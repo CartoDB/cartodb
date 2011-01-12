@@ -1,14 +1,14 @@
 body {position:relative; background:url('/images/common/header_bkg.jpg') repeat-x center 0 #2D3451;}
 body, html {height:100%;} /*table hack*/
 /*HEADER*/
-header {width:100%; height:58px; margin:0 auto; background:none;}
+header {position:absolute; top:0; left:0; right:0; width:100%; height:58px; margin:0 auto; background:none; z-index:100;}
 header a.logo {float:left; width:70px; height:15px; margin:21px 0 0 20px; background:url('/images/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
 header p.session {float:right; margin:22px 20px 0 0; font:normal 13px Arial; color:white;}
 header p.session a {text-decoration:underline; color:white;}
 header p.session a:hover {}
 
 /*SUBHEADER*/
-section.subheader {width:100%; height:103px; background:url('/images/common/sub_header_bkg.png') repeat-x 0 0;}
+section.subheader {position:absolute; top:58px; left:0; right:0; width:100%; height:103px; background:url('/images/common/sub_header_bkg.png') repeat-x 0 0; z-index:100;}
 section.subheader div.left {position:relative; float:left; width:700px; height:88px; padding:15px 0 0 0; margin:0 0 0 20px;}
 section.subheader h2 {float:left; width:auto; font:bold 21px Arial; color:white;}
 section.subheader p.status {float:left; width:auto; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; background:#6FBE6F;}
@@ -37,8 +37,9 @@ section.subheader div.right span.paginate a.next {background:url('/images/icons/
 section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
 
 /*TABLE*/
-table {position:absolute; top:161px; left:0; right:0; bottom:0; background:white;}
-table tbody {}
+div.table_position {position:absolute; top:161px; left:0; right:0; bottom:0; z-index:2; overflow:auto;}
+div.wrapper {float:left; margin:0; padding:0;}
+table {position:relative; float:left;}
 
 /*MAP*/
 div#map {position:absolute; display:none; top:161px; left:0; right:0; bottom:0; background:white;}

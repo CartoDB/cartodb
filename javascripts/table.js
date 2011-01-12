@@ -3,12 +3,22 @@
     $(document).ready(function(){
       //Fix tabs content position
       fixContentPosition();
+      
+      //$.getJSON('/javascripts/test.json',function(result){
+        //console.log(result);
+      //});
+
+      //$('table').flexigrid({height:'auto',striped:false});
+      
+      $("#flex1").flexigrid({height:'auto',width:'auto',striped: true});
+      
+      
       $(window).resize(function(){fixContentPosition()});
     });
     
     function fixContentPosition() {
       if ($('table').is(':visible')) {
-        $('table').height($(window).height()-162);
+        //$('table').height($(window).height()-162);
       } else {
         $('div#map').height($(window).height()-162);
       }
@@ -35,7 +45,7 @@
           $('div#map').toggle();
           
           if ($('div#map svg').size()==0) {
-            $('div#map').append('<script type="text/javascript" src="/javascripts/application.js"></script>');
+            $('div#map').append('<script type="text/javascript" src="/javascripts/maps/map.js"></script>');
           }
           
         }

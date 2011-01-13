@@ -1,11 +1,11 @@
 @charset "UTF-8";/* CSS Document */
-.flexigrid{font-family:Arial,Helvetica,sans-serif;font-size:11px;position:relative;border:0px solid #eee;overflow:hidden;color:#000;}
+.flexigrid{position:relative; font-family:Arial,Helvetica,sans-serif;font-size:11px;position:relative;border:0px solid #eee;overflow:hidden;color:#000;}
 .flexigrid.hideBody{height:26px !important;border-bottom:1px solid #ccc;}
 .ie6fullwidthbug{border-right:0px solid #ccc;padding-right:2px;}
 .flexigrid div.nDiv{background:#eee url(images/line.gif) repeat-y -1px top;border:1px solid #ccc;border-top:0px;overflow:auto;left:0px;position:absolute;z-index:999;float:left;}
 .flexigrid div.nDiv table{margin:2px;}
-.flexigrid div.hDivBox{float:left;padding-right:40px;}
-.flexigrid div.bDiv table{margin-bottom:10px;}
+.flexigrid div.hDivBox{float:left; padding-right:40px;}
+.flexigrid div.bDiv table{margin:0 0 10px;}
 .flexigrid div.bDiv table.autoht{border-bottom:0px;margin-bottom:0px;}
 .flexigrid div.nDiv td{padding:2px 3px;border:1px solid #eee;cursor:default;}
 .flexigrid div.nDiv tr:hover td,.flexigrid div.nDiv tr.ndcolover td{background:#d5effc url(images/hl.png) repeat-x top;border:1px solid #a8d8eb;}

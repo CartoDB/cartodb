@@ -50,11 +50,11 @@ div.table_position table thead tr th a {position:absolute; right:10px; top:10px;
 div.table_position table thead tr th a:hover {background-position:0 -14px;}
 div.table_position table tbody {}
 div.table_position table tbody tr {height:39px;}
-div.table_position table tbody tr td {height:13px!important; width:100px!important; padding:13px; background-color:#f0f1f5; background:-moz-linear-gradient(100% 100% 90deg, #f9fafe, #f0f1f5); background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#f9fafe), to(#f0f1f5));
+div.table_position table tbody tr td {height:13px!important; background-color:#f0f1f5; background:-moz-linear-gradient(100% 100% 90deg, #f9fafe, #f0f1f5); background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#f9fafe), to(#f0f1f5));
   border:1px solid #E4E5E9; border-top:none; font:normal 13px "Helvetica"; line-height:13px; color:#666666; text-shadow:0 1px white; -moz-box-shadow:inset 1px 1px 0 white; -webkit-box-shadow:inset 1px 1px 0 white;}
 div.table_position table tbody tr td:hover {cursor:pointer;}
 div.table_position table tbody tr:hover td {background: -moz-linear-gradient(100% 100% 90deg, #edf9ef, #e4F0E1); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#edf9ef), to(#e4F0E1));}
-div.table_position table tbody tr td div {width:100px; overflow:hidden; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
+div.table_position table tbody tr td div {width:100px; padding:13px; overflow:hidden; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; -webkit-user-select:none; -moz-user-select:none;}
 
 div.table_position div.loading_more {position:relative; display:none; float:left; width:100%; height:45px; padding:45px 0 0; margin:1px 0 0 0; background: -moz-linear-gradient(100% 100% 90deg, #DCDDE0, #FEFEFE); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DCDDE0), to(#FEFEFE));}
 div.table_position div.loading_more p {width:100%; text-align:center; font:bold 13px "Helvetica"; color:#666666;}

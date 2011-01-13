@@ -18,7 +18,7 @@
       var loading = false;
       var page = 0;
       var defaults;
-      var total = 10000;
+      var total = 5000;
 
       var methods = {
         init : function(options) {
@@ -30,7 +30,7 @@
               getDataUrl: 'http://bioblitz.tdwg.org/api/taxonomy',  
               style: "cDBtable.css",
               paginateParam: "page",
-              resultsPerPage: 30
+              resultsPerPage: 5000
             };
             
             table = $(this)[0];
@@ -74,7 +74,7 @@
             methods.addScroll();
             
             //Cell click event
-            //methods.bindCellEvent();
+            methods.bindCellEvent();
             
           }
           
@@ -126,28 +126,22 @@
         },
         
         bindCellEvent: function() {
-          document.ondblclick = function(event) {
+          $(document).click(function(event){
+            var target = event.target || event.srcElement;
+            var targetElement = target.nodeName.toLowerCase();
 
-              //Cross-browser event object
-              event = event || window.event;
-              //Cross-browser event target
-              var target = event.target || event.srcElement;
-              //Get target element type
-              var targetElement = target.nodeName.toLowerCase();
+            if (targetElement == "div") {
+              alert($(target).parent().attr('c')+'-'+$(target).parent().attr('r')+'-'+$(target).parent().text());
+            }
 
-              //Is it a link?
-              if (targetElement == "td") {
-                alert("td");
-                //alert(targetElement.getAttribute('r'));
-              }
-
-              //Cross-browser prevent default action
-              if (event.preventDefault) {
-                event.preventDefault();
-              } else {
-                event.returnValue = false;
-              }
-            };
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
+            }
+          });
         }
       };
 

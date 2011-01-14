@@ -16,51 +16,68 @@
       
       var table;
       var loading = false;
-      var page = 0;
+      var minPage = 0;
+      var maxPage = -1;
       var defaults;
-      var total = 5000;
+      var actualPage;
 
       var methods = {
         init : function(options) {
           return this.each(function(){
       
-            defaults = {  
-              height: '200',  
-              width: '200',
+            defaults = {
               getDataUrl: 'http://bioblitz.tdwg.org/api/taxonomy',  
-              style: "cDBtable.css",
               paginateParam: "page",
-              resultsPerPage: 5000
+              resultsPerPage: 20,
+              reuseResults: 40,
+              total: 5000
             };
             
             table = $(this)[0];
-            methods.getData(defaults);
+            methods.getData(defaults, 'next');
             
           });
         },
+        
+        
 
-        getData : function(options) {
+        getData : function(options, direction) {
          //Pagination AJAX adding rows
-         if (!loading) {
-           loading = true;
-
-           $.ajax({
-             dataType: 'jsonp',
-             method: "GET",
-             url: options.getDataUrl,
-             data: {
-               query: 'a',
-               limit: options.resultsPerPage,
-               page: page
-             },
-             success: function(data) {
-               methods.draw(options,data);
-             }
-           });
+         if (direction=="next") {
+           maxPage++;
+           actualPage = maxPage;
+         } else {
+           minPage--;
+           actualPage = minPage;
          }
+         
+         $.ajax({
+           dataType: 'jsonp',
+           method: "GET",
+           url: options.getDataUrl,
+           data: {
+             query: 'a',
+             limit: options.resultsPerPage,
+             page: actualPage
+           },
+           success: function(data) {
+             if (data.length>0) {
+               methods.draw(options,data,direction,actualPage);
+             } else {
+               if (direction=="next") {
+                  maxPage--;
+                } else {
+                  minPage++;
+                }
+             }
+           }
+         });
         },
 
-        draw: function(options,data) {
+
+
+        draw: function(options,data,direction,page) {
+          
           //Draw the data
           if ($(table).html()=='') {
             var thead = '<thead><tr>';
@@ -76,7 +93,10 @@
             //Cell click event
             methods.bindCellEvent();
             
+            //Create elements
+            methods.createElements();
           }
+          
           
           if ($(table).children('tbody').length==0) {
             var tbody = '<tbody>';
@@ -84,46 +104,116 @@
             var tbody = '';
           }
           
+          
           //Loop all the data
           $.each(data, function(i,element){
             tbody += '<tr>';
             $.each(element, function(j,elem){
-              tbody += '<td width="100" r="'+i+'" c="'+j+'"><div>'+elem+'</div></td>';
+              tbody += '<td width="100" r="'+((page*(defaults.resultsPerPage)) + i)+'" c="'+j+'"><div>'+elem+'</div></td>';
             });
             tbody += '</tr>';
           });
-          $(table).append(tbody);
-          methods.hideLoader();
           
+          if ($(table).children('tbody').length==0) {
+            tbody += '</tbody>';
+            $(table).append(tbody);
+          } else {
+            (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
+          }
+          
+          methods.checkReuse(direction);
         },
+        
+        
+        checkReuse: function(direction) {
+          
+          if ((((maxPage - minPage)+1)*defaults.resultsPerPage>defaults.reuseResults)) {
+            if (direction=="next") {
+                minPage++;
+                $(table).children('tbody').children('tr:lt('+defaults.resultsPerPage+')').remove();
+            } else {
+                maxPage--;
+                $(table).children('tbody').children('tr:gt('+(defaults.reuseResults-1)+')').remove();
+            }
+          }
+          
+          methods.hideLoader();
+        },
+        
+        
+        createElements: function() {
+          //Paginate loaders
+          $(table).prepend(
+          '<div class="loading_previous loading">' +
+            '<img src="/images/tables/activity_indicator.gif" alt="Loading..." title="Loading" />'+
+            '<p>Loading previous rows...</p>'+
+            '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
+          '</div>');
+        
+          $(table).parent().append(
+          '<div class="loading_next loading">' +
+            '<img src="/images/tables/activity_indicator.gif" alt="Loading..." title="Loading" />'+
+            '<p>Loading next rows...</p>'+
+            '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
+          '</div>');
+        },
+        
         
         addScroll: function() {
           $(window).scroll(function(ev) {
             ev.stopPropagation();
             ev.preventDefault();
+            
+            //For move thead when scrolling
+            if ($(window).scrollTop()>162) {
+              $(table).children('thead').css('top',$(window).scrollTop()-167+'px');
+            } else {
+              $(table).children('thead').css('top','0px');
+            }
+            
+            
+            //For paginating data
             if (!loading) {
-              $(window).queue([]).stop(); 
               var difference = $(document).height() - $(window).height();
               if ($(window).scrollTop()==difference) {
-                methods.showLoader();
-                page++;
-                setTimeout(function(){methods.getData(defaults)},500);
+                loading = true;
+                methods.showLoader('next');
+                setTimeout(function(){methods.getData(defaults,'next')},500);
+              } else if ($(window).scrollTop()==0 && minPage!=0) {
+                loading = true;
+                methods.showLoader('previous');
+                setTimeout(function(){methods.getData(defaults,'previous')},500);
               }
             }
           });
-          // $(table).parent().addClass('scroll-pane');
-          // $('.scroll-pane').jScrollPane({showArrows: false});
-          // $(window).resize(function(){$('.scroll-pane').jScrollPane({showArrows: false});});
         },
         
-        showLoader: function(){
-          $('div.loading_more').show();
+        
+        showLoader: function(kind){
+          if (minPage==0) {
+            var range = (maxPage - minPage + 1)*defaults.resultsPerPage;
+          } else {
+            var range = minPage*defaults.resultsPerPage+'-'+((maxPage+1)*defaults.resultsPerPage);
+          }
+          
+          if (kind=="previous") {            
+            $('div.loading_next p.count').text('Now vizzualizing '+range+' of '+defaults.total);
+            $(table).children('tbody').css('padding','0');
+            $('div.loading_previous').show();
+          } else {
+            $('div.loading_next p.count').text('Now vizzualizing '+range+' of '+defaults.total);
+            $('div.loading_next').show();
+          }
         },
+        
         
         hideLoader: function() {
           loading = false;
-          $('div.loading_more').hide();
+          $('div.loading_next').hide();
+          $('div.loading_previous').hide();
+          $(table).children('tbody').css('padding','55px 0 0 0');
         },
+        
         
         bindCellEvent: function() {
           $(document).click(function(event){

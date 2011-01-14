@@ -1,0 +1,23 @@
+div.table_position table {position:relative; width:auto; margin:5px 0 0 0; padding:55px 0 0 0; background:white; table-layout:fixed;}
+div.table_position table thead {position:absolute; top:0; left:0; padding:0; margin:0;}
+div.table_position table thead tr {border-bottom:1px solid #D2D3D5;}
+div.table_position table thead tr th {background-color:#FFFFFF; background: -moz-linear-gradient(100% 100% 90deg, #FFFFFF, #DDDEE1); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#DDDEE1));
+  border-right:1px solid #E2E3E7;  text-shadow:0 1px white; -moz-box-shadow:inset 1px 1px 0 white; -webkit-box-shadow:inset 1px 1px 0 white;}
+div.table_position table thead tr th div {position:relative!important; padding:13px; width:100px;}
+div.table_position table thead tr th h3 {font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white;}
+div.table_position table thead tr th p {font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white;}
+div.table_position table thead tr th a {position:absolute; right:10px; top:10px; height:14px; width:14px; margin:0; background:url('/images/tables/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:100;}
+div.table_position table thead tr th a:hover {background-position:0 -14px;}
+div.table_position table tbody {float:left; padding:55px 0 0 0 ;}
+div.table_position table tbody tr {height:39px;}
+div.table_position table tbody tr td {height:13px!important; background-color:#f0f1f5; background:-moz-linear-gradient(100% 100% 90deg, #f9fafe, #f0f1f5); background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#f9fafe), to(#f0f1f5));
+  border:1px solid #E4E5E9; border-left:none; border-top:none; font:normal 13px "Helvetica"; line-height:13px; color:#666666; text-shadow:0 1px white; -moz-box-shadow:inset 1px 1px 0 white; -webkit-box-shadow:inset 1px 1px 0 white;}
+div.table_position table tbody tr td:hover {cursor:pointer;}
+div.table_position table tbody tr:hover td {background: -moz-linear-gradient(100% 100% 90deg, #edf9ef, #e4F0E1); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#edf9ef), to(#e4F0E1));}
+div.table_position table tbody tr td div {width:100px; padding:13px; overflow:hidden; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; -webkit-user-select:none; -moz-user-select:none;}
+
+div.table_position div.loading {position:relative; display:default; float:left; width:100%; height:45px; padding:45px 0 0; margin:1px 0 0 0; background: -moz-linear-gradient(100% 100% 90deg, #DCDDE0, #FEFEFE); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#DCDDE0), to(#FEFEFE));}
+div.table_position div.loading.loading_previous {margin:51px 0 0 0; border-bottom:1px solid #E4E5E9;}
+div.table_position div.loading p {width:100%; text-align:center; font:bold 13px "Helvetica"; color:#666666;}
+div.table_position div.loading p.count {width:100%; padding:5px 0 0 0; text-align:center; font:normal 11px "Helvetica"; color:#B3B3B3;}
+div.table_position div.loading img {position:absolute; width:25; height:25px ; margin:0 0 0 -13px; top:12px; left:50%;}

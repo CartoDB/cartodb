@@ -1,6 +1,6 @@
 /*TABLE*/
-div.table_position {float:left; margin:103px 0 0 0; padding:0; width:1000px; overflow-x:scroll; overflow-y:hidden; background:url('/images/dashboard/content_bkg.png') repeat 0 0;}
-div.table_position table {position:relative; width:auto; margin:0; padding:55px 0 0 0; table-layout:fixed;}
+div.table_position {position:relative; float:left; margin:103px 0 0 0; padding:0; width:1000px; overflow-x:scroll; overflow-y:hidden; background:url('/images/dashboard/content_bkg.png') repeat 0 0;}
+div.table_position table {position:relative!important; width:auto; margin:0;  table-layout:fixed;}
 div.table_position table thead {position:absolute; top:0; left:0; padding:5px 0 0 0; margin:0; z-index:20; background:white;}
 div.table_position table thead tr {position:relative; float:left; padding:0 0 0 41px; border-bottom:1px solid #D2D3D5;}
 div.table_position table thead tr th {background-color:#FFFFFF; background: -moz-linear-gradient(100% 100% 90deg, #FFFFFF, #DDDEE1); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#DDDEE1));
@@ -12,7 +12,7 @@ div.table_position table thead tr th h3 {font:bold 11px "Helvetica"; color:#7272
 div.table_position table thead tr th p {font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white;}
 div.table_position table thead tr th a {position:absolute; right:10px; top:10px; height:14px; width:14px; margin:0; background:url('/images/tables/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10;}
 div.table_position table thead tr th a:hover {background-position:0 -14px;}
-div.table_position table tbody {float:left; padding:53px 0 0 0;}
+div.table_position table tbody {float:left; margin:5px 0 0 0;}
 div.table_position table tbody tr {position:relative; float:left; height:39px; padding:0 0 0 41px;}
 div.table_position table tbody tr td {padding:0; margin:0; background-color:#f0f1f5; background:-moz-linear-gradient(100% 100% 90deg, #f9fafe, #f0f1f5); background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#f9fafe), to(#f0f1f5));
   border:1px solid #E4E5E9; border-left:none; border-top:none; font:normal 13px "Helvetica"; line-height:13px; color:#666666; text-shadow:0 1px white; -moz-box-shadow:inset 1px 1px 0 white; -webkit-box-shadow:inset 1px 1px 0 white;}

@@ -11,6 +11,12 @@
     //   - Floating tHead 
     //   - Floating first column 
 
+    
+    //Elements out of the plugin (Be careful with this!)
+    // - Blue header
+    // - div.table_position
+    
+    // We are playing with these containers but they don't belong to the plugin
 
     (function( $ ){
       
@@ -35,7 +41,7 @@
             
             table = $(this)[0];
             methods.getData(defaults, 'next');
-            
+            methods.keepSize();
           });
         },
         
@@ -80,7 +86,7 @@
           
           //Draw the data
           if ($(table).html()=='') {
-            var thead = '<thead><tr><th><div class="first"></div></th>';
+            var thead = '<thead><tr><th class="first"><div></div></th>';
             $.each(data[0], function(index,element){
               thead += '<th width="100"><div><h3>'+index+'</h3><p>String</p><a href="#">options</a></div></th>';
             });
@@ -160,22 +166,28 @@
         
         
         addScroll: function() {
+          
+          $('div.table_position').scroll(function(ev){
+            //For moving first table column
+            $(table).children('tbody').children('tr').children('td.first').css('left',$('div.table_position').scrollLeft()+'px');
+            $(table).children('thead').children('tr').children('th.first').css('left',$('div.table_position').scrollLeft()+'px');
+          });
+          
+          
           $(window).scroll(function(ev) {
             ev.stopPropagation();
             ev.preventDefault();
             
             //For moving thead when scrolling
-            if ($(window).scrollTop()>162) {
-              $(table).children('thead').css('top',$(window).scrollTop()-167+'px');
+            if ($(window).scrollTop()>58) {
+              $('section.subheader').css('top',$(window).scrollTop()+'px');
+              $(table).children('thead').css('top',$(window).scrollTop()-60+'px');
             } else {
+              $('section.subheader').css('top','58px');
               $(table).children('thead').css('top','0px');
             }
             
-            
-            //For moving first table column
-            $(table).children('tbody').children('tr').children('td.first').css('left',$(window).scrollLeft()+'px');
-            
-            
+
             //For paginating data
             if (!loading) {
               var difference = $(document).height() - $(window).height();
@@ -236,6 +248,35 @@
               event.returnValue = false;
             }
           });
+        },
+        keepSize: function(){
+          //Keep the parent table div with the correct width, onresize window as well
+          if ($(window).width() != $('div.table_position').width()) {
+            setTimeout(function(){
+              resizeTable();
+            },500);
+          }
+          
+          $(window).resize(function(ev){
+            resizeTable();
+          });
+          
+          function resizeTable() {
+            $('div.table_position').width($(window).width());
+            var parent_width = $(window).width();
+            var width_table_content = (($(table).children('thead').children('tr').children('th').size()-1)*128) + 60;
+
+            if (parent_width>width_table_content) {
+              var head_element = $(table).children('thead').children('tr').children('th:last').children('div');
+              var body_element = $(table).children('tbody').children('tr');
+              
+              $(head_element).width(128 + parent_width-width_table_content);
+              $(body_element).each(function(index,element){
+                $(element).children('td:last').children('div').width(128 + parent_width-width_table_content);
+              });
+            }
+          }
+          
         }
       };
 

@@ -1,5 +1,6 @@
 body {position:relative; background:url('/images/common/header_bkg.jpg') repeat-x center 0 #2D3451;}
 body, html {height:100%;} /*table hack*/
+
 /*HEADER*/
 header {width:100%; height:58px; margin:0 auto; background:none; z-index:100;}
 header a.logo {float:left; width:70px; height:15px; margin:23px 0 0 40px; background:url('/images/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
@@ -8,7 +9,8 @@ header p.session a {text-decoration:underline; color:white;}
 header p.session a:hover {}
 
 /*SUBHEADER*/
-section.subheader {width:100%; height:103px; background:url('/images/common/sub_header_bkg.png') repeat-x 0 0; z-index:100;}
+section.subheader {position:absolute; top:58px; left:0; width:100%; height:103px; background:url('/images/common/header_bkg.jpg') repeat-x center -58px #2D3451; z-index:100;}
+section.subheader div.mamufas {float:left; width:100%; background:url('/images/common/sub_header_bkg.png') repeat-x 0 0;}
 section.subheader div.left {position:relative; float:left; width:700px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
 section.subheader h2 {float:left; width:auto; font:bold 21px Arial; color:white;}
 section.subheader p.status {float:left; width:auto; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; background:#6FBE6F;}
@@ -36,8 +38,7 @@ section.subheader div.right span.paginate a.previous {margin:0 3px 0 0; backgrou
 section.subheader div.right span.paginate a.next {background:url('/images/icons/right_button.png') no-repeat 0 0;}
 section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
 
-/*TABLE*/
-div.table_position {float:left; margin:0; background:white;}
+
 
 
 

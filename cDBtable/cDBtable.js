@@ -28,8 +28,8 @@
             defaults = {
               getDataUrl: 'http://bioblitz.tdwg.org/api/taxonomy',  
               paginateParam: "page",
-              resultsPerPage: 20,
-              reuseResults: 40,
+              resultsPerPage: 50,
+              reuseResults: 500,
               total: 5000
             };
             
@@ -80,7 +80,7 @@
           
           //Draw the data
           if ($(table).html()=='') {
-            var thead = '<thead><tr>';
+            var thead = '<thead><tr><th><div class="first"></div></th>';
             $.each(data[0], function(index,element){
               thead += '<th width="100"><div><h3>'+index+'</h3><p>String</p><a href="#">options</a></div></th>';
             });
@@ -107,7 +107,7 @@
           
           //Loop all the data
           $.each(data, function(i,element){
-            tbody += '<tr>';
+            tbody += '<tr><td class="first" r="'+((page*(defaults.resultsPerPage)) + i)+'"><div><a href="#">options</a></div></td>';
             $.each(element, function(j,elem){
               tbody += '<td width="100" r="'+((page*(defaults.resultsPerPage)) + i)+'" c="'+j+'"><div>'+elem+'</div></td>';
             });
@@ -164,12 +164,16 @@
             ev.stopPropagation();
             ev.preventDefault();
             
-            //For move thead when scrolling
+            //For moving thead when scrolling
             if ($(window).scrollTop()>162) {
               $(table).children('thead').css('top',$(window).scrollTop()-167+'px');
             } else {
               $(table).children('thead').css('top','0px');
             }
+            
+            
+            //For moving first table column
+            $(table).children('tbody').children('tr').children('td.first').css('left',$(window).scrollLeft()+'px');
             
             
             //For paginating data
@@ -197,7 +201,7 @@
           }
           
           if (kind=="previous") {            
-            $('div.loading_next p.count').text('Now vizzualizing '+range+' of '+defaults.total);
+            $('div.loading_previous p.count').text('Now vizzualizing '+range+' of '+defaults.total);
             $(table).children('tbody').css('padding','0');
             $('div.loading_previous').show();
           } else {
@@ -211,7 +215,7 @@
           loading = false;
           $('div.loading_next').hide();
           $('div.loading_previous').hide();
-          $(table).children('tbody').css('padding','55px 0 0 0');
+          $(table).children('tbody').css('padding','53px 0 0 0');
         },
         
         
@@ -220,7 +224,7 @@
             var target = event.target || event.srcElement;
             var targetElement = target.nodeName.toLowerCase();
 
-            if (targetElement == "div") {
+            if (targetElement == "div" && $(target).parent().attr('r')!=undefined) {
               alert($(target).parent().attr('c')+'-'+$(target).parent().attr('r')+'-'+$(target).parent().text());
             }
 

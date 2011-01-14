@@ -37,7 +37,7 @@ section.subheader div.right span.paginate a.next {background:url('/images/icons/
 section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
 
 /*TABLE*/
-div.table_position {float:left; margin:0 0 0 40px; background:white;}
+div.table_position {float:left; margin:0; background:white;}
 
 
 

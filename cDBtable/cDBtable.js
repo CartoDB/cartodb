@@ -265,14 +265,18 @@
             $('div.table_position').width($(window).width());
             var parent_width = $(window).width();
             var width_table_content = (($(table).children('thead').children('tr').children('th').size()-1)*128) + 60;
-
+            var head_element = $(table).children('thead').children('tr').children('th:last').children('div');
+            var body_element = $(table).children('tbody').children('tr');
+            
             if (parent_width>width_table_content) {
-              var head_element = $(table).children('thead').children('tr').children('th:last').children('div');
-              var body_element = $(table).children('tbody').children('tr');
-              
               $(head_element).width(128 + parent_width-width_table_content);
               $(body_element).each(function(index,element){
                 $(element).children('td:last').children('div').width(128 + parent_width-width_table_content);
+              });
+            } else {
+              $(head_element).width(128);
+              $(body_element).each(function(index,element){
+                $(element).children('td:last').children('div').width(128);
               });
             }
           }

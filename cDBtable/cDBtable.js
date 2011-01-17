@@ -88,7 +88,24 @@
           if ($(table).html()=='') {
             var thead = '<thead><tr><th class="first"><div></div></th>';
             $.each(data[0], function(index,element){
-              thead += '<th width="100"><div><h3>'+index+'</h3><p>String</p><a href="#">options</a></div></th>';
+              var ul_list = '<span>' +
+                              '<ul>' +
+                                '<li><a href="#">Order by this column</a></li>' +
+                                '<li><a href="#">Filter by this column</a></li>' +
+                                '<li><a href="#">Rename column</a></li>' +
+                                '<li><a href="#">Change data type</a></li>' +
+                                '<li><a href="#">Delete column</a></li>' +
+                                '<li class="last"><a href="#">Add new column</a></li>' +
+                              '</ul>' +
+                            '</span>';
+              thead += '<th width="100">'+
+                          '<div>'+
+                            '<h3>'+index+'</h3>'+
+                            '<p>String</p>'+
+                            '<a class="options" href="#">options</a>'+
+                            ul_list+
+                          '</div>'+
+                        '</th>';
             });
             thead += "</thead></tr>";
             $(table).append(thead);
@@ -113,7 +130,14 @@
           
           //Loop all the data
           $.each(data, function(i,element){
-            tbody += '<tr><td class="first" r="'+((page*(defaults.resultsPerPage)) + i)+'"><div><a href="#">options</a></div></td>';
+            var options_list =  '<span>' +
+                                  '<ul>' +
+                                    '<li><a href="#">Duplicate row</a></li>' +
+                                    '<li><a href="#">Delete row</a></li>' +
+                                    '<li class="last"><a href="#">Add new row</a></li>' +
+                                  '</ul>' +
+                                '</span>';
+            tbody += '<tr><td class="first" r="'+((page*(defaults.resultsPerPage)) + i)+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
             $.each(element, function(j,elem){
               tbody += '<td width="100" r="'+((page*(defaults.resultsPerPage)) + i)+'" c="'+j+'"><div>'+elem+'</div></td>';
             });
@@ -135,11 +159,11 @@
           
           if ((((maxPage - minPage)+1)*defaults.resultsPerPage>defaults.reuseResults)) {
             if (direction=="next") {
-                minPage++;
-                $(table).children('tbody').children('tr:lt('+defaults.resultsPerPage+')').remove();
+              minPage++;
+              $(table).children('tbody').children('tr:lt('+defaults.resultsPerPage+')').remove();
             } else {
-                maxPage--;
-                $(table).children('tbody').children('tr:gt('+(defaults.reuseResults-1)+')').remove();
+              maxPage--;
+              $(table).children('tbody').children('tr:gt('+(defaults.reuseResults-1)+')').remove();
             }
           }
           
@@ -180,7 +204,7 @@
             
             //For moving thead when scrolling
             if ($(window).scrollTop()>58) {
-              $('section.subheader').css('top',$(window).scrollTop()+'px');
+              $('section.subheader').css('top',$(window).scrollTop()-1+'px');
               $(table).children('thead').css('top',$(window).scrollTop()-60+'px');
             } else {
               $('section.subheader').css('top','58px');
@@ -232,6 +256,8 @@
         
         
         bindCellEvent: function() {
+          
+          //Cell events
           $(document).click(function(event){
             var target = event.target || event.srcElement;
             var targetElement = target.nodeName.toLowerCase();
@@ -239,6 +265,28 @@
             if (targetElement == "div" && $(target).parent().attr('r')!=undefined) {
               alert($(target).parent().attr('c')+'-'+$(target).parent().attr('r')+'-'+$(target).parent().text());
             }
+            
+            
+            //Clicking in first column element
+            if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
+              
+              if (!$(target).hasClass('selected')) {
+                $('tbody tr td.first div span').hide();
+                $('tbody tr td.first div a.options').removeClass('selected');
+                $(target).parent().children('span').show();
+                $(target).addClass('selected');
+                
+                $('body').click(function(event) {
+                  if (!$(event.target).closest('tbody tr td div span').length) {
+                    $('table tbody tr td.first div a.options').removeClass('selected');
+                    $('table tbody tr td.first div span').hide();
+                    $('body').unbind('click');
+                  };
+        				});
+                
+              }
+            }
+            
 
             if (event.preventDefault) {
               event.preventDefault();
@@ -248,6 +296,39 @@
               event.returnValue = false;
             }
           });
+          
+          
+          //Head options event
+          $('thead tr a.options').click(function(ev){
+            ev.stopPropagation();
+            ev.preventDefault();
+            
+            if (!$(this).hasClass('selected')) {
+              $('tbody tr td.first a.options').removeClass('selected');
+              $('tbody tr td.first span').hide();
+              
+              $('thead tr a.options').removeClass('selected');
+              $('thead tr span').hide();
+              $(this).addClass('selected');
+              $(this).parent().children('span').show();
+              
+              $('body').click(function(event) {
+                if (!$(event.target).closest('thead tr span').length) {
+                  $('thead tr span').hide();
+                  $('thead tr a.options').removeClass('selected');
+                  $('body').unbind('click');
+                };
+      				});
+              
+            } else {
+              $(this).removeClass('selected');
+              $(this).parent().children('span').hide();
+              $('body').unbind('click');
+            }
+
+          });
+          
+          
         },
         keepSize: function(){
           //Keep the parent table div with the correct width, onresize window as well

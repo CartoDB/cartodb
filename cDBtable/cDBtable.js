@@ -2,14 +2,14 @@
     // FUNCIONALITIES
     //   - Editing table data with events
     //   - Resize columns
-    //   - Pagination with ajax
-    //   - Custom style
+    //   - Pagination with ajax --- OK
+    //   - Custom style --- OK
     //   - jScrollPane
     //   - Update table (remove columns and rows, add columns and rows, move columns, sort columns)
     //   - Validate fields
     //   - Rows selection for multiple edition
-    //   - Floating tHead 
-    //   - Floating first column 
+    //   - Floating tHead  --- OK
+    //   - Floating first column --- OK
 
     
     //Elements out of the plugin (Be careful with this!)
@@ -35,7 +35,7 @@
               getDataUrl: 'http://bioblitz.tdwg.org/api/taxonomy',  
               paginateParam: "page",
               resultsPerPage: 50,
-              reuseResults: 500,
+              reuseResults: 200,
               total: 5000
             };
             
@@ -98,6 +98,7 @@
                                 '<li class="last"><a href="#">Add new column</a></li>' +
                               '</ul>' +
                             '</span>';
+                            
               thead += '<th width="100">'+
                           '<div>'+
                             '<h3>'+index+'</h3>'+
@@ -114,7 +115,7 @@
             methods.addScroll();
             
             //Cell click event
-            methods.bindCellEvent();
+            methods.bindCellEvents();
             
             //Create elements
             methods.createElements();
@@ -137,9 +138,9 @@
                                     '<li class="last"><a href="#">Add new row</a></li>' +
                                   '</ul>' +
                                 '</span>';
-            tbody += '<tr><td class="first" r="'+((page*(defaults.resultsPerPage)) + i)+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+            tbody += '<tr r="'+((page*(defaults.resultsPerPage)) + i)+'"><td class="first" r="'+((page*(defaults.resultsPerPage)) + i)+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
             $.each(element, function(j,elem){
-              tbody += '<td width="100" r="'+((page*(defaults.resultsPerPage)) + i)+'" c="'+j+'"><div>'+elem+'</div></td>';
+              tbody += '<td class="'+((i==5 && j=="id")?'error':'')+'" width="100" r="'+((page*(defaults.resultsPerPage)) + i)+'" c="'+j+'"><div>'+elem+'</div></td>';
             });
             tbody += '</tr>';
           });
@@ -172,6 +173,7 @@
         
         
         createElements: function() {
+          
           //Paginate loaders
           $(table).prepend(
           '<div class="loading_previous loading">' +
@@ -186,6 +188,40 @@
             '<p>Loading next rows...</p>'+
             '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
           '</div>');
+          
+          
+          //General options
+          $(table).parent().append(
+            '<div class="general_options">'+
+              '<ul>'+
+                '<li><a href="#"><span>SQL</span></a></li>'+
+                '<li><a href="#"><span>Add row</span></a></li>'+
+                '<li><a href="#"><span>Add column</span></a></li>'+
+                '<li><a href="#"><span class="dropdown">Views (2)</span></a></li>'+
+              '</ul>'+
+            '</div>'
+          );
+          
+          //Edit caption
+          $(table).parent().append(
+            '<div class="edit_cell">'+
+              '<textarea></textarea>'+
+              '<span>'+
+                '<a class="cancel" href="#">Cancel</a>'+
+                '<a class="save" href="#">Save changes</a>'+
+              '</span>'+
+            '</div>'
+          );
+          
+          //Data error tooltip
+          $(table).parent().append(
+            '<div class="error_cell">'+
+              '<div class="inner">'+
+                '<p>Your field doesn’t look like a valid lat/long field</p>'+
+              '</div>'+
+            '</div>'
+          );
+          
         },
         
         
@@ -255,21 +291,28 @@
         },
         
         
-        bindCellEvent: function() {
+        bindCellEvents: function() {
           
           //Cell events
           $(document).click(function(event){
             var target = event.target || event.srcElement;
             var targetElement = target.nodeName.toLowerCase();
 
-            if (targetElement == "div" && $(target).parent().attr('r')!=undefined) {
-              alert($(target).parent().attr('c')+'-'+$(target).parent().attr('r')+'-'+$(target).parent().text());
+            if (targetElement == "div" && $(target).parent().attr('c')!=undefined) {
+              var target_position = $(target).parent().offset();
+              var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+              $('tbody tr[r="'+data.row+'"]').addClass('editing');
+              $('div.edit_cell').css('top',target_position.top-192+'px');
+              $('div.edit_cell').css('left',target_position.left-80+'px');
+              $('div.edit_cell textarea').text(data.value);
+              $('div.edit_cell a.save').attr('r',data.row);
+              $('div.edit_cell a.save').attr('c',data.column);
+              $('div.edit_cell').show();
             }
             
             
             //Clicking in first column element
             if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
-              
               if (!$(target).hasClass('selected')) {
                 $('tbody tr td.first div span').hide();
                 $('tbody tr td.first div a.options').removeClass('selected');
@@ -282,11 +325,9 @@
                     $('table tbody tr td.first div span').hide();
                     $('body').unbind('click');
                   };
-        				});
-                
+                });
               }
             }
-            
 
             if (event.preventDefault) {
               event.preventDefault();
@@ -327,6 +368,52 @@
             }
 
           });
+          
+          
+          //Error tooltip
+          $("td.error div").livequery('mouseenter',
+            function() {
+              var position = $(this).offset();
+              $('div.error_cell').css('left',position.left-35+'px');
+              $('div.error_cell').css('top',position.top-280+'px');
+              //$('div.error_cell div.inner').css('opacity','0');
+              $('div.error_cell').show();
+              //$('div.error_cell div.inner').css('marginTop','120px');
+              //$('div.error_cell div.inner').stop().animate({opacity:1,marginTop:'0px'},300);
+           });
+           $("td.error div").livequery('mouseleave',
+              function() {
+                //$('div.error_cell div.inner').stop().animate({opacity:0,marginTop:'-120px'},200,function(){
+                  $('div.error_cell').hide();
+                //});
+           });
+          
+          
+          
+           //Saving new edited value
+           $("div.edit_cell a.save").livequery('click',function(ev){
+             ev.stopPropagation();
+             ev.preventDefault();
+             var row = $(this).attr('r');
+             var column = $(this).attr('c');
+             $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text($("div.edit_cell textarea").val());
+             $("div.edit_cell").hide();
+             $("div.edit_cell textarea").css('width','262px');
+             
+             $('tbody tr[r="'+row+'"]').removeClass('editing');
+           });
+           
+           //Cancel editing value
+           $("div.edit_cell a.cancel").livequery('click',function(ev){
+             ev.stopPropagation();
+             ev.preventDefault();
+             var row = $('div.edit_cell a.save').attr('r');
+             $("div.edit_cell").hide();
+             $("div.edit_cell textarea").css('width','262px');
+             $('tbody tr[r="'+row+'"]').removeClass('editing');
+           });
+           
+          
           
           
         },

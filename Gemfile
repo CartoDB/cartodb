@@ -4,7 +4,7 @@ gem 'rails', '3.0.3'
 gem 'ruby-debug19', :require => 'ruby-debug', :group => [:development, :test]
 
 gem 'pg', '0.9'
-gem 'sequel-rails'
+gem 'sequel-rails', :git => 'git://github.com/ferblape/sequel-rails.git'
 
 gem 'warden'
 gem 'rails_warden'

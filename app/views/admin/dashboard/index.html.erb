@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset=utf-8 />
+    <title>cartoDB</title>
+    <link rel="stylesheet" href="/stylesheets/reset.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/dashboard.css" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/javascripts/dashboard.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <header>
+      <a class="logo" href="/">CartoDB</a>
+      <p class="session"><%= current_user.email %> (<a href="#">close session</a>)</p>
+    </header>
+
+    <section class="subheader">
+      <div class="inner_subheader">
+        <div class="left">
+          <ul class="tables_list">
+            <li class="selected "><a href="/dashboard.html"><span>Your tables</span></a></li>
+            <li><a href="/public_tables.html" class="public"><span>Public tables</span></a></li>
+          </ul>
+        </div>
+        <div class="right">
+          <p class="settings"><a class="settings" href="#">settings</a></p>
+        </div>
+      </div>
+    </section>
+
+  </body>
+</html>

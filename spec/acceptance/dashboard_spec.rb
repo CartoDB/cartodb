@@ -15,10 +15,14 @@ feature "Dashboard", %q{
 
     within(:css, "header") do
       page.should have_link("CartoDB")
-      page.should has_content(user.email)
+      page.should have_content(user.email)
     end
 
     page.should have_css("ul.tables_list li.selected a", :text => "Your tables")
     page.should have_css("ul.tables_list li a", :text => "Public tables")
+
+    click_link_or_button('close session')
+
+    page.current_path.should == homepage
   end
 end

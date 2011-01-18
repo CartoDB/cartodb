@@ -1,7 +1,7 @@
 <%= form_tag create_session_path do %>
-  <%= label_tag :email %>
+  <%= label_tag :email, 'E-mail' %>
   <%= text_field_tag :email %>
-  <%= label_tag :password %>
+  <%= label_tag :password, 'Password' %>
   <%= password_field_tag :password %>
   <%= submit_tag 'Login' %>
 <% end %>

@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/ferblape/sequel-rails.git
-  revision: ce36f55
+  revision: 9bc05e5
   specs:
     sequel-rails (0.1.7)
       actionpack (~> 3.0.0.rc)

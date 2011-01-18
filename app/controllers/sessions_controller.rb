@@ -8,7 +8,10 @@ class SessionsController < ApplicationController
   def create
     authenticate!
     redirect_to dashboard_path
-  rescue ActionController::RedirectBackError
+  end
+
+  def destroy
+    logout
     redirect_to root_path
   end
 

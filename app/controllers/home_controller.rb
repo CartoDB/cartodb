@@ -1,9 +1,8 @@
 class HomeController < ApplicationController
 
-  before_filter :login_required
+  layout 'front_layout'
 
   def index
-    render :text => "Logged in: #{current_user.inspect}"
   end
 
 end

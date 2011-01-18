@@ -10,18 +10,19 @@
       </div>
       <div class="bottom_white"></div>
     </div>
-    
+
     <div class="tables_list">
       <div class="left">
         <div class="top_blue_medium">
-          <h3><strong>5 tables</strong> in your account</h3>
+          <h3><strong><%= pluralize(current_user.tables_count, 'table', 'tables') %></strong> in your account</h3>
           <a class="new_table" href="#">Create a new table</a>
         </div>
         <div class="middle_white_medium">
           <ul class="your_tables">
-            <li>
-              <h4><a href="/table.html">World Heritage sites 2010</a></h4>
-              <p class="status public">PUBLIC</p>
+            <% @tables.each_with_index do |table| %>
+            <li<%= ' class="last"'.html_safe if @tables.last == table %>>
+              <h4><a href="/table.html"><%= table.name %></a></h4>
+              <p class="status <%= css_class_for_privacy(table) %>"><%= table_privacy(table) %></p>
               <div class="meta_info">
                 <span class="info">
                   <p class="last_op">Last operation 24 minutes ago</p>
@@ -39,26 +40,7 @@
                 </span>
               </div>
             </li>
-            <li class="last">
-              <h4><a href="/table.html">RLAT DB</a></h4>
-              <p class="status private">PRIVATE</p>
-              <div class="meta_info">
-                <span class="info">
-                  <p class="last_op">Last operation 24 minutes ago</p>
-                  <p class="delete"> | <a href="#" class="delete">delete table</a></p>
-                </span>
-                <span class="tags">
-                  <a href="#">History</a>
-                  <a href="#">WHS-JK</a>
-                  <a href="#">Manus DB</a>
-                  <a href="#">Natural</a>
-                  <a href="#">DataBase</a>
-                  <a href="#">WHS</a>
-                  <a href="#">Vizzuality</a>
-                  <a href="#">Data</a>
-                </span>
-              </div>
-            </li>
+            <% end %>
           </ul>
         </div>
         <div class="bottom_white_medium"></div>

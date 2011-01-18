@@ -4,4 +4,4 @@
 require File.expand_path('../config/application', __FILE__)
 require 'rake'
 
-ProtoCartodb::Application.load_tasks
+CartoDB::Application.load_tasks

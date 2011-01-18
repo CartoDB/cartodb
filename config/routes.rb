@@ -1,4 +1,4 @@
-ProtoCartodb::Application.routes.draw do
+CartoDB::Application.routes.draw do
 
   root :to => "home#index"
 

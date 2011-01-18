@@ -1,14 +1,65 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>ProtoCartodb</title>
-  <%= stylesheet_link_tag :all %>
-  <%= javascript_include_tag :defaults %>
-  <%= csrf_meta_tag %>
-</head>
-<body>
+<!DOCTYPE html> 
+<html lang="en"> 
+  <head> 
+    <meta charset=utf-8 /> 
+    <title>cartoDB</title> 
+    <link rel="stylesheet" href="/stylesheets/reset.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/admin/dashboard.css" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/javascripts/admin/dashboard.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>  
+    <header>
+      <a class="logo" href="/">CartoDB</a>
+      <p class="session">jatorre@gmail.com (<a href="#">close session</a>)</p>
+    </header>
+    
+    <section class="subheader">
+      <div class="inner_subheader">
+        <div class="left">
+          <ul class="tables_list">
+            <li class="selected "><a href="/dashboard.html"><span>Your tables</span></a></li>
+            <li><a href="/public_tables.html" class="public"><span>Public tables</span></a></li>
+          </ul>
+        </div>
+        <div class="right">
+          <p class="settings"><a class="settings" href="#">settings</a></p>
+        </div>
+      </div>
+    </section>
 
-<%= yield %>
-
-</body>
+    <%= yield %>
+    
+    <footer>
+      <section class="prefooter">
+        <div class="block">
+          <h3>New tables published</h3>
+          <h4>World Database on Protected Areas data published</h4>
+          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
+        </div>
+        <div class="block">
+          <h3></h3>
+          <h4>GROMS Migration data on CartoDB</h4>
+          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
+        </div>
+        <div class="block last">
+          <h3>Latest from the blog</h3>
+          <h4>A new status update on status.cartodb.com</h4>
+          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
+        </div>
+      </section>
+      <div class="outer_footer">
+        <section class="footer">
+          <a class="logo" href="/">CartoDB</a>
+          <div class="long">
+            <p class="rights">All rights reserved 2011. <a href="#" target="_blank">Contact us</a> / <a href="#" target="_blank">Give us your feedback</a> / <a href="#" target="_blank">Read the TOS</a></p>
+            <span class="poweredby">
+            <p class="vizzuality">A product by </p><a href="http://www.vizzuality.com" target="_blank">Vizzuality</a>
+            </span>
+          </div>
+        </section>
+      </div>
+    </footer>
+    
+  </body> 
 </html>

@@ -7,6 +7,7 @@ class UserTablesMigration < Sequel::Migration
       String :name, :null => false
       Integer :privacy, :null => false
       String :db_table_name, :null => false
+      DateTime :updated_at, :null => false
     end
 
     alter_table(:user_tables) do

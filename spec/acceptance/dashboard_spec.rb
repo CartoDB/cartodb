@@ -9,10 +9,16 @@ feature "Dashboard", %q{
   scenario "Login and visit my dashboard and the public tables" do
     user = create_user
     the_other = create_user
+    t = Time.now - 5.minutes
+    Timecop.travel(t)
     create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PUBLIC
+    Timecop.travel(t + 1.minute)
     create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE
+    Timecop.travel(t + 2.minutes)
     create_table :user_id => the_other.id, :name => 'Favourite restaurants', :privacy => Table::PUBLIC
+    Timecop.travel(t + 3.minutes)
     create_table :user_id => the_other.id, :name => 'Secret vodkas', :privacy => Table::PRIVATE
+    Timecop.travel(t + 5.minutes)
 
     login_as user
 
@@ -31,11 +37,13 @@ feature "Dashboard", %q{
     within("ul.your_tables li:eq(1)") do
       page.should have_link("Downloaded movies")
       page.should have_content("PRIVATE")
+      page.should have_content("Last operation 4 minutes ago")
     end
 
     within("ul.your_tables li:eq(2).last") do
       page.should have_link("My check-ins")
       page.should have_content("PUBLIC")
+      page.should have_content("Last operation 5 minutes ago")
     end
 
     click_link_or_button('Downloaded movies')
@@ -53,6 +61,7 @@ feature "Dashboard", %q{
     within("ul.your_tables li:eq(1)") do
       page.should have_link("Favourite restaurants")
       page.should have_content("PUBLIC")
+      page.should have_content("Last operation 3 minutes ago")
     end
 
     click_link_or_button('Favourite restaurants')

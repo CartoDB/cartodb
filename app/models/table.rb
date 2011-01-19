@@ -16,6 +16,7 @@ class Table < Sequel::Model(:user_tables)
   # Before creating a user table a table should be created in the database.
   # This table has an empty schema
   def before_create
+    update_updated_at
     unless self.user_id.blank? || self.name.blank?
       self.db_table_name = DB_TABLE_PREFFIX + self.user_id.to_s + '_' + self.name.sanitize.tr('-','_')
       unless self.db_table_name.blank?
@@ -39,11 +40,22 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def execute_sql(sql)
+    update_updated_at!
     Rails::Sequel.connection[db_table_name.to_sym].with_sql(sql).all
   end
 
   def rows_count
     Rails::Sequel.connection[db_table_name.to_sym].count
+  end
+
+  private
+
+  def update_updated_at
+    self.updated_at = Time.now
+  end
+
+  def update_updated_at!
+    update_updated_at && save
   end
 
 end

@@ -6,9 +6,9 @@ class Admin::TablesController < ApplicationController
 
   def index
     @tables = unless params[:public]
-      current_user.tables.select(:id,:name,:privacy).all
+      current_user.tables.select(:id,:name,:privacy,:updated_at).all
     else
-      Table.filter(~{:user_id => current_user.id} & {:privacy => Table::PUBLIC}).select(:id,:name,:privacy).all
+      Table.filter(~{:user_id => current_user.id} & {:privacy => Table::PUBLIC}).select(:id,:name,:privacy,:updated_at).all
     end
   end
 

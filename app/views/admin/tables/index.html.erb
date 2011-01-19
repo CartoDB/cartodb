@@ -43,7 +43,9 @@
               <p class="status <%= css_class_for_privacy(table) %>"><%= table_privacy(table) %></p>
               <div class="meta_info">
                 <span class="info">
-                  <p class="last_op">Last operation 24 minutes ago</p>
+                  <% unless table.updated_at.blank? %>
+                  <p class="last_op">Last operation <%= time_ago_in_words(table.updated_at) %> ago</p>
+                  <% end %>
                   <p class="delete"> | <a href="#" class="delete">delete table</a></p>
                 </span>
                 <span class="tags">

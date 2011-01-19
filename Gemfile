@@ -18,6 +18,6 @@ group :test, :development do
   gem 'capybara'
   gem 'webrat'
   gem 'database_cleaner'
-  gem 'delorean'
   gem 'capybara-zombie', :git => 'https://github.com/plataformatec/capybara-zombie.git'
+  gem 'timecop'
 end

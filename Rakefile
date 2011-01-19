@@ -5,3 +5,7 @@ require File.expand_path('../config/application', __FILE__)
 require 'rake'
 
 CartoDB::Application.load_tasks
+
+Rake.application.instance_variable_get('@tasks').delete('default')
+task :default => ["spec:models", "spec:acceptance"]
+

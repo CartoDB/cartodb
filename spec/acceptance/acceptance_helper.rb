@@ -8,9 +8,6 @@ require "selenium-webdriver"
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 Capybara.default_driver    = :selenium
-# Capybara.default_host      = 'example.com'
-# Capybara.server_port       = 9887
-# Capybara.app_host          = "http://#{Capybara.default_host}:#{Capybara.server_port}"
 Capybara.default_wait_time = 10
 
 RSpec.configuration.include Capybara, :type => :acceptance

@@ -20,6 +20,7 @@ Sequel.migration do
       primary_key :id
       String :email, :text=>true, :null=>false
       String :crypted_password, :text=>true, :null=>false
+      String :salt, :text=>true, :null=>false
       
       index [:email], :name=>:users_email_key, :unique=>true
     end

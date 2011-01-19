@@ -3,7 +3,7 @@ module CartoDB
     def new_user(attributes = {})
       attributes = attributes.dup
       attributes[:email] ||= String.random(5).downcase + '@' + String.random(5).downcase + '.com'
-      attributes[:crypted_password] ||= attributes[:email].split('@').first
+      attributes[:password] ||= attributes[:email].split('@').first
       User.new(attributes)
     end
 

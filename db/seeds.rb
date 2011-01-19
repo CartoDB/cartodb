@@ -1,1 +1,1 @@
-User.create :email => 'admin@example.com', :crypted_password => 'example'
+User.create :email => 'admin@example.com', :password => 'example'

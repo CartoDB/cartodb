@@ -44,6 +44,6 @@ feature "Dashboard", %q{
 
     click_link_or_button('close session')
 
-    page.current_path.should == homepage
+    page.current_path.should == login_path
   end
 end

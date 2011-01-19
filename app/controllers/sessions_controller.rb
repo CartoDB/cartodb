@@ -3,6 +3,9 @@ class SessionsController < ApplicationController
   layout 'front_layout'
 
   def new
+    if logged_in?
+      redirect_to dashboard_path and return
+    end
   end
 
   def create

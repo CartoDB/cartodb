@@ -1,3 +1,17 @@
+<section class="subheader">
+  <div class="inner_subheader">
+    <div class="left">
+      <ul class="tables_list">
+        <li class="selected "><a href="<%= dashboard_path %>"><span>Your tables</span></a></li>
+        <li><a href="/public_tables.html" class="public"><span>Public tables</span></a></li>
+      </ul>
+    </div>
+    <div class="right">
+      <p class="settings"><a class="settings" href="#">settings</a></p>
+    </div>
+  </div>
+</section>
+
 <section id="content">
   <div class="inner_content">
     <div class="requests_info">
@@ -21,7 +35,7 @@
           <ul class="your_tables">
             <% @tables.each_with_index do |table| %>
             <li<%= ' class="last"'.html_safe if @tables.last == table %>>
-              <h4><a href="/table.html"><%= table.name %></a></h4>
+              <h4><%= link_to(table.name, table) %></h4>
               <p class="status <%= css_class_for_privacy(table) %>"><%= table_privacy(table) %></p>
               <div class="meta_info">
                 <span class="info">

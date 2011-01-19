@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/stylesheets/admin/dashboard.css" type="text/css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/javascripts/admin/dashboard.js" type="text/javascript" charset="utf-8"></script>
+
+    <%= csrf_meta_tag %>
   </head>
   <body>
     <header>
@@ -14,22 +16,9 @@
       <p class="session"><%= current_user.email %> (<a href="<%= logout_path %>">close session</a>)</p>
     </header>
 
-    <section class="subheader">
-      <div class="inner_subheader">
-        <div class="left">
-          <ul class="tables_list">
-            <li class="selected "><a href="<%= dashboard_path %>"><span>Your tables</span></a></li>
-            <li><a href="/public_tables.html" class="public"><span>Public tables</span></a></li>
-          </ul>
-        </div>
-        <div class="right">
-          <p class="settings"><a class="settings" href="#">settings</a></p>
-        </div>
-      </div>
-    </section>
-
     <%= yield %>
 
+    <% if show_footer? %>
     <footer>
       <section class="prefooter">
         <div class="block">
@@ -60,6 +49,7 @@
         </section>
       </div>
     </footer>
+    <% end %>
 
   </body>
 </html>

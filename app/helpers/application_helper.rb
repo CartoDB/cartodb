@@ -9,4 +9,8 @@ module ApplicationHelper
     table_privacy(table).downcase
   end
 
+  def show_footer?
+    controller_name == 'dashboard'
+  end
+
 end

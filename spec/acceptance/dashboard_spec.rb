@@ -18,6 +18,8 @@ feature "Dashboard", %q{
       page.should have_content(user.email)
     end
 
+    page.should have_css("footer")
+
     page.should have_css("ul.tables_list li.selected a", :text => "Your tables")
     page.should have_css("ul.tables_list li a", :text => "Public tables")
 
@@ -32,6 +34,13 @@ feature "Dashboard", %q{
       page.should have_link("My check-ins")
       page.should have_content("PUBLIC")
     end
+
+    click_link_or_button('Downloaded movies')
+
+    page.should have_css("h2", :text => 'Downloaded movies')
+    page.should have_css("p.status", :text => 'PRIVATE')
+
+    page.should have_no_selector("footer")
 
     click_link_or_button('close session')
 

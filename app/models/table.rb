@@ -1,9 +1,7 @@
-class Table < Sequel::Model
+class Table < Sequel::Model(:user_tables)
 
   PRIVATE = 0
   PUBLIC  = 1
-
-  self.set_dataset(:user_tables)
 
   def public?
     privacy && privacy == PUBLIC

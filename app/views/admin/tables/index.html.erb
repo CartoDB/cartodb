@@ -2,8 +2,8 @@
   <div class="inner_subheader">
     <div class="left">
       <ul class="tables_list">
-        <li class="selected "><a href="<%= dashboard_path %>"><span>Your tables</span></a></li>
-        <li><a href="/public_tables.html" class="public"><span>Public tables</span></a></li>
+        <li class="<%= selected_if(current_path == dashboard_path) %> %>"><a href="<%= dashboard_path %>"><span>Your tables</span></a></li>
+        <li><a href="<%= dashboard_public_path %>" class="public <%= selected_if(current_path == dashboard_public_path) %>"><span>Public tables</span></a></li>
       </ul>
     </div>
     <div class="right">
@@ -28,7 +28,11 @@
     <div class="tables_list">
       <div class="left">
         <div class="top_blue_medium">
-          <h3><strong><%= pluralize(current_user.tables_count, 'table', 'tables') %></strong> in your account</h3>
+          <% if in_my_tables? %>
+            <h3><strong><%= pluralize(current_user.tables_count, 'table', 'tables') %></strong> in your account</h3>
+          <% else %>
+            <h3><strong><%= pluralize(@tables.size, 'table', 'tables') %></strong></h3>
+          <% end %>
           <a class="new_table" href="#">Create a new table</a>
         </div>
         <div class="middle_white_medium">

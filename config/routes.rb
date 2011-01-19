@@ -7,7 +7,8 @@ CartoDB::Application.routes.draw do
   match '/sessions/create' => 'sessions#create', :as => :create_session
 
   scope :module => "admin" do
-    match '/dashboard' => 'tables#index', :as => :dashboard
+    match '/dashboard'        => 'tables#index', :as => :dashboard
+    match '/dashboard/public' => 'tables#index', :as => :dashboard_public, :defaults => {:public => true}
     resources :tables, :only => [:show]
   end
 

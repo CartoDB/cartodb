@@ -8,8 +8,11 @@ feature "Dashboard", %q{
 
   scenario "Login and visit my dashboard and the public tables" do
     user = create_user
+    the_other = create_user
     create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PUBLIC
     create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE
+    create_table :user_id => the_other.id, :name => 'Favourite restaurants', :privacy => Table::PUBLIC
+    create_table :user_id => the_other.id, :name => 'Secret vodkas', :privacy => Table::PRIVATE
 
     login_as user
 
@@ -41,6 +44,21 @@ feature "Dashboard", %q{
     page.should have_css("p.status", :text => 'PRIVATE')
 
     page.should have_no_selector("footer")
+
+    click_link_or_button('CartoDB')
+    click_link_or_button('Public tables')
+
+    page.should have_content("1 table")
+
+    within("ul.your_tables li:eq(1)") do
+      page.should have_link("Favourite restaurants")
+      page.should have_content("PUBLIC")
+    end
+
+    click_link_or_button('Favourite restaurants')
+
+    page.should have_css("h2", :text => 'Favourite restaurants')
+    page.should have_css("p.status", :text => 'PUBLIC')
 
     click_link_or_button('close session')
 

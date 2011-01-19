@@ -1,3 +1,5 @@
+# coding: UTF-8
+
 class User < Sequel::Model
 
   ## Authentication methods

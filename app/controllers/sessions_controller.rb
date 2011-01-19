@@ -1,3 +1,5 @@
+# coding: UTF-8
+
 class SessionsController < ApplicationController
 
   layout 'front_layout'

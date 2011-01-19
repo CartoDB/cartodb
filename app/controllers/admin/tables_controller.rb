@@ -1,3 +1,5 @@
+# coding: UTF-8
+
 class Admin::TablesController < ApplicationController
 
   before_filter :login_required

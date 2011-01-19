@@ -1,3 +1,5 @@
+# coding: UTF-8
+
 require 'spec_helper'
 
 describe Table do
@@ -5,5 +7,21 @@ describe Table do
     table = Table.new
     table.privacy.should be_nil
     table.should be_private
+  end
+
+  it "should be associated to a database table" do
+    user = create_user
+    table = Table.create :name => 'Wadus table', :user_id => user.id
+    table.db_table_name.should_not be_blank
+    table.db_table_name.should == "users_tables_#{user.id}_wadus_table"
+  end
+
+  it "should fetch empty data from the database by SQL sentences" do
+    user = create_user
+    table = Table.create :name => 'Wadus table', :user_id => user.id
+    Rails::Sequel.connection.table_exists?(table.db_table_name.to_sym).should be_true
+    rows = table.execute_sql "select * from #{table.db_table_name} limit 1"
+    rows.should be_empty
+    table.rows_count.should == 0
   end
 end

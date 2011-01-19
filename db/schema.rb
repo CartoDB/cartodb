@@ -11,6 +11,7 @@ Sequel.migration do
       Integer :user_id, :null=>false
       String :name, :text=>true, :null=>false
       Integer :privacy, :default=>0, :null=>false
+      String :db_table_name, :text=>true, :null=>false
       
       index [:user_id]
       index [:user_id, :privacy]

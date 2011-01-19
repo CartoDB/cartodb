@@ -6,6 +6,7 @@ class UserTablesMigration < Sequel::Migration
       Integer :user_id, :null => false, :index => true
       String :name, :null => false
       Integer :privacy, :null => false
+      String :db_table_name, :null => false
     end
 
     alter_table(:user_tables) do

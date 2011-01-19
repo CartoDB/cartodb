@@ -1,3 +1,5 @@
+# coding: UTF-8
+
 class HomeController < ApplicationController
 
   layout 'front_layout'

@@ -1,0 +1,20 @@
+javascripts:
+- base:
+  - prototype
+  - effects
+  - controls
+  - dragdrop
+- secondary:
+  - foo
+  - bar
+  - application
+stylesheets:
+- base:
+  - screen
+  - header
+- secondary:
+  - foo
+  - bar
+- subdir/styles:
+  - foo
+  - bar

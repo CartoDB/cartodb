@@ -3,10 +3,8 @@
   <head>
     <meta charset=utf-8 />
     <title>CartoDB</title>
-    <link rel="stylesheet" href="/stylesheets/reset.css" type="text/css" />
-    <link rel="stylesheet" href="/stylesheets/admin/dashboard.css" type="text/css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/javascripts/admin/dashboard.js" type="text/javascript" charset="utf-8"></script>
+    <%= stylesheet_link_merged(:base).html_safe %>
+    <%= javascript_include_merged(:base).html_safe %>
 
     <%= csrf_meta_tag %>
   </head>

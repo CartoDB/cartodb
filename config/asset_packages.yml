@@ -1,0 +1,9 @@
+---
+javascripts:
+- base:
+  - jquery.min.js
+  - admin/dashboard.js
+stylesheets:
+- base:
+  - reset
+  - admin/dashboard

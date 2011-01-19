@@ -10,7 +10,7 @@ module ApplicationHelper
   end
 
   def show_footer?
-    controller_name == 'dashboard'
+    controller_name == 'tables' && action_name != 'show'
   end
 
 end

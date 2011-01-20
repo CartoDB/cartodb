@@ -1,46 +1,35 @@
  
   <%= stylesheet_link_merged(:public_tables).html_safe %>
   <%= javascript_include_merged(:public_tables).html_safe %>
- 
-  <section class="subheader">
-    <div class="inner_subheader">
-      <div class="left">
-        <ul class="tables_list">
-          <li><a href="/dashboard"><span>Your tables</span></a></li>
-          <li class="selected"><a href="/public_tables" class="public"><span>Public tables</span></a></li>
-        </ul>
-      </div>
-      <div class="right">
-        <p class="settings"><a class="settings" href="#">settings</a></p>
-      </div>
-    </div>
-  </section>
 
+
+  <%= render 'subheader' %>
 
   <section id="content">
     <div class="inner_content">
-    
+
       <div class="tables_list">
         <div class="left">
           <div class="top_blue_medium_big">
-            <h3><strong>2 Public</strong> tables in cartoDB</h3>
+            <h3><strong><%= pluralize(@tables.size, "Public</strong> table", "Public</strong> tables").html_safe %> in cartoDB</h3>
             <form action="#">
               <input type="text" value="" name="table_name" />
               <input type="submit" value="" name="q" />
             </form>
           </div>
           <div class="middle_white_medium">
+          
             <!-- IF THERE AREN'T ANY TABLE COINCIDING WITH THE SEARCH -->
             <div class="no_tables">
               <h5>Ouch! There are not tables for your search</h5>
               <p>You can try with different terms or you can <a href="#">create your own table</a></p>
             </div>
-            
-            <!-- IF THERE ARE TABLES -->
+          
             <ul class="your_tables">
-              <li>
-                <h4><a href="/table.html">World Heritage sites 2010</a></h4>
-                <p class="status public">PUBLIC</p>
+              <% @tables.each_with_index do |table| %>
+              <li<%= ' class="last"'.html_safe if @tables.last == table %>>
+                <h4><%= link_to(table.name, table) %></h4>
+                <p class="status <%= css_class_for_privacy(table) %>"><%= table_privacy(table) %></p>
                 <div class="meta_info">
                   <span class="watching">
                     <a href="#" class="no_watching">Stop watching</a>
@@ -52,25 +41,11 @@
                   </span>
                 </div>
               </li>
-              <li class="last">
-                <h4><a href="/table.html">RLAT DB</a></h4>
-                <p class="status private">PRIVATE</p>
-                <div class="meta_info">
-                  <span class="watching">
-                    <a href="#" class="watch_table">Watch the table</a>
-                  </span>
-                  <span class="tags">
-                    <a href="#">DataBase</a>
-                    <a href="#">WHS</a>
-                    <a href="#">Vizzuality</a>
-                    <a href="#">Data</a>
-                  </span>
-                </div>
-              </li>
+              <% end %>
             </ul>
           </div>
           <div class="bottom_white_medium"></div>
-        
+
           <div class="paginate">
             <a href="#" class="previous">Previous</a>
             <ul>
@@ -81,7 +56,6 @@
             </ul>
             <a href="#" class="next">Next</a>
           </div>
-        
         </div>
         <div class="right">
           <div class="banner">
@@ -93,7 +67,7 @@
             </div>
             <div class="bottom_white_short"></div>
           </div>
-        
+
           <h4>BROWSE BY TAGS</h4>
           <ul>
             <li><a href="#"><span style="background-position:-100px 0">Natural</span></a></li>

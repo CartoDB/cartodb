@@ -17,7 +17,12 @@ class Table < Sequel::Model(:user_tables)
       unless self.db_table_name.blank?
         owner.in_database do |user_database|
           unless user_database.table_exists?(self.db_table_name.to_sym)
-            user_database.create_table self.db_table_name.to_sym
+            user_database.create_table self.db_table_name.to_sym do
+              primary_key :identifier
+              String :name
+              String :location
+              String :description, :text => true
+            end
           end
         end
       end
@@ -45,6 +50,30 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       user_database[db_table_name.to_sym].count
     end
+  end
+
+  def to_json(options = {})
+    default_options = {
+      :page => 1,
+      :rows_per_page => 10
+    }
+    options[:rows_per_page] ||= default_options[:rows_per_page]
+    options[:page] ||= default_options[:page]
+    rows_count =  0
+    colums     = []
+    rows       = []
+    limit  = options[:rows_per_page].to_i
+    offset = (options[:page].to_i - 1)*limit
+    owner.in_database do |user_database|
+      rows_count = user_database[db_table_name.to_sym].count
+      colums = user_database.schema(db_table_name.to_sym).map{ |c| [c.first,c[1][:type]] }
+      rows = user_database[db_table_name.to_sym].with_sql("select * from #{db_table_name} limit #{limit} offset #{offset}").all
+    end
+    {
+      :total_rows => rows_count,
+      :colums => colums,
+      :rows => rows
+    }
   end
 
   private

@@ -53,21 +53,22 @@ feature "Dashboard", %q{
 
     page.should have_no_selector("footer")
 
-    click_link_or_button('CartoDB')
+    visit '/dashboard'
     click_link_or_button('Public tables')
 
-    page.should have_content("1 table")
+    page.should have_content("1 Public table in cartoDB")
 
     within("ul.your_tables li:eq(1)") do
       page.should have_link("Favourite restaurants")
       page.should have_content("PUBLIC")
-      page.should have_content("Last operation 3 minutes ago")
     end
 
     click_link_or_button('Favourite restaurants')
 
     page.should have_css("h2", :text => 'Favourite restaurants')
     page.should have_css("p.status", :text => 'PUBLIC')
+
+    visit '/dashboard'
 
     click_link_or_button('close session')
 

@@ -2,8 +2,26 @@
 
 class User < Sequel::Model
 
-  ## Authentication methods
+  ## Callbacks
+  def after_create
+    super
+    self.database_name = case Rails.env
+      when 'development'
+        "cartodb_dev_user_#{self.id}_db"
+      when 'test'
+        "cartodb_test_user_#{self.id}_db"
+      else
+        "cartodb_user_#{self.id}_db"
+    end
+    save
+    Thread.new do
+      Rails::Sequel.connection.run("create database #{self.database_name}")
+    end.join
+  end
 
+  #### End of Callbacks
+
+  ## Authentication methods
   AUTH_DIGEST = '999f2da2a5fd99c5af493af3daf22fde939c0e67'
 
   def self.password_digest(password, salt)
@@ -33,6 +51,13 @@ class User < Sequel::Model
   end
 
   #### End of Authentication methods
+
+  def in_database(&block)
+    connection = ::Sequel.connect(::Rails::Sequel.configuration.environment_for(Rails.env).merge('database' => self.database_name))
+    result = yield(connection)
+    connection.disconnect
+    result
+  end
 
   def tables
     Table.filter(:user_id => self.id).order(:id).reverse

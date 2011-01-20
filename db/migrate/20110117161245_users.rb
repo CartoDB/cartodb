@@ -6,6 +6,7 @@ class UsersMigration < Sequel::Migration
       String :email, :null => false, :unique => true
       String :crypted_password, :null => false
       String :salt, :null => false
+      String :database_name
     end
   end
 

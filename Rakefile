@@ -7,5 +7,13 @@ require 'rake'
 CartoDB::Application.load_tasks
 
 Rake.application.instance_variable_get('@tasks').delete('default')
-task :default => ["spec:models", "spec:acceptance"]
+
+namespace :spec do
+  desc "Run the code examples in spec/acceptance"
+  RSpec::Core::RakeTask.new(:cartodb_acceptance) do |t|
+    t.pattern = "spec/acceptance/**/*_spec.rb"
+  end
+end
+
+task :default => ["db:test:prepare", "spec:models", "spec:cartodb_acceptance"]
 

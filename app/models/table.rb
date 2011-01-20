@@ -15,8 +15,7 @@ class Table < Sequel::Model(:user_tables)
     unless self.user_id.blank? || self.name.blank?
       self.db_table_name = self.name.sanitize.tr('-','_')
       unless self.db_table_name.blank?
-        user = User.select(:id,:database_name).filter(:id => self.user_id).first
-        user.in_database do |user_database|
+        owner.in_database do |user_database|
           unless user_database.table_exists?(self.db_table_name.to_sym)
             user_database.create_table self.db_table_name.to_sym
           end
@@ -37,15 +36,13 @@ class Table < Sequel::Model(:user_tables)
 
   def execute_sql(sql)
     update_updated_at!
-    user = User.select(:id,:database_name).filter(:id => self.user_id).first
-    user.in_database do |user_database|
+    owner.in_database do |user_database|
       user_database[db_table_name.to_sym].with_sql(sql).all
     end
   end
 
   def rows_count
-    user = User.select(:id,:database_name).filter(:id => self.user_id).first
-    user.in_database do |user_database|
+    owner.in_database do |user_database|
       user_database[db_table_name.to_sym].count
     end
   end
@@ -58,6 +55,10 @@ class Table < Sequel::Model(:user_tables)
 
   def update_updated_at!
     update_updated_at && save
+  end
+
+  def owner
+    @owner ||= User.select(:id,:database_name).filter(:id => self.user_id).first
   end
 
 end

@@ -11,6 +11,7 @@ describe User do
     user = create_user :email => 'admin@example.com', :password => 'admin123'
     User.authenticate('admin@example.com', 'admin123').should == user
     User.authenticate('admin@example.com', 'admin321').should be_nil
+    User.authenticate('', '').should be_nil
   end
 
   it "should have many tables" do

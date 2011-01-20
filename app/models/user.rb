@@ -18,7 +18,6 @@ class User < Sequel::Model
       Rails::Sequel.connection.run("create database #{self.database_name}")
     end.join
   end
-
   #### End of Callbacks
 
   ## Authentication methods
@@ -46,8 +45,11 @@ class User < Sequel::Model
   end
 
   def self.authenticate(email, password)
-    candidate = User.filter(:email => email).first
-    candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
+    if candidate = User.filter(:email => email).first
+      candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
+    else
+      nil
+    end
   end
 
   #### End of Authentication methods

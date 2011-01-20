@@ -41,4 +41,26 @@ describe Table do
     table.updated_at.should == t2
   end
 
+  it "has a to_json method that allows to fetch rows with pagination" do
+    user = create_user
+    table = create_table :user_id => user.id
+
+    table.to_json[:total_rows].should == 0
+    table.to_json[:columns].should == [[:identifier, :integer], [:name, :string], [:location, :string], [:description, :string]]
+    table.to_json[:rows].should be_empty
+
+    10.times do
+      table.execute_sql("INSERT INTO #{table.db_table_name} (Name,Location,Description) VALUES ('#{String.random(10)}','#{rand(1000000.0)}','#{String.random(100)}')")
+    end
+
+    table.to_json[:total_rows].should == 10
+    table.to_json[:rows].size.should == 10
+
+    content = table.execute_sql("select * from #{table.db_table_name}")
+
+    table.to_json(:rows_per_page => 1)[:rows].size.should == 1
+    table.to_json(:rows_per_page => 1)[:rows].first.should == content[0]
+    table.to_json(:rows_per_page => 1, :page => 2)[:rows].first.should == content[1]
+  end
+
 end

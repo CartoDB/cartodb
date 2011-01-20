@@ -5,10 +5,11 @@ class Admin::TablesController < ApplicationController
   before_filter :login_required
 
   def index
-    @tables = unless params[:public]
-      current_user.tables.select(:id,:name,:privacy,:updated_at).all
+    unless params[:public]
+      @tables = current_user.tables.select(:id,:name,:privacy,:updated_at).all
     else
-      Table.filter(~{:user_id => current_user.id} & {:privacy => Table::PUBLIC}).select(:id,:name,:privacy,:updated_at).all
+      @tables = Table.filter(~{:user_id => current_user.id} & {:privacy => Table::PUBLIC}).select(:id,:name,:privacy,:updated_at).all
+      render :template => 'admin/tables/index_public' and return
     end
   end
 

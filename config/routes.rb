@@ -12,4 +12,10 @@ CartoDB::Application.routes.draw do
     resources :tables, :only => [:show]
   end
 
+  namespace :api do
+    namespace :json do
+      match 'table/:id' => 'tables#show', :format => :json
+    end
+  end
+
 end

@@ -53,7 +53,7 @@ feature "Dashboard", %q{
 
     page.should have_no_selector("footer")
 
-    click_link_or_button('CartoDB')
+    visit '/dashboard'
     click_link_or_button('Public tables')
 
     page.should have_content("1 Public table in cartoDB")
@@ -67,6 +67,8 @@ feature "Dashboard", %q{
 
     page.should have_css("h2", :text => 'Favourite restaurants')
     page.should have_css("p.status", :text => 'PUBLIC')
+
+    visit '/dashboard'
 
     click_link_or_button('close session')
 

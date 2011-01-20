@@ -6,8 +6,8 @@
     <div class="inner_subheader">
       <div class="left">
         <ul class="tables_list">
-          <li><a href="/dashboard.html"><span>Your tables</span></a></li>
-          <li class="selected"><a href="/public_tables.html" class="public"><span>Public tables</span></a></li>
+          <li><a href="/dashboard"><span>Your tables</span></a></li>
+          <li class="selected"><a href="/public_tables" class="public"><span>Public tables</span></a></li>
         </ul>
       </div>
       <div class="right">
@@ -30,6 +30,13 @@
             </form>
           </div>
           <div class="middle_white_medium">
+            <!-- IF THERE AREN'T ANY TABLE COINCIDING WITH THE SEARCH -->
+            <div class="no_tables">
+              <h5>Ouch! There are not tables for your search</h5>
+              <p>You can try with different terms or you can <a href="#">create your own table</a></p>
+            </div>
+            
+            <!-- IF THERE ARE TABLES -->
             <ul class="your_tables">
               <li>
                 <h4><a href="/table.html">World Heritage sites 2010</a></h4>

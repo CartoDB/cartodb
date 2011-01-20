@@ -31,14 +31,6 @@
   var methods = {
     init : function(options) {
       return this.each(function(){
-  
-        defaults = {
-          getDataUrl: 'http://bioblitz.tdwg.org/api/taxonomy',  
-          paginateParam: "page",
-          resultsPerPage: 50,
-          reuseResults: 50,
-          total: 5000
-        };
         
         table = $(this)[0];
         methods.getData(defaults, 'next');
@@ -492,7 +484,10 @@
   };
 
   
-  $.fn.cDBtable = function(method) {
+  $.fn.cDBtable = function(method,options) {
+    
+    defaults = options; 
+    
     if (methods[method]) {
       return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
     } else if ( typeof method === 'object' || ! method ) {

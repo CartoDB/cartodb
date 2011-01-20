@@ -40,36 +40,44 @@
           <a class="new_table" href="#">Create a new table</a>
         </div>
         <div class="middle_white_medium">
-          <ul class="your_tables">
-            <% @tables.each_with_index do |table| %>
-            <li<%= ' class="last"'.html_safe if @tables.last == table %>>
-              <h4><%= link_to(table.name, table) %></h4>
-              <p class="status <%= css_class_for_privacy(table) %>"><%= table_privacy(table) %></p>
-              <div class="meta_info">
-                <span class="info">
-                  <% unless table.updated_at.blank? %>
-                  <p class="last_op">Last operation <%= time_ago_in_words(table.updated_at) %> ago</p>
-                  <% end %>
-                  <p class="delete"> | <a href="#" class="delete">delete table</a></p>
-                </span>
-                <span class="tags">
-                  <a href="#">History</a>
-                  <a href="#">WHS-JK</a>
-                  <a href="#">Manus DB</a>
-                  <a href="#">Natural</a>
-                  <a href="#">DataBase</a>
-                  <a href="#">WHS</a>
-                  <a href="#">Vizzuality</a>
-                  <a href="#">Data</a>
-                </span>
-              </div>
-            </li>
-            <% end %>
-          </ul>
+          <% if @tables.size==0 %>
+            <div class="no_tables">
+              <h5>Hey! You don't have any tables</h5>
+              <p>Why do you not start <a href="#">creating a new table</a>?</p>
+            </div>        
+          <% else %>
+            <ul class="your_tables">
+              <% @tables.each_with_index do |table| %>
+              <li<%= ' class="last"'.html_safe if @tables.last == table %>>
+                <h4><%= link_to(table.name, table) %></h4>
+                <p class="status <%= css_class_for_privacy(table) %>"><%= table_privacy(table) %></p>
+                <div class="meta_info">
+                  <span class="info">
+                    <% unless table.updated_at.blank? %>
+                    <p class="last_op">Last operation <%= time_ago_in_words(table.updated_at) %> ago</p>
+                    <% end %>
+                    <p class="delete"> | <a href="#" class="delete">delete table</a></p>
+                  </span>
+                  <span class="tags">
+                    <a href="#">History</a>
+                    <a href="#">WHS-JK</a>
+                    <a href="#">Manus DB</a>
+                    <a href="#">Natural</a>
+                    <a href="#">DataBase</a>
+                    <a href="#">WHS</a>
+                    <a href="#">Vizzuality</a>
+                    <a href="#">Data</a>
+                  </span>
+                </div>
+              </li>
+              <% end %>
+            </ul>
+          <% end %>
         </div>
         <div class="bottom_white_medium"></div>
       </div>
       <div class="right">
+        <!-- YOUR TABLES TAGS, NO GLOBAL TABLE TAGS -->
         <h4>BROWSE BY TAGS</h4>
         <ul>
           <li><a href="#"><span style="background-position:-100px 0">Natural</span></a></li>

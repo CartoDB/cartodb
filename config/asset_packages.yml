@@ -2,8 +2,14 @@
 javascripts:
 - base:
   - jquery.min.js
+- dashboard:
   - admin/dashboard.js
+- public_tables:
+  - admin/public_tables.js
 stylesheets:
 - base:
   - reset
+- dashboard:
   - admin/dashboard
+- public_tables:
+  - admin/public_tables

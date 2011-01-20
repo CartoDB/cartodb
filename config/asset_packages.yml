@@ -6,6 +6,11 @@ javascripts:
   - admin/dashboard.js
 - public_tables:
   - admin/public_tables.js
+- table:
+  - plugins/jquery.livequery.min.js
+  - plugins/cDBtable.js
+  - admin/table.js
+  
 stylesheets:
 - base:
   - reset
@@ -13,3 +18,6 @@ stylesheets:
   - admin/dashboard
 - public_tables:
   - admin/public_tables
+- table:
+  - admin/table
+  - admin/cDBtable

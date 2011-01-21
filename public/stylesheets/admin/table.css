@@ -15,25 +15,61 @@ section.subheader {position:absolute; top:58px; left:0; width:100%; height:103px
 section.subheader div.mamufas {float:left; width:100%; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
 section.subheader div.left {position:relative; float:left; width:700px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
 section.subheader h2 {float:left; width:auto; font:bold 21px Arial; color:white;}
-section.subheader p.status {float:left; width:auto; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; background:#6FBE6F;}
+section.subheader p.status {float:left; width:auto;}
+section.subheader p.status a {float:left; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none;}
+section.subheader p.status a.public {background:#6FBE6F;}
+section.subheader p.status a.private {background:#FF3300;}
+section.subheader p.status a.save {background:#FFCC00;}
+section.subheader p.status a.selected {background:black; color:white;}
+section.subheader p.status a:hover {background:black;}
+section.subheader p.status a.save:hover {background:#FFCC00;}
+
+
+section.subheader span.privacy_window {position:absolute; display:none; width:216px; height:108px; background:url('/images/admin/table/privacy_options_bkg.png') no-repeat center center;}
+section.subheader span.privacy_window ul {float:left; width:175px; margin:34px 0 0 20px;}
+section.subheader span.privacy_window ul li {width:161px; padding:5px 7px 6px; margin:0 0 2px; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;}
+section.subheader span.privacy_window ul li.last {margin:0;}
+section.subheader span.privacy_window ul li a {padding:0 0 0 16px; font:normal 13px Arial; color:black; background:url('/images/admin/icons/selected_privacy.png') no-repeat 0 -28px; text-decoration:none;}
+section.subheader span.privacy_window ul li.selected.public {background:#6FBE6F;}
+section.subheader span.privacy_window ul li.selected.private {background:#C10000;}
+section.subheader span.privacy_window ul li.selected a {color:white; background-position:0 2px;}
+section.subheader span.privacy_window ul li.public:hover {background:#6FBE6F;}
+section.subheader span.privacy_window ul li.private:hover {background:#C10000;}
+section.subheader span.privacy_window ul li:hover a {color:white; background-position:0 2px;}
+
+
 section.subheader span.tags {float:left; width:100%;}
 section.subheader span.tags a {float:left; width:auto; padding:3px 7px; margin:4px 3px 0 0; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 11px Arial; color:white; text-decoration:none  ; background:#121621;}
 section.subheader span.tags a.add {padding:3px 0; margin:4px 0 0 10px; background:none; color:#FFCC00; text-shadow:0 1px black;}
 section.subheader span.tags a:hover {background:black; text-decoration:underline;}
 section.subheader span.tags a.add:hover {background:none;}
-section.subheader ul {position:absolute; bottom:0; left:0; height:auto; width:100%; padding:0; margin:0;}
-section.subheader ul li {float:left; width:auto; height:auto; margin:0 3px 0 0; padding:0;}
-section.subheader ul li a {float:left; padding:7px 15px; color:white; font:bold 13px Arial; text-decoration:underline; background-color:rgba(256,256,256,0.1); -webkit-border-top-left-radius:5px; -webkit-border-top-right-radius:5px; -moz-border-radius-topleft:5px; -moz-border-radius-topright:5px; border-top-left-radius:5px; border-top-right-radius:5px;}
-section.subheader ul li a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
-section.subheader ul li.selected a {background-color:rgba(256,256,256,1); color:#272E48; text-decoration:none;}
-section.subheader ul li.selected a:hover {color:#272E48; text-decoration:none;}
-section.subheader div.right {position:relative; float:right; width:100px; height:88px; padding:15px 0 0 0; margin:0 40px 0 0; color:white!important;}
-section.subheader div.right p.settings {float:right;}
+section.subheader ul.tab_menu {position:absolute; bottom:0; left:0; height:auto; width:100%; padding:0; margin:0;}
+section.subheader ul.tab_menu li {float:left; width:auto; height:auto; margin:0 3px 0 0; padding:0;}
+section.subheader ul.tab_menu li a {float:left; padding:7px 15px; color:white; font:bold 13px Arial; text-decoration:underline; background-color:rgba(256,256,256,0.1); -webkit-border-top-left-radius:5px; -webkit-border-top-right-radius:5px; -moz-border-radius-topleft:5px; -moz-border-radius-topright:5px; border-top-left-radius:5px; border-top-right-radius:5px;}
+section.subheader ul.tab_menu li a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
+section.subheader ul.tab_menu li.selected a {background-color:rgba(256,256,256,1); color:#272E48; text-decoration:none;}
+section.subheader ul.tab_menu li.selected a:hover {color:#272E48; text-decoration:none;}
+section.subheader div.right {position:relative; float:right; width:180px; height:88px; padding:15px 0 0 0; margin:0 40px 0 0; color:white!important;}
+section.subheader div.right p.settings {float:right; font:normal 15px Arial; color:white; z-index:10;}
 section.subheader div.right p.settings a {font:normal 13px Arial; text-shadow:0 1px black;}
-section.subheader div.right p.settings a.delete {color:#FF3300;}
+section.subheader div.right p.settings a.delete {padding:0 3px 0 0; color:#FF3300;}
 section.subheader div.right p.settings a.delete:hover {color:#FF4400;}
-section.subheader div.right p.settings a.settings {padding:0 20px  0 0; color:white; background:url('/images/admin/icons/settings.png') no-repeat right 1px;}
+section.subheader div.right p.settings a.settings {padding:0 20px 0 3px; color:white; background:url('/images/admin/icons/settings.png') no-repeat right 1px;}
 section.subheader div.right p.settings a.settings:hover {color:white;}
+
+
+section.subheader div.right span.advanced_options {position:absolute; display:none; right:-10px; top:9px; width:122px; z-index:100;}
+section.subheader div.right span.advanced_options a.advanced {position:relative; float:right; padding:7px 29px 7px 9px; font:normal 13px Arial; text-shadow:0 1px black;
+text-decoration:none; color:#949BAA; z-index:100; border:1px solid black; border-bottom:0; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; 
+border-top-left-radius: 5px; border-top-right-radius: 5px; background:url('/images/admin/table/advanced_options_bkg.jpg') repeat-x 0 top;}
+section.subheader div.right span.advanced_options a.advanced span {position:absolute; right:9px; top:6px; height:16px; width:13px; background:url('/images/admin/icons/settings.png') no-repeat right -13px;}
+section.subheader div.right span.advanced_options ul {float:left; width:100px; height:auto; padding:10px; margin:-1px 0 0 0; background:url('/images/admin/table/advanced_options_bkg.jpg') repeat-x 0 bottom; border:1px solid black; -webkit-border-radius: 5px;
+  -webkit-border-top-right-radius: 0; -moz-border-radius: 5px; -moz-border-radius-topright: 0; border-radius: 5px; border-top-right-radius: 0;}
+section.subheader div.right span.advanced_options ul li {background:none;}
+section.subheader div.right span.advanced_options ul li a {background:none; font:normal 11px "Helvetica"; color:white; text-decoration:none;}
+section.subheader div.right span.advanced_options ul li a:hover {text-decoration:underline;}
+
+
 section.subheader div.right span.paginate {position:absolute; right:0; bottom:5px;  width:100%;}
 section.subheader div.right span.paginate a {float:right; width:27px; height:23px; text-indent:-9999px;}
 section.subheader div.right span.paginate a.previous {margin:0 3px 0 0; background:url('/images/admin/icons/left_button.png') no-repeat 0 0;}

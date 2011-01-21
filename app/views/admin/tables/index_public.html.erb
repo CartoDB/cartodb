@@ -18,31 +18,31 @@
             </form>
           </div>
           <div class="middle_white_medium">
-          
-            <!-- IF THERE AREN'T ANY TABLE COINCIDING WITH THE SEARCH -->
-            <div class="no_tables">
-              <h5>Ouch! There are not tables for your search</h5>
-              <p>You can try with different terms or you can <a href="#">create your own table</a></p>
-            </div>
-          
-            <ul class="your_tables">
-              <% @tables.each_with_index do |table| %>
-              <li<%= ' class="last"'.html_safe if @tables.last == table %>>
-                <h4><%= link_to(table.name, table) %></h4>
-                <p class="status <%= css_class_for_privacy(table) %>"><%= table_privacy(table) %></p>
-                <div class="meta_info">
-                  <span class="watching">
-                    <a href="#" class="no_watching">Stop watching</a>
-                  </span>
-                  <span class="tags">
-                    <a href="#">History</a>
-                    <a href="#">WHS-JK</a>
-                    <a href="#">Manus DB</a>
-                  </span>
-                </div>
-              </li>
-              <% end %>
-            </ul>
+            <% if @tables.size == 0 %>
+              <div class="no_tables">
+                <h5>Ouch! There are not tables for your search</h5>
+                <p>You can try with different terms or you can <a href="#">create your own table</a></p>
+              </div>
+            <% else %>
+              <ul class="your_tables">
+                <% @tables.each_with_index do |table| %>
+                <li<%= ' class="last"'.html_safe if @tables.last == table %>>
+                  <h4><%= link_to(table.name, table) %></h4>
+                  <p class="status <%= css_class_for_privacy(table) %>"><%= table_privacy(table) %></p>
+                  <div class="meta_info">
+                    <span class="watching">
+                      <a href="#" class="no_watching">Stop watching</a>
+                    </span>
+                    <span class="tags">
+                      <a href="#">History</a>
+                      <a href="#">WHS-JK</a>
+                      <a href="#">Manus DB</a>
+                    </span>
+                  </div>
+                </li>
+                <% end %>
+              </ul>
+            <% end %>
           </div>
           <div class="bottom_white_medium"></div>
 

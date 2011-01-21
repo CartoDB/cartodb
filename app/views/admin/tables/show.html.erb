@@ -8,7 +8,7 @@
       <div class="inner_subheader">
         <div class="left">
           <h2><%= @table.name %></h2>
-          <p class="status"><%= table_privacy(@table) %></p>
+          <p class="status"><a class="<%= table_privacy(@table).downcase %>" href="#change_privacy"><%= table_privacy(@table) %></a></p>
           <span class="tags">
             <a href="#">WHS</a>
             <a href="#">Natural</a>
@@ -16,12 +16,14 @@
             <a class="add" href="#">add tags</a>
           </span>
           <ul class="tab_menu">
-            <li class="selected"><a href="#" onclick="changeTo(event,'table')">Table</a></li>
-            <li><a href="#" onclick="changeTo(event,'map')">Map</a></li>
+            <li class="selected"><a href="#">Table</a></li>
+            <li><a href="#">Map</a></li>
           </ul>
         </div>
         <div class="right">
-          <p class="settings"><a class="delete" href="#">delete table</a></p>
+          <p class="settings">
+            <a class="delete" href="#delete_table">delete table</a> | <a class="settings selected" href="#show_advanced_options">advanced</a>
+          </p>
           <span class="paginate">
             <a class="next" href="#">Next column</a>
             <a class="previous" href="#">Previous column</a>
@@ -38,6 +40,5 @@
   <div id="map"></div>
   
   
-  <script type="text/javascript">
-    var table_id = <%= @table.id %>;
-  </script> 
+  <script type="text/javascript">var table_id = <%= @table.id %>;</script> 
+  <script type="text/javascript">var status = <%= table_privacy(@table).downcase %>;</script> 

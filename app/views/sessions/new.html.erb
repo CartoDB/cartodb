@@ -1,7 +1,17 @@
-<%= form_tag create_session_path do %>
-  <%= label_tag :email, 'E-mail' %>
-  <%= text_field_tag :email %>
-  <%= label_tag :password, 'Password' %>
-  <%= password_field_tag :password %>
-  <%= submit_tag 'Login' %>
-<% end %>
+  
+  <%= stylesheet_link_merged(:sessions).html_safe %>
+
+  <!-- TODO: show errors -->
+  <section>
+    <h1>Wellcome to Carto<strong>DB</strong></h1>
+    <p>Use your account information to start using CartoDB</p>
+    <%= form_tag create_session_path do %>
+      <p>Introduce your account data</p>
+      <%= label_tag :email, 'your e-mail' %>
+      <%= text_field_tag :email %>
+      <%= label_tag :password, 'your password' %>
+      <%= password_field_tag :password %>
+      <%= submit_tag 'Sign in', :class=>"login" %>
+    <% end %>
+  </section>
+  <footer>CartoDB is a product of <a href="http://www.vizzuality.com" target="_blank">vizzuality</a></footer>

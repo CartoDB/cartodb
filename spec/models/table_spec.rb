@@ -60,7 +60,9 @@ describe Table do
 
     table.to_json(:rows_per_page => 1)[:rows].size.should == 1
     table.to_json(:rows_per_page => 1)[:rows].first.should == content[0]
-    table.to_json(:rows_per_page => 1, :page => 2)[:rows].first.should == content[1]
+    table.to_json(:rows_per_page => 1)[:rows].first.should == table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
+    table.to_json(:rows_per_page => 1, :page => 1)[:rows].first.should == content[1]
+    table.to_json(:rows_per_page => 1, :page => 2)[:rows].first.should == content[2]
   end
 
 end

@@ -23,7 +23,7 @@ feature "Tables JSON API" do
     json_response['rows'][0].symbolize_keys.should == content[0]
     json_response['rows'][1].symbolize_keys.should == content[1]
 
-    get_json "/api/json/table/#{table.id}?rows_per_page=2&page=2"
+    get_json "/api/json/table/#{table.id}?rows_per_page=2&page=1"
     page.driver.last_response.should be_ok
     json_response = JSON(page.body)
     json_response['rows'][0].symbolize_keys.should == content[2]

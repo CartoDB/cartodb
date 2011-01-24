@@ -3,11 +3,15 @@ module CartoDB
     def new_table(attributes = {})
       attributes = attributes.dup
       attributes[:name] ||= String.random(10)
-      if attributes[:user_id].nil?
+      user_id = if attributes[:user_id].nil?
         user = create_user
-        attributes[:user_id] = user.id
+        user.id
+      else
+        attributes.delete(:user_id)
       end
-      Table.new(attributes)
+      table = Table.new(attributes)
+      table.user_id = user_id
+      table
     end
 
     def create_table(attributes = {})

@@ -2,9 +2,11 @@ require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
 
 feature "Tables JSON API" do
 
-  scenario "Retrieve different pages of rows from a table" do
+  background do
     Capybara.current_driver = :rack_test
+  end
 
+  scenario "Retrieve different pages of rows from a table" do
     user = create_user
     table = create_table :user_id => user.id
 
@@ -31,8 +33,6 @@ feature "Tables JSON API" do
   end
 
   scenario "Update the privacy status of a table" do
-    Capybara.current_driver = :rack_test
-
     user = create_user
     table = create_table :user_id => user.id, :privacy => Table::PRIVATE
 
@@ -51,6 +51,33 @@ feature "Tables JSON API" do
     json_response = JSON(response.body)
     json_response['privacy'].should == 'PRIVATE'
     table.reload.should be_private
+  end
+
+  scenario "Update the name of a table" do
+    user = create_user
+    old_table = create_table :user_id => user.id, :privacy => Table::PRIVATE, :name => 'Old table'
+    table = create_table :user_id => user.id, :privacy => Table::PRIVATE
+
+    authenticate_api user
+
+    put_json "/api/json/table/#{table.id}/update", {:name => "My brand new name"}
+    response.status.should == 200
+    table.reload
+    table.name.should == "My brand new name"
+
+    put_json "/api/json/table/#{table.id}/update", {:name => ""}
+    response.status.should == 400
+    json_response = JSON(response.body)
+    json_response['errors'].should == ["name can't be blank"]
+    table.reload
+    table.name.should == "My brand new name"
+
+    put_json "/api/json/table/#{table.id}/update", {:name => "Old table"}
+    response.status.should == 400
+    json_response = JSON(response.body)
+    json_response['errors'].should == ["name and user_id is already taken"]
+    table.reload
+    table.name.should == "My brand new name"
   end
 
 end

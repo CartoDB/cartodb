@@ -3,6 +3,13 @@
 require 'spec_helper'
 
 describe Table do
+  it "should have a name and a user_id" do
+    table = Table.new
+    table.should_not be_valid
+    table.errors.on(:name).should_not be_nil
+    table.errors.on(:user_id).should_not be_nil
+  end
+
   it "should have a privacy associated and it should be private by default" do
     table = create_table
     table.privacy.should_not be_nil
@@ -11,13 +18,13 @@ describe Table do
 
   it "should be associated to a database table" do
     user = create_user
-    table = Table.create :name => 'Wadus table', :user_id => user.id
+    table = create_table :name => 'Wadus table', :user_id => user.id
     Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
   end
 
   it "should fetch empty data from the database by SQL sentences" do
     user = create_user
-    table = Table.create :name => 'Wadus table', :user_id => user.id
+    table = create_table :name => 'Wadus table', :user_id => user.id
     Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
     user.in_database do |user_database|
       user_database.table_exists?(table.name.to_sym).should be_true
@@ -31,7 +38,7 @@ describe Table do
     user = create_user
     t1 = Time.now - 5.minutes
     Timecop.freeze(t1)
-    table = Table.create :name => 'Wadus table', :user_id => user.id
+    table = create_table :name => 'Wadus table', :user_id => user.id
     table.updated_at.should == t1
     t2 = Time.now - 3.minutes
     Timecop.freeze(t2)
@@ -45,7 +52,7 @@ describe Table do
     table = create_table :user_id => user.id
 
     table.to_json[:total_rows].should == 0
-    table.to_json[:columns].should == [[:identifier, :integer], [:name, :string], [:location, :string], [:description, :string]]
+    table.to_json[:columns].should == [[:id, :integer], [:name, :string], [:location, :string], [:description, :string]]
     table.to_json[:rows].should be_empty
 
     10.times do

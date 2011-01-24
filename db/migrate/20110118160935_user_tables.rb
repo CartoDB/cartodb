@@ -11,6 +11,7 @@ class UserTablesMigration < Sequel::Migration
 
     alter_table(:user_tables) do
       add_index [:user_id, :privacy]
+      add_index [:name, :user_id], :unique => true
       set_column_default :privacy, 0
     end
   end

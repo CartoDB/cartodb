@@ -6,7 +6,16 @@ class Table < Sequel::Model(:user_tables)
   PRIVATE = 0
   PUBLIC  = 1
 
+  # Allowed columns
+  set_allowed_columns(:name, :privacy)
+
   ## Callbacks
+  def validate
+    super
+    errors.add(:user_id, 'can\'t be blank')  if user_id.blank?
+    errors.add(:name,    'can\'t be blank')  if name.blank?
+    validates_unique [:name, :user_id], :message => 'is already taken'
+  end
 
   def before_validation
     self.privacy ||= PUBLIC
@@ -21,7 +30,7 @@ class Table < Sequel::Model(:user_tables)
         owner.in_database do |user_database|
           unless user_database.table_exists?(self.name.to_sym)
             user_database.create_table self.name.to_sym do
-              primary_key :identifier
+              primary_key :id
               String :name
               String :location
               String :description, :text => true
@@ -84,7 +93,7 @@ class Table < Sequel::Model(:user_tables)
   private
 
   def update_updated_at
-    set(:updated_at => Time.now)
+    self.updated_at = Time.now
   end
 
   def update_updated_at!

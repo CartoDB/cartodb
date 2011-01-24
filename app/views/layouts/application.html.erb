@@ -5,7 +5,7 @@
     <title>CartoDB</title>
     <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
     <%= stylesheet_link_merged(:base).html_safe %>
-    <%= javascript_include_merged(:base).html_safe %>
+    <%= yield :head %>
     <%= csrf_meta_tag %>
   </head>
   <body>
@@ -49,5 +49,7 @@
     </footer>
     <% end %>
 
+    <%= javascript_include_merged(:base).html_safe %>
+    <%= yield :js %>
   </body>
 </html>

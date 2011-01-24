@@ -1,5 +1,9 @@
-<%= stylesheet_link_merged(:dashboard).html_safe %>
-<%= javascript_include_merged(:dashboard).html_safe %>
+<%= content_for(:head) do %>
+  <%= stylesheet_link_merged(:dashboard).html_safe %>
+<% end %>
+<%= content_for(:js) do %>
+  <%= javascript_include_merged(:dashboard).html_safe %>
+<% end %>
 
 <%= render 'subheader' %>
 
@@ -27,7 +31,7 @@
             <div class="no_tables">
               <h5>Hey! You don't have any tables</h5>
               <p>Why do you not start <a href="#">creating a new table</a>?</p>
-            </div>        
+            </div>
           <% else %>
             <ul class="your_tables">
               <% @tables.each_with_index do |table| %>

@@ -1,8 +1,10 @@
+  <% content_for :head do %>
   <%= stylesheet_link_merged(:sessions).html_safe %>
+  <% end %>
 
   <!-- TODO: show errors -->
   <section>
-    <h1>Wellcome to Carto<strong>DB</strong></h1>
+    <h1>Welcome to Carto<strong>DB</strong></h1>
     <p>Use your account information to start using CartoDB</p>
     <%= form_tag create_session_path do %>
       <p>Introduce your account data</p>

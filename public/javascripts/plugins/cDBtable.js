@@ -20,7 +20,7 @@
 // We are playing with these containers but they don't belong to the plugin
 
 (function( $ ){
-  
+
   var table;
   var loading = false;
   var minPage = 0;
@@ -31,14 +31,14 @@
   var methods = {
     init : function(options) {
       return this.each(function(){
-        
+
         table = $(this)[0];
         methods.getData(defaults, 'next');
         methods.keepSize();
       });
     },
-    
-    
+
+
 
     getData : function(options, direction) {
      //Pagination AJAX adding rows
@@ -49,14 +49,14 @@
        minPage--;
        actualPage = minPage;
      }
-     
+
      $.ajax({
        dataType: 'jsonp',
        method: "GET",
        url: options.getDataUrl,
        data: {
          query: 'a',
-         limit: options.resultsPerPage,
+         rows_per_page: options.resultsPerPage,
          page: actualPage
        },
        success: function(data) {
@@ -76,7 +76,7 @@
 
 
     draw: function(options,data,direction,page) {
-      
+
       //Draw the data
       if ($(table).html()=='') {
         var thead = '<thead><tr><th class="first"><div></div></th>';
@@ -91,7 +91,7 @@
                             '<li class="last"><a href="#">Add new column</a></li>' +
                           '</ul>' +
                         '</span>';
-                        
+
           thead += '<th width="100">'+
                       '<div>'+
                         '<h3>'+index+'</h3>'+
@@ -103,25 +103,25 @@
         });
         thead += "</thead></tr>";
         $(table).append(thead);
-        
+
         //Scroll event
         methods.addScroll();
-        
+
         //Cell click event
         methods.bindCellEvents();
-        
+
         //Create elements
         methods.createElements();
       }
-      
-      
+
+
       if ($(table).children('tbody').length==0) {
         var tbody = '<tbody>';
       } else {
         var tbody = '';
       }
-      
-      
+
+
       //Loop all the data
       $.each(data, function(i,element){
         var options_list =  '<span>' +
@@ -137,20 +137,20 @@
         });
         tbody += '</tr>';
       });
-      
+
       if ($(table).children('tbody').length==0) {
         tbody += '</tbody>';
         $(table).append(tbody);
       } else {
         (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
       }
-      
+
       methods.checkReuse(direction);
     },
-    
-    
+
+
     checkReuse: function(direction) {
-      
+
       if ((((maxPage - minPage)+1)*defaults.resultsPerPage>defaults.reuseResults)) {
         if (direction=="next") {
           minPage++;
@@ -160,13 +160,13 @@
           $(table).children('tbody').children('tr:gt('+(defaults.reuseResults-1)+')').remove();
         }
       }
-      
+
       methods.hideLoader();
     },
-    
-    
+
+
     createElements: function() {
-      
+
       //Paginate loaders
       $(table).prepend(
       '<div class="loading_previous loading">' +
@@ -174,21 +174,21 @@
         '<p>Loading previous rows...</p>'+
         '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
       '</div>');
-    
+
       $(table).parent().append(
       '<div class="loading_next loading">' +
         '<img src="/images/admin/table/activity_indicator.gif" alt="Loading..." title="Loading" />'+
         '<p>Loading next rows...</p>'+
         '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
       '</div>');
-      
+
       //Save operation loader
       $(table).parent().parent().children('section.subheader').append(
       '<div class="performing_op">' +
         '<p class="loading">Loading...</p>'+
       '</div>');
-      
-      
+
+
       //General options
       $(table).parent().append(
         '<div class="general_options">'+
@@ -213,8 +213,8 @@
           '</div>'+
         '</div>'
       );
-      
-      
+
+
       //Edit caption
       $(table).parent().append(
         '<div class="edit_cell">'+
@@ -226,8 +226,8 @@
           '</span>'+
         '</div>'
       );
-      
-      
+
+
       //Data error tooltip
       $(table).parent().append(
         '<div class="error_cell">'+
@@ -238,21 +238,21 @@
       );
 
     },
-    
-    
+
+
     addScroll: function() {
-      
+
       $('div.table_position').scroll(function(ev){
         //For moving first table column
         $(table).children('tbody').children('tr').children('td.first').css('left',$('div.table_position').scrollLeft()+'px');
         $(table).children('thead').children('tr').children('th.first').css('left',$('div.table_position').scrollLeft()+'px');
       });
-      
-      
+
+
       $(window).scroll(function(ev) {
         ev.stopPropagation();
         ev.preventDefault();
-        
+
         //For moving thead when scrolling
         if ($(window).scrollTop()>58) {
           $('section.subheader').css('top',$(window).scrollTop()-1+'px');
@@ -261,7 +261,7 @@
           $('section.subheader').css('top','58px');
           $(table).children('thead').css('top','0px');
         }
-        
+
 
         //For paginating data
         if (!loading) {
@@ -278,16 +278,16 @@
         }
       });
     },
-    
-    
+
+
     showLoader: function(kind){
       if (minPage==0) {
         var range = (maxPage - minPage + 1)*defaults.resultsPerPage;
       } else {
         var range = minPage*defaults.resultsPerPage+'-'+((maxPage+1)*defaults.resultsPerPage);
       }
-      
-      if (kind=="previous") {            
+
+      if (kind=="previous") {
         $('div.loading_previous p.count').text('Now vizzualizing '+range+' of '+defaults.total);
         $(table).children('tbody').css('padding','0');
         $(table).children('tbody').css('margin','0');
@@ -297,8 +297,8 @@
         $('div.loading_next').show();
       }
     },
-    
-    
+
+
     hideLoader: function() {
       loading = false;
       $('div.loading_next').hide();
@@ -306,10 +306,10 @@
       $(table).children('tbody').css('padding','53px 0 0 0');
       $(table).children('tbody').css('margin','5px 0 0 0');
     },
-    
-    
+
+
     bindCellEvents: function() {
-      
+
       //Cell events
       $(document).click(function(event){
         var target = event.target || event.srcElement;
@@ -326,8 +326,8 @@
           $('div.edit_cell a.save').attr('c',data.column);
           $('div.edit_cell').show();
         }
-        
-        
+
+
         //Clicking in first column element
         if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
           if (!$(target).hasClass('selected')) {
@@ -335,7 +335,7 @@
             $('tbody tr td.first div a.options').removeClass('selected');
             $(target).parent().children('span').show();
             $(target).addClass('selected');
-            
+
             $('body').click(function(event) {
               if (!$(event.target).closest('tbody tr td div span').length) {
                 $('table tbody tr td.first div a.options').removeClass('selected');
@@ -354,30 +354,30 @@
           event.returnValue = false;
         }
       });
-      
-      
+
+
       //Head options event
       $('thead tr a.options').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-        
+
         if (!$(this).hasClass('selected')) {
           $('tbody tr td.first a.options').removeClass('selected');
           $('tbody tr td.first span').hide();
-          
+
           $('thead tr a.options').removeClass('selected');
           $('thead tr span').hide();
           $(this).addClass('selected');
           $(this).parent().children('span').show();
-          
+
           $('body').click(function(event) {
             if (!$(event.target).closest('thead tr span').length) {
               $('thead tr span').hide();
               $('thead tr a.options').removeClass('selected');
               $('body').unbind('click');
             };
-  				});
-          
+          });
+
         } else {
           $(this).removeClass('selected');
           $(this).parent().children('span').hide();
@@ -385,8 +385,8 @@
         }
 
       });
-      
-      
+
+
       //Error tooltip
       $("td.error div").livequery('mouseenter',
         function() {
@@ -404,9 +404,9 @@
               $('div.error_cell').hide();
             //});
        });
-      
-      
-      
+
+
+
        //Saving new edited value
        $("div.edit_cell a.save").livequery('click',function(ev){
          ev.stopPropagation();
@@ -419,7 +419,7 @@
          $("div.edit_cell textarea").css('height','30px');
          $('tbody tr[r="'+row+'"]').removeClass('editing');
        });
-       
+
        //Cancel editing value
        $("div.edit_cell a.cancel,div.edit_cell a.close").livequery('click',function(ev){
          ev.stopPropagation();
@@ -430,23 +430,23 @@
          $("div.edit_cell textarea").css('height','30px');
          $('tbody tr[r="'+row+'"]').removeClass('editing');
        });
-       
-      
+
+
       //SQL Editor
       $('div.general_options div.sql_console span a.close').livequery('click',function(){
         $('div.general_options div.sql_console').hide();
         $('div.general_options ul').removeClass('sql');
       });
-      
-      
+
+
       //General options
       $('div.general_options ul li a.sql').livequery('click',function(){
         $('div.general_options div.sql_console').show();
         $('div.general_options ul').addClass('sql');
       });
-      
-      
-      
+
+
+
     },
     keepSize: function(){
       //Keep the parent table div with the correct width, onresize window as well
@@ -455,18 +455,18 @@
           resizeTable();
         },500);
       }
-      
+
       $(window).resize(function(ev){
         resizeTable();
       });
-      
+
       function resizeTable() {
         $('div.table_position').width($(window).width());
         var parent_width = $(window).width();
         var width_table_content = (($(table).children('thead').children('tr').children('th').size()-1)*128) + 60;
         var head_element = $(table).children('thead').children('tr').children('th:last').children('div');
         var body_element = $(table).children('tbody').children('tr');
-        
+
         if (parent_width>width_table_content) {
           $(head_element).width(128 + parent_width-width_table_content);
           $(body_element).each(function(index,element){
@@ -479,15 +479,15 @@
           });
         }
       }
-      
+
     }
   };
 
-  
+
   $.fn.cDBtable = function(method,options) {
-    
-    defaults = options; 
-    
+
+    defaults = options;
+
     if (methods[method]) {
       return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
     } else if ( typeof method === 'object' || ! method ) {

@@ -54,7 +54,7 @@ class Table < Sequel::Model(:user_tables)
 
   def to_json(options = {})
     default_options = {
-      :page => 1,
+      :page => 0,
       :rows_per_page => 10
     }
     options[:rows_per_page] ||= default_options[:rows_per_page]
@@ -63,7 +63,7 @@ class Table < Sequel::Model(:user_tables)
     columns    = []
     rows       = []
     limit  = options[:rows_per_page].to_i
-    offset = (options[:page].to_i - 1)*limit
+    offset = (options[:page].to_i)*limit
     # FIXME: this should be done in one connection block
     owner.in_database do |user_database|
       rows_count = user_database[db_table_name.to_sym].count

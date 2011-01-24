@@ -34,7 +34,7 @@ feature "Tables JSON API" do
     Capybara.current_driver = :rack_test
 
     user = create_user
-    table = create_table :user_id => user.id
+    table = create_table :user_id => user.id, :privacy => Table::PRIVATE
 
     table.should be_private
 

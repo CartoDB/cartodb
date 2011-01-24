@@ -4,9 +4,9 @@ require 'spec_helper'
 
 describe Table do
   it "should have a privacy associated and it should be private by default" do
-    table = Table.new
-    table.privacy.should be_nil
-    table.should be_private
+    table = create_table
+    table.privacy.should_not be_nil
+    table.should_not be_private
   end
 
   it "should be associated to a database table" do
@@ -67,7 +67,7 @@ describe Table do
 
   it "has a toggle_privacy! method to toggle the table privacy" do
     user = create_user
-    table = create_table :user_id => user.id
+    table = create_table :user_id => user.id, :privacy => Table::PRIVATE
     table.should be_private
 
     table.toggle_privacy!

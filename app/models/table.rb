@@ -8,6 +8,10 @@ class Table < Sequel::Model(:user_tables)
 
   ## Callbacks
 
+  def before_validation
+    self.privacy ||= PUBLIC
+  end
+
   # Before creating a user table a table should be created in the database.
   # This table has an empty schema
   def before_create
@@ -32,7 +36,11 @@ class Table < Sequel::Model(:user_tables)
   ## End of Callbacks
 
   def private?
-    privacy.nil? || privacy == PRIVATE
+    privacy == PRIVATE
+  end
+
+  def public?
+    !private?
   end
 
   def toggle_privacy!

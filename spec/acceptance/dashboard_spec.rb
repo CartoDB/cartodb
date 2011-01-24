@@ -6,6 +6,21 @@ feature "Dashboard", %q{
   I want to be able to visit my databases and manage them
 } do
 
+  scenario "Login and visit public tables wit no tables" do
+    user = create_user
+    login_as user
+
+    within(:css, "header") do
+      page.should have_link("CartoDB")
+      page.should have_content(user.email)
+    end
+
+    click_link_or_button('Public tables')
+
+    page.should have_content("0 Public tables in cartoDB")
+    page.should have_content("Ouch! There are not tables for your search")
+  end
+
   scenario "Login and visit my dashboard and the public tables" do
     user = create_user
     the_other = create_user

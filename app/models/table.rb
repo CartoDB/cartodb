@@ -64,10 +64,13 @@ class Table < Sequel::Model(:user_tables)
     rows       = []
     limit  = options[:rows_per_page].to_i
     offset = (options[:page].to_i - 1)*limit
+    # FIXME: this should be done in one connection block
     owner.in_database do |user_database|
       rows_count = user_database[db_table_name.to_sym].count
-      columns = user_database.schema(db_table_name.to_sym).map{ |c| [c.first,c[1][:type]] }
-      rows = user_database[db_table_name.to_sym].with_sql("select * from #{db_table_name} limit #{limit} offset #{offset}").all
+      columns    = user_database.schema(db_table_name.to_sym).map{ |c| [c.first, c[1][:type]] }
+    end
+    owner.in_database do |user_database|
+      rows = user_database[db_table_name.to_sym].limit(limit,offset).all
     end
     {
       :total_rows => rows_count,

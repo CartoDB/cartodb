@@ -51,11 +51,12 @@ class User < Sequel::Model
       nil
     end
   end
-
   #### End of Authentication methods
 
   def in_database(&block)
-    connection = ::Sequel.connect(::Rails::Sequel.configuration.environment_for(Rails.env).merge('database' => self.database_name))
+    connection = ::Sequel.connect(
+      ::Rails::Sequel.configuration.environment_for(Rails.env).merge('database' => self.database_name)
+    )
     result = yield(connection)
     connection.disconnect
     result

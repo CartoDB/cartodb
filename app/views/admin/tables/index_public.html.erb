@@ -1,4 +1,4 @@
- 
+
   <%= stylesheet_link_merged(:public_tables).html_safe %>
   <%= javascript_include_merged(:public_tables).html_safe %>
 
@@ -18,11 +18,12 @@
             </form>
           </div>
           <div class="middle_white_medium">
-            <% if @tables.size == 0 %>
-              <div class="no_tables">
-                <h5>Ouch! There are not tables for your search</h5>
-                <p>You can try with different terms or you can <a href="#">create your own table</a></p>
-              </div>
+
+            <% if @tables.empty? %>
+            <div class="no_tables">
+              <h5>Ouch! There are not tables for your search</h5>
+              <p>You can try with different terms or you can <a href="#">create your own table</a></p>
+            </div>
             <% else %>
               <ul class="your_tables">
                 <% @tables.each_with_index do |table| %>

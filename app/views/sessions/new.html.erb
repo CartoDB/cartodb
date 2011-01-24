@@ -13,9 +13,11 @@
       <%= label_tag :password, 'your password' %>
       <%= password_field_tag :password, '', :class=>"error" %>
       <%= submit_tag 'Sign in', :class=>"login" %>
+      <% if flash[:alert] %>
       <div class="error_content">
-        <p><span>Your account or your password is not ok</span></p>
+        <p><span><%= flash[:alert] %></span></p>
       </div>
+      <% end %>
     <% end %>
   </section>
   <footer>CartoDB is a product of <a href="http://www.vizzuality.com" target="_blank">vizzuality</a></footer>

@@ -21,7 +21,8 @@ class SessionsController < ApplicationController
   end
 
   def unauthenticated
-    redirect_to root_path
+    flash[:alert] = 'Your account or your password is not ok'
+    render :action => 'new' and return
   end
 
 end

@@ -10,7 +10,7 @@ javascripts:
   - plugins/jquery.livequery.min.js
   - plugins/cDBtable.js
   - admin/table.js
-  
+
 stylesheets:
 - base:
   - reset

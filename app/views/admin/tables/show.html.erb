@@ -1,7 +1,10 @@
 
-  <%= stylesheet_link_merged(:table).html_safe %>
-  <%= javascript_include_merged(:table).html_safe %>
-  
+  <% content_for(:head) do %>
+    <%= stylesheet_link_merged(:table).html_safe %>
+  <% end %>
+  <% content_for(:js) do %>
+    <%= javascript_include_merged(:table).html_safe %>
+  <% end %>
 
   <section class="subheader">
     <div class="mamufas">
@@ -38,7 +41,7 @@
   </div>
 
   <div id="map"></div>
-  
-  
-  <script type="text/javascript">var table_id = <%= @table.id %>;</script> 
-  <script type="text/javascript">var status = <%= table_privacy(@table).downcase %>;</script> 
+
+
+  <script type="text/javascript">var table_id = <%= @table.id %>;</script>
+  <script type="text/javascript">var status = <%= table_privacy(@table).downcase %>;</script>

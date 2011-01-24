@@ -1,7 +1,9 @@
-
-  <%= stylesheet_link_merged(:public_tables).html_safe %>
-  <%= javascript_include_merged(:public_tables).html_safe %>
-
+  <% content_for(:head) do %>
+    <%= stylesheet_link_merged(:public_tables).html_safe %>
+  <% end %>
+  <% content_for(:js) do %>
+    <%= javascript_include_merged(:public_tables).html_safe %>
+  <% end %>
 
   <%= render 'subheader' %>
 

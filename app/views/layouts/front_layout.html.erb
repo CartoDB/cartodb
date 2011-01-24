@@ -1,8 +1,10 @@
 <html>
   <head>
     <title>CartoDB</title>
+    <%= yield :head %>
   </head>
   <body>
     <%= yield %>
+    <%= yield :js %>
   </body>
 </html>

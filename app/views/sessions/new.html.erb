@@ -9,8 +9,11 @@
       <%= label_tag :email, 'your e-mail' %>
       <%= text_field_tag :email %>
       <%= label_tag :password, 'your password' %>
-      <%= password_field_tag :password %>
+      <%= password_field_tag :password, '', :class=>"error" %>
       <%= submit_tag 'Sign in', :class=>"login" %>
+      <div class="error_content">
+        <p><span>Your account or your password is not ok</span></p>
+      </div>
     <% end %>
   </section>
   <footer>CartoDB is a product of <a href="http://www.vizzuality.com" target="_blank">vizzuality</a></footer>

@@ -18,6 +18,6 @@ section form input[type="submit"] {display:inline-block; width:81px; height:36px
 section form input[type="submit"]:hover {background-position:0 -36px; cursor:pointer;}
 section p.follow {font:normal 13px "Helvetica", Arial; color:white;}
 section p.follow a.twitter {padding:5px 36px 5px 0; color:white; background:url('/images/front/home/twitter.png') no-repeat right 2px;}
-footer {position:absolute; left:50%; bottom:15px; width:200px; margin:0 0 0 -100px; z-index:1; font:normal 13px "Helvetica", Arial; color:white;}
+footer {position:absolute; left:50%; bottom:15px; width:200px; margin:0 0 0 -100px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}
 footer a {color:white;}
 footer a:hover {color:white;}

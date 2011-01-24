@@ -1,6 +1,6 @@
 /*TABLE*/
-div.table_position {position:relative; float:left; margin:103px 0 0 0; padding:0; width:1000px; overflow-x:scroll; overflow-y:hidden; background:url('/images/admin/dashboard/content_bkg.png') repeat 0 0;}
-div.table_position table {position:relative!important; width:auto; margin:0;  table-layout:fixed;}
+div.table_position {position:relative; float:left; width:100%; min-height:55px; margin:103px 0 0 0; padding:0; overflow-y:hidden; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F9FAFE;}
+div.table_position table {position:relative!important; width:auto; margin:0;}
 div.table_position table thead {position:absolute; top:0; left:0; padding:5px 0 0 0; margin:0; z-index:20; background-color:#FFFFFF; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white;}
 div.table_position table thead tr {position:relative; float:left; padding:0 0 0 41px; border-bottom:1px solid #D2D3D5;}
 div.table_position table thead tr th {background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom; border:1px solid #E2E3E7; border-bottom:none; border-top:none; text-shadow:0 1px white;}
@@ -41,6 +41,10 @@ div.table_position table tbody tr td.first div span li {float:left; width:66px; 
 div.table_position table tbody tr td.first div span li.last {margin:8px 3px 0 3px; border-top:1px solid #666666;}
 div.table_position table tbody tr td.first div span li a {float:left; font:normal 11px "Helvetica",Arial; text-decoration:none; color:white; text-shadow:none; text-align:left!important; text-indent:0;}
 div.table_position table tbody tr td.first div span li a:hover {color:#6EBE6E;}
+/*new table*/
+div.table_position table.new {height:100%; width:100%;}
+
+
 
 /*LOADINGS*/
 /*pagination*/

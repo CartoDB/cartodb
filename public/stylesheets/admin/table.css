@@ -1,4 +1,4 @@
-body {position:relative; background:url('/images/admin/common/header_bkg.jpg') repeat-x center 0 #2D3451;}
+body {position:relative; background:url('/images/admin/common/header_bkg.jpg') repeat-x center 0 #2D3451; overflow-x:hidden;}
 body, html {height:100%;} /*table hack*/
 a:focus {outline:none;}
 
@@ -11,9 +11,9 @@ header p.session a {text-decoration:underline; color:white;}
 header p.session a:hover {}
 
 /*SUBHEADER*/
-section.subheader {position:absolute; top:58px; left:0; width:100%; height:103px; background:url('/images/admin/common/header_bkg.jpg') repeat-x center -58px #2D3451; z-index:100;}
+section.subheader {position:absolute; top:58px; left:0; width:100%; min-width:880px; height:103px; background:url('/images/admin/common/header_bkg.jpg') repeat-x center -58px #2D3451; z-index:100;}
 section.subheader div.mamufas {float:left; width:100%; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
-section.subheader div.left {position:relative; float:left; width:700px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
+section.subheader div.left {position:relative; float:left; width:600px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
 section.subheader h2 {float:left; width:auto; font:bold 21px Arial; color:white;}
 section.subheader p.status {float:left; width:auto;}
 section.subheader p.status a {float:left; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none;}
@@ -23,8 +23,6 @@ section.subheader p.status a.save {background:#FFCC00;}
 section.subheader p.status a.selected {background:black; color:white;}
 section.subheader p.status a:hover {background:black;}
 section.subheader p.status a.save:hover {background:#FFCC00;}
-
-
 section.subheader span.privacy_window {position:absolute; display:none; width:216px; height:108px; background:url('/images/admin/table/privacy_options_bkg.png') no-repeat center center;}
 section.subheader span.privacy_window ul {float:left; width:175px; margin:34px 0 0 20px;}
 section.subheader span.privacy_window ul li {width:161px; padding:5px 7px 6px; margin:0 0 2px; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;}
@@ -36,8 +34,6 @@ section.subheader span.privacy_window ul li.selected a {color:white; background-
 section.subheader span.privacy_window ul li.public:hover {background:#6FBE6F;}
 section.subheader span.privacy_window ul li.private:hover {background:#C10000;}
 section.subheader span.privacy_window ul li:hover a {color:white; background-position:0 2px;}
-
-
 section.subheader span.tags {float:left; width:100%;}
 section.subheader span.tags a {float:left; width:auto; padding:3px 7px; margin:4px 3px 0 0; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 11px Arial; color:white; text-decoration:none  ; background:#121621;}
 section.subheader span.tags a.add {padding:3px 0; margin:4px 0 0 10px; background:none; color:#FFCC00; text-shadow:0 1px black;}

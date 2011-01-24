@@ -27,14 +27,14 @@
   var maxPage = -1;
   var defaults;
   var actualPage;
+  var total;
 
   var methods = {
-    init : function(options) {
+    init : function() {
       return this.each(function(){
-
         table = $(this)[0];
         methods.getData(defaults, 'next');
-        methods.keepSize();
+        //methods.keepSize();
       });
     },
 
@@ -51,77 +51,83 @@
      }
 
      $.ajax({
-       dataType: 'jsonp',
+       //dataType: 'jsonp',
        method: "GET",
        url: options.getDataUrl,
        data: {
-         query: 'a',
          rows_per_page: options.resultsPerPage,
          page: actualPage
        },
        success: function(data) {
-         if (data.length>0) {
-           methods.draw(options,data,direction,actualPage);
+         if (data.total_rows==0) {
+           //Start new table
+           if ($(table).children('thead').length==0) {methods.drawColumns(data.columns);}  
          } else {
-           if (direction=="next") {
-              maxPage--;
-            } else {
-              minPage++;
-            }
+           total = data.total_rows;
+           if (data.rows.length>0) {
+             methods.drawRows(options,data.rows,direction,actualPage);
+             if ($(table).children('thead').length==0) {methods.drawColumns(data.columns);}  
+           } else {
+             methods.hideLoader();
+             if (direction=="next") {
+                maxPage--;
+              } else {
+                minPage++;
+              }
+           }
          }
        }
      });
     },
 
 
+    drawColumns: function(data) {
+      //Draw the columns headers
+      var thead = '<thead><tr><th class="first"><div></div></th>';
+      $.each(data,function(index,element){
+        var ul_list = '<span>' +
+                        '<ul>' +
+                          '<li><a href="#">Order by this column</a></li>' +
+                          '<li><a href="#">Filter by this column</a></li>' +
+                          '<li><a href="#">Rename column</a></li>' +
+                          '<li><a href="#">Change data type</a></li>' +
+                          '<li><a href="#">Delete column</a></li>' +
+                          '<li class="last"><a href="#">Add new column</a></li>' +
+                        '</ul>' +
+                      '</span>';
+        thead += '<th width="100">'+
+                    '<div>'+
+                      '<h3>'+element[0]+'</h3>'+
+                      '<p>'+element[1]+'</p>'+
+                      '<a class="options" href="#">options</a>'+
+                      ul_list+
+                    '</div>'+
+                  '</th>';
+        
+      });
+      thead += "</thead></tr>";
+      $(table).append(thead);
 
-    draw: function(options,data,direction,page) {
+      //Scroll event
+      methods.addScroll();
 
-      //Draw the data
-      if ($(table).html()=='') {
-        var thead = '<thead><tr><th class="first"><div></div></th>';
-        $.each(data[0], function(index,element){
-          var ul_list = '<span>' +
-                          '<ul>' +
-                            '<li><a href="#">Order by this column</a></li>' +
-                            '<li><a href="#">Filter by this column</a></li>' +
-                            '<li><a href="#">Rename column</a></li>' +
-                            '<li><a href="#">Change data type</a></li>' +
-                            '<li><a href="#">Delete column</a></li>' +
-                            '<li class="last"><a href="#">Add new column</a></li>' +
-                          '</ul>' +
-                        '</span>';
+      //Cell click event
+      methods.bindCellEvents();
 
-          thead += '<th width="100">'+
-                      '<div>'+
-                        '<h3>'+index+'</h3>'+
-                        '<p>String</p>'+
-                        '<a class="options" href="#">options</a>'+
-                        ul_list+
-                      '</div>'+
-                    '</th>';
-        });
-        thead += "</thead></tr>";
-        $(table).append(thead);
-
-        //Scroll event
-        methods.addScroll();
-
-        //Cell click event
-        methods.bindCellEvents();
-
-        //Create elements
-        methods.createElements();
-      }
+      //Create elements
+      methods.createElements();
+    },
 
 
+    drawRows: function(options,data,direction,page) {
+      
       if ($(table).children('tbody').length==0) {
         var tbody = '<tbody>';
       } else {
         var tbody = '';
       }
 
-
+      
       //Loop all the data
       $.each(data, function(i,element){
         var options_list =  '<span>' +
@@ -131,19 +137,20 @@
                                 '<li class="last"><a href="#">Add new row</a></li>' +
                               '</ul>' +
                             '</span>';
-        tbody += '<tr r="'+((page*(defaults.resultsPerPage)) + i)+'"><td class="first" r="'+((page*(defaults.resultsPerPage)) + i)+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+        tbody += '<tr r="'+element.identifier+'"><td class="first" r="'+ element.identifier +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
         $.each(element, function(j,elem){
-          tbody += '<td class="'+((i==5 && j=="id")?'error':'')+'" width="100" r="'+((page*(defaults.resultsPerPage)) + i)+'" c="'+j+'"><div>'+elem+'</div></td>';
+          tbody += '<td width="100" r="'+ element.identifier +'" c="'+ j +'"><div>'+elem+'</div></td>';
         });
         tbody += '</tr>';
       });
-
+      
+      
       if ($(table).children('tbody').length==0) {
         tbody += '</tbody>';
         $(table).append(tbody);
       } else {
         (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
-      }
+      }      
 
       methods.checkReuse(direction);
     },
@@ -187,6 +194,7 @@
       '<div class="performing_op">' +
         '<p class="loading">Loading...</p>'+
       '</div>');
+
 
 
       //General options

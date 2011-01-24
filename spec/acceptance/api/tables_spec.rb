@@ -9,10 +9,10 @@ feature "Tables JSON API" do
     table = create_table :user_id => user.id
 
     100.times do
-      table.execute_sql("INSERT INTO #{table.db_table_name} (Name,Location,Description) VALUES ('#{String.random(10)}','#{rand(1000000.0)}','#{String.random(100)}')")
+      table.execute_sql("INSERT INTO \"#{table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{rand(1000000.0)}','#{String.random(100)}')")
     end
 
-    content = table.execute_sql("select * from #{table.db_table_name}")
+    content = table.execute_sql("select * from \"#{table.name}\"")
 
     authenticate_api user
 

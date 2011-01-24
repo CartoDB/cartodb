@@ -12,18 +12,17 @@ describe Table do
   it "should be associated to a database table" do
     user = create_user
     table = Table.create :name => 'Wadus table', :user_id => user.id
-    table.db_table_name.should_not be_blank
-    table.db_table_name.should == "wadus_table"
+    Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
   end
 
   it "should fetch empty data from the database by SQL sentences" do
     user = create_user
     table = Table.create :name => 'Wadus table', :user_id => user.id
-    Rails::Sequel.connection.table_exists?(table.db_table_name.to_sym).should be_false
+    Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
     user.in_database do |user_database|
-      user_database.table_exists?(table.db_table_name.to_sym).should be_true
+      user_database.table_exists?(table.name.to_sym).should be_true
     end
-    rows = table.execute_sql "select * from #{table.db_table_name} limit 1"
+    rows = table.execute_sql "select * from \"#{table.name}\" limit 1"
     rows.should be_empty
     table.rows_count.should == 0
   end
@@ -36,7 +35,7 @@ describe Table do
     table.updated_at.should == t1
     t2 = Time.now - 3.minutes
     Timecop.freeze(t2)
-    rows = table.execute_sql "select * from #{table.db_table_name} limit 1"
+    rows = table.execute_sql "select * from \"#{table.name}\" limit 1"
     table.reload
     table.updated_at.should == t2
   end
@@ -50,13 +49,13 @@ describe Table do
     table.to_json[:rows].should be_empty
 
     10.times do
-      table.execute_sql("INSERT INTO #{table.db_table_name} (Name,Location,Description) VALUES ('#{String.random(10)}','#{rand(1000000.0)}','#{String.random(100)}')")
+      table.execute_sql("INSERT INTO \"#{table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{rand(1000000.0)}','#{String.random(100)}')")
     end
 
     table.to_json[:total_rows].should == 10
     table.to_json[:rows].size.should == 10
 
-    content = table.execute_sql("select * from #{table.db_table_name}")
+    content = table.execute_sql("select * from \"#{table.name}\"")
 
     table.to_json(:rows_per_page => 1)[:rows].size.should == 1
     table.to_json(:rows_per_page => 1)[:rows].first.should == content[0]

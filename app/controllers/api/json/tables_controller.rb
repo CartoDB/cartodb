@@ -22,7 +22,7 @@ class Api::Json::TablesController < ApplicationController
   protected
 
   def load_table
-    @table = Table.select(:id,:user_id,:db_table_name,:privacy).filter(:id => params[:id]).first
+    @table = Table.select(:id,:user_id,:name,:privacy).filter(:id => params[:id]).first
     raise ActiveRecord::RecordNotFound if @table.user_id != current_user.id && @table.private?
   end
 

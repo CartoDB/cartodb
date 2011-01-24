@@ -17,11 +17,10 @@ class Table < Sequel::Model(:user_tables)
   def before_create
     update_updated_at
     unless self.user_id.blank? || self.name.blank?
-      self.db_table_name = self.name.sanitize.tr('-','_')
-      unless self.db_table_name.blank?
+      unless self.name.blank?
         owner.in_database do |user_database|
-          unless user_database.table_exists?(self.db_table_name.to_sym)
-            user_database.create_table self.db_table_name.to_sym do
+          unless user_database.table_exists?(self.name.to_sym)
+            user_database.create_table self.name.to_sym do
               primary_key :identifier
               String :name
               String :location
@@ -51,13 +50,13 @@ class Table < Sequel::Model(:user_tables)
   def execute_sql(sql)
     update_updated_at!
     owner.in_database do |user_database|
-      user_database[db_table_name.to_sym].with_sql(sql).all
+      user_database[name.to_sym].with_sql(sql).all
     end
   end
 
   def rows_count
     owner.in_database do |user_database|
-      user_database[db_table_name.to_sym].count
+      user_database[name.to_sym].count
     end
   end
 
@@ -68,11 +67,11 @@ class Table < Sequel::Model(:user_tables)
 
     # FIXME: this should be done in one connection block
     owner.in_database do |user_database|
-      rows_count = user_database[db_table_name.to_sym].count
-      columns    = user_database.schema(db_table_name.to_sym).map{ |c| [c.first, c[1][:type]] }
+      rows_count = user_database[name.to_sym].count
+      columns    = user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:type]] }
     end
     owner.in_database do |user_database|
-      rows = user_database[db_table_name.to_sym].limit(limit,offset).all
+      rows = user_database[name.to_sym].limit(limit,offset).all
     end
 
     {

@@ -15,6 +15,7 @@ CartoDB::Application.routes.draw do
   namespace :api do
     namespace :json do
       match 'table/:id' => 'tables#show', :format => :json
+      match 'table/:id/toggle_privacy' => 'tables#toggle_privacy', :format => :json
     end
   end
 

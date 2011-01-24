@@ -7,8 +7,16 @@ module HelperMethods
     click_link_or_button 'Sign in'
   end
 
+  def authenticate_api(user)
+    post '/sessions/create', {:email => user.email, :password => user.email.split('@').first}
+  end
+
   def get_json(path)
-    visit path
+    get path
+  end
+
+  def put_json(path, params = {})
+    put path, params
   end
 
 end

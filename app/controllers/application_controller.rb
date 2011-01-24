@@ -13,4 +13,10 @@ class ApplicationController < ActionController::Base
     redirect_to login_path and return
   end
 
+  def table_privacy_text(table)
+    table.private? ? 'PRIVATE' : 'PUBLIC'
+  end
+  helper_method :table_privacy_text
+
+
 end

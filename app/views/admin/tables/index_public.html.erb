@@ -31,7 +31,7 @@
                 <% @tables.each_with_index do |table| %>
                 <li<%= ' class="last"'.html_safe if @tables.last == table %>>
                   <h4><%= link_to(table.name, table) %></h4>
-                  <p class="status <%= css_class_for_privacy(table) %>"><%= table_privacy(table) %></p>
+                  <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
                   <div class="meta_info">
                     <span class="watching">
                       <a href="#" class="no_watching">Stop watching</a>

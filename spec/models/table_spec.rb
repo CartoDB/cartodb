@@ -65,4 +65,18 @@ describe Table do
     table.to_json(:rows_per_page => 1, :page => 2)[:rows].first.should == content[2]
   end
 
+  it "has a toggle_privacy! method to toggle the table privacy" do
+    user = create_user
+    table = create_table :user_id => user.id
+    table.should be_private
+
+    table.toggle_privacy!
+    table.reload
+    table.should_not be_private
+
+    table.toggle_privacy!
+    table.reload
+    table.should be_private
+  end
+
 end

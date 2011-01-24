@@ -20,10 +20,10 @@ Warden::Strategies.add(:password) do
       if user = User.authenticate(params[:email], params[:password])
         success!(user)
       else
-        pass
+        fail!
       end
     else
-      pass
+      fail!
     end
   end
 end

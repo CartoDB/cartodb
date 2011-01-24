@@ -31,12 +31,13 @@ class Table < Sequel::Model(:user_tables)
   end
   ## End of Callbacks
 
-  def public?
-    privacy && privacy == PUBLIC
-  end
-
   def private?
     privacy.nil? || privacy == PRIVATE
+  end
+
+  def toggle_privacy!
+    private? ? set(:privacy => PUBLIC) : set(:privacy => PRIVATE)
+    save_changes
   end
 
   def execute_sql(sql)
@@ -76,11 +77,11 @@ class Table < Sequel::Model(:user_tables)
   private
 
   def update_updated_at
-    self.updated_at = Time.now
+    set(:updated_at => Time.now)
   end
 
   def update_updated_at!
-    update_updated_at && save
+    update_updated_at && save_changes
   end
 
   def owner

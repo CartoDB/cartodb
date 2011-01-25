@@ -87,96 +87,28 @@ describe Table do
 
   it "can be associated to many tags" do
     user = create_user
-    table = create_table :user_id => user.id
-    table.tags = "tag 1, tag 2,tag 3, tag 3"
+    table = create_table :user_id => user.id, :tags => "tag 1, tag 2,tag 3, tag 3"
     Tag.count.should == 3
     tag1 = Tag[:name => 'tag 1']
-    tag1.count.should == 1
     tag1.table_id.should == table.id
     tag1.user_id.should == user.id
     tag2 = Tag[:name => 'tag 2']
     tag2.user_id.should == user.id
     tag2.table_id.should == table.id
-    tag2.count.should == 1
     tag3 = Tag[:name => 'tag 3']
     tag3.user_id.should == user.id
-    tag3.count.should == 1
     tag3.table_id.should == table.id
 
     table.tags = "tag 1"
+    table.save_changes
     Tag.count.should == 1
     tag1 = Tag[:name => 'tag 1']
-    tag1.count.should == 1
     tag1.table_id.should == table.id
     tag1.user_id.should == user.id
 
     table.tags = "    "
+    table.save_changes
     Tag.count.should == 0
-  end
-
-  it "should increase its counter when associated to different tables" do
-    user = create_user
-    table1 = create_table :user_id => user.id
-    table1.tags = "tag 1, tag 2,tag 3, tag 3"
-    Tag.count.should == 3
-    tag1 = Tag[:name => 'tag 1']
-    tag1.count.should == 1
-
-    table2 = create_table :user_id => user.id
-    table2.tags = "tag 1"
-    Tag.count.should == 4
-    tag11 = Tag[:name => 'tag 1', :table_id => table1.id]
-    tag11.count.should == 2
-    tag12 = Tag[:name => 'tag 1', :table_id => table2.id]
-    tag12.count.should == 2
-  end
-
-  it "should not modify other user tags" do
-    user1 = create_user
-    table1 = create_table :user_id => user1.id
-    user2 = create_user
-    table2 = create_table :user_id => user2.id
-    table1.tags = "tag 1, tag 2,tag 3, tag 3"
-    table2.tags = "tag 1, tag 2,tag 3, tag 3"
-    Tag.count.should == 6
-    tag1 = Tag[:name => 'tag 1', :user_id => user1.id]
-    tag1.count.should == 1
-
-    table3 = create_table :user_id => user1.id
-    table3.tags = "tag 1"
-    Tag.count.should == 7
-    Tag[:name => 'tag 1', :table_id => table1.id, :user_id => user1.id].count.should == 2
-    Tag[:name => 'tag 1', :table_id => table3.id, :user_id => user1.id].count.should == 2
-    Tag[:name => 'tag 1', :table_id => table2.id, :user_id => user2.id].count.should == 1
-  end
-
-  it "should update counters when removing the tags with the same name but in different tables" do
-    user1 = create_user
-    table1 = create_table :user_id => user1.id
-    user2 = create_user
-    table2 = create_table :user_id => user2.id
-    table1.tags = "tag 1, tag 2,tag 3, tag 3"
-    table2.tags = "tag 1, tag 2,tag 3, tag 3"
-    Tag.count.should == 6
-    table3 = create_table :user_id => user1.id
-    table3.tags = "tag 1, tag 2, tag 3"
-    Tag.count.should == 9
-    Tag[:name => 'tag 1', :table_id => table1.id, :user_id => user1.id].count.should == 2
-    Tag[:name => 'tag 1', :table_id => table3.id, :user_id => user1.id].count.should == 2
-    Tag[:name => 'tag 1', :table_id => table2.id, :user_id => user2.id].count.should == 1
-
-    table1.tags = "tag 2, tag 3"
-    Tag.count.should == 8
-    Tag[:name => 'tag 1', :table_id => table1.id, :user_id => user1.id].should be_nil
-    Tag[:name => 'tag 1', :table_id => table3.id, :user_id => user1.id].count.should == 1
-    Tag[:name => 'tag 2', :table_id => table1.id, :user_id => user1.id].count.should == 2
-    Tag[:name => 'tag 3', :table_id => table1.id, :user_id => user1.id].count.should == 2
-
-    table1.tags = ""
-    Tag.count.should == 6
-    Tag[:name => 'tag 1', :table_id => table1.id, :user_id => user1.id].should be_nil
-    Tag[:name => 'tag 1', :table_id => table3.id, :user_id => user1.id].count.should == 1
-    Tag[:name => 'tag 1', :table_id => table2.id, :user_id => user2.id].count.should == 1
   end
 
 end

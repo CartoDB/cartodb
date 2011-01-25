@@ -16,4 +16,17 @@ module ApplicationHelper
     condition ? 'selected' : ''
   end
 
+  def tag_width(count, min, max)
+    if count >= max
+      "-100"
+    elsif count <= min
+      "-250"
+    else
+      nmax   = max   + min
+      mmin   = min   + min
+      ncount = count + min
+      (250 - ((ncount.to_f * 100.0) / nmax.to_f)/100.to_f * 150).to_s
+    end
+  end
+
 end

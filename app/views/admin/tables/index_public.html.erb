@@ -37,9 +37,11 @@
                       <a href="#" class="no_watching">Stop watching</a>
                     </span>
                     <span class="tags">
-                      <a href="#">History</a>
-                      <a href="#">WHS-JK</a>
-                      <a href="#">Manus DB</a>
+                      <% unless table.tags.blank? %>
+                        <% table.tags.split(',').each do |tag_name| %>
+                        <a href="#"><%= tag_name %></a>
+                        <% end %>
+                      <% end %>
                     </span>
                   </div>
                 </li>
@@ -72,12 +74,13 @@
           </div>
 
           <h4>BROWSE BY TAGS</h4>
-          <ul>
-            <li><a href="#"><span style="background-position:-100px 0">Natural</span></a></li>
-            <li><a href="#"><span style="background-position:-130px 0">Jamonal</span></a></li>
-            <li><a href="#"><span style="background-position:-200px 0">WHS</span></a></li>
-            <li><a href="#"><span style="background-position:-205px 0">Oldies</span></a></li>
-          </ul>
+          <% unless @tags.empty? %>
+            <ul>
+              <% @tags.each do |tag| %>
+                <li><a href="#"><span style="background-position:<%= tag_width(tag[:count], @tags.first[:count], @tags.last[:count]) %>px 0"><%= tag[:name] %></span></a></li>
+              <% end %>
+            </ul>
+          <% end %>
         </div>
       </div>
     </div>

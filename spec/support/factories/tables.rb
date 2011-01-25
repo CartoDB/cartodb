@@ -4,8 +4,7 @@ module CartoDB
       attributes = attributes.dup
       attributes[:name] ||= String.random(10)
       user_id = if attributes[:user_id].nil?
-        user = create_user
-        user.id
+        create_user.id
       else
         attributes.delete(:user_id)
       end

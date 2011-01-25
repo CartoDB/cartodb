@@ -9,11 +9,10 @@ Sequel.migration do
     create_table(:tags, :ignore_index_errors=>true) do
       primary_key :id
       String :name, :text=>true, :null=>false
-      Integer :count, :default=>1, :null=>false
       Integer :user_id, :null=>false
       Integer :table_id, :null=>false
       
-      index [:name]
+      index [:user_id, :table_id, :name], :unique=>true
     end
     
     create_table(:user_tables, :ignore_index_errors=>true) do
@@ -22,6 +21,7 @@ Sequel.migration do
       String :name, :text=>true, :null=>false
       Integer :privacy, :default=>0, :null=>false
       DateTime :updated_at, :null=>false
+      String :tags, :text=>true
       
       index [:name, :user_id], :unique=>true
       index [:user_id]

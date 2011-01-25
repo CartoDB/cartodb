@@ -7,6 +7,7 @@ class UserTablesMigration < Sequel::Migration
       String :name, :null => false
       Integer :privacy, :null => false
       DateTime :updated_at, :null => false
+      String :tags, :text => true
     end
 
     alter_table(:user_tables) do

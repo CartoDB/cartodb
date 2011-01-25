@@ -18,11 +18,13 @@ User.create :email => 'user1@example.com', :password => 'user1'
 ## Development demo data
 
 user = User.first
-table = Table.new :privacy => Table::PUBLIC, :name => 'Foursq check-ins'
+table = Table.new :privacy => Table::PUBLIC, :name => 'Foursq check-ins',
+                  :tags => '4sq, personal'
 table.user_id = user.id
 table.save
 
-table = Table.new :privacy => Table::PRIVATE, :name => 'Downloaded movies'
+table = Table.new :privacy => Table::PRIVATE, :name => 'Downloaded movies',
+                  :tags => 'movies, personal'
 table.user_id = user.id
 table.save
 
@@ -33,9 +35,11 @@ table = Table[1]
 end
 
 user = User.order(:id).last
-table = Table.new :privacy => Table::PUBLIC, :name => 'Twitter followers'
+table = Table.new :privacy => Table::PUBLIC, :name => 'Twitter followers',
+                  :tags => 'twitter, followers, api'
 table.user_id = user.id
 table.save
-table = Table.new :privacy => Table::PRIVATE, :name => 'Recipes'
+table = Table.new :privacy => Table::PRIVATE, :name => 'Recipes',
+                  :tags => 'recipes'
 table.user_id = user.id
 table.save

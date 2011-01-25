@@ -43,6 +43,40 @@ class Table < Sequel::Model(:user_tables)
   end
   ## End of Callbacks
 
+  ## Tags
+  def tags=(tag_names)
+    if tag_names.blank?
+      Tag.filter(:user_id => user_id, :table_id => id).all.each do |old_tag|
+        old_tag.delete
+        Tag.filter(:user_id => user_id, :name => old_tag.name).update(:count => :count - 1)
+      end
+    end
+    tag_names = tag_names.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq
+
+    table_tags = Tag.filter(:user_id => user_id, :table_id => id).all
+    unless table_tags.empty?
+      # Remove tags that are not in the new names list
+      table_tags.each do |tag|
+        unless tag_names.include?(tag.name)
+          tag.destroy
+          Tag.filter(:user_id => user_id, :name => tag.name).update(:count => :count - 1)
+        else
+          tag_names.delete(tag.name)
+        end
+      end
+    end
+    # Create the new tags in the this table
+    tag_names.each do |new_tag_name|
+      new_tag = Tag.new :name => new_tag_name
+      new_tag.user_id = user_id
+      new_tag.table_id = id
+      new_tag.save
+      # Set the new counter to all tags from the user with this name in the different tables
+      count = Tag.filter(:user_id => user_id, :name => new_tag_name).count
+      Tag.filter(:user_id => user_id, :name => new_tag_name).update(:count => count)
+    end
+  end
+
   def private?
     privacy == PRIVATE
   end

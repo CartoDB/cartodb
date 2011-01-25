@@ -6,6 +6,16 @@ Sequel.migration do
       primary_key [:filename]
     end
     
+    create_table(:tags, :ignore_index_errors=>true) do
+      primary_key :id
+      String :name, :text=>true, :null=>false
+      Integer :count, :default=>1, :null=>false
+      Integer :user_id, :null=>false
+      Integer :table_id, :null=>false
+      
+      index [:name]
+    end
+    
     create_table(:user_tables, :ignore_index_errors=>true) do
       primary_key :id
       Integer :user_id, :null=>false
@@ -13,6 +23,7 @@ Sequel.migration do
       Integer :privacy, :default=>0, :null=>false
       DateTime :updated_at, :null=>false
       
+      index [:name, :user_id], :unique=>true
       index [:user_id]
       index [:user_id, :privacy]
     end
@@ -29,6 +40,6 @@ Sequel.migration do
   end
   
   down do
-    drop_table(:schema_migrations, :user_tables, :users)
+    drop_table(:schema_migrations, :tags, :user_tables, :users)
   end
 end

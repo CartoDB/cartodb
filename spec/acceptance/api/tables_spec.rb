@@ -80,4 +80,22 @@ feature "Tables JSON API" do
     table.name.should == "My brand new name"
   end
 
+  scenario "Update the tags of a table" do
+    user = create_user
+    table = create_table :user_id => user.id
+
+    authenticate_api user
+
+    put_json "/api/json/table/#{table.id}/update", {:tags => "tag1, tag2, tag3"}
+    response.status.should == 200
+    Tag.count.should == 3
+    tags = Tag.filter(:user_id => user.id, :table_id => table.id).all
+    tags.size.should == 3
+    tags.map(&:name).sort.should == %W{ tag1 tag2 tag3 }
+
+    put_json "/api/json/table/#{table.id}/update", {:tags => ""}
+    response.status.should == 200
+    Tag.count.should == 0
+  end
+
 end

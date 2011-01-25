@@ -6,8 +6,11 @@ class Table < Sequel::Model(:user_tables)
   PRIVATE = 0
   PUBLIC  = 1
 
+  # Ignore mass-asigment on not allowed columns
+  self.strict_param_setting = false
+
   # Allowed columns
-  set_allowed_columns(:name, :privacy)
+  set_allowed_columns(:name, :privacy, :tags)
 
   ## Callbacks
   def validate

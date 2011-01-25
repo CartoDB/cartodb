@@ -23,7 +23,7 @@ class Api::Json::TablesController < ApplicationController
     respond_to do |format|
       format.json do
         begin
-          @table.update_fields(params, [:name])
+          @table.update_all(params)
           render :nothing => true, :status => 200
         rescue
           render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400

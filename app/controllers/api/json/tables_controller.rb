@@ -155,6 +155,27 @@ class Api::Json::TablesController < ApplicationController
     end
   end
 
+  # Insert a new row in a table
+  # * Request Method: +POST+
+  # * URI: +/api/json/tables/1/rows+
+  # * Format: +JSON+
+  # * Parameters:
+  #     {
+  #       "column_name1" => "value1",
+  #       "column_name1" => "value2"
+  #     }
+  # * Response if _success_:
+  #   * status code: 200
+  #   * body: _nothing_
+  # * Response if _error_:
+  #   * status code +400+
+  #   * body:
+  #       { "errors" => ["error message"] }
+  def create_row
+    @table.insert_row!(params)
+    render :nothing => true, :status => 200
+  end
+
   protected
 
   def load_table

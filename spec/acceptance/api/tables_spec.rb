@@ -208,4 +208,17 @@ feature "Tables JSON API" do
     json_response['errors'].should == ["column parameter can't be blank"]
   end
 
+  scenario "Insert a new row in a table" do
+    user = create_user
+    table = create_table :user_id => user.id
+
+    authenticate_api user
+
+    post_json "/api/json/tables/#{table.id}/rows", { :name => "Name 123", :description => "The description", :location => Point.from_x_y(1,1).as_ewkt }
+    response.status.should == 200
+    table.reload
+    table.rows_count.should == 1
+    table.to_json[:total_rows].should == 1
+  end
+
 end

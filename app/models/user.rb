@@ -55,7 +55,7 @@ class User < Sequel::Model
 
   def in_database(&block)
     connection = ::Sequel.connect(
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge('database' => self.database_name)
+      ::Rails::Sequel.configuration.environment_for(Rails.env).merge('database' => self.database_name, :logger => ::Rails.logger)
     )
     result = nil
     begin

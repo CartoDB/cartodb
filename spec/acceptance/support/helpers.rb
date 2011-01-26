@@ -19,6 +19,10 @@ module HelperMethods
     put path, params
   end
 
+  def post_json(path, params = {})
+    post path, params
+  end
+
 end
 
 RSpec.configuration.include HelperMethods, :type => :acceptance

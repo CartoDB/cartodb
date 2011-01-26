@@ -165,5 +165,24 @@ describe Table do
     table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column new name", "integer"]]
   end
 
-end
+  it "should be able to insert a new row" do
+    table = create_table
+    table.rows_count.should == 0
+    table.insert_row!({:name => String.random(10), :location => Point.from_x_y(1,1).as_ewkt, :description => "", :not_existing_col => 33})
+    table.reload
+    table.rows_count.should == 1
 
+    table.insert_row!({:location => Point.from_x_y(1,1).as_ewkt, :description => "My description"})
+    table.reload
+    table.rows_count.should == 2
+
+    table.insert_row!({})
+    table.reload
+    table.rows_count.should == 2
+
+    table.insert_row!({:not_existing => "bad value"})
+    table.reload
+    table.rows_count.should == 2
+  end
+
+end

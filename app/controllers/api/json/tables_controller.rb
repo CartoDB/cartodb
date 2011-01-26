@@ -162,7 +162,7 @@ class Api::Json::TablesController < ApplicationController
   # * Parameters:
   #     {
   #       "column_name1" => "value1",
-  #       "column_name1" => "value2"
+  #       "column_name2" => "value2"
   #     }
   # * Response if _success_:
   #   * status code: 200
@@ -173,7 +173,46 @@ class Api::Json::TablesController < ApplicationController
   #       { "errors" => ["error message"] }
   def create_row
     @table.insert_row!(params)
-    render :nothing => true, :status => 200
+    respond_to do |format|
+      format.json do
+        render :nothing => true, :status => 200
+      end
+    end
+  end
+
+  # Insert a new row in a table
+  # * Request Method: +PUT+
+  # * URI: +/api/json/tables/1/rows/33+
+  # * Format: +JSON+
+  # * Parameters:
+  #     {
+  #       "row_id" => "3",
+  #       "column_name" => "new value"
+  #     }
+  # * Response if _success_:
+  #   * status code: 200
+  #   * body: _nothing_
+  # * Response if _error_:
+  #   * status code +400+
+  #   * body:
+  #       { "errors" => ["error message"] }
+  def update_row
+    respond_to do |format|
+      format.json do
+        unless params[:row_id].blank?
+          if resp = @table.update_row!(params[:row_id], params)
+            render :nothing => true, :status => 200
+          else
+            case resp
+              when 404
+                render :json => { :errors => ["row with id = #{params[:row_id]} not found"] }.to_json, :status => 400 and return
+            end
+          end
+        else
+          render :json => { :errors => ["row_id can't be blank"] }.to_json, :status => 400 and return
+        end
+      end
+    end
   end
 
   protected

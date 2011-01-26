@@ -105,6 +105,13 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  def update_row!(row_id, attributes)
+    owner.in_database do |user_database|
+      attributes = attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
+      user_database[name.to_sym].filter(:id => row_id).update(attributes) unless attributes.empty?
+    end
+  end
+
   def rows_count
     owner.in_database do |user_database|
       user_database[name.to_sym].count

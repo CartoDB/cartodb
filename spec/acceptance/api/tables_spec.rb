@@ -221,4 +221,22 @@ feature "Tables JSON API" do
     table.to_json[:total_rows].should == 1
   end
 
+  scenario "Update the value from a ceil" do
+    user = create_user
+    table = create_table :user_id => user.id
+
+    authenticate_api user
+
+    table.insert_row!({:name => String.random(12)})
+
+    row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
+    row[:description].should be_blank
+
+    put_json "/api/json/tables/#{table.id}/rows/#{row[:id]}", {:description => "Description 123"}
+    response.status.should == 200
+    table.reload
+    row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
+    row[:description].should == "Description 123"
+  end
+
 end

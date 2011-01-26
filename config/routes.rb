@@ -17,6 +17,7 @@ CartoDB::Application.routes.draw do
       get  'tables'                     => 'tables#index', :format => :json
       get  'tables/:id'                 => 'tables#show', :format => :json
       post 'tables/:id/rows'            => 'tables#create_row', :format => :json
+      put  'tables/:id/rows/:row_id'    => 'tables#update_row', :format => :json
       get  'tables/:id/schema'          => 'tables#schema', :format => :json
       put  'tables/:id/toggle_privacy'  => 'tables#toggle_privacy', :format => :json
       put  'tables/:id/update'          => 'tables#update', :format => :json

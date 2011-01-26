@@ -185,4 +185,16 @@ describe Table do
     table.rows_count.should == 2
   end
 
+  it "should be able to update a row" do
+    table = create_table
+    table.insert_row!({:name => String.random(10), :location => Point.from_x_y(1,1).as_ewkt, :description => ""})
+    row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
+    row[:description].should be_blank
+
+    table.update_row!(row[:id], :non_existing => 'ignore it, please', :description => "Description 123")
+    table.reload
+    row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
+    row[:description].should == "Description 123"
+  end
+
 end

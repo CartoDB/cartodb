@@ -192,7 +192,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def owner
-    @owner ||= User.select(:id,:database_name).filter(:id => self.user_id).first
+    @owner ||= User.select(:id,:database_name,:crypted_password).filter(:id => self.user_id).first
   end
 
 end

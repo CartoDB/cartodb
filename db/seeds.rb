@@ -3,12 +3,15 @@
 ## Remove all user databases
 
 tables = Rails::Sequel.connection.tables
-Rails::Sequel.connection[tables.first].with_sql(
+Rails::Sequel.connection[
   "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_dev_user_%'"
-).map(:datname).each { |user_database_name| Rails::Sequel.connection.run("drop database #{user_database_name}") }
-Rails::Sequel.connection[tables.first].with_sql(
+].map(:datname).each { |user_database_name| Rails::Sequel.connection.run("drop database #{user_database_name}") }
+Rails::Sequel.connection[
   "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
-).map(:datname).each { |user_database_name| Rails::Sequel.connection.run("drop database #{user_database_name}") }
+].map(:datname).each { |user_database_name| Rails::Sequel.connection.run("drop database #{user_database_name}") }
+Rails::Sequel.connection[
+  "SELECT u.usename FROM pg_catalog.pg_user u"
+].map{ |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user #{username}") if username =~ /^cartodb_user_/ }
 
 ## Create users
 

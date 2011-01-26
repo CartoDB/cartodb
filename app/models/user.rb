@@ -15,7 +15,8 @@ class User < Sequel::Model
     end
     save
     Thread.new do
-      Rails::Sequel.connection.run("create database #{self.database_name} with template = template_postgis")
+      Rails::Sequel.connection.run("create user #{database_username} password '#{database_password}'")
+      Rails::Sequel.connection.run("create database #{self.database_name} with template = template_postgis owner = #{database_username}")
     end.join
   end
   #### End of Callbacks
@@ -53,9 +54,20 @@ class User < Sequel::Model
   end
   #### End of Authentication methods
 
+  def database_username
+    "cartodb_user_#{id}"
+  end
+
+  def database_password
+    crypted_password + database_username
+  end
+
   def in_database(&block)
     connection = ::Sequel.connect(
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge('database' => self.database_name, :logger => ::Rails.logger)
+      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'database' => self.database_name, :logger => ::Rails.logger,
+        'username' => database_username, 'password' => database_password
+      )
     )
     result = nil
     begin

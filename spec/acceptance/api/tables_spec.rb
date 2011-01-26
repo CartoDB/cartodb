@@ -110,4 +110,31 @@ feature "Tables JSON API" do
     json_response.should == [["id", "integer"], ["name", "text"], ["location", "geometry"], ["description", "text"]]
   end
 
+  scenario "Get a list of tables" do
+    user = create_user
+
+    authenticate_api user
+
+    get_json "/api/json/tables"
+    response.status.should == 200
+    JSON(response.body).should == []
+
+    table1 = create_table :user_id => user.id, :name => 'My table #1', :privacy => Table::PUBLIC
+    table2 = create_table :user_id => user.id, :name => 'My table #2', :privacy => Table::PRIVATE
+    get_json "/api/json/tables"
+    response.status.should == 200
+    response.body.should == [
+      {
+        "id" => table1.id,
+        "name" => "My table #1",
+        "privacy" => "PUBLIC"
+      },
+      {
+        "id" => table2.id,
+        "name" => "My table #2",
+        "privacy" => "PRIVATE"
+      }
+    ].to_json
+  end
+
 end

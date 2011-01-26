@@ -1,6 +1,16 @@
 class Api::Json::TablesController < ApplicationController
 
-  before_filter :login_required, :load_table
+  before_filter :login_required
+  before_filter :load_table, :except => [:index]
+
+  def index
+    @tables = Table.select(:id,:user_id,:name,:privacy).all
+    respond_to do |format|
+      format.json do
+        render :json => @tables.map{ |table| {:id => table.id, :name => table.name, :privacy => table_privacy_text(table)} }.to_json
+      end
+    end
+  end
 
   def show
     respond_to do |format|

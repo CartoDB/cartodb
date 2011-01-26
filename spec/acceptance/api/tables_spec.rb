@@ -137,4 +137,66 @@ feature "Tables JSON API" do
     ].to_json
   end
 
+  scenario "Modify the schema of a table" do
+    user = create_user
+    table = create_table :user_id => user.id
+
+    authenticate_api user
+
+    put_json "/api/json/tables/#{table.id}/update_schema", {
+                                                              :what => "add", :column => {
+                                                                  :type => "integer", :name => "postal code"
+                                                              }
+                                                           }
+    response.status.should == 200
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"postal code", "integer"]]
+
+    put_json "/api/json/tables/#{table.id}/update_schema", {
+                                                              :what => "add", :column => {
+                                                                  :type => "integerrrr", :name => "no matter what"
+                                                              }
+                                                           }
+    response.status.should == 400
+    json_response = JSON(response.body)
+    json_response['errors'].should == ["PGError: ERROR:  type \"integerrrr\" does not exist"]
+
+    put_json "/api/json/tables/#{table.id}/update_schema", {
+                                                              :what => "drop", :column => {
+                                                                :name => "postal code"
+                                                              }
+                                                           }
+    response.status.should == 200
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+
+    put_json "/api/json/tables/#{table.id}/update_schema", {
+                                                              :what => "drop", :column => {
+                                                                :name => "postal code"
+                                                              }
+                                                           }
+    response.status.should == 400
+    table.reload
+    json_response = JSON(response.body)
+    json_response['errors'].should == ["PGError: ERROR:  column \"postal code\" of relation \"#{table.name}\" does not exist"]
+
+    put_json "/api/json/tables/#{table.id}/update_schema", {
+                                                              :what => "wadus", :column => {
+                                                                :name => "postal code"
+                                                              }
+                                                           }
+    response.status.should == 400
+    table.reload
+    json_response = JSON(response.body)
+    json_response['errors'].should == ["what parameter has an invalid value"]
+
+    put_json "/api/json/tables/#{table.id}/update_schema", {
+                                                              :what => "add", :column => {}
+                                                           }
+    response.status.should == 400
+    table.reload
+    json_response = JSON(response.body)
+    json_response['errors'].should == ["column parameter can't be blank"]
+  end
+
 end

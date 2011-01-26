@@ -19,6 +19,7 @@ CartoDB::Application.routes.draw do
       get 'tables/:id/schema'          => 'tables#schema', :format => :json
       put 'tables/:id/toggle_privacy'  => 'tables#toggle_privacy', :format => :json
       put 'tables/:id/update'          => 'tables#update', :format => :json
+      put 'tables/:id/update_schema'   => 'tables#update_schema', :format => :json
     end
   end
 

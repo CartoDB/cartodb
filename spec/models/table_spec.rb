@@ -111,4 +111,34 @@ describe Table do
     Tag.count.should == 0
   end
 
+  it "can return its schema" do
+    table = create_table
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+  end
+
+  it "can modify it's schema" do
+    table = create_table
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+
+    lambda {
+      table.add_column!(:name => "my column with bad status", :type => "textttt")
+    }.should raise_error
+    table.reload
+
+    table.add_column!(:name => "my new column", :type => "text")
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column", "text"]]
+
+    table.drop_column!(:name => "location")
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:description, "text"], [:"my new column", "text"]]
+
+    lambda {
+      table.drop_column!(:name => "location")
+    }.should raise_error
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:description, "text"], [:"my new column", "text"]]
+  end
+
 end
+

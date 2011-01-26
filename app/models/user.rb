@@ -57,8 +57,14 @@ class User < Sequel::Model
     connection = ::Sequel.connect(
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge('database' => self.database_name)
     )
-    result = yield(connection)
-    connection.disconnect
+    result = nil
+    begin
+      result = yield(connection)
+      connection.disconnect
+    rescue => e
+      connection.disconnect
+      raise e
+    end
     result
   end
 

@@ -107,7 +107,50 @@ class Api::Json::TablesController < ApplicationController
         end
       end
     end
+  end
 
+  # Update the schema of a table
+  # * Request Method: +PUT+
+  # * URI: +/api/json/tables/1/update_schema+
+  # * Format: +JSON+
+  # * Parameters:
+  #     {
+  #       "what" => "add" or "drop",
+  #       "column" => {
+  #          "name" => "new column name",
+  #          "type" => "integer"
+  #       }
+  #     }
+  # * Response if _success_:
+  #   * status code: 200
+  #   * body: _nothing_
+  # * Response if _error_:
+  #   * status code +400+
+  #   * body:
+  #       { "errors" => ["error message"] }
+  def update_schema
+    respond_to do |format|
+      format.json do
+        if params[:what] && %W{ add drop }.include?(params[:what])
+          unless params[:column].blank? || params[:column].empty?
+            begin
+              if params[:what] == 'add'
+                @table.add_column!(params[:column])
+              else
+                @table.drop_column!(params[:column])
+              end
+              render :nothing => true, :status => 200
+            rescue => e
+              render :json => { :errors => [e.message.split("\n").first] }.to_json, :status => 400 and return
+            end
+          else
+            render :json => { :errors => ["column parameter can't be blank"] }.to_json, :status => 400 and return
+          end
+        else
+          render :json => { :errors => ["what parameter has an invalid value"] }.to_json, :status => 400 and return
+        end
+      end
+    end
   end
 
   protected

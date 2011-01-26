@@ -110,6 +110,18 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  def add_column!(options)
+    owner.in_database do |user_database|
+      user_database.add_column name.to_sym, options[:name].to_s, options[:type]
+    end
+  end
+
+  def drop_column!(options)
+    owner.in_database do |user_database|
+      user_database.drop_column name.to_sym, options[:name].to_s
+    end
+  end
+
   def to_json(options = {})
     rows, columns, rows_count = [], [], 0
     limit      = (options[:rows_per_page] || 10).to_i

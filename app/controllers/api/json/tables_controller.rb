@@ -131,13 +131,15 @@ class Api::Json::TablesController < ApplicationController
   def update_schema
     respond_to do |format|
       format.json do
-        if params[:what] && %W{ add drop }.include?(params[:what])
+        if params[:what] && %W{ add drop modify }.include?(params[:what])
           unless params[:column].blank? || params[:column].empty?
             begin
               if params[:what] == 'add'
                 @table.add_column!(params[:column])
-              else
+              elsif params[:what] == 'drop'
                 @table.drop_column!(params[:column])
+              else
+                @table.modify_column!(params[:column])
               end
               render :nothing => true, :status => 200
             rescue => e

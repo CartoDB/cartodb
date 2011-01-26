@@ -153,6 +153,15 @@ feature "Tables JSON API" do
     table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"postal code", "integer"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
+                                                              :what => "modify", :column => {
+                                                                  :type => "text", :name => "postal code"
+                                                              }
+                                                           }
+    response.status.should == 200
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"postal code", "text"]]
+
+    put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "add", :column => {
                                                                   :type => "integerrrr", :name => "no matter what"
                                                               }

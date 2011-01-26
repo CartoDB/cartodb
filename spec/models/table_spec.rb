@@ -125,7 +125,19 @@ describe Table do
     }.should raise_error
     table.reload
 
-    table.add_column!(:name => "my new column", :type => "text")
+    table.add_column!(:name => "my new column", :type => "integer")
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column", "integer"]]
+
+    table.modify_column!(:old_name => "my new column", :new_name => "my new column new name", :type => "text")
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column new name", "text"]]
+
+    table.modify_column!(:old_name => "my new column new name", :new_name => "my new column")
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column", "text"]]
+
+    table.modify_column!(:name => "my new column", :type => "text")
     table.reload
     table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column", "text"]]
 
@@ -138,6 +150,19 @@ describe Table do
     }.should raise_error
     table.reload
     table.schema.should == [[:id, "integer"], [:name, "text"], [:description, "text"], [:"my new column", "text"]]
+  end
+
+  it "should be able to modify it's schema with castings that the DB engine doesn't support" do
+    table = create_table
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+
+    table.add_column!(:name => "my new column", :type => "text")
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column", "text"]]
+
+    table.modify_column!(:old_name => "my new column", :new_name => "my new column new name", :type => "integer", :force_value => "NULL")
+    table.reload
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column new name", "integer"]]
   end
 
 end

@@ -15,7 +15,7 @@ class User < Sequel::Model
     end
     save
     Thread.new do
-      Rails::Sequel.connection.run("create database #{self.database_name}")
+      Rails::Sequel.connection.run("create database #{self.database_name} with template = template_postgis")
     end.join
   end
   #### End of Callbacks

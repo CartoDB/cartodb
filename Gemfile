@@ -5,6 +5,7 @@ gem 'ruby-debug19', :require => 'ruby-debug', :group => [:development, :test]
 
 gem 'pg', '0.9'
 gem 'sequel-rails', :git => 'git://github.com/ferblape/sequel-rails.git'
+gem 'nofxx-georuby', :require => 'geo_ruby'
 
 gem 'warden'
 gem 'rails_warden'

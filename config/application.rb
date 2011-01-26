@@ -41,3 +41,5 @@ module CartoDB
     config.filter_parameters += [:password]
   end
 end
+
+include GeoRuby::SimpleFeatures

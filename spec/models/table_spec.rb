@@ -52,11 +52,11 @@ describe Table do
     table = create_table :user_id => user.id
 
     table.to_json[:total_rows].should == 0
-    table.to_json[:columns].should == [[:id, :integer], [:name, :string], [:location, :string], [:description, :string]]
+    table.to_json[:columns].should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
     table.to_json[:rows].should be_empty
 
     10.times do
-      table.execute_sql("INSERT INTO \"#{table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{rand(1000000.0)}','#{String.random(100)}')")
+      table.execute_sql("INSERT INTO \"#{table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
     end
 
     table.to_json[:total_rows].should == 10

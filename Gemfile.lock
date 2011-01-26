@@ -85,6 +85,8 @@ GEM
     mocha (0.9.10)
       rake
     multi_json (0.0.5)
+    nofxx-georuby (1.9.0)
+      json_pure (>= 1.4.6)
     nokogiri (1.4.4)
     pg (0.9.0)
     polyglot (0.3.1)
@@ -163,6 +165,7 @@ DEPENDENCIES
   capybara-zombie!
   launchy
   mocha
+  nofxx-georuby
   pg (= 0.9)
   rails (= 3.0.3)
   rails_warden

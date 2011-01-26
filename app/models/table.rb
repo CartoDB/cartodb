@@ -35,8 +35,9 @@ class Table < Sequel::Model(:user_tables)
             user_database.create_table self.name.to_sym do
               primary_key :id
               String :name
-              String :location
+              column :location, 'geometry'
               String :description, :text => true
+              constraint(:enforce_geotype_location){"(geometrytype(location) = 'POINT'::text OR location IS NULL)"}
             end
           end
         end
@@ -47,7 +48,7 @@ class Table < Sequel::Model(:user_tables)
 
   def after_save
     super
-    if tags.blank?
+    if self[:tags].blank?
       Tag.filter(:user_id => user_id, :table_id => id).delete
     else
       tag_names = tags.split(',')
@@ -111,7 +112,7 @@ class Table < Sequel::Model(:user_tables)
     # FIXME: this should be done in one connection block
     owner.in_database do |user_database|
       rows_count = user_database[name.to_sym].count
-      columns    = user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:type]] }
+      columns    = user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:db_type]] }
     end
     owner.in_database do |user_database|
       rows = user_database[name.to_sym].limit(limit,offset).all

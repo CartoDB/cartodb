@@ -29,7 +29,6 @@ describe User do
     user.database_name.should == "cartodb_test_user_#{user.id}_db"
     user.in_database do |user_database|
       user_database.test_connection.should == true
-      user_database.tables.should be_empty
     end
   end
 end

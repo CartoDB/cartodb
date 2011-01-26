@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>Class: Api::Json::TablesController</title>
+
+	<link rel="stylesheet" href="../../rdoc.css" type="text/css" media="screen" />
+
+	<script src="../../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+
+</head>
+<body class="class">
+
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#classes">Classes</a>
+          <a href="../../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="file-metadata">
+			<div id="file-list-section" class="section">
+				<h3 class="section-header">In Files</h3>
+				<div class="section-body">
+					<ul>
+					
+						<li><a href="../../app/controllers/api/json/tables_controller_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="app/controllers/api/json/tables_controller.rb">app/controllers/api/json/tables_controller.rb</a></li>
+					
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div id="class-metadata">
+
+			<!-- Parent Class -->
+			
+			<div id="parent-class-section" class="section">
+				<h3 class="section-header">Parent</h3>
+				
+				<p class="link">ApplicationController</p>
+				
+			</div>
+			
+
+			<!-- Namespace Contents -->
+			
+
+			<!-- Method Quickref -->
+			
+			<div id="method-list-section" class="section">
+				<h3 class="section-header">Methods</h3>
+				<ul class="link-list">
+					
+					<li><a href="#method-i-index">#index</a></li>
+					
+					<li><a href="#method-i-load_table">#load_table</a></li>
+					
+					<li><a href="#method-i-schema">#schema</a></li>
+					
+					<li><a href="#method-i-show">#show</a></li>
+					
+					<li><a href="#method-i-toggle_privacy">#toggle_privacy</a></li>
+					
+					<li><a href="#method-i-update">#update</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Included Modules -->
+			
+		</div>
+
+		<div id="project-metadata">
+			
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../../Api.html">Api</a></li>
+				
+					<li><a href="../../Api/Json.html">Api::Json</a></li>
+				
+					<li><a href="../../Api/Json/TablesController.html">Api::Json::TablesController</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<h1 class="class">Api::Json::TablesController</h1>
+
+		<div id="description">
+			
+		</div>
+
+		<!-- Constants -->
+		
+
+		<!-- Attributes -->
+		
+
+		<!-- Methods -->
+		
+		<div id="public-instance-method-details" class="method-section section">
+			<h3 class="section-header">Public Instance Methods</h3>
+
+		
+			<div id="index-method" class="method-detail ">
+				<a name="method-i-index"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">index</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Get the list of tables of a user
+</p>
+<ul>
+<li><p>
+Request Method: <tt>GET</tt>
+</p>
+</li>
+<li><p>
+URI: <tt>/api/json/tables</tt>
+</p>
+</li>
+<li><p>
+Format: <tt>JSON</tt>
+</p>
+</li>
+<li><p>
+Response:
+</p>
+<pre>
+  [
+    {
+      &quot;id&quot; =&gt; 1,
+      &quot;name&quot; =&gt; &quot;My table&quot;,
+      &quot;privacy&quot; =&gt; &quot;PUBLIC&quot;
+    },
+    {
+      &quot;id&quot; =&gt; 2,
+      &quot;name&quot; =&gt; &quot;My private data&quot;,
+      &quot;privacy&quot; =&gt; &quot;PRIVATE&quot;
+    }
+  ]</pre>
+</li>
+</ul>
+					
+
+					
+					<div class="method-source-code"
+						id="index-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/controllers/api/json/tables_controller.rb, line 23</span>
+23:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">index</span>
+24:     <span class="ruby-ivar">@tables</span> = <span class="ruby-constant">Table</span>.<span class="ruby-identifier">select</span>(<span class="ruby-value">:id</span>,<span class="ruby-value">:user_id</span>,<span class="ruby-value">:name</span>,<span class="ruby-value">:privacy</span>).<span class="ruby-identifier">all</span>
+25:     <span class="ruby-identifier">respond_to</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">format</span><span class="ruby-operator">|</span>
+26:       <span class="ruby-identifier">format</span>.<span class="ruby-identifier">json</span> <span class="ruby-keyword kw">do</span>
+27:         <span class="ruby-identifier">render</span> <span class="ruby-value">:json</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@tables</span>.<span class="ruby-identifier">map</span>{ <span class="ruby-operator">|</span><span class="ruby-identifier">table</span><span class="ruby-operator">|</span> {<span class="ruby-value">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">table</span>.<span class="ruby-identifier">id</span>, <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">table</span>.<span class="ruby-identifier">name</span>, <span class="ruby-value">:privacy</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">table_privacy_text</span>(<span class="ruby-identifier">table</span>)} }.<span class="ruby-identifier">to_json</span>
+28:       <span class="ruby-keyword kw">end</span>
+29:     <span class="ruby-keyword kw">end</span>
+30:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="schema-method" class="method-detail ">
+				<a name="method-i-schema"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">schema</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Gets the scehma from a table
+</p>
+<ul>
+<li><p>
+Request Method: <tt>GET</tt>
+</p>
+</li>
+<li><p>
+URI: <tt>/api/json/tables/1/schema</tt>
+</p>
+</li>
+<li><p>
+Format: <tt>JSON</tt>
+</p>
+</li>
+<li><p>
+Response:
+</p>
+<pre>
+  [[:id, &quot;integer&quot;], [:name, &quot;text&quot;], [:location, &quot;geometry&quot;], [:description, &quot;text&quot;]]</pre>
+</li>
+</ul>
+					
+
+					
+					<div class="method-source-code"
+						id="schema-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/controllers/api/json/tables_controller.rb, line 60</span>
+60:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">schema</span>
+61:     <span class="ruby-identifier">respond_to</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">format</span><span class="ruby-operator">|</span>
+62:       <span class="ruby-identifier">format</span>.<span class="ruby-identifier">json</span> <span class="ruby-keyword kw">do</span>
+63:         <span class="ruby-identifier">render</span> <span class="ruby-value">:json</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">schema</span>.<span class="ruby-identifier">to_json</span>
+64:       <span class="ruby-keyword kw">end</span>
+65:     <span class="ruby-keyword kw">end</span>
+66:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="show-method" class="method-detail ">
+				<a name="method-i-show"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">show</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Gets the rows from a table
+</p>
+<ul>
+<li><p>
+Request Method: <tt>GET</tt>
+</p>
+</li>
+<li><p>
+URI: <tt>/api/json/tables/1</tt>
+</p>
+</li>
+<li><p>
+Params:
+</p>
+<ul>
+<li><p>
+<tt>rows_per_page</tt>: number of rows in the response. By default
+<tt>10</tt>
+</p>
+</li>
+</ul>
+<ul>
+<li><p>
+<tt>page</tt>: number of the current page. By default <tt>0</tt>
+</p>
+</li>
+</ul>
+</li>
+<li><p>
+Format: <tt>JSON</tt>
+</p>
+</li>
+<li><p>
+Response:
+</p>
+<pre>
+  {
+    &quot;total_rows&quot; =&gt; 100,
+    &quot;columns&quot; =&gt; [[:id, &quot;integer&quot;], [:name, &quot;text&quot;], [:location, &quot;geometry&quot;], [:description, &quot;text&quot;]],
+    &quot;rows&quot; =&gt; [{:id=&gt;1, :name=&gt;&quot;name 1&quot;, :location=&gt;&quot;...&quot;, :description=&gt;&quot;description 1&quot;}]
+  }</pre>
+</li>
+</ul>
+					
+
+					
+					<div class="method-source-code"
+						id="show-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/controllers/api/json/tables_controller.rb, line 45</span>
+45:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">show</span>
+46:     <span class="ruby-identifier">respond_to</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">format</span><span class="ruby-operator">|</span>
+47:       <span class="ruby-identifier">format</span>.<span class="ruby-identifier">json</span> <span class="ruby-keyword kw">do</span>
+48:         <span class="ruby-identifier">render</span> <span class="ruby-value">:json</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">to_json</span>(<span class="ruby-value">:rows_per_page</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:rows_per_page</span>], <span class="ruby-value">:page</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:page</span>])
+49:       <span class="ruby-keyword kw">end</span>
+50:     <span class="ruby-keyword kw">end</span>
+51:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="toggle-privacy-method" class="method-detail ">
+				<a name="method-i-toggle_privacy"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">toggle_privacy</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Toggle the privacy of a table. Returns the new privacy status
+</p>
+<ul>
+<li><p>
+Request Method: <tt>PUT</tt>
+</p>
+</li>
+<li><p>
+URI: <tt>/api/json/tables/1/toggle_privacy</tt>
+</p>
+</li>
+<li><p>
+Format: <tt>JSON</tt>
+</p>
+</li>
+<li><p>
+Response:
+</p>
+<pre>
+  { &quot;privacy&quot; =&gt; &quot;PUBLIC&quot; }</pre>
+</li>
+</ul>
+					
+
+					
+					<div class="method-source-code"
+						id="toggle-privacy-source">
+<pre>
+    <span class="ruby-comment cmt"># File app/controllers/api/json/tables_controller.rb, line 74</span>
+74:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">toggle_privacy</span>
+75:     <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">toggle_privacy!</span>
+76:     <span class="ruby-identifier">respond_to</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">format</span><span class="ruby-operator">|</span>
+77:       <span class="ruby-identifier">format</span>.<span class="ruby-identifier">json</span> <span class="ruby-keyword kw">do</span>
+78:         <span class="ruby-identifier">render</span> <span class="ruby-value">:json</span> =<span class="ruby-operator">&gt;</span> { <span class="ruby-value">:privacy</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">table_privacy_text</span>(<span class="ruby-ivar">@table</span>) }.<span class="ruby-identifier">to_json</span>
+79:       <span class="ruby-keyword kw">end</span>
+80:     <span class="ruby-keyword kw">end</span>
+81:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="update-method" class="method-detail ">
+				<a name="method-i-update"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">update</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Update a table
+</p>
+<ul>
+<li><p>
+Request Method: <tt>PUT</tt>
+</p>
+</li>
+<li><p>
+URI: <tt>/api/json/tables/1/update</tt>
+</p>
+</li>
+<li><p>
+Format: <tt>JSON</tt>
+</p>
+</li>
+<li><p>
+Parameters: a hash with keys representing the attributes and values with
+the new values for that attributes
+</p>
+<pre>
+  {
+    &quot;tags&quot; =&gt; &quot;new tag #1, new tag #2&quot;,
+    &quot;name&quot; =&gt; &quot;new name&quot;
+  }
+</pre>
+</li>
+<li><p>
+Response if <em>success</em>:
+</p>
+<ul>
+<li><p>
+status code: 200
+</p>
+</li>
+</ul>
+<ul>
+<li><p>
+body: <em>nothing</em>
+</p>
+</li>
+</ul>
+</li>
+<li><p>
+Response if <em>error</em>:
+</p>
+<ul>
+<li><p>
+status code <tt>400</tt>
+</p>
+</li>
+</ul>
+<ul>
+<li><p>
+body:
+</p>
+<pre>
+  { &quot;errors&quot; =&gt; [&quot;error #1&quot;, &quot;error #2&quot;] }</pre>
+</li>
+</ul>
+</li>
+</ul>
+					
+
+					
+					<div class="method-source-code"
+						id="update-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/controllers/api/json/tables_controller.rb, line 99</span>
+ 99:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">update</span>
+100:     <span class="ruby-identifier">respond_to</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">format</span><span class="ruby-operator">|</span>
+101:       <span class="ruby-identifier">format</span>.<span class="ruby-identifier">json</span> <span class="ruby-keyword kw">do</span>
+102:         <span class="ruby-keyword kw">begin</span>
+103:           <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">update_all</span>(<span class="ruby-identifier">params</span>)
+104:           <span class="ruby-identifier">render</span> <span class="ruby-value">:nothing</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>, <span class="ruby-value">:status</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">200</span>
+105:         <span class="ruby-keyword kw">rescue</span>
+106:           <span class="ruby-identifier">render</span> <span class="ruby-value">:json</span> =<span class="ruby-operator">&gt;</span> { <span class="ruby-value">:errors</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">errors</span>.<span class="ruby-identifier">full_messages</span>}.<span class="ruby-identifier">to_json</span>, <span class="ruby-value">:status</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">400</span>
+107:         <span class="ruby-keyword kw">end</span>
+108:       <span class="ruby-keyword kw">end</span>
+109:     <span class="ruby-keyword kw">end</span>
+110: 
+111:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="protected-instance-method-details" class="method-section section">
+			<h3 class="section-header">Protected Instance Methods</h3>
+
+		
+			<div id="load-table-method" class="method-detail ">
+				<a name="method-i-load_table"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">load_table</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="load-table-source">
+<pre>
+     <span class="ruby-comment cmt"># File app/controllers/api/json/tables_controller.rb, line 115</span>
+115:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">load_table</span>
+116:     <span class="ruby-ivar">@table</span> = <span class="ruby-constant">Table</span>.<span class="ruby-identifier">select</span>(<span class="ruby-value">:id</span>,<span class="ruby-value">:user_id</span>,<span class="ruby-value">:name</span>,<span class="ruby-value">:privacy</span>).<span class="ruby-identifier">filter</span>(<span class="ruby-value">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:id</span>]).<span class="ruby-identifier">first</span>
+117:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">RecordNotFound</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">user_id</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">current_user</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">private?</span>
+118:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+
+	</div>
+
+
+	<div id="rdoc-debugging-section-dump" class="debugging-section">
+	
+		<p>Disabled; run with --debug to generate this.</p>
+	
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+
+</body>
+</html>
+

@@ -22,6 +22,8 @@ Sequel.migration do
       Integer :privacy, :default=>0, :null=>false
       DateTime :updated_at, :null=>false
       String :tags, :text=>true
+      Integer :rows_counted, :default=>0
+      Integer :rows_estimated, :default=>0
       
       index [:name, :user_id], :unique=>true
       index [:user_id]

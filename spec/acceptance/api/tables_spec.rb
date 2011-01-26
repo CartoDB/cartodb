@@ -217,7 +217,7 @@ feature "Tables JSON API" do
     post_json "/api/json/tables/#{table.id}/rows", { :name => "Name 123", :description => "The description", :location => Point.from_x_y(1,1).as_ewkt }
     response.status.should == 200
     table.reload
-    table.rows_count.should == 1
+    table.rows_counted.should == 1
     table.to_json[:total_rows].should == 1
   end
 

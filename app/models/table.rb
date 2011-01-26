@@ -91,6 +91,13 @@ class Table < Sequel::Model(:user_tables)
     save_changes
   end
 
+  # TODO: use the database field
+  def rows_counted
+    owner.in_database do |user_database|
+      user_database[name.to_sym].count
+    end
+  end
+
   def execute_sql(sql)
     update_updated_at!
     owner.in_database do |user_database|
@@ -109,12 +116,6 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       attributes = attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
       user_database[name.to_sym].filter(:id => row_id).update(attributes) unless attributes.empty?
-    end
-  end
-
-  def rows_count
-    owner.in_database do |user_database|
-      user_database[name.to_sym].count
     end
   end
 
@@ -161,21 +162,16 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def to_json(options = {})
-    rows, columns, rows_count = [], [], 0
+    rows, columns = [], []
     limit      = (options[:rows_per_page] || 10).to_i
     offset     = (options[:page] || 0).to_i*limit
 
-    # FIXME: this should be done in one connection block
     owner.in_database do |user_database|
-      rows_count = user_database[name.to_sym].count
-      columns    = user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:db_type]] }
+      columns = user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:db_type]] }
+      rows    = user_database[name.to_sym].limit(limit,offset).all
     end
-    owner.in_database do |user_database|
-      rows = user_database[name.to_sym].limit(limit,offset).all
-    end
-
     {
-      :total_rows => rows_count,
+      :total_rows => rows_counted,
       :columns => columns,
       :rows => rows
     }

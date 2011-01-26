@@ -31,7 +31,7 @@ describe Table do
     end
     rows = table.execute_sql "select * from \"#{table.name}\" limit 1"
     rows.should be_empty
-    table.rows_count.should == 0
+    table.rows_counted.should == 0
   end
 
   it "has a last_updated attribute that is updated with every operation on the database" do
@@ -167,22 +167,22 @@ describe Table do
 
   it "should be able to insert a new row" do
     table = create_table
-    table.rows_count.should == 0
+    table.rows_counted.should == 0
     table.insert_row!({:name => String.random(10), :location => Point.from_x_y(1,1).as_ewkt, :description => "", :not_existing_col => 33})
     table.reload
-    table.rows_count.should == 1
+    table.rows_counted.should == 1
 
     table.insert_row!({:location => Point.from_x_y(1,1).as_ewkt, :description => "My description"})
     table.reload
-    table.rows_count.should == 2
+    table.rows_counted.should == 2
 
     table.insert_row!({})
     table.reload
-    table.rows_count.should == 2
+    table.rows_counted.should == 2
 
     table.insert_row!({:not_existing => "bad value"})
     table.reload
-    table.rows_count.should == 2
+    table.rows_counted.should == 2
   end
 
   it "should be able to update a row" do

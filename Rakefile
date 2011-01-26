@@ -17,3 +17,11 @@ end
 
 task :default => ["db:test:prepare", "spec:models", "spec:cartodb_acceptance"]
 
+namespace :cartodb do
+  namespace :api do
+    desc "Create API documentation"
+    task :doc do
+      %x(rdoc app/controllers/api/*)
+    end
+  end
+end

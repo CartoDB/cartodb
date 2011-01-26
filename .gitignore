@@ -5,3 +5,4 @@ log/*.log
 tmp/**/*
 public/system
 db/schema.rb
+doc/

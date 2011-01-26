@@ -10,6 +10,8 @@ gem 'nofxx-georuby', :require => 'geo_ruby'
 gem 'warden'
 gem 'rails_warden'
 
+gem 'rdoc', :group => :development
+
 group :test, :development do
   gem 'mocha'
   gem 'steak'

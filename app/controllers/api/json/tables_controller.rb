@@ -10,6 +10,14 @@ class Api::Json::TablesController < ApplicationController
     end
   end
 
+  def schema
+    respond_to do |format|
+      format.json do
+        render :json => @table.schema.to_json
+      end
+    end
+  end
+
   def toggle_privacy
     @table.toggle_privacy!
     respond_to do |format|

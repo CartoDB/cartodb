@@ -98,4 +98,16 @@ feature "Tables JSON API" do
     Tag.count.should == 0
   end
 
+  scenario "Get the schema of a table" do
+    user = create_user
+    table = create_table :user_id => user.id
+
+    authenticate_api user
+
+    get_json "/api/json/table/#{table.id}/schema"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response.should == [["id", "integer"], ["name", "text"], ["location", "geometry"], ["description", "text"]]
+  end
+
 end

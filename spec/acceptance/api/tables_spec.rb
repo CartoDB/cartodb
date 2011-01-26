@@ -18,14 +18,14 @@ feature "Tables JSON API" do
 
     authenticate_api user
 
-    get_json "/api/json/table/#{table.id}?rows_per_page=2"
+    get_json "/api/json/tables/#{table.id}?rows_per_page=2"
     response.status.should == 200
     json_response = JSON(response.body)
     json_response['total_rows'].should == 100
     json_response['rows'][0].symbolize_keys.should == content[0]
     json_response['rows'][1].symbolize_keys.should == content[1]
 
-    get_json "/api/json/table/#{table.id}?rows_per_page=2&page=1"
+    get_json "/api/json/tables/#{table.id}?rows_per_page=2&page=1"
     response.status.should == 200
     json_response = JSON(response.body)
     json_response['rows'][0].symbolize_keys.should == content[2]
@@ -40,13 +40,13 @@ feature "Tables JSON API" do
 
     authenticate_api user
 
-    put_json "/api/json/table/#{table.id}/toggle_privacy"
+    put_json "/api/json/tables/#{table.id}/toggle_privacy"
     response.status.should == 200
     json_response = JSON(response.body)
     json_response['privacy'].should == 'PUBLIC'
     table.reload.should_not be_private
 
-    put_json "/api/json/table/#{table.id}/toggle_privacy"
+    put_json "/api/json/tables/#{table.id}/toggle_privacy"
     response.status.should == 200
     json_response = JSON(response.body)
     json_response['privacy'].should == 'PRIVATE'
@@ -60,19 +60,19 @@ feature "Tables JSON API" do
 
     authenticate_api user
 
-    put_json "/api/json/table/#{table.id}/update", {:name => "My brand new name"}
+    put_json "/api/json/tables/#{table.id}/update", {:name => "My brand new name"}
     response.status.should == 200
     table.reload
     table.name.should == "My brand new name"
 
-    put_json "/api/json/table/#{table.id}/update", {:name => ""}
+    put_json "/api/json/tables/#{table.id}/update", {:name => ""}
     response.status.should == 400
     json_response = JSON(response.body)
     json_response['errors'].should == ["name can't be blank"]
     table.reload
     table.name.should == "My brand new name"
 
-    put_json "/api/json/table/#{table.id}/update", {:name => "Old table"}
+    put_json "/api/json/tables/#{table.id}/update", {:name => "Old table"}
     response.status.should == 400
     json_response = JSON(response.body)
     json_response['errors'].should == ["name and user_id is already taken"]
@@ -86,14 +86,14 @@ feature "Tables JSON API" do
 
     authenticate_api user
 
-    put_json "/api/json/table/#{table.id}/update", {:tags => "tag1, tag2, tag3"}
+    put_json "/api/json/tables/#{table.id}/update", {:tags => "tag1, tag2, tag3"}
     response.status.should == 200
     Tag.count.should == 3
     tags = Tag.filter(:user_id => user.id, :table_id => table.id).all
     tags.size.should == 3
     tags.map(&:name).sort.should == %W{ tag1 tag2 tag3 }
 
-    put_json "/api/json/table/#{table.id}/update", {:tags => ""}
+    put_json "/api/json/tables/#{table.id}/update", {:tags => ""}
     response.status.should == 200
     Tag.count.should == 0
   end
@@ -104,7 +104,7 @@ feature "Tables JSON API" do
 
     authenticate_api user
 
-    get_json "/api/json/table/#{table.id}/schema"
+    get_json "/api/json/tables/#{table.id}/schema"
     response.status.should == 200
     json_response = JSON(response.body)
     json_response.should == [["id", "integer"], ["name", "text"], ["location", "geometry"], ["description", "text"]]

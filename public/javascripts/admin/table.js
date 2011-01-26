@@ -1,9 +1,9 @@
 
-    
+
     $(document).ready(function(){
       $("table#cDBtable").cDBtable(
         'start',{
-          getDataUrl: '/api/json/table/'+table_id,  
+          getDataUrl: '/api/json/tables/'+table_id,
           resultsPerPage: 50,
           reuseResults: 100,
           total: 5000
@@ -12,9 +12,9 @@
 
 
       //SUBHEADER EVENTS AND FLOATING WINDOWS
-      
+
       // change table status
-      
+
       $('div.inner_subheader div.left').append(
         '<span class="privacy_window">'+
           '<ul>'+
@@ -22,18 +22,18 @@
             '<li class="private '+((status=="private")?'selected':'')+'"><a href="#"><strong>Private</strong> (visible to you)</a></li>'+
           '</ul>'+
         '</span>');
-        
-      
+
+
       $('p.status a').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         var status_position = $('p.status a').position();
-        
+
       });
-        
-        
-        
-        
+
+
+
+
       // change save to unsaved table
       // $('div.inner_subheader div.right').append(
       //  '<span class="advanced_options">'+
@@ -43,11 +43,11 @@
       //       '<li><a href="#">Save table as...</a></li>'+
       //     '</ul>'+
       //   '</span>');
-      
-      
-      
-      
-      
+
+
+
+
+
       $('div.inner_subheader div.right').append(
         '<span class="advanced_options">'+
           '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
@@ -77,16 +77,16 @@
 
 
     });
-    
-    
-    
+
+
+
     function changesRequest(param,values) {
       var params = {};
       params[param] = values;
       $.ajax({
         dataType: 'jsonp',
         method: "GET",
-        url: '/api/json/table/'+table_id+'',
+        url: '/api/json/tables/'+table_id+'',
         data: params,
         success: function(data) {
           console.debug(data);

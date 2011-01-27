@@ -4,7 +4,8 @@ feature "Tables" do
 
   background do
     @user = create_user
-    @table = create_table :user_id => @user.id, :name => 'Twitter followers', :privacy => Table::PUBLIC
+    @table = create_table :user_id => @user.id, :name => 'Twitter followers', :privacy => Table::PUBLIC,
+                          :tags => 'twitter'
 
     login_as @user
 
@@ -34,4 +35,30 @@ feature "Tables" do
 
     page.find("h2").text.should == "New name"
   end
+
+  scenario "Add and remove tags from a table" do
+    click_link_or_button("add tags")
+    page.find("li.tagit-new input.tagit-input").set("tag1 ")
+    page.find_link("Save").click
+
+    page.all("span.tags p")[0].text.should == 'twitter'
+    page.all("span.tags p")[1].text.should == 'tag1'
+
+    click_link_or_button("add tags")
+    page.find("li.tagit-new input.tagit-input").set("tag3 ")
+    page.find_link("Save").click
+
+    page.all("span.tags p")[0].text.should == 'twitter'
+    page.all("span.tags p")[1].text.should == 'tag1'
+    page.all("span.tags p")[2].text.should == 'tag3'
+
+    click_link_or_button("add tags")
+    page.find("li.tagit-choice", :text => "tag3").find("a.close").click
+    page.find_link("Save").click
+
+    page.all("span.tags p")[0].text.should == 'twitter'
+    page.all("span.tags p")[1].text.should == 'tag1'
+    page.all("span.tags p").size.should == 2
+  end
+
 end

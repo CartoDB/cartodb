@@ -8,6 +8,7 @@ javascripts:
   - admin/public_tables.js
 - table:
   - plugins/jquery.livequery.min.js
+  - plugins/tag-it.js
   - plugins/cDBtable.js
   - admin/table_elements.js
   - admin/table.js

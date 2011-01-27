@@ -100,7 +100,48 @@
     // End table status binding
 
 
+    
+    
+    //Change tags
+    $('div.inner_subheader div.left').append(
+      '<span class="tags_window">'+
+        '<ul id="tags_list"></ul>'+
+        '<a href="#save_tags">Save</a>'+
+      '</span>');
+      
+    $('span.tags a.add').click(function(){
+      var values = [];
+      $('span.tags p').each(function(index,element){
+        values.push($(element).text());
+      });
+      $("#tags_list").tagit(
+        //{availableTags: ["c++", "java", "php", "coldfusion", "javascript", "asp", "ruby", "python", "c", "scala", "groovy", "haskell", "perl"]}
+        {values: values}
+      );
+      $('span.tags_window').show();
+    });
+    
+    $('span.tags_window a').click(function(){
+      var old_values = [];
+      $("span.tags p").each(function(index,element){
+        old_values.push($(element).text());
+      });
+      var new_values = '';
+      $("span.tags p").remove();  
+      $("li.tagit-choice").each(function(index,element){
+        var value = (($.trim($(element).text())).slice(0, -2));
+        $('<p>'+value+'</p>').insertBefore('a.add');
+        new_values+=value+',';
+      });
 
+      $('span.tags_window').hide();
+      changesRequest('/update','tags',new_values,old_values);
+    });
+    
+
+
+
+    //Advanced options
     $('div.inner_subheader div.right').append(
       '<span class="advanced_options">'+
         '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
@@ -128,6 +169,7 @@
         $('body').unbind('click');
       }
     });
+    //End advanced options
     
   });
 
@@ -167,6 +209,11 @@
                       $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      case 'tags':    $('div.performing_op p').removeClass('loading').addClass('success').text('Tags changed');
+                      var width_text = $('div.performing_op p').width();
+                      $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
+                      break;
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       default:
     }
     $('div.performing_op').delay(2000).fadeOut(function(){resetLoader()});
@@ -190,6 +237,15 @@
                       var width_text = $('div.performing_op p').width();
                       $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
                       $('section.subheader h2 a').text(old_value);
+                      break;
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      case 'tags':    $('div.performing_op p').removeClass('loading').addClass('error').text('Impossible to change the tags. Try again later.');
+                      var width_text = $('div.performing_op p').width();
+                      $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
+                      $("span.tags p").remove();
+                      $.each(old_value,function(index,element){
+                        $('<p>'+element+'</p>').insertBefore('a.add');
+                      });
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       default:

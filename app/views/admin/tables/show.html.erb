@@ -14,8 +14,9 @@
         <% unless @table.tags.blank? %>
         <span class="tags">
           <% @table.tags.split(',').each do |tag_name| %>
-          <a href="#"><%= tag_name %></a>
+          <p><%= tag_name %></p>
           <% end %>
+          <a href="#" class="add">add tags</a>
         </span>
         <% end %>
         <ul class="tab_menu">

@@ -1,13 +1,15 @@
 
 
     $(document).ready(function(){
+      
+      //Put paginator in middle
+      var paginator_width = $('div.paginate').width();
+      $('div.paginate').css('margin-left', ((626-paginator_width)/2) +'px');
+      $('div.paginate').show();
+    
       $('a.close').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-        // $('div.requests_info').fadeTo(500,0, function(){
-        //   $('div.requests_info').animate({height:0},300);
-        //   $('div.inner_content').delay(100).animate({paddingTop:0},200);
-        // });
         $('div.requests_info').fadeOut();
       });
       

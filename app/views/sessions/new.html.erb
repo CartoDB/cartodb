@@ -11,7 +11,7 @@
       <%= label_tag :email, 'your e-mail' %>
       <%= text_field_tag :email %>
       <%= label_tag :password, 'your password' %>
-      <%= password_field_tag :password, '', :class=>"error" %>
+      <%= password_field_tag :password, '' %>
       <%= submit_tag 'Sign in', :class=>"login" %>
       <% if flash[:alert] %>
       <div class="error_content">

@@ -194,14 +194,35 @@
 
 
 
-
-
-
   function resetLoader() {
     $('div.performing_op p').removeClass('success').addClass('loading').text('Loading...');
     var width_text = $('div.performing_op p').width();
     $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
   }
+  
+  
+  
+  function closeAllWindows() {
+    $('div.performing_op').hide();
+    $('span.title_window').hide();
+    $('span.advanced_options').hide();
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
 
 

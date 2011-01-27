@@ -37,8 +37,8 @@ section.subheader span.privacy_window ul li.public:hover {background:#6FBE6F;}
 section.subheader span.privacy_window ul li.private:hover {background:#C10000;}
 section.subheader span.privacy_window ul li:hover a {color:white; background-position:0 2px;}
 section.subheader span.tags {float:left; width:100%;}
-section.subheader span.tags a {float:left; width:auto; padding:3px 7px; margin:4px 3px 0 0; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 11px Arial; color:white; text-decoration:none  ; background:#121621;}
-section.subheader span.tags a.add {padding:3px 0; margin:4px 0 0 10px; background:none; color:#FFCC00; text-shadow:0 1px black;}
+section.subheader span.tags p {float:left; width:auto; padding:3px 7px; margin:4px 3px 0 0; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 11px Arial; color:white; text-decoration:none; background:#121621;}
+section.subheader span.tags a.add {float:left; width:auto; padding:3px 0; margin:4px 0 0 10px; background:none; color:#FFCC00; text-shadow:0 1px black; font:normal 11px Arial;}
 section.subheader span.tags a:hover {background:black; text-decoration:underline;}
 section.subheader span.tags a.add:hover {background:none;}
 section.subheader ul.tab_menu {position:absolute; bottom:0; left:0; height:auto; width:100%; padding:0; margin:0;}
@@ -75,7 +75,7 @@ section.subheader div.performing_op p {font:normal 13px Arial; color:#333333; pa
   -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; border-top-left-radius: 5px; border-top-right-radius: 5px; text-align:center;}
 section.subheader div.performing_op p.loading {padding:8px 12px 8px 32px; background:url('/images/admin/icons/watch.png') no-repeat 12px 9px #FFEAA4;}
 section.subheader div.performing_op p.success {padding:8px 12px; background:#99CC66; border-bottom-color:#A5BB93; color:#111111;}
-section.subheader div.performing_op p.error {padding:8px 12px; background:#FF5F5F; border-bottom-color:#D05153; color:white;}
+section.subheader div.performing_op p.error {padding:8px 12px; background:#FF5F5F; border-bottom-color:#FFA3A9; color:#333333;}
 /*Change table title*/
 section.subheader span.title_window {position:absolute; display:none; top:22px; right:50px; width:200px; height:67px; padding:33px 18px 0 18px; background:url('/images/admin/table/save_title_bkg.png') no-repeat 0 0;}
 section.subheader span.title_window p {font:bold 13px Arial; color:#000000;}

@@ -15,8 +15,8 @@ Rails::Sequel.connection[
 
 ## Create users
 
-User.create :email => 'admin@example.com', :password => 'example'
-User.create :email => 'user1@example.com', :password => 'user1'
+User.create :email => 'admin@example.com', :password => 'example', :username => 'admin'
+User.create :email => 'user1@example.com', :password => 'user1',   :username => 'user1'
 
 ## Development demo data
 

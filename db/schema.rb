@@ -36,8 +36,10 @@ Sequel.migration do
       String :crypted_password, :text=>true, :null=>false
       String :salt, :text=>true, :null=>false
       String :database_name, :text=>true
+      String :username, :text=>true, :null=>false
       
       index [:email], :name=>:users_email_key, :unique=>true
+      index [:username], :name=>:users_username_key, :unique=>true
     end
   end
   

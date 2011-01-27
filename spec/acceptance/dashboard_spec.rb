@@ -7,13 +7,15 @@ feature "Dashboard", %q{
 } do
 
   scenario "Login and visit public tables wit no tables" do
-    user = create_user
+    user = create_user :username => 'fulano'
     login_as user
 
     within(:css, "header") do
       page.should have_link("CartoDB")
       page.should have_content(user.email)
     end
+
+    page.should have_content("Welcome back fulano")
 
     page.should have_content("You have not added any tags yet.")
 

@@ -11,7 +11,6 @@
 		var el = this;
 
 		const ENTER			= 13;
-		const SPACE			= 32;
 		const COMMA			= 44;
 
 		// add the tagit CSS class.

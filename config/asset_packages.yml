@@ -9,6 +9,7 @@ javascripts:
 - table:
   - plugins/jquery.livequery.min.js
   - plugins/cDBtable.js
+  - admin/table_elements.js
   - admin/table.js
 
 stylesheets:

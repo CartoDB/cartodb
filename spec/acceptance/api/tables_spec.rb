@@ -259,4 +259,19 @@ feature "Tables JSON API" do
     Table[table_other.id].should_not be_nil
   end
 
+  scenario "Create a new table" do
+    user = create_user
+
+    authenticate_api user
+
+    post_json "/api/json/tables"
+    response.status.should == 302
+    response.location.should =~ /tables\/\d+$/
+
+    post_json "/api/json/tables"
+    response.status.should == 400
+    json_response = JSON(response.body)
+    json_response['errors'].should == ["name and user_id is already taken"]
+  end
+
 end

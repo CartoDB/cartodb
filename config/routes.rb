@@ -15,6 +15,7 @@ CartoDB::Application.routes.draw do
   namespace :api do
     namespace :json do
       get    'tables'                     => 'tables#index', :format => :json
+      post   'tables'                     => 'tables#create', :format => :json
       get    'tables/:id'                 => 'tables#show', :format => :json
       delete 'tables/:id'                 => 'tables#delete', :format => :json
       post   'tables/:id/rows'            => 'tables#create_row', :format => :json

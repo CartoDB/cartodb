@@ -22,6 +22,8 @@ class Table < Sequel::Model(:user_tables)
 
   def before_validation
     self.privacy ||= PUBLIC
+    self.name ||= "Untitle table"
+    super
   end
 
   # Before creating a user table a table should be created in the database.

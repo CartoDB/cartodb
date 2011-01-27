@@ -6,7 +6,6 @@ describe Table do
   it "should have a name and a user_id" do
     table = Table.new
     table.should_not be_valid
-    table.errors.on(:name).should_not be_nil
     table.errors.on(:user_id).should_not be_nil
   end
 

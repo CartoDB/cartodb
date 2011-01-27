@@ -112,6 +112,8 @@
     $('span.tags a.add').click(function(ev){
       ev.stopPropagation();
       ev.preventDefault();
+      closeAllWindows();
+      bindESC();
       var values = [];
       $('span.tags p').each(function(index,element){
         values.push($(element).text());
@@ -285,6 +287,7 @@
     $('span.privacy_window').hide();
     $('span.title_window').hide();
     $('span.advanced_options').hide();
+    $('span.tags_window').hide();
     $(document).unbind('keydown');
   }
   

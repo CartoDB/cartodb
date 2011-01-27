@@ -10,7 +10,6 @@
     
 		var el = this;
 
-		const BACKSPACE		= 8;
 		const ENTER			= 13;
 		const SPACE			= 32;
 		const COMMA			= 44;
@@ -42,14 +41,7 @@
 		});
 
 		tag_input.keypress(function(event){
-			if (event.which == BACKSPACE) {
-				if (tag_input.val() == "") {
-					// When backspace is pressed, the last tag is deleted.
-					$(el).children(".tagit-choice:last").remove();
-				}
-			}
-			// Comma/Space/Enter are all valid delimiters for new tags.
-			else if (event.which == COMMA || event.which == SPACE || event.which == ENTER) {
+			if (event.which == COMMA || event.which == ENTER) {
 				event.preventDefault();
 
 				var typed = tag_input.val();

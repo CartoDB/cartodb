@@ -1,9 +1,16 @@
 # coding: UTF-8
 
 class ApplicationController < ActionController::Base
+
+  rescue_from RecordNotFound, :with => :render_404
+
   protect_from_forgery
 
   protected
+
+  def render_404
+    render :file => "public/404.html.erb", :status => 404, :layout => false
+  end
 
   def login_required
     authenticated? || not_authorized

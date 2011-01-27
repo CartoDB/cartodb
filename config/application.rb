@@ -45,3 +45,5 @@ module CartoDB
 end
 
 include GeoRuby::SimpleFeatures
+
+class RecordNotFound < StandardError; end

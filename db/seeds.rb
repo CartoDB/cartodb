@@ -15,8 +15,8 @@ Rails::Sequel.connection[
 
 ## Create users
 
-User.create :email => 'admin@example.com', :password => 'example'
-User.create :email => 'user1@example.com', :password => 'user1'
+User.create :email => 'admin@example.com', :password => 'example', :username => 'admin'
+User.create :email => 'user1@example.com', :password => 'user1',   :username => 'user1'
 
 ## Development demo data
 
@@ -30,6 +30,17 @@ table = Table.new :privacy => Table::PRIVATE, :name => 'Downloaded movies',
                   :tags => 'movies, personal'
 table.user_id = user.id
 table.save
+
+table = Table.new :privacy => Table::PUBLIC, :name => 'My favourite bars',
+                  :tags => 'bars, personal'
+table.user_id = user.id
+table.save
+
+20.times do
+  t = Table.new :name => "Table #{rand(1000)}"
+  t.user_id = user.id
+  t.save
+end
 
 table = Table[1]
 
@@ -46,3 +57,9 @@ table = Table.new :privacy => Table::PRIVATE, :name => 'Recipes',
                   :tags => 'recipes'
 table.user_id = user.id
 table.save
+
+20.times do
+  t = Table.new :name => "Table #{rand(1000)}", :privacy => Table::PUBLIC
+  t.user_id = user.id
+  t.save
+end

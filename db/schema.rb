@@ -12,6 +12,8 @@ Sequel.migration do
       Integer :user_id, :null=>false
       Integer :table_id, :null=>false
       
+      index [:table_id]
+      index [:user_id]
       index [:user_id, :table_id, :name], :unique=>true
     end
     
@@ -36,8 +38,11 @@ Sequel.migration do
       String :crypted_password, :text=>true, :null=>false
       String :salt, :text=>true, :null=>false
       String :database_name, :text=>true
+      String :username, :text=>true, :null=>false
+      Integer :tables_count, :default=>0, :null=>false
       
       index [:email], :name=>:users_email_key, :unique=>true
+      index [:username], :name=>:users_username_key, :unique=>true
     end
   end
   

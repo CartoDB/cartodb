@@ -29,4 +29,11 @@ module ApplicationHelper
     end
   end
 
+  def paginate(collection)
+    return if collection.empty? || collection.is_a?(Array)
+    if collection.page_count > 1
+      render(:partial => 'shared/paginate', :locals => {:collection => collection}).html_safe
+    end
+  end
+
 end

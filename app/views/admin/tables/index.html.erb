@@ -13,7 +13,7 @@
       <div class="top_white"></div>
       <div class="middle_white">
         <a class="close" href="#close_stats">close</a>
-        <h2>Welcome back jatorre</h2>
+        <h2>Welcome back <%= current_user.username %></h2>
         <p>You have done <strong>1,253 requests</strong> in the last 22 days</p>
         <img src="http://chart.googleapis.com/chart?chxr=0,6.667,100&chxs=0,676767,0,0,_,676767|1,676767,0,0,_,676767&chxt=x,y&chbh=37,1,1&chs=849x60&cht=bvg&chco=D7E6E8|D7E6E8|D7E6E8|D7E6E8|D7E6E8|D7E6E8|D7E6E8|BFD6D9|BFD6D9|BFD6D9|BFD6D9|BFD6D9|BFD6D9|BFD6D9|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4&chd=s1:ibYXZabeaaaglfiiklqpmn,fl9YMYS&chp=0.033" width="849" height="60" alt="Requests stats" />
       </div>
@@ -27,15 +27,15 @@
           <a class="new_table" href="#">Create a new table</a>
         </div>
         <div class="middle_white_medium">
-          <% if @tables.empty? %>
+          <% if @tables.current_page_record_count == 0 %>
             <div class="no_tables">
               <h5>Hey! You don't have any tables</h5>
               <p>Why do you not start <a href="#">creating a new table</a>?</p>
             </div>
           <% else %>
             <ul class="your_tables">
-              <% @tables.each_with_index do |table| %>
-              <li<%= ' class="last"'.html_safe if @tables.last == table %>>
+              <% @tables.each_with_index do |table, i| %>
+              <li<%= ' class="last"'.html_safe if i == @tables.current_page_record_count - 1%>>
                 <h4><%= link_to(table.name, table) %></h4>
                 <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
                 <div class="meta_info">
@@ -59,6 +59,9 @@
           <% end %>
         </div>
         <div class="bottom_white_medium"></div>
+
+        <%= paginate(@tables) %>
+
       </div>
       <div class="right">
         <h4>BROWSE BY TAGS</h4>
@@ -69,7 +72,7 @@
         <% else %>
           <ul>
             <% @tags.each do |tag| %>
-              <li><a href="#"><span style="background-position:<%= tag_width(tag[:count], @tags.first[:count], @tags.last[:count]) %>px 0"><%= tag[:name] %></span></a></li>
+              <li><a href="#"><span style="background-position:<%= tag_width(tag[:count], @tags.last[:count], @tags.first[:count]) %>px 0"><%= tag[:name] %></span></a></li>
             <% end %>
           </ul>
         <% end %>

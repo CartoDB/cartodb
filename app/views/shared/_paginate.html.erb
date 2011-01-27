@@ -1,0 +1,15 @@
+<div class="paginate">
+  <% if collection.prev_page %>
+    <%= link_to('Previous', params.merge({:page => collection.prev_page}), {:class => 'previous'}) %>
+  <% end %>
+  <ul>
+    <% collection.page_range.each do |i| %>
+      <li<%= ' class="selected"'.html_safe if i == collection.current_page %>>
+        <%= link_to(i, params.merge({:page => i})) %>
+      </li>
+    <% end %>
+  </ul>
+  <% if collection.next_page %>
+    <%= link_to('Next', params.merge({:page => collection.next_page}), {:class => 'next'}) %>
+  <% end %>
+</div>

@@ -72,6 +72,11 @@ class Table < Sequel::Model(:user_tables)
       end
     end
   end
+
+  def after_create
+    super
+    User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
+  end
   ## End of Callbacks
 
   def tags=(value)

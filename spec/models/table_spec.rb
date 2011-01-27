@@ -197,4 +197,13 @@ describe Table do
     row[:description].should == "Description 123"
   end
 
+  it "should increase the tables_count counter" do
+    user = create_user
+    user.tables_count.should == 0
+
+    table = create_table :user_id => user.id
+    user.reload
+    user.tables_count.should == 1
+  end
+
 end

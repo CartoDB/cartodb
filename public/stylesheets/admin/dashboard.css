@@ -80,6 +80,16 @@ section#content div.left div.middle_white_medium ul li div.meta_info span.tags {
 section#content div.left div.middle_white_medium ul li div.meta_info span.tags a {float:right; padding:2px 7px; margin:4px 3px 0 0; font:normal 11px Arial; color:#999999; text-decoration:none; background:#D8E7E9; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.tags a:hover {color:#333333!important; background:#C2DADD;}
 section#content div.left div.bottom_white_medium {float:left; width:626px; height:10px; padding:0; background:url('/images/admin/backgrounds/bottom_white_medium.png') no-repeat 0 top;}
+section#content div.left div.paginate {display:none; float:left; padding:18px 0 0 0;}
+section#content div.left div.paginate a.previous {float:left; width:7px; height:9px; margin:2px 0 0 0; background:url('/images/admin/icons/pag_prev.png') no-repeat 0 0; text-indent:-9999px;}
+section#content div.left div.paginate a.previous:hover {background-position:0 -9px;}
+section#content div.left div.paginate a.next {float:left; width:7px; height:9px; margin:2px 0 0 0; background:url('/images/admin/icons/pag_next.png') no-repeat 0 0; text-indent:-9999px;}
+section#content div.left div.paginate a.next:hover {background-position:0 -9px;}
+section#content div.left div.paginate ul {float:left; width:auto; margin:0 5px 0 7px;}
+section#content div.left div.paginate ul li {float:left; width:13px; height:13px; margin:0 2px 0 0;}
+section#content div.left div.paginate ul li a {float:left; width:13px; height:13px; background:url('/images/admin/icons/page_disc.png') no-repeat 0 0; text-indent:-9999px;}
+section#content div.left div.paginate ul li a:hover {background-position:0 -13px;}
+
 section#content div.right {display:inline-block; vertical-align:top; width:255px; margin:10px 0 0 19px;}
 section#content div.right p {padding:7px 0 0 0; font:normal 13px "Helvetica",Arial; color:#9ABFC5; text-shadow:0 1px white;}
 section#content div.right h4 {font:bold 13px "Aller"; padding:0 0 10px 0; color:#83B0B6; text-shadow:0 1px white;}

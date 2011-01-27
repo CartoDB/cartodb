@@ -109,7 +109,9 @@
         '<a href="#save_tags">Save</a>'+
       '</span>');
       
-    $('span.tags a.add').click(function(){
+    $('span.tags a.add').click(function(ev){
+      ev.stopPropagation();
+      ev.preventDefault();
       var values = [];
       $('span.tags p').each(function(index,element){
         values.push($(element).text());
@@ -121,7 +123,9 @@
       $('span.tags_window').show();
     });
     
-    $('span.tags_window a').click(function(){
+    $('span.tags_window a').click(function(ev){
+      ev.stopPropagation();
+      ev.preventDefault();
       var old_values = [];
       $("span.tags p").each(function(index,element){
         old_values.push($(element).text());

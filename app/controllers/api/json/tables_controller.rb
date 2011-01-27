@@ -1,7 +1,7 @@
 class Api::Json::TablesController < ApplicationController
 
   before_filter :login_required
-  before_filter :load_table, :except => [:index]
+  before_filter :load_table, :except => [:index, :create]
 
   # Get the list of tables of a user
   # * Request Method: +GET+
@@ -45,7 +45,7 @@ class Api::Json::TablesController < ApplicationController
   def show
     respond_to do |format|
       format.json do
-        render :json => @table.to_json(:rows_per_page => params[:rows_per_page], :page => params[:page])
+        render :json => @table.to_json(:owner => current_user, :rows_per_page => params[:rows_per_page], :page => params[:page])
       end
     end
   end
@@ -212,6 +212,39 @@ class Api::Json::TablesController < ApplicationController
           render :json => { :errors => ["row_id can't be blank"] }.to_json, :status => 400 and return
         end
       end
+    end
+  end
+
+  # Drop the table
+  # * Request Method: +DELETE+
+  # * URI: +/api/json/tables/1/
+  # * Format: +JSON+
+  # * Response if _success_:
+  #   * status code: 200
+  #   * body: _nothing_
+  def delete
+    @table.destroy
+    render :nothing => true, :status => 200
+  end
+
+  # Create a new table
+  # * Request Method: +POST+
+  # * URI: +/api/json/tables
+  # * Format: +JSON+
+  # * Response if _success_:
+  #   * status code: 302
+  #   * location: the url of the new table
+  # * Response if _error_:
+  #   * status code +400+
+  #   * body:
+  #       { "errors" => ["error message"] }
+  def create
+    @table = Table.new
+    @table.user_id = current_user.id
+    if @table.valid? && @table.save
+      redirect_to table_path(@table) and return
+    else
+      render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400
     end
   end
 

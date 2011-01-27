@@ -23,6 +23,10 @@ module HelperMethods
     post path, params
   end
 
+  def delete_json(path)
+    delete path
+  end
+
 end
 
 RSpec.configuration.include HelperMethods, :type => :acceptance

@@ -26,4 +26,12 @@ feature "Tables" do
     page.should have_css("p.status", :text => 'public')
     page.find("div.performing_op p.success").text.should == 'The status has been changed'
   end
+
+  scenario "Change the name from a table" do
+    click_link_or_button("Twitter followers")
+    page.find("form#change_name input[name='title']").set("New name")
+    page.find_button('Save').click
+
+    page.find("h2").text.should == "New name"
+  end
 end

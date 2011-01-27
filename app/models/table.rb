@@ -22,6 +22,8 @@ class Table < Sequel::Model(:user_tables)
 
   def before_validation
     self.privacy ||= PUBLIC
+    self.name ||= "Untitle table"
+    super
   end
 
   # Before creating a user table a table should be created in the database.
@@ -76,6 +78,12 @@ class Table < Sequel::Model(:user_tables)
   def after_create
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
+  end
+
+  def after_destroy
+    super
+    Tag.filter(:user_id => user_id, :table_id => id).delete
+    User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
   end
   ## End of Callbacks
 
@@ -170,8 +178,7 @@ class Table < Sequel::Model(:user_tables)
     rows, columns = [], []
     limit      = (options[:rows_per_page] || 10).to_i
     offset     = (options[:page] || 0).to_i*limit
-
-    owner.in_database do |user_database|
+    (options[:owner] || owner).in_database do |user_database|
       columns = user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:db_type]] }
       rows    = user_database[name.to_sym].limit(limit,offset).all
     end

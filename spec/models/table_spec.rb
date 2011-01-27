@@ -6,7 +6,6 @@ describe Table do
   it "should have a name and a user_id" do
     table = Table.new
     table.should_not be_valid
-    table.errors.on(:name).should_not be_nil
     table.errors.on(:user_id).should_not be_nil
   end
 
@@ -204,6 +203,17 @@ describe Table do
     table = create_table :user_id => user.id
     user.reload
     user.tables_count.should == 1
+  end
+
+  it "should be removed removing related entities and updating the denormalized counters" do
+    user = create_user
+    table = create_table :user_id => user.id, :tags => 'tag 1, tag2'
+
+    table.destroy
+    user.reload
+    user.tables_count.should == 0
+    Tag.count.should == 0
+    Table.count == 0
   end
 
 end

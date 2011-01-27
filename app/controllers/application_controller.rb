@@ -9,7 +9,14 @@ class ApplicationController < ActionController::Base
   protected
 
   def render_404
-    render :file => "public/404.html.erb", :status => 404, :layout => false
+    respond_to do |format|
+      format.html do
+        render :file => "public/404.html.erb", :status => 404, :layout => false
+      end
+      format.json do
+        render :nothing => true, :status => 404
+      end
+    end
   end
 
   def login_required

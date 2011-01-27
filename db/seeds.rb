@@ -36,6 +36,12 @@ table = Table.new :privacy => Table::PUBLIC, :name => 'My favourite bars',
 table.user_id = user.id
 table.save
 
+20.times do
+  t = Table.new :name => "Table #{rand(1000)}"
+  t.user_id = user.id
+  t.save
+end
+
 table = Table[1]
 
 100.times do
@@ -51,3 +57,9 @@ table = Table.new :privacy => Table::PRIVATE, :name => 'Recipes',
                   :tags => 'recipes'
 table.user_id = user.id
 table.save
+
+20.times do
+  t = Table.new :name => "Table #{rand(1000)}", :privacy => Table::PUBLIC
+  t.user_id = user.id
+  t.save
+end

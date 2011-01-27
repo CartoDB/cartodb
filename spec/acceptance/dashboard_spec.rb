@@ -37,6 +37,10 @@ feature "Dashboard", %q{
       create_table :user_id => user.id, :name => "Table ##{20 - i}", :privacy => Table::PUBLIC,
                    :tags => 'personal'
     end
+    20.times do |i|
+      create_table :user_id => the_other.id, :name => "Other Table ##{20 - i}", :privacy => Table::PUBLIC,
+                   :tags => 'vodka'
+    end
     Timecop.travel(t + 1.minute)
     create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PUBLIC,
                  :tags => "4sq, personal, feed aggregator"
@@ -49,6 +53,7 @@ feature "Dashboard", %q{
     Timecop.travel(t + 4.minutes)
     create_table :user_id => the_other.id, :name => 'Secret vodkas', :privacy => Table::PRIVATE,
                  :tags => "vodka, drinking"
+
     Timecop.travel(t + 6.minutes)
 
     login_as user
@@ -177,7 +182,7 @@ feature "Dashboard", %q{
     visit '/dashboard'
     click_link_or_button('Public tables')
 
-    page.should have_content("1 Public table in cartoDB")
+    page.should have_content("21 Public tables in cartoDB")
 
     within("ul.your_tables li:eq(1)") do
       page.should have_link("Favourite restaurants")
@@ -186,6 +191,34 @@ feature "Dashboard", %q{
         page.should have_content("restaurants")
       end
     end
+
+    page.should have_no_selector("div.paginate a.previous")
+    page.should have_selector("div.paginate a.next")
+    within(:css, "div.paginate ul") do
+      page.should have_css("li.selected a", :text => "1")
+      page.should have_css("li a", :text => "2")
+      page.should have_css("li a", :text => "3")
+    end
+
+    click_link_or_button('Next')
+
+    within("ul.your_tables li:eq(1)") do
+      page.should have_link("Other Table #10")
+      page.should have_content("PUBLIC")
+      within(:css, "span.tags") do
+        page.should have_content("vodka")
+      end
+    end
+
+    page.should have_selector("div.paginate a.previous")
+    page.should have_selector("div.paginate a.next")
+    within(:css, "div.paginate ul") do
+      page.should have_css("li a", :text => "1")
+      page.should have_css("li.selected a", :text => "2")
+      page.should have_css("li a", :text => "3")
+    end
+
+    click_link_or_button('Previous')
 
     click_link_or_button('Favourite restaurants')
 

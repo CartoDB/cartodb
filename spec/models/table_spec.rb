@@ -206,4 +206,15 @@ describe Table do
     user.tables_count.should == 1
   end
 
+  it "should be removed removing related entities and updating the denormalized counters" do
+    user = create_user
+    table = create_table :user_id => user.id, :tags => 'tag 1, tag2'
+
+    table.destroy
+    user.reload
+    user.tables_count.should == 0
+    Tag.count.should == 0
+    Table.count == 0
+  end
+
 end

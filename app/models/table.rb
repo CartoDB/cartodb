@@ -77,6 +77,12 @@ class Table < Sequel::Model(:user_tables)
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
   end
+
+  def after_destroy
+    super
+    Tag.filter(:user_id => user_id, :table_id => id).delete
+    User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
+  end
   ## End of Callbacks
 
   def tags=(value)

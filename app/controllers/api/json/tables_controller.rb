@@ -215,6 +215,18 @@ class Api::Json::TablesController < ApplicationController
     end
   end
 
+  # Drop the table
+  # * Request Method: +DELETE+
+  # * URI: +/api/json/tables/1/
+  # * Format: +JSON+
+  # * Response if _success_:
+  #   * status code: 200
+  #   * body: _nothing_
+  def delete
+    @table.destroy
+    render :nothing => true, :status => 200
+  end
+
   protected
 
   def load_table

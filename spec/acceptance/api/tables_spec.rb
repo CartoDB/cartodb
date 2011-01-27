@@ -241,4 +241,22 @@ feature "Tables JSON API" do
     row[:description].should == "Description 123"
   end
 
+  scenario "Drop a table" do
+    user = create_user
+    table = create_table :user_id => user.id
+    other = create_user
+    table_other = create_table :user_id => other.id
+
+    authenticate_api user
+
+    delete_json "/api/json/tables/#{table.id}"
+    response.status.should == 200
+    Table[table.id].should be_nil
+
+    delete_json "/api/json/tables/#{table_other.id}"
+    response.status.should == 404
+
+    Table[table_other.id].should_not be_nil
+  end
+
 end

@@ -184,6 +184,11 @@ feature "Dashboard", %q{
 
     page.should have_content("21 Public tables in cartoDB")
 
+    page.should have_content("BROWSE BY TAGS")
+    page.should have_css("ul li:eq(1) a span", :text => "vodka")
+    page.should have_css("ul li a span", :text => "restaurants")
+    page.should have_no_css("ul li a span", :text => "drinking")
+
     within("ul.your_tables li:eq(1)") do
       page.should have_link("Favourite restaurants")
       page.should have_content("PUBLIC")

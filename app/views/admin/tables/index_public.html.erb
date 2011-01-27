@@ -51,16 +51,8 @@
           </div>
           <div class="bottom_white_medium"></div>
 
-          <div class="paginate">
-            <a href="#" class="previous">Previous</a>
-            <ul>
-              <li class="selected"><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-            </ul>
-            <a href="#" class="next">Next</a>
-          </div>
+          <%= paginate(@tables) %>
+
         </div>
         <div class="right">
           <div class="banner">

@@ -12,6 +12,8 @@ Sequel.migration do
       Integer :user_id, :null=>false
       Integer :table_id, :null=>false
       
+      index [:table_id]
+      index [:user_id]
       index [:user_id, :table_id, :name], :unique=>true
     end
     

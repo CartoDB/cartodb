@@ -19,29 +19,37 @@ feature "Dashboard", %q{
 
     page.should have_content("You have not added any tags yet.")
 
+    page.should have_no_selector("div.paginate")
+
     click_link_or_button('Public tables')
 
     page.should have_content("0 Public tables in cartoDB")
     page.should have_content("Ouch! There are not tables for your search")
+
   end
 
   scenario "Login and visit my dashboard and the public tables" do
     user = create_user
     the_other = create_user
-    t = Time.now - 5.minutes
+    t = Time.now - 6.minutes
     Timecop.travel(t)
+    20.times do |i|
+      create_table :user_id => user.id, :name => "Table ##{20 - i}", :privacy => Table::PUBLIC,
+                   :tags => 'personal'
+    end
+    Timecop.travel(t + 1.minute)
     create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PUBLIC,
                  :tags => "4sq, personal, feed aggregator"
-    Timecop.travel(t + 1.minute)
+    Timecop.travel(t + 2.minutes)
     create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE,
                  :tags => "movies, personal"
-    Timecop.travel(t + 2.minutes)
+    Timecop.travel(t + 3.minutes)
     create_table :user_id => the_other.id, :name => 'Favourite restaurants', :privacy => Table::PUBLIC,
                  :tags => "restaurants"
-    Timecop.travel(t + 3.minutes)
+    Timecop.travel(t + 4.minutes)
     create_table :user_id => the_other.id, :name => 'Secret vodkas', :privacy => Table::PRIVATE,
                  :tags => "vodka, drinking"
-    Timecop.travel(t + 5.minutes)
+    Timecop.travel(t + 6.minutes)
 
     login_as user
 
@@ -55,7 +63,7 @@ feature "Dashboard", %q{
     page.should have_css("ul.tables_list li.selected a", :text => "Your tables")
     page.should have_css("ul.tables_list li a", :text => "Public tables")
 
-    page.should have_content("2 tables in your account")
+    page.should have_content("22 tables in your account")
 
     within("ul.your_tables li:eq(1)") do
       page.should have_link("Downloaded movies")
@@ -67,7 +75,7 @@ feature "Dashboard", %q{
       end
     end
 
-    within("ul.your_tables li:eq(2).last") do
+    within("ul.your_tables li:eq(2)") do
       page.should have_link("My check-ins")
       page.should have_content("PUBLIC")
       page.should have_content("Last operation 5 minutes ago")
@@ -78,11 +86,82 @@ feature "Dashboard", %q{
       end
     end
 
+    within("ul.your_tables li:eq(10).last") do
+      page.should have_link("Table #8")
+      page.should have_content("PUBLIC")
+      page.should have_content("Last operation 6 minutes ago")
+      within(:css, "span.tags") do
+        page.should have_content("personal")
+      end
+    end
+
     page.should have_content("BROWSE BY TAGS")
     page.should have_css("ul li:eq(1) a span", :text => "personal")
     page.should have_css("ul li a span", :text => "4sq")
     page.should have_css("ul li a span", :text => "feed aggregator")
     page.should have_css("ul li a span", :text => "movies")
+
+    page.should have_no_selector("div.paginate a.previous")
+    page.should have_selector("div.paginate a.next")
+    within(:css, "div.paginate ul") do
+      page.should have_css("li.selected a", :text => "1")
+      page.should have_css("li a", :text => "2")
+      page.should have_css("li a", :text => "3")
+    end
+
+    click_link_or_button('3')
+
+    within("ul.your_tables li:eq(1)") do
+      page.should have_link("Table #19")
+      page.should have_content("PUBLIC")
+      within(:css, "span.tags") do
+        page.should have_content("personal")
+      end
+    end
+
+    within("ul.your_tables li:eq(2)") do
+      page.should have_link("Table #20")
+      page.should have_content("PUBLIC")
+      within(:css, "span.tags") do
+        page.should have_content("personal")
+      end
+    end
+
+    page.should have_selector("div.paginate a.previous")
+    page.should have_no_selector("div.paginate a.next")
+    within(:css, "div.paginate ul") do
+      page.should have_css("li a", :text => "1")
+      page.should have_css("li a", :text => "2")
+      page.should have_css("li.selected a", :text => "3")
+    end
+
+    click_link_or_button('Previous')
+
+    within("ul.your_tables li:eq(1)") do
+      page.should have_link("Table #9")
+      page.should have_content("PUBLIC")
+      within(:css, "span.tags") do
+        page.should have_content("personal")
+      end
+    end
+
+    within("ul.your_tables li:eq(2)") do
+      page.should have_link("Table #10")
+      page.should have_content("PUBLIC")
+      within(:css, "span.tags") do
+        page.should have_content("personal")
+      end
+    end
+
+    page.should have_selector("div.paginate a.previous")
+    page.should have_selector("div.paginate a.next")
+    within(:css, "div.paginate ul") do
+      page.should have_css("li a", :text => "1")
+      page.should have_css("li.selected a", :text => "2")
+      page.should have_css("li a", :text => "3")
+    end
+
+    click_link_or_button('1')
 
     click_link_or_button('Downloaded movies')
 

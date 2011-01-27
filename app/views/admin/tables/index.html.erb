@@ -69,7 +69,7 @@
         <% else %>
           <ul>
             <% @tags.each do |tag| %>
-              <li><a href="#"><span style="background-position:<%= tag_width(tag[:count], @tags.first[:count], @tags.last[:count]) %>px 0"><%= tag[:name] %></span></a></li>
+              <li><a href="#"><span style="background-position:<%= tag_width(tag[:count], @tags.last[:count], @tags.first[:count]) %>px 0"><%= tag[:name] %></span></a></li>
             <% end %>
           </ul>
         <% end %>

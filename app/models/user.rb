@@ -84,8 +84,4 @@ class User < Sequel::Model
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
-  def tables_count
-    Table.filter(:user_id => self.id).count
-  end
-
 end

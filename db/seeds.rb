@@ -31,6 +31,11 @@ table = Table.new :privacy => Table::PRIVATE, :name => 'Downloaded movies',
 table.user_id = user.id
 table.save
 
+table = Table.new :privacy => Table::PUBLIC, :name => 'My favourite bars',
+                  :tags => 'bars, personal'
+table.user_id = user.id
+table.save
+
 table = Table[1]
 
 100.times do

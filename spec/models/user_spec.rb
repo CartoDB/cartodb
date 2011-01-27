@@ -20,6 +20,7 @@ describe User do
 
     create_table :user_id => user.id, :name => 'My first table', :privacy => Table::PUBLIC
 
+    user.reload
     user.tables_count.should == 1
     user.tables.all.should == [Table.first(:user_id => user.id)]
   end

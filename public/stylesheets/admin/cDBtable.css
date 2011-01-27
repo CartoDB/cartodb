@@ -57,11 +57,7 @@ div.table_position div.loading.loading_previous {margin:59px 0 0 0; border-botto
 div.table_position div.loading p {width:100%; text-align:center; font:bold 13px "Helvetica"; color:#666666;}
 div.table_position div.loading p.count {width:100%; padding:5px 0 0 0; text-align:center; font:normal 11px "Helvetica"; color:#B3B3B3;}
 div.table_position div.loading img {position:absolute; width:25; height:25px ; margin:0 0 0 -13px; top:12px; left:50%;}
-/*performing operation*/
-div.performing_op {position:absolute; bottom:0; left:50%; margin:0 0 0 -50px; padding:8px 12px; background:#FFEAA4; border-bottom:1px solid #D0C090; z-index:100; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px;
-  -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; border-top-left-radius: 5px; border-top-right-radius: 5px;}
-div.performing_op p {font:normal 13px Arial; color:#333333;}
-div.performing_op p.loading {padding:0 0 0 20px; background:url('/images/admin/icons/watch.png') no-repeat 0 1px;}
+
 
 
 

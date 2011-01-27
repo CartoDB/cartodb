@@ -26,7 +26,7 @@ class Admin::TablesController < ApplicationController
 
   def show
     @table = Table.select(:id,:name,:privacy,:user_id,:tags).filter(:id => params[:id]).first
-    raise ActiveRecord::RecordNotFound if @table.user_id != current_user.id && @table.private?
+    #raise ActiveRecord::RecordNotFound if @table.user_id != current_user.id && @table.private?
   end
 
 end

@@ -16,14 +16,14 @@ section.subheader div.mamufas {float:left; width:100%; background:url('/images/a
 section.subheader div.left {position:relative; float:left; width:600px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
 section.subheader h2 {float:left; width:auto; font:bold 21px Arial; color:white;}
 section.subheader p.status {float:left; width:auto;}
-section.subheader p.status a {float:left; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none;}
+section.subheader p.status a {float:left; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none; text-transform:uppercase;}
 section.subheader p.status a.public {background:#6FBE6F;}
 section.subheader p.status a.private {background:#FF3300;}
 section.subheader p.status a.save {background:#FFCC00;}
 section.subheader p.status a.selected {background:black; color:white;}
 section.subheader p.status a:hover {background:black;}
 section.subheader p.status a.save:hover {background:#FFCC00;}
-section.subheader span.privacy_window {position:absolute; display:none; width:216px; height:108px; background:url('/images/admin/table/privacy_options_bkg.png') no-repeat center center;}
+section.subheader span.privacy_window {position:absolute; display:none; top:18px; width:216px; height:108px; background:url('/images/admin/table/privacy_options_bkg.png') no-repeat center center;}
 section.subheader span.privacy_window ul {float:left; width:175px; margin:34px 0 0 20px;}
 section.subheader span.privacy_window ul li {width:161px; padding:5px 7px 6px; margin:0 0 2px; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;}
 section.subheader span.privacy_window ul li.last {margin:0;}
@@ -52,8 +52,6 @@ section.subheader div.right p.settings a.delete {padding:0 3px 0 0; color:#FF330
 section.subheader div.right p.settings a.delete:hover {color:#FF4400;}
 section.subheader div.right p.settings a.settings {padding:0 20px 0 3px; color:white; background:url('/images/admin/icons/settings.png') no-repeat right 1px;}
 section.subheader div.right p.settings a.settings:hover {color:white;}
-
-
 section.subheader div.right span.advanced_options {position:absolute; display:none; right:-10px; top:9px; width:122px; z-index:100;}
 section.subheader div.right span.advanced_options a.advanced {position:relative; float:right; padding:7px 29px 7px 9px; font:normal 13px Arial; text-shadow:0 1px black;
 text-decoration:none; color:#949BAA; z-index:100; border:1px solid black; border-bottom:0; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; 
@@ -64,13 +62,19 @@ section.subheader div.right span.advanced_options ul {float:left; width:100px; h
 section.subheader div.right span.advanced_options ul li {background:none;}
 section.subheader div.right span.advanced_options ul li a {background:none; font:normal 11px "Helvetica"; color:white; text-decoration:none;}
 section.subheader div.right span.advanced_options ul li a:hover {text-decoration:underline;}
-
-
 section.subheader div.right span.paginate {position:absolute; right:0; bottom:5px;  width:100%;}
 section.subheader div.right span.paginate a {float:right; width:27px; height:23px; text-indent:-9999px;}
 section.subheader div.right span.paginate a.previous {margin:0 3px 0 0; background:url('/images/admin/icons/left_button.png') no-repeat 0 0;}
 section.subheader div.right span.paginate a.next {background:url('/images/admin/icons/right_button.png') no-repeat 0 0;}
 section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
+/*performing operation*/
+section.subheader div.performing_op {position:absolute; display:none; bottom:0; left:50%; margin:0 0 0 -50px;}
+section.subheader div.performing_op p {font:normal 13px Arial; color:#333333; padding:8px 12px; border-bottom:1px solid #D0C090; z-index:100; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px;
+  -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; border-top-left-radius: 5px; border-top-right-radius: 5px; text-align:center;}
+section.subheader div.performing_op p.loading {padding:8px 12px 8px 32px; background:url('/images/admin/icons/watch.png') no-repeat 12px 9px #FFEAA4;}
+section.subheader div.performing_op p.success {padding:8px 12px; background:#99CC66; border-bottom-color:#A5BB93; color:#111111;}
+section.subheader div.performing_op p.error {padding:8px 12px; background:#FF5F5F; border-bottom-color:#D05153; color:white;}
+
 
 
 /*MAP*/

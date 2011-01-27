@@ -190,11 +190,11 @@
         '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
       '</div>');
 
-      //Save operation loader
-      $(table).parent().parent().children('section.subheader').append(
-      '<div class="performing_op">' +
-        '<p class="loading">Loading...</p>'+
-      '</div>');
+      // //Save operation loader
+      // $(table).parent().parent().children('section.subheader').append(
+      // '<div class="performing_op">' +
+      //   '<p class="loading">Loading...</p>'+
+      // '</div>');
 
 
 
@@ -255,9 +255,7 @@
           '<p>You can <a href="#">add it manually</a> or <a href="#">import a file</a></p>'+
         '</div>'
       );
-      
       methods.resizeTable();
-      
     },
 
 

@@ -219,7 +219,7 @@ class Api::Json::TablesController < ApplicationController
 
   def load_table
     @table = Table.select(:id,:user_id,:name,:privacy).filter(:id => params[:id]).first
-    raise ActiveRecord::RecordNotFound if @table.user_id != current_user.id && @table.private?
+    #raise ActiveRecord::RecordNotFound if @table.user_id != current_user.id && @table.private?
   end
 
 end

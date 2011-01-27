@@ -13,8 +13,14 @@
 
       //SUBHEADER EVENTS AND FLOATING WINDOWS
 
-      // change table status
+      //Save operation loader
+      $('section.subheader').append(
+      '<div class="performing_op">' +
+        '<p class="loading">Loading...</p>'+
+      '</div>');
 
+
+      // change table status
       $('div.inner_subheader div.left').append(
         '<span class="privacy_window">'+
           '<ul>'+
@@ -22,27 +28,39 @@
             '<li class="private '+((status=="private")?'selected':'')+'"><a href="#"><strong>Private</strong> (visible to you)</a></li>'+
           '</ul>'+
         '</span>');
-
+        
+      $('span.privacy_window ul li a').livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        var parent_li = $(this).parent();
+        if (parent_li.hasClass('selected')) {
+          $('span.privacy_window').hide();
+        } else {
+          var old_value = $('span.privacy_window ul li.selected a strong').text().toLowerCase();
+          $('span.privacy_window ul li').removeClass('selected');
+          parent_li.addClass('selected');
+          var new_value = $('span.privacy_window ul li.selected a strong').text().toLowerCase();
+          $('span.privacy_window').hide();
+          $('p.status a').removeClass('public private').addClass(new_value).text(new_value);
+          changesRequest('/toggle_privacy','privacy',new_value.toUpperCase(),old_value);
+        }
+      });
 
       $('p.status a').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-        var status_position = $('p.status a').position();
-
+        var privacy_window = $(this).parent().parent().children('span.privacy_window');
+        if (privacy_window.is(':visible')) {
+          privacy_window.hide();
+        } else {
+          var status_position = $('p.status a').position();
+          privacy_window.css('left',status_position.left-72+'px').show();
+        }
       });
+      // End table status binding
 
 
 
-
-      // change save to unsaved table
-      // $('div.inner_subheader div.right').append(
-      //  '<span class="advanced_options">'+
-      //     '<a href="#" class="advanced">advanced<span></span></a>'+
-      //     '<ul>'+
-      //       '<li><a href="#">Export data...</a></li>'+
-      //       '<li><a href="#">Save table as...</a></li>'+
-      //     '</ul>'+
-      //   '</span>');
 
 
 
@@ -73,26 +91,68 @@
           $('body').unbind('click');
         }
       });
-
-
-
     });
 
 
 
-    function changesRequest(param,values) {
+    function changesRequest(url_change,param,value,old_value) {
+      //show loader
+      $('div.performing_op').show();
+      
       var params = {};
-      params[param] = values;
+      params[param] = value;
       $.ajax({
-        dataType: 'jsonp',
-        method: "GET",
-        url: '/api/json/tables/'+table_id+'',
+        dataType: 'json',
+        type: "PUT",
+        url: '/api/json/tables/'+table_id+url_change,
         data: params,
         success: function(data) {
-          console.debug(data);
+          successActionPerform(param);
         },
         error: function(e) {
-          console.debug(e);
+          errorActionPerforming(param,old_value);
         }
       });
     }
+    
+    
+    
+    function successActionPerform(param) {
+      switch (param) {
+        case 'privacy': $('div.performing_op p').removeClass('loading').addClass('success').text('The status has been changed');
+                        var width_text = $('div.performing_op p').width();
+                        $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
+                        break;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        default:
+      }
+      $('div.performing_op').delay(1000).fadeOut(function(){resetLoader()});
+    }
+    
+    
+    function errorActionPerforming(param, old_value) {
+      switch (param) {
+        case 'privacy': $('div.performing_op p').removeClass('loading').addClass('error').text('The status has not been changed. Try again later.');
+                        var width_text = $('div.performing_op p').width();
+                        $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
+                        $('span.privacy_window ul li').removeClass('selected');
+                        $('span.privacy_window ul li.'+old_value).addClass('selected');
+                        $('p.status a').removeClass('public private').addClass(old_value).text(old_value);
+                        break;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        default:
+      }
+      $('div.performing_op').delay(1000).fadeOut(function(){resetLoader()});
+    }
+    
+    
+    function resetLoader() {
+      $('div.performing_op p').removeClass('success').addClass('loading').text('Loading...');
+      var width_text = $('div.performing_op p').width();
+      $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
+    }
+    
+    
+    
+    
+    

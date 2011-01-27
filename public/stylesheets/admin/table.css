@@ -16,7 +16,7 @@ section.subheader div.mamufas {float:left; width:100%; background:url('/images/a
 section.subheader div.left {position:relative; float:left; width:600px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
 section.subheader h2 {float:left; width:auto; font:bold 21px Arial; color:white;}
 section.subheader h2 a {color:white; text-decoration:none;}
-section.subheader h2 a:hover {font-style:italic;}
+section.subheader h2 a:hover {}
 section.subheader p.status {float:left; width:auto;}
 section.subheader p.status a {float:left; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none; text-transform:uppercase;}
 section.subheader p.status a.public {background:#6FBE6F;}
@@ -69,6 +69,7 @@ section.subheader div.right span.paginate a {float:right; width:27px; height:23p
 section.subheader div.right span.paginate a.previous {margin:0 3px 0 0; background:url('/images/admin/icons/left_button.png') no-repeat 0 0;}
 section.subheader div.right span.paginate a.next {background:url('/images/admin/icons/right_button.png') no-repeat 0 0;}
 section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
+
 /*performing operation*/
 section.subheader div.performing_op {position:absolute; display:none; bottom:0; left:50%; margin:0 0 0 -50px;}
 section.subheader div.performing_op p {font:normal 13px Arial; color:#333333; padding:8px 12px; border-bottom:1px solid #D0C090; z-index:100; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px;
@@ -76,6 +77,7 @@ section.subheader div.performing_op p {font:normal 13px Arial; color:#333333; pa
 section.subheader div.performing_op p.loading {padding:8px 12px 8px 32px; background:url('/images/admin/icons/watch.png') no-repeat 12px 9px #FFEAA4;}
 section.subheader div.performing_op p.success {padding:8px 12px; background:#99CC66; border-bottom-color:#A5BB93; color:#111111;}
 section.subheader div.performing_op p.error {padding:8px 12px; background:#FF5F5F; border-bottom-color:#FFA3A9; color:#333333;}
+
 /*Change table title*/
 section.subheader span.title_window {position:absolute; display:none; top:22px; right:50px; width:200px; height:67px; padding:33px 18px 0 18px; background:url('/images/admin/table/save_title_bkg.png') no-repeat 0 0;}
 section.subheader span.title_window p {font:bold 13px Arial; color:#000000;}

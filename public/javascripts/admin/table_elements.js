@@ -16,7 +16,7 @@
     $('div.inner_subheader div.left').append(
       '<span class="title_window">'+
         '<p>Pick a name for this table</p>'+
-        '<form id="change_name"><input type="text" name="title"/>'+
+        '<form id="change_name" method="get" action="#"><input type="text" name="title"/>'+
         '<input type="submit" value="Save" name="submit"/></form>'+
       '</span>');
     //Bind events
@@ -37,9 +37,22 @@
         $('span.title_window input[type="text"]').focus();
       }
     });
-    $('#change_name').live('submit',function(){
-      console.log('jamon');
-      saveTableTitle();
+    // -Save table name
+    $('#change_name').livequery('submit',function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      var new_value = $('span.title_window input[type="text"]').attr('value');
+      var old_value = $('section.subheader h2 a').text();
+      if (new_value==old_value) {
+        $('span.title_window').hide();
+      } else if (new_value=='') {
+        $('span.title_window input').css('border-color','#D05153');
+        setTimeout(function(){$('span.title_window input').css('border-color','#999999')},1000);
+      } else {
+        $('section.subheader h2 a').text(new_value);
+        $('span.title_window').hide();
+        changesRequest('/update','name',new_value,old_value);
+      }
     });
 
 
@@ -180,21 +193,7 @@
 
 
 
-  // -Save table name
-  function saveTableTitle() {
-    var new_value = $('span.title_window input[type="text"]').attr('value');
-    var old_value = $('section.subheader h2 a').text();
-    if (new_value==old_value) {
-      $('span.title_window').hide();
-    } else if (new_value=='') {
-      $('span.title_window input').css('border-color','#D05153');
-      setTimeout(function(){$('span.title_window input').css('border-color','#999999')},1000);
-    } else {
-      $('section.subheader h2 a').text(new_value);
-      $('span.title_window').hide();
-      changesRequest('/update','name',new_value,old_value);
-    }
-  }
+
 
 
 

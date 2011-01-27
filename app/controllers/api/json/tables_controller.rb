@@ -101,7 +101,7 @@ class Api::Json::TablesController < ApplicationController
       format.json do
         begin
           @table.update_all(params)
-          render :nothing => true, :status => 200
+          render :json => ''.to_json, :status => 200
         rescue
           render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400
         end
@@ -141,7 +141,7 @@ class Api::Json::TablesController < ApplicationController
               else
                 @table.modify_column!(params[:column])
               end
-              render :nothing => true, :status => 200
+              render :json => ''.to_json, :status => 200
             rescue => e
               render :json => { :errors => [e.message.split("\n").first] }.to_json, :status => 400 and return
             end
@@ -175,7 +175,7 @@ class Api::Json::TablesController < ApplicationController
     @table.insert_row!(params)
     respond_to do |format|
       format.json do
-        render :nothing => true, :status => 200
+        render :json => ''.to_json, :status => 200
       end
     end
   end
@@ -201,7 +201,7 @@ class Api::Json::TablesController < ApplicationController
       format.json do
         unless params[:row_id].blank?
           if resp = @table.update_row!(params[:row_id], params)
-            render :nothing => true, :status => 200
+            render :json => ''.to_json, :status => 200
           else
             case resp
               when 404
@@ -224,7 +224,7 @@ class Api::Json::TablesController < ApplicationController
   #   * body: _nothing_
   def delete
     @table.destroy
-    render :nothing => true, :status => 200
+    render :json => ''.to_json, :status => 200
   end
 
   # Create a new table

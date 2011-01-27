@@ -176,8 +176,7 @@ class Table < Sequel::Model(:user_tables)
     rows, columns = [], []
     limit      = (options[:rows_per_page] || 10).to_i
     offset     = (options[:page] || 0).to_i*limit
-
-    owner.in_database do |user_database|
+    (options[:owner] || owner).in_database do |user_database|
       columns = user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:db_type]] }
       rows    = user_database[name.to_sym].limit(limit,offset).all
     end

@@ -10,7 +10,7 @@ class Warden::SessionSerializer
   end
 
   def deserialize(keys)
-    User.filter(:id => keys).select(:id,:email,:username,:tables_count).first
+    User.filter(:id => keys).select(:id,:email,:username,:tables_count,:crypted_password,:database_name).first
   end
 end
 

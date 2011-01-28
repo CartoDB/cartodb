@@ -18,4 +18,40 @@
       }, function(){
         $('div.tables_list div.left div.bottom_white_medium').css('background-position','0 0');
       });
+      
+      
+      $('a.new_table').click(function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        $('div.mamufas').fadeIn();
+        $.ajax({
+          method: "POST",
+          url: '/api/json/tables/',
+          success: function(data) {
+            console.debug(data);
+          },
+          error: function(e) {
+            console.debug(e);
+          }
+        });
+      });
+      
+      // $('a.delete').click(function(ev){
+      //   ev.preventDefault();
+      //   ev.stopPropagation();
+      //   var table_id = $(this).attr('table-id');
+      //   $.ajax({
+      //     type: "DELETE",
+      //     url: '/api/json/tables/'+table_id,
+      //     success: function(data) {
+      //       console.debug(data);
+      //       window.location.href=window.location.href
+      //     },
+      //     error: function(e) {
+      //       console.debug(e);
+      //     }
+      //   });
+      // });
+      
+      
     });

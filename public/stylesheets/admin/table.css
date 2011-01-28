@@ -79,7 +79,7 @@ section.subheader div.performing_op p.success {padding:8px 12px; background:#99C
 section.subheader div.performing_op p.error {padding:8px 12px; background:#FF5F5F; border-bottom-color:#FFA3A9; color:#333333;}
 
 /*Change table title*/
-section.subheader span.title_window {position:absolute; display:none; top:22px; right:50px; width:200px; height:67px; padding:33px 18px 0 18px; background:url('/images/admin/table/save_title_bkg.png') no-repeat 0 0;}
+section.subheader span.title_window {position:absolute; display:none; top:22px; left:5px; width:200px; height:67px; padding:33px 18px 0 18px; background:url('/images/admin/table/save_title_bkg.png') no-repeat 0 0;}
 section.subheader span.title_window p {font:bold 13px Arial; color:#000000;}
 section.subheader span.title_window input[type="text"] {float:left; width:134px; height:14px; margin:5px 0 0 0; padding:6px 7px; background:white; color:#999999; border:none; font:normal 14px Arial; border:1px solid #999999; border-right:0;
   -webkit-border-top-left-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-topleft: 3px; -moz-border-radius-bottomleft: 3px; border-top-left-radius: 3px; border-bottom-left-radius: 3px;}

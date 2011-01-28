@@ -27,6 +27,8 @@
     }
     
 		$(this).click(function(e){
+		  e.stopPropagation();
+		  e.preventDefault();
 			if (e.target.tagName == 'A') {
 				// Removes a tag when the little 'x' is clicked.
 				// Event is binded to the UL, otherwise a new tag (LI > A) wouldn't have this event attached to it.

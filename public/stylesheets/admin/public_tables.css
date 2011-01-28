@@ -104,6 +104,11 @@ section#content div.right ul li a span {float:left; width:237px; height:18px; pa
 section#content div.right ul li a:hover {background-position:0 -20px;}
 section#content div.right ul li a:hover span {background-position:right -20px!important; color:black;}
 
+/*Mamufas*/
+div.mamufas {position:fixed; display:none; top:0; left:0; height:100%; width:100%; background:rgba(0,0,0,0.3);}
+div.mamufas p {position:absolute; top:50%; left:50%; margin:-5px 0 0 -104px; font:bold 20px Arial; color:white;}
+div.mamufas span {}
+
 /*FOOTER*/
 footer {width:100%; height:384px; background:url('/images/admin/dashboard/footer_bkg.jpg') repeat-x center 0;}
 footer section.prefooter {width:900px; height:271px; margin:0 auto;}

@@ -49,6 +49,8 @@
     </footer>
     <% end %>
 
+    <%= yield :mamufas %>
+    
     <%= javascript_include_merged(:base).html_safe %>
     <%= yield :js %>
   </body>

@@ -43,7 +43,7 @@
                     <% unless table.updated_at.blank? %>
                     <p class="last_op">Last operation <%= time_ago_in_words(table.updated_at) %> ago</p>
                     <% end %>
-                    <p class="delete"> | <a href="#" class="delete">delete table</a></p>
+                    <p class="delete"> | <a table-id="<%= table.id %>" href="#" class="delete">delete table</a></p>
                   </span>
                   <span class="tags">
                     <% unless table.tags.blank? %>
@@ -59,16 +59,16 @@
           <% end %>
         </div>
         <div class="bottom_white_medium"></div>
-
         <%= paginate(@tables) %>
-
       </div>
       <div class="right">
         <h4>BROWSE BY TAGS</h4>
         <% if @tags.empty? %>
-          <p>You have not added any tags yet.</p>
-          <p>Tags are useful for organizing and filtering your tables.</p>
-          <p>For adding tags to a table, open it and define it with the button under the name.</p>
+          <span class="no_tags">
+            <p>You have not added any tags yet.</p>
+            <p>Tags are useful for organizing and filtering your tables.</p>
+            <p>For adding tags to a table, open it and define it with the button under the name.</p>
+          </span>
         <% else %>
           <ul>
             <% @tags.each do |tag| %>
@@ -80,3 +80,22 @@
     </div>
   </div>
 </section>
+
+
+<%= content_for(:mamufas) do %>
+  <div class="mamufas">
+    <div class="delete_window">
+      <a href="#" class="close_delete"></a>
+      <div class="inner_">
+        <span class="top">
+          <h3>You are about to delete this table</h3>
+          <p>You will not be able to recover this information. We really recommend to <a href="#">export the data</a> before deleting it.</p>
+        </span>
+        <span class="bottom">
+          <a href="#" class="cancel">cancel</a>
+          <a href="#" class="confirm_delete">Delete this table</a>
+        </span>
+      </div>
+    </div>
+  </div>
+<% end %>

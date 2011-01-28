@@ -29,7 +29,6 @@
       } else {
         closeAllWindows();
         bindESC();
-        var position = ($(this).parent().width()/2) - 118;
         if ($('section.subheader h2 a').text()=='Untitle table') {
           $('span.title_window input[type="text"]').attr('value','');
         } else {
@@ -41,12 +40,12 @@
             $('body').unbind('click');
           };
         });
-        $('span.title_window').css('left',position+'px').show();
+        $('span.title_window').show();
         $('span.title_window input[type="text"]').focus();
       }
     });
     // -Save table name
-    $('#change_name').livequery('submit',function(ev){
+    $('#change_name input[type="submit"]').livequery('click',function(ev){
       ev.preventDefault();
       ev.stopPropagation();
       var new_value = $('span.title_window input[type="text"]').attr('value');
@@ -195,6 +194,23 @@
     });
     //End advanced options
     
+    
+    //Delete table
+    $('a.delete').click(function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      var table_id = $(this).attr('table-id');
+      $.ajax({
+        type: "DELETE",
+        url: '/api/json/tables/'+table_id,
+        success: function(data) {
+          window.location.href='/dashboard';
+        },
+        error: function(e) {
+          console.debug(e);
+        }
+      });
+    });
   });
 
 
@@ -202,7 +218,6 @@
   function changesRequest(url_change,param,value,old_value) {
     //show loader
     $('div.performing_op').show();
-
     var params = {};
     params[param] = value;
     $.ajax({

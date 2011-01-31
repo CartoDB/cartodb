@@ -32,5 +32,12 @@ class ApplicationController < ActionController::Base
   end
   helper_method :table_privacy_text
 
+  def translate_error(error_message)
+    if error_message =~ /^PGError:\s+ERROR:\s+relation\s+\"([^\\\"]+)\" already exists$/
+      return "A table with name \"#{$1}\" already exists"
+    else
+      return error_message
+    end
+  end
 
 end

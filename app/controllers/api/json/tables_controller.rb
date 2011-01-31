@@ -111,7 +111,7 @@ class Api::Json::TablesController < ApplicationController
             render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400
           end
         rescue => e
-          render :json => { :errors => [e.message.split("\n").first] }.to_json, :status => 400 and return
+          render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400 and return
         end
       end
     end
@@ -153,7 +153,7 @@ class Api::Json::TablesController < ApplicationController
                 render :json => resp.to_json, :status => 200 and return
               end
             rescue => e
-              render :json => { :errors => [e.message.split("\n").first] }.to_json, :status => 400 and return
+              render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400 and return
             end
           else
             render :json => { :errors => ["column parameter can't be blank"] }.to_json, :status => 400 and return

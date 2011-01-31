@@ -79,7 +79,7 @@ feature "Tables JSON API" do
     put_json "/api/json/tables/#{old_table.id}/update", {:name => "Untitle table"}
     response.status.should == 400
     json_response = JSON(response.body)
-    json_response['errors'].should == ["PGError: ERROR:  relation \"untitle_table\" already exists"]
+    json_response['errors'].should == ["A table with name \"untitle_table\" already exists"]
     old_table.reload
     old_table.name.should == "old_table"
   end

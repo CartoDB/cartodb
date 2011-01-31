@@ -38,7 +38,7 @@ feature "Tables" do
 
   scenario "Add and remove tags from a table" do
     click_link_or_button("add tags")
-    page.find("li.tagit-new input.tagit-input").set("tag1 ")
+    page.find("li.tagit-new input.tagit-input").set("tag1,")
     page.find_link("Save").click
 
     page.find("div.performing_op p.success").text.should == 'Tags changed'
@@ -46,7 +46,7 @@ feature "Tables" do
     page.all("span.tags p")[1].text.should == 'tag1'
 
     click_link_or_button("add tags")
-    page.find("li.tagit-new input.tagit-input").set("tag3 ")
+    page.find("li.tagit-new input.tagit-input").set("tag3,")
     page.find_link("Save").click
 
     page.find("div.performing_op p.success").text.should == 'Tags changed'

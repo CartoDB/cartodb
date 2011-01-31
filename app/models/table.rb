@@ -22,8 +22,17 @@ class Table < Sequel::Model(:user_tables)
 
   def before_validation
     self.privacy ||= PUBLIC
-    self.name ||= set_table_name
+    self.name = set_table_name if self.name.blank?
     super
+  end
+
+  def name=(new_name)
+    unless new?
+      owner.in_database do |user_database|
+        user_database.rename_table name, new_name
+      end
+    end
+    self[:name] = new_name
   end
 
   # Before creating a user table a table should be created in the database.
@@ -204,8 +213,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_table_name
-    return if user_id.nil?
     base_name = "Untitle table"
+    return base_name if user_id.nil?
     i = 1
     while Table.filter(:user_id => user_id, :name => base_name).count != 0
       i += 1

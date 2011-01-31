@@ -34,15 +34,29 @@ describe Table do
     user = create_user
     table = create_table :name => 'Wadus table', :user_id => user.id
     Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
+    user.in_database do |user_database|
+      user_database.table_exists?(table.name.to_sym).should be_true
+    end
   end
 
-  it "should fetch empty data from the database by SQL sentences" do
+  it "should rename a database table when the attribute name is modified" do
     user = create_user
     table = create_table :name => 'Wadus table', :user_id => user.id
     Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
     user.in_database do |user_database|
       user_database.table_exists?(table.name.to_sym).should be_true
     end
+    table.name = 'Wadus table #2'
+    table.save
+    user.in_database do |user_database|
+      user_database.table_exists?('Wadus table'.to_sym).should be_false
+      user_database.table_exists?('Wadus table #2'.to_sym).should be_true
+    end
+  end
+
+  it "should fetch empty data from the database by SQL sentences" do
+    user = create_user
+    table = create_table :name => 'Wadus table', :user_id => user.id
     rows = table.execute_sql "select * from \"#{table.name}\" limit 1"
     rows.should be_empty
     table.rows_counted.should == 0

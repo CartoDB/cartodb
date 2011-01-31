@@ -2,17 +2,16 @@
   <%= stylesheet_link_merged(:sessions).html_safe %>
   <% end %>
 
-  <!-- TODO: show errors -->
   <section>
     <h1>Welcome to Carto<strong>DB</strong></h1>
     <p>Use your account information to start using CartoDB</p>
     <%= form_tag create_session_path do %>
       <p>Introduce your account data</p>
       <%= label_tag :email, 'your e-mail' %>
-      <%= text_field_tag :email %>
+      <%= text_field_tag :email, '', :class => (flash[:alert] ? 'error' : nil) %>
       <%= label_tag :password, 'your password' %>
-      <%= password_field_tag :password, '' %>
-      <%= submit_tag 'Sign in', :class=>"login" %>
+      <%= password_field_tag :password, '', :class => (flash[:alert] ? 'error' : nil) %>
+      <%= submit_tag 'Sign in', :class => "login" %>
       <% if flash[:alert] %>
       <div class="error_content">
         <p><span><%= flash[:alert] %></span></p>

@@ -4,9 +4,11 @@ javascripts:
   - jquery.min.js
 - dashboard:
   - plugins/jquery.color.js
+  - plugins/jquery.shadow.js
   - admin/dashboard.js
 - public_tables:
   - plugins/jquery.color.js
+  - plugins/jquery.shadow.js
   - admin/public_tables.js
 - table:
   - plugins/jquery.livequery.min.js

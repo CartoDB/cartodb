@@ -69,6 +69,7 @@
         $('div.mamufas').fadeOut('fast',function(){
           $('div.mamufas div.settings_window').hide();
           $('div.mamufas div.delete_window').hide();
+          $('div.mamufas div.create_window').hide();
         });
         unbindESC();
       });

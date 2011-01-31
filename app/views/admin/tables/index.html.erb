@@ -24,13 +24,13 @@
       <div class="left">
         <div class="top_blue_medium">
           <h3><strong><%= pluralize(current_user.tables_count, 'table', 'tables') %></strong> in your account</h3>
-          <a class="new_table" href="#">Create a new table</a>
+          <a class="new_table" href="#create_table">Create a new table</a>
         </div>
         <div class="middle_white_medium">
           <% if @tables.current_page_record_count == 0 %>
             <div class="no_tables">
               <h5>Hey! You don't have any tables</h5>
-              <p>Why do you not start <a href="#">creating a new table</a>?</p>
+              <p>Why do you not start <a href="#create_table" class="new_table">creating a new table</a>?</p>
             </div>
           <% else %>
             <ul class="your_tables">

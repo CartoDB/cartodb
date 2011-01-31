@@ -153,31 +153,35 @@ describe Table do
     }.should raise_error
     table.reload
 
-    table.add_column!(:name => "my new column", :type => "integer")
+    resp = table.add_column!(:name => "my new column", :type => "integer")
+    resp.should == {:name => 'my_new_column', :type => 'integer'}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column", "integer"]]
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "integer"]]
 
-    table.modify_column!(:old_name => "my new column", :new_name => "my new column new name", :type => "text")
+    resp = table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "text")
+    resp.should == {:name => 'my_new_column_new_name', :type => 'text'}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column new name", "text"]]
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column_new_name, "text"]]
 
-    table.modify_column!(:old_name => "my new column new name", :new_name => "my new column")
+    resp = table.modify_column!(:old_name => "my_new_column_new_name", :new_name => "my new column")
+    resp.should == {:name => 'my_new_column', :type => nil}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column", "text"]]
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "text"]]
 
-    table.modify_column!(:name => "my new column", :type => "text")
+    resp = table.modify_column!(:name => "my_new_column", :type => "text")
+    resp.should == {:name => 'my_new_column', :type => 'text'}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column", "text"]]
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "text"]]
 
     table.drop_column!(:name => "location")
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:description, "text"], [:"my new column", "text"]]
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:description, "text"], [:my_new_column, "text"]]
 
     lambda {
       table.drop_column!(:name => "location")
     }.should raise_error
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:description, "text"], [:"my new column", "text"]]
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:description, "text"], [:my_new_column, "text"]]
   end
 
   it "should be able to modify it's schema with castings that the DB engine doesn't support" do
@@ -186,11 +190,11 @@ describe Table do
 
     table.add_column!(:name => "my new column", :type => "text")
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column", "text"]]
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "text"]]
 
-    table.modify_column!(:old_name => "my new column", :new_name => "my new column new name", :type => "integer", :force_value => "NULL")
+    table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "integer", :force_value => "NULL")
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"my new column new name", "integer"]]
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column_new_name, "integer"]]
   end
 
   it "should be able to insert a new row" do

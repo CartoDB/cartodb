@@ -143,13 +143,15 @@ class Api::Json::TablesController < ApplicationController
           unless params[:column].blank? || params[:column].empty?
             begin
               if params[:what] == 'add'
-                @table.add_column!(params[:column])
+                resp = @table.add_column!(params[:column])
+                render :json => resp.to_json, :status => 200 and return
               elsif params[:what] == 'drop'
                 @table.drop_column!(params[:column])
+                render :json => ''.to_json, :status => 200 and return
               else
-                @table.modify_column!(params[:column])
+                resp = @table.modify_column!(params[:column])
+                render :json => resp.to_json, :status => 200 and return
               end
-              render :json => ''.to_json, :status => 200
             rescue => e
               render :json => { :errors => [e.message.split("\n").first] }.to_json, :status => 400 and return
             end

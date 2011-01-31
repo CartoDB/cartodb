@@ -153,17 +153,21 @@ feature "Tables JSON API" do
                                                               }
                                                            }
     response.status.should == 200
+    json_response = JSON(response.body)
+    json_response.should == {"name" => "postal_code", "type" => 'integer'}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"postal code", "integer"]]
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:postal_code, "integer"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "modify", :column => {
-                                                                  :type => "text", :name => "postal code"
+                                                                  :type => "text", :name => "postal_code"
                                                               }
                                                            }
     response.status.should == 200
+    json_response = JSON(response.body)
+    json_response.should == {"name" => "postal_code", "type" => 'text'}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:"postal code", "text"]]
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:postal_code, "text"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "add", :column => {
@@ -176,7 +180,7 @@ feature "Tables JSON API" do
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "drop", :column => {
-                                                                :name => "postal code"
+                                                                :name => "postal_code"
                                                               }
                                                            }
     response.status.should == 200
@@ -185,17 +189,17 @@ feature "Tables JSON API" do
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "drop", :column => {
-                                                                :name => "postal code"
+                                                                :name => "postal_code"
                                                               }
                                                            }
     response.status.should == 400
     table.reload
     json_response = JSON(response.body)
-    json_response['errors'].should == ["PGError: ERROR:  column \"postal code\" of relation \"#{table.name}\" does not exist"]
+    json_response['errors'].should == ["PGError: ERROR:  column \"postal_code\" of relation \"#{table.name}\" does not exist"]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "wadus", :column => {
-                                                                :name => "postal code"
+                                                                :name => "postal_code"
                                                               }
                                                            }
     response.status.should == 400
@@ -218,7 +222,11 @@ feature "Tables JSON API" do
 
     authenticate_api user
 
-    post_json "/api/json/tables/#{table.id}/rows", { :name => "Name 123", :description => "The description", :location => Point.from_x_y(1,1).as_ewkt }
+    post_json "/api/json/tables/#{table.id}/rows", {
+        :name => "Name 123",
+        :description => "The description",
+        :location => Point.from_x_y(1,1).as_ewkt
+    }
     response.status.should == 200
     table.reload
     table.rows_counted.should == 1

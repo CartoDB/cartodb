@@ -41,6 +41,7 @@ feature "Tables" do
     page.find("li.tagit-new input.tagit-input").set("tag1 ")
     page.find_link("Save").click
 
+    page.find("div.performing_op p.success").text.should == 'Tags changed'
     page.all("span.tags p")[0].text.should == 'twitter'
     page.all("span.tags p")[1].text.should == 'tag1'
 
@@ -48,6 +49,7 @@ feature "Tables" do
     page.find("li.tagit-new input.tagit-input").set("tag3 ")
     page.find_link("Save").click
 
+    page.find("div.performing_op p.success").text.should == 'Tags changed'
     page.all("span.tags p")[0].text.should == 'twitter'
     page.all("span.tags p")[1].text.should == 'tag1'
     page.all("span.tags p")[2].text.should == 'tag3'

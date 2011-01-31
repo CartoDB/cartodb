@@ -151,8 +151,9 @@ class Table < Sequel::Model(:user_tables)
 
   def add_column!(options)
     owner.in_database do |user_database|
-      user_database.add_column name.to_sym, options[:name].to_s, options[:type]
+      user_database.add_column name.to_sym, options[:name].to_s.sanitize, options[:type]
     end
+    return {:name => options[:name].to_s.sanitize, :type => options[:type]}
   end
 
   def drop_column!(options)
@@ -162,27 +163,32 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def modify_column!(options)
+    new_name = options[:name]
+    new_type = options[:type]
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
-        user_database.rename_column name.to_sym, options[:old_name].to_sym, options[:new_name].to_sym
+        user_database.rename_column name.to_sym, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
+        new_name = options[:new_name].sanitize
       end
       if options[:type]
+        column_name = (options[:new_name] || options[:name]).sanitize
         begin
-          user_database.set_column_type name.to_sym, (options[:new_name] || options[:name]).to_sym, options[:type]
+          user_database.set_column_type name.to_sym, column_name.to_sym, options[:type]
         rescue => e
           message = e.message.split("\n").first
           if message =~ /cannot be cast to type/
             user_database.transaction do
               random_name = "new_column_#{rand(10)*Time.now.to_i}"
               user_database.add_column name.to_sym, random_name, options[:type]
-              user_database["UPDATE #{name} SET #{random_name}=#{(options[:new_name] || options[:name])}::#{options[:type]}"]
-              user_database.drop_column name.to_sym, (options[:new_name] || options[:name]).to_sym
-              user_database.rename_column name.to_sym, random_name, (options[:new_name] || options[:name]).to_sym
+              user_database["UPDATE #{name} SET #{random_name}=#{column_name}::#{options[:type]}"]
+              user_database.drop_column name.to_sym, column_name.to_sym
+              user_database.rename_column name.to_sym, random_name, column_name.to_sym
             end
           end
         end
       end
     end
+    return {:name => new_name, :type => new_type}
   end
 
   def to_json(options = {})

@@ -22,7 +22,7 @@
       '</span>');
     //Bind events
     // -Open window
-    $('section.subheader h2 a').livequery('click',function(ev){
+    $('section.subheader h2 a, p.status a.save').livequery('click',function(ev){
       ev.stopPropagation();
       ev.preventDefault();
       if ($('span.title_window').is(':visible')) {
@@ -30,11 +30,7 @@
       } else {
         closeAllWindows();
         bindESC();
-        if ($('section.subheader h2 a').text()=='Untitle table') {
-          $('span.title_window input[type="text"]').attr('value','');
-        } else {
-          $('span.title_window input[type="text"]').attr('value',$('section.subheader h2 a').text());
-        }
+        $('span.title_window input[type="text"]').attr('value',$('section.subheader h2 a').text());
         $('body').click(function(event) {
           if (!$(event.target).closest('span.title_window').length) {
             $('span.title_window').hide();
@@ -49,7 +45,7 @@
     $('#change_name input[type="submit"]').livequery('click',function(ev){
       ev.preventDefault();
       ev.stopPropagation();
-      var new_value = $('span.title_window input[type="text"]').attr('value');
+      var new_value = $('span.title_window input[type="text"]').attr('value').replace(/[^a-zA-Z 0-9 _]+/g,'').replace(' ','_').toLowerCase();
       var old_value = $('section.subheader h2 a').text();
       if (new_value==old_value) {
         $('span.title_window').hide();
@@ -61,6 +57,9 @@
           $('span.title_window span').fadeOut();
         },1500);
       } else {
+        if ($('p.status a').hasClass('save')) {
+          $('p.status a').removeClass('save').addClass('public').text('public');
+        }
         $('section.subheader h2 a').text(new_value);
         $('span.title_window').hide();
         changesRequest('/update','name',new_value,old_value);
@@ -98,20 +97,23 @@
       ev.stopPropagation();
       ev.preventDefault();
       var privacy_window = $(this).parent().parent().children('span.privacy_window');
-      if (privacy_window.is(':visible')) {
-        privacy_window.hide();
-      } else {
-        closeAllWindows();
-        bindESC();
-        var status_position = $('p.status a').position();
-        privacy_window.css('left',status_position.left-72+'px').show();
-        $('body').click(function(event) {
-          if (!$(event.target).closest('span.privacy_window').length) {
-            $('span.privacy_window').hide();
-            $('body').unbind('click');
-          };
-        });
+      if (!$(this).hasClass('save')) {
+        if (privacy_window.is(':visible')) {
+          privacy_window.hide();
+        } else {
+          closeAllWindows();
+          bindESC();
+          var status_position = $('p.status a').position();
+          privacy_window.css('left',status_position.left-72+'px').show();
+          $('body').click(function(event) {
+            if (!$(event.target).closest('span.privacy_window').length) {
+              $('span.privacy_window').hide();
+              $('body').unbind('click');
+            };
+          });
+        }
       }
+
     });
     // End table status binding
 
@@ -204,6 +206,7 @@
     $('a.delete').click(function(ev){
       ev.preventDefault();
       ev.stopPropagation();
+      closeAllWindows();
       var table_id = $(this).attr('table-id');
       $('div.mamufas a.confirm_delete').attr('table-id',table_id);
       $('div.mamufas div.delete_window').show();
@@ -230,8 +233,8 @@
       $.ajax({
         type: "DELETE",
         url: '/api/json/tables/'+table_id,
-        success: function(data) {
-          window.location.href=window.location.href;
+        success: function(data, textStatus, XMLHttpRequest) {
+          window.location.href = XMLHttpRequest.getResponseHeader("Location");
         },
         error: function(e) {
           console.debug(e);

@@ -8,7 +8,7 @@ describe Table do
     table = Table.new
     table.should_not be_valid
     table.errors.on(:user_id).should_not be_nil
-    table.name.should == "Untitle table"
+    table.name.should == "untitle_table"
   end
 
   it "should set a default name different than the previous" do
@@ -16,12 +16,12 @@ describe Table do
     table = Table.new
     table.user_id = user.id
     table.save
-    table.name.should == "Untitle table"
+    table.name.should == "untitle_table"
 
     table2 = Table.new
     table2.user_id = user.id
     table2.save.reload
-    table2.name.should == "Untitle table 2"
+    table2.name.should == "untitle_table_2"
   end
 
   it "should have a privacy associated and it should be private by default" do
@@ -49,8 +49,8 @@ describe Table do
     table.name = 'Wadus table #2'
     table.save
     user.in_database do |user_database|
-      user_database.table_exists?('Wadus table'.to_sym).should be_false
-      user_database.table_exists?('Wadus table #2'.to_sym).should be_true
+      user_database.table_exists?('wadus_table'.to_sym).should be_false
+      user_database.table_exists?('wadus_table_2'.to_sym).should be_true
     end
   end
 

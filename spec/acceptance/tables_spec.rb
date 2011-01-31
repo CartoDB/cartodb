@@ -9,7 +9,7 @@ feature "Tables" do
 
     login_as @user
 
-    click_link_or_button("Twitter followers")
+    click_link_or_button("twitter_followers")
   end
 
   scenario "Toggle the privacy of a table" do
@@ -29,16 +29,16 @@ feature "Tables" do
   end
 
   scenario "Change the name from a table" do
-    click_link_or_button("Twitter followers")
+    click_link_or_button("twitter_followers")
     page.find("form#change_name input[name='title']").set("New name")
     page.find_button('Save').click
 
-    page.find("h2").text.should == "New name"
+    page.find("h2").text.should == "new_name"
   end
 
   scenario "Add and remove tags from a table" do
     click_link_or_button("add tags")
-    page.find("li.tagit-new input.tagit-input").set("tag1 ")
+    page.find("li.tagit-new input.tagit-input").set("tag1,")
     page.find_link("Save").click
 
     page.find("div.performing_op p.success").text.should == 'Tags changed'
@@ -46,7 +46,7 @@ feature "Tables" do
     page.all("span.tags p")[1].text.should == 'tag1'
 
     click_link_or_button("add tags")
-    page.find("li.tagit-new input.tagit-input").set("tag3 ")
+    page.find("li.tagit-new input.tagit-input").set("tag3,")
     page.find_link("Save").click
 
     page.find("div.performing_op p.success").text.should == 'Tags changed'

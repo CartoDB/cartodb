@@ -91,7 +91,11 @@ class Api::Json::TablesController < ApplicationController
   #     }
   # * Response if _success_:
   #   * status code: 200
-  #   * body: _nothing_
+  #   * body:
+  #       {
+  #         "tags" => "new tag #1, new tag #2"
+  #         "name" => "new name"
+  #       }
   # * Response if _error_:
   #   * status code +400+
   #   * body:
@@ -100,10 +104,14 @@ class Api::Json::TablesController < ApplicationController
     respond_to do |format|
       format.json do
         begin
-          @table.update_all(params)
-          render :json => ''.to_json, :status => 200
-        rescue
-          render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400
+          @table.set_all(params)
+          if @table.save
+            render :json => params.merge(@table.reload.values).to_json, :status => 200
+          else
+            render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400
+          end
+        rescue => e
+          render :json => { :errors => [e.message.split("\n").first] }.to_json, :status => 400 and return
         end
       end
     end
@@ -224,7 +232,7 @@ class Api::Json::TablesController < ApplicationController
   #   * body: _nothing_
   def delete
     @table.destroy
-    render :json => ''.to_json, :status => 200
+    render :json => ''.to_json, :status => 200, :location => dashboard_path
   end
 
   # Create a new table
@@ -242,7 +250,7 @@ class Api::Json::TablesController < ApplicationController
     @table = Table.new
     @table.user_id = current_user.id
     if @table.valid? && @table.save
-      redirect_to table_path(@table) and return
+      render :json => {:id => @table.id}.to_json, :status => 200, :location => table_path(@table)
     else
       render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400
     end

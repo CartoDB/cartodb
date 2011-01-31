@@ -11,6 +11,7 @@ gem 'warden'
 gem 'rails_warden'
 
 gem 'rdoc', :group => :development
+gem 'passenger', :group => :development
 
 group :test, :development do
   gem 'mocha'

@@ -18,6 +18,7 @@
         '<p>Pick a name for this table</p>'+
         '<form id="change_name" method="get" action="#"><input type="text" name="title"/>'+
         '<input type="submit" value="Save" name="submit"/></form>'+
+        '<span>The name cannot be blank</span>'+
       '</span>');
     //Bind events
     // -Open window
@@ -54,7 +55,11 @@
         $('span.title_window').hide();
       } else if (new_value=='') {
         $('span.title_window input').css('border-color','#D05153');
-        setTimeout(function(){$('span.title_window input').css('border-color','#999999')},1000);
+        $('span.title_window span').fadeIn();
+        setTimeout(function(){
+          $('span.title_window input').css('border-color','#999999');
+          $('span.title_window span').fadeOut();
+        },1500);
       } else {
         $('section.subheader h2 a').text(new_value);
         $('span.title_window').hide();
@@ -203,6 +208,7 @@
       $('div.mamufas a.confirm_delete').attr('table-id',table_id);
       $('div.mamufas div.delete_window').show();
       $('div.mamufas').fadeIn('fast');
+      bindESC();
     });
     
     
@@ -212,6 +218,7 @@
       $('div.mamufas').fadeOut('fast',function(){
         $('div.mamufas div.delete_window').hide();
       });
+      unbindESC();
     });
     
     
@@ -342,27 +349,12 @@
     $('span.title_window').hide();
     $('span.advanced_options').hide();
     $('span.tags_window').hide();
+    
+    //popup windows
+    $('div.mamufas').fadeOut('fast',function(){
+      $('div.mamufas div.delete_window').hide();
+    });
+    
     $(document).unbind('keydown');
     $('body').unbind('click');
   }
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
-
-
-
-

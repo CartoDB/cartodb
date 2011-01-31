@@ -50,7 +50,8 @@ section.subheader ul.tab_menu li a {float:left; padding:7px 15px; color:white; f
 section.subheader ul.tab_menu li a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
 section.subheader ul.tab_menu li.selected a {background-color:rgba(256,256,256,1); color:#272E48; text-decoration:none;}
 section.subheader ul.tab_menu li.selected a:hover {color:#272E48; text-decoration:none;}
-section.subheader ul.tab_menu li.disabled {text-decoration:none; color:#eeeeee; }
+section.subheader ul.tab_menu li a.disabled {text-decoration:none; color:#999999; }
+section.subheader ul.tab_menu li a.disabled:hover {background-color:rgba(256,256,256,0.1);}
 section.subheader div.right {position:relative; float:right; width:180px; height:88px; padding:15px 0 0 0; margin:0 40px 0 0; color:white!important;}
 section.subheader div.right p.settings {float:right; font:normal 15px Arial; color:white; z-index:10;}
 section.subheader div.right p.settings a {font:normal 13px Arial; text-shadow:0 1px black;}
@@ -74,6 +75,7 @@ section.subheader div.right span.paginate a.previous {margin:0 3px 0 0; backgrou
 section.subheader div.right span.paginate a.next {background:url('/images/admin/icons/right_button.png') no-repeat 0 0;}
 section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
 
+
 /*performing operation*/
 section.subheader div.performing_op {position:absolute; display:none; bottom:0; left:50%; margin:0 0 0 -50px;}
 section.subheader div.performing_op p {font:normal 13px Arial; color:#333333; padding:8px 12px; border-bottom:1px solid #D0C090; z-index:100; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px;
@@ -81,6 +83,7 @@ section.subheader div.performing_op p {font:normal 13px Arial; color:#333333; pa
 section.subheader div.performing_op p.loading {padding:8px 12px 8px 32px; background:url('/images/admin/icons/watch.png') no-repeat 12px 9px #FFEAA4;}
 section.subheader div.performing_op p.success {padding:8px 12px; background:#99CC66; border-bottom-color:#A5BB93; color:#111111;}
 section.subheader div.performing_op p.error {padding:8px 12px; background:#FF5F5F; border-bottom-color:#FFA3A9; color:#333333;}
+
 
 /*Change table title*/
 section.subheader span.title_window {position:absolute; display:none; top:22px; left:5px; width:200px; height:67px; padding:33px 18px 0 18px; background:url('/images/admin/table/save_title_bkg.png') no-repeat 0 0;}
@@ -92,6 +95,7 @@ section.subheader span.title_window input[type="submit"] {float:right; width:50p
   -webkit-border-top-right-radius: 3px; -webkit-border-bottom-right-radius: 3px; -moz-border-radius-topright: 3px; -moz-border-radius-bottomright: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px;
   background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
 section.subheader span.title_window input[type="submit"]:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+section.subheader span.title_window span {position:absolute; display:none; top:20px; left:80px; width:141px; height:32px; padding:8px 0 0 10px; background:url('/images/admin/table/error_name.png') no-repeat 0 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C05928;}
 
 
 /*Tags list*/

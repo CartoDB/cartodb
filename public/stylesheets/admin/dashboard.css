@@ -107,6 +107,37 @@ section#content div.right ul li a:hover span {background-position:right -20px!im
 /*Mamufas*/
 div.mamufas {position:fixed; display:none; top:0; left:0; height:100%; width:100%; background:rgba(0,0,0,0.65);}
 
+div.mamufas div.create_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-107px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;}
+div.mamufas div.create_window a.close_create {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
+div.mamufas div.create_window a.close_create:hover {background-position:0 -23px;}
+div.mamufas div.create_window a.close_create.last {background-position:0 -46px;}
+div.mamufas div.create_window a.close_create.last:hover {background-position:0 -69px;}
+div.mamufas div.create_window div.inner_ span.loading {float:left; display:none; opacity:0; width:347px; height:40px; padding:0 0 0 47px; margin:10px; background:url('/images/admin/icons/loading.gif') no-repeat 0 7px;}
+div.mamufas div.create_window div.inner_ span.loading h5 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.create_window div.inner_ span.loading p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
+div.mamufas div.create_window div.inner_ {float:left; width:414px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+div.mamufas div.create_window div.inner_ span.top {float:left; width:394px; padding:10px 10px 25px 10px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.create_window div.inner_ span.top h4 {font:bold 15px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.create_window div.inner_ span.top p {padding:5px 0 5px 0; font:normal 13px "Helvetica",Arial; color:#999999; text-shadow:0 1px white;}
+div.mamufas div.create_window div.inner_ span.top ul {padding:10px 0 0 0;}
+div.mamufas div.create_window div.inner_ span.top ul li {float:left; width:auto!important; padding:10px;}
+div.mamufas div.create_window div.inner_ span.top ul li a {padding:0 0 0 18px; font:bold 13px Arial; color:#333333; text-decoration:none; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -28px;}
+div.mamufas div.create_window div.inner_ span.top ul li a:hover {color:#111111; background-position:0 -67px;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected {width:auto; padding:10px; background:#2A3857; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected a {color:white; background-position:0 1px;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected a:hover {color:white; cursor:default; background-position:0 1px;}
+div.mamufas div.create_window div.inner_ span.top ul li span.file {display:none;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected span.file {display:block;}
+div.mamufas div.create_window div.inner_ span.top ul li.disabled a {opacity:0.3;}
+div.mamufas div.create_window div.inner_ span.top ul li.disabled a:hover {cursor:default; background-position:0 -28px;}
+div.mamufas div.create_window div.inner_ span.bottom {float:left; width:394px; padding:10px; border-top:1px solid white;}
+div.mamufas div.create_window div.inner_ span.bottom input {float:right; height:26px; padding:7px 10px; border:1px solid #999; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
+  text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
+div.mamufas div.create_window div.inner_ span.bottom input:focus {outline:none;}
+div.mamufas div.create_window div.inner_ span.bottom input:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+div.mamufas div.create_window div.inner_ span.bottom a.cancel {float:left; margin:7px 0 0 0; font:normal 13px "Helvetica",Arial; color:#666666;}
+div.mamufas div.create_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
+
 div.mamufas div.settings_window {position:absolute; display:none; top:50%; left:50%; width:309px; height:259px; margin:-137px 0 0 -167px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.settings_window a.close_settings {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
 div.mamufas div.settings_window a.close_settings:hover {background-position:0 -23px;}
@@ -129,6 +160,7 @@ div.mamufas div.settings_window div.inner_ span.bottom input {float:right; heigh
   text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
 div.mamufas div.settings_window div.inner_ span.bottom input:focus {outline:none;}
 div.mamufas div.settings_window div.inner_ span.bottom input:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+
 
 div.mamufas div.delete_window {position:absolute; display:none; top:50%; left:50%; width:434px; height:139px; margin:-69px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.delete_window a.close_delete {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0;}

@@ -23,17 +23,33 @@
       $('a.new_table').click(function(ev){
         ev.preventDefault();
         ev.stopPropagation();
+        $('div.create_window').show();
         $('div.mamufas').fadeIn();
-        // $.ajax({
-        //   method: "POST",
-        //   url: '/api/json/tables/',
-        //   success: function(data) {
-        //     console.debug(data);
-        //   },
-        //   error: function(e) {
-        //     console.debug(e);
-        //   }
-        // });
+        bindESC();
+      });
+      
+      
+      $('input#create_table').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $('div.create_window div.inner_').animate({borderColor:'#FFC209', height:'68px'},500);
+        $('div.create_window div.inner_ form').animate({opacity:0},300,function(){
+          $('div.create_window div.inner_ span.loading').show();
+          $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
+            $.ajax({
+              type: "POST",
+              url: '/api/json/tables/',
+              success: function(data) {
+                window.location.href = window.location;
+              },
+              error: function(e) {
+                console.debug(e);
+              }
+            });
+          });
+        });
+        
+        setTimeout(function(){$('div.create_window a.close_create').addClass('last');},250);
       });
       
       $('a.delete').click(function(ev){
@@ -47,7 +63,7 @@
       });
       
       
-      $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_settings').click(function(ev){
+      $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_settings, div.mamufas a.close_create').click(function(ev){
         ev.preventDefault();
         ev.stopPropagation();
         $('div.mamufas').fadeOut('fast',function(){
@@ -93,6 +109,7 @@
           $('div.mamufas').fadeOut('fast',function(){
             $('div.mamufas div.settings_window').hide();
             $('div.mamufas div.delete_window').hide();
+            $('div.mamufas div.create_window').hide();
           });
         }
       });

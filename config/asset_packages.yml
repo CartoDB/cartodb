@@ -3,8 +3,10 @@ javascripts:
 - base:
   - jquery.min.js
 - dashboard:
+  - plugins/jquery.color.js
   - admin/dashboard.js
 - public_tables:
+  - plugins/jquery.color.js
   - admin/public_tables.js
 - table:
   - plugins/jquery.livequery.min.js

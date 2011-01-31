@@ -63,7 +63,7 @@ class String
      return if self.blank?
      self.gsub(/<[^>]+>/m,'').normalize.downcase.gsub(/&.+?;/,'-').
       gsub(/[^a-z0-9 _-]/,'-').strip.gsub(/\s+/,'-').gsub(/-+/,'-').
-      gsub(/-/,' ').strip.gsub(/ /,'-')
+      gsub(/-/,' ').strip.gsub(/ /,'-').gsub(/-/,'_')
    end
 
    def strip_tags

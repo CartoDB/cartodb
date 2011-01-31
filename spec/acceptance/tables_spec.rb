@@ -9,7 +9,7 @@ feature "Tables" do
 
     login_as @user
 
-    click_link_or_button("Twitter followers")
+    click_link_or_button("twitter_followers")
   end
 
   scenario "Toggle the privacy of a table" do
@@ -29,11 +29,11 @@ feature "Tables" do
   end
 
   scenario "Change the name from a table" do
-    click_link_or_button("Twitter followers")
+    click_link_or_button("twitter_followers")
     page.find("form#change_name input[name='title']").set("New name")
     page.find_button('Save').click
 
-    page.find("h2").text.should == "New name"
+    page.find("h2").text.should == "new_name"
   end
 
   scenario "Add and remove tags from a table" do

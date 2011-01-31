@@ -71,7 +71,7 @@ feature "Dashboard", %q{
     page.should have_content("22 tables in your account")
 
     within("ul.your_tables li:eq(1)") do
-      page.should have_link("Downloaded movies")
+      page.should have_link("downloaded_movies")
       page.should have_content("PRIVATE")
       page.should have_content("Last operation 4 minutes ago")
       within(:css, "span.tags") do
@@ -81,7 +81,7 @@ feature "Dashboard", %q{
     end
 
     within("ul.your_tables li:eq(2)") do
-      page.should have_link("My check-ins")
+      page.should have_link("my_check_ins")
       page.should have_content("PUBLIC")
       page.should have_content("Last operation 5 minutes ago")
       within(:css, "span.tags") do
@@ -92,7 +92,7 @@ feature "Dashboard", %q{
     end
 
     within("ul.your_tables li:eq(10).last") do
-      page.should have_link("Table #8")
+      page.should have_link("table_8")
       page.should have_content("PUBLIC")
       page.should have_content("Last operation 6 minutes ago")
       within(:css, "span.tags") do
@@ -117,7 +117,7 @@ feature "Dashboard", %q{
     click_link_or_button('3')
 
     within("ul.your_tables li:eq(1)") do
-      page.should have_link("Table #19")
+      page.should have_link("table_19")
       page.should have_content("PUBLIC")
       within(:css, "span.tags") do
         page.should have_content("personal")
@@ -125,7 +125,7 @@ feature "Dashboard", %q{
     end
 
     within("ul.your_tables li:eq(2)") do
-      page.should have_link("Table #20")
+      page.should have_link("table_20")
       page.should have_content("PUBLIC")
       within(:css, "span.tags") do
         page.should have_content("personal")
@@ -143,7 +143,7 @@ feature "Dashboard", %q{
     click_link_or_button('Previous')
 
     within("ul.your_tables li:eq(1)") do
-      page.should have_link("Table #9")
+      page.should have_link("table_9")
       page.should have_content("PUBLIC")
       within(:css, "span.tags") do
         page.should have_content("personal")
@@ -151,7 +151,7 @@ feature "Dashboard", %q{
     end
 
     within("ul.your_tables li:eq(2)") do
-      page.should have_link("Table #10")
+      page.should have_link("table_10")
       page.should have_content("PUBLIC")
       within(:css, "span.tags") do
         page.should have_content("personal")
@@ -168,9 +168,9 @@ feature "Dashboard", %q{
 
     click_link_or_button('1')
 
-    click_link_or_button('Downloaded movies')
+    click_link_or_button('downloaded_movies')
 
-    page.should have_css("h2", :text => 'Downloaded movies')
+    page.should have_css("h2", :text => 'downloaded_movies')
     page.should have_css("p.status", :text => 'PRIVATE')
     within(:css, "span.tags") do
       page.should have_content("movies")
@@ -190,7 +190,7 @@ feature "Dashboard", %q{
     page.should have_no_css("ul li a span", :text => "drinking")
 
     within("ul.your_tables li:eq(1)") do
-      page.should have_link("Favourite restaurants")
+      page.should have_link("favourite_restaurants")
       page.should have_content("PUBLIC")
       within(:css, "span.tags") do
         page.should have_content("restaurants")
@@ -208,7 +208,7 @@ feature "Dashboard", %q{
     click_link_or_button('Next')
 
     within("ul.your_tables li:eq(1)") do
-      page.should have_link("Other Table #10")
+      page.should have_link("other_table_10")
       page.should have_content("PUBLIC")
       within(:css, "span.tags") do
         page.should have_content("vodka")
@@ -225,9 +225,9 @@ feature "Dashboard", %q{
 
     click_link_or_button('Previous')
 
-    click_link_or_button('Favourite restaurants')
+    click_link_or_button('favourite_restaurants')
 
-    page.should have_css("h2", :text => 'Favourite restaurants')
+    page.should have_css("h2", :text => 'favourite_restaurants')
     page.should have_css("p.status", :text => 'PUBLIC')
     within(:css, "span.tags") do
       page.should have_content("restaurants")

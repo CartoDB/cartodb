@@ -65,19 +65,19 @@ feature "Tables JSON API" do
     put_json "/api/json/tables/#{table.id}/update", {:name => "My brand new name"}
     response.status.should == 200
     table.reload
-    table.name.should == "My brand new name"
+    table.name.should == "my_brand_new_name"
 
     put_json "/api/json/tables/#{table.id}/update", {:name => ""}
     response.status.should == 200
     table.reload
-    table.name.should == "Untitle table"
+    table.name.should == "untitle_table"
 
     put_json "/api/json/tables/#{old_table.id}/update", {:name => "Untitle table"}
     response.status.should == 400
     json_response = JSON(response.body)
-    json_response['errors'].should == ["PGError: ERROR:  relation \"Untitle table\" already exists"]
+    json_response['errors'].should == ["PGError: ERROR:  relation \"untitle_table\" already exists"]
     old_table.reload
-    old_table.name.should == "Old table"
+    old_table.name.should == "old_table"
   end
 
   scenario "Update the tags of a table" do
@@ -126,12 +126,12 @@ feature "Tables JSON API" do
     response.body.should == [
       {
         "id" => table1.id,
-        "name" => "My table #1",
+        "name" => "my_table_1",
         "privacy" => "PUBLIC"
       },
       {
         "id" => table2.id,
-        "name" => "My table #2",
+        "name" => "my_table_2",
         "privacy" => "PRIVATE"
       }
     ].to_json

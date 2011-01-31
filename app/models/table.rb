@@ -28,6 +28,7 @@ class Table < Sequel::Model(:user_tables)
 
   def name=(new_name)
     new_name = set_table_name if new_name.blank?
+    new_name = new_name.sanitize
     if !new? && !new_name.blank? && !name.blank? && new_name != name
       owner.in_database do |user_database|
         user_database.rename_table name, new_name
@@ -214,12 +215,12 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_table_name
-    base_name = "Untitle table"
+    base_name = "Untitle table".sanitize
     return base_name if user_id.nil?
     i = 1
     while Table.filter(:user_id => user_id, :name => base_name).count != 0
       i += 1
-      base_name = "Untitle table #{i}"
+      base_name = "Untitle table #{i}".sanitize
     end
     base_name
   end

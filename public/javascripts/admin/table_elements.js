@@ -46,7 +46,8 @@
       ev.preventDefault();
       ev.stopPropagation();
       var new_value = $('span.title_window input[type="text"]').attr('value').replace(/[^a-zA-Z 0-9 _]+/g,'').replace(' ','_').toLowerCase();
-      var old_value = $('section.subheader h2 a').text();
+      var old_value = new Object();
+      old_value.name = $('section.subheader h2 a').text();
       if (new_value==old_value) {
         $('span.title_window').hide();
       } else if (new_value=='') {
@@ -58,6 +59,7 @@
         },1500);
       } else {
         if ($('p.status a').hasClass('save')) {
+          old_value.status = 'save';
           $('p.status a').removeClass('save').addClass('public').text('public');
         }
         $('section.subheader h2 a').text(new_value);
@@ -259,7 +261,7 @@
         successActionPerform(param);
       },
       error: function(e) {
-        errorActionPerforming(param,old_value);
+        errorActionPerforming(param,old_value,$.parseJSON(e.responseText));
       }
     });
   }
@@ -292,7 +294,7 @@
 
 
 
-  function errorActionPerforming(param, old_value) {
+  function errorActionPerforming(param, old_value,error_text) {
     switch (param) {
       case 'privacy': $('div.performing_op p').removeClass('loading').addClass('error').text('The status has not been changed. Try again later.');
                       var width_text = $('div.performing_op p').width();
@@ -302,10 +304,13 @@
                       $('p.status a').removeClass('public private').addClass(old_value).text(old_value);
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      case 'name':    $('div.performing_op p').removeClass('loading').addClass('error').text('The table name has not been changed. Try again later.');
+      case 'name':    $('div.performing_op p').removeClass('loading').addClass('error').text(error_text.errors[0]);
                       var width_text = $('div.performing_op p').width();
                       $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
-                      $('section.subheader h2 a').text(old_value);
+                      $('section.subheader h2 a').text(old_value.name);
+                      if (old_value.status=="save") {
+                        $('p.status a').removeClass('public private').addClass('save').text('save');
+                      }
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       case 'tags':    $('div.performing_op p').removeClass('loading').addClass('error').text('Impossible to change the tags. Try again later.');

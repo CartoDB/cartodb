@@ -237,4 +237,26 @@ feature "Dashboard", %q{
     click_link_or_button('close session')
     page.current_path.should == login_path
   end
+
+  # TODO: implement it
+  # scenario "Remove a table" do
+  #   user = create_user
+  #   create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PUBLIC,
+  #                :tags => "4sq, personal, feed aggregator"
+  #   create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE,
+  #                :tags => "movies, personal"
+  #
+  #   login_as user
+  #
+  #   # debugger
+  #
+  #   page.driver.browser.execute_script("$('ul.your_tables li:eq(1)').trigger('mouseover')")
+  #   page.find("ul.your_tables li a.delete").click
+  #
+  #   page.find("div.delete_window a.cancel").click
+  #   # page.find("ul.your_tables li:eq(1) p.status").click
+  #   page.find("ul.your_tables li:eq(1) a.delete").click
+  #   page.find("ul.your_tables li:eq(1) a.confirm_delete").click
+  # end
+
 end

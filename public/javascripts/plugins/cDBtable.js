@@ -365,13 +365,13 @@
           }
         }
 
-        if (event.preventDefault) {
-          event.preventDefault();
-          event.stopPropagation();
-        } else {
-          event.stopPropagation();
-          event.returnValue = false;
-        }
+        // if (event.preventDefault) {
+        //   event.preventDefault();
+        //   event.stopPropagation();
+        // } else {
+        //   event.stopPropagation();
+        //   event.returnValue = false;
+        // }
       });
 
 

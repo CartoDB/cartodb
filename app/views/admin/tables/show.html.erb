@@ -6,7 +6,7 @@
 <% end %>
 
 <section class="subheader">
-  <div class="mamufas">
+  <div class="outer">
     <div class="inner_subheader">
       <div class="left">
         <h2><a href="#change_title"><%= @table.name %></a></h2>
@@ -19,7 +19,7 @@
         </span>
         <ul class="tab_menu">
           <li class="selected"><a href="#">Table</a></li>
-          <li><a href="#">Map</a></li>
+          <li><a class="disabled">Map</a></li>
         </ul>
       </div>
       <div class="right">
@@ -40,6 +40,24 @@
 </div>
 
 <div id="map"></div>
+
+<%= content_for(:mamufas) do %>
+  <div class="mamufas">
+    <div class="delete_window">
+      <a href="#close_window" class="close_delete"></a>
+      <div class="inner_">
+        <span class="top">
+          <h3>You are about to delete this table</h3>
+          <p>You will not be able to recover this information. We really recommend to <a href="#">export the data</a> before deleting it.</p>
+        </span>
+        <span class="bottom">
+          <a href="#close_window" class="cancel">cancel</a>
+          <a href="#confirm_delete" class="confirm_delete">Delete this table</a>
+        </span>
+      </div>
+    </div>
+  </div>
+<% end %>
 
 
 <script type="text/javascript">var table_id = <%= @table.id %>;</script>

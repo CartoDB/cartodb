@@ -200,11 +200,31 @@
       ev.preventDefault();
       ev.stopPropagation();
       var table_id = $(this).attr('table-id');
+      $('div.mamufas a.confirm_delete').attr('table-id',table_id);
+      $('div.mamufas div.delete_window').show();
+      $('div.mamufas').fadeIn('fast');
+    });
+    
+    
+    $('div.mamufas a.cancel, div.mamufas a.close_delete').click(function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      $('div.mamufas').fadeOut('fast',function(){
+        $('div.mamufas div.delete_window').hide();
+      });
+    });
+    
+    
+    
+    $('a.confirm_delete').click(function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      var table_id = $(this).attr('table-id');
       $.ajax({
         type: "DELETE",
         url: '/api/json/tables/'+table_id,
         success: function(data) {
-          window.location.href='/dashboard';
+          window.location.href=window.location.href;
         },
         error: function(e) {
           console.debug(e);

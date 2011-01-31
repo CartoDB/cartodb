@@ -6,6 +6,10 @@ header a.logo {float:left; width:70px; height:15px; margin:21px 0 0 0; backgroun
 header p.session {float:right; margin:22px 0 0 0; font:normal 13px Arial; color:white;}
 header p.session a {text-decoration:underline; color:white;}
 header p.session a:hover {}
+header p.session a.account {text-decoration:none;}
+header p.session a.account:hover {text-decoration:underline;}
+
+
 
 /*SUBHEADER*/
 section.subheader {width:100%; height:52px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
@@ -102,8 +106,31 @@ section#content div.right ul li a:hover span {background-position:right -20px!im
 
 /*Mamufas*/
 div.mamufas {position:fixed; display:none; top:0; left:0; height:100%; width:100%; background:rgba(0,0,0,0.65);}
-div.mamufas span {}
-div.mamufas div.delete_window {position:absolute; top:50%; left:50%; width:434px; height:139px; margin:-69px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;}
+
+div.mamufas div.settings_window {position:absolute; display:none; top:50%; left:50%; width:309px; height:259px; margin:-137px 0 0 -167px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;}
+div.mamufas div.settings_window a.close_settings {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
+div.mamufas div.settings_window a.close_settings:hover {background-position:0 -23px;}
+div.mamufas div.settings_window div.inner_ {width:307px; height:257px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+div.mamufas div.settings_window div.inner_ span.top {float:left; width:287px; padding:10px 10px 25px 10px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.settings_window div.inner_ span.top h4 {font:bold 15px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.settings_window div.inner_ span.top p {padding:5px 0 5px 0; font:normal 11px "Helvetica",Arial; color:#999999; text-shadow:0 1px white;}
+div.mamufas div.settings_window div.inner_ span.top label {float:left; width:287px; padding:15px 0 0 0; font:bold 10px "Helvetica",Arial; color:#999999; text-shadow:0 1px white;}
+div.mamufas div.settings_window div.inner_ span.top input[type="text"] {float:left; width:275px; height:16px; padding:5px; border:1px solid #cccccc; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; font:normal 13px "Helvetica"; color:#666666;}
+div.mamufas div.settings_window div.inner_ span.top input[type="password"] {float:left; width:160px; height:16px; padding:5px 120px 5px 5px; border:1px solid #cccccc; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; font:normal 13px "Helvetica"; color:#666666;}
+div.mamufas div.settings_window div.inner_ span.top input:focus {outline:none;}
+div.mamufas div.settings_window div.inner_ span.top div.pass_block {position:relative; float:left;}
+div.mamufas div.settings_window div.inner_ span.top div.pass_block a.change {position:absolute; right:3px; top:30px; width:108px; height:12px; padding:4px 0; border:1px solid #999; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
+  text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
+div.mamufas div.settings_window div.inner_ span.top div.pass_block a.change:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+div.mamufas div.settings_window div.inner_ span.top a.forgot {float:right; margin:5px 0 0 0; font:normal 11px "Helvetica",Arial; color:#FF6600; text-decoration:underline;}
+div.mamufas div.settings_window div.inner_ span.top a.forgot:hover {color:#FF4400;}
+div.mamufas div.settings_window div.inner_ span.bottom {float:left; width:307px; border-top:1px solid white;}
+div.mamufas div.settings_window div.inner_ span.bottom input {float:right; height:26px; padding:4px 10px; margin:13px 10px 0 0; border:1px solid #999; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
+  text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
+div.mamufas div.settings_window div.inner_ span.bottom input:focus {outline:none;}
+div.mamufas div.settings_window div.inner_ span.bottom input:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+
+div.mamufas div.delete_window {position:absolute; display:none; top:50%; left:50%; width:434px; height:139px; margin:-69px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.delete_window a.close_delete {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0;}
 div.mamufas div.delete_window a.close_delete:hover {background-position:0 -24px;}
 div.mamufas div.delete_window div.inner_ {width:430px; height:135px; border:2px solid #FF6600; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}

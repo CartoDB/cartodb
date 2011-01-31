@@ -24,16 +24,16 @@
         ev.preventDefault();
         ev.stopPropagation();
         $('div.mamufas').fadeIn();
-        $.ajax({
-          method: "POST",
-          url: '/api/json/tables/',
-          success: function(data) {
-            console.debug(data);
-          },
-          error: function(e) {
-            console.debug(e);
-          }
-        });
+        // $.ajax({
+        //   method: "POST",
+        //   url: '/api/json/tables/',
+        //   success: function(data) {
+        //     console.debug(data);
+        //   },
+        //   error: function(e) {
+        //     console.debug(e);
+        //   }
+        // });
       });
       
       $('a.delete').click(function(ev){
@@ -41,14 +41,20 @@
         ev.stopPropagation();
         var table_id = $(this).attr('table-id');
         $('div.mamufas a.confirm_delete').attr('table-id',table_id);
+        $('div.mamufas div.delete_window').show();
         $('div.mamufas').fadeIn('fast');
+        bindESC();
       });
       
       
-      $('div.mamufas a.cancel, div.mamufas a.close_delete').click(function(ev){
+      $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_settings').click(function(ev){
         ev.preventDefault();
         ev.stopPropagation();
-        $('div.mamufas').fadeOut('fast');
+        $('div.mamufas').fadeOut('fast',function(){
+          $('div.mamufas div.settings_window').hide();
+          $('div.mamufas div.delete_window').hide();
+        });
+        unbindESC();
       });
       
       
@@ -70,6 +76,29 @@
       });
       
       
-      
+      $('a.settings').click(function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        $('div.mamufas div.settings_window').show();
+        $('div.mamufas').fadeIn('fast');
+        bindESC();
+      });
       
     });
+    
+    
+    function bindESC() {
+      $(document).keydown(function(){
+        if (event.which == '27') {
+          $('div.mamufas').fadeOut('fast',function(){
+            $('div.mamufas div.settings_window').hide();
+            $('div.mamufas div.delete_window').hide();
+          });
+        }
+      });
+    }
+
+    function unbindESC() {
+      $(document).unbind('keydown');
+    }
+    

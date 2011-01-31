@@ -68,18 +68,16 @@ feature "Tables JSON API" do
     table.name.should == "My brand new name"
 
     put_json "/api/json/tables/#{table.id}/update", {:name => ""}
-    response.status.should == 400
-    json_response = JSON(response.body)
-    json_response['errors'].should == ["name can't be blank"]
+    response.status.should == 200
     table.reload
-    table.name.should == "My brand new name"
+    table.name.should == "Untitle table"
 
-    put_json "/api/json/tables/#{table.id}/update", {:name => "Old table"}
+    put_json "/api/json/tables/#{old_table.id}/update", {:name => "Untitle table"}
     response.status.should == 400
     json_response = JSON(response.body)
-    json_response['errors'].should == ["name and user_id is already taken"]
-    table.reload
-    table.name.should == "My brand new name"
+    json_response['errors'].should == ["PGError: ERROR:  relation \"Untitle table\" already exists"]
+    old_table.reload
+    old_table.name.should == "Old table"
   end
 
   scenario "Update the tags of a table" do
@@ -252,6 +250,7 @@ feature "Tables JSON API" do
     delete_json "/api/json/tables/#{table.id}"
     response.status.should == 200
     Table[table.id].should be_nil
+    response.location.should =~ /^\/dashboard$/
 
     delete_json "/api/json/tables/#{table_other.id}"
     response.status.should == 404
@@ -265,13 +264,16 @@ feature "Tables JSON API" do
     authenticate_api user
 
     post_json "/api/json/tables"
-    response.status.should == 302
-    response.location.should =~ /tables\/\d+$/
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
 
     post_json "/api/json/tables"
-    response.status.should == 400
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
     json_response = JSON(response.body)
-    json_response['errors'].should == ["name and user_id is already taken"]
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
   end
 
 end

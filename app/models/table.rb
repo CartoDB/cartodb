@@ -27,12 +27,13 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def name=(new_name)
-    unless new?
+    new_name = set_table_name if new_name.blank?
+    if !new? && !new_name.blank? && !name.blank? && new_name != name
       owner.in_database do |user_database|
         user_database.rename_table name, new_name
       end
     end
-    self[:name] = new_name
+    self[:name] = new_name unless new_name.blank?
   end
 
   # Before creating a user table a table should be created in the database.

@@ -115,6 +115,10 @@ class Table < Sequel::Model(:user_tables)
     save_changes
   end
 
+  def pending_to_save?
+    self.name =~ /^untitle_table/
+  end
+
   # TODO: use the database field
   def rows_counted
     owner.in_database do |user_database|

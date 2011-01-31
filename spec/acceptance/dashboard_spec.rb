@@ -269,7 +269,7 @@ feature "Dashboard", %q{
     page.find('div.create_window span.bottom input#create_table').click
 
     page.should have_css("h2", :text => 'untitle_table')
-    page.should have_css("p.status", :text => 'PUBLIC')
+    page.should have_css("p.status a.save", :text => 'SAVE')
   end
 
 end

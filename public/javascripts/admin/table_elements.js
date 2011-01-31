@@ -331,7 +331,7 @@
 
 
   function resetLoader() {
-    $('div.performing_op p').removeClass('success').addClass('loading').text('Loading...');
+    $('div.performing_op p').removeClass('success error').addClass('loading').text('Loading...');
     var width_text = $('div.performing_op p').width();
     $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
   }

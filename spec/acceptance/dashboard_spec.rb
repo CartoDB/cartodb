@@ -259,4 +259,17 @@ feature "Dashboard", %q{
   #   page.find("ul.your_tables li:eq(1) a.confirm_delete").click
   # end
 
+  scenario "Create a new table" do
+    user = create_user
+
+    login_as user
+
+    click_link_or_button('Create a new table')
+    page.find('div.create_window ul li:eq(1) a').click
+    page.find('div.create_window span.bottom input#create_table').click
+
+    page.should have_css("h2", :text => 'untitle_table')
+    page.should have_css("p.status", :text => 'PUBLIC')
+  end
+
 end

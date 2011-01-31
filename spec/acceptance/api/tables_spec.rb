@@ -66,11 +66,15 @@ feature "Tables JSON API" do
     response.status.should == 200
     table.reload
     table.name.should == "my_brand_new_name"
+    json_response = JSON(response.body)
+    json_response['name'].should == 'my_brand_new_name'
 
     put_json "/api/json/tables/#{table.id}/update", {:name => ""}
     response.status.should == 200
     table.reload
     table.name.should == "untitle_table"
+    json_response = JSON(response.body)
+    json_response['name'].should == 'untitle_table'
 
     put_json "/api/json/tables/#{old_table.id}/update", {:name => "Untitle table"}
     response.status.should == 400

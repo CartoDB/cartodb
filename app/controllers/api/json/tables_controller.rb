@@ -91,7 +91,11 @@ class Api::Json::TablesController < ApplicationController
   #     }
   # * Response if _success_:
   #   * status code: 200
-  #   * body: _nothing_
+  #   * body:
+  #       {
+  #         "tags" => "new tag #1, new tag #2"
+  #         "name" => "new name"
+  #       }
   # * Response if _error_:
   #   * status code +400+
   #   * body:
@@ -102,7 +106,7 @@ class Api::Json::TablesController < ApplicationController
         begin
           @table.set_all(params)
           if @table.save
-            render :json => ''.to_json, :status => 200
+            render :json => params.merge(@table.reload.values).to_json, :status => 200
           else
             render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400
           end

@@ -22,7 +22,7 @@ class Table < Sequel::Model(:user_tables)
 
   def before_validation
     self.privacy ||= PUBLIC
-    self.name ||= "Untitle table"
+    self.name ||= set_table_name
     super
   end
 
@@ -201,6 +201,17 @@ class Table < Sequel::Model(:user_tables)
 
   def owner
     @owner ||= User.select(:id,:database_name,:crypted_password).filter(:id => self.user_id).first
+  end
+
+  def set_table_name
+    return if user_id.nil?
+    base_name = "Untitle table"
+    i = 1
+    while Table.filter(:user_id => user_id, :name => base_name).count != 0
+      i += 1
+      base_name = "Untitle table #{i}"
+    end
+    base_name
   end
 
 end

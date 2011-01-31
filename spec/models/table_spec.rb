@@ -3,10 +3,25 @@
 require 'spec_helper'
 
 describe Table do
+
   it "should have a name and a user_id" do
     table = Table.new
     table.should_not be_valid
     table.errors.on(:user_id).should_not be_nil
+    table.name.should == "Untitle table"
+  end
+
+  it "should set a default name different than the previous" do
+    user = create_user
+    table = Table.new
+    table.user_id = user.id
+    table.save
+    table.name.should == "Untitle table"
+
+    table2 = Table.new
+    table2.user_id = user.id
+    table2.save.reload
+    table2.name.should == "Untitle table 2"
   end
 
   it "should have a privacy associated and it should be private by default" do

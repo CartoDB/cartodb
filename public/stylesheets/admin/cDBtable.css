@@ -60,7 +60,6 @@ div.table_position div.loading img {position:absolute; width:25; height:25px ; m
 
 
 
-
 /*GENERAL OPTIONS*/
 div.table_position div.general_options {position:fixed; bottom:0; right:0; left:0; height:28px; border-bottom:3px solid #282F49; z-index:200;}
 div.table_position div.general_options ul {position:absolute; bottom:0; right:0; width:auto; height:23px!important; padding:5px 5px 0 0; margin:0; background:#282F49; -webkit-border-top-left-radius: 5px; -moz-border-radius-topleft: 5px; border-top-left-radius: 5px; z-index:100;}

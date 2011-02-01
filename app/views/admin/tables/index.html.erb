@@ -97,11 +97,19 @@
             <h4>Do you want to import some data to the new table?</h4>
             <p>You will also be available to do it later.</p>
             <ul>
-              <li><a href="#">I want to create an empty table</a></li>
-              <li class="selected">
+              <li class="selected"><a href="#">I want to create an empty table</a></li>
+              <li>
                 <a href="#">I want to start with some imported data...</a>
                 <span class="file">
-                  <input type="file" value="select your file" name="file"/>
+                  <div class="select_file">
+                    <a href="#select_file">Select files...</a>
+                    <p>You can import .csv and .xls files</p>
+                    <input type="file" value="select your file" name="file"/>
+                  </div>
+                  <div class="progress">
+                    <p>Uploading your file...</p>
+                    <span class="progress"></span>
+                  </div>
                 </span>
               </li>
             </ul>

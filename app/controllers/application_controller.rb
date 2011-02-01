@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
 
+  $progress ||= {}
+
   protected
 
   def render_404

@@ -251,10 +251,15 @@ class Api::Json::TablesController < ApplicationController
   def create
     @table = Table.new
     @table.user_id = current_user.id
+    if params[:file]
+      if $progress[params["X-Progress-ID".to_sym]].nil?
+        $progress[params["X-Progress-ID".to_sym]] = 0
+      end
+    end
     if @table.valid? && @table.save
-      render :json => {:id => @table.id}.to_json, :status => 200, :location => table_path(@table)
+      render :json => { :id => @table.id }.to_json, :status => 200, :location => table_path(@table)
     else
-      render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400
+      render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400
     end
   end
 

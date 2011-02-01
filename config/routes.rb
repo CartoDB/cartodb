@@ -2,6 +2,8 @@ CartoDB::Application.routes.draw do
 
   root :to => "home#index"
 
+  get '/progress' => 'upload#progress', :format => :json
+
   get '/login' => 'sessions#new', :as => :login
   get '/logout' => 'sessions#destroy', :as => :logout
   match '/sessions/create' => 'sessions#create', :as => :create_session

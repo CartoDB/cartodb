@@ -92,23 +92,23 @@
           <h5>We are creating your table...</h5>
           <p>It's not gonna be a lot of time. Just a few seconds, ok?</p>
         </span>
-        <form action="#">
+        <form action="#import_file" id="import_file" enctype="multipart/form-data" method="post">
           <span class="top">
             <h4>Do you want to import some data to the new table?</h4>
             <p>You will also be available to do it later.</p>
             <ul>
-              <li class="selected"><a href="#">I want to create an empty table</a></li>
-              <li class="disabled">
+              <li><a href="#">I want to create an empty table</a></li>
+              <li class="selected">
                 <a href="#">I want to start with some imported data...</a>
                 <span class="file">
-                  <input type="file" />
+                  <input type="file" value="select your file" name="file"/>
                 </span>
               </li>
             </ul>
           </span>
           <span class="bottom">
             <a href="#" class="cancel">cancel</a>
-            <input id="create_table" type="submit" value="Create table"/>
+            <input id="create_table" type="submit" name="submit" value="Create table"/>
           </span>
         </form>
       </div>

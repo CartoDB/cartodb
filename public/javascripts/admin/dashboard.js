@@ -29,27 +29,46 @@
       });
 
 
-      $('input#create_table').click(function(ev){
+      $('form#import_file').submit(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-        $('div.create_window div.inner_').animate({borderColor:'#FFC209', height:'68px'},500);
-        $('div.create_window div.inner_ form').animate({opacity:0},300,function(){
-          $('div.create_window div.inner_ span.loading').show();
-          $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
-            $.ajax({
-              type: "POST",
-              url: '/api/json/tables/',
-              success: function(data, textStatus, XMLHttpRequest) {
-                window.location.href = XMLHttpRequest.getResponseHeader("Location");
-              },
-              error: function(e) {
-                console.debug(e);
-              }
-            });
-          });
+        
+        var uuid= '';
+        for (i = 0; i < 32; i++) {
+          uuid += Math.floor(Math.random() * 16).toString(16);
+        }
+        
+        
+        $.ajax({
+          type: "POST",
+          url: '/api/json/tables/?X-Progress-ID='+uuid,
+          success: function(data, textStatus, XMLHttpRequest) {
+            console.log('blat');
+          },
+          error: function(e) {
+            console.debug(e);
+          }
         });
+        
+        
+        // $('div.create_window div.inner_').animate({borderColor:'#FFC209', height:'68px'},500);
+        // $('div.create_window div.inner_ form').animate({opacity:0},300,function(){
+        //   $('div.create_window div.inner_ span.loading').show();
+        //   $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
+        //     $.ajax({
+        //       type: "POST",
+        //       url: '/api/json/tables/',
+        //       success: function(data, textStatus, XMLHttpRequest) {
+        //         window.location.href = XMLHttpRequest.getResponseHeader("Location");
+        //       },
+        //       error: function(e) {
+        //         console.debug(e);
+        //       }
+        //     });
+        //   });
+        // });
 
-        setTimeout(function(){$('div.create_window a.close_create').addClass('last');},250);
+        //setTimeout(function(){$('div.create_window a.close_create').addClass('last');},250);
       });
 
       $('a.delete').click(function(ev){

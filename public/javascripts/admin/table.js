@@ -9,6 +9,7 @@
           total: 5000
         }
       );
+      $('p.session a, a.logo').click(function(){window.location.href = $(this).attr('href');});
     });
 
     

@@ -28,7 +28,7 @@
   var defaults;
   var actualPage;
   var total;
-  var sizes = [];
+  var cell_size = 100;
 
   var methods = {
     
@@ -60,7 +60,6 @@
      }
 
      $.ajax({
-       //dataType: 'jsonp',
        method: "GET",
        url: options.getDataUrl,
        data: {
@@ -68,15 +67,30 @@
          page: actualPage
        },
        success: function(data) {
+
          if (data.total_rows==0) {
            //Start new table
+           
+           //Calculate width of th on header 
+           var window_width = $(window).width();
+           if (window_width>((data.columns.length*128)+44)) {
+             cell_size = ((window_width-172)/(data.columns.length-1))-26;
+           }
+           
            if ($(table).children('thead').length==0) {methods.drawColumns(data.columns);}
            methods.startTable();
          } else {
            total = data.total_rows;
            if (data.rows.length>0) {
+             if ($(table).children('thead').length==0) {
+               //Calculate width of th on header 
+               var window_width = $(window).width();
+               if (window_width>((data.columns.length*128)+44)) {
+                 cell_size = ((window_width-172)/(data.columns.length-1))-26;
+               }
+               methods.drawColumns(data.columns);
+             }  
              methods.drawRows(options,data.rows,direction,actualPage);
-             if ($(table).children('thead').length==0) {methods.drawColumns(data.columns);}  
            } else {
              methods.hideLoader();
              if (direction=="next") {
@@ -98,19 +112,25 @@
     drawColumns: function(data) {
       //Draw the columns headers
       var thead = '<thead><tr><th class="first"><div></div></th>';
+      
       $.each(data,function(index,element){
         var ul_list = '<span>' +
+                        '<h5>EDIT</h5>' +
                         '<ul>' +
                           '<li><a href="#">Order by this column</a></li>' +
                           '<li><a href="#">Filter by this column</a></li>' +
-                          '<li><a href="#">Rename column</a></li>' +
-                          '<li><a href="#">Change data type</a></li>' +
-                          '<li><a href="#">Delete column</a></li>' +
+                          ((index!=0)?'<li><a href="#">Rename column</a></li>':'') +
+                          ((index!=0)?'<li><a href="#">Change data type</a></li>':'') +
+                          ((index!=0)?'<li><a href="#">Delete column</a></li>':'') +
+                        '</ul>' +
+                        '<div class="line"></div>'+
+                        '<h5>CREATE</h5>' +
+                        '<ul>' +
                           '<li class="last"><a href="#">Add new column</a></li>' +
                         '</ul>' +
                       '</span>';
-        thead += '<th width="500">'+
-                    '<div>'+
+        thead += '<th>'+
+                    '<div '+((index==0)?'':' style="width:'+cell_size+'px"') + '>'+
                       '<h3>'+element[0]+'</h3>'+
                       '<p>'+element[1]+'</p>'+
                       '<a class="options" href="#">options</a>'+
@@ -144,7 +164,7 @@
       } else {
         var tbody = '';
       }
-
+      
       
       //Loop all the data
       $.each(data, function(i,element){
@@ -157,7 +177,7 @@
                             '</span>';
         tbody += '<tr r="'+element.identifier+'"><td class="first" r="'+ element.identifier +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
         $.each(element, function(j,elem){
-          tbody += '<td width="100" r="'+ element.identifier +'" c="'+ j +'"><div>'+elem+'</div></td>';
+          tbody += '<td r="'+ element.identifier +'" c="'+ j +'"><div '+((j=='id')?'':' style="width:'+cell_size+'px"') + '>'+elem+'</div></td>';
         });
         tbody += '</tr>';
       });
@@ -407,13 +427,13 @@
           }
         }
 
-        // if (event.preventDefault) {
-        //   event.preventDefault();
-        //   event.stopPropagation();
-        // } else {
-        //   event.stopPropagation();
-        //   event.returnValue = false;
-        // }
+        if (event.preventDefault) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          event.stopPropagation();
+          event.returnValue = false;
+        }
       });
 
 
@@ -538,17 +558,17 @@
       var body_element = $(table).children('tbody').children('tr');
       
       // WIDTH
-      if (parent_width>width_table_content) {
-        $(head_element).width(128 + parent_width-width_table_content);
-        $(body_element).each(function(index,element){
-          $(element).children('td:last').children('div').width(128 + parent_width-width_table_content);
-        });
-      } else {
-        $(head_element).width(128);
-        $(body_element).each(function(index,element){
-          $(element).children('td:last').children('div').width(128);
-        });
-      }
+      // if (parent_width>width_table_content) {
+      //   $(head_element).width(128 + parent_width-width_table_content);
+      //   $(body_element).each(function(index,element){
+      //     $(element).children('td:last').children('div').width(128 + parent_width-width_table_content);
+      //   });
+      // } else {
+      //   $(head_element).width(128);
+      //   $(body_element).each(function(index,element){
+      //     $(element).children('td:last').children('div').width(128);
+      //   });
+      // }
       
       // HEIGTH
       var parent_height = $(window).height();

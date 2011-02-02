@@ -12,6 +12,8 @@ gem 'rails_warden'
 
 gem 'rdoc', :group => :development
 gem 'passenger', :group => :development
+gem 'capistrano'
+gem 'capistrano-ext'
 
 group :test, :development do
   gem 'mocha'

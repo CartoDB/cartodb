@@ -3,7 +3,7 @@
 div.table_position {position:relative; float:left; width:100%; min-width:880px; min-height:55px; margin:103px 0 0 0; padding:0; overflow-y:hidden; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;
   -webkit-user-select:none; -moz-user-select:none;}
 div.table_position table {position:relative!important; width:auto; margin:0;}
-div.table_position table thead {position:absolute; top:0; left:0; padding:5px 0 0 0; margin:0; z-index:20; background-color:#FFFFFF; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white;}
+div.table_position table thead {position:absolute; top:0; left:0; padding:5px 0 0 0; margin:0; z-index:50; background-color:#FFFFFF; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white;}
 div.table_position table thead tr {position:relative; float:left; padding:0 0 0 41px; border-bottom:1px solid #D2D3D5;}
 div.table_position table thead tr th {background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom; border:1px solid #E2E3E7; border-bottom:none; border-top:none; text-shadow:0 1px white;}
 div.table_position table thead tr th div {position:relative!important; padding:10px 18px 16px 8px; width:100px; height:27px; max-height:27px;}
@@ -22,7 +22,6 @@ div.table_position table thead tr th div input:focus {padding:2px; background:#F
 div.table_position table thead tr th a.static {float:left; margin:3px 0 0 4px; font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white; text-transform:capitalize;}
 div.table_position table thead tr th div a.column_type {float:left; margin:0 0 0 4px; padding:0; color:#B4B4B4; text-decoration:none; text-transform:capitalize;}
 div.table_position table thead tr th div a.column_type:hover {color:#666666; padding:0 7px 0 0; background:url('/images/admin/icons/grey_down_arrow.png') no-repeat right 6px;}
-
 div.table_position table thead tr th div span.col_types {position:absolute; display:none; left:7px; background:none; width:82px; height:auto; padding:19px 0 0 0;}
 div.table_position table thead tr th div span.col_types p {position:absolute; height:15px; left:0; top:0; margin:0; padding:4px 14px 0 4px; border:1px solid #A7A7A7; border-bottom:none; z-index:10; background:url('/images/admin/icons/grey_up_arrow.png') no-repeat right 9px #F7f8f8; 
   font:normal 11px "Helvetica",Arial; color:#666666; text-transform:capitalize;}
@@ -33,8 +32,6 @@ div.table_position table thead tr th div span.col_types ul li a {float:left; tex
 div.table_position table thead tr th div span.col_types ul li a:hover {color:#333333; text-decoration:underline;}
 div.table_position table thead tr th div span.col_types ul li.selected a {color:#999999; text-decoration:underline;}
 div.table_position table thead tr th div span.col_types ul li.selected a:hover {color:#999999; text-decoration:underline; cursor:default;}
-
-
 div.table_position table thead tr th span.col_ops_list {display:none; position:absolute; right:10px; top:25px; width:130px; height:auto; background:#282F46; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:110;}
 div.table_position table thead tr th span.col_ops_list ul {float:left; padding:0 0 10px; width:130px;}
 div.table_position table thead tr th span.col_ops_list li {float:left; width:104px; margin:0 3px 0 5px; padding:5px 8px 1px;}
@@ -50,6 +47,10 @@ div.table_position table tbody tr {position:relative; float:left; height:39px; p
 div.table_position table tbody tr td {padding:0; margin:0; background:url('/images/admin/table/item_bkg.jpg') repeat-x 0 -1px; border:1px solid #E4E5E9; font:normal 13px "Helvetica"; line-height:13px; color:#666666;
 text-shadow:0 1px white;}
 div.table_position table tbody tr.editing td {background-position:0 -40px;}
+div.table_position table tbody tr.selecting_first {background-position:0 -40px; border-top:1px solid black;}
+div.table_position table tbody tr.selecting td {background-position:0 -40px;}
+div.table_position table tbody tr.selecting_last {border-bottom:4px solid black;}
+div.table_position table tbody tr.selecting_last td {background-position:0 -40px;}
 div.table_position table tbody tr td:hover {cursor:pointer;}
 div.table_position table tbody tr:hover td {background-position:0 -40px;}
 div.table_position table tbody tr td.id:hover {cursor:default;}

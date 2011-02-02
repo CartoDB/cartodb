@@ -330,24 +330,22 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addScroll: function() {
 
-      $('div.table_position').scroll(function(ev){
-        //For moving first table column
-        $(table).children('tbody').children('tr').children('td.first').css('left',$('div.table_position').scrollLeft()+'px');
-        $(table).children('thead').children('tr').children('th.first').css('left',$('div.table_position').scrollLeft()+'px');
-      });
 
-
-      $(window).scroll(function(ev) {
+      $(document).scroll(function(ev) {
         ev.stopPropagation();
         ev.preventDefault();
 
         //For moving thead when scrolling
-        if ($(window).scrollTop()>58) {
-          $('section.subheader').css('top',$(window).scrollTop()-1+'px');
-          $(table).children('thead').css('top',$(window).scrollTop()-60+'px');
+        if ($(document).scrollTop()>58) {
+          $('section.subheader').css('top','0');
+          $(table).children('thead').css('top','102px');
+          $('section.subheader').css('position','fixed');
+          $(table).children('thead').css('position','fixed');
         } else {
           $('section.subheader').css('top','58px');
-          $(table).children('thead').css('top','0px');
+          $(table).children('thead').css('top',160-$(document).scrollTop()+'px');
+          $('section.subheader').css('position','absolute');
+          $(table).children('thead').css('position','fixed');
         }
 
 
@@ -365,6 +363,15 @@
           }
         }
       });
+      
+      
+      $('div.table_position').scroll(function(ev){
+        //For moving first table column
+        $(table).children('tbody').children('tr').children('td.first').css('left',$('div.table_position').scrollLeft()+'px');
+        $(table).children('thead').children('tr').children('th.first').css('left',$('div.table_position').scrollLeft()+'px');
+        $(table).children('thead').css('left',-$('div.table_position').scrollLeft()+'px');
+      });
+      
     },
 
 
@@ -460,6 +467,12 @@
               };
             });
           }
+        } else {
+          if (targetElement == "div" && $(target).parent().is('td')) {
+            var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+            $('tbody tr').removeClass('editing');
+            $('tbody tr[r="'+data.row+'"]').addClass('editing');
+          }
         }
 
         if (event.preventDefault) {
@@ -470,6 +483,90 @@
           event.returnValue = false;
         }
       });
+      
+      
+      
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //EXPERIMENT SELECTING ROWS
+      
+      $(document).mousedown(function(event){
+        //console.log(event);
+        
+        var target = event.target || event.srcElement;
+        var targetElement = target.nodeName.toLowerCase();
+        $('tbody tr').removeClass('editing');
+        $('tbody tr').removeClass('selecting_first');
+        $('tbody tr').removeClass('selecting');
+        $('tbody tr').removeClass('selecting_last');
+
+        if (targetElement == "div" && $(target).parent().is('td')) {
+          var first_row = $(target).parent().attr('r');
+          $('tbody tr[r="'+first_row+'"]').addClass('selecting_first');
+        }
+        
+        $(document).mousemove(function(event){
+          var target = event.target || event.srcElement;
+          var targetElement = target.nodeName.toLowerCase();
+
+          if (targetElement == "div" && $(target).parent().is('td')) {
+            var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+            
+            
+            //control -> Borrar previas, fuera del bound. -> Mover bottom
+            // 
+            // for (var i=0; i<; i++) {
+            //   
+            // }
+            
+            
+            $('tbody tr[r="'+data.row+'"]').addClass('selecting');
+          } else {
+          }
+          if (event.preventDefault) {
+            event.preventDefault();
+            event.stopPropagation();
+          } else {
+            event.stopPropagation();
+            event.returnValue = false;
+          }
+        });
+        
+        if (event.preventDefault) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          event.stopPropagation();
+          event.returnValue = false;
+        }
+      });
+      
+
+      
+      $(document).mouseup(function(event){
+        var target = event.target || event.srcElement;
+        var targetElement = target.nodeName.toLowerCase();
+
+        if (targetElement == "div" && $(target).parent().is('td')) {
+          var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+          if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
+            $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
+          } else {
+            $('tbody tr[r="'+data.row+'"]').addClass('selecting_last');
+          }
+        }
+        $(document).unbind('mousemove');
+        if (event.preventDefault) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          event.stopPropagation();
+          event.returnValue = false;
+        }
+      });
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
+
+
 
 
       //Head options event
@@ -516,29 +613,6 @@
            $('body').unbind('click');
          };
         });
-        
-        // if (!$(this).hasClass('selected')) {
-        //    $('tbody tr td.first a.options').removeClass('selected');
-        //    $('tbody tr td.first span').hide();
-        // 
-        //    $('thead tr a.options').removeClass('selected');
-        //    $('thead tr span').hide();
-        //    $(this).addClass('selected');
-        //    $(this).parent().children('span.col_ops_list').show();
-        // 
-        //    $('body').click(function(event) {
-        //      if (!$(event.target).closest('thead tr span').length) {
-        //        $('thead tr span').hide();
-        //        $('thead tr a.options').removeClass('selected');
-        //        $('body').unbind('click');
-        //      };
-        //    });
-        // 
-        //  } else {
-        //    $(this).removeClass('selected');
-        //    $(this).parent().children('span').hide();
-        //    $('body').unbind('click');
-        //  }
       });
       
       

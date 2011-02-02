@@ -49,6 +49,14 @@ GEM
     archive-tar-minitar (0.5.2)
     arel (2.0.7)
     builder (2.1.2)
+    capistrano (2.5.19)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.0.0)
+    capistrano-ext (1.2.1)
+      capistrano (>= 1.0.0)
     capybara (0.4.0)
       celerity (>= 0.7.9)
       culerity (>= 0.2.4)
@@ -73,6 +81,7 @@ GEM
       rake (>= 0.8.7)
     file-tail (1.0.5)
       spruz (>= 0.1.0)
+    highline (1.6.1)
     i18n (0.5.0)
     json_pure (1.4.6)
     launchy (0.3.7)
@@ -89,6 +98,13 @@ GEM
     mocha (0.9.10)
       rake
     multi_json (0.0.5)
+    net-scp (1.0.4)
+      net-ssh (>= 1.99.1)
+    net-sftp (2.0.5)
+      net-ssh (>= 2.0.9)
+    net-ssh (2.1.0)
+    net-ssh-gateway (1.0.1)
+      net-ssh (>= 1.99.1)
     nofxx-georuby (1.9.0)
       json_pure (>= 1.4.6)
     nokogiri (1.4.4)
@@ -173,6 +189,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  capistrano
+  capistrano-ext
   capybara
   capybara-zombie!
   launchy

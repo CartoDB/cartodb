@@ -114,7 +114,18 @@
       var thead = '<thead><tr><th class="first"><div></div></th>';
       
       $.each(data,function(index,element){
-        var ul_list = '<span>' +
+        var column_types = '<span class="col_types">' +
+                        '<p>'+element[1]+'</p>' +
+                        '<ul>' +
+                          '<li class="selected"><a href="#">String</a></li>' +
+                          '<li><a href="#">Number</a></li>' +
+                          '<li><a href="#">Date</a></li>' +
+                          '<li><a href="#">Lat/Lng</a></li>' +
+                          '<li><a href="#">Geometry</a></li>' +
+                        '</ul>' +
+                      '</span>';
+        
+        var col_ops_list = '<span class="col_ops_list">' +
                         '<h5>EDIT</h5>' +
                         '<ul>' +
                           '<li><a href="#">Order by this column</a></li>' +
@@ -131,10 +142,13 @@
                       '</span>';
         thead += '<th>'+
                     '<div '+((index==0)?'':' style="width:'+cell_size+'px"') + '>'+
-                      '<h3>'+element[0]+'</h3>'+
-                      '<p>'+element[1]+'</p>'+
+                      ((index==0)?'<h3>'+element[0]+'</h3>':'<input type="text" value="'+element[0]+'"/>') +
+                      '<p class="long">'+
+                        ((index==0)?'<a class="static">'+element[1]+'</a>':'<a href="#" class="column_type">'+element[1]+'</a>') +
+                      '</p>'+
                       '<a class="options" href="#">options</a>'+
-                      ul_list+
+                      col_ops_list+
+                      ((index!=0)?column_types:'') +
                     '</div>'+
                   '</th>';
         
@@ -169,15 +183,20 @@
       //Loop all the data
       $.each(data, function(i,element){
         var options_list =  '<span>' +
+                              '<h5>EDIT</h5>' +
                               '<ul>' +
                                 '<li><a href="#">Duplicate row</a></li>' +
                                 '<li><a href="#">Delete row</a></li>' +
+                              '</ul>' +
+                              '<div class="line"></div>'+
+                              '<h5>CREATE</h5>' +
+                              '<ul>' +
                                 '<li class="last"><a href="#">Add new row</a></li>' +
                               '</ul>' +
                             '</span>';
-        tbody += '<tr r="'+element.identifier+'"><td class="first" r="'+ element.identifier +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+        tbody += '<tr r="'+element.id+'"><td class="first" r="'+ element.id +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
         $.each(element, function(j,elem){
-          tbody += '<td r="'+ element.identifier +'" c="'+ j +'"><div '+((j=='id')?'':' style="width:'+cell_size+'px"') + '>'+elem+'</div></td>';
+          tbody += '<td '+((j!="id")?'':'class="id"')+' r="'+ element.id +'" c="'+ j +'"><div '+((j=='id')?'':' style="width:'+cell_size+'px"') + '>'+elem+'</div></td>';
         });
         tbody += '</tr>';
       });
@@ -392,22 +411,38 @@
     bindCellEvents: function() {
 
       //Cell events
-      $(document).click(function(event){
+      
+      //DOUBLE CLICK IN THE TABLE
+      $(document).dblclick(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
 
-        if (targetElement == "div" && $(target).parent().attr('c')!=undefined) {
+        if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id')) {
           var target_position = $(target).parent().offset();
           var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
           $('tbody tr[r="'+data.row+'"]').addClass('editing');
           $('div.edit_cell').css('top',target_position.top-192+'px');
-          $('div.edit_cell').css('left',target_position.left-80+'px');
+          $('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');
           $('div.edit_cell textarea').text(data.value);
           $('div.edit_cell a.save').attr('r',data.row);
           $('div.edit_cell a.save').attr('c',data.column);
           $('div.edit_cell').show();
         }
 
+        if (event.preventDefault) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          event.stopPropagation();
+          event.returnValue = false;
+        }
+      });
+
+
+      //CLICK IN THE TABLE
+      $(document).click(function(event){
+        var target = event.target || event.srcElement;
+        var targetElement = target.nodeName.toLowerCase();
 
         //Clicking in first column element
         if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
@@ -416,7 +451,7 @@
             $('tbody tr td.first div a.options').removeClass('selected');
             $(target).parent().children('span').show();
             $(target).addClass('selected');
-
+        
             $('body').click(function(event) {
               if (!$(event.target).closest('tbody tr td div span').length) {
                 $('table tbody tr td.first div a.options').removeClass('selected');
@@ -449,7 +484,7 @@
           $('thead tr a.options').removeClass('selected');
           $('thead tr span').hide();
           $(this).addClass('selected');
-          $(this).parent().children('span').show();
+          $(this).parent().children('span.col_ops_list').show();
 
           $('body').click(function(event) {
             if (!$(event.target).closest('thead tr span').length) {
@@ -464,8 +499,49 @@
           $(this).parent().children('span').hide();
           $('body').unbind('click');
         }
-
       });
+      
+      $('thead tr a.column_type').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $('thead tr th div span').hide();
+        
+        var position = $(this).position();
+        $(this).parent().parent().children('span.col_types').css('top',position.top-5+'px');
+        
+        $(this).parent().parent().children('span.col_types').show();
+        $('body').click(function(event) {
+         if (!$(event.target).closest('thead tr span.col_types').length) {
+           $('thead tr span').hide();
+           $('body').unbind('click');
+         };
+        });
+        
+        // if (!$(this).hasClass('selected')) {
+        //    $('tbody tr td.first a.options').removeClass('selected');
+        //    $('tbody tr td.first span').hide();
+        // 
+        //    $('thead tr a.options').removeClass('selected');
+        //    $('thead tr span').hide();
+        //    $(this).addClass('selected');
+        //    $(this).parent().children('span.col_ops_list').show();
+        // 
+        //    $('body').click(function(event) {
+        //      if (!$(event.target).closest('thead tr span').length) {
+        //        $('thead tr span').hide();
+        //        $('thead tr a.options').removeClass('selected');
+        //        $('body').unbind('click');
+        //      };
+        //    });
+        // 
+        //  } else {
+        //    $(this).removeClass('selected');
+        //    $(this).parent().children('span').hide();
+        //    $('body').unbind('click');
+        //  }
+      });
+      
+      
 
 
       //Error tooltip
@@ -474,16 +550,10 @@
           var position = $(this).offset();
           $('div.error_cell').css('left',position.left-35+'px');
           $('div.error_cell').css('top',position.top-280+'px');
-          //$('div.error_cell div.inner').css('opacity','0');
           $('div.error_cell').show();
-          //$('div.error_cell div.inner').css('marginTop','120px');
-          //$('div.error_cell div.inner').stop().animate({opacity:1,marginTop:'0px'},300);
        });
-       $("td.error div").livequery('mouseleave',
-          function() {
-            //$('div.error_cell div.inner').stop().animate({opacity:0,marginTop:'-120px'},200,function(){
-              $('div.error_cell').hide();
-            //});
+       $("td.error div").livequery('mouseleave',function() {
+         $('div.error_cell').hide();
        });
 
 

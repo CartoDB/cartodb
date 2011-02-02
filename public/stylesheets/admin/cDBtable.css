@@ -1,28 +1,49 @@
 /*TABLE*/
-div.table_position {position:relative; float:left; width:100%; min-width:880px; min-height:55px; margin:103px 0 0 0; padding:0; overflow-y:hidden; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;}
+
+div.table_position {position:relative; float:left; width:100%; min-width:880px; min-height:55px; margin:103px 0 0 0; padding:0; overflow-y:hidden; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;
+  -webkit-user-select:none; -moz-user-select:none;}
 div.table_position table {position:relative!important; width:auto; margin:0;}
 div.table_position table thead {position:absolute; top:0; left:0; padding:5px 0 0 0; margin:0; z-index:20; background-color:#FFFFFF; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white;}
 div.table_position table thead tr {position:relative; float:left; padding:0 0 0 41px; border-bottom:1px solid #D2D3D5;}
 div.table_position table thead tr th {background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom; border:1px solid #E2E3E7; border-bottom:none; border-top:none; text-shadow:0 1px white;}
-div.table_position table thead tr th div {position:relative!important; padding:13px; width:100px; height:27px;}
-div.table_position table thead tr th.first {position:absolute; top:0; left:0; width:41px; height:auto; z-index:30; overflow:hidden; border:none; border-right:1px solid #E2E3E7;}
-div.table_position table thead tr th.first div {position:relative; width:41px; height:53px; margin:0; padding:0;}
-div.table_position table thead tr th h3 {font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white;}
+div.table_position table thead tr th div {position:relative!important; padding:10px 18px 16px 8px; width:100px; height:27px; max-height:27px;}
+div.table_position table thead tr th.first {position:absolute; top:0; left:0; width:41px; height:100%; z-index:30; overflow:hidden; border:none; border-right:1px solid #E2E3E7;}
+div.table_position table thead tr th.first div {position:relative; width:41px; height:150px; margin:0; padding:0;}
+div.table_position table thead tr th h3 {float:left; margin:3px 0 0 4px; font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white;}
 div.table_position table thead tr th p {padding:3px 0 0 0;  font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white;}
 div.table_position table thead tr th a.options {position:absolute; right:10px; top:10px; height:14px; width:14px; margin:0; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10;}
 div.table_position table thead tr th a.options:hover {background-position:0 -14px;}
 div.table_position table thead tr th a.options.selected {height:20px; background-image:url('/images/admin/table/selected_option.png')}
 div.table_position table thead tr th a.options.selected:hover {background-position:0 0;}
-div.table_position table thead tr th span {display:none; position:absolute; right:10px; top:25px; width:130px; height:auto; background:#282F46; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:110;}
-div.table_position table thead tr th span ul {float:left; padding:6px 0 5px; width:130px;}
-div.table_position table thead tr th span li {float:left; width:104px; margin:0 3px 0 5px; padding:3px 8px 3px;}
-div.table_position table thead tr th span li a {float:left; font:normal 11px "Helvetica",Arial; text-decoration:none; color:white; text-shadow:none; text-align:left!important;}
-div.table_position table thead tr th span li a:hover {color:#6EBE6E;}
-div.table_position table thead tr th span li.last a {color:#FFCC00; text-shadow:0 1px black;}
-div.table_position table thead tr th span li.last a:hover {color:#FFFE5E;}
-div.table_position table thead tr th span h5 {padding:8px 0 0 7px; font:bold 10px Helvetica; color:#53596B; text-shadow:0 -1px #1E2A40; text-align:left;}
-div.table_position table thead tr th span div.line {float:left; width:124px; height:1px!important; padding:0; margin:0 0 8px 3px; background:#393F55;}
+div.table_position table thead tr th div p.long {float:left; display:block; width:100%;}
+div.table_position table thead tr th div input {float:left; width:81%; margin:0; padding:3px; border:0px; background:none; font:bold 11px "Helvetica"; color:#727272; text-shadow:0 1px white;}
+div.table_position table thead tr th div input:hover {padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; font-weight:normal; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; cursor:pointer;}
+div.table_position table thead tr th div input:focus {padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; font-weight:normal; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; outline:none; cursor:pointer;}
+div.table_position table thead tr th a.static {float:left; margin:3px 0 0 4px; font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white; text-transform:capitalize;}
+div.table_position table thead tr th div a.column_type {float:left; margin:0 0 0 4px; padding:0; color:#B4B4B4; text-decoration:none; text-transform:capitalize;}
+div.table_position table thead tr th div a.column_type:hover {color:#666666; padding:0 7px 0 0; background:url('/images/admin/icons/grey_down_arrow.png') no-repeat right 6px;}
 
+div.table_position table thead tr th div span.col_types {position:absolute; display:none; left:7px; background:none; width:82px; height:auto; padding:19px 0 0 0;}
+div.table_position table thead tr th div span.col_types p {position:absolute; height:15px; left:0; top:0; margin:0; padding:4px 14px 0 4px; border:1px solid #A7A7A7; border-bottom:none; z-index:10; background:url('/images/admin/icons/grey_up_arrow.png') no-repeat right 9px #F7f8f8; 
+  font:normal 11px "Helvetica",Arial; color:#666666; text-transform:capitalize;}
+div.table_position table thead tr th div span.col_types ul {float:left; width:82px; margin:0; padding:5px 0 3px; border:1px solid #A7A7A7; -webkit-border-radius: 3px; -webkit-border-top-left-radius: 0; -moz-border-radius: 3px; -moz-border-radius-topleft: 0; border-radius: 3px; border-top-left-radius: 0;
+  background-image:-moz-linear-gradient(100% 100% 90deg, #F7f8f8, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#F7f8f8), to(#CACBCE));}
+div.table_position table thead tr th div span.col_types ul li {float:left; width:74px; margin:0; padding:2px 0 2px 4px;}
+div.table_position table thead tr th div span.col_types ul li a {float:left; text-align:left!important; font:normal 11px "Helvetica"; color:#666666; text-decoration:none; text-transform:capitalize;}
+div.table_position table thead tr th div span.col_types ul li a:hover {color:#333333; text-decoration:underline;}
+div.table_position table thead tr th div span.col_types ul li.selected a {color:#999999; text-decoration:underline;}
+div.table_position table thead tr th div span.col_types ul li.selected a:hover {color:#999999; text-decoration:underline; cursor:default;}
+
+
+div.table_position table thead tr th span.col_ops_list {display:none; position:absolute; right:10px; top:25px; width:130px; height:auto; background:#282F46; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:110;}
+div.table_position table thead tr th span.col_ops_list ul {float:left; padding:0 0 10px; width:130px;}
+div.table_position table thead tr th span.col_ops_list li {float:left; width:104px; margin:0 3px 0 5px; padding:5px 8px 1px;}
+div.table_position table thead tr th span.col_ops_list li a {float:left; font:normal 11px "Helvetica",Arial; text-decoration:none; color:white; text-shadow:none; text-align:left!important;}
+div.table_position table thead tr th span.col_ops_list li a:hover {color:#6EBE6E;}
+div.table_position table thead tr th span.col_ops_list li.last a {color:#FFCC00; text-shadow:0 1px black;}
+div.table_position table thead tr th span.col_ops_list li.last a:hover {color:#FFFE5E;}
+div.table_position table thead tr th span.col_ops_list h5 {padding:8px 0 0 7px; font:bold 10px Helvetica; color:#53596B; text-shadow:0 -1px #1E2A40; text-align:left;}
+div.table_position table thead tr th span.col_ops_list div.line {float:left; width:124px; height:1px!important; padding:0; margin:0 0 8px 3px; background:#393F55;}
 
 div.table_position table tbody {float:left; margin:5px 0 0 0;}
 div.table_position table tbody tr {position:relative; float:left; height:39px; padding:0 0 0 41px;}
@@ -31,6 +52,7 @@ text-shadow:0 1px white;}
 div.table_position table tbody tr.editing td {background-position:0 -40px;}
 div.table_position table tbody tr td:hover {cursor:pointer;}
 div.table_position table tbody tr:hover td {background-position:0 -40px;}
+div.table_position table tbody tr td.id:hover {cursor:default;}
 div.table_position table tbody tr td.error {color:#FF9900; text-decoration:underline;}
 div.table_position table tbody tr td.error:hover {background-position:0 -78px;}
 div.table_position table tbody tr td div {float:left; width:100px; height:14px; padding:13px; overflow:hidden; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; -webkit-user-select:none; -moz-user-select:none;}
@@ -40,12 +62,18 @@ div.table_position table tbody tr td.first div a.options {float:left; height:14p
 div.table_position table tbody tr td.first div a.options:hover {background-position:0 -14px;}
 div.table_position table tbody tr td.first div a.options.selected {height:20px; background-image:url('/images/admin/table/selected_option.png')}
 div.table_position table tbody tr td.first div a.options.selected:hover {background-position:0 0;}
-div.table_position table tbody tr td.first div span {display:none; position:absolute; left:13px; top:30px; width:88px; height:auto!important; background:#282F46; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:200;}
-div.table_position table tbody tr td.first div span ul {float:left; padding:6px 0 10px; width:88px;}
+div.table_position table tbody tr td.first div span {display:none; position:absolute; left:13px; top:30px; width:88px; height:auto!important; background:#282F46; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:10;}
+div.table_position table tbody tr td.first div span ul {float:left; padding:0 0 10px; width:88px;}
 div.table_position table tbody tr td.first div span li {float:left; width:66px; margin:0 3px 0 3px; padding:7px 8px 0;}
-div.table_position table tbody tr td.first div span li.last {margin:8px 3px 0 3px; border-top:1px solid #666666;}
+div.table_position table tbody tr td.first div span li.last {margin:0 0 0 3px;}
 div.table_position table tbody tr td.first div span li a {float:left; font:normal 11px "Helvetica",Arial; text-decoration:none; color:white; text-shadow:none; text-align:left!important; text-indent:0;}
 div.table_position table tbody tr td.first div span li a:hover {color:#6EBE6E;}
+div.table_position table tbody tr td.first div span li.last a {color:#FFCC00; text-shadow:0 1px black; border:none;}
+div.table_position table tbody tr td.first div span li.last a:hover {color:#FFFE5E;}
+div.table_position table tbody tr td.first div span h5 {float:left; padding:8px 0 0 7px; margin:0; font:bold 10px Helvetica; color:#53596B; text-shadow:0 -1px #1E2A40; text-align:left;}
+div.table_position table tbody tr td.first div span div.line {float:left; width:82px; height:1px!important; padding:0; margin:0 0 0 3px!important; background:#393F55;}
+
+
 /*new table*/
 div.table_position table.new {height:100%; width:100%;}
 div.table_position div.empty_table {position:absolute; top:50%; left:50%; width:300px; height:230px; margin:-115px 0 0 -150px; padding:170px 0 0 0; background:url('/images/admin/table/new_table.png') no-repeat center 0;}
@@ -62,7 +90,6 @@ div.table_position div.loading.loading_previous {margin:59px 0 0 0; border-botto
 div.table_position div.loading p {width:100%; text-align:center; font:bold 13px "Helvetica"; color:#666666;}
 div.table_position div.loading p.count {width:100%; padding:5px 0 0 0; text-align:center; font:normal 11px "Helvetica"; color:#B3B3B3;}
 div.table_position div.loading img {position:absolute; width:25; height:25px ; margin:0 0 0 -13px; top:12px; left:50%;}
-
 
 
 /*GENERAL OPTIONS*/
@@ -117,7 +144,3 @@ div.table_position div.edit_cell a.save:hover {background-position:0 -24px; colo
 div.table_position div.error_cell {position:absolute; display:none; overflow:hidden; left:250px; top:300px; width:197px; height:120px; z-index:300;}
 div.table_position div.error_cell div.inner {float:left; width:197px; height:120px; background:url('/images/admin/table/error_bkg.png') no-repeat 0 0;}
 div.table_position div.error_cell p {float:left; width:150px; margin:52px 0 0 22px; font:normal 13px Arial; color:#666666; text-shadow:0 1px white; text-align:center;}
-
-
-
-

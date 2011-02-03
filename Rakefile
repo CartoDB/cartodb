@@ -8,10 +8,12 @@ CartoDB::Application.load_tasks
 
 Rake.application.instance_variable_get('@tasks').delete('default')
 
-namespace :spec do
-  desc "Run the code examples in spec/acceptance"
-  RSpec::Core::RakeTask.new(:cartodb_acceptance) do |t|
-    t.pattern = "spec/acceptance/**/*_spec.rb"
+if %(development test).include?(Rails.env)
+  namespace :spec do
+    desc "Run the code examples in spec/acceptance"
+    RSpec::Core::RakeTask.new(:cartodb_acceptance) do |t|
+      t.pattern = "spec/acceptance/**/*_spec.rb"
+    end
   end
 end
 

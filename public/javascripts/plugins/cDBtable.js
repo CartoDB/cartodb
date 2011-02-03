@@ -330,7 +330,6 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addScroll: function() {
 
-
       $(document).scroll(function(ev) {
         ev.stopPropagation();
         ev.preventDefault();
@@ -339,13 +338,9 @@
         if ($(document).scrollTop()>58) {
           $('section.subheader').css('top','0');
           $(table).children('thead').css('top','102px');
-          $('section.subheader').css('position','fixed');
-          $(table).children('thead').css('position','fixed');
         } else {
-          $('section.subheader').css('top','58px');
+          $('section.subheader').css('top',58-$(document).scrollTop()+'px');
           $(table).children('thead').css('top',160-$(document).scrollTop()+'px');
-          $('section.subheader').css('position','absolute');
-          $(table).children('thead').css('position','fixed');
         }
 
 
@@ -500,8 +495,9 @@
         $('tbody tr').removeClass('selecting_last');
 
         if (targetElement == "div" && $(target).parent().is('td')) {
-          var first_row = $(target).parent().attr('r');
-          $('tbody tr[r="'+first_row+'"]').addClass('selecting_first');
+          var first_row = $(target).parent().parent();
+          first_row.addClass('selecting_first');
+          var initial_x = first_row.position().top;
         }
         
         $(document).mousemove(function(event){
@@ -510,16 +506,42 @@
 
           if (targetElement == "div" && $(target).parent().is('td')) {
             var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+            var current_row = $(target).parent().parent();
+            var current_x = current_row.position().top;
+            $(table).children('tbody').children('tr').removeClass('selecting');
+            current_row.addClass('selecting');
+            var find = false;
+            var cursor = first_row;
             
-            
-            //control -> Borrar previas, fuera del bound. -> Mover bottom
-            // 
-            // for (var i=0; i<; i++) {
-            //   
-            // }
-            
-            
-            $('tbody tr[r="'+data.row+'"]').addClass('selecting');
+            while (!find) {
+              if (initial_x<current_x) {
+                first_row.removeClass('selecting_last').addClass('selecting_first');
+                if (cursor.attr('r')==current_row.attr('r')) {
+                  cursor.addClass('selecting');
+                  cursor.next().removeClass('selecting');
+                  find=true;
+                } else {
+                  cursor.next().removeClass('selecting');
+                  cursor.addClass('selecting');
+                  cursor = cursor.next();
+                }
+              } else if (initial_x>current_x) {
+                first_row.removeClass('selecting_first').addClass('selecting_last');
+                if (cursor.attr('r')==current_row.attr('r')) {
+                  cursor.addClass('selecting');
+                  cursor.prev().removeClass('selecting');
+                  find=true;
+                } else {
+                  cursor.prev().removeClass('selecting');
+                  cursor.addClass('selecting');
+                  cursor = cursor.prev();
+                }
+              } else {
+                find=true;
+                return false;
+              }
+            }
+
           } else {
           }
           if (event.preventDefault) {
@@ -548,8 +570,8 @@
 
         if (targetElement == "div" && $(target).parent().is('td')) {
           var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-          if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
-            $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
+          if ($('tbody tr').hasClass('selecting_last')) {
+            $('tbody tr[r="'+data.row+'"]').addClass('selecting_first');
           } else {
             $('tbody tr[r="'+data.row+'"]').addClass('selecting_last');
           }

@@ -338,7 +338,7 @@
   
   
   function bindESC() {
-    $(document).keydown(function(){
+    $(document).keydown(function(event){
       if (event.which == '27') {
         closeAllWindows();
       }

@@ -59,7 +59,7 @@
         $(document).css('cursor','default');
       });
       
-      $('span.file input').change(function(ev){
+      $('input[type="file"]').change(function(ev){
         $('div.select_file p').text($(this).attr('value').split('\\')[2]);
       });
 
@@ -121,12 +121,6 @@
 
 
 
-
-
-
-
-
-
       //Delete window
       $('a.delete').click(function(ev){
         ev.preventDefault();
@@ -167,7 +161,7 @@
 
 
     function bindESC() {
-      $(document).keydown(function(){
+      $(document).keydown(function(event){
         if (event.which == '27') {
           $('div.mamufas').fadeOut('fast',function(){
             $('div.mamufas div.settings_window').hide();

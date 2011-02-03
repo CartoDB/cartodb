@@ -80,7 +80,7 @@
     
     
     function bindESC() {
-      $(document).keydown(function(){
+      $(document).keydown(function(event){
         if (event.which == '27') {
           $('div.mamufas').fadeOut('fast',function(){
             $('div.mamufas div.settings_window').hide();

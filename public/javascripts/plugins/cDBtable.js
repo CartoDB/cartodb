@@ -446,6 +446,23 @@
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
 
+        //Clicking in first column element + Key
+        if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
+          $('tbody tr').removeClass('editing');
+          $('tbody tr').removeClass('selecting_first');
+          $('tbody tr').removeClass('selecting');
+          $('tbody tr').removeClass('selecting_last');
+          $(target).parent().parent().removeClass('selecting_first').removeClass('border').addClass('selected');
+          
+          if (event.preventDefault) {
+            event.preventDefault();
+            event.stopPropagation();
+          } else {
+            event.stopPropagation();
+            event.returnValue = false;
+          }
+        }
+
         //Clicking in first column element
         if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
           if (!$(target).parent().parent().parent().hasClass('selecting_first')) {
@@ -453,6 +470,7 @@
             $('tbody tr').removeClass('selecting_first');
             $('tbody tr').removeClass('selecting');
             $('tbody tr').removeClass('selecting_last');
+            $('tbody tr').removeClass('selected');
             $(target).parent().parent().parent().addClass('editing');            
           }
 
@@ -489,13 +507,14 @@
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
 
-        if (targetElement == "div" && $(target).parent().is('td')) {
+        if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
           $('table tbody tr td.first div span').hide();
           $('table tbody tr td.first div a.options').removeClass('selected');
           $('tbody tr').removeClass('editing');
           $('tbody tr').removeClass('selecting_first').removeClass('border');
           $('tbody tr').removeClass('selecting');
           $('tbody tr').removeClass('selecting_last');
+          $('tbody tr').removeClass('selected');
           var first_row = $(target).parent().parent();
           first_row.addClass('selecting_first');
           var initial_x = first_row.position().top;
@@ -588,6 +607,7 @@
             $('tbody tr[r="'+data.row+'"]').removeClass('border');
             $('tbody tr[r="'+data.row+'"]').removeClass('selecting');
             $('tbody tr[r="'+data.row+'"]').removeClass('editing');
+            $('tbody tr[r="'+data.row+'"]').removeClass('selected');
           }
           if (event.preventDefault) {
             event.preventDefault();

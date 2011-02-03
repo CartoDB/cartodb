@@ -270,7 +270,7 @@ feature "Tables JSON API" do
     Table[table_other.id].should_not be_nil
   end
 
-  scenario "Create a new table" do
+  scenario "Create a new table without schema" do
     user = create_user
 
     authenticate_api user
@@ -286,6 +286,33 @@ feature "Tables JSON API" do
     response.location.should =~ /tables\/(\d+)$/
     json_response = JSON(response.body)
     json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+  end
+
+  scenario "Create a new table specifing a name and a schema" do
+    user = create_user
+
+    authenticate_api user
+
+    post_json "/api/json/tables", {:name => "My new imported table", :schema => "bla bla blat"}
+    response.status.should == 400
+
+    post_json "/api/json/tables", {
+      :name => "My new imported table",
+      :schema => "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+    }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+
+    get_json "/api/json/tables/#{response.location.match(/\/(\d+)$/)[1].to_i}/schema"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response.should == [["code", "character(5)"], ["title", "character varying(40)"], ["did", "integer"], ["date_prod", "date"], ["kind", "character varying(10)"]]
+  end
+
+  scenario "Create a new table specifing an schema and a file from which import data" do
+
   end
 
 end

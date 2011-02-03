@@ -249,4 +249,16 @@ describe Table do
     Table.count == 0
   end
 
+  it "has a default schema if is not imported from a file" do
+    table = create_table
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+  end
+
+  it "can be created with a given schema if it is valid" do
+    table = new_table
+    table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+    table.save
+    table.schema.should == [[:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"]]
+  end
+
 end

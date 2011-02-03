@@ -256,11 +256,14 @@ class Api::Json::TablesController < ApplicationController
         $progress[params["X-Progress-ID".to_sym]] = 0
       end
     end
+    @table.force_schema = params[:schema] if params[:schema]
     if @table.valid? && @table.save
       render :json => { :id => @table.id }.to_json, :status => 200, :location => table_path(@table)
     else
       render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400
     end
+  rescue => e
+    render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400 and return
   end
 
   protected

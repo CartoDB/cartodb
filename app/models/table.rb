@@ -12,6 +12,8 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
+  attr_accessor :force_schema
+
   ## Callbacks
   def validate
     super
@@ -26,25 +28,14 @@ class Table < Sequel::Model(:user_tables)
     super
   end
 
-  def name=(new_name)
-    new_name = set_table_name if new_name.blank?
-    new_name = new_name.sanitize
-    if !new? && !new_name.blank? && !name.blank? && new_name != name
-      owner.in_database do |user_database|
-        user_database.rename_table name, new_name
-      end
-    end
-    self[:name] = new_name unless new_name.blank?
-  end
-
   # Before creating a user table a table should be created in the database.
   # This table has an empty schema
   def before_create
     update_updated_at
     unless self.user_id.blank? || self.name.blank?
-      unless self.name.blank?
-        owner.in_database do |user_database|
-          unless user_database.table_exists?(self.name.to_sym)
+      owner.in_database do |user_database|
+        if !user_database.table_exists?(self.name.to_sym)
+          if force_schema.blank?
             user_database.create_table self.name.to_sym do
               primary_key :id
               String :name
@@ -52,6 +43,8 @@ class Table < Sequel::Model(:user_tables)
               String :description, :text => true
               constraint(:enforce_geotype_location){"(geometrytype(location) = 'POINT'::text OR location IS NULL)"}
             end
+          else
+            user_database.run("CREATE TABLE #{self.name} (#{force_schema})")
           end
         end
       end
@@ -97,6 +90,17 @@ class Table < Sequel::Model(:user_tables)
     User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
   end
   ## End of Callbacks
+
+  def name=(new_name)
+    new_name = set_table_name if new_name.blank?
+    new_name = new_name.sanitize
+    if !new? && !new_name.blank? && !name.blank? && new_name != name
+      owner.in_database do |user_database|
+        user_database.rename_table name, new_name
+      end
+    end
+    self[:name] = new_name unless new_name.blank?
+  end
 
   def tags=(value)
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')

@@ -1,4 +1,4 @@
-body {position:relative; background:url('/images/admin/common/header_bkg.jpg') repeat-x center 0 #2D3451; overflow-x:hidden;}
+body {position:relative; background:url('/images/admin/common/header_bkg.jpg') repeat-x center 0 #2D3451; overflow-x:hidden; -webkit-user-select:none; -moz-user-select:none;}
 body, html {height:100%;} /*table hack*/
 a:focus {outline:none;}
 
@@ -112,13 +112,14 @@ section.subheader span.tags_window ul#tags_list li.tagit-choice a.close:hover {c
 section.subheader span.tags_window ul#tags_list input[type="text"] {width:120px; margin:0; padding:0; background-color:#FFFFFF; color:#333333; border:none; font:normal 12px Arial;}
 section.subheader span.tags_window ul#tags_list input[type="text"]:focus {outline:none;}
 section.subheader span.tags_window a {float:right; width:46px; height:14px; margin:5px 5px 5px 0; padding:6px 0; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #000000; text-decoration:none; text-shadow:0 1px white;
-  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
-section.subheader span.tags_window a:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
+section.subheader span.tags_window a:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
 
 
 /*Mamufas*/
 div.mamufas {position:fixed; display:none; top:0; left:0; height:100%; width:100%; background:rgba(0,0,0,0.65); z-index:1000;}
-div.mamufas div.delete_window {position:absolute; display:none; top:50%; left:50%; width:434px; height:139px; margin:-69px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;}
+div.mamufas div.delete_window {position:absolute; display:none; top:50%; left:50%; width:434px; height:139px; margin:-69px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
+  -moz-box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.delete_window a.close_delete {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0;}
 div.mamufas div.delete_window a.close_delete:hover {background-position:0 -24px;}
 div.mamufas div.delete_window div.inner_ {width:430px; height:135px; border:2px solid #FF6600; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
@@ -131,8 +132,8 @@ div.mamufas div.delete_window div.inner_ span.bottom {float:left; width:430px; b
 div.mamufas div.delete_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.delete_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
 div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
-  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
-div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
+div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
 
 
 

@@ -9,14 +9,18 @@ div.table_position table thead tr th {background:url('/images/admin/table/head_b
 div.table_position table thead tr th div {position:relative!important; padding:10px 18px 16px 8px; width:100px; height:27px; max-height:27px;}
 div.table_position table thead tr th.first {position:absolute; top:0; left:0; width:41px; height:100%; z-index:30; overflow:hidden; border:none; border-right:1px solid #E2E3E7;}
 div.table_position table thead tr th.first div {position:relative; width:41px; height:150px; margin:0; padding:0;}
+div.table_position table thead tr th span.long {float:left; width:100%;}
 div.table_position table thead tr th h3 {float:left; margin:3px 0 0 4px; font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white;}
+div.table_position table thead tr th h3:hover {cursor:pointer; color:#444444;}
 div.table_position table thead tr th p {padding:3px 0 0 0;  font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white;}
+p.geo {float:left; width:22px; height:12px; padding:0!important; margin:3px 0 0 5px; background:url('/images/admin/icons/geo.png') no-repeat 0 0; text-indent:-9999px;}
+div.table_position table thead tr th p.geo:hover {background-position:0 -12px; cursor:pointer;}
 div.table_position table thead tr th a.options {position:absolute; right:10px; top:10px; height:14px; width:14px; margin:0; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10;}
 div.table_position table thead tr th a.options:hover {background-position:0 -14px;}
 div.table_position table thead tr th a.options.selected {height:20px; background-image:url('/images/admin/table/selected_option.png')}
 div.table_position table thead tr th a.options.selected:hover {background-position:0 0;}
 div.table_position table thead tr th div p.long {float:left; display:block; width:100%;}
-div.table_position table thead tr th div input {float:left; width:81%; margin:0; padding:3px; border:0px; background:none; font:bold 11px "Helvetica"; color:#727272; text-shadow:0 1px white;}
+div.table_position table thead tr th div input {float:left; display:none; width:81%; margin:0; padding:3px; border:0px; background:none; font:bold 11px "Helvetica"; color:#727272; text-shadow:0 1px white;}
 div.table_position table thead tr th div input:hover {padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; font-weight:normal; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; cursor:pointer;}
 div.table_position table thead tr th div input:focus {padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; font-weight:normal; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; outline:none; cursor:pointer;}
 div.table_position table thead tr th a.static {float:left; margin:3px 0 0 4px; font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white; text-transform:capitalize;}
@@ -26,7 +30,7 @@ div.table_position table thead tr th div span.col_types {position:absolute; disp
 div.table_position table thead tr th div span.col_types p {position:absolute; height:15px; left:0; top:0; margin:0; padding:4px 14px 0 4px; border:1px solid #A7A7A7; border-bottom:none; z-index:10; background:url('/images/admin/icons/grey_up_arrow.png') no-repeat right 9px #F7f8f8; 
   font:normal 11px "Helvetica",Arial; color:#666666; text-transform:capitalize;}
 div.table_position table thead tr th div span.col_types ul {float:left; width:82px; margin:0; padding:5px 0 3px; border:1px solid #A7A7A7; -webkit-border-radius: 3px; -webkit-border-top-left-radius: 0; -moz-border-radius: 3px; -moz-border-radius-topleft: 0; border-radius: 3px; border-top-left-radius: 0;
-  background-image:-moz-linear-gradient(100% 100% 90deg, #F7f8f8, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#F7f8f8), to(#CACBCE));}
+  background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #F7f8f8); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#F7f8f8), to(#CACBCE));}
 div.table_position table thead tr th div span.col_types ul li {float:left; width:74px; margin:0; padding:2px 0 2px 4px;}
 div.table_position table thead tr th div span.col_types ul li a {float:left; text-align:left!important; font:normal 11px "Helvetica"; color:#666666; text-decoration:none; text-transform:capitalize;}
 div.table_position table thead tr th div span.col_types ul li a:hover {color:#333333; text-decoration:underline;}

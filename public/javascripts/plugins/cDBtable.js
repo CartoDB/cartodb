@@ -142,7 +142,11 @@
                       '</span>';
         thead += '<th>'+
                     '<div '+((index==0)?'':' style="width:'+cell_size+'px"') + '>'+
-                      ((index==0)?'<h3>'+element[0]+'</h3>':'<input type="text" value="'+element[0]+'"/>') +
+                      '<span class="long">'+
+                        '<h3>'+element[0]+'</h3>'+
+                        ((element[0]=='location')?'<p class="geo">geo</p>':'') +
+                        ((index==0)?'':'<input type="text" value="'+element[0]+'"/>') +
+                      '</span>'+
                       '<p class="long">'+
                         ((index==0)?'<a class="static">'+element[1]+'</a>':'<a href="#" class="column_type">'+element[1]+'</a>') +
                       '</p>'+
@@ -305,6 +309,7 @@
           '</div>'+
         '</div>'
       );
+      
 
     },
     
@@ -527,7 +532,7 @@
             event.returnValue = false;
           }
         }
-        
+
         $(document).mousemove(function(event){
           var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
@@ -580,11 +585,8 @@
             event.returnValue = false;
           }
         });
-        
-
       });
       
-
       
       $(document).mouseup(function(event){
         var target = event.target || event.srcElement;
@@ -600,7 +602,7 @@
             $('tbody tr[r="'+data.row+'"]').addClass('selecting_last').addClass('border');
             $('tbody tr.selecting_first').addClass('border');
           }
-          
+
           if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_last') && $('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
             $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
             $('tbody tr[r="'+data.row+'"]').removeClass('selecting_last');
@@ -619,6 +621,9 @@
         }
         $(document).unbind('mousemove');
       });
+      
+
+      
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
 
@@ -632,21 +637,20 @@
 
         if (!$(this).hasClass('selected')) {
           $('tbody tr td.first a.options').removeClass('selected');
-          $('tbody tr td.first span').hide();
-
+          $('thead tr span.col_types').hide();
           $('thead tr a.options').removeClass('selected');
-          $('thead tr span').hide();
+          $('thead tr span.col_ops_list').hide();
           $(this).addClass('selected');
           $(this).parent().children('span.col_ops_list').show();
 
           $('body').click(function(event) {
             if (!$(event.target).closest('thead tr span').length) {
-              $('thead tr span').hide();
+              $('thead tr span.col_ops_list').hide();
+              $('thead tr span.col_types').hide();
               $('thead tr a.options').removeClass('selected');
               $('body').unbind('click');
             };
           });
-
         } else {
           $(this).removeClass('selected');
           $(this).parent().children('span').hide();
@@ -657,21 +661,21 @@
       $('thead tr a.column_type').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-        $('thead tr th div span').hide();
-        
+        $('thead tr th div span.col_ops_list').hide();
+        $('thead tr span.col_types').hide();
         var position = $(this).position();
         $(this).parent().parent().children('span.col_types').css('top',position.top-5+'px');
         
         $(this).parent().parent().children('span.col_types').show();
         $('body').click(function(event) {
          if (!$(event.target).closest('thead tr span.col_types').length) {
-           $('thead tr span').hide();
+           $('thead tr span.col_ops_list').hide();
+           $('thead tr span.col_types').hide();
+           $('thead tr a.options').removeClass('selected');
            $('body').unbind('click');
          };
         });
       });
-      
-      
 
 
       //Error tooltip
@@ -724,6 +728,68 @@
         $('div.general_options div.sql_console').show();
         $('div.general_options ul').addClass('sql');
       });
+      
+      
+      //GEO tag movement
+      
+      $('p.geo').livequery('mousedown',function(event){
+        var position = $(this).offset();
+        var geo_element = $(this);
+        var old_target = $('p.geo').parent();
+        geo_element.css('left',position.left+'px');
+        geo_element.css('top',position.top+'px');
+        geo_element.css('position','absolute');
+        geo_element.css('zIndex',100);
+        $('body').append(geo_element);
+        $('body').mousemove(function(event){
+          $('p.geo').css('left',event.clientX+'px');
+          $('p.geo').css('top',event.clientY+$(window).scrollTop()+'px');
+          if (event.preventDefault) {
+            event.preventDefault();
+            event.stopPropagation();
+          } else {
+            event.stopPropagation();
+            event.returnValue = false;
+          }
+        });
+        $('body').mouseup(function(event){
+          var target = event.target || event.srcElement;
+          var targetElement = target.nodeName.toLowerCase();
+          
+          $(this).unbind('mouseup');
+          $(this).unbind('mousemove');
+          
+          if ($(target).closest('th') && !$(target).closest('th').hasClass('first') && $(target).closest('th').find('h3').text()!="id") {
+            $(target).closest('th').children('div').children('span.long').append(geo_element);
+            geo_element.css('position','relative');
+            geo_element.css('left','0');
+            geo_element.css('top','0');
+            geo_element.css('zIndex',0);
+          } else {
+            old_target.append(geo_element);
+            geo_element.css('position','relative');
+            geo_element.css('left','0');
+            geo_element.css('top','0');
+            geo_element.css('zIndex',0);
+          }
+          if (event.preventDefault) {
+            event.preventDefault();
+            event.stopPropagation();
+          } else {
+            event.stopPropagation();
+            event.returnValue = false;
+          }
+        });
+        if (event.preventDefault) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          event.stopPropagation();
+          event.returnValue = false;
+        }
+      });
+
+      
     },
     
     

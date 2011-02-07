@@ -62,13 +62,18 @@ class User < Sequel::Model
     crypted_password + database_username
   end
 
-  def in_database(&block)
-    connection = ::Sequel.connect(
+  def in_database(options = {}, &block)
+    configuration = if options[:as] && options[:as] == :superuser
+      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        'database' => self.database_name, :logger => ::Rails.logger
+      )
+    else
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => self.database_name, :logger => ::Rails.logger,
         'username' => database_username, 'password' => database_password
       )
-    )
+    end
+    connection = ::Sequel.connect(configuration)
     result = nil
     begin
       result = yield(connection)

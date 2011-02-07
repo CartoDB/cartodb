@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema
+  attr_accessor :force_schema, :import_from_file
 
   ## Callbacks
   def validate
@@ -44,10 +44,18 @@ class Table < Sequel::Model(:user_tables)
               constraint(:enforce_geotype_location){"(geometrytype(location) = 'POINT'::text OR location IS NULL)"}
             end
           else
-            user_database.run("CREATE TABLE #{self.name} (#{force_schema})")
+            sanitized_force_schema = force_schema.split(',').map do |column|
+              if column =~ /^\s*\"([^\"]+)\"(.*)$/
+                "#{$1.sanitize} #{$2}"
+              else
+                column
+              end
+            end
+            user_database.run("CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')})")
           end
         end
       end
+      import_data! unless import_from_file.nil?
     end
     super
   end
@@ -237,6 +245,22 @@ class Table < Sequel::Model(:user_tables)
       base_name = "Untitle table #{i}".sanitize
     end
     base_name
+  end
+
+  def import_data!
+    return if self.import_from_file.nil?
+    path = if import_from_file.respond_to?(:tempfile)
+      import_from_file.tempfile.path
+    else
+      import_from_file.path
+    end
+    filename = "#{Rails.root}/tmp/importing_csv_#{self.user_id}.csv"
+    system("tail -n `wc -l #{path}` > #{filename}")
+    owner.in_database(:as => :superuser) do |user_database|
+      user_database.run("copy #{self.name} from '#{filename}' WITH CSV")
+    end
+  ensure
+    FileUtils.rm filename
   end
 
 end

@@ -252,6 +252,7 @@ class Api::Json::TablesController < ApplicationController
     @table = Table.new
     @table.user_id = current_user.id
     if params[:file]
+      @table.import_from_file = params[:file]
       if $progress[params["X-Progress-ID".to_sym]].nil?
         $progress[params["X-Progress-ID".to_sym]] = 0
       end

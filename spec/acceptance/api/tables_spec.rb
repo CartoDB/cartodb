@@ -311,8 +311,43 @@ feature "Tables JSON API" do
     json_response.should == [["code", "character(5)"], ["title", "character varying(40)"], ["did", "integer"], ["date_prod", "date"], ["kind", "character varying(10)"]]
   end
 
-  scenario "Create a new table specifing an schema and a file from which import data" do
+  scenario "Import a file when the schema is wrong" do
+    user = create_user
 
+    authenticate_api user
+
+    post_json "/api/json/tables", {
+                    :name => "Twitts",
+                    :schema => "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer",
+                    :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+               }
+    response.status.should == 400
+  end
+
+  scenario "Create a new table specifing an schema and a file from which import data" do
+    user = create_user
+
+    authenticate_api user
+
+    post_json "/api/json/tables", {
+                    :name => "Twitts",
+                    :schema => "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)",
+                    :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+               }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+
+    get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 7
+    row0 = json_response['rows'][0].symbolize_keys
+    row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+    row0[:login].should == "vzlaturistica "
+    row0[:country].should == " Venezuela "
+    row0[:followers_count].should == 211
   end
 
 end

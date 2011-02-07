@@ -249,4 +249,37 @@ describe Table do
     Table.count == 0
   end
 
+  it "has a default schema if is not imported from a file" do
+    table = create_table
+    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+  end
+
+  it "can be created with a given schema if it is valid" do
+    table = new_table
+    table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+    table.save
+    table.schema.should == [[:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"]]
+  end
+
+  it "should sanitize columns from a given schema" do
+    table = new_table
+    table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+    table.save
+    table.schema.should == [[:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"]]
+  end
+
+  it "should import a CSV if the schema is valid" do
+    table = new_table
+    table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+    table.save
+
+    table.rows_counted.should == 7
+    row0 = table.to_json[:rows][0]
+    row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+    row0[:login].should == "vzlaturistica "
+    row0[:country].should == " Venezuela "
+    row0[:followers_count].should == 211
+  end
+
 end

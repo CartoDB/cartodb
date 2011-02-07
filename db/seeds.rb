@@ -24,6 +24,7 @@ user = User.first
 table = Table.new :privacy => Table::PUBLIC, :name => 'Foursq check-ins',
                   :tags => '4sq, personal'
 table.user_id = user.id
+table.force_schema = "id SERIAL, name varchar(255), surname varchar(255), address varchar(255), city varchar(255), country varchar(255), nif varchar(255), age integer, twitter_account varchar(255), postal_code integer"
 table.save
 
 table = Table.new :privacy => Table::PRIVATE, :name => 'Downloaded movies',
@@ -45,7 +46,7 @@ end
 table = Table[1]
 
 100.times do
-  table.execute_sql("INSERT INTO \"#{table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
+  table.execute_sql("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','#{String.random(30)}','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',#{rand(100)},'#{String.random(10)}',#{rand(10000)})" )
 end
 
 user = User.order(:id).last

@@ -9,6 +9,7 @@ javascripts:
   - plugins/jquery.color
   - admin/public_tables
 - table:
+  - plugins/jquery.scrollTo
   - plugins/jquery.livequery.min
   - plugins/tag-it
   - plugins/cDBtable

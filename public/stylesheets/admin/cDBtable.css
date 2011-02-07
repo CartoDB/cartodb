@@ -5,12 +5,12 @@ div.table_position {position:relative; float:left; width:100%; min-width:880px; 
 div.table_position table {position:relative!important; width:auto; margin:0;}
 div.table_position table thead {position:fixed; top:161px; left:0; padding:5px 0 0 0; margin:0; z-index:50; background-color:#FFFFFF; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white;}
 div.table_position table thead tr {position:relative; float:left; padding:0 0 0 41px; border-bottom:1px solid #D2D3D5;}
-div.table_position table thead tr th {background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom; border:1px solid #E2E3E7; border-bottom:none; border-top:none; text-shadow:0 1px white;}
-div.table_position table thead tr th div {position:relative!important; padding:10px 18px 16px 8px; width:100px; height:27px; max-height:27px;}
+div.table_position table thead tr th {background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom #ffffff; border:1px solid #E2E3E7; border-bottom:none; border-top:none; text-shadow:0 1px white;}
+div.table_position table thead tr th div {position:relative!important; padding:10px 18px 16px 8px; width:100px; min-height:27px;}
 div.table_position table thead tr th.first {position:absolute; top:0; left:0; width:41px; height:100%; z-index:30; overflow:hidden; border:none; border-right:1px solid #E2E3E7;}
-div.table_position table thead tr th.first div {position:relative; width:41px; height:150px; margin:0; padding:0;}
+div.table_position table thead tr th.first div {position:relative; width:41px; height:100px; padding:0!important; margin:0!important;}
 div.table_position table thead tr th span.long {float:left; width:100%;}
-div.table_position table thead tr th h3 {float:left; margin:3px 0 0 4px; font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white;}
+div.table_position table thead tr th h3 {float:left; width:81%; margin:3px 0 0 4px; font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 div.table_position table thead tr th h3:hover {cursor:pointer; color:#444444;}
 div.table_position table thead tr th p {padding:3px 0 0 0;  font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white;}
 p.geo {float:left; width:22px; height:12px; padding:0!important; margin:3px 0 0 5px; background:url('/images/admin/icons/geo.png') no-repeat 0 0; text-indent:-9999px;}
@@ -24,11 +24,11 @@ div.table_position table thead tr th div input {float:left; display:none; width:
 div.table_position table thead tr th div input:hover {padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; font-weight:normal; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; cursor:pointer;}
 div.table_position table thead tr th div input:focus {padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; font-weight:normal; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; outline:none; cursor:pointer;}
 div.table_position table thead tr th a.static {float:left; margin:3px 0 0 4px; font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white; text-transform:capitalize;}
-div.table_position table thead tr th div a.column_type {float:left; margin:0 0 0 4px; padding:0; color:#B4B4B4; text-decoration:none; text-transform:capitalize;}
+div.table_position table thead tr th div a.column_type {float:left; max-width:60px; margin:0 0 0 4px; padding:0; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#B4B4B4; text-decoration:none; text-transform:capitalize;}
 div.table_position table thead tr th div a.column_type:hover {color:#666666; padding:0 7px 0 0; background:url('/images/admin/icons/grey_down_arrow.png') no-repeat right 6px;}
 div.table_position table thead tr th div span.col_types {position:absolute; display:none; left:7px; background:none; width:82px; height:auto; padding:19px 0 0 0;}
-div.table_position table thead tr th div span.col_types p {position:absolute; height:15px; left:0; top:0; margin:0; padding:4px 14px 0 4px; border:1px solid #A7A7A7; border-bottom:none; z-index:10; background:url('/images/admin/icons/grey_up_arrow.png') no-repeat right 9px #F7f8f8; 
-  font:normal 11px "Helvetica",Arial; color:#666666; text-transform:capitalize;}
+div.table_position table thead tr th div span.col_types p {position:absolute; max-width:60px; height:15px; left:0; top:0; margin:0; padding:4px 14px 0 4px; border:1px solid #A7A7A7; border-bottom:none; z-index:10; background:url('/images/admin/icons/grey_up_arrow.png') no-repeat right 9px #F7f8f8; 
+  font:normal 11px "Helvetica",Arial; color:#666666; text-transform:capitalize; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 div.table_position table thead tr th div span.col_types ul {float:left; width:82px; margin:0; padding:5px 0 3px; border:1px solid #A7A7A7; -webkit-border-radius: 3px; -webkit-border-top-left-radius: 0; -moz-border-radius: 3px; -moz-border-radius-topleft: 0; border-radius: 3px; border-top-left-radius: 0;
   background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #F7f8f8); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#F7f8f8), to(#CACBCE));}
 div.table_position table thead tr th div span.col_types ul li {float:left; width:74px; margin:0; padding:2px 0 2px 4px;}
@@ -44,7 +44,7 @@ div.table_position table thead tr th span.col_ops_list li a:hover {color:#6EBE6E
 div.table_position table thead tr th span.col_ops_list li.last a {color:#FFCC00; text-shadow:0 1px black;}
 div.table_position table thead tr th span.col_ops_list li.last a:hover {color:#FFFE5E;}
 div.table_position table thead tr th span.col_ops_list h5 {padding:8px 0 0 7px; font:bold 10px Helvetica; color:#53596B; text-shadow:0 -1px #1E2A40; text-align:left;}
-div.table_position table thead tr th span.col_ops_list div.line {float:left; width:124px; height:1px!important; padding:0; margin:0 0 8px 3px; background:#393F55;}
+div.table_position table thead tr th span.col_ops_list div.line {float:left; width:124px; min-height:1px; height:1px!important; padding:0; margin:0 0 8px 3px; background:#393F55;}
 
 div.table_position table tbody {float:left; margin:5px 0 0 0;}
 div.table_position table tbody tr {position:relative; float:left; height:39px; padding:0 0 0 41px;}

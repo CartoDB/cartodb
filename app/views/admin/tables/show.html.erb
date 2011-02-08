@@ -47,7 +47,8 @@
   <table border="0" id="cDBtable"></table>
 </div>
 
-<div id="map"></div>
+
+
 
 <%= content_for(:mamufas) do %>
   <div class="mamufas">
@@ -61,6 +62,33 @@
         <span class="bottom">
           <a href="#close_window" class="cancel">cancel</a>
           <a href="#confirm_delete" class="confirm_delete">Delete this table</a>
+        </span>
+      </div>
+    </div>
+    
+    <div class="georeference">
+      <a href="#close_window" class="close_delete"></a>
+      <div class="inner_">
+        <span class="top">
+          <h3>Choose your geocoding method for this column</h3>
+          <p>Please select the columns for the lat/lon fields</p>
+          <ul>
+            <li class="selected">
+              <a href="#lat_lng_column">This is a lat/lon column</a>
+              <!-- <div class="latlng_rows"></div> -->
+            </li>
+            <li>
+              <a href="#address_column">This is an address column</a>
+            </li>
+            <li>
+              <a href="#KML_PostGIS">KML or PostGIS geometry</a>
+            </li>
+          </ul>
+          
+        </span>
+        <span class="bottom">
+          <a href="#close_window" class="cancel">cancel</a>
+          <a href="#confirm_georeference" class="confirm_georeference">Georeference</a>
         </span>
       </div>
     </div>

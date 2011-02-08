@@ -5,6 +5,7 @@ javascripts:
 - dashboard:
   - plugins/jquery.color
   - admin/dashboard
+  - admin/import
 - public_tables:
   - plugins/jquery.color
   - admin/public_tables

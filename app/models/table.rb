@@ -32,6 +32,7 @@ class Table < Sequel::Model(:user_tables)
   # This table has an empty schema
   def before_create
     update_updated_at
+    guess_schema if force_schema.blank? && !import_from_file.blank?
     unless self.user_id.blank? || self.name.blank?
       owner.in_database do |user_database|
         if !user_database.table_exists?(self.name.to_sym)
@@ -255,12 +256,44 @@ class Table < Sequel::Model(:user_tables)
       import_from_file.path
     end
     filename = "#{Rails.root}/tmp/importing_csv_#{self.user_id}.csv"
-    system("tail -n `wc -l #{path}` > #{filename}")
+    system("awk 'NR>1{print $0}' #{path} > #{filename}")
     owner.in_database(:as => :superuser) do |user_database|
       user_database.run("copy #{self.name} from '#{filename}' WITH CSV")
     end
   ensure
     FileUtils.rm filename
+  end
+
+  def guess_schema
+    return if self.import_from_file.nil?
+    path = if import_from_file.respond_to?(:tempfile)
+      import_from_file.tempfile.path
+    else
+      import_from_file.path
+    end
+    schemas = []
+    csv = CSV.open(path)
+    column_names = csv.gets.map{ |c| c.sanitize }
+    while (line = csv.gets)
+      line.each_with_index do |field, i|
+        next if line[i].blank?
+        if schemas[i].nil?
+          if line[i] =~ /^[0-9]+$/
+            schemas[i] = "integer"
+          elsif line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
+            schemas[i] = "float"
+          else
+            schemas[i] = "varchar"
+          end
+        else
+        end
+      end
+    end
+    result = []
+    schemas.each_with_index do |column_schema, i|
+      result << "#{column_names[i]} #{column_schema}"
+    end
+    self.force_schema = result.join(', ')
   end
 
 end

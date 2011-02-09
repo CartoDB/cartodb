@@ -268,7 +268,7 @@ describe Table do
     table.schema.should == [[:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"]]
   end
 
-  it "should import a CSV if the schema is valid" do
+  it "should import a CSV if the schema is given and is valid" do
     table = new_table
     table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
@@ -280,6 +280,32 @@ describe Table do
     row0[:login].should == "vzlaturistica "
     row0[:country].should == " Venezuela "
     row0[:followers_count].should == 211
+  end
+
+  it "should guess the schema from a import file" do
+    Table.send(:public, *Table.private_instance_methods)
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+    table.force_schema.should be_blank
+    table.guess_schema
+    table.force_schema.should == "id integer, name_of_specie varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
+  end
+
+  it "should import file import_csv_1.csv" do
+    Table.send(:public, *Table.private_instance_methods)
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+    table.save
+
+    table.rows_counted.should == 100
+    row = table.to_json[:rows][6]
+    row[:id].should == 6
+    row[:name_of_specie].should == "Laetmonice producta 6"
+    row[:kingdom].should == "Animalia"
+    row[:family].should == "Aphroditidae"
+    row[:lat].should == 0.2
+    row[:lon].should == 2.8
+    row[:views].should == 540
   end
 
 end

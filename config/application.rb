@@ -45,5 +45,6 @@ module CartoDB
 end
 
 include GeoRuby::SimpleFeatures
+require 'csv'
 
 class RecordNotFound < StandardError; end

@@ -282,13 +282,46 @@ describe Table do
     row0[:followers_count].should == 211
   end
 
-  it "should guess the schema from a import file" do
+  it "should guess the schema from import file import_csv_1.csv" do
     Table.send(:public, *Table.private_instance_methods)
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
     table.force_schema.should be_blank
     table.guess_schema
     table.force_schema.should == "id integer, name_of_specie varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
+  end
+
+  it "should guess the schema from import file import_csv_2.csv" do
+    Table.send(:public, *Table.private_instance_methods)
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
+    table.force_schema.should be_blank
+    table.guess_schema
+    table.force_schema.should == "id integer, name_of_specie varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
+  end
+
+  it "should guess the schema from import file twitters.csv" do
+    Table.send(:public, *Table.private_instance_methods)
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+    table.force_schema.should be_blank
+    table.guess_schema
+    table.force_schema.should == "url varchar, login varchar, country varchar, followers_count integer, unknow_name_1 varchar"
+  end
+
+  it "should import file twitters.csv" do
+    Table.send(:public, *Table.private_instance_methods)
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+    table.save
+
+    table.rows_counted.should == 7
+    table.schema.should == [[:url, "character varying"], [:login, "character varying"], [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"]]
+    row = table.to_json[:rows][0]
+    row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+    row[:login].should == "vzlaturistica "
+    row[:country].should == " Venezuela "
+    row[:followers_count].should == 211
   end
 
   it "should import file import_csv_1.csv" do
@@ -308,4 +341,20 @@ describe Table do
     row[:views].should == 540
   end
 
+  it "should import file import_csv_2.csv" do
+    Table.send(:public, *Table.private_instance_methods)
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
+    table.save
+
+    table.rows_counted.should == 100
+    row = table.to_json[:rows][6]
+    row[:id].should == 6
+    row[:name_of_specie].should == "Laetmonice producta 6"
+    row[:kingdom].should == "Animalia"
+    row[:family].should == "Aphroditidae"
+    row[:lat].should == 0.2
+    row[:lon].should == 2.8
+    row[:views].should == 540
+  end
 end

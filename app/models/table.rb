@@ -258,7 +258,9 @@ class Table < Sequel::Model(:user_tables)
     filename = "#{Rails.root}/tmp/importing_csv_#{self.user_id}.csv"
     system("awk 'NR>1{print $0}' #{path} > #{filename}")
     owner.in_database(:as => :superuser) do |user_database|
-      user_database.run("copy #{self.name} from '#{filename}' WITH CSV")
+      # user_database.run("copy #{self.name} from '#{filename}' WITH CSV")
+      #  QUOTE AS '`'"
+      user_database.run("copy #{self.name} from '#{filename}' WITH DELIMITER '#{@col_separator || ','}' CSV")
     end
   ensure
     FileUtils.rm filename
@@ -266,14 +268,44 @@ class Table < Sequel::Model(:user_tables)
 
   def guess_schema
     return if self.import_from_file.nil?
+    @col_separator = ','
+    options = {:col_sep => @col_separator}
+    schemas = []
+    uk_column_counter = 0
+
     path = if import_from_file.respond_to?(:tempfile)
       import_from_file.tempfile.path
     else
       import_from_file.path
     end
-    schemas = []
-    csv = CSV.open(path)
-    column_names = csv.gets.map{ |c| c.sanitize }
+
+    csv = CSV.open(path, options)
+    column_names = csv.gets
+
+    if column_names.size == 1
+      candidate_col_separators = {}
+      column_names.first.scan(/([^\w\s])/i).flatten.uniq.each do |candidate|
+        candidate_col_separators[candidate] = 0
+      end
+      candidate_col_separators.keys.each do |candidate|
+        csv = CSV.open(path, options.merge(:col_sep => candidate))
+        column_names = csv.gets
+        candidate_col_separators[candidate] = column_names.size
+      end
+      @col_separator = candidate_col_separators.sort{|a,b| a[1]<=>b[1]}.last.first
+      csv = CSV.open(path, options.merge(:col_sep => @col_separator))
+      column_names = csv.gets
+    end
+
+    column_names = column_names.map do |c|
+      if c.blank?
+        uk_column_counter += 1
+        "unknow_name_#{uk_column_counter}"
+      else
+        c.sanitize
+      end
+    end
+
     while (line = csv.gets)
       line.each_with_index do |field, i|
         next if line[i].blank?
@@ -289,10 +321,12 @@ class Table < Sequel::Model(:user_tables)
         end
       end
     end
+
     result = []
-    schemas.each_with_index do |column_schema, i|
-      result << "#{column_names[i]} #{column_schema}"
+    column_names.each_with_index do |column_name, i|
+      result << "#{column_name} #{schemas[i] || "varchar"}"
     end
+
     self.force_schema = result.join(', ')
   end
 

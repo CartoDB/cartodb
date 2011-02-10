@@ -258,9 +258,7 @@ class Table < Sequel::Model(:user_tables)
     filename = "#{Rails.root}/tmp/importing_csv_#{self.user_id}.csv"
     system("awk 'NR>1{print $0}' #{path} > #{filename}")
     owner.in_database(:as => :superuser) do |user_database|
-      # user_database.run("copy #{self.name} from '#{filename}' WITH CSV")
-      #  QUOTE AS '`'"
-      user_database.run("copy #{self.name} from '#{filename}' WITH DELIMITER '#{@col_separator || ','}' CSV")
+      user_database.run("copy #{self.name} from '#{filename}' WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote || '"'}'")
     end
   ensure
     FileUtils.rm filename
@@ -298,6 +296,10 @@ class Table < Sequel::Model(:user_tables)
     end
 
     column_names = column_names.map do |c|
+      results = c.scan(/(["`\'])[^"`\']+(["`\'])/).flatten
+      if results.size == 2 && results[0] == results[1]
+        @quote = $1
+      end
       if c.blank?
         uk_column_counter += 1
         "unknow_name_#{uk_column_counter}"
@@ -309,6 +311,12 @@ class Table < Sequel::Model(:user_tables)
     while (line = csv.gets)
       line.each_with_index do |field, i|
         next if line[i].blank?
+        unless @quote
+          results = line[i].scan(/(["`\'])[^"`\']+(["`\'])/).flatten
+          if results.size == 2 && results[0] == results[1]
+            @quote = $1
+          end
+        end
         if schemas[i].nil?
           if line[i] =~ /^[0-9]+$/
             schemas[i] = "integer"

@@ -85,6 +85,18 @@ class User < Sequel::Model
     result
   end
 
+  def run_query(query)
+    rows = []
+    in_database do |user_database|
+      rows = user_database[query].all
+    end
+    {
+      :total_rows => rows.size,
+      :columns => (rows.size > 0 ? rows.first.keys : []),
+      :rows => rows
+    }
+  end
+
   def tables
     Table.filter(:user_id => self.id).order(:id).reverse
   end

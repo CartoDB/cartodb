@@ -1,7 +1,7 @@
 class Api::Json::TablesController < ApplicationController
 
   before_filter :login_required
-  before_filter :load_table, :except => [:index, :create]
+  before_filter :load_table, :except => [:index, :create, :query]
 
   # Get the list of tables of a user
   # * Request Method: +GET+
@@ -46,6 +46,26 @@ class Api::Json::TablesController < ApplicationController
     respond_to do |format|
       format.json do
         render :json => @table.to_json(:owner => current_user, :rows_per_page => params[:rows_per_page], :page => params[:page])
+      end
+    end
+  end
+
+  # Run a query against your database
+  # * Request Method: +GET+
+  # * URI: +/api/json/tables/query+
+  # * Params:
+  #   * +query+: the query to be executed
+  # * Format: +JSON+
+  # * Response:
+  #     {
+  #       "total_rows" => 100,
+  #       "columns" => [:id, :name, ...],
+  #       "rows" => [{:id=>1, :name=>"name 1", :location=>"...", :description=>"description 1"}]
+  #     }
+  def query
+    respond_to do |format|
+      format.json do
+        render :json => current_user.run_query(params[:query]).to_json
       end
     end
   end
@@ -251,6 +271,7 @@ class Api::Json::TablesController < ApplicationController
   def create
     @table = Table.new
     @table.user_id = current_user.id
+    @table.name = params[:name] if params[:name]
     if params[:file]
       @table.import_from_file = params[:file]
       if $progress[params["X-Progress-ID".to_sym]].nil?

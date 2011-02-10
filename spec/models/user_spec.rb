@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe User do
+
   it "should have a crypted password" do
     user = create_user :email => 'admin@example.com', :password => 'admin123'
     user.crypted_password.should_not be_blank
@@ -66,4 +67,42 @@ describe User do
       )
     ).test_connection.should_not == true
   end
+
+  it "should run valid queries against his database" do
+    user = create_user
+    table = new_table :name => 'antantaric species'
+    table.user_id = user.id
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+    table.save
+
+    query_result = user.run_query("select * from antantaric_species where family='Polynoidae' limit 10")
+    query_result[:total_rows].should == 2
+    query_result[:columns].should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views]
+    query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
+    query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
+
+    table2 = new_table :name => 'twitts'
+    table2.user_id = user.id
+    table2.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+    table2.save
+
+    query_result = user.run_query("select antantaric_species.family as fam, twitts.login as login from antantaric_species, twitts where family='Polynoidae' limit 10")
+    query_result[:total_rows].should == 10
+    query_result[:columns].should == [:fam, :login]
+    query_result[:rows][0].should == {:fam=>"Polynoidae", :login=>"vzlaturistica "}
+  end
+
+  it "should raise errors when running invalid queries against his database" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.name = 'antantaric species'
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+    table.save
+
+    lambda {
+      user.run_query("selectttt * from antantaric_species where family='Polynoidae' limit 10")
+    }.should raise_error
+  end
+
 end

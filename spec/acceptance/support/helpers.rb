@@ -11,8 +11,8 @@ module HelperMethods
     post '/sessions/create', {:email => user.email, :password => user.email.split('@').first}
   end
 
-  def get_json(path)
-    get path
+  def get_json(path, params = {})
+    get path, params
   end
 
   def put_json(path, params = {})

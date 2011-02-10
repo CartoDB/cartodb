@@ -1,4 +1,4 @@
-id,name of specie,kingdom,family,lat,lon,views
+id,name of species,kingdom,family,lat,lon,views
 0,nutrix,"","",0.0,0.4,406
 1,laevis,"","",0.0,3.6,79
 2,gigantea,"","",0.0,2.0,774

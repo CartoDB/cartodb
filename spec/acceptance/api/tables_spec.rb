@@ -395,7 +395,7 @@ feature "Tables JSON API" do
     json_response['total_rows'].should == 100
     row = json_response['rows'][6].symbolize_keys
     row[:id].should == 6
-    row[:name_of_specie].should == "Laetmonice producta 6"
+    row[:name_of_species].should == "Laetmonice producta 6"
     row[:kingdom].should == "Animalia"
     row[:family].should == "Aphroditidae"
     row[:lat].should == 0.2
@@ -423,7 +423,7 @@ feature "Tables JSON API" do
     json_response['total_rows'].should == 100
     row = json_response['rows'][6].symbolize_keys
     row[:id].should == 6
-    row[:name_of_specie].should == "Laetmonice producta 6"
+    row[:name_of_species].should == "Laetmonice producta 6"
     row[:kingdom].should == "Animalia"
     row[:family].should == "Aphroditidae"
     row[:lat].should == 0.2
@@ -514,4 +514,29 @@ feature "Tables JSON API" do
     row[:lon].should == 2.8
     row[:views].should == 540
   end
+
+  scenario "Run a query against a table" do
+    user = create_user
+
+    authenticate_api user
+
+    post_json "/api/json/tables", {
+                    :name => "antantaric species",
+                    :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+               }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    table_id = response.location.match(/\/(\d+)$/)[1].to_i
+
+    get_json "/api/json/tables/query", {
+      :query => "select * from antantaric_species where family='Polynoidae' limit 10"
+    }
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 2
+    json_response['rows'][0].symbolize_keys[:name_of_species].should == "Barrukia cristata"
+    json_response['rows'][1].symbolize_keys[:name_of_species].should == "Eulagisca gigantea"
+  end
+
 end

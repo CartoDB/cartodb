@@ -288,7 +288,7 @@ describe Table do
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
     table.force_schema.should be_blank
     table.guess_schema
-    table.force_schema.should == "id integer, name_of_specie varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
+    table.force_schema.should == "id integer, name_of_species varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
   end
 
   it "should guess the schema from import file import_csv_2.csv" do
@@ -342,7 +342,7 @@ describe Table do
     table.rows_counted.should == 100
     row = table.to_json[:rows][6]
     row[:id].should == 6
-    row[:name_of_specie].should == "Laetmonice producta 6"
+    row[:name_of_species].should == "Laetmonice producta 6"
     row[:kingdom].should == "Animalia"
     row[:family].should == "Aphroditidae"
     row[:lat].should == 0.2
@@ -400,4 +400,5 @@ describe Table do
     row[:lon].should == 2.8
     row[:views].should == 540
   end
+
 end

@@ -66,7 +66,7 @@
       </div>
     </div>
     
-    <div class="georeference">
+    <div class="georeference_window">
       <a href="#close_window" class="close_delete"></a>
       <div class="inner_">
         <span class="top">
@@ -114,18 +114,33 @@
                 </span>
               </div>
             </li>
-            <li>
-              <a href="#address_column">This is an address column</a>
-            </li>
-            <li>
-              <a href="#KML_PostGIS">KML or PostGIS geometry</a>
-            </li>
+            <li><a href="#address_column">This is an address column</a></li>
+            <li><a href="#KML_PostGIS">KML or PostGIS geometry</a></li>
           </ul>
-          
         </span>
         <span class="bottom">
           <a href="#close_window" class="cancel">cancel</a>
           <a href="#confirm_georeference" class="confirm_georeference">Georeference</a>
+        </span>
+      </div>
+    </div>
+    
+    
+    <div class="export_window">
+      <a href="#close_window" class="close_delete"></a>
+      <div class="inner_">
+        <span class="top">
+          <h3>Export your data</h3>
+          <p>Select your desired format for downloading the data</p>
+          <ul>
+            <li class="selected"><a class="option" href="#CSV">CSV (Comma separated values)</a></li>
+            <li><a href="#KML">KML</a></li>
+            <li><a href="#SHP">SHP</a></li>
+          </ul>
+        </span>
+        <span class="bottom">
+          <a href="#close_window" class="cancel">cancel</a>
+          <a href="#download" class="download" type="CSV">Download</a>
         </span>
       </div>
     </div>

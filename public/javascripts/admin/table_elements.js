@@ -254,7 +254,6 @@
     });
     
     
-    
     $('a.confirm_delete').click(function(ev){
       ev.preventDefault();
       ev.stopPropagation();
@@ -270,6 +269,10 @@
         }
       });
     });
+    
+    
+    
+    
   });
 
 
@@ -388,6 +391,8 @@
     //popup windows
     $('div.mamufas').fadeOut('fast',function(){
       $('div.mamufas div.delete_window').hide();
+      $('div.mamufas div.georeference_window').hide();
+      $('div.mamufas div.export_window').hide();
     });
     
     $(document).unbind('keydown');

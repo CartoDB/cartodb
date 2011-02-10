@@ -1,0 +1,80 @@
+body {position:relative; background:url('/images/admin/common/header_bkg.jpg') repeat-x center 0 #2D3451;}
+
+/*HEADER*/
+header {width:900px; height:58px; margin:0 auto; background:none;}
+header a.logo {float:left; width:70px; height:15px; margin:21px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
+header p.session {float:right; margin:22px 0 0 0; font:normal 13px Arial; color:white;}
+header p.session a {text-decoration:underline; color:white;}
+header p.session a:hover {}
+header p.session a.account {text-decoration:none;}
+header p.session a.account:hover {text-decoration:underline;}
+
+
+/*SUBHEADER+CONTENT*/
+section.outer_content {position:relative; width:100%; padding:0 0 50px; background:url('/images/admin/dashboard/content_bkg.png') repeat 0 0;}
+section.outer_content div.mesh1 {position:absolute; display:block; width:100%; min-width:880px; height:103px; background:url('/images/admin/common/header_bkg.jpg') repeat-x center -58px; z-index:0;}
+section.outer_content div.mesh2 {position:absolute; display:block; width:100%; min-width:880px; height:103px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0; z-index:0;}
+section.outer_content div.content {position:relative; z-index:2;}
+section.outer_content div.content div.top {width:900px; margin:0 auto; padding:20px 0 20px;}
+section.outer_content div.content div.top ul.breadcrumb {float:left; width:auto; margin:0;}
+section.outer_content div.content div.top ul.breadcrumb li {float:left; width:auto; padding:0 12px 0 6px; background:url('/images/admin/api/li_separator.png') no-repeat right -1px;}
+section.outer_content div.content div.top ul.breadcrumb li.first {padding:0 12px 0 0;}
+section.outer_content div.content div.top ul.breadcrumb li a {font:normal 13px Arial; color:white; text-decoration:none;}
+section.outer_content div.content div.top ul.breadcrumb li a:hover {text-decoration:underline;}
+section.outer_content div.content div.top ul.breadcrumb li.selected {background:none;}
+section.outer_content div.content div.top ul.breadcrumb li.selected a {color:#999999;}
+section.outer_content div.content div.top ul.breadcrumb li.selected a:hover {text-decoration:none; cursor:default;}
+section.outer_content div.content div.top a.get_key {float:right; width:auto; padding:3px 7px; background:black; color:white; text-transform:uppercase; font:bold 11px Arial; text-decoration:none; 
+  -webkit-border-radius:8px; -moz-border-radius:8px; border-radius:8px;}
+section.outer_content div.content div.top a.get_key:hover {background:white; color:black;}
+section.outer_content div.content div.middle {width:900px; margin:20px auto 0; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; background:url('/images/admin/api/right_bkg.jpg') repeat-y right 0 white; -webkit-box-shadow:0 0 2px 2px rgba(0,0,0,0.2);}
+section.outer_content div.content div.middle div.left {display:inline-block; width:575px; padding:30px; vertical-align:top;}
+section.outer_content div.content div.middle div.left h1 {width:100%; padding:0 0 20px 0; font:bold 21px Arial; color:#333333;}
+section.outer_content div.content div.middle div.left p {font:normal 15px Arial; color:#666666}
+section.outer_content div.content div.middle div.left p a {color:#666666;}
+section.outer_content div.content div.middle div.left p a:hover {color:#333333;}
+section.outer_content div.content div.middle div.left h2 {width:100%; padding:0 0 2px; margin:25px 0 10px 0; border-bottom:1px solid #E9EBEE; font:bold 13px Arial; color:#FF6600;}
+section.outer_content div.content div.middle div.left h3 {padding:0 0 0 12px; font:bold 15px Arial; color:#333333;}
+section.outer_content div.content div.middle div.left ul {margin:15px 0 0 12px; padding:0 0 15px 0;}
+section.outer_content div.content div.middle div.left ul li {padding:0 0 0 12px; color:#9397A4; background:url('/images/admin/api/list_style.png') no-repeat 0 -12px;}
+section.outer_content div.content div.middle div.left ul li h4 {font:normal 15px Arial; color:#666666;}
+section.outer_content div.content div.middle div.left ul li p {padding:4px 0 0 0; font:normal 13px Arial; color:#999999;}
+
+section.outer_content div.content div.middle div.right {display:inline-block; width:225px; padding:30px 20px 30px 15px; vertical-align:top;}  
+section.outer_content div.content div.middle div.right ul {width:100%;}
+section.outer_content div.content div.middle div.right ul li {width:225px; margin:5px 0 0 0;}
+section.outer_content div.content div.middle div.right ul li a {width:215px; padding:0 0 0 10px; font:normal 13px Arial; color:#9CA5AF; text-decoration:none;}
+section.outer_content div.content div.middle div.right ul li a:hover {color:#27304B;}
+section.outer_content div.content div.middle div.right ul li.selected p {width:205px; padding:3px 10px; background:#27304B; -webkit-border-radius:8px; border-radius:8px; -moz-border-radius:8px; font:normal 13px Arial; color:white;}
+section.outer_content div.content div.middle div.right ul li.selected ul {margin:0 0 0 13px;}
+section.outer_content div.content div.middle div.right ul li.selected ul li {background:url('/images/admin/api/list_style.png') no-repeat 0 -12px;}
+section.outer_content div.content div.middle div.right ul li.selected ul li a:hover {color:#26304B;}
+
+section.outer_content div.content div.middle div.right ul li.selected ul li.selected {background-position:0 7px;}
+section.outer_content div.content div.middle div.right ul li.selected ul li.selected a {color:#26304B;}
+
+
+
+
+/*FOOTER*/
+footer {float:left; width:100%; height:384px; background:url('/images/admin/dashboard/footer_bkg.jpg') repeat-x center 0;}
+footer section.prefooter {width:900px; height:271px; margin:0 auto;}
+footer section.prefooter div.block {float:left; width:280px; padding:40px 0 0 0; margin:0 30px 0 0;}
+footer section.prefooter div.block.last {margin:0;}
+footer section.prefooter div.block h3 {float:left; width:100%; height:13px; font:normal 13px Arial; color:white; text-transform:uppercase; letter-spacing:-1px; word-spacing:2px;}
+footer section.prefooter div.block h4 {margin:30px 0 0 0; font:bold 19px Arial; color:#CACDD4; text-transform:none;}
+footer section.prefooter div.block h4 a {font:bold 19px Arial; color:#CACDD4; text-transform:none; text-decoration:none;}
+footer section.prefooter div.block h4 a:hover {color:white;}
+footer section.prefooter div.block p {margin:20px 0 0 0; font:normal 13px Arial; color:#8F95A4; line-height:17px;}
+footer section.prefooter div.block p a {color:#8F95A4;}
+footer section.prefooter div.block p a:hover {color:white;}
+footer div.outer_footer {width:100%; height:113px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
+footer section.footer {width:900px; margin:0 auto;}
+footer section.footer a.logo {float:left; width:70px; height:15px; margin:32px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
+footer section.footer div.long {float:left; width:100%;}
+footer section.footer span.poweredby {float:right; width:auto;}
+footer section.footer p.vizzuality {float:left; width:auto; padding:22px 5px 0 0; font:normal 13px Arial; color:#9295A0;}
+footer section.footer span.poweredby a {float:left; width:72px; height:38px; background:url('/images/admin/common/vizzuality.png') no-repeat 0 0; text-indent:-9999px;}
+footer section.footer p.rights {float:left; padding:22px 0 0 0; font:normal 13px Arial; color:#9295A0;}
+footer section.footer p.rights a {color:#9295A0;}
+footer section.footer p.rights a:hover {color:white;}

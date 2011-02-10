@@ -135,6 +135,11 @@
                           ((index!=0)?'<li><a href="#">Delete column</a></li>':'') +
                         '</ul>' +
                         '<div class="line"></div>'+
+                        '<h5>GEOREFERENCE</h5>' +
+                        '<ul>' +
+                          '<li><a href="#" class="open_georeference">Georeference with this</a></li>' +
+                        '</ul>' +
+                        '<div class="line"></div>'+
                         '<h5>CREATE</h5>' +
                         '<ul>' +
                           '<li class="last"><a href="#">Add new column</a></li>' +
@@ -677,6 +682,17 @@
            $('body').unbind('click');
          };
         });
+      });
+      
+      
+      //Open georeference window
+      $('a.open_georeference').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).closest('div').find('a.options').removeClass('selected');
+        $(this).closest('div').find('span.col_ops_list').hide();
+        $('div.mamufas div.georeference_window').show();
+        $('div.mamufas').fadeIn();
       });
 
 

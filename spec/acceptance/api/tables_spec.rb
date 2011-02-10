@@ -350,4 +350,168 @@ feature "Tables JSON API" do
     row0[:followers_count].should == 211
   end
 
+  scenario "Create a new table from importing file twitters.csv" do
+    user = create_user
+
+    authenticate_api user
+
+    post_json "/api/json/tables", {
+                    :name => "Twitts",
+                    :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+               }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+
+    get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 7
+    row0 = json_response['rows'][0].symbolize_keys
+    row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+    row0[:login].should == "vzlaturistica "
+    row0[:country].should == " Venezuela "
+    row0[:followers_count].should == 211
+  end
+
+  scenario "Create a new table from importing file import_csv_1.csv" do
+    user = create_user
+
+    authenticate_api user
+
+    post_json "/api/json/tables", {
+                    :name => "Twitts",
+                    :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+               }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+
+    get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 100
+    row = json_response['rows'][6].symbolize_keys
+    row[:id].should == 6
+    row[:name_of_specie].should == "Laetmonice producta 6"
+    row[:kingdom].should == "Animalia"
+    row[:family].should == "Aphroditidae"
+    row[:lat].should == 0.2
+    row[:lon].should == 2.8
+    row[:views].should == 540
+  end
+
+  scenario "Create a new table from importing file import_csv_1.csv" do
+    user = create_user
+
+    authenticate_api user
+
+    post_json "/api/json/tables", {
+                    :name => "Twitts",
+                    :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+               }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+
+    get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 100
+    row = json_response['rows'][6].symbolize_keys
+    row[:id].should == 6
+    row[:name_of_specie].should == "Laetmonice producta 6"
+    row[:kingdom].should == "Animalia"
+    row[:family].should == "Aphroditidae"
+    row[:lat].should == 0.2
+    row[:lon].should == 2.8
+    row[:views].should == 540
+  end
+
+  scenario "Create a new table from importing file import_csv_2.csv" do
+    user = create_user
+
+    authenticate_api user
+
+    post_json "/api/json/tables", {
+                    :name => "Twitts",
+                    :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
+               }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+
+    get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 100
+    row = json_response['rows'][6].symbolize_keys
+    row[:id].should == 6
+    row[:name_of_specie].should == "Laetmonice producta 6"
+    row[:kingdom].should == "Animalia"
+    row[:family].should == "Aphroditidae"
+    row[:lat].should == 0.2
+    row[:lon].should == 2.8
+    row[:views].should == 540
+  end
+
+  scenario "Create a new table from importing file import_csv_3.csv" do
+    user = create_user
+
+    authenticate_api user
+
+    post_json "/api/json/tables", {
+                    :name => "Twitts",
+                    :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_3.csv", "text/csv")
+               }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+
+    get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 100
+    row = json_response['rows'][6].symbolize_keys
+    row[:id].should == 6
+    row[:name_of_specie].should == "Laetmonice producta 6"
+    row[:kingdom].should == "Animalia"
+    row[:family].should == "Aphroditidae"
+    row[:lat].should == 0.2
+    row[:lon].should == 2.8
+    row[:views].should == 540
+  end
+
+  scenario "Create a new table from importing file import_csv_4.csv" do
+    user = create_user
+
+    authenticate_api user
+
+    post_json "/api/json/tables", {
+                    :name => "Twitts",
+                    :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_4.csv", "text/csv")
+               }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+
+    get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 100
+    row = json_response['rows'][6].symbolize_keys
+    row[:id].should == 6
+    row[:name_of_specie].should == "Laetmonice producta 6"
+    row[:kingdom].should == "Animalia"
+    row[:family].should == "Aphroditidae"
+    row[:lat].should == 0.2
+    row[:lon].should == 2.8
+    row[:views].should == 540
+  end
 end

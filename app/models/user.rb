@@ -1,5 +1,15 @@
 # coding: UTF-8
 
+class CartoDB::ErrorRunningQuery < StandardError
+  attr_accessor :db_message # the error message from the database
+  attr_accessor :syntax_message # the query and a marker where the error is
+
+  def initialize(message)
+    @db_message = message.split("\n")[0]
+    @syntax_message = message.split("\n")[1..-1].join("\n")
+  end
+end
+
 class User < Sequel::Model
 
   ## Callbacks
@@ -87,14 +97,24 @@ class User < Sequel::Model
 
   def run_query(query)
     rows = []
+    time = nil
     in_database do |user_database|
-      rows = user_database[query].all
+      time = Benchmark.measure {
+        rows = user_database[query].all
+      }
     end
     {
+      :time => time.real,
       :total_rows => rows.size,
       :columns => (rows.size > 0 ? rows.first.keys : []),
       :rows => rows
     }
+  rescue => e
+    if e.message =~ /^PGError/
+      raise CartoDB::ErrorRunningQuery.new(e.message)
+    else
+      raise e
+    end
   end
 
   def tables

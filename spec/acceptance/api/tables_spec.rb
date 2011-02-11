@@ -13,10 +13,10 @@ feature "Tables JSON API" do
     table = create_table :user_id => user.id
 
     100.times do
-      table.execute_sql("INSERT INTO \"#{table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
+      user.run_query("INSERT INTO \"#{table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
     end
 
-    content = table.execute_sql("select * from \"#{table.name}\"")
+    content = user.run_query("select * from \"#{table.name}\"")[:rows]
 
     authenticate_api user
 

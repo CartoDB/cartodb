@@ -76,6 +76,8 @@ describe User do
     table.save
 
     query_result = user.run_query("select * from antantaric_species where family='Polynoidae' limit 10")
+    query_result[:time].should_not be_blank
+    query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
     query_result[:columns].should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views]
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
@@ -90,6 +92,24 @@ describe User do
     query_result[:total_rows].should == 10
     query_result[:columns].should == [:fam, :login]
     query_result[:rows][0].should == {:fam=>"Polynoidae", :login=>"vzlaturistica "}
+
+    query_result = user.run_query("update antantaric_species set family='polynoidae' where family='Polynoidae'")
+    query_result[:time].should_not be_blank
+    query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
+    query_result[:total_rows].should == 0
+    query_result[:rows].should be_empty
+
+    query_result = user.run_query("select count(*) from antantaric_species where family='Polynoidae' ")
+    query_result[:time].should_not be_blank
+    query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
+    query_result[:total_rows].should == 1
+    query_result[:rows][0].should == {:count => 0}
+
+    query_result = user.run_query("select count(*) from antantaric_species where family='polynoidae' ")
+    query_result[:time].should_not be_blank
+    query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
+    query_result[:total_rows].should == 1
+    query_result[:rows][0].should == {:count => 2}
   end
 
   it "should raise errors when running invalid queries against his database" do
@@ -100,9 +120,12 @@ describe User do
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
     table.save
 
-    lambda {
+    begin
       user.run_query("selectttt * from antantaric_species where family='Polynoidae' limit 10")
-    }.should raise_error
+    rescue CartoDB::ErrorRunningQuery => e
+      e.db_message.should == "PGError: ERROR:  syntax error at or near \"selectttt\""
+      e.syntax_message.should == "L\xC3\x8DNEA 1: selectttt * from antantaric_species where family='Polynoidae...\n         ^"
+    end
   end
 
 end

@@ -139,13 +139,6 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def execute_sql(sql)
-    update_updated_at!
-    owner.in_database do |user_database|
-      user_database[name.to_sym].with_sql(sql).all
-    end
-  end
-
   def insert_row!(attributes)
     owner.in_database do |user_database|
       attributes = attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }

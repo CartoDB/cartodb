@@ -54,25 +54,7 @@ describe Table do
     end
   end
 
-  it "should fetch empty data from the database by SQL sentences" do
-    user = create_user
-    table = create_table :name => 'Wadus table', :user_id => user.id
-    rows = table.execute_sql "select * from \"#{table.name}\" limit 1"
-    rows.should be_empty
-    table.rows_counted.should == 0
-  end
-
-  it "has a last_updated attribute that is updated with every operation on the database" do
-    user = create_user
-    t1 = Time.now - 5.minutes
-    Timecop.freeze(t1)
-    table = create_table :name => 'Wadus table', :user_id => user.id
-    table.updated_at.should == t1
-    t2 = Time.now - 3.minutes
-    Timecop.freeze(t2)
-    rows = table.execute_sql "select * from \"#{table.name}\" limit 1"
-    table.reload
-    table.updated_at.should == t2
+  pending "has a last_updated attribute that is updated with every operation on the database" do
   end
 
   it "has a to_json method that allows to fetch rows with pagination" do
@@ -84,13 +66,13 @@ describe Table do
     table.to_json[:rows].should be_empty
 
     10.times do
-      table.execute_sql("INSERT INTO \"#{table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
+      user.run_query("INSERT INTO \"#{table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
     end
 
     table.to_json[:total_rows].should == 10
     table.to_json[:rows].size.should == 10
 
-    content = table.execute_sql("select * from \"#{table.name}\"")
+    content = user.run_query("select * from \"#{table.name}\"")[:rows]
 
     table.to_json(:rows_per_page => 1)[:rows].size.should == 1
     table.to_json(:rows_per_page => 1)[:rows].first.should == content[0]

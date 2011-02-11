@@ -1,0 +1,28 @@
+div.fixed.syntax {
+  background-color: #e3e3e3;
+  border: 1px solid #aaaaaa;
+  padding: 0 !important;
+  margin: 0 !important; }
+  div.fixed.syntax .numbers-column {
+    float: left;
+    text-align: right;
+    margin-right: 0em;
+    width: 3em;
+    color: #979797;
+    background-color: #e3e3e3; }
+    div.fixed.syntax .numbers-column div {
+      padding: 0 0.4em 0 !important; }
+  div.fixed.syntax .code-column {
+    border-left: 1px solid #aaaaaa;
+    overflow: auto;
+    background-color: #f0f0f0; }
+    div.fixed.syntax .code-column table {
+      border-collapse: collapse;
+      width: 100%;
+      white-space: pre; }
+    div.fixed.syntax .code-column .source {
+      margin: auto !important;
+      color: #333333;
+      padding: 0 0.4em 0 !important; }
+    div.fixed.syntax .code-column .source.alt {
+      background-color: #f5f5f5; }

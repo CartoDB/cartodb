@@ -7,6 +7,9 @@
     <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" /> 
     <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" /> 
     <link href="/stylesheets/admin/api.css" media="screen" rel="stylesheet" type="text/css" /> 
+    <script src="/javascripts/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/javascripts/plugins/jquery-syntax/public/jquery.syntax.min.js" type="text/javascript" charset="utf-8"></script>
+    
   </head> 
   <body> 
     <header> 
@@ -56,6 +59,13 @@
                 <p>http://www.vizzuality.com</p>
               </li>
             </ul>
+            
+            <p class="tab">JSON</p>
+            <pre class="syntax javascript">
+              
+  var jamon = [];
+  var json = [{"json":"json_guay"}];
+            </pre>
           </div>
           <div class="right">
             <ul>
@@ -75,9 +85,6 @@
         </div>
       </div>
     </section>
-
-
-
 
     <footer> 
       <section class="prefooter"> 
@@ -111,7 +118,11 @@
     </footer>
 
 
-
+    <script type="text/javascript">
+        jQuery(function($) {
+            $.syntax();
+        });
+    </script>
     
   </body> 
 </html>

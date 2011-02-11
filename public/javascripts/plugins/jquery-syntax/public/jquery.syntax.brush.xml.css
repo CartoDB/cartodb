@@ -1,0 +1,18 @@
+.syntax .xml .cdata-content {
+  color: #004466;
+  border-radius: 0.5em; }
+.syntax .xml .tag, .syntax .xml .cdata {
+  color: #0000cc; }
+.syntax .xml .tag-name, .syntax .xml .cdata-tag {
+  color: blue;
+  font-weight: bold; }
+.syntax .xml .namespace {
+  color: #0000cc; }
+.syntax .xml .attribute {
+  color: #0000cc; }
+.syntax .xml .instruction {
+  color: #0000cc; }
+.syntax .xml .entity, .syntax .xml .percent-escape {
+  color: #666666;
+  background-color: #dddddd;
+  border-radius: 0.5em; }

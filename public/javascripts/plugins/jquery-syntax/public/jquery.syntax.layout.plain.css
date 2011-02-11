@@ -1,0 +1,8 @@
+.syntax.plain {
+  background-color: #f0f0f0;
+  padding: 0.6em;
+  border: 1px solid #aaaaaa; }
+  .syntax.plain pre {
+    margin: 0;
+    font-family: inherit;
+    overflow: auto; }

@@ -1,0 +1,13 @@
+.syntax .css .selector {
+  color: green; }
+.syntax .css .property {
+  color: red; }
+.syntax .css .color-box {
+  position: relative; }
+  .syntax .css .color-box .sample {
+    border: 1px solid black;
+    position: absolute;
+    left: 0.2em;
+    right: 0.2em;
+    top: 0.2em;
+    bottom: 0.2em; }

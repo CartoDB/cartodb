@@ -1,0 +1,31 @@
+.syntax-container table.syntax {
+  border-collapse: collapse;
+  background-color: #f0f0f0;
+  border: 1px solid #aaaaaa;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100%; }
+  .syntax-container table.syntax tr.alt td.source {
+    background-color: #f5f5f5; }
+  .syntax-container table.syntax td.source {
+    padding: 0 0.4em 0;
+    color: #333333;
+    /* CSS2.1 */
+    white-space: pre-wrap;
+    /* Mozilla, since 1999 */
+    white-space: -moz-pre-wrap;
+    /* Opera 7 */
+    white-space: -o-pre-wrap;
+    /* Internet Explorer 5.5+ */
+    word-wrap: break-word;
+    _white-space: pre; }
+  .syntax-container table.syntax td.number {
+    padding: 0 0.4em 0;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    border-right: 1px solid #aaaaaa;
+    text-align: right;
+    width: 2.5em;
+    color: #979797;
+    background-color: #e3e3e3; }

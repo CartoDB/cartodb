@@ -1,0 +1,8 @@
+.syntax .asm .register {
+  color: #3caa20;
+  font-style: italic; }
+.syntax .asm .label {
+  font-weight: bold;
+  color: #2a85b3; }
+.syntax .asm .directive {
+  color: #828a3d; }

@@ -39,6 +39,9 @@ section.outer_content div.content div.middle div.left ul {margin:15px 0 0 12px; 
 section.outer_content div.content div.middle div.left ul li {padding:0 0 0 12px; color:#9397A4; background:url('/images/admin/api/list_style.png') no-repeat 0 -12px;}
 section.outer_content div.content div.middle div.left ul li h4 {font:normal 15px Arial; color:#666666;}
 section.outer_content div.content div.middle div.left ul li p {padding:4px 0 0 0; font:normal 13px Arial; color:#999999;}
+section.outer_content div.content div.middle div.left p.tab {float:left; width:auto!important; padding:8px 10px 5px; margin:10px 0 0 0; background:#aaaaaa; color:white; font:normal 12px Arial; text-transform:uppercase;
+  -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; border-top-left-radius: 5px; border-top-right-radius: 5px;}
+
 
 section.outer_content div.content div.middle div.right {display:inline-block; width:225px; padding:30px 20px 30px 15px; vertical-align:top;}  
 section.outer_content div.content div.middle div.right ul {width:100%;}
@@ -49,7 +52,6 @@ section.outer_content div.content div.middle div.right ul li.selected p {width:2
 section.outer_content div.content div.middle div.right ul li.selected ul {margin:0 0 0 13px;}
 section.outer_content div.content div.middle div.right ul li.selected ul li {background:url('/images/admin/api/list_style.png') no-repeat 0 -12px;}
 section.outer_content div.content div.middle div.right ul li.selected ul li a:hover {color:#26304B;}
-
 section.outer_content div.content div.middle div.right ul li.selected ul li.selected {background-position:0 7px;}
 section.outer_content div.content div.middle div.right ul li.selected ul li.selected a {color:#26304B;}
 

@@ -26,7 +26,14 @@ class ApplicationController < ActionController::Base
   end
 
   def not_authorized
-    redirect_to login_path and return
+    respond_to do |format|
+      format.html do
+        redirect_to login_path and return
+      end
+      format.json do
+        render :nothing => true, :status => 401
+      end
+    end
   end
 
   def table_privacy_text(table)

@@ -63,4 +63,12 @@ feature "Tables" do
     page.all("span.tags p").size.should == 2
   end
 
+  scenario "Delete a table" do
+    click_link_or_button("delete table")
+
+    page.find("div.mamufas div.delete_window a.confirm_delete").click
+
+    page.current_path.should == dashboard_path
+  end
+
 end

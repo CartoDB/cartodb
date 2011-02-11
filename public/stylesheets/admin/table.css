@@ -77,12 +77,12 @@ section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
 
 
 /*performing operation*/
-section.subheader div.performing_op {position:absolute; display:none; bottom:0; left:50%; margin:0 0 0 -50px;}
-section.subheader div.performing_op p {font:normal 13px Arial; color:#333333; padding:8px 12px; border-bottom:1px solid #D0C090; z-index:100; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px;
-  -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; border-top-left-radius: 5px; border-top-right-radius: 5px; text-align:center;}
-section.subheader div.performing_op p.loading {padding:8px 12px 8px 32px; background:url('/images/admin/icons/watch.png') no-repeat 12px 9px #FFEAA4;}
+section.subheader div.performing_op {position:absolute; display:block; bottom:0; left:50%; width:650px; margin:0 0 0 -325px;}
+section.subheader div.performing_op p {float:left; width:auto; font:normal 13px Arial; color:#333333; padding:8px 12px; border-bottom:1px solid #D0C090; z-index:100; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px;
+  -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; border-top-left-radius: 5px; border-top-right-radius: 5px; text-align:center; opacity:0;}
+section.subheader div.performing_op p.loading {margin:0 0 0 280px; padding:8px 12px 8px 32px; background:url('/images/admin/icons/watch.png') no-repeat 12px 9px #FFEAA4;}
 section.subheader div.performing_op p.success {padding:8px 12px; background:#99CC66; border-bottom-color:#A5BB93; color:#111111;}
-section.subheader div.performing_op p.error {padding:8px 12px; background:#FF5F5F; border-bottom-color:#FFA3A9; color:#333333;}
+section.subheader div.performing_op p.error {padding:8px 12px; background:#D0878E; border-bottom-color:#FFA3A9; color:#333333;}
 
 
 /*Change table title*/

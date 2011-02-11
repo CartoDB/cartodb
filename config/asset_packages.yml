@@ -15,6 +15,7 @@ javascripts:
   - plugins/jquery.scrollTo
   - plugins/jquery.livequery.min
   - plugins/tag-it
+  - admin/loader_queue
   - plugins/cDBtable
   - admin/table_elements
   - admin/table

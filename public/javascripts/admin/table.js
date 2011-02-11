@@ -1,5 +1,8 @@
 
 
+    var requests_queue = new loaderQueue();
+
+
     $(document).ready(function(){
       $("table#cDBtable").cDBtable(
         'start',{
@@ -11,6 +14,19 @@
       );
       $('p.session a, a.logo').click(function(){window.location.href = $(this).attr('href');});
     });
+    
+    
+    
+    /*========================================================================================================================*/
+  	/* Use unique  */
+  	/*========================================================================================================================*/
+    function createUniqueId() {
+      var uuid= '';
+      for (i = 0; i < 32; i++) {
+      	uuid += Math.floor(Math.random() * 16).toString(16);
+      }
+      return uuid;
+    }
 
     
     

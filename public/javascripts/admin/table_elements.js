@@ -4,14 +4,6 @@
 
     //SUBHEADER EVENTS AND FLOATING WINDOWS
 
-    //Save operation loader
-    $('section.subheader').append(
-    '<div class="performing_op">' +
-      '<p class="loading">Loading...</p>'+
-    '</div>');
-
-
-
     //Change title name window
     $('div.inner_subheader div.left').append(
       '<span class="title_window">'+

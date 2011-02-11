@@ -422,9 +422,8 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     bindCellEvents: function() {
 
-      //Cell events
       
-      //DOUBLE CLICK IN THE TABLE
+      //DOUBLE CLICK IN THE TABLE -> Open editor
       $(document).dblclick(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
@@ -433,20 +432,23 @@
           var target_position = $(target).parent().offset();
           var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
           $('tbody tr[r="'+data.row+'"]').addClass('editing');
-          $('div.edit_cell').css('top',target_position.top-192+'px');
-          $('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');
+          
+          //Check if frist row or last column
+          if ($(target).parent().offset().top<230) {$('div.edit_cell').css('top',target_position.top-150+'px');} else {$('div.edit_cell').css('top',target_position.top-192+'px');}
+          if ($("div.table_position").width()<($(target).parent().offset().left+cell_size+28)) {$('div.edit_cell').css('left',target_position.left-215+($(target).width()/2)+'px');} else {$('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');} 
+          
           $('div.edit_cell textarea').text(data.value);
           $('div.edit_cell a.save').attr('r',data.row);
           $('div.edit_cell a.save').attr('c',data.column);
           $('div.edit_cell').show();
-        }
-
-        if (event.preventDefault) {
-          event.preventDefault();
-          event.stopPropagation();
-        } else {
-          event.stopPropagation();
-          event.returnValue = false;
+          
+          if (event.preventDefault) {
+            event.preventDefault();
+            event.stopPropagation();
+          } else {
+            event.stopPropagation();
+            event.returnValue = false;
+          }
         }
       });
 
@@ -455,7 +457,7 @@
       $(document).click(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
-
+      
         //Clicking in first column element + Key
         if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
           $('tbody tr').removeClass('editing');
@@ -472,7 +474,7 @@
             event.returnValue = false;
           }
         }
-
+      
         //Clicking in first column element
         if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
           if (!$(target).parent().parent().parent().hasClass('selecting_first')) {
@@ -485,13 +487,13 @@
               $(target).parent().parent().parent().addClass('editing');            
             }
           }
-
+      
           if (!$(target).hasClass('selected')) {
             $('tbody tr td.first div span').hide();
             $('tbody tr td.first div a.options').removeClass('selected');
             $(target).parent().children('span').show();
             $(target).addClass('selected');
-
+      
             $('body').click(function(event) {
               if (!$(event.target).closest('tbody tr td div span').length) {
                 $('table tbody tr td.first div a.options').removeClass('selected');
@@ -513,12 +515,11 @@
       
       
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //EXPERIMENT SELECTING ROWS
-      
+      //EXPERIMENT SELECTING ROWS    
       $(document).mousedown(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
-
+      
         if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
           $('table tbody tr td.first div span').hide();
           $('table tbody tr td.first div a.options').removeClass('selected');
@@ -539,11 +540,11 @@
             event.returnValue = false;
           }
         }
-
+      
         $(document).mousemove(function(event){
           var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
-
+      
           if (targetElement == "div" && $(target).parent().is('td')) {
             var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
             var current_row = $(target).parent().parent();
@@ -581,7 +582,7 @@
                 return false;
               }
             }
-
+      
           } else {
           }
           if (event.preventDefault) {
@@ -598,7 +599,7 @@
       $(document).mouseup(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
-
+      
         if (targetElement == "div" && $(target).parent().is('td')) {
           var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
           if ($('tbody tr').hasClass('selecting_last')) {
@@ -609,7 +610,7 @@
             $('tbody tr[r="'+data.row+'"]').addClass('selecting_last').addClass('border');
             $('tbody tr.selecting_first').addClass('border');
           }
-
+      
           if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_last') && $('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
             $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
             $('tbody tr[r="'+data.row+'"]').removeClass('selecting_last');
@@ -628,20 +629,14 @@
         }
         $(document).unbind('mousemove');
       });
-      
-
-      
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
-
-
+ 
 
 
       //Head options event
       $('thead tr a.options').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-
+      
         if (!$(this).hasClass('selected')) {
           $('tbody tr td.first a.options').removeClass('selected');
           $('thead tr span.col_types').hide();
@@ -649,7 +644,7 @@
           $('thead tr span.col_ops_list').hide();
           $(this).addClass('selected');
           $(this).parent().children('span.col_ops_list').show();
-
+      
           $('body').click(function(event) {
             if (!$(event.target).closest('thead tr span').length) {
               $('thead tr span.col_ops_list').hide();
@@ -708,14 +703,23 @@
          $('div.error_cell').hide();
        });
 
-
+      
+        
        //Saving new edited value
        $("div.edit_cell a.save").livequery('click',function(ev){
          ev.stopPropagation();
          ev.preventDefault();
          var row = $(this).attr('r');
          var column = $(this).attr('c');
-         $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text($("div.edit_cell textarea").val());
+         if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
+           var new_value = $("div.edit_cell textarea").val();
+           var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
+           var params = {};
+           params["row_id"] = row;
+           params[column] = $("div.edit_cell textarea").val();
+           methods.updateTable("/rows/"+row,params,new_value,old_value,'update_cell');
+           $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text($("div.edit_cell textarea").val());
+         }
          $("div.edit_cell").hide();
          $("div.edit_cell textarea").css('width','262px');
          $("div.edit_cell textarea").css('height','30px');
@@ -748,8 +752,7 @@
       });
       
       
-      //GEO tag movement
-      
+      //GEO tag movement     
       $('p.geo').livequery('mousedown',function(event){
         var position = $(this).offset();
         var geo_element = $(this);
@@ -818,7 +821,7 @@
         var test_1 = $('table thead tr th:eq(3)').position().left;
         var test_2 = $('table thead tr th:eq(4)').position().left;
         var length = test_2 - test_1;
-
+      
         try {
           var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+3;
           var position = $('table thead tr th:eq('+column_position+')').offset().left;
@@ -836,7 +839,7 @@
         var test_1 = $('table thead tr th:eq(3)').position().left;
         var test_2 = $('table thead tr th:eq(4)').position().left;
         var length = test_2 - test_1;
-
+      
         var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+1;
         var position = $('table thead tr th:eq('+column_position+')').offset().left;
         $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
@@ -906,7 +909,56 @@
       if ((parent_height-162)>($(table).parent().height())) {
         $(table).parent().height(parent_height-162);
       }
+    },
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  UPDATE TABLE
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    updateTable: function(url_change,params,new_value,old_value,type) {
+      
+      //Queue loader
+      var requestId = createUniqueId();
+      params.requestId = requestId; 
+      requests_queue.newRequest(requestId,type);
+      
+      $.ajax({
+        dataType: 'json',
+        type: "PUT",
+        url: '/api/json/tables/'+table_id+url_change,
+        data: params,
+        success: function(data) {
+          requests_queue.responseRequest(requestId,'ok');
+          console.log(data);
+          //methods.successRequest(params,new_value,old_value,type);
+        },
+        error: function(e) {
+          requests_queue.responseRequest(requestId,'error');
+          console.log(data);
+        }
+      });
+      
+    },
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  SUCCES UPDATING THE TABLE
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    successRequest: function(url_change,params,new_value,old_value,type) {
+
+    },
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  ERROR UPDATING THE TABLE
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    errorRequest: function(url_change,params,new_value,old_value,type) {
+
     }
+    
   };
 
 

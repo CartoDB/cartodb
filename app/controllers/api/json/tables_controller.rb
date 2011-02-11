@@ -1,5 +1,7 @@
 class Api::Json::TablesController < ApplicationController
 
+  skip_before_filter :verify_authenticity_token
+
   before_filter :login_required
   before_filter :load_table, :except => [:index, :create, :query]
 

@@ -213,7 +213,7 @@ class Table < Sequel::Model(:user_tables)
     offset     = (options[:page] || 0).to_i*limit
     (options[:owner] || owner).in_database do |user_database|
       columns = user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:db_type]] }
-      rows    = user_database[name.to_sym].limit(limit,offset).all
+      rows    = user_database[name.to_sym].limit(limit,offset).order(:cartodb_id)
     end
     {
       :total_rows => rows_counted,

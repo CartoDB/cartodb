@@ -645,6 +645,7 @@
           var params = {};
           params["row_id"] = row;
           params[column] = $("div.edit_cell textarea").val();
+          params['column_id'] = column;
           methods.updateTable("/rows/"+row,params,new_value,old_value,'update_cell');
           $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text($("div.edit_cell textarea").val());
         }
@@ -719,34 +720,43 @@
         ev.preventDefault();
       });
       $('thead tr th div h3').dblclick(function(){
+        var title = $(this);
         var input = $(this).parent().children('input');
+        
+        function updateColumnName() {
+          var old_value = title.text();
+          var new_value = sanitizeText(input.attr('value'));
+
+          var params = {};
+          params.column={};
+          params["column"].new_name = new_value;
+          params["column"].old_name = old_value;
+          
+          methods.updateTable("/update_schema",params,new_value,old_value,'rename_column');
+          
+          input.parent().children('h3').text(new_value);
+          input.hide();
+          input.unbind('focusout');
+          input.unbind('keydown');
+        }
+        
         input.show().focus();
         input.keydown(function(ev){
           if (ev.which == 13) {
             ev.preventDefault();
             ev.stopPropagation();
-            var value = sanitizeText($(this).attr('value'));
-            $(this).parent().children('h3').text(value);
-            $(this).hide();
-            $(this).unbind('focusout');
-            $(this).unbind('keydown');
-         }
+            updateColumnName();
+          }
         });
         input.focusout(function(){
-          var value = sanitizeText($(this).attr('value'));
-          $(this).parent().children('h3').text(value);
-          $(this).hide();
-          $(this).unbind('focusout');
-          $(this).unbind('keydown');
-  				
-          //TODO: Stop table and send new values.
+          updateColumnName();
         });
       });
       $('a.open_georeference').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         $(this).closest('div').find('a.options').removeClass('selected');
-        $(this).closest('div').find('span.col_ops_list').hide();
+        $(this).closest('div').find('span.col_ops_list').hidee();
         $('div.mamufas div.georeference_window').show();
         $('div.mamufas').fadeIn();
       });
@@ -962,29 +972,28 @@
         success: function(data) {
           requests_queue.responseRequest(requestId,'ok','');
           console.log(data);
-          //methods.successRequest(params,new_value,old_value,type);
         },
         error: function(e) {
-          requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText));
-          console.log(data);
+          console.log(e);
+          requests_queue.responseRequest(requestId,'error',e.statusText);
+          methods.errorRequest(params,new_value,old_value,type);
         }
       });
     },
     
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  SUCCES UPDATING THE TABLE
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    successRequest: function(url_change,params,new_value,old_value,type) {
-
-    },
-    
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  ERROR UPDATING THE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    errorRequest: function(url_change,params,new_value,old_value,type) {
-
+    errorRequest: function(params,new_value,old_value,type) {
+      switch (type) {
+        case "update_cell": $('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div').text(old_value);
+                            $('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div').animate({color:'#FF3300'},300,function(){
+                              setTimeout(function(){$('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div').animate({color:'#666666'},300);},1000);
+                            });
+                            break;  
+        default:            break;
+      }
     }
   };
 

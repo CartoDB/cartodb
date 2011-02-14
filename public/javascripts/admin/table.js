@@ -1,5 +1,5 @@
 
-
+    var worker = new Worker('/javascripts/admin/geoAddress.js');
     var requests_queue = new loaderQueue();
 
 
@@ -39,3 +39,21 @@
     
     
     
+    
+    
+    
+    // TEST
+
+    function geocodeAddress() {
+      
+      worker.onmessage = function (event) {
+        console.log(event.data);
+      };
+      
+      // worker.addEventListener('message', function(e) {
+      //     console.log(e.data);
+      //   }, false);
+      // 
+      // worker.postMessage({'address': 'jamon'});
+
+    }

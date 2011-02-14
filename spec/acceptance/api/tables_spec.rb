@@ -539,4 +539,31 @@ feature "Tables JSON API" do
     json_response['rows'][1].symbolize_keys[:name_of_species].should == "Eulagisca gigantea"
   end
 
+
+  scenario "Run a query against a table using JSONP and key authorization" do
+    Capybara.current_driver = :selenium
+
+    user = create_user
+    api_key = user.create_key "example.org"
+    api_key2 = user.create_key "127.0.0.1"
+
+    post_json "/api/json/tables", {
+                    :api_key => api_key,
+                    :name => "antantaric species",
+                    :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+               }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    table_id = response.location.match(/\/(\d+)$/)[1].to_i
+
+    FileUtils.cp("#{Rails.root}/spec/support/test_jsonp.html", "#{Rails.root}/public/")
+
+    visit "/test_jsonp.html?api_key=#{api_key2}"
+
+    page.find("div#results").text.should == "Barrukia cristata"
+
+    FileUtils.rm("#{Rails.root}/public/test_jsonp.html")
+  end
+
 end

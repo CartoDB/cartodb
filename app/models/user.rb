@@ -121,4 +121,11 @@ class User < Sequel::Model
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
+  def create_key(domain)
+    raise "domain argument can't be blank" if domain.blank?
+    key = self.class.secure_digest(domain)
+    APIKey.create :api_key => key, :user_id => self.id, :domain => domain
+    key
+  end
+
 end

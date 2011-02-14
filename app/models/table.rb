@@ -14,6 +14,8 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file
 
+  CARTODB_COLUMNS = %W{ cartodb_id }
+
   ## Callbacks
   def validate
     super
@@ -38,7 +40,7 @@ class Table < Sequel::Model(:user_tables)
         if !user_database.table_exists?(self.name.to_sym)
           if force_schema.blank?
             user_database.create_table self.name.to_sym do
-              primary_key :id
+              primary_key :cartodb_id
               String :name
               column :location, 'geometry'
               String :description, :text => true
@@ -47,11 +49,12 @@ class Table < Sequel::Model(:user_tables)
           else
             sanitized_force_schema = force_schema.split(',').map do |column|
               if column =~ /^\s*\"([^\"]+)\"(.*)$/
-                "#{$1.sanitize} #{$2}"
+                "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,"UNIQUE")}"
               else
-                column
+                column.gsub(/primary\s+key/i,"UNIQUE")
               end
             end
+            sanitized_force_schema.unshift("cartodb_id SERIAL") if import_from_file.blank?
             user_database.run("CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')})")
           end
         end
@@ -149,7 +152,7 @@ class Table < Sequel::Model(:user_tables)
   def update_row!(row_id, attributes)
     owner.in_database do |user_database|
       attributes = attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
-      user_database[name.to_sym].filter(:id => row_id).update(attributes) unless attributes.empty?
+      user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes) unless attributes.empty?
     end
   end
 
@@ -167,6 +170,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def drop_column!(options)
+    raise if CARTODB_COLUMNS.include?(options[:name].to_s)
     owner.in_database do |user_database|
       user_database.drop_column name.to_sym, options[:name].to_s
     end
@@ -177,11 +181,13 @@ class Table < Sequel::Model(:user_tables)
     new_type = options[:type]
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
+        raise if CARTODB_COLUMNS.include?(options[:old_name].to_s)
         user_database.rename_column name.to_sym, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
         new_name = options[:new_name].sanitize
       end
       if options[:type]
         column_name = (options[:new_name] || options[:name]).sanitize
+        raise if CARTODB_COLUMNS.include?(column_name)
         begin
           user_database.set_column_type name.to_sym, column_name.to_sym, options[:type]
         rescue => e
@@ -252,6 +258,14 @@ class Table < Sequel::Model(:user_tables)
     system("awk 'NR>1{print $0}' #{path} > #{filename}")
     owner.in_database(:as => :superuser) do |user_database|
       user_database.run("copy #{self.name} from '#{filename}' WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote || '"'}'")
+      user_database.run("alter table #{self.name} add column cartodb_id integer")
+      user_database.run("create sequence #{self.name}_cartodb_id_seq")
+      user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")
+      user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('#{self.name}_cartodb_id_seq')")
+      user_database.run("alter table #{self.name} alter column cartodb_id set not null")
+      user_database.run("alter table #{self.name} add unique (cartodb_id)")
+      user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
+      user_database.run("alter table #{self.name} add primary key (cartodb_id)")
     end
   ensure
     FileUtils.rm filename

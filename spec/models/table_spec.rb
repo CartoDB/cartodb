@@ -62,7 +62,7 @@ describe Table do
     table = create_table :user_id => user.id
 
     table.to_json[:total_rows].should == 0
-    table.to_json[:columns].should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+    table.to_json[:columns].should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
     table.to_json[:rows].should be_empty
 
     10.times do
@@ -123,12 +123,12 @@ describe Table do
 
   it "can return its schema" do
     table = create_table
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
   end
 
   it "can modify it's schema" do
     table = create_table
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
 
     lambda {
       table.add_column!(:name => "my column with bad status", :type => "textttt")
@@ -138,45 +138,68 @@ describe Table do
     resp = table.add_column!(:name => "my new column", :type => "integer")
     resp.should == {:name => 'my_new_column', :type => 'integer'}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "integer"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "integer"]]
 
     resp = table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "text")
     resp.should == {:name => 'my_new_column_new_name', :type => 'text'}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column_new_name, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column_new_name, "text"]]
 
     resp = table.modify_column!(:old_name => "my_new_column_new_name", :new_name => "my new column")
     resp.should == {:name => 'my_new_column', :type => nil}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "text"]]
 
     resp = table.modify_column!(:name => "my_new_column", :type => "text")
     resp.should == {:name => 'my_new_column', :type => 'text'}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "text"]]
 
     table.drop_column!(:name => "location")
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:description, "text"], [:my_new_column, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:description, "text"], [:my_new_column, "text"]]
 
     lambda {
       table.drop_column!(:name => "location")
     }.should raise_error
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:description, "text"], [:my_new_column, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:description, "text"], [:my_new_column, "text"]]
+  end
+
+  it "cannot modify :cartodb_id column" do
+    table = create_table
+    original_schema = table.schema
+
+    lambda {
+      table.modify_column!(:old_name => "cartodb_id", :new_name => "new_id", :type => "integer")
+    }.should raise_error
+    table.reload
+    table.schema.should == original_schema
+
+    lambda {
+      table.modify_column!(:old_name => "cartodb_id", :new_name => "cartodb_id", :type => "float")
+    }.should raise_error
+    table.reload
+    table.schema.should == original_schema
+
+    lambda {
+      table.drop_column!(:name => "cartodb_id")
+    }.should raise_error
+    table.reload
+    table.schema.should == original_schema
   end
 
   it "should be able to modify it's schema with castings that the DB engine doesn't support" do
     table = create_table
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
 
     table.add_column!(:name => "my new column", :type => "text")
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column, "text"]]
 
     table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "integer", :force_value => "NULL")
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column_new_name, "integer"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:my_new_column_new_name, "integer"]]
   end
 
   it "should be able to insert a new row" do
@@ -205,7 +228,7 @@ describe Table do
     row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
     row[:description].should be_blank
 
-    table.update_row!(row[:id], :non_existing => 'ignore it, please', :description => "Description 123")
+    table.update_row!(row[:cartodb_id], :non_existing => 'ignore it, please', :description => "Description 123")
     table.reload
     row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
     row[:description].should == "Description 123"
@@ -231,23 +254,18 @@ describe Table do
     Table.count == 0
   end
 
-  it "has a default schema if is not imported from a file" do
-    table = create_table
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
-  end
-
   it "can be created with a given schema if it is valid" do
     table = new_table
     table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    table.schema.should == [[:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"]]
   end
 
   it "should sanitize columns from a given schema" do
     table = new_table
     table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    table.schema.should == [[:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"]]
   end
 
   it "should import a CSV if the schema is given and is valid" do
@@ -258,6 +276,7 @@ describe Table do
 
     table.rows_counted.should == 7
     row0 = table.to_json[:rows][0]
+    row0[:cartodb_id].should == 1
     row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
     row0[:login].should == "vzlaturistica "
     row0[:country].should == " Venezuela "
@@ -305,9 +324,10 @@ describe Table do
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
     table.save
+    table.reload
 
     table.rows_counted.should == 7
-    table.schema.should == [[:url, "character varying"], [:login, "character varying"], [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"]]
+    table.schema.should == [[:url, "character varying"], [:login, "character varying"], [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"],[:cartodb_id, "integer"]]
     row = table.to_json[:rows][0]
     row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
     row[:login].should == "vzlaturistica "
@@ -323,6 +343,7 @@ describe Table do
 
     table.rows_counted.should == 100
     row = table.to_json[:rows][6]
+    row[:cartodb_id] == 6
     row[:id].should == 6
     row[:name_of_species].should == "Laetmonice producta 6"
     row[:kingdom].should == "Animalia"

@@ -50,7 +50,6 @@ Sequel.migration do
       String :database_name, :text=>true
       String :username, :text=>true, :null=>false
       Integer :tables_count, :default=>0, :null=>false
-      String :keys, :text=>true
       
       index [:email], :name=>:users_email_key, :unique=>true
       index [:username], :name=>:users_username_key, :unique=>true

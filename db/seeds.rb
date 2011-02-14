@@ -24,7 +24,7 @@ user = User.first
 table = Table.new :privacy => Table::PUBLIC, :name => 'Foursq check-ins',
                   :tags => '4sq, personal'
 table.user_id = user.id
-table.force_schema = "id SERIAL, name varchar(255), surname varchar(255), address varchar(255), city varchar(255), country varchar(255), nif varchar(255), age integer, twitter_account varchar(255), postal_code integer"
+table.force_schema = "name varchar(255), surname varchar(255), address varchar(255), city varchar(255), country varchar(255), nif varchar(255), age integer, twitter_account varchar(255), postal_code integer"
 table.save
 
 100.times do

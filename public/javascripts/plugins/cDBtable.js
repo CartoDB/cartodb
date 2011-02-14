@@ -31,11 +31,11 @@
   var cell_size = 100;
 
   var methods = {
-    
-    
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  INIT PLUGIN
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     init : function() {
       return this.each(function(){
         table = $(this)[0];
@@ -70,26 +70,26 @@
 
          if (data.total_rows==0) {
            //Start new table
-           
-           //Calculate width of th on header 
+
+           //Calculate width of th on header
            var window_width = $(window).width();
            if (window_width>((data.columns.length*128)+42)) {
              cell_size = ((window_width-170)/(data.columns.length-1))-28;
            }
-           
+
            if ($(table).children('thead').length==0) {methods.drawColumns(data.columns);}
            methods.startTable();
          } else {
            total = data.total_rows;
            if (data.rows.length>0) {
              if ($(table).children('thead').length==0) {
-               //Calculate width of th on header 
+               //Calculate width of th on header
                var window_width = $(window).width();
                if (window_width>((data.columns.length*128)+42)) {
                  cell_size = ((window_width-170)/(data.columns.length-1))-28;
                }
                methods.drawColumns(data.columns);
-             }  
+             }
              methods.drawRows(options,data.rows,direction,actualPage);
            } else {
              methods.hideLoader();
@@ -112,7 +112,7 @@
     drawColumns: function(data) {
       //Draw the columns headers
       var thead = '<thead><tr><th class="first"><div></div></th>';
-      
+
       $.each(data,function(index,element){
         var column_types = '<span class="col_types">' +
                         '<p>'+element[1]+'</p>' +
@@ -124,7 +124,7 @@
                           '<li><a href="#">Geometry</a></li>' +
                         '</ul>' +
                       '</span>';
-        
+
         var col_ops_list = '<span class="col_ops_list">' +
                         '<h5>EDIT</h5>' +
                         '<ul>' +
@@ -160,7 +160,7 @@
                       ((index!=0)?column_types:'') +
                     '</div>'+
                   '</th>';
-        
+
       });
       thead += "</thead></tr>";
       $(table).append(thead);
@@ -181,14 +181,14 @@
     //  DRAW ROWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawRows: function(options,data,direction,page) {
-      
+
       if ($(table).children('tbody').length==0) {
         var tbody = '<tbody>';
       } else {
         var tbody = '';
       }
-      
-      
+
+
       //Loop all the data
       $.each(data, function(i,element){
         var options_list =  '<span>' +
@@ -203,20 +203,20 @@
                                 '<li class="last"><a href="#">Add new row</a></li>' +
                               '</ul>' +
                             '</span>';
-        tbody += '<tr r="'+element.id+'"><td class="first" r="'+ element.id +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+        tbody += '<tr r="'+element.cartodb_id+'"><td class="first" r="'+ element.cartodb_id +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
         $.each(element, function(j,elem){
-          tbody += '<td '+((j!="id")?'':'class="id"')+' r="'+ element.id +'" c="'+ j +'"><div '+((j=='id')?'':' style="width:'+cell_size+'px"') + '>'+elem+'</div></td>';
+          tbody += '<td '+((j!="id")?'':'class="id"')+' r="'+ element.cartodb_id +'" c="'+ j +'"><div '+((j=='id')?'':' style="width:'+cell_size+'px"') + '>'+elem+'</div></td>';
         });
         tbody += '</tr>';
       });
-      
-      
+
+
       if ($(table).children('tbody').length==0) {
         tbody += '</tbody>';
         $(table).append(tbody);
       } else {
         (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
-      }      
+      }
 
       methods.checkReuse(direction);
     },
@@ -309,16 +309,16 @@
           '</div>'+
         '</div>'
       );
-      
+
 
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  NEW TABLE (EMPTY)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    startTable: function() {      
+    startTable: function() {
       $(table).parent().append(
         '<div class="empty_table">'+
           '<h5>Add some rows to your table</h5>'+
@@ -363,15 +363,15 @@
           }
         }
       });
-      
-      
+
+
       $('div.table_position').scroll(function(ev){
         //For moving first table column
         $(table).children('tbody').children('tr').children('td.first').css('left',$('div.table_position').scrollLeft()+'px');
         $(table).children('thead').children('tr').children('th.first').css('left',$('div.table_position').scrollLeft()+'px');
         $(table).children('thead').css('left',-$('div.table_position').scrollLeft()+'px');
       });
-      
+
     },
 
 
@@ -428,16 +428,16 @@
           var target_position = $(target).parent().offset();
           var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
           $('tbody tr[r="'+data.row+'"]').addClass('editing');
-          
+
           //Check if frist row or last column
           if ($(target).parent().offset().top<230) {$('div.edit_cell').css('top',target_position.top-150+'px');} else {$('div.edit_cell').css('top',target_position.top-192+'px');}
-          if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {$('div.edit_cell').css('left',target_position.left-215+($(target).width()/2)+'px');} else {$('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');} 
-          
+          if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {$('div.edit_cell').css('left',target_position.left-215+($(target).width()/2)+'px');} else {$('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');}
+
           $('div.edit_cell textarea').text(data.value);
           $('div.edit_cell a.save').attr('r',data.row);
           $('div.edit_cell a.save').attr('c',data.column);
           $('div.edit_cell').show();
-          
+
           if (event.preventDefault) {
             event.preventDefault();
             event.stopPropagation();
@@ -456,7 +456,7 @@
       $(document).click(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
-      
+
         //Clicking in first column element + Key
         if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
           $('tbody tr').removeClass('editing');
@@ -464,7 +464,7 @@
           $('tbody tr').removeClass('selecting');
           $('tbody tr').removeClass('selecting_last');
           $(target).parent().parent().removeClass('selecting_first').removeClass('border').addClass('selected');
-          
+
           if (event.preventDefault) {
             event.preventDefault();
             event.stopPropagation();
@@ -473,7 +473,7 @@
             event.returnValue = false;
           }
         }
-      
+
         //Clicking in first column element
         if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
           if (!$(target).parent().parent().parent().hasClass('selecting_first')) {
@@ -483,16 +483,16 @@
             $('tbody tr').removeClass('selecting_last');
             //$('tbody tr').removeClass('selected');
             if (!$(target).parent().parent().parent().hasClass('selected')) {
-              $(target).parent().parent().parent().addClass('editing');            
+              $(target).parent().parent().parent().addClass('editing');
             }
           }
-      
+
           if (!$(target).hasClass('selected')) {
             $('tbody tr td.first div span').hide();
             $('tbody tr td.first div a.options').removeClass('selected');
             $(target).parent().children('span').show();
             $(target).addClass('selected');
-      
+
             $('body').click(function(event) {
               if (!$(event.target).closest('tbody tr td div span').length) {
                 $('table tbody tr td.first div a.options').removeClass('selected');
@@ -510,16 +510,16 @@
           }
         }
       });
-      
-      
-      
+
+
+
       ///////////////////////////////////////
       //  Editing selected rows            //
-      ///////////////////////////////////////   
+      ///////////////////////////////////////
       $(document).mousedown(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
-      
+
         if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
           $('table tbody tr td.first div span').hide();
           $('table tbody tr td.first div a.options').removeClass('selected');
@@ -531,7 +531,7 @@
           var first_row = $(target).parent().parent();
           first_row.addClass('selecting_first');
           var initial_x = first_row.position().top;
-          
+
           if (event.preventDefault) {
             event.preventDefault();
             event.stopPropagation();
@@ -540,11 +540,11 @@
             event.returnValue = false;
           }
         }
-      
+
         $(document).mousemove(function(event){
           var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
-      
+
           if (targetElement == "div" && $(target).parent().is('td')) {
             var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
             var current_row = $(target).parent().parent();
@@ -553,7 +553,7 @@
             current_row.addClass('selecting');
             var find = false;
             var cursor = first_row;
-            
+
             while (!find) {
               if (initial_x<current_x) {
                 first_row.removeClass('selecting_last').addClass('selecting_first');
@@ -582,7 +582,7 @@
                 return false;
               }
             }
-      
+
           } else {
           }
           if (event.preventDefault) {
@@ -597,7 +597,7 @@
       $(document).mouseup(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
-      
+
         if (targetElement == "div" && $(target).parent().is('td')) {
           var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
           if ($('tbody tr').hasClass('selecting_last')) {
@@ -608,7 +608,7 @@
             $('tbody tr[r="'+data.row+'"]').addClass('selecting_last').addClass('border');
             $('tbody tr.selecting_first').addClass('border');
           }
-      
+
           if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_last') && $('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
             $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
             $('tbody tr[r="'+data.row+'"]').removeClass('selecting_last');
@@ -627,8 +627,8 @@
         }
         $(document).unbind('mousemove');
       });
- 
- 
+
+
 
       ///////////////////////////////////////
       //  Editing table values             //
@@ -664,9 +664,9 @@
         $("div.edit_cell textarea").css('height','30px');
         $('tbody tr[r="'+row+'"]').removeClass('editing');
       });
-       
-       
-       
+
+
+
       ///////////////////////////////////////
       //  Header options events            //
       ///////////////////////////////////////
@@ -674,7 +674,7 @@
       $('thead tr a.options').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-      
+
         if (!$(this).hasClass('selected')) {
           $('tbody tr td.first a.options').removeClass('selected');
           $('thead tr span.col_types').hide();
@@ -682,7 +682,7 @@
           $('thead tr span.col_ops_list').hide();
           $(this).addClass('selected');
           $(this).parent().children('span.col_ops_list').show();
-      
+
           $('body').click(function(event) {
             if (!$(event.target).closest('thead tr span').length) {
               $('thead tr span.col_ops_list').hide();
@@ -704,7 +704,7 @@
         $('thead tr span.col_types').hide();
         var position = $(this).position();
         $(this).parent().parent().children('span.col_types').css('top',position.top-5+'px');
-      
+
         $(this).parent().parent().children('span.col_types').show();
         $('body').click(function(event) {
          if (!$(event.target).closest('thead tr span.col_types').length) {
@@ -779,7 +779,7 @@
         ev.preventDefault();
         $(this).closest('div').find('a.options').removeClass('selected');
         $(this).closest('div').find('span.col_ops_list').hide();
-        
+
       });
       //TODO change data type list values
       $('thead tr th').click(function(ev){
@@ -802,9 +802,9 @@
       //   $('div.general_options div.sql_console').show();
       //   $('div.general_options ul').addClass('sql');
       // });
-      
-      
-      // //GEO tag movement     
+
+
+      // //GEO tag movement
       // $('p.geo').livequery('mousedown',function(event){
       //   var position = $(this).offset();
       //   var geo_element = $(this);
@@ -828,10 +828,10 @@
       //   $('body').mouseup(function(event){
       //     var target = event.target || event.srcElement;
       //     var targetElement = target.nodeName.toLowerCase();
-      //     
+      //
       //     $(this).unbind('mouseup');
       //     $(this).unbind('mousemove');
-      //     
+      //
       //     if ($(target).closest('th') && !$(target).closest('th').hasClass('first') && $(target).closest('th').find('h3').text()!="id") {
       //       $(target).closest('th').children('div').children('span.long').append(geo_element);
       //       geo_element.css('position','relative');
@@ -862,9 +862,9 @@
       //   }
       // });
 
-      
-      
-      
+
+
+
       ///////////////////////////////////////
       //  Move table -> left/right         //
       ///////////////////////////////////////
@@ -877,7 +877,7 @@
         var test_1 = $('table thead tr th:eq(3)').position().left;
         var test_2 = $('table thead tr th:eq(4)').position().left;
         var length = test_2 - test_1;
-      
+
         try {
           var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+3;
           var position = $('table thead tr th:eq('+column_position+')').offset().left;
@@ -895,15 +895,15 @@
         var test_1 = $('table thead tr th:eq(3)').position().left;
         var test_2 = $('table thead tr th:eq(4)').position().left;
         var length = test_2 - test_1;
-      
+
         var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+1;
         var position = $('table thead tr th:eq('+column_position+')').offset().left;
         $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
       });
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  KEEP SIZE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -920,9 +920,9 @@
       });
 
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  RESIZE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -932,7 +932,7 @@
       var width_table_content = (($(table).children('thead').children('tr').children('th').size()-1)*128) + 66;
       var head_element = $(table).children('thead').children('tr').children('th:last').children('div');
       var body_element = $(table).children('tbody').children('tr');
-      
+
       // WIDTH
       // if (parent_width>width_table_content) {
       //   $(head_element).width(128 + parent_width-width_table_content);
@@ -945,25 +945,25 @@
       //     $(element).children('td:last').children('div').width(128);
       //   });
       // }
-      
+
       // HEIGTH
       var parent_height = $(window).height();
       if ((parent_height-162)>($(table).parent().height())) {
         $(table).parent().height(parent_height-162);
       }
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  UPDATE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     updateTable: function(url_change,params,new_value,old_value,type) {
       //Queue loader
       var requestId = createUniqueId();
-      params.requestId = requestId; 
+      params.requestId = requestId;
       requests_queue.newRequest(requestId,type);
-      
+
       $.ajax({
         dataType: 'json',
         type: "PUT",
@@ -980,8 +980,16 @@
         }
       });
     },
-    
-    
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  SUCCES UPDATING THE TABLE
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    successRequest: function(url_change,params,new_value,old_value,type) {
+
+    },
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  ERROR UPDATING THE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

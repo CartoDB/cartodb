@@ -111,7 +111,7 @@ feature "Tables JSON API" do
     get_json "/api/json/tables/#{table.id}/schema"
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response.should == [["id", "integer"], ["name", "text"], ["location", "geometry"], ["description", "text"]]
+    json_response.should == [["cartodb_id", "integer"], ["name", "text"], ["location", "geometry"], ["description", "text"]]
   end
 
   scenario "Get a list of tables" do
@@ -156,7 +156,7 @@ feature "Tables JSON API" do
     json_response = JSON(response.body)
     json_response.should == {"name" => "postal_code", "type" => 'integer'}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:postal_code, "integer"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:postal_code, "integer"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "modify", :column => {
@@ -167,7 +167,7 @@ feature "Tables JSON API" do
     json_response = JSON(response.body)
     json_response.should == {"name" => "postal_code", "type" => 'text'}
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:postal_code, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:postal_code, "text"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "add", :column => {
@@ -185,7 +185,7 @@ feature "Tables JSON API" do
                                                            }
     response.status.should == 200
     table.reload
-    table.schema.should == [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "drop", :column => {
@@ -244,7 +244,7 @@ feature "Tables JSON API" do
     row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
     row[:description].should be_blank
 
-    put_json "/api/json/tables/#{table.id}/rows/#{row[:id]}", {:description => "Description 123"}
+    put_json "/api/json/tables/#{table.id}/rows/#{row[:cartodb_id]}", {:description => "Description 123"}
     response.status.should == 200
     table.reload
     row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
@@ -308,7 +308,7 @@ feature "Tables JSON API" do
     get_json "/api/json/tables/#{response.location.match(/\/(\d+)$/)[1].to_i}/schema"
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response.should == [["code", "character(5)"], ["title", "character varying(40)"], ["did", "integer"], ["date_prod", "date"], ["kind", "character varying(10)"]]
+    json_response.should == [["cartodb_id", "integer"], ["code", "character(5)"], ["title", "character varying(40)"], ["did", "integer"], ["date_prod", "date"], ["kind", "character varying(10)"]]
   end
 
   scenario "Import a file when the schema is wrong" do

@@ -243,7 +243,7 @@ class Api::Json::TablesController < ApplicationController
           else
             case resp
               when 404
-                render :json => { :errors => ["row with id = #{params[:row_id]} not found"] }.to_json,
+                render :json => { :errors => ["row identified with #{params[:row_id]} not found"] }.to_json,
                        :status => 400, :callback => params[:callback] and return
             end
           end

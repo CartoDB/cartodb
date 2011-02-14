@@ -79,7 +79,7 @@ describe User do
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
-    query_result[:columns].should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views]
+    query_result[:columns].should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views, :cartodb_id]
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
 

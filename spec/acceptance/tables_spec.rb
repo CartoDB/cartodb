@@ -93,4 +93,30 @@ feature "Tables" do
     page.find("table#cDBtable tr:eq(1)[@r='1'] td[@r='1'][c='name']").text.should == "wadus"
   end
 
+  scenario "Can't update cartodb_id field" do
+    2.times do
+      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
+    end
+
+    sleep 2
+
+    visit page.current_path
+
+    page.execute_script("$('table#cDBtable td[r=1][c=cartodb_id] div').trigger('dblclick')")
+    page.find("div.edit_cell textarea").should_not be_visible
+  end
+
+  scenario "Can't update cartodb_id field" do
+    2.times do
+      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
+    end
+
+    sleep 2
+
+    visit page.current_path
+
+    page.execute_script("$('table#cDBtable td[r=1][c=cartodb_id] div').trigger('dblclick')")
+    page.find("div.edit_cell textarea").should_not be_visible
+  end
+
 end

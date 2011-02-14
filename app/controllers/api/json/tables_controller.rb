@@ -238,14 +238,19 @@ class Api::Json::TablesController < ApplicationController
     respond_to do |format|
       format.json do
         unless params[:row_id].blank?
-          if resp = @table.update_row!(params[:row_id], params)
-            render :json => ''.to_json, :status => 200
-          else
-            case resp
-              when 404
-                render :json => { :errors => ["row identified with #{params[:row_id]} not found"] }.to_json,
-                       :status => 400, :callback => params[:callback] and return
+          begin
+            if resp = @table.update_row!(params[:row_id], params)
+              render :json => ''.to_json, :status => 200
+            else
+              case resp
+                when 404
+                  render :json => { :errors => ["row identified with #{params[:row_id]} not found"] }.to_json,
+                         :status => 400, :callback => params[:callback] and return
+              end
             end
+          rescue => e
+            render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400,
+                   :callback => params[:callback] and return
           end
         else
           render :json => { :errors => ["row_id can't be blank"] }.to_json,

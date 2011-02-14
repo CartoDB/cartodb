@@ -251,6 +251,23 @@ feature "Tables JSON API" do
     row[:description].should == "Description 123"
   end
 
+  scenario "Update the value from a ceil with an invalid value" do
+    user = create_user
+    table = new_table
+    table.force_schema = "age integer"
+    table.user_id = user.id
+    table.save
+
+    authenticate_api user
+
+    table.insert_row!({:age => rand(100)})
+
+    put_json "/api/json/tables/#{table.id}/rows/1", {:age => "abc10"}
+    response.status.should == 400
+    json_response = JSON(response.body)
+    json_response['errors'].should == ["PGError: ERROR:  invalid input syntax for integer: \"abc10\""]
+  end
+
   scenario "Drop a table" do
     user = create_user
     table = create_table :user_id => user.id

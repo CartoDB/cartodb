@@ -48,7 +48,7 @@ class Api::Json::TablesController < ApplicationController
   def show
     respond_to do |format|
       format.json do
-        render :json => @table.to_json(:owner => current_user, :rows_per_page => params[:rows_per_page], :page => params[:page]),
+        render :json => @table.to_json(:rows_per_page => params[:rows_per_page], :page => params[:page]),
                :callback => params[:callback]
       end
     end

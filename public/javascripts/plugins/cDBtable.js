@@ -114,7 +114,7 @@
       var thead = '<thead><tr><th class="first"><div></div></th>';
 
       $.each(data,function(index,element){
-        
+
         var column_types = '<span class="col_types">' +
                         '<p>'+element[1]+'</p>' +
                         '<ul>' +
@@ -427,7 +427,7 @@
 
         if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" &&
           $(target).parent().attr('c')!="updated_at" && $(target).parent().attr('c')!="created_at") {
-            
+
           var target_position = $(target).parent().offset();
           var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
           $('tbody tr[r="'+data.row+'"]').addClass('editing');
@@ -726,11 +726,11 @@
         var title = $(this);
         var input = $(this).parent().children('input');
         input.attr('value',title.text());
-        
+
         function updateColumnName() {
           var old_value = title.text();
           var new_value = sanitizeText(input.attr('value'));
-          
+
           if (old_value!=new_value && new_value.length>0) {
             var params = {};
             params["what"] = "modify";
@@ -749,7 +749,7 @@
             input.unbind('keydown');
           }
         }
-        
+
 
         input.show().focus();
         input.keydown(function(ev){
@@ -762,7 +762,7 @@
         input.focusout(function(){
           updateColumnName();
         });
-        
+
 
       });
       $('a.open_georeference').click(function(ev){
@@ -801,7 +801,7 @@
         $(this).find('a.options').trigger('click');
       });
 
-      
+
       // //GEO tag movement
       // $('p.geo').livequery('mousedown',function(event){
       //   var position = $(this).offset();
@@ -984,8 +984,8 @@
           requests_queue.responseRequest(requestId,'ok','');
           methods.successRequest(params,new_value,old_value,type);
         },
-        error: function(e) {
-          requests_queue.responseRequest(requestId,'error',e.statusText);
+        error: function(e, textStatus) {
+          requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
           methods.errorRequest(params,new_value,old_value,type);
         }
       });
@@ -999,7 +999,7 @@
     successRequest: function(params,new_value,old_value,type) {
       switch (type) {
         case "rename_column": $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
-                              break;                            
+                              break;
 
         default:              break;
       }
@@ -1019,13 +1019,13 @@
                                 setTimeout(function(){element.animate({color:'#666666'},300);},1000);
                               });
                               break;
-                              
+
         case "rename_column": var element = $('table thead tr th:eq('+params.column.index+') h3');
                               element.text(old_value);
                               element.animate({color:'#FF3300'},300,function(){
                                 setTimeout(function(){element.animate({color:'#727272'},300);},1000);
                               });
-                              break;                            
+                              break;
 
         default:              break;
       }

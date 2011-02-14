@@ -34,7 +34,14 @@ end
 table = Table.new :privacy => Table::PRIVATE, :name => 'Downloaded movies',
                   :tags => 'movies, personal'
 table.user_id = user.id
+table.force_schema = "name varchar(255), surname varchar(255), address varchar(255), city varchar(255), country varchar(255), nif varchar(255), age integer, twitter_account varchar(255), postal_code integer"
 table.save
+
+user.run_query("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','Calle Santa Ana 1, 3C, Madrid','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',#{rand(100)},'#{String.random(10)}',#{rand(10000)})" )
+user.run_query("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','Calle Hortaleza 48, Madrid','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',#{rand(100)},'#{String.random(10)}',#{rand(10000)})" )
+user.run_query("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','Calle de la Villa, 2, Madrid','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',#{rand(100)},'#{String.random(10)}',#{rand(10000)})" )
+user.run_query("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','Calle Pilar Marti 16, Burjassot','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',#{rand(100)},'#{String.random(10)}',#{rand(10000)})" )
+user.run_query("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','Calle San Vicente 16, Valencia','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',#{rand(100)},'#{String.random(10)}',#{rand(10000)})" )
 
 table = Table.new :privacy => Table::PUBLIC, :name => 'My favourite bars',
                   :tags => 'bars, personal'

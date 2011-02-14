@@ -12,9 +12,11 @@ javascripts:
 - table:
   - plugins/jquery.mousewheel
   - plugins/jscrollpane.min
+  - plugins/jquery.color
   - plugins/jquery.scrollTo
   - plugins/jquery.livequery.min
   - plugins/tag-it
+  - admin/loading_messages
   - admin/loader_queue
   - plugins/cDBtable
   - admin/table_elements

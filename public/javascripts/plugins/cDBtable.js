@@ -128,11 +128,11 @@
         var col_ops_list = '<span class="col_ops_list">' +
                         '<h5>EDIT</h5>' +
                         '<ul>' +
-                          '<li><a href="#">Order by this column</a></li>' +
-                          '<li><a href="#">Filter by this column</a></li>' +
-                          ((index!=0)?'<li><a href="#">Rename column</a></li>':'') +
-                          ((index!=0)?'<li><a href="#">Change data type</a></li>':'') +
-                          ((index!=0)?'<li><a href="#">Delete column</a></li>':'') +
+                          '<li><a>Order by this column</a></li>' +
+                          '<li><a>Filter by this column</a></li>' +
+                          ((index!=0)?'<li><a class="rename_column" href="#rename_column">Rename column</a></li>':'') +
+                          ((index!=0)?'<li><a class="change_data_type" href="#change_data_type">Change data type</a></li>':'') +
+                          ((index!=0)?'<li><a class="delete_column" href="#delete_column">Delete column</a></li>':'') +
                         '</ul>' +
                         '<div class="line"></div>'+
                         '<h5>GEOREFERENCE</h5>' +
@@ -263,11 +263,6 @@
         '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
       '</div>');
 
-      // //Save operation loader
-      // $(table).parent().parent().children('section.subheader').append(
-      // '<div class="performing_op">' +
-      //   '<p class="loading">Loading...</p>'+
-      // '</div>');
 
       //General options
       $(table).parent().append(
@@ -422,8 +417,9 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     bindCellEvents: function() {
 
-      
-      //DOUBLE CLICK IN THE TABLE -> Open editor
+      ///////////////////////////////////////
+      //  DOUBLE CLICK -> Open editor      //
+      ///////////////////////////////////////
       $(document).dblclick(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
@@ -435,7 +431,7 @@
           
           //Check if frist row or last column
           if ($(target).parent().offset().top<230) {$('div.edit_cell').css('top',target_position.top-150+'px');} else {$('div.edit_cell').css('top',target_position.top-192+'px');}
-          if ($("div.table_position").width()<($(target).parent().offset().left+cell_size+28)) {$('div.edit_cell').css('left',target_position.left-215+($(target).width()/2)+'px');} else {$('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');} 
+          if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {$('div.edit_cell').css('left',target_position.left-215+($(target).width()/2)+'px');} else {$('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');} 
           
           $('div.edit_cell textarea').text(data.value);
           $('div.edit_cell a.save').attr('r',data.row);
@@ -453,7 +449,10 @@
       });
 
 
-      //CLICK IN THE TABLE
+
+      ///////////////////////////////////////
+      //  SIMPLE CLICK -> Open editor      //
+      ///////////////////////////////////////
       $(document).click(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
@@ -514,8 +513,9 @@
       
       
       
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //EXPERIMENT SELECTING ROWS    
+      ///////////////////////////////////////
+      //  Editing selected rows            //
+      ///////////////////////////////////////   
       $(document).mousedown(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
@@ -594,8 +594,6 @@
           }
         });
       });
-      
-      
       $(document).mouseup(function(event){
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
@@ -630,9 +628,48 @@
         $(document).unbind('mousemove');
       });
  
+ 
 
-
-      //Head options event
+      ///////////////////////////////////////
+      //  Editing table values             //
+      ///////////////////////////////////////
+       //Saving new edited value
+      $("div.edit_cell a.save").livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        var row = $(this).attr('r');
+        var column = $(this).attr('c');
+        if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
+          var new_value = $("div.edit_cell textarea").val();
+          var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
+          var params = {};
+          params["row_id"] = row;
+          params[column] = $("div.edit_cell textarea").val();
+          methods.updateTable("/rows/"+row,params,new_value,old_value,'update_cell');
+          $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text($("div.edit_cell textarea").val());
+        }
+        $("div.edit_cell").hide();
+        $("div.edit_cell textarea").css('width','262px');
+        $("div.edit_cell textarea").css('height','30px');
+        $('tbody tr[r="'+row+'"]').removeClass('editing');
+      });
+      //Cancel editing value
+      $("div.edit_cell a.cancel,div.edit_cell a.close").livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        var row = $('div.edit_cell a.save').attr('r');
+        $("div.edit_cell").hide();
+        $("div.edit_cell textarea").css('width','262px');
+        $("div.edit_cell textarea").css('height','30px');
+        $('tbody tr[r="'+row+'"]').removeClass('editing');
+      });
+       
+       
+       
+      ///////////////////////////////////////
+      //  Header options events            //
+      ///////////////////////////////////////
+      //Head options even
       $('thead tr a.options').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
@@ -659,7 +696,6 @@
           $('body').unbind('click');
         }
       });
-      
       $('thead tr a.column_type').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
@@ -667,7 +703,7 @@
         $('thead tr span.col_types').hide();
         var position = $(this).position();
         $(this).parent().parent().children('span.col_types').css('top',position.top-5+'px');
-        
+      
         $(this).parent().parent().children('span.col_types').show();
         $('body').click(function(event) {
          if (!$(event.target).closest('thead tr span.col_types').length) {
@@ -678,9 +714,34 @@
          };
         });
       });
-      
-      
-      //Open georeference window
+      $('thead tr th div h3,thead tr th div input').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+      });
+      $('thead tr th div h3').dblclick(function(){
+        var input = $(this).parent().children('input');
+        input.show().focus();
+        input.keydown(function(ev){
+          if (ev.which == 13) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            var value = sanitizeText($(this).attr('value'));
+            $(this).parent().children('h3').text(value);
+            $(this).hide();
+            $(this).unbind('focusout');
+            $(this).unbind('keydown');
+         }
+        });
+        input.focusout(function(){
+          var value = sanitizeText($(this).attr('value'));
+          $(this).parent().children('h3').text(value);
+          $(this).hide();
+          $(this).unbind('focusout');
+          $(this).unbind('keydown');
+  				
+          //TODO: Stop table and send new values.
+        });
+      });
       $('a.open_georeference').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
@@ -689,129 +750,114 @@
         $('div.mamufas div.georeference_window').show();
         $('div.mamufas').fadeIn();
       });
-
-
-      //Error tooltip
-      $("td.error div").livequery('mouseenter',
-        function() {
-          var position = $(this).offset();
-          $('div.error_cell').css('left',position.left-35+'px');
-          $('div.error_cell').css('top',position.top-280+'px');
-          $('div.error_cell').show();
-       });
-       $("td.error div").livequery('mouseleave',function() {
-         $('div.error_cell').hide();
-       });
-
-      
+      $('a.rename_column').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).closest('div').find('a.options').removeClass('selected');
+        $(this).closest('div').find('span.col_ops_list').hide();
+        $(this).closest('div').find('h3').trigger('dblclick');
+      });
+      $('a.change_data_type').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).closest('div').find('a.options').removeClass('selected');
+        $(this).closest('div').find('span.col_ops_list').hide();
+        $(this).closest('div').find('a.column_type').trigger('click');
+      });
+      $('a.delete_column').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).closest('div').find('a.options').removeClass('selected');
+        $(this).closest('div').find('span.col_ops_list').hide();
         
-       //Saving new edited value
-       $("div.edit_cell a.save").livequery('click',function(ev){
-         ev.stopPropagation();
-         ev.preventDefault();
-         var row = $(this).attr('r');
-         var column = $(this).attr('c');
-         if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
-           var new_value = $("div.edit_cell textarea").val();
-           var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
-           var params = {};
-           params["row_id"] = row;
-           params[column] = $("div.edit_cell textarea").val();
-           methods.updateTable("/rows/"+row,params,new_value,old_value,'update_cell');
-           $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text($("div.edit_cell textarea").val());
-         }
-         $("div.edit_cell").hide();
-         $("div.edit_cell textarea").css('width','262px');
-         $("div.edit_cell textarea").css('height','30px');
-         $('tbody tr[r="'+row+'"]').removeClass('editing');
-       });
-
-       //Cancel editing value
-       $("div.edit_cell a.cancel,div.edit_cell a.close").livequery('click',function(ev){
-         ev.stopPropagation();
-         ev.preventDefault();
-         var row = $('div.edit_cell a.save').attr('r');
-         $("div.edit_cell").hide();
-         $("div.edit_cell textarea").css('width','262px');
-         $("div.edit_cell textarea").css('height','30px');
-         $('tbody tr[r="'+row+'"]').removeClass('editing');
-       });
-
-
-      //SQL Editor
-      $('div.general_options div.sql_console span a.close').livequery('click',function(){
-        $('div.general_options div.sql_console').hide();
-        $('div.general_options ul').removeClass('sql');
+      });
+      //TODO change data type list values
+      $('thead tr th').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).find('a.options').trigger('click');
       });
 
 
-      //General options
-      $('div.general_options ul li a.sql').livequery('click',function(){
-        $('div.general_options div.sql_console').show();
-        $('div.general_options ul').addClass('sql');
-      });
+
+      // //SQL Editor
+      // $('div.general_options div.sql_console span a.close').livequery('click',function(){
+      //   $('div.general_options div.sql_console').hide();
+      //   $('div.general_options ul').removeClass('sql');
+      // });
+
+
+      // //General options
+      // $('div.general_options ul li a.sql').livequery('click',function(){
+      //   $('div.general_options div.sql_console').show();
+      //   $('div.general_options ul').addClass('sql');
+      // });
       
       
-      //GEO tag movement     
-      $('p.geo').livequery('mousedown',function(event){
-        var position = $(this).offset();
-        var geo_element = $(this);
-        var old_target = $('p.geo').parent();
-        geo_element.css('left',position.left+'px');
-        geo_element.css('top',position.top+'px');
-        geo_element.css('position','absolute');
-        geo_element.css('zIndex',100);
-        $('body').append(geo_element);
-        $('body').mousemove(function(event){
-          $('p.geo').css('left',event.clientX+'px');
-          $('p.geo').css('top',event.clientY+$(window).scrollTop()+'px');
-          if (event.preventDefault) {
-            event.preventDefault();
-            event.stopPropagation();
-          } else {
-            event.stopPropagation();
-            event.returnValue = false;
-          }
-        });
-        $('body').mouseup(function(event){
-          var target = event.target || event.srcElement;
-          var targetElement = target.nodeName.toLowerCase();
-          
-          $(this).unbind('mouseup');
-          $(this).unbind('mousemove');
-          
-          if ($(target).closest('th') && !$(target).closest('th').hasClass('first') && $(target).closest('th').find('h3').text()!="id") {
-            $(target).closest('th').children('div').children('span.long').append(geo_element);
-            geo_element.css('position','relative');
-            geo_element.css('left','0');
-            geo_element.css('top','0');
-            geo_element.css('zIndex',0);
-          } else {
-            old_target.append(geo_element);
-            geo_element.css('position','relative');
-            geo_element.css('left','0');
-            geo_element.css('top','0');
-            geo_element.css('zIndex',0);
-          }
-          if (event.preventDefault) {
-            event.preventDefault();
-            event.stopPropagation();
-          } else {
-            event.stopPropagation();
-            event.returnValue = false;
-          }
-        });
-        if (event.preventDefault) {
-          event.preventDefault();
-          event.stopPropagation();
-        } else {
-          event.stopPropagation();
-          event.returnValue = false;
-        }
-      });
+      // //GEO tag movement     
+      // $('p.geo').livequery('mousedown',function(event){
+      //   var position = $(this).offset();
+      //   var geo_element = $(this);
+      //   var old_target = $('p.geo').parent();
+      //   geo_element.css('left',position.left+'px');
+      //   geo_element.css('top',position.top+'px');
+      //   geo_element.css('position','absolute');
+      //   geo_element.css('zIndex',100);
+      //   $('body').append(geo_element);
+      //   $('body').mousemove(function(event){
+      //     $('p.geo').css('left',event.clientX+'px');
+      //     $('p.geo').css('top',event.clientY+$(window).scrollTop()+'px');
+      //     if (event.preventDefault) {
+      //       event.preventDefault();
+      //       event.stopPropagation();
+      //     } else {
+      //       event.stopPropagation();
+      //       event.returnValue = false;
+      //     }
+      //   });
+      //   $('body').mouseup(function(event){
+      //     var target = event.target || event.srcElement;
+      //     var targetElement = target.nodeName.toLowerCase();
+      //     
+      //     $(this).unbind('mouseup');
+      //     $(this).unbind('mousemove');
+      //     
+      //     if ($(target).closest('th') && !$(target).closest('th').hasClass('first') && $(target).closest('th').find('h3').text()!="id") {
+      //       $(target).closest('th').children('div').children('span.long').append(geo_element);
+      //       geo_element.css('position','relative');
+      //       geo_element.css('left','0');
+      //       geo_element.css('top','0');
+      //       geo_element.css('zIndex',0);
+      //     } else {
+      //       old_target.append(geo_element);
+      //       geo_element.css('position','relative');
+      //       geo_element.css('left','0');
+      //       geo_element.css('top','0');
+      //       geo_element.css('zIndex',0);
+      //     }
+      //     if (event.preventDefault) {
+      //       event.preventDefault();
+      //       event.stopPropagation();
+      //     } else {
+      //       event.stopPropagation();
+      //       event.returnValue = false;
+      //     }
+      //   });
+      //   if (event.preventDefault) {
+      //     event.preventDefault();
+      //     event.stopPropagation();
+      //   } else {
+      //     event.stopPropagation();
+      //     event.returnValue = false;
+      //   }
+      // });
 
-
-      //Move table -> left/right
+      
+      
+      
+      ///////////////////////////////////////
+      //  Move table -> left/right         //
+      ///////////////////////////////////////
       $('span.paginate a.next').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
@@ -843,20 +889,6 @@
         var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+1;
         var position = $('table thead tr th:eq('+column_position+')').offset().left;
         $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
-      });
-      
-      
-      //Change name column 
-      $('thead tr th div h3').dblclick(function(){
-        $(this).hide();
-        var input = $(this).parent().children('input');
-        input.show().focus();
-        input.focusout(function(){
-          var value = $(this).attr('value');
-          $(this).hide();
-          $(this).parent().children('h3').text(value).show();
-          $(this).unbind('focusout');
-        });
       });
     },
     
@@ -917,7 +949,6 @@
     //  UPDATE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     updateTable: function(url_change,params,new_value,old_value,type) {
-      
       //Queue loader
       var requestId = createUniqueId();
       params.requestId = requestId; 
@@ -929,18 +960,16 @@
         url: '/api/json/tables/'+table_id+url_change,
         data: params,
         success: function(data) {
-          requests_queue.responseRequest(requestId,'ok');
+          requests_queue.responseRequest(requestId,'ok','');
           console.log(data);
           //methods.successRequest(params,new_value,old_value,type);
         },
         error: function(e) {
-          requests_queue.responseRequest(requestId,'error');
+          requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText));
           console.log(data);
         }
       });
-      
     },
-    
     
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -951,14 +980,12 @@
     },
     
     
-    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  ERROR UPDATING THE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     errorRequest: function(url_change,params,new_value,old_value,type) {
 
     }
-    
   };
 
 

@@ -37,7 +37,7 @@
     $('#change_name input[type="submit"]').livequery('click',function(ev){
       ev.preventDefault();
       ev.stopPropagation();
-      var new_value = $('span.title_window input[type="text"]').attr('value').replace(/[^a-zA-Z 0-9 _]+/g,'').replace(' ','_').toLowerCase();
+      var new_value = sanitizeText($('span.title_window input[type="text"]').attr('value'));
       var old_value = new Object();
       old_value.name = $('section.subheader h2 a').text();
       if (new_value==old_value) {
@@ -261,84 +261,52 @@
         }
       });
     });
-    
-    
-    
-    
   });
 
 
 
   function changesRequest(url_change,param,value,old_value) {
-    //show loader
-    $('div.performing_op').show();
+    
+    //TODO add loader queue
     var params = {};
     params[param] = value;
+    
+    var requestId = createUniqueId();
+    params.requestId = requestId; 
+    requests_queue.newRequest(requestId,param);
+    
     $.ajax({
       dataType: 'json',
       type: "PUT",
       url: '/api/json/tables/'+table_id+url_change,
       data: params,
       success: function(data) {
-        successActionPerform(param);
+        requests_queue.responseRequest(requestId,'ok','');
       },
       error: function(e) {
+        requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText));
         errorActionPerforming(param,old_value,$.parseJSON(e.responseText));
       }
     });
   }
 
-
-
-  function successActionPerform(param) {
-    switch (param) {
-      case 'privacy': $('div.performing_op p').removeClass('loading').addClass('success').text('The status has been changed');
-                      var width_text = $('div.performing_op p').width();
-                      $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
-                      break;
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      case 'name':    $('div.performing_op p').removeClass('loading').addClass('success').text('The table name has been changed');
-                      var width_text = $('div.performing_op p').width();
-                      $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
-                      break;
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      case 'tags':    $('div.performing_op p').removeClass('loading').addClass('success').text('Tags changed');
-                      var width_text = $('div.performing_op p').width();
-                      $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
-                      break;
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      default:
-    }
-    $('div.performing_op').delay(2000).fadeOut(function(){resetLoader()});
-  }
-  
   
 
 
 
   function errorActionPerforming(param, old_value,error_text) {
     switch (param) {
-      case 'privacy': $('div.performing_op p').removeClass('loading').addClass('error').text('The status has not been changed. Try again later.');
-                      var width_text = $('div.performing_op p').width();
-                      $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
-                      $('span.privacy_window ul li').removeClass('selected');
-                      $('span.privacy_window ul li.'+old_value).addClass('selected');
+      case 'privacy': $('span.privacy_window ul li.'+old_value).addClass('selected');
                       $('p.status a').removeClass('public private').addClass(old_value).text(old_value);
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      case 'name':    $('div.performing_op p').removeClass('loading').addClass('error').text(error_text.errors[0]);
-                      var width_text = $('div.performing_op p').width();
-                      $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
-                      $('section.subheader h2 a').text(old_value.name);
+      case 'name':    $('section.subheader h2 a').text(old_value.name);
                       if (old_value.status=="save") {
                         $('p.status a').removeClass('public private').addClass('save').text('save');
                       }
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      case 'tags':    $('div.performing_op p').removeClass('loading').addClass('error').text('Impossible to change the tags. Try again later.');
-                      var width_text = $('div.performing_op p').width();
-                      $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
-                      $("span.tags p").remove();
+      case 'tags':    $("span.tags p").remove();
                       $.each(old_value,function(index,element){
                         $('<p>'+element+'</p>').insertBefore('a.add');
                       });
@@ -346,17 +314,9 @@
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       default:
     }
-    $('div.performing_op').delay(2000).fadeOut(function(){resetLoader()});
   }
 
 
-
-
-  function resetLoader() {
-    $('div.performing_op p').removeClass('success error').addClass('loading').text('Loading...');
-    var width_text = $('div.performing_op p').width();
-    $('div.performing_op').css('margin-left','-'+(width_text/2)+'px');
-  }
   
   
   function bindESC() {

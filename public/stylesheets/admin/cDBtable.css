@@ -13,16 +13,17 @@ div.table_position table thead tr th span.long {float:left; width:100%;}
 div.table_position table thead tr th h3 {float:left; width:auto; max-width:81%; margin:3px 0 3px 4px; font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 div.table_position table thead tr th h3:hover {cursor:pointer; color:#444444;}
 div.table_position table thead tr th p {padding:3px 0 0 0;  font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white;}
+div.table_position table thead tr th div p.long {float:left; display:block; width:100%;}
+div.table_position table thead tr th div input {position:absolute; display:none; left:8px; top:10px; width:65%; margin:0; padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; 
+  cursor:pointer; font:normal 11px "Helvetica"; color:#727272; text-shadow:0 1px white; z-index:10;}
+div.table_position table thead tr th div input:hover {}
+div.table_position table thead tr th div input:focus {outline:none; cursor:pointer;}
 p.geo {float:left; width:22px; height:12px; padding:0!important; margin:3px 0 0 5px; background:url('/images/admin/icons/geo.png') no-repeat 0 0; text-indent:-9999px;}
 div.table_position table thead tr th p.geo:hover {background-position:0 -12px; cursor:pointer;}
 div.table_position table thead tr th a.options {position:absolute; right:10px; top:10px; height:14px; width:14px; margin:0; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10;}
 div.table_position table thead tr th a.options:hover {background-position:0 -14px;}
 div.table_position table thead tr th a.options.selected {height:20px; background-image:url('/images/admin/table/selected_option.png')}
 div.table_position table thead tr th a.options.selected:hover {background-position:0 0;}
-div.table_position table thead tr th div p.long {float:left; display:block; width:100%;}
-div.table_position table thead tr th div input {float:left; display:none; width:81%; margin:0; padding:3px; border:0px; background:none; font:bold 11px "Helvetica"; color:#727272; text-shadow:0 1px white;}
-div.table_position table thead tr th div input:hover {padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; font-weight:normal; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; cursor:pointer;}
-div.table_position table thead tr th div input:focus {padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; font-weight:normal; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; outline:none; cursor:pointer;}
 div.table_position table thead tr th a.static {float:left; margin:0 0 0 4px; font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white; text-transform:capitalize;}
 div.table_position table thead tr th div a.column_type {float:left; max-width:60px; margin:0 0 0 4px; padding:0; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#B4B4B4; text-decoration:none; text-transform:capitalize;}
 div.table_position table thead tr th div a.column_type:hover {color:#666666; padding:0 7px 0 0; background:url('/images/admin/icons/grey_down_arrow.png') no-repeat right 6px;}

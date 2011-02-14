@@ -18,14 +18,16 @@ feature "Tables" do
     page.find("span.privacy_window ul li.private a").click
 
     page.should have_css("p.status", :text => 'private')
-    page.find("div.performing_op p.success").text.should == 'The status has been changed'
+    page.find("div.performing_op p").text.should == 'Loading...'
+    sleep 1
+    page.find("div.performing_op p").text.should == 'Your table privacy has been changed'
 
     # Toggle to public
     page.find("p.status a").click
     page.find("span.privacy_window ul li.public a").click
 
     page.should have_css("p.status", :text => 'public')
-    page.find("div.performing_op p.success").text.should == 'The status has been changed'
+    page.find("div.performing_op p").text.should == 'Your table privacy has been changed'
   end
 
   scenario "Change the name from a table" do
@@ -41,7 +43,9 @@ feature "Tables" do
     page.find("li.tagit-new input.tagit-input").set("tag1,")
     page.find_link("Save").click
 
-    page.find("div.performing_op p.success").text.should == 'Tags changed'
+    page.find("div.performing_op p").text.should == 'Loading...'
+    sleep 1
+    page.find("div.performing_op p").text.should == 'Your table tags has been updated'
     page.all("span.tags p")[0].text.should == 'twitter'
     page.all("span.tags p")[1].text.should == 'tag1'
 
@@ -49,7 +53,7 @@ feature "Tables" do
     page.find("li.tagit-new input.tagit-input").set("tag3,")
     page.find_link("Save").click
 
-    page.find("div.performing_op p.success").text.should == 'Tags changed'
+    page.find("div.performing_op p").text.should == 'Your table tags has been updated'
     page.all("span.tags p")[0].text.should == 'twitter'
     page.all("span.tags p")[1].text.should == 'tag1'
     page.all("span.tags p")[2].text.should == 'tag3'
@@ -69,6 +73,24 @@ feature "Tables" do
     page.find("div.mamufas div.delete_window a.confirm_delete").click
 
     page.current_path.should == dashboard_path
+  end
+
+  scenario "Update the value from a cell" do
+    10.times do
+      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
+    end
+
+    sleep 2
+
+    visit page.current_path
+
+    page.execute_script("$('table#cDBtable td[r=1][c=name] div').trigger('dblclick')")
+    page.find("div.edit_cell textarea").set("wadus")
+    page.find("div.edit_cell a.save").click
+    page.find("table#cDBtable tr[@r='1'] td[@r='1'][c='name']").text.should == "wadus"
+
+    visit page.current_path
+    page.find("table#cDBtable tr:eq(1)[@r='1'] td[@r='1'][c='name']").text.should == "wadus"
   end
 
 end

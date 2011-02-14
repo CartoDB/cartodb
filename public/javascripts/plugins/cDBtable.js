@@ -114,6 +114,7 @@
       var thead = '<thead><tr><th class="first"><div></div></th>';
 
       $.each(data,function(index,element){
+        
         var column_types = '<span class="col_types">' +
                         '<p>'+element[1]+'</p>' +
                         '<ul>' +
@@ -130,15 +131,15 @@
                         '<ul>' +
                           '<li><a>Order by this column</a></li>' +
                           '<li><a>Filter by this column</a></li>' +
-                          ((index!=0)?'<li><a class="rename_column" href="#rename_column">Rename column</a></li>':'') +
-                          ((index!=0)?'<li><a class="change_data_type" href="#change_data_type">Change data type</a></li>':'') +
-                          ((index!=0)?'<li><a class="delete_column" href="#delete_column">Delete column</a></li>':'') +
+                          ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="rename_column" href="#rename_column">Rename column</a></li>':'') +
+                          ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="change_data_type" href="#change_data_type">Change data type</a></li>':'') +
+                          ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="delete_column" href="#delete_column">Delete column</a></li>':'') +
                         '</ul>' +
-                        '<div class="line"></div>'+
-                        '<h5>GEOREFERENCE</h5>' +
-                        '<ul>' +
-                          '<li><a href="#" class="open_georeference">Georeference with this</a></li>' +
-                        '</ul>' +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<div class="line"></div>':'') +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<h5>GEOREFERENCE</h5>':'') +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<ul>':'') +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a href="#" class="open_georeference">Georeference with this</a></li>':'') +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'</ul>':'') +
                         '<div class="line"></div>'+
                         '<h5>CREATE</h5>' +
                         '<ul>' +
@@ -424,7 +425,9 @@
         var target = event.target || event.srcElement;
         var targetElement = target.nodeName.toLowerCase();
 
-        if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id')) {
+        if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" &&
+          $(target).parent().attr('c')!="updated_at" && $(target).parent().attr('c')!="created_at") {
+            
           var target_position = $(target).parent().offset();
           var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
           $('tbody tr[r="'+data.row+'"]').addClass('editing');
@@ -693,7 +696,7 @@
           });
         } else {
           $(this).removeClass('selected');
-          $(this).parent().children('span').hide();
+          $(this).parent().children('span.col_ops_list').hide();
           $('body').unbind('click');
         }
       });
@@ -715,31 +718,39 @@
          };
         });
       });
-      $('thead tr th div h3,thead tr th div input').click(function(ev){
+      $('thead tr th div h3,thead tr th div input,thead tr span.col_types,thead tr span.col_ops_list').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
       });
       $('thead tr th div h3').dblclick(function(){
         var title = $(this);
         var input = $(this).parent().children('input');
+        input.attr('value',title.text());
         
         function updateColumnName() {
           var old_value = title.text();
           var new_value = sanitizeText(input.attr('value'));
-
-          var params = {};
-          params.column={};
-          params["column"].new_name = new_value;
-          params["column"].old_name = old_value;
           
-          methods.updateTable("/update_schema",params,new_value,old_value,'rename_column');
-          
-          input.parent().children('h3').text(new_value);
-          input.hide();
-          input.unbind('focusout');
-          input.unbind('keydown');
+          if (old_value!=new_value && new_value.length>0) {
+            var params = {};
+            params["what"] = "modify";
+            params.column={};
+            params["column"].new_name = new_value;
+            params["column"].old_name = old_value;
+            params["column"].index = title.parent().parent().parent().index();
+            methods.updateTable("/update_schema",params,new_value,old_value,'rename_column');
+            input.parent().children('h3').text(new_value);
+            input.hide();
+            input.unbind('focusout');
+            input.unbind('keydown');
+          } else {
+            input.hide();
+            input.unbind('focusout');
+            input.unbind('keydown');
+          }
         }
         
+
         input.show().focus();
         input.keydown(function(ev){
           if (ev.which == 13) {
@@ -751,12 +762,14 @@
         input.focusout(function(){
           updateColumnName();
         });
+        
+
       });
       $('a.open_georeference').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         $(this).closest('div').find('a.options').removeClass('selected');
-        $(this).closest('div').find('span.col_ops_list').hidee();
+        $(this).closest('div').find('span.col_ops_list').hide();
         $('div.mamufas div.georeference_window').show();
         $('div.mamufas').fadeIn();
       });
@@ -788,22 +801,7 @@
         $(this).find('a.options').trigger('click');
       });
 
-
-
-      // //SQL Editor
-      // $('div.general_options div.sql_console span a.close').livequery('click',function(){
-      //   $('div.general_options div.sql_console').hide();
-      //   $('div.general_options ul').removeClass('sql');
-      // });
-
-
-      // //General options
-      // $('div.general_options ul li a.sql').livequery('click',function(){
-      //   $('div.general_options div.sql_console').show();
-      //   $('div.general_options ul').addClass('sql');
-      // });
-
-
+      
       // //GEO tag movement
       // $('p.geo').livequery('mousedown',function(event){
       //   var position = $(this).offset();
@@ -862,6 +860,19 @@
       //   }
       // });
 
+
+      // //SQL Editor
+      // $('div.general_options div.sql_console span a.close').livequery('click',function(){
+      //   $('div.general_options div.sql_console').hide();
+      //   $('div.general_options ul').removeClass('sql');
+      // });
+
+
+      // //General options
+      // $('div.general_options ul li a.sql').livequery('click',function(){
+      //   $('div.general_options div.sql_console').show();
+      //   $('div.general_options ul').addClass('sql');
+      // });
 
 
 
@@ -971,10 +982,9 @@
         data: params,
         success: function(data) {
           requests_queue.responseRequest(requestId,'ok','');
-          console.log(data);
+          methods.successRequest(params,new_value,old_value,type);
         },
         error: function(e) {
-          console.log(e);
           requests_queue.responseRequest(requestId,'error',e.statusText);
           methods.errorRequest(params,new_value,old_value,type);
         }
@@ -982,12 +992,20 @@
     },
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  SUCCES UPDATING THE TABLE
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    successRequest: function(url_change,params,new_value,old_value,type) {
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  SUCCESS UPDATING THE TABLE
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    successRequest: function(params,new_value,old_value,type) {
+      switch (type) {
+        case "rename_column": $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
+                              break;                            
+
+        default:              break;
+      }
     },
+
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -995,12 +1013,21 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     errorRequest: function(params,new_value,old_value,type) {
       switch (type) {
-        case "update_cell": $('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div').text(old_value);
-                            $('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div').animate({color:'#FF3300'},300,function(){
-                              setTimeout(function(){$('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div').animate({color:'#666666'},300);},1000);
-                            });
-                            break;  
-        default:            break;
+        case "update_cell":   var element = $('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div');
+                              element.text(old_value);
+                              element.animate({color:'#FF3300'},300,function(){
+                                setTimeout(function(){element.animate({color:'#666666'},300);},1000);
+                              });
+                              break;
+                              
+        case "rename_column": var element = $('table thead tr th:eq('+params.column.index+') h3');
+                              element.text(old_value);
+                              element.animate({color:'#FF3300'},300,function(){
+                                setTimeout(function(){element.animate({color:'#727272'},300);},1000);
+                              });
+                              break;                            
+
+        default:              break;
       }
     }
   };

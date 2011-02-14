@@ -40,7 +40,7 @@
       var new_value = sanitizeText($('span.title_window input[type="text"]').attr('value'));
       var old_value = new Object();
       old_value.name = $('section.subheader h2 a').text();
-      if (new_value==old_value) {
+      if (new_value==old_value.name) {
         $('span.title_window').hide();
       } else if (new_value=='') {
         $('span.title_window input').css('border-color','#D05153');

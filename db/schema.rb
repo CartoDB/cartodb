@@ -1,5 +1,15 @@
 Sequel.migration do
   up do
+    create_table(:api_keys, :ignore_index_errors=>true) do
+      primary_key :id
+      String :api_key, :text=>true, :null=>false
+      Integer :user_id, :null=>false
+      String :domain, :text=>true, :null=>false
+      
+      index [:api_key]
+      index [:api_key], :name=>:api_keys_api_key_key, :unique=>true
+    end
+    
     create_table(:schema_migrations) do
       String :filename, :text=>true, :null=>false
       
@@ -40,6 +50,7 @@ Sequel.migration do
       String :database_name, :text=>true
       String :username, :text=>true, :null=>false
       Integer :tables_count, :default=>0, :null=>false
+      String :keys, :text=>true
       
       index [:email], :name=>:users_email_key, :unique=>true
       index [:username], :name=>:users_username_key, :unique=>true
@@ -47,6 +58,6 @@ Sequel.migration do
   end
   
   down do
-    drop_table(:schema_migrations, :tags, :user_tables, :users)
+    drop_table(:api_keys, :schema_migrations, :tags, :user_tables, :users)
   end
 end

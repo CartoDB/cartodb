@@ -10,6 +10,14 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def api_authorization_required
+    api_authenticated? || authenticated? || not_authorized
+  end
+
+  def api_authenticated?
+    env['warden'].authenticate(:api_key)
+  end
+
   def render_404
     respond_to do |format|
       format.html do

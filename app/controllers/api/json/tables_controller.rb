@@ -2,7 +2,7 @@ class Api::Json::TablesController < ApplicationController
 
   skip_before_filter :verify_authenticity_token
 
-  before_filter :login_required
+  before_filter :api_authorization_required
   before_filter :load_table, :except => [:index, :create, :query]
 
   # Get the list of tables of a user
@@ -26,7 +26,8 @@ class Api::Json::TablesController < ApplicationController
     @tables = Table.select(:id,:user_id,:name,:privacy).all
     respond_to do |format|
       format.json do
-        render :json => @tables.map{ |table| {:id => table.id, :name => table.name, :privacy => table_privacy_text(table)} }.to_json
+        render :json => @tables.map{ |table| {:id => table.id, :name => table.name, :privacy => table_privacy_text(table)} }.to_json,
+               :callback => params[:callback]
       end
     end
   end
@@ -47,7 +48,8 @@ class Api::Json::TablesController < ApplicationController
   def show
     respond_to do |format|
       format.json do
-        render :json => @table.to_json(:owner => current_user, :rows_per_page => params[:rows_per_page], :page => params[:page])
+        render :json => @table.to_json(:owner => current_user, :rows_per_page => params[:rows_per_page], :page => params[:page]),
+               :callback => params[:callback]
       end
     end
   end
@@ -67,7 +69,7 @@ class Api::Json::TablesController < ApplicationController
   def query
     respond_to do |format|
       format.json do
-        render :json => current_user.run_query(params[:query]).to_json
+        render :json => current_user.run_query(params[:query]).to_json, :callback => params[:callback]
       end
     end
   end
@@ -82,7 +84,7 @@ class Api::Json::TablesController < ApplicationController
   def schema
     respond_to do |format|
       format.json do
-        render :json => @table.schema.to_json
+        render :json => @table.schema.to_json, :callback => params[:callback]
       end
     end
   end
@@ -97,7 +99,7 @@ class Api::Json::TablesController < ApplicationController
     @table.toggle_privacy!
     respond_to do |format|
       format.json do
-        render :json => { :privacy => table_privacy_text(@table) }.to_json
+        render :json => { :privacy => table_privacy_text(@table) }.to_json, :callback => params[:callback]
       end
     end
   end
@@ -128,12 +130,13 @@ class Api::Json::TablesController < ApplicationController
         begin
           @table.set_all(params)
           if @table.save
-            render :json => params.merge(@table.reload.values).to_json, :status => 200
+            render :json => params.merge(@table.reload.values).to_json, :status => 200, :callback => params[:callback]
           else
-            render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400
+            render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400, :callback => params[:callback]
           end
         rescue => e
-          render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400 and return
+          render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
+                 :status => 400, :callback => params[:callback] and return
         end
       end
     end
@@ -166,22 +169,25 @@ class Api::Json::TablesController < ApplicationController
             begin
               if params[:what] == 'add'
                 resp = @table.add_column!(params[:column])
-                render :json => resp.to_json, :status => 200 and return
+                render :json => resp.to_json, :status => 200, :callback => params[:callback] and return
               elsif params[:what] == 'drop'
                 @table.drop_column!(params[:column])
-                render :json => ''.to_json, :status => 200 and return
+                render :json => ''.to_json, :status => 200, :callback => params[:callback] and return
               else
                 resp = @table.modify_column!(params[:column])
-                render :json => resp.to_json, :status => 200 and return
+                render :json => resp.to_json, :status => 200, :callback => params[:callback] and return
               end
             rescue => e
-              render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400 and return
+              render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400,
+                     :callback => params[:callback] and return
             end
           else
-            render :json => { :errors => ["column parameter can't be blank"] }.to_json, :status => 400 and return
+            render :json => { :errors => ["column parameter can't be blank"] }.to_json, :status => 400,
+                   :callback => params[:callback] and return
           end
         else
-          render :json => { :errors => ["what parameter has an invalid value"] }.to_json, :status => 400 and return
+          render :json => { :errors => ["what parameter has an invalid value"] }.to_json, :status => 400,
+                 :callback => params[:callback] and return
         end
       end
     end
@@ -207,7 +213,7 @@ class Api::Json::TablesController < ApplicationController
     @table.insert_row!(params)
     respond_to do |format|
       format.json do
-        render :json => ''.to_json, :status => 200
+        render :json => ''.to_json, :status => 200, :callback => params[:callback]
       end
     end
   end
@@ -237,11 +243,13 @@ class Api::Json::TablesController < ApplicationController
           else
             case resp
               when 404
-                render :json => { :errors => ["row with id = #{params[:row_id]} not found"] }.to_json, :status => 400 and return
+                render :json => { :errors => ["row with id = #{params[:row_id]} not found"] }.to_json,
+                       :status => 400, :callback => params[:callback] and return
             end
           end
         else
-          render :json => { :errors => ["row_id can't be blank"] }.to_json, :status => 400 and return
+          render :json => { :errors => ["row_id can't be blank"] }.to_json,
+                 :status => 400, :callback => params[:callback] and return
         end
       end
     end
@@ -256,7 +264,7 @@ class Api::Json::TablesController < ApplicationController
   #   * body: _nothing_
   def delete
     @table.destroy
-    render :json => ''.to_json, :status => 200, :location => dashboard_path
+    render :json => ''.to_json, :status => 200, :location => dashboard_path, :callback => params[:callback]
   end
 
   # Create a new table
@@ -282,12 +290,14 @@ class Api::Json::TablesController < ApplicationController
     end
     @table.force_schema = params[:schema] if params[:schema]
     if @table.valid? && @table.save
-      render :json => { :id => @table.id }.to_json, :status => 200, :location => table_path(@table)
+      render :json => { :id => @table.id }.to_json, :status => 200, :location => table_path(@table),
+             :callback => params[:callback]
     else
-      render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400
+      render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400, :callback => params[:callback]
     end
   rescue => e
-    render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400 and return
+    render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
+           :status => 400, :callback => params[:callback] and return
   end
 
   protected

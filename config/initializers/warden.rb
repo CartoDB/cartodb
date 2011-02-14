@@ -1,5 +1,5 @@
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
-  manager.default_strategies :password
+  manager.default_strategies :password, :api_key
   manager.failure_app = SessionsController
 end
 
@@ -25,5 +25,27 @@ Warden::Strategies.add(:password) do
     else
       fail!
     end
+  end
+end
+
+Warden::Strategies.add(:api_key) do
+  def authenticate!
+    if params[:api_key]
+      if api_key = APIKey[:api_key => params[:api_key]]
+        if api_key.domain == request.host
+          success!(api_key.user)
+        else
+          fail!
+        end
+      else
+        fail!
+      end
+    else
+      fail!
+    end
+  end
+
+  def fail!
+    render :status => 401, :nothing => true
   end
 end

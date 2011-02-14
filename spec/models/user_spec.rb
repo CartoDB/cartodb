@@ -128,4 +128,14 @@ describe User do
     end
   end
 
+  it "can have different keys for accessing via JSONP API requrests" do
+    user = create_user
+    lambda {
+      user.create_key ""
+    }.should raise_error
+    key = user.create_key "mymashup.com"
+    api_key = APIKey.filter(:user_id => user.id, :domain => 'mymashup.com').first
+    api_key.api_key.should == key
+  end
+
 end

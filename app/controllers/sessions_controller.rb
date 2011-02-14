@@ -22,7 +22,14 @@ class SessionsController < ApplicationController
 
   def unauthenticated
     flash[:alert] = 'Your account or your password is not ok'
-    render :action => 'new' and return
+    respond_to do |format|
+      format.html do
+        render :action => 'new' and return
+      end
+      format.json do
+        render :nothing => true, :status => 401
+      end
+    end
   end
 
 end

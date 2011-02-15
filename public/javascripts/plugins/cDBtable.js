@@ -29,6 +29,7 @@
   var actualPage;
   var total;
   var cell_size = 100;
+  var last_cell_size = 100;
 
   var methods = {
 
@@ -67,14 +68,13 @@
          page: actualPage
        },
        success: function(data) {
-
          if (data.total_rows==0) {
            //Start new table
-
            //Calculate width of th on header
            var window_width = $(window).width();
            if (window_width>((data.columns.length*128)+42)) {
-             cell_size = ((window_width-170)/(data.columns.length-1))-28;
+             cell_size = ((window_width-170)/(data.columns.length-1))-27;
+             last_cell_size = cell_size;
            }
 
            if ($(table).children('thead').length==0) {methods.drawColumns(data.columns);}
@@ -86,7 +86,8 @@
                //Calculate width of th on header
                var window_width = $(window).width();
                if (window_width>((data.columns.length*128)+42)) {
-                 cell_size = ((window_width-170)/(data.columns.length-1))-28;
+                 cell_size = ((window_width-170)/(data.columns.length-1))-27;
+                 last_cell_size = cell_size;
                }
                methods.drawColumns(data.columns);
              }
@@ -150,7 +151,7 @@
                     '<div '+((index==0)?'':' style="width:'+cell_size+'px"') + '>'+
                       '<span class="long">'+
                         '<h3>'+element[0]+'</h3>'+
-                        ((element[0]=='location')?'<p class="geo">geo</p>':'') +
+                        ((element[2]!=undefined)?'<p class="geo '+element[2]+'">geo</p>':'') +
                         ((index==0)?'':'<input type="text" value="'+element[0]+'"/>') +
                       '</span>'+
                       '<p class="long">'+
@@ -206,8 +207,13 @@
                             '</span>';
         tbody += '<tr r="'+element.cartodb_id+'"><td class="first" r="'+ element.cartodb_id +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
         $.each(element, function(j,elem){
-          tbody += '<td '+((j!="id")?'':'class="id"')+' r="'+ element.cartodb_id +'" c="'+ j +'"><div '+((j=='id')?'':' style="width:'+cell_size+'px"') + '>'+elem+'</div></td>';
+          tbody += '<td '+((j!="cartodb_id")?'':'class="id"')+' r="'+ element.cartodb_id +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+elem+'</div></td>';
         });
+        
+        var start = tbody.lastIndexOf('"width:');
+        var end = tbody.lastIndexOf('px"');
+        tbody = tbody.substring(0,start) + '"width:' + last_cell_size + tbody.substring(end);
+        
         tbody += '</tr>';
       });
 
@@ -310,6 +316,10 @@
           '</div>'+
         '</div>'
       );
+      
+      //CSS Hack for cover end of table
+      //Data error tooltip
+      $(table).append('<span class="end_table"></span>');
 
 
     },
@@ -339,7 +349,7 @@
       $(document).scroll(function(ev) {
         ev.stopPropagation();
         ev.preventDefault();
-
+        
         //For moving thead when scrolling
         if ($(document).scrollTop()>58) {
           $('section.subheader').css('top','0');
@@ -765,13 +775,64 @@
 
 
       });
+      
+      
       $('a.open_georeference').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
+        
+        
+        //TODO desactivate component
+        $('div.georeference_window span.select').addClass('disabled');
+        $('div.georeference_window span.select a:eq(0)').text('Retreiving columns...').attr('c','');
+        $('div.georeference_window a.confirm_georeference').addClass('disabled');
+        
+        $.ajax({
+           method: "GET",
+           url: '/api/json/tables/'+table_id+'/schema',
+           success: function(data) {
+             
+             // <span class="select">
+             //   <a class="option" href="#" index="0">Retreiving columns...</a>
+             //   <div class="select_content">
+             //     <ul></ul>
+             //   </div>
+             // </span>
+             
+             
+             for (var i = 0; i<data.length; i++) {
+               if (data[i][2]==undefined) {
+                 $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+               } else {
+                 if (data[i][2]=="longitude") {
+                   $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                   $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
+                 } else {
+                   $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                   $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
+                 }
+               }
+             }
+             
+             $('div.georeference_window span.select').removeClass('disabled');
+
+             $('div.georeference_window span.select a.option').each(function(i,ele){
+               if ($(ele).text()=="Retreiving columns...") {
+                  $(ele).text('Select a row').attr('c','');
+                }
+             });
+             $('div.georeference_window a.confirm_georeference').removeClass('disabled');
+           }
+         });
+        
+
+        
+        
         $(this).closest('div').find('a.options').removeClass('selected');
         $(this).closest('div').find('span.col_ops_list').hide();
         $('div.mamufas div.georeference_window').show();
         $('div.mamufas').fadeIn();
+        
       });
       $('a.rename_column').click(function(ev){
         ev.stopPropagation();
@@ -801,64 +862,6 @@
         $(this).find('a.options').trigger('click');
       });
 
-
-      // //GEO tag movement
-      // $('p.geo').livequery('mousedown',function(event){
-      //   var position = $(this).offset();
-      //   var geo_element = $(this);
-      //   var old_target = $('p.geo').parent();
-      //   geo_element.css('left',position.left+'px');
-      //   geo_element.css('top',position.top+'px');
-      //   geo_element.css('position','absolute');
-      //   geo_element.css('zIndex',100);
-      //   $('body').append(geo_element);
-      //   $('body').mousemove(function(event){
-      //     $('p.geo').css('left',event.clientX+'px');
-      //     $('p.geo').css('top',event.clientY+$(window).scrollTop()+'px');
-      //     if (event.preventDefault) {
-      //       event.preventDefault();
-      //       event.stopPropagation();
-      //     } else {
-      //       event.stopPropagation();
-      //       event.returnValue = false;
-      //     }
-      //   });
-      //   $('body').mouseup(function(event){
-      //     var target = event.target || event.srcElement;
-      //     var targetElement = target.nodeName.toLowerCase();
-      //
-      //     $(this).unbind('mouseup');
-      //     $(this).unbind('mousemove');
-      //
-      //     if ($(target).closest('th') && !$(target).closest('th').hasClass('first') && $(target).closest('th').find('h3').text()!="id") {
-      //       $(target).closest('th').children('div').children('span.long').append(geo_element);
-      //       geo_element.css('position','relative');
-      //       geo_element.css('left','0');
-      //       geo_element.css('top','0');
-      //       geo_element.css('zIndex',0);
-      //     } else {
-      //       old_target.append(geo_element);
-      //       geo_element.css('position','relative');
-      //       geo_element.css('left','0');
-      //       geo_element.css('top','0');
-      //       geo_element.css('zIndex',0);
-      //     }
-      //     if (event.preventDefault) {
-      //       event.preventDefault();
-      //       event.stopPropagation();
-      //     } else {
-      //       event.stopPropagation();
-      //       event.returnValue = false;
-      //     }
-      //   });
-      //   if (event.preventDefault) {
-      //     event.preventDefault();
-      //     event.stopPropagation();
-      //   } else {
-      //     event.stopPropagation();
-      //     event.returnValue = false;
-      //   }
-      // });
 
 
       // //SQL Editor
@@ -940,22 +943,18 @@
     resizeTable: function() {
       $('div.table_position').width($(window).width());
       var parent_width = $(window).width();
-      var width_table_content = (($(table).children('thead').children('tr').children('th').size()-1)*128) + 66;
+      var width_table_content = (($(table).children('thead').children('tr').children('th').size()-2)*(cell_size+27)) + 168;
       var head_element = $(table).children('thead').children('tr').children('th:last').children('div');
       var body_element = $(table).children('tbody').children('tr');
 
-      // WIDTH
-      // if (parent_width>width_table_content) {
-      //   $(head_element).width(128 + parent_width-width_table_content);
-      //   $(body_element).each(function(index,element){
-      //     $(element).children('td:last').children('div').width(128 + parent_width-width_table_content);
-      //   });
-      // } else {
-      //   $(head_element).width(128);
-      //   $(body_element).each(function(index,element){
-      //     $(element).children('td:last').children('div').width(128);
-      //   });
-      // }
+      //WIDTH
+      if (parent_width>width_table_content) {
+        $(head_element).width(parent_width - width_table_content + cell_size);
+        $(body_element).each(function(index,element){
+          $(element).children('td:last').children('div').width(parent_width-width_table_content + cell_size);
+          last_cell_size = parent_width-width_table_content + cell_size;
+        });
+      }
 
       // HEIGTH
       var parent_height = $(window).height();
@@ -1004,7 +1003,6 @@
         default:              break;
       }
     },
-
 
 
 

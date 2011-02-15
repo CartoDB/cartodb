@@ -218,32 +218,7 @@
       unbindESC();
     });
     
-    //Magic select
-    $('span.select a.option').click(function(ev){
-      ev.stopPropagation();
-      ev.preventDefault();
-      if ($(this).parent().hasClass('clicked')) {
-        $(this).parent().removeClass('clicked');
-      } else {
-        $('span.select').removeClass('clicked');
-        $(document).bind('click',function(ev){
-          if (!$(ev.target).closest('span.select').length) {
-            $('span.select').removeClass('clicked');
-          };
-        });
-        $(this).parent().addClass('clicked');
-        $(this).parent().find('ul').jScrollPane();
-      }
-    });
-    
-    $('div.select_content ul li a').click(function(ev){
-      ev.stopPropagation();
-      ev.preventDefault();
-      $(this).closest('span.select').children('a.option').text($(this).text());
-      $(this).closest('span.select').children('a.option').attr('index',$(this).attr('index'));
-      $('span.select').removeClass('clicked');
-      //TODO change select option selected
-    });
+
     
     
     $('a.confirm_delete').click(function(ev){

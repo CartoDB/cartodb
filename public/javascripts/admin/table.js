@@ -1,5 +1,3 @@
-
-    var worker = new Worker('/javascripts/admin/geoAddress.js');
     var requests_queue = new loaderQueue();
 
 
@@ -18,12 +16,12 @@
     
     
     /*============================================================================*/
-  	/* Use unique  */
-  	/*============================================================================*/
+    /* Use unique  */
+    /*============================================================================*/
     function createUniqueId() {
       var uuid= '';
       for (i = 0; i < 32; i++) {
-      	uuid += Math.floor(Math.random() * 16).toString(16);
+       uuid += Math.floor(Math.random() * 16).toString(16);
       }
       return uuid;
     }
@@ -31,8 +29,8 @@
 
     
     /*============================================================================*/
-  	/* Sanitize texts  */
-  	/*============================================================================*/
+    /* Sanitize texts  */
+    /*============================================================================*/
     function sanitizeText(str) {
       return str.replace(/[^a-zA-Z 0-9 _]+/g,'').replace(' ','_').toLowerCase();
     }
@@ -42,18 +40,10 @@
     
     
     
-    // TEST
-
-    function geocodeAddress() {
-      
-      worker.onmessage = function (event) {
-        console.log(event.data);
-      };
-      
-      // worker.addEventListener('message', function(e) {
-      //     console.log(e.data);
-      //   }, false);
-      // 
-      // worker.postMessage({'address': 'jamon'});
-
-    }
+    
+    
+    
+    
+    
+    
+    

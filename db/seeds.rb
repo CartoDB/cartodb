@@ -43,6 +43,7 @@ table = Table.new :privacy => Table::PRIVATE, :name => 'Downloaded movies',
 table.user_id = user.id
 table.force_schema = "name varchar(255), address varchar(255), latitude float, longitude float"
 table.save
+table.set_lan_lon_columns!(:latitude, :longitude)
 
 user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('#{String.random(15)}','Calle Santa Ana 1, 3C, Madrid',#{rand(100000).to_f / 100.0},#{rand(100000).to_f / 100.0})"   )
 user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('#{String.random(15)}','Calle Hortaleza 48, Madrid',#{rand(100000).to_f / 100.0},#{rand(100000).to_f / 100.0})"      )

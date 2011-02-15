@@ -1,3 +1,5 @@
+# coding: UTF-8
+
 class Api::Json::TablesController < ApplicationController
 
   skip_before_filter :verify_authenticity_token
@@ -331,7 +333,7 @@ class Api::Json::TablesController < ApplicationController
   protected
 
   def load_table
-    @table = Table.select(:id,:user_id,:name,:privacy).filter(:id => params[:id]).first
+    @table = Table.select(:id,:user_id,:name,:privacy,:geometry_columns).filter(:id => params[:id]).first
     raise RecordNotFound if @table.user_id != current_user.id
   end
 

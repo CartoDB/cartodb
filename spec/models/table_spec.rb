@@ -404,4 +404,26 @@ describe Table do
     row[:views].should == 540
   end
 
+  it "should import data from an external url returning JSON data" do
+    json = JSON.parse(File.read("#{Rails.root}/spec/support/bus_gijon.json"))
+    JSON.stubs(:parse).returns(json)
+    table = new_table
+    table.import_from_external_url = "http://externaldata.com/bus_gijon.json"
+    table.save
+
+    table.rows_counted.should == 7
+    table.schema.should == [[:cartodb_id, "integer"], [:idautobus, "integer"], [:utmx, "integer"],
+        [:utmy, "integer"], [:horaactualizacion, "character varying"], [:fechaactualizacion, "character varying"],
+        [:idtrayecto, "integer"], [:idparada, "integer"], [:minutos, "integer"], [:distancia, "double precision"],
+        [:idlinea, "integer"], [:matricula, "character varying"], [:modelo, "character varying"],
+        [:ordenparada, "integer"], [:idsiguienteparada, "integer"], [:created_at, "timestamp"],
+        [:updated_at, "timestamp"]
+    ]
+    row = table.to_json[:rows][0]
+    row[:cartodb_id].should == 1
+    row[:idautobus].should == 330
+    row[:horaactualizacion].should == "14:23:10"
+    row[:idparada] == 34
+  end
+
 end

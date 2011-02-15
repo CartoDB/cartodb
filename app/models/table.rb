@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file
+  attr_accessor :force_schema, :import_from_file, :import_from_external_url
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at }
 
@@ -34,6 +34,9 @@ class Table < Sequel::Model(:user_tables)
   # This table has an empty schema
   def before_create
     update_updated_at
+    unless import_from_external_url.blank?
+      import_data_from_external_url!
+    end
     guess_schema if force_schema.blank? && !import_from_file.blank?
     unless self.user_id.blank? || self.name.blank?
       owner.in_database do |user_database|
@@ -72,7 +75,9 @@ class Table < Sequel::Model(:user_tables)
           end
         end
       end
-      import_data! unless import_from_file.nil?
+      unless import_from_file.blank?
+        import_data_from_file!
+      end
       set_triggers
     end
     super
@@ -270,8 +275,35 @@ class Table < Sequel::Model(:user_tables)
     base_name
   end
 
-  def import_data!
-    return if self.import_from_file.nil?
+  def import_data_from_external_url!
+    return if self.import_from_external_url.blank?
+    url = URI.parse(self.import_from_external_url)
+    req = Net::HTTP::Get.new(url.path)
+    res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
+    json = JSON.parse(res.body)
+    columns = []
+    filepath = "#{Rails.root}/tmp/importing_#{user_id}.csv"
+    if json.is_a?(Array)
+      raise "Invalid JSON format" unless json.first.is_a?(Hash)
+      CSV.open(filepath, "wb") do |csv|
+        csv << json.first.keys
+        json.each do |row|
+          csv << row.values
+        end
+      end
+    elsif json.is_a?(Hash)
+      CSV.open(filepath, "wb") do |csv|
+        csv << json.keys
+        csv << json.values
+      end
+    else
+      raise "Invalid JSON format"
+    end
+    self.import_from_file = File.open(filepath,'r')
+  end
+
+  def import_data_from_file!
+    return if self.import_from_file.blank?
     path = if import_from_file.respond_to?(:tempfile)
       import_from_file.tempfile.path
     else
@@ -294,6 +326,7 @@ class Table < Sequel::Model(:user_tables)
     end
   ensure
     FileUtils.rm filename
+    FileUtils.rm path
   end
 
   def guess_schema

@@ -8,6 +8,7 @@ class UserTablesMigration < Sequel::Migration
       Integer :privacy, :null => false
       DateTime :updated_at, :null => false
       String :tags, :text => true
+      String :geometry_columns
       Integer :rows_counted
       Integer :rows_estimated
     end

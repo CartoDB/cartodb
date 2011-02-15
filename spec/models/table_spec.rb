@@ -444,6 +444,12 @@ describe Table do
     row[:name].should == "Hawai"
 
     table.set_lan_lon_columns!(:lat, :lon)
+    table.reload
+    table.lat_column.should == :lat
+    table.lon_column.should == :lon
+    table.schema.should == [[:cartodb_id, "integer"], [:id, "integer"], [:name, "character varying"], [:lat, "double precision", "latitude"],
+      [:lon, "double precision", "longitude"], [:the_geom, "geometry"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
 
     # Vizzuality HQ
     current_lat = "40.422546"

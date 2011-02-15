@@ -184,6 +184,12 @@ class Table < Sequel::Model(:user_tables)
     schema = [schema] + temporal_schema
     created_at = schema.delete([:created_at, "timestamp without time zone"])
     updated_at = schema.delete([:updated_at, "timestamp without time zone"])
+    if lat_column && lon_column
+      schema.each do |col|
+        col << "latitude"  if col[0].to_sym == lat_column
+        col << "longitude" if col[0].to_sym == lon_column
+      end
+    end
     schema.push([:created_at, "timestamp"]).push([:updated_at, "timestamp"])
   end
 
@@ -272,8 +278,25 @@ class Table < Sequel::Model(:user_tables)
 TRIGGER
       )
     end
+    self.geometry_columns = "#{lat_column}|#{lon_column}"
+    save_changes
   end
 
+  def lat_column
+    unless geometry_columns.blank?
+      geometry_columns.split('|')[0].to_sym
+    else
+      nil
+    end
+  end
+
+  def lon_column
+    unless geometry_columns.blank?
+      geometry_columns.split('|')[1].to_sym
+    else
+      nil
+    end
+  end
   private
 
   def update_updated_at

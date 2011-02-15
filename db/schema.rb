@@ -34,6 +34,7 @@ Sequel.migration do
       Integer :privacy, :default=>0, :null=>false
       DateTime :updated_at, :null=>false
       String :tags, :text=>true
+      String :geometry_columns, :text=>true
       Integer :rows_counted, :default=>0
       Integer :rows_estimated, :default=>0
       

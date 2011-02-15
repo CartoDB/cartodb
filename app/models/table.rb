@@ -184,6 +184,7 @@ class Table < Sequel::Model(:user_tables)
     schema = [schema] + temporal_schema
     created_at = schema.delete([:created_at, "timestamp without time zone"])
     updated_at = schema.delete([:updated_at, "timestamp without time zone"])
+    schema.delete([:the_geom, "geometry"])
     if lat_column && lon_column
       schema.each do |col|
         col << "latitude"  if col[0].to_sym == lat_column

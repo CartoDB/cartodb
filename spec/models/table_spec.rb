@@ -437,7 +437,7 @@ describe Table do
 
     table.rows_counted.should == 5
     table.schema.should == [[:cartodb_id, "integer"], [:id, "integer"], [:name, "character varying"], [:lat, "double precision"],
-        [:lon, "double precision"], [:the_geom, "geometry"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+        [:lon, "double precision"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     row = table.to_json[:rows][0]
     row[:cartodb_id].should == 1
@@ -448,7 +448,7 @@ describe Table do
     table.lat_column.should == :lat
     table.lon_column.should == :lon
     table.schema.should == [[:cartodb_id, "integer"], [:id, "integer"], [:name, "character varying"], [:lat, "double precision", "latitude"],
-      [:lon, "double precision", "longitude"], [:the_geom, "geometry"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:lon, "double precision", "longitude"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
 
     # Vizzuality HQ

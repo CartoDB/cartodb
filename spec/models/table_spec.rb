@@ -426,4 +426,38 @@ describe Table do
     row[:idparada] == 34
   end
 
+  it "should import data from an external url returning JSON data and set the geometric fields" do
+    user = create_user
+    json = JSON.parse(File.read("#{Rails.root}/spec/support/points_json.json"))
+    JSON.stubs(:parse).returns(json)
+    table = new_table
+    table.import_from_external_url = "http://externaldata.com/points_json.json"
+    table.user_id = user.id
+    table.save
+
+    table.rows_counted.should == 5
+    table.schema.should == [[:cartodb_id, "integer"], [:id, "integer"], [:name, "character varying"], [:lat, "double precision"],
+        [:lon, "double precision"], [:the_geom, "geometry"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
+    row = table.to_json[:rows][0]
+    row[:cartodb_id].should == 1
+    row[:name].should == "Hawai"
+
+    table.set_lan_lon_columns!(:lat, :lon)
+
+    # Vizzuality HQ
+    current_lat = "40.422546"
+    current_lon = "-3.699431"
+    query_result = user.run_query("select name, distance_sphere(the_geom, geomfromtext('POINT(#{current_lon} #{current_lat})', 4236)) as distance from #{table.name} order by distance asc")
+    query_result[:rows][0][:name].should == "Hawai"
+    query_result[:rows][1][:name].should == "El Pico"
+
+    # Plaza Santa Ana
+    current_lat = "40.414689"
+    current_lon = "-3.700901"
+    query_result = user.run_query("select name, distance_sphere(the_geom, geomfromtext('POINT(#{current_lon} #{current_lat})', 4236)) as distance from #{table.name} order by distance asc")
+    query_result[:rows][0][:name].should == "El Lacón"
+    query_result[:rows][1][:name].should == "Hawai"
+  end
+
 end

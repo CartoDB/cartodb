@@ -14,7 +14,7 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file, :import_from_external_url
 
-  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at }
+  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
 
   ## Callbacks
   def validate
@@ -45,11 +45,11 @@ class Table < Sequel::Model(:user_tables)
             user_database.create_table self.name.to_sym do
               primary_key :cartodb_id
               String :name
-              column :location, 'geometry'
+              String :location
+              column :the_geom, 'geometry'
               String :description, :text => true
               DateTime :created_at, :default => "now()"
               DateTime :updated_at, :default => "now()"
-              constraint(:enforce_geotype_location){"(geometrytype(location) = 'POINT'::text OR location IS NULL)"}
             end
           else
             sanitized_force_schema = force_schema.split(',').map do |column|
@@ -66,6 +66,7 @@ class Table < Sequel::Model(:user_tables)
               sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY")
               sanitized_force_schema.unshift("created_at timestamp")
               sanitized_force_schema.unshift("updated_at timestamp")
+              sanitized_force_schema.unshift("the_geom geometry")
             end
             user_database.run("CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')})")
             if import_from_file.blank?
@@ -250,6 +251,29 @@ class Table < Sequel::Model(:user_tables)
     }
   end
 
+  def set_lan_lon_columns!(lat_column, lon_column)
+    owner.in_database(:as => :superuser) do |user_database|
+      user_database.run("UPDATE #{self.name} SET the_geom = PointFromText('POINT(' || #{lon_column} || ' ' || #{lat_column} || ')',4236)")
+      user_database.run(<<-TRIGGER
+        -- Sets trigger to update the_geom automagically
+        DROP TRIGGER IF EXISTS update_geometry_trigger ON #{self.name};
+
+        CREATE OR REPLACE FUNCTION update_geometry() RETURNS TRIGGER AS $update_geometry_trigger$
+          BEGIN
+               NEW.the_geom := PointFromText('POINT(#{lat_column} #{lon_column})',4236);
+               RETURN NEW;
+          END;
+        $update_geometry_trigger$ LANGUAGE plpgsql;
+
+        CREATE TRIGGER update_geometry_trigger
+        BEFORE UPDATE ON #{self.name}
+            FOR EACH ROW EXECUTE PROCEDURE update_geometry();
+
+TRIGGER
+      )
+    end
+  end
+
   private
 
   def update_updated_at
@@ -323,6 +347,7 @@ class Table < Sequel::Model(:user_tables)
       user_database.run("alter table #{self.name} add primary key (cartodb_id)")
       user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
       user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
+      user_database.run("alter table #{self.name} add column the_geom geometry")
     end
   ensure
     FileUtils.rm filename

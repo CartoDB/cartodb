@@ -325,9 +325,9 @@ class Api::Json::TablesController < ApplicationController
   def set_geometry_columns
     @table.set_lan_lon_columns!(params[:lat_column].to_sym, params[:lon_column].to_sym)
     render :json => ''.to_json, :status => 200, :callback => params[:callback]
-  # rescue => e
-  #   render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
-  #          :status => 400, :callback => params[:callback] and return
+  rescue => e
+    render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
+           :status => 400, :callback => params[:callback] and return
   end
 
   protected

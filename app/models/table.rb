@@ -45,11 +45,12 @@ class Table < Sequel::Model(:user_tables)
             user_database.create_table self.name.to_sym do
               primary_key :cartodb_id
               String :name
-              String :location
-              column :the_geom, 'geometry'
+              Float :latitude
+              Float :longitude
               String :description, :text => true
               DateTime :created_at, :default => "now()"
               DateTime :updated_at, :default => "now()"
+              column :the_geom, 'geometry'
             end
           else
             sanitized_force_schema = force_schema.split(',').map do |column|

@@ -106,8 +106,8 @@ class User < Sequel::Model
     {
       :time => time.real,
       :total_rows => rows.size,
-      :columns => (rows.size > 0 ? rows.first.keys : []),
-      :rows => rows
+      :columns => (rows.size > 0 ? rows.first.keys - [:the_geom]: []),
+      :rows => rows.map{ |row| row.delete("the_geom"); row }
     }
   rescue => e
     if e.message =~ /^PGError/

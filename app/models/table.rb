@@ -14,7 +14,7 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file
 
-  CARTODB_COLUMNS = %W{ cartodb_id }
+  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at }
 
   ## Callbacks
   def validate
@@ -44,6 +44,8 @@ class Table < Sequel::Model(:user_tables)
               String :name
               column :location, 'geometry'
               String :description, :text => true
+              DateTime :created_at, :default => "now()"
+              DateTime :updated_at, :default => "now()"
               constraint(:enforce_geotype_location){"(geometrytype(location) = 'POINT'::text OR location IS NULL)"}
             end
           else
@@ -57,8 +59,16 @@ class Table < Sequel::Model(:user_tables)
             # If import_from_file is blank primary key is added now.
             # If not we add it after importing the CSV file, becaus the number of columns
             # will not match
-            sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY") if import_from_file.blank?
+            if import_from_file.blank?
+              sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY")
+              sanitized_force_schema.unshift("created_at timestamp")
+              sanitized_force_schema.unshift("updated_at timestamp")
+            end
             user_database.run("CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')})")
+            if import_from_file.blank?
+              user_database.run("alter table #{self.name} alter column created_at SET DEFAULT now()")
+              user_database.run("alter table #{self.name} alter column updated_at SET DEFAULT now()")
+            end
           end
         end
       end
@@ -161,9 +171,14 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema
-    owner.in_database do |user_database|
+    temporal_schema = owner.in_database do |user_database|
       user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:db_type]] }
     end
+    schema = temporal_schema.delete([:cartodb_id, "integer"])
+    schema = [schema] + temporal_schema
+    created_at = schema.delete([:created_at, "timestamp without time zone"])
+    updated_at = schema.delete([:updated_at, "timestamp without time zone"])
+    schema.push([:created_at, "timestamp"]).push([:updated_at, "timestamp"])
   end
 
   def add_column!(options)
@@ -212,16 +227,20 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def to_json(options = {})
-    rows, columns = [], []
-    limit      = (options[:rows_per_page] || 10).to_i
-    offset     = (options[:page] || 0).to_i*limit
+    rows = []
+    limit = (options[:rows_per_page] || 10).to_i
+    offset = (options[:page] || 0).to_i*limit
     owner.in_database do |user_database|
-      columns = user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:db_type]] }
-      rows    = user_database[name.to_sym].limit(limit,offset).order(:cartodb_id).all
+      rows = user_database[name.to_sym].limit(limit,offset).
+              order(:cartodb_id).select(*schema.map{ |e| e[0]}).all.map do |row|
+                row[:created_at] = row[:created_at].strftime("%H:%M:%S %Y-%m-%d")
+                row[:updated_at] = row[:updated_at].strftime("%H:%M:%S %Y-%m-%d")
+                row
+             end
     end
     {
       :total_rows => rows_counted,
-      :columns => columns,
+      :columns => schema,
       :rows => rows
     }
   end
@@ -270,6 +289,8 @@ class Table < Sequel::Model(:user_tables)
       user_database.run("alter table #{self.name} add unique (cartodb_id)")
       user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
       user_database.run("alter table #{self.name} add primary key (cartodb_id)")
+      user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
+      user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
     end
   ensure
     FileUtils.rm filename
@@ -365,6 +386,19 @@ class Table < Sequel::Model(:user_tables)
         CREATE TRIGGER protect_data_trigger
         BEFORE UPDATE ON #{self.name}
             FOR EACH ROW EXECUTE PROCEDURE protect_data();
+
+        DROP TRIGGER IF EXISTS update_updated_at_trigger ON #{self.name};
+
+        CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at_trigger$
+          BEGIN
+               NEW.updated_at := now();
+               RETURN NEW;
+          END;
+        $update_updated_at_trigger$ LANGUAGE plpgsql;
+
+        CREATE TRIGGER update_updated_at_trigger
+        BEFORE UPDATE ON #{self.name}
+            FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
 TRIGGER
       )
     end

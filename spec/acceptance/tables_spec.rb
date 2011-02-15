@@ -45,7 +45,7 @@ feature "Tables" do
 
     page.find("div.performing_op p").text.should == 'Loading...'
     sleep 1
-    page.find("div.performing_op p").text.should == 'Your table tags has been updated'
+    page.find("div.performing_op p").text.should == 'Your table tags have been updated'
     page.all("span.tags p")[0].text.should == 'twitter'
     page.all("span.tags p")[1].text.should == 'tag1'
 
@@ -53,7 +53,7 @@ feature "Tables" do
     page.find("li.tagit-new input.tagit-input").set("tag3,")
     page.find_link("Save").click
 
-    page.find("div.performing_op p").text.should == 'Your table tags has been updated'
+    page.find("div.performing_op p").text.should == 'Your table tags have been updated'
     page.all("span.tags p")[0].text.should == 'twitter'
     page.all("span.tags p")[1].text.should == 'tag1'
     page.all("span.tags p")[2].text.should == 'tag3'

@@ -24,14 +24,14 @@ feature "Tables JSON API" do
     response.status.should == 200
     json_response = JSON(response.body)
     json_response['total_rows'].should == 100
-    json_response['rows'][0].symbolize_keys.should == content[0]
-    json_response['rows'][1].symbolize_keys.should == content[1]
+    json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[0].slice(:cartodb_id, :name, :location, :description)
+    json_response['rows'][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[1].slice(:cartodb_id, :name, :location, :description)
 
     get_json "/api/json/tables/#{table.id}?rows_per_page=2&page=1"
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response['rows'][0].symbolize_keys.should == content[2]
-    json_response['rows'][1].symbolize_keys.should == content[3]
+    json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
+    json_response['rows'][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
   end
 
   scenario "Update the privacy status of a table" do
@@ -111,7 +111,7 @@ feature "Tables JSON API" do
     get_json "/api/json/tables/#{table.id}/schema"
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response.should == [["cartodb_id", "integer"], ["name", "text"], ["location", "geometry"], ["description", "text"]]
+    json_response.should == [["cartodb_id", "integer"], ["name", "text"], ["location", "geometry"], ["description", "text"], ["created_at", "timestamp"], ["updated_at", "timestamp"]]
   end
 
   scenario "Get a list of tables" do
@@ -156,7 +156,11 @@ feature "Tables JSON API" do
     json_response = JSON(response.body)
     json_response.should == {"name" => "postal_code", "type" => 'integer'}
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:postal_code, "integer"]]
+    table.schema.should == [
+        [:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"],
+        [:description, "text"], [:postal_code, "integer"],
+        [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "modify", :column => {
@@ -167,7 +171,10 @@ feature "Tables JSON API" do
     json_response = JSON(response.body)
     json_response.should == {"name" => "postal_code", "type" => 'text'}
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:postal_code, "text"]]
+    table.schema.should == [
+      [:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:postal_code, "text"],
+      [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "add", :column => {
@@ -185,7 +192,10 @@ feature "Tables JSON API" do
                                                            }
     response.status.should == 200
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
+    table.schema.should == [
+      [:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"],
+      [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "drop", :column => {
@@ -331,7 +341,10 @@ feature "Tables JSON API" do
     get_json "/api/json/tables/#{response.location.match(/\/(\d+)$/)[1].to_i}/schema"
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response.should == [["cartodb_id", "integer"], ["code", "character(5)"], ["title", "character varying(40)"], ["did", "integer"], ["date_prod", "date"], ["kind", "character varying(10)"]]
+    json_response.should == [
+      ["cartodb_id", "integer"], ["code", "character(5)"], ["title", "character varying(40)"], ["did", "integer"],
+      ["date_prod", "date"], ["kind", "character varying(10)"], ["created_at", "timestamp"], ["updated_at", "timestamp"]
+    ]
   end
 
   scenario "Import a file when the schema is wrong" do

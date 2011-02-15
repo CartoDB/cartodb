@@ -305,6 +305,29 @@ class Api::Json::TablesController < ApplicationController
            :status => 400, :callback => params[:callback] and return
   end
 
+  # Set the columns of the geometry of the table
+  # * Request Method: +PUT+
+  # * URI: +/api/json/table/:id/set_geometry_columns
+  # * Format: +JSON+
+  # * Parameters:
+  #     {
+  #       "lat_column" => "<lat_column_name>",
+  #       "lon_column" => "<lon_column_name>"
+  #     }
+  # * Response if _success_:
+  #   * status code: 200
+  # * Response if _error_:
+  #   * status code +400+
+  #   * body:
+  #       { "errors" => ["error message"] }
+  def set_geometry_columns
+    @table.set_lan_lon_columns!(params[:lat_column].to_sym, params[:lon_column].to_sym)
+    render :json => ''.to_json, :status => 200, :callback => params[:callback]
+  # rescue => e
+  #   render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
+  #          :status => 400, :callback => params[:callback] and return
+  end
+
   protected
 
   def load_table

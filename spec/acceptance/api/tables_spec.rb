@@ -12,8 +12,8 @@ feature "Tables JSON API" do
     user = create_user
     table = create_table :user_id => user.id
 
-    100.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{rand(100000).to_f / 100.0}, #{rand(100000).to_f / 100.0},'#{String.random(100)}')")
     end
 
     content = user.run_query("select * from \"#{table.name}\"")[:rows]
@@ -23,7 +23,7 @@ feature "Tables JSON API" do
     get_json "/api/json/tables/#{table.id}?rows_per_page=2"
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response['total_rows'].should == 100
+    json_response['total_rows'].should == 10
     json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[0].slice(:cartodb_id, :name, :location, :description)
     json_response['rows'][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[1].slice(:cartodb_id, :name, :location, :description)
 
@@ -111,7 +111,7 @@ feature "Tables JSON API" do
     get_json "/api/json/tables/#{table.id}/schema"
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response.should == [["cartodb_id", "integer"], ["name", "text"], ["location", "geometry"], ["description", "text"], ["created_at", "timestamp"], ["updated_at", "timestamp"]]
+    json_response.should == [["cartodb_id", "integer"], ["name", "text"], ["latitude", "double precision"], ["longitude", "double precision"], ["description", "text"], ["created_at", "timestamp"], ["updated_at", "timestamp"]]
   end
 
   scenario "Get a list of tables" do
@@ -156,11 +156,7 @@ feature "Tables JSON API" do
     json_response = JSON(response.body)
     json_response.should == {"name" => "postal_code", "type" => 'integer'}
     table.reload
-    table.schema.should == [
-        [:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"],
-        [:description, "text"], [:postal_code, "integer"],
-        [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:postal_code, "integer"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "modify", :column => {
@@ -171,10 +167,7 @@ feature "Tables JSON API" do
     json_response = JSON(response.body)
     json_response.should == {"name" => "postal_code", "type" => 'text'}
     table.reload
-    table.schema.should == [
-      [:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"], [:postal_code, "text"],
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:postal_code, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "add", :column => {
@@ -192,10 +185,7 @@ feature "Tables JSON API" do
                                                            }
     response.status.should == 200
     table.reload
-    table.schema.should == [
-      [:cartodb_id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"],
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
+    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "drop", :column => {
@@ -575,7 +565,6 @@ feature "Tables JSON API" do
     json_response['rows'][1].symbolize_keys[:name_of_species].should == "Eulagisca gigantea"
   end
 
-
   scenario "Run a query against a table using JSONP and key authorization" do
     Capybara.current_driver = :selenium
 
@@ -600,6 +589,22 @@ feature "Tables JSON API" do
     page.find("div#results").text.should == "Barrukia cristata"
 
     FileUtils.rm("#{Rails.root}/public/test_jsonp.html")
+  end
+
+  scenario "Set the geometry from a table" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.save
+
+    authenticate_api user
+
+    put_json "/api/json/tables/#{table.id}/set_geometry_columns", {:lat_column => :latitude, :lon_column => :longitude}
+    response.status.should == 200
+
+    table.reload
+    table.lat_column.should == :latitude
+    table.lon_column.should == :longitude
   end
 
 end

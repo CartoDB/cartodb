@@ -77,7 +77,7 @@ feature "Tables" do
 
   scenario "Update the value from a cell" do
     10.times do
-      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
+      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{rand(100000).to_f / 100.0}, #{rand(100000).to_f / 100.0},'#{String.random(100)}')")
     end
 
     sleep 2
@@ -95,7 +95,7 @@ feature "Tables" do
 
   scenario "Can't update cartodb_id field" do
     2.times do
-      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
+      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{rand(100000).to_f / 100.0}, #{rand(100000).to_f / 100.0},'#{String.random(100)}')")
     end
 
     sleep 2
@@ -108,7 +108,7 @@ feature "Tables" do
 
   scenario "Can't update cartodb_id field" do
     2.times do
-      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Location,Description) VALUES ('#{String.random(10)}','#{Point.from_x_y(rand(10.0), rand(10.0)).as_ewkt}','#{String.random(100)}')")
+      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{rand(100000).to_f / 100.0}, #{rand(100000).to_f / 100.0},'#{String.random(100)}')")
     end
 
     sleep 2

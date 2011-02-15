@@ -54,12 +54,16 @@ class Table < Sequel::Model(:user_tables)
                 column.gsub(/primary\s+key/i,"UNIQUE")
               end
             end
-            sanitized_force_schema.unshift("cartodb_id SERIAL") if import_from_file.blank?
+            # If import_from_file is blank primary key is added now.
+            # If not we add it after importing the CSV file, becaus the number of columns
+            # will not match
+            sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY") if import_from_file.blank?
             user_database.run("CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')})")
           end
         end
       end
       import_data! unless import_from_file.nil?
+      set_triggers
     end
     super
   end
@@ -343,6 +347,27 @@ class Table < Sequel::Model(:user_tables)
     end
 
     self.force_schema = result.join(', ')
+  end
+
+  def set_triggers
+    owner.in_database(:as => :superuser) do |user_database|
+      user_database.run(<<-TRIGGER
+        -- Sets trigger to protect primary key cartodb_id to be updated
+        DROP TRIGGER IF EXISTS protect_data_trigger ON #{self.name};
+
+        CREATE OR REPLACE FUNCTION protect_data() RETURNS TRIGGER AS $protect_data_trigger$
+          BEGIN
+               NEW.cartodb_id := OLD.cartodb_id;
+               RETURN NEW;
+          END;
+        $protect_data_trigger$ LANGUAGE plpgsql;
+
+        CREATE TRIGGER protect_data_trigger
+        BEFORE UPDATE ON #{self.name}
+            FOR EACH ROW EXECUTE PROCEDURE protect_data();
+TRIGGER
+      )
+    end
   end
 
 end

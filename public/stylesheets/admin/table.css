@@ -173,7 +173,7 @@ border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-r
 div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.clicked a {background-position:130px -15px;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.clicked div.select_content {position:absolute; top:28px; left:-1px; display:block; margin:0!important; padding:2px 0px; border:1px solid #999999; border-top:none;
   background-image:-moz-linear-gradient(100% 100% 90deg, #DBDCDF, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#DFE0E2), to(#FFFFFF)); -webkit-border-bottom-right-radius: 5px; -webkit-border-bottom-left-radius: 5px;
-  -moz-border-radius-bottomright: 5px; -moz-border-radius-bottomleft: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px;}
+  -moz-border-radius-bottomright: 5px; -moz-border-radius-bottomleft: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; z-index:20;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.clicked ul {float:left; display:block; width:137px; max-height:100px; margin:1px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.clicked ul li a {width:137px; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 div.mamufas div.georeference_window .jspContainer{overflow:hidden;position:relative;}

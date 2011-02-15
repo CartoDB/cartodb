@@ -345,7 +345,12 @@
     //  ADD SCROLL PAGINATE BINDING
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addScroll: function() {
-
+      
+      $('.jspScrollable,.jspContainer,.jspPane').scroll(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+      });
+      
       $(document).scroll(function(ev) {
         ev.stopPropagation();
         ev.preventDefault();
@@ -791,25 +796,22 @@
            method: "GET",
            url: '/api/json/tables/'+table_id+'/schema',
            success: function(data) {
-             
-             // <span class="select">
-             //   <a class="option" href="#" index="0">Retreiving columns...</a>
-             //   <div class="select_content">
-             //     <ul></ul>
-             //   </div>
-             // </span>
-             
+             //TODO, see what happens with styled scrolls
+             $(document).unbind('scroll');
              
              for (var i = 0; i<data.length; i++) {
-               if (data[i][2]==undefined) {
-                 $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-               } else {
-                 if (data[i][2]=="longitude") {
-                   $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                   $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
+               
+               if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
+                 if (data[i][2]==undefined) {
+                   $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                  } else {
-                   $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                   $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
+                   if (data[i][2]=="longitude") {
+                     $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                     $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
+                   } else {
+                     $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                     $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
+                   }
                  }
                }
              }
@@ -824,7 +826,6 @@
              $('div.georeference_window a.confirm_georeference').removeClass('disabled');
            }
          });
-        
 
         
         
@@ -834,6 +835,44 @@
         $('div.mamufas').fadeIn();
         
       });
+      
+      //Magic select
+      $('span.select a.option').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        if ($(this).parent().hasClass('clicked')) {
+          $(this).parent().removeClass('clicked');
+        } else {
+          $('span.select').removeClass('clicked');
+          $(document).bind('click',function(ev){
+            if (!$(ev.target).closest('span.select').length) {
+              $('span.select').removeClass('clicked');
+            };
+          });
+          $(this).parent().addClass('clicked');
+          $(this).parent().find('ul').jScrollPane();
+        }
+      });
+
+      $('span.select ul li a').livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).closest('span.select').children('a.option').text($(this).text());
+        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
+        $('span.select').removeClass('clicked');
+        $('span.select ul li').removeClass('choosen');
+        $('span.select ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
+      });
+      
+      $('a.confirm_georeference').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        if ($('a#latitude').attr('c')!='' && $('a#longitude').attr('c')!='') {
+          alert('georeferencia!');
+        } 
+      });
+      
+      
       $('a.rename_column').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();

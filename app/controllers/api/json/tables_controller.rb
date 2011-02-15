@@ -1,3 +1,5 @@
+# coding: UTF-8
+
 class Api::Json::TablesController < ApplicationController
 
   skip_before_filter :verify_authenticity_token

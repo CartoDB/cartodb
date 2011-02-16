@@ -297,7 +297,7 @@ class Table < Sequel::Model(:user_tables)
 
         CREATE OR REPLACE FUNCTION update_geometry() RETURNS TRIGGER AS $update_geometry_trigger$
           BEGIN
-               NEW.the_geom := PointFromText('POINT(#{lat_column} #{lon_column})',4236);
+               NEW.the_geom := PointFromText('POINT(' || NEW.#{lon_column} || ' ' || NEW.#{lat_column} || ')',4236);
                RETURN NEW;
           END;
         $update_geometry_trigger$ LANGUAGE plpgsql;

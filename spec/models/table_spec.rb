@@ -517,4 +517,16 @@ describe Table do
     query_result[:rows][1][:name].should == "Hawai"
   end
 
+  it "should set latitude and longitude if the default schema is loaded" do
+    table = create_table
+    table.lat_column.should == :latitude
+    table.lon_column.should == :longitude
+
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_4.csv", "text/csv")
+    table.save
+    table.lat_column.should be_nil
+    table.lon_column.should be_nil
+  end
+
 end

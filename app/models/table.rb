@@ -125,6 +125,7 @@ class Table < Sequel::Model(:user_tables)
   def after_create
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
+    set_lan_lon_columns!(:latitude, :longitude) if schema.flatten.include?(:latitude) && schema.flatten.include?(:longitude)
   end
 
   def after_destroy

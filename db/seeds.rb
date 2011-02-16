@@ -38,18 +38,18 @@ table.save
   user.run_query("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','#{String.random(30)}','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',#{rand(100)},'#{String.random(10)}',#{rand(10000)})" )
 end
 
-table = Table.new :privacy => Table::PRIVATE, :name => 'Downloaded movies',
+table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
                   :tags => 'movies, personal'
 table.user_id = user.id
 table.force_schema = "name varchar, address varchar, latitude float, longitude float"
 table.save
 table.set_lan_lon_columns!(:latitude, :longitude)
 
-user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('#{String.random(15)}','Calle Santa Ana 1, 3C, Madrid',#{rand(100000).to_f / 100.0},#{rand(100000).to_f / 100.0})"   )
-user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('#{String.random(15)}','Calle Hortaleza 48, Madrid',#{rand(100000).to_f / 100.0},#{rand(100000).to_f / 100.0})"      )
-user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('#{String.random(15)}','Calle de la Villa, 2, Madrid',#{rand(100000).to_f / 100.0},#{rand(100000).to_f / 100.0})"    )
-user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('#{String.random(15)}','Calle Pilar Marti 16, Burjassot',#{rand(100000).to_f / 100.0},#{rand(100000).to_f / 100.0})" )
-user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('#{String.random(15)}','Calle San Vicente 16, Valencia',#{rand(100000).to_f / 100.0},#{rand(100000).to_f / 100.0})" )
+user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('Hawai','',40.423012,-3.699732)"   )
+user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('El Estocolmo','',40.426949,-3.708969)"   )
+user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('El Rey del Tallarín','',40.424654,-3.709570)"   )
+user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('El Lacón','',40.415113,-3.699871)"   )
+user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('El Pico','',40.428198,-3.703991)"   )
 
 table = Table.new :privacy => Table::PUBLIC, :name => 'My favourite bars',
                   :tags => 'bars, personal'

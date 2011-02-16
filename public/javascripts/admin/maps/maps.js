@@ -5,11 +5,13 @@
     $('div.map_header ul:eq(0) li').click(function(ev){
       ev.stopPropagation();
       ev.preventDefault();
-      // if () {
-      //   
-      // } else {
-      //   
-      // }
+      $(this).children('span').toggle();
+      $('body').click(function(event) {
+        if (!$(event.target).closest('span.map_type_list').length) {
+          $('span.map_type_list').toggle();
+          $('body').unbind('click');
+        };
+      });
     });
     
     
@@ -17,13 +19,14 @@
       ev.stopPropagation();
       ev.preventDefault();
       switch ($(this).attr('map')) {
-        case 'hybrid': map.setMapTypeId(google.maps.MapTypeId.HYBRID);break;
-        case 'satellite': map.setMapTypeId(google.maps.MapTypeId.SATELLITE);break;
-        case 'terrain': map.setMapTypeId(google.maps.MapTypeId.TERRAIN);break;
-        default: map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+        case 'hybrid': map.setMapTypeId(google.maps.MapTypeId.HYBRID); $('div.map_header ul:eq(0) li:eq(0) p').text('hybrid'); break;
+        case 'satellite': map.setMapTypeId(google.maps.MapTypeId.SATELLITE); $('div.map_header ul:eq(0) li:eq(0) p').text('satellite'); break;
+        case 'terrain': map.setMapTypeId(google.maps.MapTypeId.TERRAIN); $('div.map_header ul:eq(0) li:eq(0) p').text('terrain'); break;
+        default: map.setMapTypeId(google.maps.MapTypeId.ROADMAP); $('div.map_header ul:eq(0) li:eq(0) p').text('roadmap');
       }
+      $('body').unbind('click');
+      $(this).closest('span').toggle();
     });
-    
   });
 
   function showMap() {

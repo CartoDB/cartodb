@@ -7,9 +7,9 @@ div.map_window div.map_header ul li {position:relative; float:left; width:auto; 
 div.map_window div.map_header ul li h4 {font:normal 11px "Helvetica",Arial; color:#B4B4B4; text-shadow:0 1px white;}
 div.map_window div.map_header ul li h4 a {font:normal 11px "Helvetica",Arial; color:#B4B4B4; text-shadow:0 1px white; text-decoration:none;}
 div.map_window div.map_header ul li p {padding:3px 0 0 0; font:bold 11px "Helvetica",Arial; color:#666666; text-shadow:0 1px white; text-transform:capitalize;}
-div.map_window div.map_header ul li a.open {position:absolute; right:5px; top:13px; height:26px; width:26px; background:url('/images/admin/map/open_bkg.png') no-repeat 0 0; text-indent:-9999px;}
+div.map_window div.map_header ul li a.open {position:absolute; right:7px; top:13px; height:26px; width:26px; background:url('/images/admin/map/open_bkg.png') no-repeat 0 0; text-indent:-9999px;}
 div.map_window div.map_header ul li a.open:hover {background-position:0 -26px;}
-div.map_window div.map_header ul li span {position:absolute; top:19px; right:11px; width:80px; height:auto; background:url('/images/admin/map/combo_bkg.png') no-repeat right 0;}
+div.map_window div.map_header ul li span {position:absolute; display:none; top:19px; right:13px; width:80px; height:auto; background:url('/images/admin/map/combo_bkg.png') no-repeat right 0;}
 div.map_window div.map_header ul li span ul {height:auto; width:80px; margin:20px 0 0 0; padding:2px 0 5px 0; border:none; -webkit-border-radius: 5px; -webkit-border-top-right-radius: 0; -moz-border-radius: 5px;
 -moz-border-radius-topright: 0; border-radius: 5px; border-top-right-radius: 0; background:blue; background-image:-moz-linear-gradient(100% 100% 90deg, #282F49, #283A5A); 
 background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#283A5A), to(#282F49));}

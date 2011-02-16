@@ -31,6 +31,7 @@
   var cell_size = 100;
   var last_cell_size = 100;
 
+  var enabled = true;
   var methods = {
 
 
@@ -359,7 +360,7 @@
 
 
         //For paginating data
-        if (!loading) {
+        if (!loading && enabled) {
           var difference = $(document).height() - $(window).height();
           if ($(window).scrollTop()==difference) {
             loading = true;
@@ -808,8 +809,8 @@
         ev.stopPropagation();
         ev.preventDefault();
         
-        bindESC();
-        //TODO desactivate component
+        enabled = false;
+
         $('div.georeference_window span.select').addClass('disabled');
         $('div.georeference_window span.select a:eq(0)').text('Retreiving columns...').attr('c','');
         $('div.georeference_window a.confirm_georeference').addClass('disabled');
@@ -820,8 +821,6 @@
            url: '/api/json/tables/'+table_id+'/schema',
            success: function(data) {
 
-             $(document).unbind('scroll');
-             $('div.table_position').unbind('scroll');
              //Remove ScrollPane
              var custom_scrolls = [];
              $('.scrollPane').each(function(){
@@ -851,8 +850,9 @@
                  }
                }
              }
+             $('div.georeference_window span.select:eq(1) ul').append('<li><a href="#no_geo">Empty</a></li>');
+             $('div.georeference_window span.select:eq(0) ul').append('<li><a href="#no_geo">Empty</a></li>');
              
-             //$('div.georeference_window span.select .scrollPane').jScrollPane();
              $('div.georeference_window span.select').removeClass('disabled');
 
              $('div.georeference_window span.select a.option').each(function(i,ele){
@@ -891,8 +891,29 @@
         $(this).closest('span.select').children('a.option').text($(this).text());
         $(this).closest('span.select').children('a.option').attr('c',$(this).text());
         $('span.select').removeClass('clicked');
-        $('span.select ul li').removeClass('choosen');
-        $('span.select ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
+
+        if ($(this).text()=="Empty") {
+          $(this).parent().parent().children('li').removeClass('choosen');
+          $(this).parent().addClass('choosen');
+        } else {
+          $(this).parent().parent().children('li').removeClass('choosen');
+          $(this).parent().addClass('choosen');
+          var index = $(this).closest('span.select');
+          //console.log($(this).parent().parent().parent().html());
+          if (index == 0) {
+            var other_index = 1;
+            var other_value = $('span.select:eq(1) a.option').text(); 
+          } else {
+            var other_index = 0;
+            var other_value = $('span.select:eq(0) a.option').text();
+          }
+          $('span.select:eq('+index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
+          
+          //Ocultar en la otra lista lo que has elegido en la anterior
+          $('span.select:eq('+other_index+') ul li').removeClass('choosen');
+          $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
+          $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
+        }
       });
       $('a.confirm_georeference').click(function(ev){
         ev.stopPropagation();
@@ -901,31 +922,25 @@
           var params = {};
           params['lat_column'] = $('a#latitude').attr('c');
           params['lon_column'] = $('a#longitude').attr('c');
-          $.ajax({
-             type: "PUT",
-             url: '/api/json/tables/'+table_id+'/set_geometry_columns',
-             data: params,
-             success: function(data) {
-               console.log(data);
-             }
-          });
+          methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry');
         } 
       });
       $('div.mamufas div.georeference_window a.close_delete').click(function(ev){
         ev.preventDefault();
         ev.stopPropagation();
+        enabled = true;
+        
         $('div.mamufas').fadeOut('fast',function(){
           $('div.mamufas div.delete_window').hide();
         });
         var document_events = $.data( $(document).get(0), 'events' ).click;
-        console.log(document_events);
         for (var i=0; i<document_events.length; i++) {
           if (document_events[i].type=="scroll") {
             return false;
           }
         }
         methods.addScroll();
-        unbindESC();
+        
       });
       
       
@@ -1065,7 +1080,7 @@
       switch (type) {
         case "rename_column": $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
                               break;
-
+        case "update_geometry": closeAllWindows();
         default:              break;
       }
     },
@@ -1090,6 +1105,7 @@
                                 setTimeout(function(){element.animate({color:'#727272'},300);},1000);
                               });
                               break;
+        case "update_geometry": closeAllWindows();
 
         default:              break;
       }

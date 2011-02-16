@@ -607,4 +607,15 @@ feature "Tables JSON API" do
     table.lon_column.should == :longitude
   end
 
+  scenario "Get the available types for columns" do
+    user = create_user
+
+    authenticate_api user
+
+    get_json "/api/json/column_types"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response.should == %W{ String Number Date }
+  end
+
 end

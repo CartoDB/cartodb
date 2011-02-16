@@ -16,6 +16,7 @@ CartoDB::Application.routes.draw do
 
   namespace :api do
     namespace :json, :format => :json do
+      get    'column_types'                     => 'meta#column_types'
       get    'tables'                           => 'tables#index'
       post   'tables'                           => 'tables#create'
       get    'tables/query'                     => 'tables#query'

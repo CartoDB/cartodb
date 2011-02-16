@@ -56,6 +56,39 @@ class Api::Json::TablesController < ApplicationController
     end
   end
 
+  # Create a new table
+  # * Request Method: +POST+
+  # * URI: +/api/json/tables
+  # * Format: +JSON+
+  # * Response if _success_:
+  #   * status code: 302
+  #   * location: the url of the new table
+  # * Response if _error_:
+  #   * status code +400+
+  #   * body:
+  #       { "errors" => ["error message"] }
+  def create
+    @table = Table.new
+    @table.user_id = current_user.id
+    @table.name = params[:name] if params[:name]
+    if params[:file]
+      @table.import_from_file = params[:file]
+      if $progress[params["X-Progress-ID".to_sym]].nil?
+        $progress[params["X-Progress-ID".to_sym]] = 0
+      end
+    end
+    @table.force_schema = params[:schema] if params[:schema]
+    if @table.valid? && @table.save
+      render :json => { :id => @table.id }.to_json, :status => 200, :location => table_path(@table),
+             :callback => params[:callback]
+    else
+      render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400, :callback => params[:callback]
+    end
+  rescue => e
+    render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
+           :status => 400, :callback => params[:callback] and return
+  end
+
   # Run a query against your database
   # * Request Method: +GET+
   # * URI: +/api/json/tables/query+
@@ -146,14 +179,23 @@ class Api::Json::TablesController < ApplicationController
 
   # Update the schema of a table
   # * Request Method: +PUT+
-  # * URI: +/api/json/tables/1/update_schema+
+  # * URI: +/api/json/tables/:id/update_schema+
   # * Format: +JSON+
-  # * Parameters:
+  # * Parameters for adding or removing a column:
   #     {
-  #       "what" => "add" or "drop",
+  #       "what" => ("add"|"drop")
   #       "column" => {
   #          "name" => "new column name",
-  #          "type" => "integer"
+  #          "type" => "type"
+  #       }
+  #     }
+  # * Parameters for modifying a column:
+  #     {
+  #       "what" => "modify"
+  #       "column" => {
+  #          "old_name" => "old column name"
+  #          "new_name" => "new column name",
+  #          "type" => "the new type"
   #       }
   #     }
   # * Response if _success_:
@@ -197,7 +239,7 @@ class Api::Json::TablesController < ApplicationController
 
   # Insert a new row in a table
   # * Request Method: +POST+
-  # * URI: +/api/json/tables/1/rows+
+  # * URI: +/api/json/tables/:id/rows+
   # * Format: +JSON+
   # * Parameters:
   #     {
@@ -222,11 +264,10 @@ class Api::Json::TablesController < ApplicationController
 
   # Insert a new row in a table
   # * Request Method: +PUT+
-  # * URI: +/api/json/tables/1/rows/33+
+  # * URI: +/api/json/tables/:id/rows/:row_id+
   # * Format: +JSON+
   # * Parameters:
   #     {
-  #       "row_id" => "3",
   #       "column_name" => "new value"
   #     }
   # * Response if _success_:
@@ -264,7 +305,7 @@ class Api::Json::TablesController < ApplicationController
 
   # Drop the table
   # * Request Method: +DELETE+
-  # * URI: +/api/json/tables/1/
+  # * URI: +/api/json/tables/:id
   # * Format: +JSON+
   # * Response if _success_:
   #   * status code: 200
@@ -272,39 +313,6 @@ class Api::Json::TablesController < ApplicationController
   def delete
     @table.destroy
     render :json => ''.to_json, :status => 200, :location => dashboard_path, :callback => params[:callback]
-  end
-
-  # Create a new table
-  # * Request Method: +POST+
-  # * URI: +/api/json/tables
-  # * Format: +JSON+
-  # * Response if _success_:
-  #   * status code: 302
-  #   * location: the url of the new table
-  # * Response if _error_:
-  #   * status code +400+
-  #   * body:
-  #       { "errors" => ["error message"] }
-  def create
-    @table = Table.new
-    @table.user_id = current_user.id
-    @table.name = params[:name] if params[:name]
-    if params[:file]
-      @table.import_from_file = params[:file]
-      if $progress[params["X-Progress-ID".to_sym]].nil?
-        $progress[params["X-Progress-ID".to_sym]] = 0
-      end
-    end
-    @table.force_schema = params[:schema] if params[:schema]
-    if @table.valid? && @table.save
-      render :json => { :id => @table.id }.to_json, :status => 200, :location => table_path(@table),
-             :callback => params[:callback]
-    else
-      render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400, :callback => params[:callback]
-    end
-  rescue => e
-    render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
-           :status => 400, :callback => params[:callback] and return
   end
 
   # Set the columns of the geometry of the table

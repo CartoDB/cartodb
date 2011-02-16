@@ -25,8 +25,8 @@ feature "Tables JSON API" do
     json_response = JSON(response.body)
     json_response['total_rows'].should == 10
     json_response['columns'].should == [
-      ["cartodb_id", "number"], ["name", "string"], ["latitude", "number"],
-      ["longitude", "number"], ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
+      ["cartodb_id", "number"], ["name", "string"], ["latitude", "number", "latitude"],
+      ["longitude", "number", "longitude"], ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
     ]
     json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
       should == content[0].slice(:cartodb_id, :name, :location, :description)
@@ -118,8 +118,8 @@ feature "Tables JSON API" do
     response.status.should == 200
     json_response = JSON(response.body)
     json_response.should == [
-      ["cartodb_id", "number"], ["name", "string"], ["latitude", "number"],
-      ["longitude", "number"], ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
+      ["cartodb_id", "number"], ["name", "string"], ["latitude", "number", "latitude"],
+      ["longitude", "number", "longitude"], ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
     ]
   end
 

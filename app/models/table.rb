@@ -289,27 +289,38 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_lan_lon_columns!(lat_column, lon_column)
-    owner.in_database(:as => :superuser) do |user_database|
-      user_database.run("UPDATE #{self.name} SET the_geom = PointFromText('POINT(' || #{lon_column} || ' ' || #{lat_column} || ')',4236)")
-      user_database.run(<<-TRIGGER
-        -- Sets trigger to update the_geom automagically
-        DROP TRIGGER IF EXISTS update_geometry_trigger ON #{self.name};
+    if lat_column && lon_column
+      owner.in_database(:as => :superuser) do |user_database|
+        user_database.run("UPDATE #{self.name} SET the_geom = PointFromText('POINT(' || #{lon_column} || ' ' || #{lat_column} || ')',4236)")
+        user_database.run(<<-TRIGGER
+          -- Sets trigger to update the_geom automagically
+          DROP TRIGGER IF EXISTS update_geometry_trigger ON #{self.name};
 
-        CREATE OR REPLACE FUNCTION update_geometry() RETURNS TRIGGER AS $update_geometry_trigger$
-          BEGIN
-               NEW.the_geom := PointFromText('POINT(' || NEW.#{lon_column} || ' ' || NEW.#{lat_column} || ')',4236);
-               RETURN NEW;
-          END;
-        $update_geometry_trigger$ LANGUAGE plpgsql;
+          CREATE OR REPLACE FUNCTION update_geometry() RETURNS TRIGGER AS $update_geometry_trigger$
+            BEGIN
+                 NEW.the_geom := PointFromText('POINT(' || NEW.#{lon_column} || ' ' || NEW.#{lat_column} || ')',4236);
+                 RETURN NEW;
+            END;
+          $update_geometry_trigger$ LANGUAGE plpgsql;
 
-        CREATE TRIGGER update_geometry_trigger
-        BEFORE UPDATE ON #{self.name}
-            FOR EACH ROW EXECUTE PROCEDURE update_geometry();
+          CREATE TRIGGER update_geometry_trigger
+          BEFORE UPDATE ON #{self.name}
+              FOR EACH ROW EXECUTE PROCEDURE update_geometry();
 
 TRIGGER
-      )
+        )
+      end
+      self.geometry_columns = "#{lat_column}|#{lon_column}"
+    else
+      owner.in_database(:as => :superuser) do |user_database|
+        user_database.run(<<-TRIGGER
+          -- Sets trigger to update the_geom automagically
+          DROP TRIGGER IF EXISTS update_geometry_trigger ON #{self.name};
+TRIGGER
+        )
+      end
+      self.geometry_columns = nil
     end
-    self.geometry_columns = "#{lat_column}|#{lon_column}"
     save_changes
   end
 

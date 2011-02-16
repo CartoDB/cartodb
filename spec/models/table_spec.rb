@@ -57,16 +57,32 @@ describe Table do
   pending "has a last_updated attribute that is updated with every operation on the database" do
   end
 
+  it "has a default schema" do
+    table = create_table
+    table.schema.should == [
+      [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"],
+      [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
+    table.schema(:cartodb_types => true).should == [
+      [:cartodb_id, "number"], [:name, "string"], [:latitude, "number"], [:longitude, "number"],
+      [:description, "string"], [:created_at, "date"], [:updated_at, "date"]
+    ]
+  end
+
   it "has a to_json method that allows to fetch rows with pagination" do
     user = create_user
     table = create_table :user_id => user.id
 
     table.to_json[:total_rows].should == 0
-    table.to_json[:columns].should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.to_json[:columns].should == [
+      [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"],
+      [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
     table.to_json[:rows].should be_empty
 
     10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{rand(100000).to_f / 100.0}, #{rand(100000).to_f / 100.0},'#{String.random(100)}')")
+      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES
+                        ('#{String.random(10)}',#{rand(100000).to_f / 100.0}, #{rand(100000).to_f / 100.0},'#{String.random(100)}')")
     end
 
     table.to_json[:total_rows].should == 10
@@ -75,10 +91,13 @@ describe Table do
     content = user.run_query("select * from \"#{table.name}\"")[:rows]
 
     table.to_json(:rows_per_page => 1)[:rows].size.should == 1
-    table.to_json(:rows_per_page => 1)[:rows].first.slice(:name, :latitude, :longitude, :description).should == content[0].slice(:name, :latitude, :longitude, :description)
+    table.to_json(:rows_per_page => 1)[:rows].first.slice(:name, :latitude, :longitude, :description).
+      should == content[0].slice(:name, :latitude, :longitude, :description)
     table.to_json(:rows_per_page => 1)[:rows].first.should == table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
-    table.to_json(:rows_per_page => 1, :page => 1)[:rows].first.slice(:name, :latitude, :longitude, :description).should == content[1].slice(:name, :latitude, :longitude, :description)
-    table.to_json(:rows_per_page => 1, :page => 2)[:rows].first.slice(:name, :latitude, :longitude, :description).should == content[2].slice(:name, :latitude, :longitude, :description)
+    table.to_json(:rows_per_page => 1, :page => 1)[:rows].first.slice(:name, :latitude, :longitude, :description).
+      should == content[1].slice(:name, :latitude, :longitude, :description)
+    table.to_json(:rows_per_page => 1, :page => 2)[:rows].first.slice(:name, :latitude, :longitude, :description).
+      should == content[2].slice(:name, :latitude, :longitude, :description)
   end
 
   it "has a toggle_privacy! method to toggle the table privacy" do
@@ -121,37 +140,69 @@ describe Table do
     Tag.count.should == 0
   end
 
-  it "can return its schema" do
+  it "can add a column of a CartoDB::TYPE type" do
     table = create_table
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema.should == [
+      [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"],
+      [:longitude, "double precision"], [:description, "text"], [:created_at, "timestamp"],
+      [:updated_at, "timestamp"]
+    ]
+
+    resp = table.add_column!(:name => "my new column", :type => "number")
+    resp.should == {:name => "my_new_column", :type => "integer", :cartodb_type => "number"}
+    table.reload
+    table.schema.should == [
+      [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"],
+      [:longitude, "double precision"], [:description, "text"], [:my_new_column, "integer"],
+      [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
+  end
+
+  it "can modify a column using a CartoDB::TYPE type" do
+    table = create_table
+    table.schema.should == [
+      [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"],
+      [:longitude, "double precision"], [:description, "text"], [:created_at, "timestamp"],
+      [:updated_at, "timestamp"]
+    ]
+
+    resp = table.modify_column!(:name => "latitude", :type => "string")
+    resp.should == {:name => "latitude", :type => "varchar", :cartodb_type => "string"}
   end
 
   it "can modify it's schema" do
     table = create_table
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema.should == [
+      [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"],
+      [:longitude, "double precision"], [:description, "text"], [:created_at, "timestamp"],
+      [:updated_at, "timestamp"]
+    ]
 
     lambda {
-      table.add_column!(:name => "my column with bad status", :type => "textttt")
-    }.should raise_error
-    table.reload
+      table.add_column!(:name => "my column with bad type", :type => "textttt")
+    }.should raise_error(CartoDB::InvalidType)
 
     resp = table.add_column!(:name => "my new column", :type => "integer")
-    resp.should == {:name => 'my_new_column', :type => 'integer'}
+    resp.should == {:name => 'my_new_column', :type => 'integer', :cartodb_type => 'number'}
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:my_new_column, "integer"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema.should == [
+      [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"],
+      [:longitude, "double precision"], [:description, "text"], [:my_new_column, "integer"],
+      [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
 
     resp = table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "text")
-    resp.should == {:name => 'my_new_column_new_name', :type => 'text'}
+    resp.should == {:name => 'my_new_column_new_name', :type => 'text', :cartodb_type => 'string'}
     table.reload
     table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:my_new_column_new_name, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     resp = table.modify_column!(:old_name => "my_new_column_new_name", :new_name => "my new column")
-    resp.should == {:name => 'my_new_column', :type => nil}
+    resp.should == {:name => 'my_new_column', :type => nil, :cartodb_type => nil}
     table.reload
     table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     resp = table.modify_column!(:name => "my_new_column", :type => "text")
-    resp.should == {:name => 'my_new_column', :type => 'text'}
+    resp.should == {:name => 'my_new_column', :type => 'text', :cartodb_type => 'string'}
     table.reload
     table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 

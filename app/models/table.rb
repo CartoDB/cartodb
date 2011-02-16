@@ -1,5 +1,15 @@
 # coding: UTF-8
 
+class CartoDB::InvalidType < StandardError
+  attr_accessor :db_message # the error message from the database
+  attr_accessor :syntax_message # the query and a marker where the error is
+
+  def initialize(message)
+    @db_message = message.split("\n")[0]
+    @syntax_message = message.split("\n")[1..-1].join("\n")
+  end
+end
+
 class Table < Sequel::Model(:user_tables)
 
   # Privacy constants
@@ -177,7 +187,8 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def schema
+  def schema(options = {})
+    options[:cartodb_types] ||= false
     temporal_schema = owner.in_database do |user_database|
       user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:db_type]] }
     end
@@ -192,14 +203,30 @@ class Table < Sequel::Model(:user_tables)
         col << "longitude" if col[0].to_sym == lon_column
       end
     end
-    schema.push([:created_at, "timestamp"]).push([:updated_at, "timestamp"])
+    schema = schema.push([:created_at, "timestamp"]).push([:updated_at, "timestamp"])
+    if options[:cartodb_types] == true
+      schema.map do |col|
+        col[1] = col[1].convert_to_cartodb_type
+        col
+      end
+    else
+      return schema
+    end
   end
 
   def add_column!(options)
+    type = options[:type].convert_to_db_type
+    cartodb_type = options[:type].convert_to_cartodb_type
     owner.in_database do |user_database|
-      user_database.add_column name.to_sym, options[:name].to_s.sanitize, options[:type]
+      user_database.add_column name.to_sym, options[:name].to_s.sanitize, type
     end
-    return {:name => options[:name].to_s.sanitize, :type => options[:type]}
+    return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
+  rescue => e
+    if e.message =~ /^PGError/
+      raise CartoDB::InvalidType.new(e.message)
+    else
+      raise e
+    end
   end
 
   def drop_column!(options)
@@ -211,7 +238,8 @@ class Table < Sequel::Model(:user_tables)
 
   def modify_column!(options)
     new_name = options[:name]
-    new_type = options[:type]
+    new_type = options[:type].try(:convert_to_db_type)
+    cartodb_type = options[:type].try(:convert_to_cartodb_type)
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
         raise if CARTODB_COLUMNS.include?(options[:old_name].to_s)
@@ -237,7 +265,7 @@ class Table < Sequel::Model(:user_tables)
         end
       end
     end
-    return {:name => new_name, :type => new_type}
+    return {:name => new_name, :type => new_type, :cartodb_type => cartodb_type}
   end
 
   def to_json(options = {})
@@ -254,7 +282,7 @@ class Table < Sequel::Model(:user_tables)
     end
     {
       :total_rows => rows_counted,
-      :columns => schema,
+      :columns => schema({:cartodb_types => options[:cartodb_types]}),
       :rows => rows
     }
   end

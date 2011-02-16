@@ -69,6 +69,7 @@ GEM
     celerity (0.8.7)
     childprocess (0.1.6)
       ffi (~> 0.6.3)
+    colored (1.2)
     columnize (0.3.2)
     configuration (1.2.0)
     culerity (0.2.15)
@@ -81,6 +82,12 @@ GEM
       rake (>= 0.8.7)
     file-tail (1.0.5)
       spruz (>= 0.1.0)
+    git-up (0.4.4)
+      colored (>= 1.2)
+      grit
+    grit (2.4.1)
+      diff-lcs (~> 1.1)
+      mime-types (~> 1.15)
     highline (1.6.1)
     i18n (0.5.0)
     json_pure (1.5.1)
@@ -193,6 +200,7 @@ DEPENDENCIES
   capistrano-ext
   capybara
   capybara-zombie!
+  git-up
   launchy
   mocha
   nofxx-georuby

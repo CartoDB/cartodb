@@ -50,7 +50,7 @@ class Api::Json::TablesController < ApplicationController
   def show
     respond_to do |format|
       format.json do
-        render :json => @table.to_json(:rows_per_page => params[:rows_per_page], :page => params[:page]),
+        render :json => @table.to_json(:rows_per_page => params[:rows_per_page], :page => params[:page], :cartodb_types => true),
                :callback => params[:callback]
       end
     end
@@ -119,7 +119,7 @@ class Api::Json::TablesController < ApplicationController
   def schema
     respond_to do |format|
       format.json do
-        render :json => @table.schema.to_json, :callback => params[:callback]
+        render :json => @table.schema(:cartodb_types => true).to_json, :callback => params[:callback]
       end
     end
   end
@@ -222,7 +222,12 @@ class Api::Json::TablesController < ApplicationController
                 render :json => resp.to_json, :status => 200, :callback => params[:callback] and return
               end
             rescue => e
-              render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400,
+              errors = if e.is_a?(CartoDB::InvalidType)
+                [e.db_message]
+              else
+                [translate_error(e.message.split("\n").first)]
+              end
+              render :json => { :errors => errors }.to_json, :status => 400,
                      :callback => params[:callback] and return
             end
           else

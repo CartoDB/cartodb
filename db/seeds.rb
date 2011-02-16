@@ -31,7 +31,7 @@ end
 table = Table.new :privacy => Table::PUBLIC, :name => 'Foursq check-ins',
                   :tags => '4sq, personal'
 table.user_id = user.id
-table.force_schema = "name varchar(255), surname varchar(255), address varchar(255), city varchar(255), country varchar(255), nif varchar(255), age integer, twitter_account varchar(255), postal_code integer"
+table.force_schema = "name varchar, surname varchar, address varchar, city varchar, country varchar, nif varchar, age integer, twitter_account varchar, postal_code integer"
 table.save
 
 100.times do
@@ -41,7 +41,7 @@ end
 table = Table.new :privacy => Table::PRIVATE, :name => 'Downloaded movies',
                   :tags => 'movies, personal'
 table.user_id = user.id
-table.force_schema = "name varchar(255), address varchar(255), latitude float, longitude float"
+table.force_schema = "name varchar, address varchar, latitude float, longitude float"
 table.save
 table.set_lan_lon_columns!(:latitude, :longitude)
 

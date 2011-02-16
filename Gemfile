@@ -10,10 +10,14 @@ gem 'nofxx-georuby', :require => 'geo_ruby'
 gem 'warden'
 gem 'rails_warden'
 
-gem 'rdoc', :group => :development
-gem 'passenger', :group => :development
 gem 'capistrano'
 gem 'capistrano-ext'
+
+group :development do
+  gem 'git-up'
+  gem 'rdoc'
+  gem 'passenger'
+end
 
 group :test, :development do
   gem 'mocha'

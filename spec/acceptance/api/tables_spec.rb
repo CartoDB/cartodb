@@ -24,8 +24,14 @@ feature "Tables JSON API" do
     response.status.should == 200
     json_response = JSON(response.body)
     json_response['total_rows'].should == 10
-    json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[0].slice(:cartodb_id, :name, :location, :description)
-    json_response['rows'][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[1].slice(:cartodb_id, :name, :location, :description)
+    json_response['columns'].should == [
+      ["cartodb_id", "number"], ["name", "string"], ["latitude", "number"],
+      ["longitude", "number"], ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
+    ]
+    json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
+      should == content[0].slice(:cartodb_id, :name, :location, :description)
+    json_response['rows'][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
+      should == content[1].slice(:cartodb_id, :name, :location, :description)
 
     get_json "/api/json/tables/#{table.id}?rows_per_page=2&page=1"
     response.status.should == 200
@@ -111,7 +117,10 @@ feature "Tables JSON API" do
     get_json "/api/json/tables/#{table.id}/schema"
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response.should == [["cartodb_id", "integer"], ["name", "text"], ["latitude", "double precision"], ["longitude", "double precision"], ["description", "text"], ["created_at", "timestamp"], ["updated_at", "timestamp"]]
+    json_response.should == [
+      ["cartodb_id", "number"], ["name", "string"], ["latitude", "number"],
+      ["longitude", "number"], ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
+    ]
   end
 
   scenario "Get a list of tables" do
@@ -149,25 +158,22 @@ feature "Tables JSON API" do
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "add", :column => {
-                                                                  :type => "integer", :name => "postal code"
+                                                                  :type => "number", :name => "postal code"
                                                               }
                                                            }
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response.should == {"name" => "postal_code", "type" => 'integer'}
+    json_response.should == {"name" => "postal_code", "type" => "integer", "cartodb_type" => "number"}
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:postal_code, "integer"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "modify", :column => {
-                                                                  :type => "text", :name => "postal_code"
+                                                                  :type => "string", :name => "postal_code"
                                                               }
                                                            }
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response.should == {"name" => "postal_code", "type" => 'text'}
-    table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:postal_code, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    json_response.should == {"name" => "postal_code", "type" => "varchar", "cartodb_type" => "string"}
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "add", :column => {
@@ -184,8 +190,6 @@ feature "Tables JSON API" do
                                                               }
                                                            }
     response.status.should == 200
-    table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision"], [:longitude, "double precision"], [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "drop", :column => {
@@ -321,8 +325,9 @@ feature "Tables JSON API" do
 
     post_json "/api/json/tables", {
       :name => "My new imported table",
-      :schema => "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+      :schema => "code varchar, title varchar, did integer, date_prod timestamp, kind varchar"
     }
+
     response.status.should == 200
     response.location.should =~ /tables\/(\d+)$/
     json_response = JSON(response.body)
@@ -332,8 +337,8 @@ feature "Tables JSON API" do
     response.status.should == 200
     json_response = JSON(response.body)
     json_response.should == [
-      ["cartodb_id", "integer"], ["code", "character(5)"], ["title", "character varying(40)"], ["did", "integer"],
-      ["date_prod", "date"], ["kind", "character varying(10)"], ["created_at", "timestamp"], ["updated_at", "timestamp"]
+      ["cartodb_id", "number"], ["code", "string"], ["title", "string"], ["did", "number"],
+      ["date_prod", "date"], ["kind", "string"], ["created_at", "date"], ["updated_at", "date"]
     ]
   end
 

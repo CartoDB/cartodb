@@ -142,7 +142,6 @@
         };
       });
     });
-    
     $('span.tags_window a').click(function(ev){
       ev.stopPropagation();
       ev.preventDefault();
@@ -174,8 +173,7 @@
           '<li><a href="#save_table">Save table as...</a></li>'+
         '</ul>'+
       '</span>');
-
-    $('p.settings a.settings, span.advanced_options a.advanced').livequery('click',function(ev){
+      $('p.settings a.settings, span.advanced_options a.advanced').livequery('click',function(ev){
       ev.stopPropagation();
       ev.preventDefault();
       if (!$('span.advanced_options').is(':visible')) {
@@ -207,8 +205,6 @@
       $('div.mamufas').fadeIn('fast');
       bindESC();
     });
-    
-    
     $('div.mamufas a.cancel, div.mamufas a.close_delete').click(function(ev){
       ev.preventDefault();
       ev.stopPropagation();
@@ -217,10 +213,6 @@
       });
       unbindESC();
     });
-    
-
-    
-    
     $('a.confirm_delete').click(function(ev){
       ev.preventDefault();
       ev.stopPropagation();
@@ -235,6 +227,27 @@
           console.debug(e);
         }
       });
+    });
+    
+    
+    
+    
+    //Change Map-Table toggle tabs
+    $('section.subheader ul.tab_menu li a').click(function(ev){
+      ev.stopPropagation();
+      ev.preventDefault();
+      if (!$(this).parent().hasClass('selected')) {
+        $('section.subheader ul.tab_menu li').removeClass('selected');
+        if ($(this).text()=="Table") {
+          $(this).parent().addClass('selected')
+          $('div.table_position').show();
+          hideMap();
+        } else {
+          $(this).parent().addClass('selected')
+          $('div.table_position').hide();
+          showMap();
+        }
+      } 
     });
   });
 

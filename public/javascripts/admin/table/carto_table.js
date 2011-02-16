@@ -131,7 +131,7 @@
                         '<h5>EDIT</h5>' +
                         '<ul>' +
                           '<li><a>Order by this column</a></li>' +
-                          '<li><a>Filter by this column</a></li>' +
+                          //'<li><a>Filter by this column</a></li>' +
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="rename_column" href="#rename_column">Rename column</a></li>':'') +
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="change_data_type" href="#change_data_type">Change data type</a></li>':'') +
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="delete_column" href="#delete_column">Delete column</a></li>':'') +
@@ -150,16 +150,16 @@
         thead += '<th>'+
                     '<div '+((index==0)?'':' style="width:'+cell_size+'px"') + '>'+
                       '<span class="long">'+
-                        '<h3>'+element[0]+'</h3>'+
+                        '<h3 class="'+((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'static':'')+'">'+element[0]+'</h3>'+
                         ((element[2]!=undefined)?'<p class="geo '+element[2]+'">geo</p>':'') +
-                        ((index==0)?'':'<input type="text" value="'+element[0]+'"/>') +
+                        ((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'':'<input type="text" value="'+element[0]+'"/>') +
                       '</span>'+
                       '<p class="long">'+
-                        ((index==0)?'<a class="static">'+element[1]+'</a>':'<a href="#" class="column_type">'+element[1]+'</a>') +
+                        ((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'<a class="static">'+element[1]+'</a>':'<a href="#" class="column_type">'+element[1]+'</a>') +
                       '</p>'+
                       '<a class="options" href="#">options</a>'+
                       col_ops_list+
-                      ((index!=0)?column_types:'') +
+                      ((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'':column_types) +
                     '</div>'+
                   '</th>';
 
@@ -321,7 +321,6 @@
       //Data error tooltip
       $(table).append('<span class="end_table"></span>');
 
-
     },
 
 
@@ -345,12 +344,6 @@
     //  ADD SCROLL PAGINATE BINDING
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addScroll: function() {
-      
-      $('.jspScrollable,.jspContainer,.jspPane').scroll(function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
-      });
-      
       $(document).scroll(function(ev) {
         ev.stopPropagation();
         ev.preventDefault();
@@ -780,24 +773,65 @@
 
 
       });
+      $('thead a.rename_column').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).closest('div').find('a.options').removeClass('selected');
+        $(this).closest('div').find('span.col_ops_list').hide();
+        $(this).closest('div').find('h3').trigger('dblclick');
+      });
+      $('thead a.change_data_type').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).closest('div').find('a.options').removeClass('selected');
+        $(this).closest('div').find('span.col_ops_list').hide();
+        $(this).closest('div').find('a.column_type').trigger('click');
+      });
+      $('thead a.delete_column').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).closest('div').find('a.options').removeClass('selected');
+        $(this).closest('div').find('span.col_ops_list').hide();
+      });
+      //TODO change data type list values
+      $('thead tr th').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).find('a.options').trigger('click');
+      });
       
       
-      $('a.open_georeference').click(function(ev){
+      ///////////////////////////////////////
+      //  Georeference window events       //
+      ///////////////////////////////////////
+      $('a.open_georeference,p.geo').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         
-        
+        bindESC();
         //TODO desactivate component
         $('div.georeference_window span.select').addClass('disabled');
         $('div.georeference_window span.select a:eq(0)').text('Retreiving columns...').attr('c','');
         $('div.georeference_window a.confirm_georeference').addClass('disabled');
+        $('div.georeference_window span.select').removeClass('clicked');
         
         $.ajax({
            method: "GET",
            url: '/api/json/tables/'+table_id+'/schema',
            success: function(data) {
-             //TODO, see what happens with styled scrolls
+
              $(document).unbind('scroll');
+             $('div.table_position').unbind('scroll');
+             //Remove ScrollPane
+             var custom_scrolls = [];
+             $('.scrollPane').each(function(){
+         					custom_scrolls.push($(this).jScrollPane().data().jsp);
+         				}
+         		  );
+         		  $.each(custom_scrolls,function(i) {
+                this.destroy();
+              });
+             $('div.georeference_window span.select ul li').remove();
              
              for (var i = 0; i<data.length; i++) {
                
@@ -807,8 +841,10 @@
                  } else {
                    if (data[i][2]=="longitude") {
                      $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                     $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                      $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
                    } else {
+                     $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                      $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                      $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
                    }
@@ -816,27 +852,23 @@
                }
              }
              
+             //$('div.georeference_window span.select .scrollPane').jScrollPane();
              $('div.georeference_window span.select').removeClass('disabled');
 
              $('div.georeference_window span.select a.option').each(function(i,ele){
                if ($(ele).text()=="Retreiving columns...") {
-                  $(ele).text('Select a row').attr('c','');
+                  $(ele).text('Select a column').attr('c','');
                 }
              });
              $('div.georeference_window a.confirm_georeference').removeClass('disabled');
            }
-         });
-
-        
-        
+        });
         $(this).closest('div').find('a.options').removeClass('selected');
         $(this).closest('div').find('span.col_ops_list').hide();
         $('div.mamufas div.georeference_window').show();
         $('div.mamufas').fadeIn();
         
       });
-      
-      //Magic select
       $('span.select a.option').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
@@ -853,7 +885,6 @@
           $(this).parent().find('ul').jScrollPane();
         }
       });
-
       $('span.select ul li a').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
@@ -863,58 +894,54 @@
         $('span.select ul li').removeClass('choosen');
         $('span.select ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
       });
-      
       $('a.confirm_georeference').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         if ($('a#latitude').attr('c')!='' && $('a#longitude').attr('c')!='') {
-          alert('georeferencia!');
+          var params = {};
+          params['lat_column'] = $('a#latitude').attr('c');
+          params['lon_column'] = $('a#longitude').attr('c');
+          $.ajax({
+             type: "PUT",
+             url: '/api/json/tables/'+table_id+'/set_geometry_columns',
+             data: params,
+             success: function(data) {
+               console.log(data);
+             }
+          });
         } 
       });
+      $('div.mamufas div.georeference_window a.close_delete').click(function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        $('div.mamufas').fadeOut('fast',function(){
+          $('div.mamufas div.delete_window').hide();
+        });
+        var document_events = $.data( $(document).get(0), 'events' ).click;
+        console.log(document_events);
+        for (var i=0; i<document_events.length; i++) {
+          if (document_events[i].type=="scroll") {
+            return false;
+          }
+        }
+        methods.addScroll();
+        unbindESC();
+      });
       
       
-      $('a.rename_column').click(function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
-        $(this).closest('div').find('a.options').removeClass('selected');
-        $(this).closest('div').find('span.col_ops_list').hide();
-        $(this).closest('div').find('h3').trigger('dblclick');
-      });
-      $('a.change_data_type').click(function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
-        $(this).closest('div').find('a.options').removeClass('selected');
-        $(this).closest('div').find('span.col_ops_list').hide();
-        $(this).closest('div').find('a.column_type').trigger('click');
-      });
-      $('a.delete_column').click(function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
-        $(this).closest('div').find('a.options').removeClass('selected');
-        $(this).closest('div').find('span.col_ops_list').hide();
-
-      });
-      //TODO change data type list values
-      $('thead tr th').click(function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
-        $(this).find('a.options').trigger('click');
-      });
-
-
-
+      ///////////////////////////////////////
+      //  SQL Editor                       //
+      ///////////////////////////////////////
       // //SQL Editor
-      // $('div.general_options div.sql_console span a.close').livequery('click',function(){
-      //   $('div.general_options div.sql_console').hide();
-      //   $('div.general_options ul').removeClass('sql');
-      // });
-
-
-      // //General options
-      // $('div.general_options ul li a.sql').livequery('click',function(){
-      //   $('div.general_options div.sql_console').show();
-      //   $('div.general_options ul').addClass('sql');
-      // });
+      $('div.general_options div.sql_console span a.close').livequery('click',function(){
+        $('div.general_options div.sql_console').hide();
+        $('div.general_options ul').removeClass('sql');
+      });
+      // General options
+      $('div.general_options ul li a.sql').livequery('click',function(){
+        $('div.general_options div.sql_console').show();
+        $('div.general_options ul').addClass('sql');
+      });
 
 
 

@@ -1,14 +1,14 @@
 ---
 javascripts:
 - base:
-  - jquery.min
+  - plugins/jquery.min
 - dashboard:
   - plugins/jquery.color
-  - admin/dashboard
-  - admin/import
+  - admin/tables/dashboard
+  - admin/tables/import
 - public_tables:
   - plugins/jquery.color
-  - admin/public_tables
+  - admin/tables/public_tables
 - table:
   - plugins/jquery.mousewheel
   - plugins/jscrollpane.min
@@ -16,11 +16,12 @@ javascripts:
   - plugins/jquery.scrollTo
   - plugins/jquery.livequery.min
   - plugins/tag-it
-  - admin/loading_messages
-  - admin/loader_queue
-  - plugins/cDBtable
-  - admin/table_elements
-  - admin/table
+  - admin/table/loading_messages
+  - admin/table/loader_queue
+  - admin/table/carto_table
+  - admin/table/table_elements
+  - admin/maps/maps
+  - admin/table/table
 
 stylesheets:
 - base:
@@ -30,9 +31,10 @@ stylesheets:
 - sessions:
   - front/sessions
 - dashboard:
-  - admin/dashboard
+  - admin/tables/dashboard
 - public_tables:
-  - admin/public_tables
+  - admin/tables/public_tables
 - table:
-  - admin/table
-  - admin/cDBtable
+  - admin/table/table
+  - admin/table/carto_table
+  - admin/maps/maps

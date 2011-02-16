@@ -1,7 +1,7 @@
 /*TABLE*/
 
 div.table_position {position:relative; float:left; width:100%; min-width:880px; min-height:55px; margin:103px 0 0 0; padding:0; overflow-y:hidden; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;
-  -webkit-user-select:none; -moz-user-select:none;}
+  -webkit-user-select:none; -moz-user-select:none; z-index:15;}
 div.table_position table {position:relative!important; width:auto; margin:0;}
 div.table_position table thead {position:fixed; top:161px; left:0; padding:5px 0 0 0; margin:0; z-index:50; background-color:#FFFFFF; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white;}
 div.table_position table thead tr {position:relative; float:left; padding:0 0 0 41px; border-bottom:1px solid #D2D3D5;}
@@ -12,6 +12,7 @@ div.table_position table thead tr th.first div {position:relative; width:41px; h
 div.table_position table thead tr th span.long {float:left; width:100%;}
 div.table_position table thead tr th h3 {float:left; width:auto; max-width:81%; margin:3px 0 3px 4px; font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 div.table_position table thead tr th h3:hover {cursor:pointer; color:#444444;}
+div.table_position table thead tr th h3.static:hover {cursor:default; color:#666666;}
 div.table_position table thead tr th p {padding:3px 0 0 0;  font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white;}
 div.table_position table thead tr th div p.long {float:left; display:block; width:100%;}
 div.table_position table thead tr th div input {position:absolute; display:none; left:8px; top:10px; width:65%; margin:0; padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; 

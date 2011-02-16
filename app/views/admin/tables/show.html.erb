@@ -1,132 +1,167 @@
-<% content_for(:head) do %>
-  <%= stylesheet_link_merged(:table).html_safe %>
-<% end %>
-<% content_for(:js) do %>
-  <%= javascript_include_merged(:table).html_safe %>
-<% end %>
+  <% content_for(:head) do %>
+    <%= stylesheet_link_merged(:table).html_safe %>
+  <% end %>
+  <% content_for(:js) do %>
+    <%= javascript_include_merged(:table).html_safe %>
+  <% end %>
 
-<section class="subheader">
-  <div class="outer">
-    <div class="inner_subheader">
-      <div class="left">
-        <h2><a href="#change_title"><%= @table.name %></a></h2>
-        <p class="status">
-          <% if @table.pending_to_save? %>
-            <a class="save" href="#change_privacy">SAVE</a>
-          <% else %>
-            <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
-          <% end %>
-          </p>
-        <span class="tags">
-          <% unless @table.tags.blank? %>
-            <% @table.tags.split(',').each do |tag_name| %>
-            <p><%= tag_name %></p>
+  <section class="subheader">
+    <div class="outer">
+      <div class="inner_subheader">
+        <div class="left">
+          <h2><a href="#change_title"><%= @table.name %></a></h2>
+          <p class="status">
+            <% if @table.pending_to_save? %>
+              <a class="save" href="#change_privacy">SAVE</a>
+            <% else %>
+              <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
             <% end %>
-          <% end %>
-          <a href="#" class="add">add tags</a>
-        </span>
-        <ul class="tab_menu">
-          <li class="selected"><a href="#">Table</a></li>
-          <li><a class="disabled">Map</a></li>
-        </ul>
-      </div>
-      <div class="right">
-        <p class="settings">
-          <a class="delete" table-id="<%= @table.id %>" href="#delete_table">delete table</a> | <a class="settings selected" href="#show_advanced_options">advanced</a>
-        </p>
-        <span class="paginate">
-          <a class="next" href="#next_column">Next column</a>
-          <a class="previous" href="#prev_column">Previous column</a>
-        </span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="table_position">
-  <table border="0" id="cDBtable"></table>
-</div>
-
-
-
-
-<%= content_for(:mamufas) do %>
-  <div class="mamufas">
-    <div class="delete_window">
-      <a href="#close_window" class="close_delete"></a>
-      <div class="inner_">
-        <span class="top">
-          <h3>You are about to delete this table</h3>
-          <p>You will not be able to recover this information. We really recommend to <a href="#">export the data</a> before deleting it.</p>
-        </span>
-        <span class="bottom">
-          <a href="#close_window" class="cancel">cancel</a>
-          <a href="#confirm_delete" class="confirm_delete">Delete this table</a>
-        </span>
-      </div>
-    </div>
-    
-    <div class="georeference_window">
-      <a href="#close_window" class="close_delete"></a>
-      <div class="inner_">
-        <span class="top">
-          <h3>Choose your geocoding method for this column</h3>
-          <p>Please select the columns for the lat/lon fields</p>
-          <ul>
-            <li class="selected">
-              <a class="option" href="#lat_lng_column">This is a lat/lon column</a>
-              <div class="select">
-                <label>LATITUDE ROW</label>
-                <span class="select">
-                  <a id="latitude" class="option" href="#" c="">Retreiving columns...</a>
-                  <div class="select_content">
-                    <ul></ul>
-                  </div>
-                </span>
-              </div>
-              <div class="select last">
-                <label>LONGITUDE ROW</label>
-                <span class="select">
-                  <a id="longitude" class="option" href="#" c="">Retreiving columns...</a>
-                  <div class="select_content">
-                    <ul></ul>
-                  </div>
-                </span>
-              </div>
-            </li>
-            <li class="disabled"><a href="#address_column">This is an address column</a></li>
-            <li class="disabled"><a href="#KML_PostGIS">KML or PostGIS geometry</a></li>
+            </p>
+          <span class="tags">
+            <% unless @table.tags.blank? %>
+              <% @table.tags.split(',').each do |tag_name| %>
+              <p><%= tag_name %></p>
+              <% end %>
+            <% end %>
+            <a href="#" class="add">add tags</a>
+          </span>
+          <ul class="tab_menu">
+            <li class="selected"><a href="#view_table">Table</a></li>
+            <li><a href="#view_map">Map</a></li>
           </ul>
-        </span>
-        <span class="bottom">
-          <a href="#close_window" class="cancel">cancel</a>
-          <a href="#confirm_georeference" class="confirm_georeference">Georeference</a>
-        </span>
+        </div>
+        <div class="right">
+          <p class="settings">
+            <a class="delete" table-id="<%= @table.id %>" href="#delete_table">delete table</a> | <a class="settings selected" href="#show_advanced_options">advanced</a>
+          </p>
+          <span class="paginate">
+            <a class="next" href="#next_column">Next column</a>
+            <a class="previous" href="#prev_column">Previous column</a>
+          </span>
+        </div>
       </div>
     </div>
-    
-    
-    <div class="export_window">
-      <a href="#close_window" class="close_delete"></a>
-      <div class="inner_">
-        <span class="top">
-          <h3>Export your data</h3>
-          <p>Select your desired format for downloading the data</p>
-          <ul>
-            <li class="selected"><a class="option" href="#CSV">CSV (Comma separated values)</a></li>
-            <li><a href="#KML">KML</a></li>
-            <li><a href="#SHP">SHP</a></li>
-          </ul>
-        </span>
-        <span class="bottom">
-          <a href="#close_window" class="cancel">cancel</a>
-          <a href="#download" class="download" type="CSV">Download</a>
-        </span>
-      </div>
-    </div>
+  </section>
+
+  <div class="table_position">
+    <table border="0" id="cDBtable"></table>
   </div>
-<% end %>
+
+  <div class="map_window">
+    <div class="map_curtain"></div>
+    <div class="map_header">
+      <ul>
+        <li class="first">
+          <h4><a href="#">Map type</a></h4>
+          <p>Terrain</p>
+          <a class="open" href="#open_map_type">open</a>
+          <span class="map_type_list">
+            <ul>
+              <li><a map="hybrid" href="#hybrid">Hybrid</a></li>
+              <li><a map="roadmap" href="#roadmap">Roadmap</a></li>
+              <li><a map="satellite" href="#satellite">Satellite</a></li>
+              <li><a map="terrain" href="#terrain">Terrain</a></li>
+            </ul>
+          </span>
+        </li>
+        <li>
+          <h4>Visualization type</h4>
+          <p>Features visualization</p>
+        </li>
+        <li>
+          <h4>Markers customization</h4>
+          <p>Customized dots</p>
+        </li>
+        <li>
+          <h4>Infowindow customization</h4>
+          <p>Default</p>
+        </li>
+      </ul>
+    </div>
+    <div id="map"></div>
+  </div>
 
 
-<script type="text/javascript">var table_id = <%= @table.id %>;</script>
-<script type="text/javascript">var status = "<%= table_privacy_text(@table).downcase %>";</script>
+
+
+  <%= content_for(:mamufas) do %>
+    <div class="mamufas">
+      <div class="delete_window">
+        <a href="#close_window" class="close_delete"></a>
+        <div class="inner_">
+          <span class="top">
+            <h3>You are about to delete this table</h3>
+            <p>You will not be able to recover this information. We really recommend to <a href="#">export the data</a> before deleting it.</p>
+          </span>
+          <span class="bottom">
+            <a href="#close_window" class="cancel">cancel</a>
+            <a href="#confirm_delete" class="confirm_delete">Delete this table</a>
+          </span>
+        </div>
+      </div>
+    
+      <div class="georeference_window">
+        <a href="#close_window" class="close_delete"></a>
+        <div class="inner_">
+          <span class="top">
+            <h3>Choose your geocoding method for this column</h3>
+            <p>Please select the columns for the lat/lon fields</p>
+            <ul>
+              <li class="selected">
+                <a class="option" href="#lat_lng_column">This is a lat/lon column</a>
+                <div class="select">
+                  <label>LATITUDE COLUMN</label>
+                  <span class="select">
+                    <a id="latitude" class="option" href="#" c="">Retreiving columns...</a>
+                    <div class="select_content">
+                      <ul class="scrollPane"></ul>
+                    </div>
+                  </span>
+                </div>
+                <div class="select last">
+                  <label>LONGITUDE COLUMN</label>
+                  <span class="select">
+                    <a id="longitude" class="option" href="#" c="">Retreiving columns...</a>
+                    <div class="select_content">
+                      <ul class="scrollPane"></ul>
+                    </div>
+                  </span>
+                </div>
+              </li>
+              <li class="disabled"><a>This is an address column</a></li>
+              <li class="disabled"><a>KML or PostGIS geometry</a></li>
+            </ul>
+          </span>
+          <span class="bottom">
+            <a href="#close_window" class="cancel">cancel</a>
+            <a href="#confirm_georeference" class="confirm_georeference">Georeference</a>
+          </span>
+        </div>
+      </div>
+    
+    
+      <div class="export_window">
+        <a href="#close_window" class="close_delete"></a>
+        <div class="inner_">
+          <span class="top">
+            <h3>Export your data</h3>
+            <p>Select your desired format for downloading the data</p>
+            <ul>
+              <li class="selected"><a class="option" href="#CSV">CSV (Comma separated values)</a></li>
+              <li><a href="#KML">KML</a></li>
+              <li><a href="#SHP">SHP</a></li>
+            </ul>
+          </span>
+          <span class="bottom">
+            <a href="#close_window" class="cancel">cancel</a>
+            <a href="#download" class="download" type="CSV">Download</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+
+  <script type="text/javascript">var table_id = <%= @table.id %>;</script>
+  <script type="text/javascript">var status = "<%= table_privacy_text(@table).downcase %>";</script>
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script> 

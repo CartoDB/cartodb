@@ -17,8 +17,9 @@ Rails::Sequel.connection[
 
 User.create :email => 'admin@example.com', :password => 'example', :username => 'admin'
 User.create :email => 'user1@example.com', :password => 'user1',   :username => 'user1'
+User.create :email => 'jmedina@vizzuality.com', :password => 'jmedina', :username => 'jmedina'
 
-## Development demo data
+## Development demo data for admin@example.com
 
 user = User.first
 
@@ -56,7 +57,10 @@ table = Table.new :privacy => Table::PUBLIC, :name => 'My favourite bars',
 table.user_id = user.id
 table.save
 
-user = User.order(:id).last
+## Development demo data for user1@example.com
+
+user = User[2]
+
 table = Table.new :privacy => Table::PUBLIC, :name => 'Twitter followers',
                   :tags => 'twitter, followers, api'
 table.user_id = user.id

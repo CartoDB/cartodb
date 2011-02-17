@@ -104,17 +104,31 @@
           
           //Club Markers
           //Get other markers
-          // example - 40.41356139992232, -3.695676326751709
-          var club_marker = new ClubMarker(new google.maps.LatLng(40.4222594, -3.6996326),'',map);
-          bounds.extend(new google.maps.LatLng(40.4222594, -3.6996326));
-          map.fitBounds(bounds);
           
-          
+          var api_key = ""; // API key is not necessary if you are at localhost:3000 and you are logged in in CartoDB
+          var query = "select cartodb_id, distance_sphere(the_geom, geomfromtext('POINT(" +  position.lng() + ' ' +  position.lat() + ")', 4236)) as distance," + 
+                      "ST_X(the_geom) as lon, ST_Y(the_geom) as lat " + 
+                      "from clubbing_madrid where poblacion='Madrid' order by distance asc limit 50";
+          $.ajax({
+            url: "/api/json/tables/query",
+            data: ({api_key: api_key, query: query}),
+            dataType: "jsonp",
+            success: function( data ) {
+              if(data != null) {
+                for(var i=0;i<data.rows.length;i++){
+                  var row = data.rows[i];
+                  var club_marker = new ClubMarker(new google.maps.LatLng(row.lat, row.lon),'',map);
+                  bounds.extend(new google.maps.LatLng(row.lat, row.lon));
+                  map.fitBounds(bounds);
+                }
+              }
+            },
+            error: function(req, textStatus, e) {
+              alert(textStatus);
+            }
+          });
           hideLoader();
         }
-        
-
-        
 
         function ClubMarker(latlng, info, map) {
           this.latlng_ = latlng;

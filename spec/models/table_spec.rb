@@ -604,12 +604,16 @@ describe Table do
     user = create_user
     table = new_table
     table.user_id = user.id
-    table.force_schema = "name varchar, address varchar"
+    table.force_schema = "name varchar, address varchar, latitude float, longitude float"
     table.save
+    table.lat_column.should == :latitude
+    table.lon_column.should == :longitude
 
     table.set_address_column!(:address)
     table.schema.should == [
-      [:cartodb_id, "integer"], [:name, "character varying"], [:address, "character varying", "address"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:cartodb_id, "integer"], [:name, "character varying"], [:address, "character varying", "address"],
+      [:latitude, "double precision"], [:longitude, "double precision"],
+      [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
   end
 

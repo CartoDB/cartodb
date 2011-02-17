@@ -461,7 +461,7 @@ TRIGGER
     end
   ensure
     FileUtils.rm filename
-    FileUtils.rm path
+    # FileUtils.rm path
   end
 
   def guess_schema
@@ -496,7 +496,7 @@ TRIGGER
     end
 
     column_names = column_names.map do |c|
-      results = c.scan(/(["`\'])[^"`\']+(["`\'])/).flatten
+      results = c.scan(/^(["`\'])[^"`\']+(["`\'])$/).flatten
       if results.size == 2 && results[0] == results[1]
         @quote = $1
       end
@@ -512,7 +512,7 @@ TRIGGER
       line.each_with_index do |field, i|
         next if line[i].blank?
         unless @quote
-          results = line[i].scan(/(["`\'])[^"`\']+(["`\'])/).flatten
+          results = line[i].scan(/^(["`\'])[^"`\']+(["`\'])$/).flatten
           if results.size == 2 && results[0] == results[1]
             @quote = $1
           end
@@ -587,9 +587,10 @@ TRIGGER
 
   def geocode_all_address_columns!
     owner.in_database do |user_database|
-      result = owner.run_query("select cartodb_id, address FROM #{self.name} order by cartodb_id")
+      result = owner.run_query("select cartodb_id, #{address_column} as address_column FROM #{self.name} order by cartodb_id")
       result[:rows].each do |row|
-        url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(row[:address])}&sensor=false")
+        next if row[:address_column].blank?
+        url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(row[:address_column])}&sensor=false")
         req = Net::HTTP::Get.new(url.request_uri)
         res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
         json = JSON.parse(res.body)

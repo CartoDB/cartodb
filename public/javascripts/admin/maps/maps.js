@@ -2,6 +2,19 @@
   var map = null;
   
   $(document).ready(function(){
+    //Zooms
+    $('a.zoom_in').click(function(ev){
+      ev.stopPropagation();
+      ev.preventDefault();
+      map.setZoom(map.getZoom()+1);
+    });
+    $('a.zoom_out').click(function(ev){
+      ev.stopPropagation();
+      ev.preventDefault();
+      map.setZoom(map.getZoom()-1);
+    });
+    
+    
     $('div.map_header ul:eq(0) li').click(function(ev){
       ev.stopPropagation();
       ev.preventDefault();

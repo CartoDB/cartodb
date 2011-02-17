@@ -12,6 +12,7 @@
       /*HEADER*/
       header {width:900px; height:100px; margin:0 auto; padding:20px 0 50px 0; background:none;}
       header a.logo {float:left; width:200px; height:100px; margin:21px 0 0 0; background:url('/images/admin/others/logo_mashup.png') no-repeat 0 0; text-indent:-9999px;}
+      h1 {float:right; margin:38px 0 0 0; font:bold 40px "Helvetica",Arial; color:white; letter-spacing:-3px;}
       section.map {position:relative; margin:0 auto; width:900px; height:600px; -wekit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid black;}
       section.map div#map {float:left; width:900px; height:600px;}
       section.map span.top-left {position:absolute; width:5px; height:5px; background-image:url('/images/admin/others/corners_mashup.png');top:-1px; left:-1px; background-position:0 0;}
@@ -20,6 +21,11 @@
       section.map span.bottom-right {position:absolute; width:5px; height:5px; background-image:url('/images/admin/others/corners_mashup.png');bottom:-1px; right:-1px; background-position:-5px -5px;}
       section.map p.loading {position:absolute; display:none; top:10px; left:50%; margin:0 0 0 -47px; padding:5px 30px 5px 10px; background:url('/images/admin/others/activity_indicator.gif') no-repeat 68px 5px rgba(0,0,0,0.9);
        -wekit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; font:normal 15px Arial; color:white;}
+      
+      section.map a.zoom_in {position:absolute; top:10px; left:10px; width:26px; height:26px; background:url('/images/admin/map/zoomin.png') no-repeat 0 0;}
+      section.map a.zoom_in:hover {background-position:0 -26px; cursor:pointer;}
+      section.map a.zoom_out {position:absolute; top:40px; left:10px; width:26px; height:26px; background:url('/images/admin/map/zoomout.png') no-repeat 0 0;}
+      section.map a.zoom_out:hover {background-position:0 -26px; cursor:pointer;}
       /*Infowindow*/
       a.clubMarker {float:left; display:block; width:25px; height:25px; background:url("/images/admin/others/marker.png") no-repeat 0 0; text-indent:-9999px;}
       a.clubMarker:hover {cursor:pointer;}
@@ -38,7 +44,8 @@
   </head> 
   <body> 
     <header> 
-      <a class="logo" href="/">CartoDB</a> 
+      <a class="logo" href="/">CartoDB</a>
+      <h1>¿Where are we going to?</h1>
     </header> 
     
     <section class="map">
@@ -48,11 +55,14 @@
       <span class="bottom-left"></span>
       <span class="bottom-right"></span>
       <p class="loading">Loading</p>
+      <a href="#zoom_in" class="zoom_in"></a>
+      <a href="#zoom_out" class="zoom_out"></a>
     </section>
 
     <script type="text/javascript">
         var map;
         var bounds = new google.maps.LatLngBounds();
+        var globalIndex = 0;
         
         jQuery(function($) {
             showLoader();
@@ -64,6 +74,19 @@
               mapTypeId: google.maps.MapTypeId.ROADMAP
             }
             map = new google.maps.Map(document.getElementById("map"),myOptions);
+            
+            
+            $('a.zoom_in').click(function(ev){
+              ev.stopPropagation();
+              ev.preventDefault();
+              map.setZoom(map.getZoom()+1);
+            });
+            $('a.zoom_out').click(function(ev){
+              ev.stopPropagation();
+              ev.preventDefault();
+              map.setZoom(map.getZoom()-1);
+            });
+            
             
             var current_position;
 
@@ -117,7 +140,7 @@
               if(data != null) {
                 for(var i=0;i<data.rows.length;i++){
                   var row = data.rows[i];
-                  var club_marker = new ClubMarker(new google.maps.LatLng(row.lat, row.lon),'',map);
+                  var club_marker = new ClubMarker(new google.maps.LatLng(row.lat, row.lon),row,map);
                   bounds.extend(new google.maps.LatLng(row.lat, row.lon));
                   map.fitBounds(bounds);
                 }
@@ -164,33 +187,41 @@
               "<a class='clubMarker'>marker</a>"+
               "<div class='hidden'>"+
                 "<a href='#close' class='close'>close</a>"+
-                "<h3>Bonito var gay chuequeño</h3>"+
+                "<h3>"+this.inf.cartodb_id+"</h3>"+
                 "<div class='content'>"+
                   "<img src='http://chengdu.zonalibre.org/archives/bar%20gay%20patrocinado%20por%20Barcadi.JPG'/>"+
-                  "<p>En esta pequeña y humilde oficina se va celebrar una de las mayores fiestas gay del año, como anticipo el Love Gay Parade 2011. Fiestón padre.</p>"+
+                  "<p>La distancia a donde te encuentras es de "+((this.inf.distance.toFixed(0)>1000)?((this.inf.distance/1000).toFixed(2)+' km'):(this.inf.distance.toFixed(0))+' metros')+"</p>"+
                 "</div>"+
               "</div>";
 
             $(div).append(content);
             
-            $('a.close').live('click',function(ev){
-              ev.stopPropagation();
-              ev.preventDefault();
-              $('div.hidden').hide();
-            });
-            
-            
-            $('a.clubMarker').live('click',function(ev){
-              ev.stopPropagation();
-              ev.preventDefault();
-              me.moveMaptoOpen();
-              $('div.hidden').hide();
-              $(this).parent().children('div.hidden').show();
-            });
-
 
             var panes = this.getPanes();
             panes.floatPane.appendChild(div);
+            
+            $('a.close').click(function(ev){
+              ev.stopPropagation();
+              ev.preventDefault();
+              $('div.hidden').hide();
+            });
+            
+            
+            $(div).click(function(ev){
+              ev.stopPropagation();
+              ev.preventDefault();
+              $('div.hidden').hide();
+              $(this).children('div.hidden').fadeIn('fast',function(){
+                me.moveMaptoOpen();
+              });
+            });
+            
+            $('a.clubMarker').live('hover',function(ev){
+              ev.stopPropagation();
+              ev.preventDefault();
+              globalIndex++;
+              $(this).parent().css('zIndex',globalIndex);
+            });
           }
 
         	var pixPosition = me.getProjection().fromLatLngToDivPixel(me.latlng_);
@@ -237,10 +268,10 @@
           }
 
         	if ((pixPosition.y + this.offsetVertical_) < 205) {
-        		top = pixPosition.y + this.offsetVertical_ -205;
+        		top = pixPosition.y + this.offsetVertical_ - 205;
         	}
 
-        	this.map_.panBy(left,top);
+        	map.panBy(left,top);
         }
 
     </script>

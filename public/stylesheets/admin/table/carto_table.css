@@ -12,14 +12,15 @@ div.table_position table thead tr th.first div {position:relative; width:41px; h
 div.table_position table thead tr th span.long {float:left; width:100%;}
 div.table_position table thead tr th h3 {float:left; width:auto; max-width:60%; margin:3px 0 3px 4px; font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 div.table_position table thead tr th h3:hover {cursor:pointer; color:#444444;}
-div.table_position table thead tr th h3.static:hover {cursor:default; color:#666666;}
+div.table_position table thead tr th h3.static {color:#bbb; max-width:90%;}
+div.table_position table thead tr th h3.static:hover {cursor:default; color:#bbb;}
 div.table_position table thead tr th p {padding:3px 0 0 0;  font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white;}
 div.table_position table thead tr th div p.long {float:left; display:block; width:100%;}
 div.table_position table thead tr th div input {position:absolute; display:none; left:8px; top:10px; width:65%; margin:0; padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; 
   cursor:pointer; font:normal 11px "Helvetica"; color:#727272; text-shadow:0 1px white; z-index:10;}
 div.table_position table thead tr th div input:hover {}
 div.table_position table thead tr th div input:focus {outline:none; cursor:pointer;}
-p.geo {float:left; width:22px; height:12px; padding:0!important; margin:3px 0 0 5px; background:url('/images/admin/icons/geo.png') no-repeat 0 0; text-indent:-9999px;}
+p.geo {float:left; width:22px; height:12px; padding:0!important; margin:3px 0 0 2px; background:url('/images/admin/icons/geo.png') no-repeat 0 0; text-indent:-9999px;}
 div.table_position table thead tr th p.geo:hover {background-position:0 -12px; cursor:pointer;}
 div.table_position table thead tr th a.options {position:absolute; right:10px; top:12px; height:14px; width:14px; margin:0; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10;}
 div.table_position table thead tr th a.options:hover {background-position:0 -14px;}
@@ -54,10 +55,10 @@ div.table_position table tbody tr td {padding:0; margin:0; background:url('/imag
 text-shadow:0 1px white;}
 div.table_position table tbody tr td:hover {cursor:pointer;}
 div.table_position table tbody tr:hover td {background-position:0 -40px;}
-div.table_position table tbody tr td.id:hover {cursor:default;}
+
 div.table_position table tbody tr td.error {color:#FF9900; text-decoration:underline;}
 div.table_position table tbody tr td.error:hover {background-position:0 -78px;}
-div.table_position table tbody tr td div {float:left; width:100px; height:14px; padding:13px; overflow:hidden; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; -webkit-user-select:none; -moz-user-select:none;}
+div.table_position table tbody tr td div {float:left; width:75px; height:14px; padding:13px; overflow:hidden; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; -webkit-user-select:none; -moz-user-select:none;}
 div.table_position table tbody tr td.first {position:absolute; left:0; width:40px; height:40px; padding:0; margin:0;}
 div.table_position table tbody tr td.first div {position:relative; width:40px; height:27px; padding:0!important; margin:0!important; overflow:visible;}
 div.table_position table tbody tr td.first div a.options {float:left; height:14px; width:14px; margin:14px 0 0 13px; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px;}
@@ -74,7 +75,8 @@ div.table_position table tbody tr td.first div span li.last a {color:#FFCC00; te
 div.table_position table tbody tr td.first div span li.last a:hover {color:#FFFE5E;}
 div.table_position table tbody tr td.first div span h5 {float:left; padding:8px 0 0 7px; margin:0; font:bold 10px Helvetica; color:#53596B; text-shadow:0 -1px #1E2A40; text-align:left;}
 div.table_position table tbody tr td.first div span div.line {float:left; width:82px; height:1px!important; padding:0; margin:0 0 0 3px!important; background:#393F55;}
-
+div.table_position table tbody tr td.special div {color:#bbb!important;}
+div.table_position table tbody tr td.special:hover {cursor:default;}
 
 /*SELECTED ROWS*/
 div.table_position table tbody tr.selecting td {background-position:0 -40px;}

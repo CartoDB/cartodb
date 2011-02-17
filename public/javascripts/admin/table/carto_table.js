@@ -73,8 +73,8 @@
            //Start new table
            //Calculate width of th on header
            var window_width = $(window).width();
-           if (window_width>((data.columns.length*128)+42)) {
-             cell_size = ((window_width-170)/(data.columns.length-1))-27;
+           if (window_width>((data.columns.length*113)+42)) {
+             cell_size = ((window_width-155)/(data.columns.length-1))-27;
              last_cell_size = cell_size;
            }
 
@@ -86,8 +86,8 @@
              if ($(table).children('thead').length==0) {
                //Calculate width of th on header
                var window_width = $(window).width();
-               if (window_width>((data.columns.length*128)+42)) {
-                 cell_size = ((window_width-170)/(data.columns.length-1))-27;
+               if (window_width>((data.columns.length*113)+42)) {
+                 cell_size = ((window_width-155)/(data.columns.length-1))-27;
                  last_cell_size = cell_size;
                }
                methods.drawColumns(data.columns);
@@ -149,7 +149,7 @@
                         '</ul>' +
                       '</span>';
         thead += '<th>'+
-                    '<div '+((index==0)?'':' style="width:'+cell_size+'px"') + '>'+
+                    '<div '+((index==0)?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
                       '<span class="long">'+
                         '<h3 class="'+((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'static':'')+'">'+element[0]+'</h3>'+
                         ((element[2]!=undefined)?'<p class="geo '+element[2]+'">geo</p>':'') +
@@ -208,7 +208,7 @@
                             '</span>';
         tbody += '<tr r="'+element.cartodb_id+'"><td class="first" r="'+ element.cartodb_id +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
         $.each(element, function(j,elem){
-          tbody += '<td '+((j!="cartodb_id")?'':'class="id"')+' r="'+ element.cartodb_id +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+elem+'</div></td>';
+          tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element.cartodb_id +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+elem+'</div></td>';
         });
         
         var start = tbody.lastIndexOf('"width:');
@@ -330,6 +330,8 @@
     //  NEW TABLE (EMPTY)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     startTable: function() {
+      enabled = false;
+      
       $(table).parent().append(
         '<div class="empty_table">'+
           '<h5>Add some rows to your table</h5>'+
@@ -1024,7 +1026,7 @@
     resizeTable: function() {
       $('div.table_position').width($(window).width());
       var parent_width = $(window).width();
-      var width_table_content = (($(table).children('thead').children('tr').children('th').size()-2)*(cell_size+27)) + 168;
+      var width_table_content = (($(table).children('thead').children('tr').children('th').size()-2)*(cell_size+27)) + 140;
       var head_element = $(table).children('thead').children('tr').children('th:last').children('div');
       var body_element = $(table).children('tbody').children('tr');
 
@@ -1078,10 +1080,11 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     successRequest: function(params,new_value,old_value,type) {
       switch (type) {
-        case "rename_column": $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
-                              break;
-        case "update_geometry": closeAllWindows();
-        default:              break;
+        case "rename_column":   $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
+                                break;
+        case "update_geometry": 
+                                closeAllWindows();
+        default:                break;
       }
     },
 

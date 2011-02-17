@@ -1,6 +1,10 @@
 div.map_window {position:absolute; top:161px; left:0; right:0; bottom:0; width:100%; background:white;}
 div.map_window div.map_curtain {position:absolute; left:0; right:0; top:0; bottom:0; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5; z-index:12;}
 div.map_window div#map {position:absolute; left:0; right:0; bottom:0; top:51px; width:100%; z-index:5; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;}
+div.map_window a.zoom_in {position:absolute; top:70px; left:10px; width:26px; height:26px; background:url('/images/admin/map/zoomin.png') no-repeat 0 0; z-index:10;}
+div.map_window a.zoom_in:hover {background-position:0 -26px; cursor:pointer;}
+div.map_window a.zoom_out {position:absolute; top:100px; left:10px; width:26px; height:26px; background:url('/images/admin/map/zoomout.png') no-repeat 0 0; z-index:10;}
+div.map_window a.zoom_out:hover {background-position:0 -26px; cursor:pointer;}
 div.map_window div.map_header {position:relative; float:left; width:100%; height:60px; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white; border-bottom:1px solid rgba(00,00,00,0.25); z-index:10;}
 div.map_window div.map_header ul {float:left; height:50px; margin:5px 0 0 40px; border-left:1px solid #E6E7EB;}
 div.map_window div.map_header ul li {position:relative; float:left; width:auto; height:34px; padding:13px 55px 8px 9px; border-left:1px solid white; border-right:1px solid #E6E7EB;}

@@ -475,7 +475,7 @@ describe Table do
     row[:idparada] == 34
   end
 
-  it "should import data from an external url returning JSON data and set the geometric fields" do
+  it "should import data from an external url returning JSON data and set the geometric fields which are updated on each row updated" do
     user = create_user
     json = JSON.parse(File.read("#{Rails.root}/spec/support/points_json.json"))
     JSON.stubs(:parse).returns(json)
@@ -493,12 +493,6 @@ describe Table do
     row[:name].should == "Hawai"
 
     table.set_lan_lon_columns!(:lat, :lon)
-    table.reload
-    table.lat_column.should == :lat
-    table.lon_column.should == :lon
-    table.schema.should == [[:cartodb_id, "integer"], [:id, "integer"], [:name, "character varying"], [:lat, "double precision", "latitude"],
-      [:lon, "double precision", "longitude"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
 
     # Vizzuality HQ
     current_lat = "40.422546"
@@ -513,6 +507,17 @@ describe Table do
     query_result = user.run_query("select name, distance_sphere(the_geom, geomfromtext('POINT(#{current_lon} #{current_lat})', 4236)) as distance from #{table.name} order by distance asc")
     query_result[:rows][0][:name].should == "El Lacón"
     query_result[:rows][1][:name].should == "Hawai"
+  end
+
+  it "should add an extra column in the schema for latitude and longitude columns" do
+    table = create_table
+    table.lat_column.should == :latitude
+    table.lon_column.should == :longitude
+    table.schema.should == [
+      [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"],
+      [:longitude, "double precision", "longitude"], [:description, "text"],
+      [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
   end
 
   it "should set latitude and longitude if the default schema is loaded" do
@@ -532,6 +537,89 @@ describe Table do
     table.set_lan_lon_columns!(nil, nil)
     table.lon_column.should be_nil
     table.lat_column.should be_nil
+  end
+
+  it "should be able to set an address column to a given column" do
+    res_mock = mock()
+    res_mock.stubs(:body).returns("")
+    Net::HTTP.stubs(:start).returns(res_mock)
+
+    raw_json = {"status"=>"OK", "results"=>[{"types"=>["street_address"], "formatted_address"=>"Calle de Manuel Fernández y González, 8, 28014 Madrid, Spain", "address_components"=>[{"long_name"=>"8", "short_name"=>"8", "types"=>["street_number"]}, {"long_name"=>"Calle de Manuel Fernández y González", "short_name"=>"Calle de Manuel Fernández y González", "types"=>["route"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["locality", "political"]}, {"long_name"=>"Community of Madrid", "short_name"=>"M", "types"=>["administrative_area_level_2", "political"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["administrative_area_level_1", "political"]}, {"long_name"=>"Spain", "short_name"=>"ES", "types"=>["country", "political"]}, {"long_name"=>"28014", "short_name"=>"28014", "types"=>["postal_code"]}], "geometry"=>{"location"=>{"lat"=>40.4151476, "lng"=>-3.6994168}, "location_type"=>"RANGE_INTERPOLATED", "viewport"=>{"southwest"=>{"lat"=>40.4120053, "lng"=>-3.7025647}, "northeast"=>{"lat"=>40.4183006, "lng"=>-3.6962695}}, "bounds"=>{"southwest"=>{"lat"=>40.4151476, "lng"=>-3.6994174}, "northeast"=>{"lat"=>40.4151583, "lng"=>-3.6994168}}}}]}
+    JSON.stubs(:parse).returns(raw_json)
+
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, address varchar"
+    table.save
+
+    table.set_address_column!(:address)
+
+    table.reload
+    table.lat_column.should be_nil
+    table.lon_column.should be_nil
+    table.address_column.should == :address
+
+    table.insert_row!({:name => 'El Lacón', :address => 'Calle de Manuel Fernández y González 8, Madrid'})
+
+    query_result = user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} limit 1")
+    query_result[:rows][0][:lon].should == -3.6994168
+    query_result[:rows][0][:lat].should == 40.4151476
+
+    raw_json = {"status"=>"OK", "results"=>[{"types"=>["street_address"], "formatted_address"=>"Calle de la Palma, 72, 28015 Madrid, Spain", "address_components"=>[{"long_name"=>"72", "short_name"=>"72", "types"=>["street_number"]}, {"long_name"=>"Calle de la Palma", "short_name"=>"Calle de la Palma", "types"=>["route"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["locality", "political"]}, {"long_name"=>"Community of Madrid", "short_name"=>"M", "types"=>["administrative_area_level_2", "political"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["administrative_area_level_1", "political"]}, {"long_name"=>"Spain", "short_name"=>"ES", "types"=>["country", "political"]}, {"long_name"=>"28015", "short_name"=>"28015", "types"=>["postal_code"]}], "geometry"=>{"location"=>{"lat"=>40.4268336, "lng"=>-3.7089444}, "location_type"=>"RANGE_INTERPOLATED", "viewport"=>{"southwest"=>{"lat"=>40.4236786, "lng"=>-3.7120931}, "northeast"=>{"lat"=>40.4299739, "lng"=>-3.7057979}}, "bounds"=>{"southwest"=>{"lat"=>40.4268189, "lng"=>-3.7089466}, "northeast"=>{"lat"=>40.4268336, "lng"=>-3.7089444}}}}]}
+    JSON.stubs(:parse).returns(raw_json)
+
+    table.update_row!(query_result[:rows][0][:cartodb_id], {:name => 'El Estocolmo', :address => 'Calle de La Palma 72, Madrid'})
+
+    query_result = user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} limit 1")
+    query_result[:rows][0][:lon].should == -3.7089444
+    query_result[:rows][0][:lat].should == 40.4268336
+  end
+
+  it "should add an extra column in the schema for address columns" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, address varchar"
+    table.save
+
+    table.set_address_column!(:address)
+    table.schema.should == [
+      [:cartodb_id, "integer"], [:name, "character varying"], [:address, "character varying", "address"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+    ]
+  end
+
+  it "should set the_geom in blank when an address can't be geoencoded" do
+    raw_json = {"status"=>"ZERO_RESULTS", "results"=>[]}
+    JSON.stubs(:parse).returns(raw_json)
+
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, address varchar"
+    table.save
+
+    table.set_address_column!(:address)
+
+    table.reload
+    table.lat_column.should be_nil
+    table.lon_column.should be_nil
+    table.address_column.should == :address
+
+    table.insert_row!({:name => 'El Lacón', :address => ''})
+
+    query_result = user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} limit 1")
+    query_result[:rows][0][:lon].should be_nil
+    query_result[:rows][0][:lat].should be_nil
+
+    raw_json = {"status"=>"OK", "results"=>[{"types"=>["street_address"], "formatted_address"=>"Calle de la Palma, 72, 28015 Madrid, Spain", "address_components"=>[{"long_name"=>"72", "short_name"=>"72", "types"=>["street_number"]}, {"long_name"=>"Calle de la Palma", "short_name"=>"Calle de la Palma", "types"=>["route"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["locality", "political"]}, {"long_name"=>"Community of Madrid", "short_name"=>"M", "types"=>["administrative_area_level_2", "political"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["administrative_area_level_1", "political"]}, {"long_name"=>"Spain", "short_name"=>"ES", "types"=>["country", "political"]}, {"long_name"=>"28015", "short_name"=>"28015", "types"=>["postal_code"]}], "geometry"=>{"location"=>{"lat"=>40.4268336, "lng"=>-3.7089444}, "location_type"=>"RANGE_INTERPOLATED", "viewport"=>{"southwest"=>{"lat"=>40.4236786, "lng"=>-3.7120931}, "northeast"=>{"lat"=>40.4299739, "lng"=>-3.7057979}}, "bounds"=>{"southwest"=>{"lat"=>40.4268189, "lng"=>-3.7089466}, "northeast"=>{"lat"=>40.4268336, "lng"=>-3.7089444}}}}]}
+    JSON.stubs(:parse).returns(raw_json)
+
+    table.update_row!(query_result[:rows][0][:cartodb_id], {:name => 'El Estocolmo', :address => 'Calle de La Palma 72, Madrid'})
+
+    query_result = user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} limit 1")
+    query_result[:rows][0][:lon].should == -3.7089444
+    query_result[:rows][0][:lat].should == 40.4268336
   end
 
 end

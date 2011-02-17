@@ -596,7 +596,18 @@ feature "Tables JSON API" do
     FileUtils.rm("#{Rails.root}/public/test_jsonp.html")
   end
 
-  scenario "Set the geometry from a table" do
+  scenario "Get the available types for columns" do
+    user = create_user
+
+    authenticate_api user
+
+    get_json "/api/json/column_types"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response.should == %W{ String Number Date }
+  end
+
+  scenario "Set the geometry from a table to latitude and longitude" do
     user = create_user
     table = new_table
     table.user_id = user.id
@@ -610,17 +621,28 @@ feature "Tables JSON API" do
     table.reload
     table.lat_column.should == :latitude
     table.lon_column.should == :longitude
+
+    put_json "/api/json/tables/#{table.id}/set_geometry_columns", {:lat_column => nil, :lon_column => nil}
+    response.status.should == 200
+
+    table.reload
+    table.lat_column.should be_nil
+    table.lon_column.should be_nil
   end
 
-  scenario "Get the available types for columns" do
+  scenario "Set the geometry from a table to an address column" do
     user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.save
 
     authenticate_api user
 
-    get_json "/api/json/column_types"
+    put_json "/api/json/tables/#{table.id}/set_geometry_columns", {:address_column => :address}
     response.status.should == 200
-    json_response = JSON(response.body)
-    json_response.should == %W{ String Number Date }
+
+    table.reload
+    table.address_column.should == :address
   end
 
 end

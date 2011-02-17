@@ -177,42 +177,50 @@ class Table < Sequel::Model(:user_tables)
   def insert_row!(attributes)
     owner.in_database do |user_database|
       attributes = attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
-      user_database[name.to_sym].insert(attributes) unless attributes.empty?
+      unless attributes.empty?
+        user_database[name.to_sym].insert(attributes)
+        unless address_column.blank?
+          geocode_address_column!(attributes[address_column])
+        end
+      end
     end
   end
 
   def update_row!(row_id, attributes)
     owner.in_database do |user_database|
       attributes = attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
-      user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes) unless attributes.empty?
+      unless attributes.empty?
+        user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes)
+        if !address_column.blank? && attributes.keys.include?(address_column)
+          geocode_address_column!(attributes[address_column])
+        end
+      end
     end
+    return true
   end
 
   def schema(options = {})
     options[:cartodb_types] ||= false
     temporal_schema = owner.in_database do |user_database|
-      user_database.schema(name.to_sym).map{ |c| [c.first, c[1][:db_type]] }
+      user_database.schema(name.to_sym).map do |column|
+        [
+          column.first,
+          (options[:cartodb_types] == true ? column[1][:db_type].convert_to_cartodb_type : column[1][:db_type])
+        ] unless CARTODB_COLUMNS.include?(column.first.to_s)
+      end.compact
     end
-    schema = temporal_schema.delete([:cartodb_id, "integer"])
-    schema = [schema] + temporal_schema
-    created_at = schema.delete([:created_at, "timestamp without time zone"])
-    updated_at = schema.delete([:updated_at, "timestamp without time zone"])
-    schema.delete([:the_geom, "geometry"])
-    if lat_column && lon_column
+    schema = [[:cartodb_id, (options[:cartodb_types] == true ? "integer".convert_to_cartodb_type :  "integer")]] +
+      temporal_schema +
+      [[:created_at, (options[:cartodb_types] == true ? "timestamp".convert_to_cartodb_type :  "timestamp")]] +
+      [[:updated_at, (options[:cartodb_types] == true ? "timestamp".convert_to_cartodb_type :  "timestamp")]]
+    unless geometry_columns.blank?
       schema.each do |col|
         col << "latitude"  if col[0].to_sym == lat_column
         col << "longitude" if col[0].to_sym == lon_column
+        col << "address"   if col[0].to_sym == address_column
       end
     end
-    schema = schema.push([:created_at, "timestamp"]).push([:updated_at, "timestamp"])
-    if options[:cartodb_types] == true
-      schema.map do |col|
-        col[1] = col[1].convert_to_cartodb_type
-        col
-      end
-    else
-      return schema
-    end
+    return schema
   end
 
   def add_column!(options)
@@ -325,7 +333,7 @@ TRIGGER
   end
 
   def lat_column
-    unless geometry_columns.blank?
+    if !geometry_columns.blank? && geometry_columns.include?('|')
       geometry_columns.split('|')[0].to_sym
     else
       nil
@@ -333,12 +341,26 @@ TRIGGER
   end
 
   def lon_column
-    unless geometry_columns.blank?
+    if !geometry_columns.blank? && geometry_columns.include?('|')
       geometry_columns.split('|')[1].to_sym
     else
       nil
     end
   end
+
+  def set_address_column!(address_column)
+    self.geometry_columns = address_column.try(:to_s)
+    save_changes
+  end
+
+  def address_column
+    unless geometry_columns.blank? || geometry_columns.include?('|')
+      geometry_columns.try(:to_sym)
+    else
+      nil
+    end
+  end
+
   private
 
   def update_updated_at
@@ -524,6 +546,19 @@ TRIGGER
             FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
 TRIGGER
       )
+    end
+  end
+
+  def geocode_address_column!(address)
+    return if address_column.blank?
+    url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(address)}&sensor=false")
+    req = Net::HTTP::Get.new(url.request_uri)
+    res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
+    json = JSON.parse(res.body)
+    if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
+      owner.in_database do |user_database|
+        user_database.run("UPDATE #{self.name} SET the_geom = PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')',4236)")
+      end
     end
   end
 

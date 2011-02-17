@@ -46,8 +46,8 @@
     $('div.map_window div.map_curtain').hide();
     if (map==null) {
       var myOptions = {
-        zoom: 4,
-        center: new google.maps.LatLng(-33, 151),
+        zoom: 3,
+        center: new google.maps.LatLng(43.444466828054885, 1.673828125000023),
         disableDefaultUI: true,
         mapTypeId: google.maps.MapTypeId.TERRAIN
       }

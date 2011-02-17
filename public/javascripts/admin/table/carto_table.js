@@ -74,7 +74,7 @@
            //Calculate width of th on header
            var window_width = $(window).width();
            if (window_width>((data.columns.length*113)+42)) {
-             cell_size = ((window_width-155)/(data.columns.length-1))-27;
+             cell_size = ((window_width-150)/(data.columns.length-1))-27;
              last_cell_size = cell_size;
            }
 
@@ -87,7 +87,7 @@
                //Calculate width of th on header
                var window_width = $(window).width();
                if (window_width>((data.columns.length*113)+42)) {
-                 cell_size = ((window_width-155)/(data.columns.length-1))-27;
+                 cell_size = ((window_width-150)/(data.columns.length-1))-27;
                  last_cell_size = cell_size;
                }
                methods.drawColumns(data.columns);
@@ -900,8 +900,7 @@
         } else {
           $(this).parent().parent().children('li').removeClass('choosen');
           $(this).parent().addClass('choosen');
-          var index = $(this).closest('span.select');
-          //console.log($(this).parent().parent().parent().html());
+          var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
           if (index == 0) {
             var other_index = 1;
             var other_value = $('span.select:eq(1) a.option').text(); 
@@ -910,8 +909,6 @@
             var other_value = $('span.select:eq(0) a.option').text();
           }
           $('span.select:eq('+index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
-          
-          //Ocultar en la otra lista lo que has elegido en la anterior
           $('span.select:eq('+other_index+') ul li').removeClass('choosen');
           $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
           $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
@@ -920,10 +917,12 @@
       $('a.confirm_georeference').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-        if ($('a#latitude').attr('c')!='' && $('a#longitude').attr('c')!='') {
+        var latitude = $('a#latitude').attr('c');
+        var longitude = $('a#longitude').attr('c');
+        if (!(latitude=='' && longitude=='')) {
           var params = {};
-          params['lat_column'] = $('a#latitude').attr('c');
-          params['lon_column'] = $('a#longitude').attr('c');
+          params['lat_column'] = (latitude=="Empty")? "nil" : latitude;
+          params['lon_column'] = (longitude=="Empty")? "nil" : longitude;
           methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry');
         } 
       });
@@ -1082,7 +1081,9 @@
       switch (type) {
         case "rename_column":   $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
                                 break;
-        case "update_geometry": 
+        case "update_geometry": $('p.geo').remove();
+                                $('thead tr th h3:contains('+params.lat_column+')').parent().append('<p class="geo latitude">geo</p>');
+                                $('thead tr th h3:contains('+params.lon_column+')').parent().append('<p class="geo longitude">geo</p>');
                                 closeAllWindows();
         default:                break;
       }

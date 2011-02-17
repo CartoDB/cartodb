@@ -373,6 +373,7 @@ TRIGGER
   def set_address_column!(address_column)
     self.geometry_columns = address_column.try(:to_s)
     save_changes
+    geocode_all_address_columns! if rows_counted > 0
   end
 
   def address_column
@@ -580,6 +581,21 @@ TRIGGER
     if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
       owner.in_database do |user_database|
         user_database.run("UPDATE #{self.name} SET the_geom = PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')',4236)")
+      end
+    end
+  end
+
+  def geocode_all_address_columns!
+    owner.in_database do |user_database|
+      result = owner.run_query("select cartodb_id, address FROM #{self.name} order by cartodb_id")
+      result[:rows].each do |row|
+        url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(row[:address])}&sensor=false")
+        req = Net::HTTP::Get.new(url.request_uri)
+        res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
+        json = JSON.parse(res.body)
+        if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
+          user_database.run("UPDATE #{self.name} SET the_geom = PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')',4236) where cartodb_id = #{row[:cartodb_id]}")
+        end
       end
     end
   end

@@ -2,6 +2,8 @@
 
 class Api::Json::TablesController < ApplicationController
 
+  REJECT_PARAMS = %W{ format controller action id row_id }
+
   skip_before_filter :verify_authenticity_token
 
   before_filter :api_authorization_required
@@ -259,12 +261,15 @@ class Api::Json::TablesController < ApplicationController
   #   * body:
   #       { "errors" => ["error message"] }
   def create_row
-    @table.insert_row!(params)
+    @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)})
     respond_to do |format|
       format.json do
         render :json => ''.to_json, :status => 200, :callback => params[:callback]
       end
     end
+  rescue => e
+    render :json => { :errors => [e.error_message] }.to_json, :status => 400,
+           :callback => params[:callback] and return
   end
 
   # Insert a new row in a table
@@ -287,7 +292,7 @@ class Api::Json::TablesController < ApplicationController
       format.json do
         unless params[:row_id].blank?
           begin
-            if resp = @table.update_row!(params[:row_id], params)
+            if resp = @table.update_row!(params[:row_id], params.reject{|k,v| REJECT_PARAMS.include?(k)})
               render :json => ''.to_json, :status => 200
             else
               case resp
@@ -340,10 +345,10 @@ class Api::Json::TablesController < ApplicationController
   #   * body:
   #       { "errors" => ["error message"] }
   def set_geometry_columns
-    if params[:lat_column] && params[:lon_column]
+    if params.keys.include?("lat_column") && params.keys.include?("lon_column")
       @table.set_lan_lon_columns!(params[:lat_column].try(:to_sym), params[:lon_column].try(:to_sym))
       render :json => ''.to_json, :status => 200, :callback => params[:callback]
-    elsif params[:address_column]
+    elsif params.keys.include?("address_column")
       @table.set_address_column!(params[:address_column].try(:to_sym))
       render :json => ''.to_json, :status => 200, :callback => params[:callback]
     else

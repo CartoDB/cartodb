@@ -228,8 +228,7 @@ feature "Tables JSON API" do
 
     post_json "/api/json/tables/#{table.id}/rows", {
         :name => "Name 123",
-        :description => "The description",
-        :location => Point.from_x_y(1,1).as_ewkt
+        :description => "The description"
     }
     response.status.should == 200
     table.reload

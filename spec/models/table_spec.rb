@@ -254,33 +254,30 @@ describe Table do
   it "should be able to insert a new row" do
     table = create_table
     table.rows_counted.should == 0
-    table.insert_row!({:name => String.random(10), :location => Point.from_x_y(1,1).as_ewkt, :description => "", :not_existing_col => 33})
+    table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
     table.reload
     table.rows_counted.should == 1
 
-    table.insert_row!({:location => Point.from_x_y(1,1).as_ewkt, :description => "My description"})
-    table.reload
-    table.rows_counted.should == 2
+    lambda {
+      table.insert_row!({})
+    }.should raise_error(CartoDB::EmtpyAttributes)
 
-    table.insert_row!({})
-    table.reload
-    table.rows_counted.should == 2
-
-    table.insert_row!({:not_existing => "bad value"})
-    table.reload
-    table.rows_counted.should == 2
+    lambda {
+      table.insert_row!({:non_existing => "bad value"})
+    }.should raise_error(CartoDB::InvalidAttributes)
   end
 
   it "should be able to update a row" do
     table = create_table
-    table.insert_row!({:name => String.random(10), :location => Point.from_x_y(1,1).as_ewkt, :description => ""})
+    table.insert_row!({:name => String.random(10), :description => ""})
     row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
     row[:description].should be_blank
 
-    table.update_row!(row[:cartodb_id], :non_existing => 'ignore it, please', :description => "Description 123")
-    table.reload
-    row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
-    row[:description].should == "Description 123"
+    table.update_row!(row[:cartodb_id], :description => "Description 123")
+
+    lambda {
+      table.update_row!(row[:cartodb_id], :non_existing => 'ignore it, please', :description => "Description 123")
+    }.should raise_error(CartoDB::InvalidAttributes)
   end
 
   it "should increase the tables_count counter" do

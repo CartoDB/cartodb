@@ -10,6 +10,20 @@ class CartoDB::InvalidType < StandardError
   end
 end
 
+class CartoDB::EmtpyAttributes < StandardError
+  attr_accessor :error_message
+  def initialize(message)
+    @error_message = message
+  end
+end
+
+class CartoDB::InvalidAttributes < StandardError
+  attr_accessor :error_message
+  def initialize(message)
+    @error_message = message
+  end
+end
+
 class Table < Sequel::Model(:user_tables)
 
   # Privacy constants
@@ -174,21 +188,29 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def insert_row!(attributes)
+  def insert_row!(raw_attributes)
     owner.in_database do |user_database|
-      attributes = attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
+      attributes = raw_attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
+      if attributes.keys.size != raw_attributes.keys.size
+        raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
+      end
       unless attributes.empty?
         user_database[name.to_sym].insert(attributes)
         unless address_column.blank?
           geocode_address_column!(attributes[address_column])
         end
+      else
+        raise CartoDB::EmtpyAttributes.new("Empty row")
       end
     end
   end
 
-  def update_row!(row_id, attributes)
+  def update_row!(row_id, raw_attributes)
     owner.in_database do |user_database|
-      attributes = attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
+      attributes = raw_attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
+      if attributes.keys.size != raw_attributes.keys.size
+        raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
+      end
       unless attributes.empty?
         user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes)
         if !address_column.blank? && attributes.keys.include?(address_column)

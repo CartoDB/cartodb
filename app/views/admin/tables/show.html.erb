@@ -114,7 +114,7 @@
                 <div class="select">
                   <label>LATITUDE COLUMN</label>
                   <span class="select latitude">
-                    <a id="latitude" class="option" href="#" c="">Retreiving columns...</a>
+                    <a id="latitude" class="option" href="#" c="">Retrieving columns...</a>
                     <div class="select_content">
                       <ul class="scrollPane"></ul>
                     </div>
@@ -123,7 +123,7 @@
                 <div class="select longitude last">
                   <label>LONGITUDE COLUMN</label>
                   <span class="select">
-                    <a id="longitude" class="option" href="#" c="">Retreiving columns...</a>
+                    <a id="longitude" class="option" href="#" c="">Retrieving columns...</a>
                     <div class="select_content">
                       <ul class="scrollPane"></ul>
                     </div>
@@ -133,6 +133,7 @@
               <li class="disabled"><a>This is an address column</a></li>
               <li class="disabled"><a>KML or PostGIS geometry</a></li>
             </ul>
+            <p class="error">You have to select latitude and longitude</p>
           </span>
           <span class="bottom">
             <a href="#close_window" class="cancel">cancel</a>
@@ -157,6 +158,33 @@
           <span class="bottom">
             <a href="#close_window" class="cancel">cancel</a>
             <a href="#download" class="download" type="CSV">Download</a>
+          </span>
+        </div>
+      </div>
+      
+      
+      <div class="column_window">
+        <a href="#close_window" class="close_delete"></a>
+        <div class="inner_">
+          <span class="top">
+            <h3>Create a new column</h3>
+            <p>Just select the type of the column and write the name of it.</p>
+            <div class="options">
+              <label>COLUMN NAME</label>
+              <input type="text" value=""/> 
+              <label>COLUMN TYPE</label>
+              <span class="select">
+                <a class="option" href="#">Retrieving types...</a>
+                <div class="select_content">
+                  <ul class="scrollPane"></ul>
+                </div>
+              </span>
+            </div>
+            <p class="error">You have to select a column type</p>
+          </span>
+          <span class="bottom">
+            <a href="#close_window" class="cancel">cancel</a>
+            <a href="#add_column" class="column_add">Add column</a>
           </span>
         </div>
       </div>

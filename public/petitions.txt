@@ -1,0 +1,34 @@
+
+  ADD ROW
+  
+    - BLAT -> Creo que la mejor solución sería, crear una fila vacía (sin que se de cuenta el usuario), haciendo una petición al servidor de añadir una fila nueva, 
+    que me la devuelvas con los campos rellenos en el caso de cartodb_id, created_at, updated_at, y ya haría mi trapi para controlar cuando pinche fuera de
+    la fila para mandarte los cambios. Total, si te parece bien, necesitaría que en el servicio de creación de fila me respondieras con las columnas, tipo
+    y lo que hay dentro :).
+  
+    
+  GEOREFERENCIAR
+  
+    - BLAT -> Poder georeferenciar por address, como sería el nuevo servicio, mandando el address y no lat_column o lon_column.
+    - BLAT -> Mandar nil como objecto en el la geolocalización no se puede ´por Javascript, hay que cambiar el método.
+    
+  
+  ERRORS
+  
+    - SALEIVA -> Mostrar los errores en la ventana cuando intentas georeferenciar pero no has elegido nada, por ejemplo.
+  
+  
+  TIPO DE DATOS
+    
+    - BLAT -> Falta el tipo Boolean
+    - BLAT -> Falla al cambiar el tipo a Number o a String
+    
+    
+  BORRADO DE COLUMNAS Y FILAS
+    
+    - Que sea posible borrar filas y columnas (no solo de una en una)
+    
+    
+  ADD COLUMN
+  
+    - No se puede crear columnas si no son del tipo Date

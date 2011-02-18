@@ -21,6 +21,7 @@
 
 (function( $ ){
 
+  var first = true;
   var table;
   var loading = false;
   var minPage = 0;
@@ -40,6 +41,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     init : function() {
       return this.each(function(){
+        if (first) !first;
         table = $(this)[0];
         methods.getData(defaults, 'next');
         methods.keepSize();
@@ -120,11 +122,10 @@
         var column_types = '<span class="col_types">' +
                         '<p>'+element[1]+'</p>' +
                         '<ul>' +
-                          '<li class="selected"><a href="#">String</a></li>' +
-                          '<li><a href="#">Number</a></li>' +
-                          '<li><a href="#">Date</a></li>' +
-                          '<li><a href="#">Lat/Lng</a></li>' +
-                          '<li><a href="#">Geometry</a></li>' +
+                          '<li><a href="#String">String</a></li>' +
+                          '<li><a href="#Number">Number</a></li>' +
+                          '<li><a href="#Date">Date</a></li>' +
+                          '<li><a href="#Boolean">Boolean</a></li>' +
                         '</ul>' +
                       '</span>';
 
@@ -145,10 +146,10 @@
                         '<div class="line"></div>'+
                         '<h5>CREATE</h5>' +
                         '<ul>' +
-                          '<li class="last"><a href="#">Add new column</a></li>' +
+                          '<li class="last"><a href="#add_column" class="add_column">Add new column</a></li>' +
                         '</ul>' +
                       '</span>';
-        thead += '<th>'+
+        thead += '<th c="'+element[0]+'" type="'+element[1]+'">'+
                     '<div '+((index==0)?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
                       '<span class="long">'+
                         '<h3 class="'+((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'static':'')+'">'+element[0]+'</h3>'+
@@ -167,15 +168,23 @@
       });
       thead += "</thead></tr>";
       $(table).append(thead);
+      
+      if (first) {
+        first = false;
+        //Print correct column types
+        methods.getColumnTypes();
 
-      //Scroll event
-      methods.addScroll();
+        //Scroll event
+        methods.addScroll();
 
-      //Cell click event
-      methods.bindCellEvents();
+        //Cell click event
+        methods.bindEvents();
 
-      //Create elements
-      methods.createElements();
+        //Create elements
+        methods.createElements();
+      }
+      
+      closeAllWindows();
     },
 
 
@@ -203,7 +212,7 @@
                               '<div class="line"></div>'+
                               '<h5>CREATE</h5>' +
                               '<ul>' +
-                                '<li class="last"><a href="#">Add new row</a></li>' +
+                                '<li class="last"><a href="#" class="add_row">Add new row</a></li>' +
                               '</ul>' +
                             '</span>';
         tbody += '<tr r="'+element.cartodb_id+'"><td class="first" r="'+ element.cartodb_id +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
@@ -225,10 +234,29 @@
       } else {
         (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
       }
-
+      
       methods.checkReuse(direction);
     },
 
+
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  GET COLUMN TYPES AND PRINT THEM
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
+    getColumnTypes: function() {
+      $.ajax({
+         method: "GET",
+         url: '/api/json/column_types',
+         success: function(data) {
+           $('span.col_types').each(function(index,element){
+             $(element).children('ul').children('li').remove();
+             for (var i = 0; i<data.length; i++) {
+               $(element).children('ul').append('<li><a href="#'+data[i]+'">'+data[i]+'</a></li>');
+             }
+           });
+         }
+      });
+    },
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -277,8 +305,8 @@
         '<div class="general_options">'+
           '<ul>'+
             '<li><a class="sql" href="#"><span>SQL</span></a></li>'+
-            '<li><a href="#"><span>Add row</span></a></li>'+
-            '<li><a href="#"><span>Add column</span></a></li>'+
+            '<li><a href="#add_row" class="add_row"><span>Add row</span></a></li>'+
+            '<li><a href="#add_column" class="add_column"><span>Add column</span></a></li>'+
             '<li><a href="#"><span class="dropdown">Views (2)</span></a></li>'+
             '<li class="other"><a href="#"><span class="dropdown">Other queries (2)</span></a></li>'+
           '</ul>'+
@@ -335,12 +363,97 @@
       $(table).parent().append(
         '<div class="empty_table">'+
           '<h5>Add some rows to your table</h5>'+
-          '<p>You can <a href="#">add it manually</a> or <a href="#">import a file</a></p>'+
+          '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a href="#">import a file</a></p>'+
         '</div>'
       );
       methods.resizeTable();
     },
 
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  CREATE NEW ROW
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    addRow: function() {
+      //Tabla desactivada
+      //Ver si es vacía o no
+      if ($('div.empty_table').length>0) {
+        $('div.empty_table').remove();
+        $.ajax({
+           method: "GET",
+           url: '/api/json/tables/'+table_id+'/schema',
+           success: function(data) {
+             var options_list =  '<span>' +
+                                   '<h5>EDIT</h5>' +
+                                   '<ul>' +
+                                     '<li><a href="#">Duplicate row</a></li>' +
+                                     '<li><a href="#">Delete row</a></li>' +
+                                   '</ul>' +
+                                   '<div class="line"></div>'+
+                                   '<h5>CREATE</h5>' +
+                                   '<ul>' +
+                                     '<li class="last"><a href="#" class="add_row">Add new row</a></li>' +
+                                   '</ul>' +
+                                 '</span>';
+             var row = '<tbody style="padding-top:52px"><tr><td class="first"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+             
+             for (var i = 0; i<data.length; i++) {
+                row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+'  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'You cannot modify this cell':'')+'</div></td>';
+             }
+             var start = row.lastIndexOf('"width:');
+             var end = row.lastIndexOf('px"');
+             row = row.substring(0,start) + '"width:' + last_cell_size + row.substring(end);
+             
+             row += '</tr></tbody>';
+             $(table).append(row);
+             
+           }
+        });
+        
+      } else {
+        //Si no es vacía - ir a la última página, desactivar tabla
+
+      }
+      
+      //Activamos la tabla
+      enabled = true;
+    },
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  CREATE NEW COLUMN
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    addColumn: function(name,type) {
+      var params = {};
+      params['what'] = "add";
+      params['column'] = {};
+      params['column']['name'] = sanitizeText(name);
+      params['column']['type'] = type.charAt(0).toUpperCase() + type.slice(1);
+
+      methods.updateTable('/update_schema',params,params.column,null,"new_column");
+    },
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  DELETE ROWS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    deleteRows: function() {
+
+      
+    },
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  DELETE COLUMNS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    deleteColumns: function() {
+
+      
+    },
+    
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -425,9 +538,9 @@
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  BIND CELL EVENTS
+    //  BIND EVENTS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    bindCellEvents: function() {
+    bindEvents: function() {
 
       ///////////////////////////////////////
       //  DOUBLE CLICK -> Open editor      //
@@ -680,12 +793,11 @@
       });
 
 
-
       ///////////////////////////////////////
       //  Header options events            //
       ///////////////////////////////////////
       //Head options even
-      $('thead tr a.options').click(function(ev){
+      $('thead tr a.options').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
 
@@ -711,14 +823,19 @@
           $('body').unbind('click');
         }
       });
-      $('thead tr a.column_type').click(function(ev){
+      $('thead tr a.column_type').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
+        $('thead tr th div a.options').removeClass('selected');
         $('thead tr th div span.col_ops_list').hide();
         $('thead tr span.col_types').hide();
         var position = $(this).position();
+        $(this).parent().parent().children('span.col_types').find('li').removeClass('selected');
+        var column_type = $(this).parent().parent().children('p.long').children('a').text();
+        column_type = column_type.charAt(0).toUpperCase() + column_type.slice(1);
+        $(this).parent().parent().children('span.col_types').children('p').text(column_type);
+        $(this).parent().parent().children('span.col_types').children('ul').children('li').children('a:contains("'+column_type+'")').parent().addClass('selected');
         $(this).parent().parent().children('span.col_types').css('top',position.top-5+'px');
-
         $(this).parent().parent().children('span.col_types').show();
         $('body').click(function(event) {
          if (!$(event.target).closest('thead tr span.col_types').length) {
@@ -729,11 +846,29 @@
          };
         });
       });
-      $('thead tr th div h3,thead tr th div input,thead tr span.col_types,thead tr span.col_ops_list').click(function(ev){
+      $('span.col_types ul li a').livequery('click',function(){
+        var parent_element = $(this).closest('span.col_types').parent().children('p.long').children('a');
+
+        if ($(this).text().toLowerCase()!=parent_element.text()) {
+          var old_value = parent_element.text();
+          var new_value = $(this).text().toLowerCase();
+          var column = $(this).closest('th').attr('c');
+          parent_element.text(new_value);
+          var params = {};
+          params['what'] = "modify";
+          params['column'] = {};
+          params['column']['name'] = column;
+          params['column']['type'] = new_value;
+
+          methods.updateTable('/update_schema',params,new_value,old_value,"column_type");
+        }
+        $('thead tr span.col_types').hide();
+      });
+      $('thead tr th div h3,thead tr th div input,thead tr span.col_types,thead tr span.col_ops_list').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
       });
-      $('thead tr th div h3').dblclick(function(){
+      $('thead tr th div h3').livequery('dblclick',function(){
         var title = $(this);
         var input = $(this).parent().children('input');
         input.attr('value',title.text());
@@ -776,28 +911,28 @@
 
 
       });
-      $('thead a.rename_column').click(function(ev){
+      $('thead a.rename_column').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         $(this).closest('div').find('a.options').removeClass('selected');
         $(this).closest('div').find('span.col_ops_list').hide();
         $(this).closest('div').find('h3').trigger('dblclick');
       });
-      $('thead a.change_data_type').click(function(ev){
+      $('thead a.change_data_type').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         $(this).closest('div').find('a.options').removeClass('selected');
         $(this).closest('div').find('span.col_ops_list').hide();
         $(this).closest('div').find('a.column_type').trigger('click');
       });
-      $('thead a.delete_column').click(function(ev){
+      $('thead a.delete_column').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         $(this).closest('div').find('a.options').removeClass('selected');
         $(this).closest('div').find('span.col_ops_list').hide();
       });
       //TODO change data type list values
-      $('thead tr th').click(function(ev){
+      $('thead tr th').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         $(this).find('a.options').trigger('click');
@@ -807,14 +942,15 @@
       ///////////////////////////////////////
       //  Georeference window events       //
       ///////////////////////////////////////
-      $('a.open_georeference,p.geo').click(function(ev){
+      $('a.open_georeference,p.geo').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         
         enabled = false;
-
+        
+        $('div.column_window').hide();
         $('div.georeference_window span.select').addClass('disabled');
-        $('div.georeference_window span.select a:eq(0)').text('Retreiving columns...').attr('c','');
+        $('div.georeference_window span.select a:eq(0)').text('Retrieving columns...').attr('c','');
         $('div.georeference_window a.confirm_georeference').addClass('disabled');
         $('div.georeference_window span.select').removeClass('clicked');
         
@@ -854,11 +990,10 @@
              }
              $('div.georeference_window span.select:eq(1) ul').append('<li><a href="#no_geo">Empty</a></li>');
              $('div.georeference_window span.select:eq(0) ul').append('<li><a href="#no_geo">Empty</a></li>');
-             
              $('div.georeference_window span.select').removeClass('disabled');
 
              $('div.georeference_window span.select a.option').each(function(i,ele){
-               if ($(ele).text()=="Retreiving columns...") {
+               if ($(ele).text()=="Retrieving columns...") {
                   $(ele).text('Select a column').attr('c','');
                 }
              });
@@ -871,7 +1006,7 @@
         $('div.mamufas').fadeIn();
         
       });
-      $('span.select a.option').click(function(ev){
+      $('div.georeference_window span.select a.option').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         if ($(this).parent().hasClass('clicked')) {
@@ -887,7 +1022,7 @@
           $(this).parent().find('ul').jScrollPane();
         }
       });
-      $('span.select ul li a').livequery('click',function(ev){
+      $('div.georeference_window span.select ul li a').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         $(this).closest('span.select').children('a.option').text($(this).text());
@@ -914,7 +1049,7 @@
           $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
         }
       });
-      $('a.confirm_georeference').click(function(ev){
+      $('a.confirm_georeference').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         var latitude = $('a#latitude').attr('c');
@@ -924,24 +1059,129 @@
           params['lat_column'] = (latitude=="Empty")? "nil" : latitude;
           params['lon_column'] = (longitude=="Empty")? "nil" : longitude;
           methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry');
-        } 
+        } else {
+          $('div.georeference_window p.error').text('You have to select latitude and longitude');
+          $('div.georeference_window p.error').css('opacity',0);
+          $('div.georeference_window p.error').css('display','block');
+          $('div.georeference_window p.error').fadeTo(300,1);
+          $('div.georeference_window p.error').delay(3000).fadeTo(300,0,function(){
+            $('div.georeference_window p.error').css('display','none');
+          });
+        }
       });
-      $('div.mamufas div.georeference_window a.close_delete').click(function(ev){
+      $('div.mamufas div.georeference_window a.close_delete').livequery('click',function(ev){
         ev.preventDefault();
         ev.stopPropagation();
         enabled = true;
+        closeAllWindows();
+      });
+      
+      
+      ///////////////////////////////////////
+      //  Add row events                   //
+      ///////////////////////////////////////
+      $('a.add_row').livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        methods.addRow();
+      });
+      
+      
+      ///////////////////////////////////////
+      //  Add column events                //
+      ///////////////////////////////////////
+      $('a.add_column').livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
         
-        $('div.mamufas').fadeOut('fast',function(){
-          $('div.mamufas div.delete_window').hide();
+        $('body').trigger('click');
+        enabled = false;
+
+        $('div.column_window span.select').addClass('disabled');
+        $('div.column_window span.select a:eq(0)').text('Retreiving types...').attr('type','');
+        $('div.column_window a.column_add').addClass('disabled');
+        $('div.column_window span.select').removeClass('clicked');
+        
+        $.ajax({
+           method: "GET",
+           url: '/api/json/column_types',
+           success: function(data) {
+             //Remove ScrollPane
+             var custom_scrolls = [];
+             $('.scrollPane').each(function(){
+               custom_scrolls.push($(this).jScrollPane().data().jsp);
+             });
+             $.each(custom_scrolls,function(i) {
+              this.destroy();
+              });
+             $('div.column_window span.select ul li').remove();
+             for (var i = 0; i<data.length; i++) {
+               $('div.column_window span.select ul').append('<li><a href="#'+data[i]+'">'+data[i]+'</a></li>');
+             }
+             $('div.column_window span.select').removeClass('disabled');
+             
+             $('div.column_window span.select a.option').each(function(i,ele){
+               if ($(ele).text()=="Retreiving types...") {
+                  $(ele).text('Select a type').attr('type','');
+                }
+             });
+             $('div.column_window a.column_add').removeClass('disabled');
+           }
         });
-        var document_events = $.data( $(document).get(0), 'events' ).click;
-        for (var i=0; i<document_events.length; i++) {
-          if (document_events[i].type=="scroll") {
-            return false;
-          }
-        }
-        methods.addScroll();
+
+        $('div.mamufas div.column_window').show();
+        $('div.mamufas').fadeIn();
         
+        //methods.addColumn();
+      });
+      $('div.column_window span.select a.option').livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        if ($(this).parent().hasClass('clicked')) {
+          $(this).parent().removeClass('clicked');
+        } else {
+          $('div.column_window span.select').removeClass('clicked');
+          $(document).bind('click',function(ev){
+            if (!$(ev.target).closest('span.select').length) {
+              $('div.column_window span.select').removeClass('clicked');
+            };
+          });
+          $(this).parent().addClass('clicked');
+          $(this).parent().find('ul').jScrollPane();
+        }
+      });
+      $('div.column_window span.select ul li a').livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).closest('span.select').children('a.option').text($(this).text());
+        $(this).closest('span.select').children('a.option').attr('type',$(this).text());
+        $('div.column_window span.select').removeClass('clicked');
+      });
+      $('a.column_add').livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        
+        if ($('div.column_window input').attr('value')!='' && $('div.column_window a.option').attr('type')!='') {
+          methods.addColumn($('div.column_window input').attr('value'),$('div.column_window a.option').attr('type'));
+          $('div.column_window input').attr('value','');
+        } else {
+          if ($('div.column_window input').attr('value')=='' && $('div.column_window a.option').attr('type')=='') {
+            $('div.column_window p.error').text('You have to select a type and write a name.');
+          } else {
+            if ($('div.column_window input').attr('value')=='') {
+              $('div.column_window p.error').text('You have to write a name.');
+            } else {
+              $('div.column_window p.error').text('You have to select a column type.');
+            }
+          }
+          $('div.column_window p.error').css('opacity',0);
+          $('div.column_window p.error').css('display','block');
+          $('div.column_window p.error').fadeTo(300,1);
+          $('div.column_window p.error').delay(3000).fadeTo(300,0,function(){
+            $('div.column_window p.error').css('display','none');
+          });
+          
+        }
       });
       
       
@@ -958,7 +1198,6 @@
         $('div.general_options div.sql_console').show();
         $('div.general_options ul').addClass('sql');
       });
-
 
 
       ///////////////////////////////////////
@@ -1066,7 +1305,11 @@
           methods.successRequest(params,new_value,old_value,type);
         },
         error: function(e, textStatus) {
-          requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
+          try {
+            requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
+          } catch (e) {
+            requests_queue.responseRequest(requestId,'error','Seems like you don\'t have Internet connection');
+          }
           methods.errorRequest(params,new_value,old_value,type);
         }
       });
@@ -1085,6 +1328,9 @@
                                 $('thead tr th h3:contains('+params.lat_column+')').parent().append('<p class="geo latitude">geo</p>');
                                 $('thead tr th h3:contains('+params.lon_column+')').parent().append('<p class="geo longitude">geo</p>');
                                 closeAllWindows();
+                                break;
+        case "new_column":      methods.refreshTable();
+                                break;
         default:                break;
       }
     },
@@ -1110,9 +1356,31 @@
                               });
                               break;
         case "update_geometry": closeAllWindows();
-
+                              break;
+        
+        case "column_type":   var element = $('th[c="'+params.column.name+'"]').find('p.long').children('a');
+                              element.text(old_value);
+                              element.animate({color:'#FF3300'},300,function(){
+                                setTimeout(function(){element.animate({color:'#b4b4b4'},300);},1000);
+                              });
+                              break;
+        case "new_column":      closeAllWindows();
         default:              break;
       }
+    },
+  
+  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  REFRESH TABLE
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    refreshTable: function() {
+      loading = true;
+      minPage = 0;
+      maxPage = -1;
+      $(table).children('thead').remove();
+      $(table).children('tbody').remove();
+      methods.getData(defaults, 'next');
+      enabled = true;
     }
   };
 

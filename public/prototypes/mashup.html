@@ -124,10 +124,7 @@
           map.setZoom(15);
           var marker = new google.maps.Marker({position: position, map: map,title:"Your position!"});
           
-          
-          //Club Markers
-          //Get other markers
-          
+
           var api_key = ""; // API key is not necessary if you are at localhost:3000 and you are logged in in CartoDB
           var query = "select cartodb_id, distance_sphere(the_geom, geomfromtext('POINT(" +  position.lng() + ' ' +  position.lat() + ")', 4236)) as distance," + 
                       "ST_X(the_geom) as lon, ST_Y(the_geom) as lat " + 
@@ -142,12 +139,12 @@
                   var row = data.rows[i];
                   var club_marker = new ClubMarker(new google.maps.LatLng(row.lat, row.lon),row,map);
                   bounds.extend(new google.maps.LatLng(row.lat, row.lon));
-                  map.fitBounds(bounds);
                 }
+                map.fitBounds(bounds);
               }
             },
             error: function(req, textStatus, e) {
-              alert(textStatus);
+              console.log(textStatus);
             }
           });
           hideLoader();

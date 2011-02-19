@@ -1,5 +1,7 @@
 
   var map = null;
+  var markers = [];
+  var bounds;
   
   $(document).ready(function(){
     //Zooms
@@ -53,16 +55,42 @@
       }
       map = new google.maps.Map(document.getElementById("map"),myOptions);
     }
-    getMapTableData()
+    getMapTableData();
   }
   
   function hideMap() {
     $('div.map_window div.map_curtain').show();
+    clearMap();
   }
   
   
   function getMapTableData() {
-    
+    var api_key = ""; // API key is not necessary if you are at localhost:3000 and you are logged in in CartoDB
+    var query = "select cartodb_id," + 
+                "ST_X(the_geom) as lon, ST_Y(the_geom) as lat " + 
+                "from " + $('h2 a').text();
+    $.ajax({
+      url: "/api/json/tables/query",
+      data: ({api_key: api_key, query: query}),
+      dataType: "jsonp",
+      success: function( data ) {
+        
+        bounds = new google.maps.LatLngBounds();
+        
+        if(data != null) {
+          for(var i=0;i<data.rows.length;i++){
+            var row = data.rows[i];
+            var marker = new google.maps.Marker({position: new google.maps.LatLng(row.lat, row.lon), map: map,title:"Your position!"});
+            markers.push(marker);         
+            bounds.extend(new google.maps.LatLng(row.lat, row.lon));
+          }
+          map.fitBounds(bounds);
+        }
+      },
+      error: function(req, textStatus, e) {
+        console.log(textStatus);
+      }
+    });
   }
   
   
@@ -73,4 +101,12 @@
   
   function hideMapLoader() {
     
+  }
+  
+  
+  function clearMap() {
+    for(var i=0; i < markers.length; i++){
+        markers[i].setMap(null);
+    }
+    markers = new Array();
   }

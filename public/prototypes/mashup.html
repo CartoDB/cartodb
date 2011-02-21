@@ -126,7 +126,7 @@
 
 
           var api_key = ""; // API key is not necessary if you are at localhost:3000 and you are logged in in CartoDB
-          var query = "select cartodb_id, distance_sphere(the_geom, geomfromtext('POINT(" +  position.lng() + ' ' +  position.lat() + ")', 4326)) as distance," +
+          var query = "select cartodb_id, distance_sphere(the_geom, geomfromtext('POINT(" +  position.lng() + ' ' +  position.lat() + ")', 900913)) as distance," +
                       "ST_X(the_geom) as lon, ST_Y(the_geom) as lat " +
                       "from clubbing_madrid where poblacion='Madrid' order by distance asc limit 50";
           $.ajax({

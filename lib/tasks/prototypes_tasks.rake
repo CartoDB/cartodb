@@ -8,12 +8,11 @@ namespace :cartodb do
       table = Table.new :privacy => Table::PUBLIC, :name => 'Clubbing Madrid',
                         :tags => 'bars, madrid'
       table.user_id = user.id
-      table.import_from_file = File.open("#{Rails.root}/db/fake_data/clubbing.csv", "r")
+      table.import_from_file = File.open("#{Rails.root}/db/fake_data/short_clubbing.csv", "r")
       table.save
       puts "Geocoding all this data..."
       puts "Go go go!"
       table.set_address_column!(:direccion)
-      
     end
   end
 end

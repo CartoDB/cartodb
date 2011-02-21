@@ -603,7 +603,7 @@ feature "Tables JSON API" do
     get_json "/api/json/column_types"
     response.status.should == 200
     json_response = JSON(response.body)
-    json_response.should == %W{ String Number Date }
+    json_response.should == %W{ Number String Date Boolean }
   end
 
   scenario "Set the geometry from a table to latitude and longitude" do

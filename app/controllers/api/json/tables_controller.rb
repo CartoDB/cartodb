@@ -327,7 +327,7 @@ class Api::Json::TablesController < ApplicationController
 
   # Set the columns of the geometry of the table
   # * Request Method: +PUT+
-  # * URI: +/api/json/table/:id/set_geometry_columns
+  # * URI: +/api/json/tables/:id/set_geometry_columns
   # * Format: +JSON+
   # * Parameters for setting lat and lon columns:
   #     {

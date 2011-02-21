@@ -158,7 +158,7 @@ feature "Tables JSON API" do
 
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "add", :column => {
-                                                                  :type => "number", :name => "postal code"
+                                                                  :type => "Number", :name => "postal code"
                                                               }
                                                            }
     response.status.should == 200

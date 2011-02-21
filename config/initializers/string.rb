@@ -71,20 +71,20 @@ class String
   end
 
   def convert_to_db_type
-   if CartoDB::TYPES.keys.include?(self)
-     CartoDB::TYPES[self].first
+   if CartoDB::TYPES.keys.include?(self.downcase)
+     CartoDB::TYPES[self.downcase].first
    else
-     self
+     self.downcase
    end
   end
 
   # {"integer"=>:number, "real"=>:number, "varchar"=>:string, "text"=>:string, "timestamp"=>:date, "boolean"=>:boolean}
   def convert_to_cartodb_type
     inverse_types = CartoDB::TYPES.invert.inject({}){ |h, e| e.first.each{ |k| h[k] = e.last }; h}
-    if inverse_types.keys.include?(self)
-      inverse_types[self]
+    if inverse_types.keys.include?(self.downcase)
+      inverse_types[self.downcase]
     else
-      self
+      self.downcase
     end
   end
 

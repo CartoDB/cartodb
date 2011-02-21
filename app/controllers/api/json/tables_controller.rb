@@ -346,10 +346,13 @@ class Api::Json::TablesController < ApplicationController
   #       { "errors" => ["error message"] }
   def set_geometry_columns
     if params.keys.include?("lat_column") && params.keys.include?("lon_column")
-      @table.set_lan_lon_columns!(params[:lat_column].try(:to_sym), params[:lon_column].try(:to_sym))
+      lat_column = params[:lat_column] == "nil" ? nil : params[:lat_column].try(:to_sym)
+      lon_column = params[:lon_column] == "nil" ? nil : params[:lon_column].try(:to_sym)
+      @table.set_lan_lon_columns!(lat_column, lon_column)
       render :json => ''.to_json, :status => 200, :callback => params[:callback]
     elsif params.keys.include?("address_column")
-      @table.set_address_column!(params[:address_column].try(:to_sym))
+      address_column = params[:address_column] == "nil" ? nil : params[:address_column].try(:to_sym)
+      @table.set_address_column!(address_column)
       render :json => ''.to_json, :status => 200, :callback => params[:callback]
     else
       render :json => { :errors => ["Invalid parameters"] }.to_json,

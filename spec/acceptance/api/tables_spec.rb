@@ -633,7 +633,7 @@ feature "Tables JSON API" do
     table.lat_column.should == :latitude
     table.lon_column.should == :longitude
 
-    put_json "/api/json/tables/#{table.id}/set_geometry_columns", {:lat_column => nil, :lon_column => nil}
+    put_json "/api/json/tables/#{table.id}/set_geometry_columns", {:lat_column => nil, :lon_column => "nil"}
     response.status.should == 200
 
     table.reload

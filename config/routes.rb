@@ -24,6 +24,7 @@ CartoDB::Application.routes.draw do
       delete 'tables/:id'                       => 'tables#delete'
       post   'tables/:id/rows'                  => 'tables#create_row'
       put    'tables/:id/rows/:row_id'          => 'tables#update_row'
+      delete 'tables/:id/rows/:row_id'          => 'tables#delete_row'
       get    'tables/:id/schema'                => 'tables#schema'
       put    'tables/:id/toggle_privacy'        => 'tables#toggle_privacy'
       put    'tables/:id/update'                => 'tables#update'

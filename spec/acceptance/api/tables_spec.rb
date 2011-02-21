@@ -259,7 +259,7 @@ feature "Tables JSON API" do
     row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
     row[:description].should be_blank
 
-    put_json "/api/json/tables/#{table.id}/rows/#{row[:cartodb_id]}", {:description => "Description 123"}
+    put_json "/api/json/tables/#{table.id}/rows/#{row[:cartodb_id]}", {:description => "Description 123", :column_id => "description"}
     response.status.should == 200
     table.reload
     row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
@@ -654,6 +654,26 @@ feature "Tables JSON API" do
 
     table.reload
     table.address_column.should == :address
+  end
+
+  scenario "Delete a row" do
+    user = create_user
+    table = create_table :user_id => user.id
+
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{rand(100000).to_f / 100.0}, #{rand(100000).to_f / 100.0},'#{String.random(100)}')")
+    end
+
+    authenticate_api user
+
+    delete_json "/api/json/tables/#{table.id}/rows/1"
+    response.status.should == 200
+
+    get_json "/api/json/tables/#{table.id}?rows_per_page=10"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 9
+    json_response['rows'].map{ |r| r['cartodb_id'] }.should_not include(1)
   end
 
 end

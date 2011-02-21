@@ -2,7 +2,7 @@
 
 class Api::Json::TablesController < ApplicationController
 
-  REJECT_PARAMS = %W{ format controller action id row_id }
+  REJECT_PARAMS = %W{ format controller action id row_id requestId column_id }
 
   skip_before_filter :verify_authenticity_token
 
@@ -361,6 +361,24 @@ class Api::Json::TablesController < ApplicationController
   rescue => e
     render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
            :status => 400, :callback => params[:callback] and return
+  end
+
+  # Drop a row from a table
+  # * Request Method: +DELETE+
+  # * URI: +/api/json/tables/:id/rows/:row_id
+  # * Format: +JSON+
+  # * Response if _success_:
+  #   * status code: 200
+  #   * body: _nothing_
+  def delete_row
+    if params[:row_id]
+      current_user.run_query("delete from #{@table.name} where cartodb_id = #{params[:row_id].sanitize_sql!}")
+      render :json => ''.to_json,
+             :callback => params[:callback], :status => 200
+    else
+      render :json => {:errros => ["Invalid parameters"]}.to_json,
+             :status => 404, :callback => params[:callback] and return
+    end
   end
 
   protected

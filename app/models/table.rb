@@ -202,10 +202,14 @@ class Table < Sequel::Model(:user_tables)
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
           message = e.message.split("\n")[0]
-          invalid_column = attributes.invert[message.match(/"([^"]+)"$/)[1]] # which is the column of the name that raises error
-          new_column_type = get_new_column_type(invalid_column)
-          user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
-          retry
+          invalid_value = message.match(/"([^"]+)"$/)[1]
+          invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
+          if new_column_type = get_new_column_type(invalid_column, invalid_value)
+            user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
+            retry
+          else
+            raise e
+          end
         end
         unless address_column.blank?
           geocode_address_column!(attributes[address_column])
@@ -229,10 +233,14 @@ class Table < Sequel::Model(:user_tables)
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
           message = e.message.split("\n")[0]
-          invalid_column = attributes.invert[message.match(/"([^"]+)"$/)[1]] # which is the column of the name that raises error
-          new_column_type = get_new_column_type(invalid_column)
-          user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
-          retry
+          invalid_value = message.match(/"([^"]+)"$/)[1]
+          invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
+          if new_column_type = get_new_column_type(invalid_column, invalid_value)
+            user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
+            retry
+          else
+            raise e
+          end
         end
         if !address_column.blank? && attributes.keys.include?(address_column)
           geocode_address_column!(attributes[address_column])
@@ -306,12 +314,21 @@ class Table < Sequel::Model(:user_tables)
         rescue => e
           message = e.message.split("\n").first
           if message =~ /cannot be cast to type/
-            user_database.transaction do
-              random_name = "new_column_#{rand(10)*Time.now.to_i}"
-              user_database.add_column name.to_sym, random_name, new_type
-              user_database["UPDATE #{name} SET #{random_name}=#{column_name}::#{new_type}"]
-              user_database.drop_column name.to_sym, column_name.to_sym
-              user_database.rename_column name.to_sym, random_name, column_name.to_sym
+            begin
+              user_database.transaction do
+                random_name = "new_column_#{rand(10)*Time.now.to_i}"
+                user_database.add_column name.to_sym, random_name, new_type
+                user_database.run("UPDATE #{name} SET #{random_name}=cast(#{column_name} as #{new_type})")
+                user_database.drop_column name.to_sym, column_name.to_sym
+                user_database.rename_column name.to_sym, random_name, column_name.to_sym
+              end
+            rescue
+              user_database.transaction do
+                random_name = "new_column_#{rand(10)*Time.now.to_i}"
+                user_database.add_column name.to_sym, random_name, new_type
+                user_database.drop_column name.to_sym, column_name.to_sym
+                user_database.rename_column name.to_sym, random_name, column_name.to_sym
+              end
             end
           end
         end
@@ -630,12 +647,16 @@ TRIGGER
     end
   end
 
-  def get_new_column_type(invalid_column)
+  def get_new_column_type(invalid_column, invalid_value)
     flatten_cartodb_schema = schema(:cartodb_types => true).flatten
     cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]
     flatten_schema = schema.flatten
     column_type = flatten_schema[flatten_schema.index(invalid_column.to_sym) + 1]
-    new_column_type = CartoDB::TYPES[cartodb_column_type][CartoDB::TYPES.keys.index(cartodb_column_type) + 1]
+    new_column_type = if cartodb_column_type == "number" && invalid_value =~ /^\-?[0-9]+[\.|\,][0-9]+$/
+      CartoDB::TYPES[cartodb_column_type][CartoDB::TYPES.keys.index(cartodb_column_type) + 1]
+    else
+      nil
+    end
   end
 
 end

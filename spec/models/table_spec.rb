@@ -246,9 +246,14 @@ describe Table do
     table.reload
     table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
+    pk = table.insert_row!(:name => "Text", :my_new_column => "1")
+
     table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "integer", :force_value => "NULL")
     table.reload
     table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column_new_name, "integer"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+
+    rows = table.to_json
+    rows[:rows][0][:my_new_column_new_name].should == 1
   end
 
   it "should be able to insert a new row" do

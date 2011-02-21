@@ -372,7 +372,7 @@ class Table < Sequel::Model(:user_tables)
           $update_geometry_trigger$ LANGUAGE plpgsql;
 
           CREATE TRIGGER update_geometry_trigger
-          BEFORE UPDATE ON #{self.name}
+          BEFORE INSERT OR UPDATE ON #{self.name}
               FOR EACH ROW EXECUTE PROCEDURE update_geometry();
 
 TRIGGER

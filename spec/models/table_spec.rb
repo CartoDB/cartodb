@@ -500,14 +500,14 @@ describe Table do
     # Vizzuality HQ
     current_lat = "40.422546"
     current_lon = "-3.699431"
-    query_result = user.run_query("select name, distance_sphere(the_geom, geomfromtext('POINT(#{current_lon} #{current_lat})', #{CartoDB::GOOGLE_SRID})) as distance from #{table.name} order by distance asc")
+    query_result = user.run_query("select name, distance_sphere(st_transform(the_geom, #{CartoDB::SRID}), geomfromtext('POINT(#{current_lon} #{current_lat})', #{CartoDB::SRID})) as distance from #{table.name} order by distance asc")
     query_result[:rows][0][:name].should == "Hawai"
     query_result[:rows][1][:name].should == "El Pico"
 
     # Plaza Santa Ana
     current_lat = "40.414689"
     current_lon = "-3.700901"
-    query_result = user.run_query("select name, distance_sphere(the_geom, geomfromtext('POINT(#{current_lon} #{current_lat})', #{CartoDB::GOOGLE_SRID})) as distance from #{table.name} order by distance asc")
+    query_result = user.run_query("select name, distance_sphere(st_transform(the_geom, #{CartoDB::SRID}), geomfromtext('POINT(#{current_lon} #{current_lat})', #{CartoDB::SRID})) as distance from #{table.name} order by distance asc")
     query_result[:rows][0][:name].should == "El Lacón"
     query_result[:rows][1][:name].should == "Hawai"
   end
@@ -565,18 +565,18 @@ describe Table do
 
     table.insert_row!({:name => 'El Lacón', :address => 'Calle de Manuel Fernández y González 8, Madrid'})
 
-    query_result = user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} limit 1")
-    query_result[:rows][0][:lon].should == -3.6994168
-    query_result[:rows][0][:lat].should == 40.4151476
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
+    query_result[:rows][0][:lon].to_s.should match /^-3\.699416/
+    query_result[:rows][0][:lat].to_s.should match /^40\.415147/
 
     raw_json = {"status"=>"OK", "results"=>[{"types"=>["street_address"], "formatted_address"=>"Calle de la Palma, 72, 28015 Madrid, Spain", "address_components"=>[{"long_name"=>"72", "short_name"=>"72", "types"=>["street_number"]}, {"long_name"=>"Calle de la Palma", "short_name"=>"Calle de la Palma", "types"=>["route"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["locality", "political"]}, {"long_name"=>"Community of Madrid", "short_name"=>"M", "types"=>["administrative_area_level_2", "political"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["administrative_area_level_1", "political"]}, {"long_name"=>"Spain", "short_name"=>"ES", "types"=>["country", "political"]}, {"long_name"=>"28015", "short_name"=>"28015", "types"=>["postal_code"]}], "geometry"=>{"location"=>{"lat"=>40.4268336, "lng"=>-3.7089444}, "location_type"=>"RANGE_INTERPOLATED", "viewport"=>{"southwest"=>{"lat"=>40.4236786, "lng"=>-3.7120931}, "northeast"=>{"lat"=>40.4299739, "lng"=>-3.7057979}}, "bounds"=>{"southwest"=>{"lat"=>40.4268189, "lng"=>-3.7089466}, "northeast"=>{"lat"=>40.4268336, "lng"=>-3.7089444}}}}]}
     JSON.stubs(:parse).returns(raw_json)
 
     table.update_row!(query_result[:rows][0][:cartodb_id], {:name => 'El Estocolmo', :address => 'Calle de La Palma 72, Madrid'})
 
-    query_result = user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} limit 1")
-    query_result[:rows][0][:lon].should == -3.7089444
-    query_result[:rows][0][:lat].should == 40.4268336
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
+    query_result[:rows][0][:lon].to_s.should match /^\-3\.708944/
+    query_result[:rows][0][:lat].to_s.should match /^40\.426833/
   end
 
   it "should be able to set an address column to a given column on a table with data, and that data should be geolocalized" do
@@ -599,11 +599,11 @@ describe Table do
 
     table.set_address_column!(:address)
 
-    query_result = user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name}")
-    query_result[:rows][0][:lon].should == -3.6994168
-    query_result[:rows][0][:lat].should == 40.4151476
-    query_result[:rows][1][:lon].should == -3.7089444
-    query_result[:rows][1][:lat].should == 40.4268336
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name}")
+    query_result[:rows][0][:lon].to_s.should match /^\-3\.699416/
+    query_result[:rows][0][:lat].to_s.should match /^40\.415147/
+    query_result[:rows][1][:lon].to_s.should match /^\-3\.708944/
+    query_result[:rows][1][:lat].to_s.should match /^40\.426833/
   end
 
   it "should add an extra column in the schema for address columns" do
@@ -642,7 +642,7 @@ describe Table do
 
     table.insert_row!({:name => 'El Lacón', :address => ''})
 
-    query_result = user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} limit 1")
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
     query_result[:rows][0][:lon].should be_nil
     query_result[:rows][0][:lat].should be_nil
 
@@ -651,9 +651,9 @@ describe Table do
 
     table.update_row!(query_result[:rows][0][:cartodb_id], {:name => 'El Estocolmo', :address => 'Calle de La Palma 72, Madrid'})
 
-    query_result = user.run_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} limit 1")
-    query_result[:rows][0][:lon].should == -3.7089444
-    query_result[:rows][0][:lat].should == 40.4268336
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
+    query_result[:rows][0][:lon].to_s.should match /^\-3\.708944/
+    query_result[:rows][0][:lat].to_s.should match /^40\.426833/
   end
 
   it "should alter the schema automatically to a a wide range of numbers when inserting" do

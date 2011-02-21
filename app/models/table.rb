@@ -359,14 +359,14 @@ class Table < Sequel::Model(:user_tables)
   def set_lan_lon_columns!(lat_column, lon_column)
     if lat_column && lon_column
       owner.in_database(:as => :superuser) do |user_database|
-        user_database.run("UPDATE #{self.name} SET the_geom = PointFromText('POINT(' || #{lon_column} || ' ' || #{lat_column} || ')',#{CartoDB::GOOGLE_SRID})")
+        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
         user_database.run(<<-TRIGGER
           -- Sets trigger to update the_geom automagically
           DROP TRIGGER IF EXISTS update_geometry_trigger ON #{self.name};
 
           CREATE OR REPLACE FUNCTION update_geometry() RETURNS TRIGGER AS $update_geometry_trigger$
             BEGIN
-                 NEW.the_geom := PointFromText('POINT(' || NEW.#{lon_column} || ' ' || NEW.#{lat_column} || ')',#{CartoDB::GOOGLE_SRID});
+                 NEW.the_geom := ST_Transform(ST_SetSRID(ST_Makepoint(NEW.#{lon_column}, NEW.#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID});
                  RETURN NEW;
             END;
           $update_geometry_trigger$ LANGUAGE plpgsql;
@@ -626,7 +626,7 @@ TRIGGER
     json = JSON.parse(res.body)
     if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
       owner.in_database do |user_database|
-        user_database.run("UPDATE #{self.name} SET the_geom = PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')',#{CartoDB::GOOGLE_SRID})")
+        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
       end
     end
   end
@@ -641,7 +641,7 @@ TRIGGER
         res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
         json = JSON.parse(res.body)
         if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
-          user_database.run("UPDATE #{self.name} SET the_geom = PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')',#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{row[:cartodb_id]}")
+          user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{row[:cartodb_id]}")
         end
       end
     end

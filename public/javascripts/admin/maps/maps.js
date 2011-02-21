@@ -2,7 +2,7 @@
   var map = null;
   var markers = [];
   var bounds;
-  
+
   $(document).ready(function(){
     //Zooms
     $('a.zoom_in').click(function(ev){
@@ -15,8 +15,8 @@
       ev.preventDefault();
       map.setZoom(map.getZoom()-1);
     });
-    
-    
+
+
     $('div.map_header ul:eq(0) li').click(function(ev){
       ev.stopPropagation();
       ev.preventDefault();
@@ -28,8 +28,8 @@
         };
       });
     });
-    
-    
+
+
     $('div.map_header ul:eq(1) li a').click(function(ev){
       ev.stopPropagation();
       ev.preventDefault();
@@ -57,24 +57,24 @@
     }
     getMapTableData();
   }
-  
+
   function hideMap() {
     $('div.map_window div.map_curtain').show();
     clearMap();
   }
-  
-  
+
+
   function getMapTableData() {
     var api_key = ""; // API key is not necessary if you are at localhost:3000 and you are logged in in CartoDB
-    var query = "select cartodb_id," + 
-                "ST_X(the_geom) as lon, ST_Y(the_geom) as lat " + 
+    var query = "select cartodb_id," +
+                "ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat " +
                 "from " + $('h2 a').text();
     $.ajax({
       url: "/api/json/tables/query",
       data: ({api_key: api_key, query: query}),
       dataType: "jsonp",
       success: function( data ) {
-        
+
         bounds = new google.maps.LatLngBounds();
         var image = new google.maps.MarkerImage('/images/admin/map/marker.png',new google.maps.Size(33, 33),new google.maps.Point(0,0),new google.maps.Point(12, 33));
         
@@ -95,18 +95,18 @@
       }
     });
   }
-  
-  
+
+
   function showMapLoader() {
-    
+
   }
-  
-  
+
+
   function hideMapLoader() {
-    
+
   }
-  
-  
+
+
   function clearMap() {
     for(var i=0; i < markers.length; i++){
         markers[i].setMap(null);

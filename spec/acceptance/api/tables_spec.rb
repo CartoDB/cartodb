@@ -710,5 +710,4 @@ feature "Tables JSON API" do
     ]
   end
 
-
 end

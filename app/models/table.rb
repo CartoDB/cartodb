@@ -197,7 +197,16 @@ class Table < Sequel::Model(:user_tables)
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
       unless attributes.empty?
-        primary_key = user_database[name.to_sym].insert(attributes)
+        begin
+          primary_key = user_database[name.to_sym].insert(attributes)
+        rescue Sequel::DatabaseError => e
+          # If the type don't match the schema of the table is modified for the next valid type
+          message = e.message.split("\n")[0]
+          invalid_column = attributes.invert[message.match(/"([^"]+)"$/)[1]] # which is the column of the name that raises error
+          new_column_type = get_new_column_type(invalid_column)
+          user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
+          retry
+        end
         unless address_column.blank?
           geocode_address_column!(attributes[address_column])
         end
@@ -215,7 +224,16 @@ class Table < Sequel::Model(:user_tables)
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
       unless attributes.empty?
-        user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes)
+        begin
+          user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes)
+        rescue Sequel::DatabaseError => e
+          # If the type don't match the schema of the table is modified for the next valid type
+          message = e.message.split("\n")[0]
+          invalid_column = attributes.invert[message.match(/"([^"]+)"$/)[1]] # which is the column of the name that raises error
+          new_column_type = get_new_column_type(invalid_column)
+          user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
+          retry
+        end
         if !address_column.blank? && attributes.keys.include?(address_column)
           geocode_address_column!(attributes[address_column])
         end
@@ -610,6 +628,14 @@ TRIGGER
         end
       end
     end
+  end
+
+  def get_new_column_type(invalid_column)
+    flatten_cartodb_schema = schema(:cartodb_types => true).flatten
+    cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]
+    flatten_schema = schema.flatten
+    column_type = flatten_schema[flatten_schema.index(invalid_column.to_sym) + 1]
+    new_column_type = CartoDB::TYPES[cartodb_column_type][CartoDB::TYPES.keys.index(cartodb_column_type) + 1]
   end
 
 end

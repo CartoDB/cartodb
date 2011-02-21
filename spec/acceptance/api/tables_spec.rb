@@ -160,7 +160,7 @@ feature "Tables JSON API" do
                                                               :what => "add", :column => {
                                                                   :type => "Number", :name => "postal code"
                                                               }
-                                                           }
+                                                            }
     response.status.should == 200
     json_response = JSON(response.body)
     json_response.should == {"name" => "postal_code", "type" => "integer", "cartodb_type" => "number"}
@@ -675,5 +675,40 @@ feature "Tables JSON API" do
     json_response['total_rows'].should == 9
     json_response['rows'].map{ |r| r['cartodb_id'] }.should_not include(1)
   end
+
+  scenario "Create a new row of type number and insert float values" do
+    user = create_user
+    authenticate_api user
+
+    post_json "/api/json/tables", {
+      :name => "My new imported table",
+      :schema => "name varchar, age integer"
+    }
+    response.status.should == 200
+    response.location.should =~ /tables\/(\d+)$/
+    json_response = JSON(response.body)
+    json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+    table_id = json_response['id'].to_i
+
+    post_json "/api/json/tables/#{table_id}/rows", {
+        :name => "Fernando Blat",
+        :age => "29"
+    }
+    response.status.should == 200
+
+    post_json "/api/json/tables/#{table_id}/rows", {
+        :name => "Javier Jamon",
+        :age => "25.4"
+    }
+    response.status.should == 200
+
+    get_json "/api/json/tables/#{table_id}/schema"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response.should == [
+      ["cartodb_id", "number"], ["name", "string"], ["age", "number"], ["created_at", "date"], ["updated_at", "date"]
+    ]
+  end
+
 
 end

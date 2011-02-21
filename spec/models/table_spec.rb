@@ -651,4 +651,38 @@ describe Table do
     query_result[:rows][0][:lat].should == 40.4268336
   end
 
+  it "should alter the schema automatically to a a wide range of numbers when inserting" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, age integer"
+    table.save
+
+    pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+    table.rows_counted.should == 1
+
+    pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.4")
+    table.rows_counted.should == 2
+
+    table.schema.should include([:age, "real"])
+    table.schema(:cartodb_types => true).should include([:age, "number"])
+  end
+
+  it "should alter the schema automatically to a a wide range of numbers when updating" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, age integer"
+    table.save
+
+    pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+    table.rows_counted.should == 1
+
+    pk_row2 = table.update_row!(pk_row1, :name => 'Javi Jam', :age => "25.4")
+    table.rows_counted.should == 1
+
+    table.schema.should include([:age, "real"])
+    table.schema(:cartodb_types => true).should include([:age, "number"])
+  end
+
 end

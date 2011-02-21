@@ -1,12 +1,12 @@
 
-<!DOCTYPE html> 
-<html lang="en"> 
-  <head> 
-    <meta charset=utf-8 /> 
-    <title>Clubs - Mashup</title> 
-    <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" /> 
-    <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" /> 
-    
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset=utf-8 />
+    <title>Clubs - Mashup</title>
+    <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
+    <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
+
     <style type="text/css">
       body {position:relative; background:#2D3451;}
       /*HEADER*/
@@ -21,7 +21,7 @@
       section.map span.bottom-right {position:absolute; width:5px; height:5px; background-image:url('/images/admin/others/corners_mashup.png');bottom:-1px; right:-1px; background-position:-5px -5px;}
       section.map p.loading {position:absolute; display:none; top:10px; left:50%; margin:0 0 0 -47px; padding:5px 30px 5px 10px; background:url('/images/admin/others/activity_indicator.gif') no-repeat 68px 5px rgba(0,0,0,0.9);
        -wekit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; font:normal 15px Arial; color:white;}
-      
+
       section.map a.zoom_in {position:absolute; top:10px; left:10px; width:26px; height:26px; background:url('/images/admin/map/zoomin.png') no-repeat 0 0;}
       section.map a.zoom_in:hover {background-position:0 -26px; cursor:pointer;}
       section.map a.zoom_out {position:absolute; top:40px; left:10px; width:26px; height:26px; background:url('/images/admin/map/zoomout.png') no-repeat 0 0;}
@@ -29,7 +29,7 @@
       /*Infowindow*/
       a.clubMarker {float:left; display:block; width:25px; height:25px; background:url("/images/admin/others/marker.png") no-repeat 0 0; text-indent:-9999px;}
       a.clubMarker:hover {cursor:pointer;}
-      div.hidden {position:absolute; top:-200px; left:-105px; display:none; width:233px; height:207px; margin:0; padding:0; background:url("/images/admin/others/infowindow.png") no-repeat 0 0;} 
+      div.hidden {position:absolute; top:-200px; left:-105px; display:none; width:233px; height:207px; margin:0; padding:0; background:url("/images/admin/others/infowindow.png") no-repeat 0 0;}
       div.hidden a.close {position:absolute; right:1px; top:0px; width:21px; height:21px; background:url("/images/admin/others/close.png") no-repeat 0 0; text-indent:-9999px;}
       div.hidden a.close:hover {background-position:0 -21px;}
       div.hidden h3 {float:left; width:193px; margin:20px 0 0 20px; font:bold 16px "Helvetica",Arial; color:#333333; letter-spacing:-1px;}
@@ -37,17 +37,17 @@
       div.hidden div.content img {float:left; width:50px; margin:10px 10px 10px 0; border:1px solid black;}
       div.hidden div.content p {float:none; padding:8px 0 0 0; font:normal 14px Arial; color:#666666;}
     </style>
-    
+
     <script src="/javascripts/plugins/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&region=ES&language=ES"></script>
-  </head> 
-  <body> 
-    <header> 
+  </head>
+  <body>
+    <header>
       <a class="logo" href="/">CartoDB</a>
       <h1>¿Where are we going to?</h1>
-    </header> 
-    
+    </header>
+
     <section class="map">
       <div id="map"></div>
       <span class="top-right"></span>
@@ -63,10 +63,10 @@
         var map;
         var bounds = new google.maps.LatLngBounds();
         var globalIndex = 0;
-        
+
         jQuery(function($) {
             showLoader();
-            
+
             var myOptions = {
               zoom: 6,
               center: new google.maps.LatLng(40.4166909, -3.7003454),
@@ -74,8 +74,8 @@
               mapTypeId: google.maps.MapTypeId.ROADMAP
             }
             map = new google.maps.Map(document.getElementById("map"),myOptions);
-            
-            
+
+
             $('a.zoom_in').click(function(ev){
               ev.stopPropagation();
               ev.preventDefault();
@@ -86,8 +86,8 @@
               ev.preventDefault();
               map.setZoom(map.getZoom()-1);
             });
-            
-            
+
+
             var current_position;
 
             if (google.loader.ClientLocation) {
@@ -101,33 +101,33 @@
                 });
               }
             }
-            
+
         });
-        
-        
-        
+
+
+
         function showLoader() {
           $('p.loading').fadeIn();
         }
-        
-        
+
+
         function hideLoader() {
           $('p.loading').fadeOut();
         }
-        
-        
-        
+
+
+
         function getNearClubs(position) {
           //Marker with user position
           map.setCenter(position);
           bounds.extend(position);
           map.setZoom(15);
           var marker = new google.maps.Marker({position: position, map: map,title:"Your position!"});
-          
+
 
           var api_key = ""; // API key is not necessary if you are at localhost:3000 and you are logged in in CartoDB
-          var query = "select cartodb_id, distance_sphere(the_geom, geomfromtext('POINT(" +  position.lng() + ' ' +  position.lat() + ")', 4236)) as distance," + 
-                      "ST_X(the_geom) as lon, ST_Y(the_geom) as lat " + 
+          var query = "select cartodb_id, distance_sphere(the_geom, geomfromtext('POINT(" +  position.lng() + ' ' +  position.lat() + ")', 4326)) as distance," +
+                      "ST_X(the_geom) as lon, ST_Y(the_geom) as lat " +
                       "from clubbing_madrid where poblacion='Madrid' order by distance asc limit 50";
           $.ajax({
             url: "/api/json/tables/query",
@@ -152,8 +152,8 @@
 
         function ClubMarker(latlng, info, map) {
           this.latlng_ = latlng;
-        	this.inf = info;
-        	this.map_ = map;
+          this.inf = info;
+          this.map_ = map;
 
           this.offsetVertical_ = -12;
           this.offsetHorizontal_ = -13;
@@ -168,7 +168,7 @@
         ClubMarker.prototype.draw = function() {
 
           var me = this;
-        	var num = 0;
+          var num = 0;
 
           var div = this.div_;
           if (!div) {
@@ -176,8 +176,8 @@
             $(div).addClass('clubMarker');
             div.style.border = "none";
             div.style.position = "absolute";
-        		div.style.width = '25px';
-        		div.style.height = '25px';
+            div.style.width = '25px';
+            div.style.height = '25px';
 
 
             var content = ""+
@@ -192,18 +192,18 @@
               "</div>";
 
             $(div).append(content);
-            
+
 
             var panes = this.getPanes();
             panes.floatPane.appendChild(div);
-            
+
             $('a.close').click(function(ev){
               ev.stopPropagation();
               ev.preventDefault();
               $('div.hidden').hide();
             });
-            
-            
+
+
             $(div).click(function(ev){
               ev.stopPropagation();
               ev.preventDefault();
@@ -212,7 +212,7 @@
                 me.moveMaptoOpen();
               });
             });
-            
+
             $('a.clubMarker').live('hover',function(ev){
               ev.stopPropagation();
               ev.preventDefault();
@@ -221,12 +221,12 @@
             });
           }
 
-        	var pixPosition = me.getProjection().fromLatLngToDivPixel(me.latlng_);
+          var pixPosition = me.getProjection().fromLatLngToDivPixel(me.latlng_);
           if (pixPosition) {
-        	  div.style.width = me.width_ + 'px';
-        	  div.style.left = (pixPosition.x + me.offsetHorizontal_) + 'px';
-        	  div.style.height = me.height_ + 'px';
-        	  div.style.top = (pixPosition.y + me.offsetVertical_) + 'px';
+            div.style.width = me.width_ + 'px';
+            div.style.left = (pixPosition.x + me.offsetHorizontal_) + 'px';
+            div.style.height = me.height_ + 'px';
+            div.style.top = (pixPosition.y + me.offsetVertical_) + 'px';
           }
 
         };
@@ -250,8 +250,8 @@
 
 
         ClubMarker.prototype.moveMaptoOpen = function() {
-        	var left = 0;
-        	var top = 0;
+          var left = 0;
+          var top = 0;
 
           var pixPosition = this.getProjection().fromLatLngToContainerPixel(this.latlng_);
 
@@ -264,14 +264,14 @@
            left = 105 - $('div#map').width() + pixPosition.x - this.offsetHorizontal_;
           }
 
-        	if ((pixPosition.y + this.offsetVertical_) < 205) {
-        		top = pixPosition.y + this.offsetVertical_ - 205;
-        	}
+          if ((pixPosition.y + this.offsetVertical_) < 205) {
+            top = pixPosition.y + this.offsetVertical_ - 205;
+          }
 
-        	map.panBy(left,top);
+          map.panBy(left,top);
         }
 
     </script>
-    
-  </body> 
+
+  </body>
 </html>

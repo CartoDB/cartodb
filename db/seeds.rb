@@ -46,11 +46,11 @@ table.force_schema = "name varchar, address varchar, latitude float, longitude f
 table.save
 table.set_lan_lon_columns!(:latitude, :longitude)
 
-user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('Hawai','',40.423012,-3.699732)"   )
-user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('El Estocolmo','',40.426949,-3.708969)"   )
-user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('El Rey del Tallarín','',40.424654,-3.709570)"   )
-user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('El Lacón','',40.415113,-3.699871)"   )
-user.run_query("INSERT INTO #{table.name}  (name, address, latitude, longitude) values ('El Pico','',40.428198,-3.703991)"   )
+user.run_query("INSERT INTO #{table.name} (name, address, latitude, longitude) values ('Hawai','',40.423012,-3.699732)"   )
+user.run_query("INSERT INTO #{table.name} (name, address, latitude, longitude) values ('El Estocolmo','',40.426949,-3.708969)"   )
+user.run_query("INSERT INTO #{table.name} (name, address, latitude, longitude) values ('El Rey del Tallarín','',40.424654,-3.709570)"   )
+user.run_query("INSERT INTO #{table.name} (name, address, latitude, longitude) values ('El Lacón','',40.415113,-3.699871)"   )
+user.run_query("INSERT INTO #{table.name} (name, address, latitude, longitude) values ('El Pico','',40.428198,-3.703991)"   )
 
 table = Table.new :privacy => Table::PUBLIC, :name => 'My favourite bars',
                   :tags => 'bars, personal'

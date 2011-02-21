@@ -495,14 +495,14 @@ describe Table do
     # Vizzuality HQ
     current_lat = "40.422546"
     current_lon = "-3.699431"
-    query_result = user.run_query("select name, distance_sphere(the_geom, geomfromtext('POINT(#{current_lon} #{current_lat})', 4236)) as distance from #{table.name} order by distance asc")
+    query_result = user.run_query("select name, distance_sphere(the_geom, geomfromtext('POINT(#{current_lon} #{current_lat})', #{CartoDB::GOOGLE_SRID})) as distance from #{table.name} order by distance asc")
     query_result[:rows][0][:name].should == "Hawai"
     query_result[:rows][1][:name].should == "El Pico"
 
     # Plaza Santa Ana
     current_lat = "40.414689"
     current_lon = "-3.700901"
-    query_result = user.run_query("select name, distance_sphere(the_geom, geomfromtext('POINT(#{current_lon} #{current_lat})', 4236)) as distance from #{table.name} order by distance asc")
+    query_result = user.run_query("select name, distance_sphere(the_geom, geomfromtext('POINT(#{current_lon} #{current_lat})', #{CartoDB::GOOGLE_SRID})) as distance from #{table.name} order by distance asc")
     query_result[:rows][0][:name].should == "El Lacón"
     query_result[:rows][1][:name].should == "Hawai"
   end

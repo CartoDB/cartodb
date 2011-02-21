@@ -231,6 +231,8 @@ feature "Tables JSON API" do
         :description => "The description"
     }
     response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['id'].should == 1
     table.reload
     table.rows_counted.should == 1
     table.to_json[:total_rows].should == 1

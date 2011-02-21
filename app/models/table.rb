@@ -189,13 +189,14 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def insert_row!(raw_attributes)
+    primary_key = nil
     owner.in_database do |user_database|
       attributes = raw_attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
       unless attributes.empty?
-        user_database[name.to_sym].insert(attributes)
+        primary_key = user_database[name.to_sym].insert(attributes)
         unless address_column.blank?
           geocode_address_column!(attributes[address_column])
         end
@@ -203,6 +204,7 @@ class Table < Sequel::Model(:user_tables)
         raise CartoDB::EmtpyAttributes.new("Empty row")
       end
     end
+    return primary_key
   end
 
   def update_row!(row_id, raw_attributes)

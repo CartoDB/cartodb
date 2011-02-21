@@ -254,9 +254,10 @@ describe Table do
   it "should be able to insert a new row" do
     table = create_table
     table.rows_counted.should == 0
-    table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
+    primary_key = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
     table.reload
     table.rows_counted.should == 1
+    primary_key.should == table.to_json(:rows_per_page => 1)[:rows].first[:cartodb_id]
 
     lambda {
       table.insert_row!({})

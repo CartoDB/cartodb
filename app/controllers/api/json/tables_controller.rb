@@ -261,10 +261,10 @@ class Api::Json::TablesController < ApplicationController
   #   * body:
   #       { "errors" => ["error message"] }
   def create_row
-    @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)})
+    primary_key = @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)})
     respond_to do |format|
       format.json do
-        render :json => ''.to_json, :status => 200, :callback => params[:callback]
+        render :json => {:id => primary_key}.to_json, :status => 200, :callback => params[:callback]
       end
     end
   rescue => e

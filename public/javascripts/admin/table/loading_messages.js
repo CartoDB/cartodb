@@ -8,4 +8,6 @@
     loadingMessages["update_geometry"] = "The geometry has been updated";
     loadingMessages["column_type"] = "The type of the column has been changed";
     loadingMessages["new_column"] = "New column added!";
-    
+    loadingMessages["georeference_address"] = "Your address column has been geocordered";
+    loadingMessages["delete_column"] = "Your column has been deleted";
+    loadingMessages["delete_row"] = "This row has been deleted";

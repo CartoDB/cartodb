@@ -85,6 +85,7 @@ section.subheader div.performing_op p.loading {padding:8px 12px 8px 32px; backgr
 section.subheader div.performing_op p.error {padding:8px 12px; background:#D0878E; border-bottom-color:#FFA3A9; color:#333333;}*/
 
 
+
 /*Change table title*/
 section.subheader span.title_window {position:absolute; display:none; top:22px; left:5px; width:200px; height:67px; padding:33px 18px 0 18px; background:url('/images/admin/table/save_title_bkg.png') no-repeat 0 0;}
 section.subheader span.title_window p {font:bold 13px Arial; color:#000000;}

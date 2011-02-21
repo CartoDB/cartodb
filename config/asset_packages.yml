@@ -21,6 +21,8 @@ javascripts:
   - admin/table/carto_table
   - admin/table/table_elements
   - admin/maps/maps
+  - admin/table/geocoding
+  - admin/table/worker_geocoding
   - admin/table/table
 
 stylesheets:

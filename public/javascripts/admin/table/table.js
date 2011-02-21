@@ -1,4 +1,5 @@
     var requests_queue = new loaderQueue();
+    var geolocating = false;
 
 
     $(document).ready(function(){

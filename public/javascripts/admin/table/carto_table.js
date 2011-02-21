@@ -130,10 +130,13 @@
                       '</span>';
 
         var col_ops_list = '<span class="col_ops_list">' +
+                        '<h5>ORDER</h5>' +
+                        '<ul>' +
+                          '<li><a>Order by ASC</a></li>' +
+                          '<li><a>Order by DESC</a></li>' +
+                        '</ul>' +
                         '<h5>EDIT</h5>' +
                         '<ul>' +
-                          '<li><a>Order by this column</a></li>' +
-                          //'<li><a>Filter by this column</a></li>' +
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="rename_column" href="#rename_column">Rename column</a></li>':'') +
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="change_data_type" href="#change_data_type">Change data type</a></li>':'') +
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="delete_column" href="#delete_column">Delete column</a></li>':'') +
@@ -207,7 +210,7 @@
                               '<h5>EDIT</h5>' +
                               '<ul>' +
                                 '<li><a href="#">Duplicate row</a></li>' +
-                                '<li><a href="#">Delete row</a></li>' +
+                                '<li><a class="delete_row" href="#">Delete row</a></li>' +
                               '</ul>' +
                               '<div class="line"></div>'+
                               '<h5>CREATE</h5>' +
@@ -231,6 +234,7 @@
       if ($(table).children('tbody').length==0) {
         tbody += '</tbody>';
         $(table).append(tbody);
+        methods.resizeTable();
       } else {
         (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
       }
@@ -346,10 +350,30 @@
         '</div>'
       );
       
+      
+      //Row delete tooltip
+      $(table).parent().append(
+        '<div class="delete_row">'+
+          '<p>You are about to delete this row. Are you sure?</p>'+
+          '<a class="cancel_delete" href="#cancel_delete">cancel</a>'+
+          '<a class="button" href="#delete_row">Yes, delete it</a>'+
+        '</div>'
+      );
+      
+      
+      //Column delete tooltip
+      $(table).parent().append(
+        '<div class="delete_column">'+
+          '<p>You are about to delete this column. Are you sure?</p>'+
+          '<a class="cancel_delete" href="#cancel_delete">cancel</a>'+
+          '<a class="button" href="#delete_column">Yes, delete it</a>'+
+        '</div>'
+      );
+      
+      
       //CSS Hack for cover end of table
       //Data error tooltip
       $(table).append('<span class="end_table"></span>');
-
     },
 
 
@@ -431,31 +455,11 @@
       params['column']['name'] = sanitizeText(name);
       params['column']['type'] = type.charAt(0).toUpperCase() + type.slice(1);
 
-      methods.updateTable('/update_schema',params,params.column,null,"new_column");
+      methods.updateTable('/update_schema',params,params.column,null,"new_column","PUT");
     },
     
     
     
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  DELETE ROWS
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    deleteRows: function() {
-
-      
-    },
-    
-    
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  DELETE COLUMNS
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    deleteColumns: function() {
-
-      
-    },
-    
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  ADD SCROLL PAGINATE BINDING
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -773,7 +777,7 @@
           params["row_id"] = row;
           params[column] = $("div.edit_cell textarea").val();
           params['column_id'] = column;
-          methods.updateTable("/rows/"+row,params,new_value,old_value,'update_cell');
+          methods.updateTable("/rows/"+row,params,new_value,old_value,'update_cell',"PUT");
           $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text($("div.edit_cell textarea").val());
         }
         $("div.edit_cell").hide();
@@ -860,7 +864,7 @@
           params['column']['name'] = column;
           params['column']['type'] = new_value;
 
-          methods.updateTable('/update_schema',params,new_value,old_value,"column_type");
+          methods.updateTable('/update_schema',params,new_value,old_value,"column_type","PUT");
         }
         $('thead tr span.col_types').hide();
       });
@@ -884,8 +888,9 @@
             params["column"].new_name = new_value;
             params["column"].old_name = old_value;
             params["column"].index = title.parent().parent().parent().index();
-            methods.updateTable("/update_schema",params,new_value,old_value,'rename_column');
+            methods.updateTable("/update_schema",params,new_value,old_value,'rename_column',"PUT");
             input.parent().children('h3').text(new_value);
+            input.closest('th').attr('c',new_value);
             input.hide();
             input.unbind('focusout');
             input.unbind('keydown');
@@ -930,6 +935,36 @@
         ev.preventDefault();
         $(this).closest('div').find('a.options').removeClass('selected');
         $(this).closest('div').find('span.col_ops_list').hide();
+        var column = $(this).closest('th').attr('c');
+        var left_position = $(table).find('th[c="'+column+'"]').position().left;
+        var options_position = $(table).find('th[c="'+column+'"]').find('a.options').position().left;
+
+        $('div.delete_column a.button').attr('c',column);
+        $('div.delete_column').css('left',left_position+options_position-97+'px');
+        $('div.delete_column').show();
+
+        $('body').click(function(event) {
+         if (!$(event.target).closest('div.delete_column').length) {
+           $('div.delete_column').hide();
+           $('body').unbind('click');
+         };
+        });
+      });
+      $('div.delete_column a.cancel_delete, div.delete_row a.cancel_delete').livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $('div.delete_column').hide();
+        $('div.delete_row').hide();
+      });
+      $('div.delete_column a.button').livequery('click',function(ev){
+        var column = $(this).attr('c');
+        var params = {};
+        params['what'] = "drop";
+        params['column'] = {};
+        params['column']['name'] = column;
+        params['column']['type'] = '';
+        $('body').trigger('click');
+        methods.updateTable('/update_schema',params,params.column,null,"delete_column","PUT");
       });
       //TODO change data type list values
       $('thead tr th').livequery('click',function(ev){
@@ -1058,7 +1093,7 @@
           var params = {};
           params['lat_column'] = (latitude=="Empty")? "nil" : latitude;
           params['lon_column'] = (longitude=="Empty")? "nil" : longitude;
-          methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry');
+          methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry',"PUT");
         } else {
           $('div.georeference_window p.error').text('You have to select latitude and longitude');
           $('div.georeference_window p.error').css('opacity',0);
@@ -1084,6 +1119,36 @@
         ev.stopPropagation();
         ev.preventDefault();
         methods.addRow();
+      });
+      $('a.delete_row').livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        var cartodb_id = $(this).closest('tr').attr('r');
+        $('body').trigger('click');
+        
+        var top_position = $(table).find('tr[r="'+cartodb_id+'"]').position().top;
+
+        $('div.delete_row a.button').attr('r',cartodb_id);
+        $('div.delete_row').css('top',top_position-7+'px');
+        $('div.delete_row').show();
+
+        $('body').click(function(event) {
+         if (!$(event.target).closest('div.delete_row').length) {
+           $('div.delete_row').hide();
+           $('body').unbind('click');
+         };
+        });
+        
+      });
+      $('div.delete_row a.button').livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        
+        var row = $(this).attr('r');
+        var params = {};
+        params.row = row;
+        $('body').trigger('click');
+        methods.updateTable('/rows/'+row,params,null,null,"delete_row","DELETE");
       });
       
       
@@ -1280,6 +1345,7 @@
       // HEIGTH
       var parent_height = $(window).height();
       if ((parent_height-162)>($(table).parent().height())) {
+        $('span.end_table').css('bottom','-3px');
         $(table).parent().height(parent_height-162);
       }
     },
@@ -1289,7 +1355,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  UPDATE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    updateTable: function(url_change,params,new_value,old_value,type) {
+    updateTable: function(url_change,params,new_value,old_value,type,request_type) {
       //Queue loader
       var requestId = createUniqueId();
       params.requestId = requestId;
@@ -1297,7 +1363,7 @@
 
       $.ajax({
         dataType: 'json',
-        type: "PUT",
+        type: request_type,
         url: '/api/json/tables/'+table_id+url_change,
         data: params,
         success: function(data) {
@@ -1331,6 +1397,10 @@
                                 break;
         case "new_column":      methods.refreshTable();
                                 break;
+        case "delete_column":   methods.refreshTable();
+                                break;                                
+        case "delete_row":      methods.refreshTable();
+                                break;                        
         default:                break;
       }
     },
@@ -1351,6 +1421,7 @@
 
         case "rename_column": var element = $('table thead tr th:eq('+params.column.index+') h3');
                               element.text(old_value);
+                              element.closest('th').attr('c',old_value);
                               element.animate({color:'#FF3300'},300,function(){
                                 setTimeout(function(){element.animate({color:'#727272'},300);},1000);
                               });

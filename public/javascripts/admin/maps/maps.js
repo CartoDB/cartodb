@@ -76,11 +76,14 @@
       success: function( data ) {
         
         bounds = new google.maps.LatLngBounds();
+        var image = new google.maps.MarkerImage('/images/admin/map/marker.png',new google.maps.Size(33, 33),new google.maps.Point(0,0),new google.maps.Point(12, 33));
         
         if(data != null) {
           for(var i=0;i<data.rows.length;i++){
             var row = data.rows[i];
-            var marker = new google.maps.Marker({position: new google.maps.LatLng(row.lat, row.lon), map: map,title:"Your position!"});
+            
+            
+            var marker = new google.maps.Marker({position: new google.maps.LatLng(row.lat, row.lon), icon: image, map: map,title:"Your position!"});
             markers.push(marker);         
             bounds.extend(new google.maps.LatLng(row.lat, row.lon));
           }

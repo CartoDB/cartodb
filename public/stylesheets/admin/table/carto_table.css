@@ -141,6 +141,26 @@ div.table_position div.general_options ul li a span.dropdown {padding:4px 18px 6
 div.table_position div.general_options ul li a:hover {background-position:0 -21px;}
 div.table_position div.general_options ul li a:hover span {background-position:right -21px;}
 
+
+/*DELETE ROW AND COLUMN*/
+div.table_position div.delete_row {position:absolute; display:none; top:60px; left:15px; width:166px; height:73px; padding:22px 20px 22px 34px; background:url('/images/admin/table/delete_row_bkg.png') no-repeat 0 0; z-index:20;}
+div.table_position div.delete_row p {font:normal 13px Arial; color:#333333; text-shadow:0 1px white;}
+div.table_position div.delete_row a {float:left; margin:20px 0 0 0; font:normal 13px Arial; color:#666666; text-shadow:none;}
+div.table_position div.delete_row a:hover {color:#333333;}
+div.table_position div.delete_row a.button {float:right; height:14px; margin:15px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
+div.table_position div.delete_row a.button:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+
+div.table_position div.delete_column {position:absolute; display:none; top:17px; left:305px; width:166px; height:73px; padding:34px 20px 22px 20px; background:url('/images/admin/table/delete_column_bkg.png') no-repeat 0 0; z-index:50;}
+div.table_position div.delete_column p {font:normal 13px Arial; color:#333333; text-shadow:0 1px white;}
+div.table_position div.delete_column a {float:left; margin:23px 0 0 0; font:normal 13px Arial; color:#666666; text-shadow:none;}
+div.table_position div.delete_column a:hover {color:#333333;}
+div.table_position div.delete_column a.button {float:right; height:14px; margin:18px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
+div.table_position div.delete_column a.button:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+/*END*/
+
+
 /*SQL CONSOLE*/
 div.table_position div.general_options div.sql_console {position:fixed; display:none; bottom:0; left:0; right:0; min-height:158px; padding:36px; border-bottom:3px solid black; z-index:0; background:#282F49; 
   background-image: url('/images/admin/table/console_bkg.jpg'); background-image: url('/images/admin/table/console_bkg.jpg'), -moz-linear-gradient(100% 100% 90deg, #2D3451, #1B1F33); background-image: url('/images/admin/table/console_bkg.jpg'), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2D3451), to(#1B1F33));}
@@ -181,5 +201,5 @@ div.table_position div.error_cell div.inner {float:left; width:197px; height:120
 div.table_position div.error_cell p {float:left; width:150px; margin:52px 0 0 22px; font:normal 13px Arial; color:#666666; text-shadow:0 1px white; text-align:center;}
 
 /*ENF OF THE TABLE*/
-span.end_table {position:absolute; left:0; right:0; bottom:-3px; width:100%; height:2px; background:#F0F1F5; z-index:100; border-top:1px solid #e4e5e9; z-index:1;}
+span.end_table {position:absolute; left:0; right:0; bottom:-2px; width:100%; height:2px; background:#F0F1F5; z-index:100; border-top:1px solid #e4e5e9; z-index:1;}
 

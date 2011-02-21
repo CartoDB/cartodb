@@ -175,6 +175,16 @@ feature "Tables JSON API" do
     json_response = JSON(response.body)
     json_response.should == {"name" => "postal_code", "type" => "varchar", "cartodb_type" => "string"}
 
+
+    put_json "/api/json/tables/#{table.id}/update_schema", {
+                                                              :what => "modify", :column => {
+                                                                  :type => "number", :name => "postal_code"
+                                                              }
+                                                           }
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response.should == {"name" => "postal_code", "type" => "integer", "cartodb_type" => "number"}
+
     put_json "/api/json/tables/#{table.id}/update_schema", {
                                                               :what => "add", :column => {
                                                                   :type => "integerrrr", :name => "no matter what"

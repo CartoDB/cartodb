@@ -283,14 +283,14 @@ class Table < Sequel::Model(:user_tables)
         column_name = (options[:new_name] || options[:name]).sanitize
         raise if CARTODB_COLUMNS.include?(column_name)
         begin
-          user_database.set_column_type name.to_sym, column_name.to_sym, options[:type]
+          user_database.set_column_type name.to_sym, column_name.to_sym, new_type
         rescue => e
           message = e.message.split("\n").first
           if message =~ /cannot be cast to type/
             user_database.transaction do
               random_name = "new_column_#{rand(10)*Time.now.to_i}"
-              user_database.add_column name.to_sym, random_name, options[:type]
-              user_database["UPDATE #{name} SET #{random_name}=#{column_name}::#{options[:type]}"]
+              user_database.add_column name.to_sym, random_name, new_type
+              user_database["UPDATE #{name} SET #{random_name}=#{column_name}::#{new_type}"]
               user_database.drop_column name.to_sym, column_name.to_sym
               user_database.rename_column name.to_sym, random_name, column_name.to_sym
             end

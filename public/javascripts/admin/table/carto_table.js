@@ -135,12 +135,13 @@
                           '<li><a>Order by ASC</a></li>' +
                           '<li><a>Order by DESC</a></li>' +
                         '</ul>' +
-                        '<h5>EDIT</h5>' +
-                        '<ul>' +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<div class="line"></div>':'') +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<h5>EDIT</h5>':'') +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<ul>':'') +
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="rename_column" href="#rename_column">Rename column</a></li>':'') +
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="change_data_type" href="#change_data_type">Change data type</a></li>':'') +
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="delete_column" href="#delete_column">Delete column</a></li>':'') +
-                        '</ul>' +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'</ul>':'') +
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<div class="line"></div>':'') +
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<h5>GEOREFERENCE</h5>':'') +
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<ul>':'') +
@@ -616,6 +617,12 @@
             if (!$(target).parent().parent().parent().hasClass('selected')) {
               $(target).parent().parent().parent().addClass('editing');
             }
+            $('body').click(function(event) {
+              if (!$(event.target).closest('tbody tr td div span').length) {
+                $('table tbody tr').removeClass('editing');
+                $('body').unbind('click');
+              };
+            });
           }
 
           if (!$(target).hasClass('selected')) {
@@ -627,6 +634,7 @@
             $('body').click(function(event) {
               if (!$(event.target).closest('tbody tr td div span').length) {
                 $('table tbody tr td.first div a.options').removeClass('selected');
+                $('table tbody tr').removeClass('editing');
                 $('table tbody tr td.first div span').hide();
                 $('body').unbind('click');
               };
@@ -1161,7 +1169,9 @@
         
         $('body').trigger('click');
         enabled = false;
-
+        
+        $('div.column_window span.select').removeClass('error');
+        $('div.column_window input').removeClass('error');
         $('div.column_window span.select').addClass('disabled');
         $('div.column_window span.select a:eq(0)').text('Retreiving types...').attr('type','');
         $('div.column_window a.column_add').addClass('disabled');
@@ -1231,20 +1241,24 @@
           $('div.column_window input').attr('value','');
         } else {
           if ($('div.column_window input').attr('value')=='' && $('div.column_window a.option').attr('type')=='') {
-            $('div.column_window p.error').text('You have to select a type and write a name.');
+            $('div.column_window span.select,div.column_window input').addClass('error');
+            var position = $('div.column_window input').position().top;
+            $('div.column_window p.error').css('top',position-32+'px');
+            $('div.column_window p.error span').text('Choose a name and type');
           } else {
             if ($('div.column_window input').attr('value')=='') {
-              $('div.column_window p.error').text('You have to write a name.');
+              $('div.column_window input').addClass('error');
+              var position = $('div.column_window input').position().top;
+              $('div.column_window p.error').css('top',position-32+'px');
+              $('div.column_window p.error span').text('Choose a name');
             } else {
-              $('div.column_window p.error').text('You have to select a column type.');
+              var position = $('div.column_window span.select').position().top;
+              $('div.column_window p.error').css('top',position-32+'px');
+              $('div.column_window span.select').addClass('error');
+              $('div.column_window p.error span').text('Choose a type');
             }
           }
-          $('div.column_window p.error').css('opacity',0);
-          $('div.column_window p.error').css('display','block');
-          $('div.column_window p.error').fadeTo(300,1);
-          $('div.column_window p.error').delay(3000).fadeTo(300,0,function(){
-            $('div.column_window p.error').css('display','none');
-          });
+          $('div.column_window p.error').fadeIn().delay(3000).fadeOut();
           
         }
       });

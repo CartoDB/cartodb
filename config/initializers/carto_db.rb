@@ -1,4 +1,7 @@
 module CartoDB
+
+  PUBLIC_DB_USER = 'publicuser'
+
   GOOGLE_SRID = 900913
 
   SRID = 4326

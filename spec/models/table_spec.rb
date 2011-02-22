@@ -82,7 +82,7 @@ describe Table do
 
     10.times do
       user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES
-                        ('#{String.random(10)}',#{rand(100000).to_f / 100.0}, #{rand(100000).to_f / 100.0},'#{String.random(100)}')")
+                        ('#{String.random(10)}',-3.4234213, 150.323,'#{String.random(100)}')")
     end
 
     table.to_json[:total_rows].should == 10
@@ -266,7 +266,7 @@ describe Table do
 
     lambda {
       table.insert_row!({})
-    }.should raise_error(CartoDB::EmtpyAttributes)
+    }.should_not raise_error(CartoDB::EmtpyAttributes)
 
     lambda {
       table.insert_row!({:non_existing => "bad value"})

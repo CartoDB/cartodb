@@ -25,9 +25,21 @@ class User < Sequel::Model
     end
     save
     Thread.new do
-      Rails::Sequel.connection.run("create user #{database_username} password '#{database_password}'")
-      Rails::Sequel.connection.run("create database #{self.database_name} with template = template_postgis owner = #{database_username}")
+      Rails::Sequel.connection.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
+      Rails::Sequel.connection.run("CREATE DATABASE #{self.database_name}
+        WITH TEMPLATE = template_postgis
+        OWNER = postgres
+        ENCODING = 'UTF8'
+        CONNECTION LIMIT=-1")
     end.join
+    in_database(:as => :superuser) do |user_database|
+      user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")
+      user_database.run("REVOKE ALL ON SCHEMA public FROM public")
+      user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
+      user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
+      user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
+      user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+    end
   end
   #### End of Callbacks
 

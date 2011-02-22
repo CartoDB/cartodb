@@ -147,7 +147,7 @@
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<div class="line"></div>':'') +
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<h5>GEOREFERENCE</h5>':'') +
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<ul>':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a href="#" class="open_georeference">Georeference with this</a></li>':'') +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a href="#" class="open_georeference">Georeference with...</a></li>':'') +
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'</ul>':'') +
                         '<div class="line"></div>'+
                         '<h5>CREATE</h5>' +
@@ -402,55 +402,15 @@
     //  CREATE NEW ROW
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addRow: function() {
+      var requestId = createUniqueId();
+      var type = 0;
+      requests_queue.newRequest(requestId,'add_row');
+      
+      
       if ($('div.empty_table').length>0) {
-        var requestId = createUniqueId();
-        requests_queue.newRequest(requestId,'add_row');
-        
-        $.ajax({
-           type: "POST",
-           url: '/api/json/tables/'+table_id+'/rows',
-           success: function(data) {
-             row_id = data.id;
-             $.ajax({
-                method: "GET",
-                url: '/api/json/tables/'+table_id+'/schema',
-                success: function(data) {
-                  requests_queue.responseRequest(requestId,'ok','');
-                  var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row</a></li><li><a href="#">Delete row</a></li></ul>' +
-                                      '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#" class="add_row">Add new row</a></li>' +
-                                      '</ul></span>';
-                  var row = '<tbody style="padding-top:52px"><tr><td class="first"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
-
-                  for (var i = 0; i<data.length; i++) {
-                    var text = '';
-                    if (data[i][0]=="cartodb_id") {
-                      text = row_id;
-                    } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
-                      var date = new Date();
-                      text = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+' '+date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
-                    } else {
-                      text = '';
-                    }
-                    row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+text+'</div></td>';
-                  }
-                  
-                  var start = row.lastIndexOf('"width:');
-                  var end = row.lastIndexOf('px"');
-                  row = row.substring(0,start) + '"width:' + last_cell_size + row.substring(end);
-                  row += '</tr></tbody>';
-                  
-                  $('div.empty_table').remove();
-                  $(table).append(row);
-                  
-                  methods.resizeTable();
-                },
-                error: function(e) {
-                  requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
-                }
-             });
-           }
-        });
+        type = 0;
       } else {
+        type = 1;
         // getDataUrl: '/api/json/tables/'+table_id,
         // resultsPerPage: 50,
         // reuseResults: 100,
@@ -470,6 +430,65 @@
         //}
         
       }
+      
+      
+        
+      $.ajax({
+         type: "POST",
+         url: '/api/json/tables/'+table_id+'/rows',
+         success: function(data) {
+           row_id = data.id;
+           $.ajax({
+              method: "GET",
+              url: '/api/json/tables/'+table_id+'/schema',
+              success: function(data) {
+                requests_queue.responseRequest(requestId,'ok','');
+                var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row</a></li><li><a href="#">Delete row</a></li></ul>' +
+                                    '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#" class="add_row">Add new row</a></li>' +
+                                    '</ul></span>';
+                                    
+                if (type==0) {
+                  var row = '<tbody style="padding-top:52px"><tr><td class="first"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+                } else {
+                  var row = '<tr><td class="first"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+                }
+                                 
+
+                for (var i = 0; i<data.length; i++) {
+                  var text = '';
+                  if (data[i][0]=="cartodb_id") {
+                    text = row_id;
+                  } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
+                    var date = new Date();
+                    text = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+' '+date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+                  } else {
+                    text = '';
+                  }
+                  row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+text+'</div></td>';
+                }
+                
+                var start = row.lastIndexOf('"width:');
+                var end = row.lastIndexOf('px"');
+                row = row.substring(0,start) + '"width:' + last_cell_size + row.substring(end);
+                
+                if (type==0) {
+                  row += '</tr></tbody>';
+                  $(table).append(row);
+                } else {
+                  row += '</tr>';
+                  $(table).children('tbody').append(row);
+                }
+                
+                $('div.empty_table').remove();
+                methods.resizeTable();
+              },
+              error: function(e) {
+                requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
+              }
+           });
+         }
+      });
+      
       
       //Activamos la tabla
       enabled = true;
@@ -698,7 +717,7 @@
       //  Editing selected rows            //
       ///////////////////////////////////////
       $(document).mousedown(function(event){
-        if (!enabled) {
+        if (enabled) {
           var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 

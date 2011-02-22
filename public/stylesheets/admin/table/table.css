@@ -34,10 +34,10 @@ section.subheader span.privacy_window ul li {width:161px; padding:5px 7px 6px; m
 section.subheader span.privacy_window ul li.last {margin:0;}
 section.subheader span.privacy_window ul li a {padding:0 0 0 16px; font:normal 13px Arial; color:black; background:url('/images/admin/icons/selected_privacy.png') no-repeat 0 -28px; text-decoration:none;}
 section.subheader span.privacy_window ul li.selected.public {background:#6FBE6F;}
-section.subheader span.privacy_window ul li.selected.private {background:#C10000;}
+section.subheader span.privacy_window ul li.selected.private {background:#FF2F1E;}
 section.subheader span.privacy_window ul li.selected a {color:white; background-position:0 2px;}
 section.subheader span.privacy_window ul li.public:hover {background:#6FBE6F;}
-section.subheader span.privacy_window ul li.private:hover {background:#C10000;}
+section.subheader span.privacy_window ul li.private:hover {background:#FF2F1E;}
 section.subheader span.privacy_window ul li:hover a {color:white; background-position:0 2px;}
 section.subheader span.tags {float:left; width:100%;}
 section.subheader span.tags p {float:left; width:auto; padding:3px 7px; margin:4px 3px 0 0; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 11px Arial; color:white; text-decoration:none; background:#121621;}

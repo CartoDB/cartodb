@@ -82,29 +82,30 @@
         if(data != null) {
           markers = [];
           for(var i=0;i<data.rows.length;i++){
-            var row = data.rows[i];
-            var marker = new google.maps.Marker({position: new google.maps.LatLng(row.lat, row.lon), icon: image, map: map, draggable:true, raiseOnDrag:true, data:row});
-            google.maps.event.addListener(marker,"dragstart",function(ev){
-              marker.data.init_latlng = ev.latLng;
-    				});
-            google.maps.event.addListener(marker,"dragend",function(ev){
-    					onMoveOccurrence(ev,marker.data);
-    				});
-            markers[row.cartodb_id] = marker;         
-            bounds.extend(new google.maps.LatLng(row.lat, row.lon));
+            if (data.rows[i].lat != null) {
+              var row = data.rows[i];
+              var marker = new google.maps.Marker({position: new google.maps.LatLng(row.lat, row.lon), icon: image, map: map, draggable:true, raiseOnDrag:true, data:row});
+              google.maps.event.addListener(marker,"dragstart",function(ev){
+                marker.data.init_latlng = ev.latLng;
+      				});
+              google.maps.event.addListener(marker,"dragend",function(ev){
+      					onMoveOccurrence(ev,marker.data);
+      				});
+              markers[row.cartodb_id] = marker;         
+              bounds.extend(new google.maps.LatLng(row.lat, row.lon));
+            }
           }
           
           if (data.rows.length<2) {
             map.setCenter(bounds.getCenter());
             map.setZoom(9);
-          } else {
+          } else if (data.rows.length>2) {
             map.fitBounds(bounds);
           }
         }
         hideLoader();
       },
       error: function(req, textStatus, e) {
-        console.log(textStatus);
         hideLoader();
       }
     });
@@ -129,7 +130,7 @@
       $.ajax({
         dataType: 'json',
         type: 'PUT',
-        url: '/api/json/tables/'+table_id+'/update_geometry',
+        url: '/api/json/tables/'+table_id+'/update_geometry/'+occu_data.cartodb_id,
         data: params,
         success: function(data) {
           requests_queue.responseRequest(requestId,'ok','');

@@ -11,3 +11,6 @@
     loadingMessages["georeference_address"] = "Your address column has been geocordered";
     loadingMessages["delete_column"] = "Your column has been deleted";
     loadingMessages["delete_row"] = "This row has been deleted";
+    loadingMessages["add_row"] = "New row added in your table";
+    loadingMessages["change_latlng"] = "Occurrence position changed";
+    

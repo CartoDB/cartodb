@@ -24,11 +24,13 @@
   var first = true;
   var table;
   var loading = false;
+  
   var minPage = 0;
   var maxPage = -1;
-  var defaults;
   var actualPage;
   var total;
+  
+  var defaults;
   var cell_size = 100;
   var last_cell_size = 100;
 
@@ -221,7 +223,7 @@
                             '</span>';
         tbody += '<tr r="'+element.cartodb_id+'"><td class="first" r="'+ element.cartodb_id +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
         $.each(element, function(j,elem){
-          tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element.cartodb_id +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+elem+'</div></td>';
+          tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element.cartodb_id +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((elem==null)?'':elem)+'</div></td>';
         });
         
         var start = tbody.lastIndexOf('"width:');
@@ -400,44 +402,73 @@
     //  CREATE NEW ROW
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addRow: function() {
-      //Tabla desactivada
-      //Ver si es vacía o no
       if ($('div.empty_table').length>0) {
-        $('div.empty_table').remove();
+        var requestId = createUniqueId();
+        requests_queue.newRequest(requestId,'add_row');
+        
         $.ajax({
-           method: "GET",
-           url: '/api/json/tables/'+table_id+'/schema',
+           type: "POST",
+           url: '/api/json/tables/'+table_id+'/rows',
            success: function(data) {
-             var options_list =  '<span>' +
-                                   '<h5>EDIT</h5>' +
-                                   '<ul>' +
-                                     '<li><a href="#">Duplicate row</a></li>' +
-                                     '<li><a href="#">Delete row</a></li>' +
-                                   '</ul>' +
-                                   '<div class="line"></div>'+
-                                   '<h5>CREATE</h5>' +
-                                   '<ul>' +
-                                     '<li class="last"><a href="#" class="add_row">Add new row</a></li>' +
-                                   '</ul>' +
-                                 '</span>';
-             var row = '<tbody style="padding-top:52px"><tr><td class="first"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
-             
-             for (var i = 0; i<data.length; i++) {
-                row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+'  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'You cannot modify this cell':'')+'</div></td>';
-             }
-             var start = row.lastIndexOf('"width:');
-             var end = row.lastIndexOf('px"');
-             row = row.substring(0,start) + '"width:' + last_cell_size + row.substring(end);
-             
-             row += '</tr></tbody>';
-             $(table).append(row);
-             
+             row_id = data.id;
+             $.ajax({
+                method: "GET",
+                url: '/api/json/tables/'+table_id+'/schema',
+                success: function(data) {
+                  requests_queue.responseRequest(requestId,'ok','');
+                  var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row</a></li><li><a href="#">Delete row</a></li></ul>' +
+                                      '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#" class="add_row">Add new row</a></li>' +
+                                      '</ul></span>';
+                  var row = '<tbody style="padding-top:52px"><tr><td class="first"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+
+                  for (var i = 0; i<data.length; i++) {
+                    var text = '';
+                    if (data[i][0]=="cartodb_id") {
+                      text = row_id;
+                    } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
+                      var date = new Date();
+                      text = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+' '+date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+                    } else {
+                      text = '';
+                    }
+                    row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+text+'</div></td>';
+                  }
+                  
+                  var start = row.lastIndexOf('"width:');
+                  var end = row.lastIndexOf('px"');
+                  row = row.substring(0,start) + '"width:' + last_cell_size + row.substring(end);
+                  row += '</tr></tbody>';
+                  
+                  $('div.empty_table').remove();
+                  $(table).append(row);
+                  
+                  methods.resizeTable();
+                },
+                error: function(e) {
+                  requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
+                }
+             });
            }
         });
-        
       } else {
-        //Si no es vacía - ir a la última página, desactivar tabla
-
+        // getDataUrl: '/api/json/tables/'+table_id,
+        // resultsPerPage: 50,
+        // reuseResults: 100,
+        // total: 5000
+        
+        
+        // var minPage = 0;
+        // var maxPage = -1;
+        // var actualPage;
+        // var total;
+        
+        //if () {
+          
+        //} else {
+          //Ir a la última página - Poner mamufas cargando - desaactivar durante el mamufas cargando - meter clase a la tabla para que se quede en la mitad
+          
+        //}
+        
       }
       
       //Activamos la tabla
@@ -546,6 +577,17 @@
     //  BIND EVENTS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     bindEvents: function() {
+      
+      ///////////////////////////////////////
+      //  TABLE REFRESH OR ENABLED         //
+      ///////////////////////////////////////
+      $(document).livequery('enabled',function(event){
+        enabled = !enabled;
+      });
+      $(document).livequery('refresh',function(event){
+        methods.refreshTable();
+      });
+      
 
       ///////////////////////////////////////
       //  DOUBLE CLICK -> Open editor      //
@@ -656,82 +698,85 @@
       //  Editing selected rows            //
       ///////////////////////////////////////
       $(document).mousedown(function(event){
-        var target = event.target || event.srcElement;
-        var targetElement = target.nodeName.toLowerCase();
-
-        if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
-          $('table tbody tr td.first div span').hide();
-          $('table tbody tr td.first div a.options').removeClass('selected');
-          $('tbody tr').removeClass('editing');
-          $('tbody tr').removeClass('selecting_first').removeClass('border');
-          $('tbody tr').removeClass('selecting');
-          $('tbody tr').removeClass('selecting_last');
-          $('tbody tr').removeClass('selected');
-          var first_row = $(target).parent().parent();
-          first_row.addClass('selecting_first');
-          var initial_x = first_row.position().top;
-
-          if (event.preventDefault) {
-            event.preventDefault();
-            event.stopPropagation();
-          } else {
-            event.stopPropagation();
-            event.returnValue = false;
-          }
-        }
-
-        $(document).mousemove(function(event){
+        if (!enabled) {
           var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
-          if (targetElement == "div" && $(target).parent().is('td')) {
-            var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-            var current_row = $(target).parent().parent();
-            var current_x = current_row.position().top;
-            $(table).children('tbody').children('tr').removeClass('selecting');
-            current_row.addClass('selecting');
-            var find = false;
-            var cursor = first_row;
+          if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
+            $('table tbody tr td.first div span').hide();
+            $('table tbody tr td.first div a.options').removeClass('selected');
+            $('tbody tr').removeClass('editing');
+            $('tbody tr').removeClass('selecting_first').removeClass('border');
+            $('tbody tr').removeClass('selecting');
+            $('tbody tr').removeClass('selecting_last');
+            $('tbody tr').removeClass('selected');
+            var first_row = $(target).parent().parent();
+            first_row.addClass('selecting_first');
+            var initial_x = first_row.position().top;
 
-            while (!find) {
-              if (initial_x<current_x) {
-                first_row.removeClass('selecting_last').addClass('selecting_first');
-                if (cursor.attr('r')==current_row.attr('r')) {
-                  cursor.addClass('selecting');
-                  cursor.next().removeClass('selecting');
-                  find=true;
-                } else {
-                  cursor.next().removeClass('selecting');
-                  cursor.addClass('selecting');
-                  cursor = cursor.next();
-                }
-              } else if (initial_x>current_x) {
-                first_row.removeClass('selecting_first').addClass('selecting_last');
-                if (cursor.attr('r')==current_row.attr('r')) {
-                  cursor.addClass('selecting');
-                  cursor.prev().removeClass('selecting');
-                  find=true;
-                } else {
-                  cursor.prev().removeClass('selecting');
-                  cursor.addClass('selecting');
-                  cursor = cursor.prev();
-                }
-              } else {
-                find=true;
-                return false;
-              }
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
             }
+          }
 
-          } else {
-          }
-          if (event.preventDefault) {
-            event.preventDefault();
-            event.stopPropagation();
-          } else {
-            event.stopPropagation();
-            event.returnValue = false;
-          }
-        });
+          $(document).mousemove(function(event){
+            var target = event.target || event.srcElement;
+            var targetElement = target.nodeName.toLowerCase();
+
+            if (targetElement == "div" && $(target).parent().is('td')) {
+              var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+              var current_row = $(target).parent().parent();
+              var current_x = current_row.position().top;
+              $(table).children('tbody').children('tr').removeClass('selecting');
+              current_row.addClass('selecting');
+              var find = false;
+              var cursor = first_row;
+
+              while (!find) {
+                if (initial_x<current_x) {
+                  first_row.removeClass('selecting_last').addClass('selecting_first');
+                  if (cursor.attr('r')==current_row.attr('r')) {
+                    cursor.addClass('selecting');
+                    cursor.next().removeClass('selecting');
+                    find=true;
+                  } else {
+                    cursor.next().removeClass('selecting');
+                    cursor.addClass('selecting');
+                    cursor = cursor.next();
+                  }
+                } else if (initial_x>current_x) {
+                  first_row.removeClass('selecting_first').addClass('selecting_last');
+                  if (cursor.attr('r')==current_row.attr('r')) {
+                    cursor.addClass('selecting');
+                    cursor.prev().removeClass('selecting');
+                    find=true;
+                  } else {
+                    cursor.prev().removeClass('selecting');
+                    cursor.addClass('selecting');
+                    cursor = cursor.prev();
+                  }
+                } else {
+                  find=true;
+                  return false;
+                }
+              }
+
+            } else {
+            }
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
+            }
+          });
+        }
+
       });
       $(document).mouseup(function(event){
         var target = event.target || event.srcElement;

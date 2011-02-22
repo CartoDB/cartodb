@@ -241,10 +241,13 @@
         if ($(this).text()=="Table") {
           $(this).parent().addClass('selected')
           $('div.table_position').show();
+          $(document).trigger('refresh');
+          $(document).trigger('enabled');
           hideMap();
         } else {
           $(this).parent().addClass('selected')
           $('div.table_position').hide();
+          $(document).trigger('enabled');
           showMap();
         }
       } 

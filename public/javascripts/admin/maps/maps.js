@@ -118,8 +118,8 @@
     geocoder.geocode({'latLng': event.latLng}, function(results, status) {
       
       var params = {};
-      params.lat = '';
-      params.lon = '';
+      params.lat = event.latLng.lat();
+      params.lon = event.latLng.lng();
       params.address = '';
       
       if (status == google.maps.GeocoderStatus.OK) {

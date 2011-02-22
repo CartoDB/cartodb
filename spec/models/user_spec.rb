@@ -138,23 +138,6 @@ describe User do
     api_key.api_key.should == key
   end
 
-  it "should not be able to update primary key value" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.name = 'antantaric species'
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-    table.save
-
-    query_result = user.run_query("select * from antantaric_species order by cartodb_id asc limit 1")
-    query_result[:rows][0][:cartodb_id].should == 1
-
-    user.run_query("update antantaric_species set cartodb_id = 666 where cartodb_id = 1")
-
-    query_result = user.run_query("select * from antantaric_species order by cartodb_id asc limit 1")
-    query_result[:rows][0][:cartodb_id].should == 1
-  end
-
   it "should only be accessed by the public user if its status is public" do
     user = create_user
     table = new_table

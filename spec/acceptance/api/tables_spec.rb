@@ -712,4 +712,56 @@ feature "Tables JSON API" do
     table.rows_counted.should == 3
   end
 
+  scenario "Update the geometry of a row in a table with latitud and longitude geometry" do
+    user = create_user
+    table = create_table :user_id => user.id
+
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    end
+
+    authenticate_api user
+
+    row = table.to_json[:rows][0]
+    old_lat = row[:latitude]
+    old_lon = row[:longitude]
+
+    new_latitude  = Float.random_latitude
+    new_longitude = Float.random_longitude
+
+    put_json "/api/json/tables/#{table.id}/update_geometry/1", { :latitude => new_latitude, :longitude => new_longitude, :address => "bla bla bla" }
+    response.status.should == 200
+
+    table.reload
+    row = table.to_json[:rows][0]
+    row[:latitude].should  == new_latitude
+    row[:longitude].should == new_longitude
+    # query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
+    # query_result[:rows][0][:lon].to_s.should match /^#{new_longitude}/
+    # query_result[:rows][0][:lat].to_s.should match /^#{new_latitude}/
+  end
+
+  scenario "Update the geometry of a row in a table with address geometry" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.save
+
+    authenticate_api user
+
+    new_latitude  = Float.random_latitude
+    new_longitude = Float.random_longitude
+
+    put_json "/api/json/tables/#{table.id}/update_geometry", { :latitude => new_latitude, :longitude => new_longitude, :address => "Hortaleza 48, Madrid" }
+    response.status.should == 200
+
+    table.reload
+    row = table.to_json[:rows][0]
+    row[:address].should == "Hortaleza 48, Madrid"
+
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
+    query_result[:rows][0][:lon].to_s.should match /^#{new_longitude}/
+    query_result[:rows][0][:lat].to_s.should match /^#{new_latitude}/
+  end
+
 end

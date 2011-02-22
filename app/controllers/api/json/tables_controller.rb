@@ -381,6 +381,12 @@ class Api::Json::TablesController < ApplicationController
     end
   end
 
+  def update_geometry
+    @table.update_geometry!(params[:row_id], params.slice(:latitude, :longitude, :address))
+    render :json => ''.to_json,
+           :callback => params[:callback], :status => 200
+  end
+
   protected
 
   def load_table

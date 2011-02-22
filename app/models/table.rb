@@ -407,6 +407,10 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  def update_geometry!(row_id, attributes)
+    update_row!(row_id, {lat_column => attributes[:latitude], lon_column => attributes[:longitude]})
+  end
+
   private
 
   def update_updated_at

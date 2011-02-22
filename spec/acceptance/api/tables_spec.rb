@@ -264,12 +264,6 @@ feature "Tables JSON API" do
     table.reload
     row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
     row[:description].should == "Description 123"
-
-    put_json "/api/json/tables/#{table.id}/rows/#{row[:cartodb_id]}", {:cartodb_id => "666"}
-    response.status.should == 200
-    table.reload
-    row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
-    row[:cartodb_id].should == 1
   end
 
   scenario "Update the value from a ceil with an invalid value" do

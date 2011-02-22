@@ -35,37 +35,58 @@ describe User do
     end
   end
 
-  pending "should create a dabase user that only can read it's own database" do
+  it "should create a dabase user that only can read it's own database" do
     user1 = create_user
     user2 = create_user
 
-    ::Sequel.connect(
+    connection = ::Sequel.connect(
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => user1.database_name, :logger => ::Rails.logger,
         'username' => user1.database_username, 'password' => user1.database_password
       )
-    ).test_connection.should == true
+    )
+    connection.test_connection.should == true
+    connection.disconnect
 
-    ::Sequel.connect(
+    connection = nil
+    connection = ::Sequel.connect(
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => user2.database_name, :logger => ::Rails.logger,
         'username' => user1.database_username, 'password' => user1.database_password
       )
-    ).test_connection.should_not == true
+    )
+    begin
+      connection.test_connection
+      true.should_not be_true
+    rescue
+      true.should be_true
+    ensure
+      connection.disconnect
+    end
 
-    ::Sequel.connect(
+    connection = ::Sequel.connect(
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => user2.database_name, :logger => ::Rails.logger,
         'username' => user2.database_username, 'password' => user2.database_password
       )
-    ).test_connection.should == true
+    )
+    connection.test_connection.should == true
+    connection.disconnect
 
-    ::Sequel.connect(
+    connection = ::Sequel.connect(
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => user1.database_name, :logger => ::Rails.logger,
         'username' => user2.database_username, 'password' => user2.database_password
       )
-    ).test_connection.should_not == true
+    )
+    begin
+      connection.test_connection
+      true.should_not be_true
+    rescue
+      true.should be_true
+    ensure
+      connection.disconnect
+    end
   end
 
   it "should run valid queries against his database" do

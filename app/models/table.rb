@@ -67,14 +67,14 @@ class Table < Sequel::Model(:user_tables)
         if !user_database.table_exists?(self.name.to_sym)
           if force_schema.blank?
             user_database.create_table self.name.to_sym do
-              primary_key :cartodb_id
+              column :cartodb_id, "SERIAL PRIMARY KEY"
               String :name
               Float :latitude
               Float :longitude
               String :description, :text => true
-              DateTime :created_at, :default => "now()"
-              DateTime :updated_at, :default => "now()"
-              column :the_geom, 'geometry'
+              DateTime :created_at, :default => "NOW()"
+              DateTime :updated_at, :default => "NOW()"
+              column :the_geom, 'GEOMETRY'
             end
           else
             sanitized_force_schema = force_schema.split(',').map do |column|
@@ -227,9 +227,7 @@ class Table < Sequel::Model(:user_tables)
           raise e
         end
       end
-      unless address_column.blank?
-        geocode_address_column!(attributes[address_column])
-      end
+      geocode!(attributes)
     end
     return primary_key
   end
@@ -255,9 +253,7 @@ class Table < Sequel::Model(:user_tables)
             raise e
           end
         end
-        if !address_column.blank? && attributes.keys.include?(address_column)
-          geocode_address_column!(attributes[address_column])
-        end
+        geocode!(attributes)
       end
     end
     return true
@@ -371,35 +367,11 @@ class Table < Sequel::Model(:user_tables)
 
   def set_lan_lon_columns!(lat_column, lon_column)
     if lat_column && lon_column
-      owner.in_database(:as => :superuser) do |user_database|
+      owner.in_database do |user_database|
         user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-        user_database.run(<<-TRIGGER
-          -- Sets trigger to update the_geom automagically
-          DROP TRIGGER IF EXISTS update_geometry_trigger ON #{self.name};
-
-          CREATE OR REPLACE FUNCTION update_geometry() RETURNS TRIGGER AS $update_geometry_trigger$
-            BEGIN
-                 NEW.the_geom := ST_Transform(ST_SetSRID(ST_Makepoint(NEW.#{lon_column}, NEW.#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID});
-                 RETURN NEW;
-            END;
-          $update_geometry_trigger$ LANGUAGE plpgsql;
-
-          CREATE TRIGGER update_geometry_trigger
-          BEFORE INSERT OR UPDATE ON #{self.name}
-              FOR EACH ROW EXECUTE PROCEDURE update_geometry();
-
-TRIGGER
-        )
       end
       self.geometry_columns = "#{lat_column}|#{lon_column}"
     else
-      owner.in_database(:as => :superuser) do |user_database|
-        user_database.run(<<-TRIGGER
-          -- Sets trigger to update the_geom automagically
-          DROP TRIGGER IF EXISTS update_geometry_trigger ON #{self.name};
-TRIGGER
-        )
-      end
       self.geometry_columns = nil
     end
     save_changes
@@ -617,19 +589,6 @@ TRIGGER
     end
   end
 
-  def geocode_address_column!(address)
-    return if address_column.blank?
-    url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(address)}&sensor=false")
-    req = Net::HTTP::Get.new(url.request_uri)
-    res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-    json = JSON.parse(res.body)
-    if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
-      owner.in_database do |user_database|
-        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-      end
-    end
-  end
-
   def geocode_all_address_columns!
     owner.in_database do |user_database|
       result = owner.run_query("select cartodb_id, #{address_column} as address_column FROM #{self.name} order by cartodb_id")
@@ -655,6 +614,25 @@ TRIGGER
       CartoDB::TYPES[cartodb_column_type][CartoDB::TYPES.keys.index(cartodb_column_type) + 1]
     else
       nil
+    end
+  end
+
+  def geocode!(attributes)
+    if !address_column.blank? && attributes.keys.include?(address_column)
+      url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(attributes[address_column])}&sensor=false")
+      req = Net::HTTP::Get.new(url.request_uri)
+      res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
+      json = JSON.parse(res.body)
+      if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
+        owner.in_database do |user_database|
+          user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
+        end
+      end
+    end
+    if !lat_column.blank? && !lon_column.blank?
+      owner.in_database do |user_database|
+        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
+      end
     end
   end
 

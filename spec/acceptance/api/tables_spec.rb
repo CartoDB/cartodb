@@ -708,6 +708,14 @@ feature "Tables JSON API" do
     json_response.should == [
       ["cartodb_id", "number"], ["name", "string"], ["age", "number"], ["created_at", "date"], ["updated_at", "date"]
     ]
+
+    post_json "/api/json/tables/#{table_id}/rows"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['id'].should == 3
+
+    table = Table[table_id]
+    table.rows_counted.should == 3
   end
 
 end

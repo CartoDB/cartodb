@@ -196,26 +196,22 @@ class Table < Sequel::Model(:user_tables)
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
-      unless attributes.empty?
-        begin
-          primary_key = user_database[name.to_sym].insert(attributes)
-        rescue Sequel::DatabaseError => e
-          # If the type don't match the schema of the table is modified for the next valid type
-          message = e.message.split("\n")[0]
-          invalid_value = message.match(/"([^"]+)"$/)[1]
-          invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
-          if new_column_type = get_new_column_type(invalid_column, invalid_value)
-            user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
-            retry
-          else
-            raise e
-          end
+      begin
+        primary_key = user_database[name.to_sym].insert(attributes)
+      rescue Sequel::DatabaseError => e
+        # If the type don't match the schema of the table is modified for the next valid type
+        message = e.message.split("\n")[0]
+        invalid_value = message.match(/"([^"]+)"$/)[1]
+        invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
+        if new_column_type = get_new_column_type(invalid_column, invalid_value)
+          user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
+          retry
+        else
+          raise e
         end
-        unless address_column.blank?
-          geocode_address_column!(attributes[address_column])
-        end
-      else
-        raise CartoDB::EmtpyAttributes.new("Empty row")
+      end
+      unless address_column.blank?
+        geocode_address_column!(attributes[address_column])
       end
     end
     return primary_key

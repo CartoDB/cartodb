@@ -729,22 +729,24 @@ feature "Tables JSON API" do
     new_latitude  = Float.random_latitude
     new_longitude = Float.random_longitude
 
-    put_json "/api/json/tables/#{table.id}/update_geometry/1", { :latitude => new_latitude, :longitude => new_longitude, :address => "bla bla bla" }
+    put_json "/api/json/tables/#{table.id}/update_geometry/1", { :lat => new_latitude, :lon => new_longitude, :address => "bla bla bla" }
     response.status.should == 200
 
     table.reload
     row = table.to_json[:rows][0]
     row[:latitude].should  == new_latitude
     row[:longitude].should == new_longitude
-    # query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
-    # query_result[:rows][0][:lon].to_s.should match /^#{new_longitude}/
-    # query_result[:rows][0][:lat].to_s.should match /^#{new_latitude}/
+
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")
+    query_result[:rows][0][:lon].to_s.should match /^#{new_longitude}/
+    query_result[:rows][0][:lat].to_s.should match /^#{new_latitude}/
   end
 
   scenario "Update the geometry of a row in a table with address geometry" do
     user = create_user
     table = new_table
     table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
     authenticate_api user
@@ -752,14 +754,14 @@ feature "Tables JSON API" do
     new_latitude  = Float.random_latitude
     new_longitude = Float.random_longitude
 
-    put_json "/api/json/tables/#{table.id}/update_geometry", { :latitude => new_latitude, :longitude => new_longitude, :address => "Hortaleza 48, Madrid" }
+    put_json "/api/json/tables/#{table.id}/update_geometry/1", { :lat => new_latitude, :lon => new_longitude, :address => "Hortaleza 48, Madrid" }
     response.status.should == 200
 
     table.reload
     row = table.to_json[:rows][0]
-    row[:address].should == "Hortaleza 48, Madrid"
+    row["address"].should == "Hortaleza 48, Madrid"
 
-    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")
     query_result[:rows][0][:lon].to_s.should match /^#{new_longitude}/
     query_result[:rows][0][:lat].to_s.should match /^#{new_latitude}/
   end

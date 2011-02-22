@@ -155,4 +155,26 @@ describe User do
     query_result[:rows][0][:cartodb_id].should == 1
   end
 
+  it "should only be accessed by the public user if its status is public" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, age integer"
+    table.save
+    table.should be_public
+
+    user.in_database(:as => :public_user) do |user_database|
+      user_database.run("select * from #{table.name}")
+    end
+
+    table.toggle_privacy!
+    table.reload
+
+    lambda {
+      user.in_database(:as => :public_user) do |user_database|
+        user_database.run("select * from #{table.name}")
+      end
+    }.should raise_error(Sequel::DatabaseError)
+  end
+
 end

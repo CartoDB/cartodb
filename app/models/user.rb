@@ -85,10 +85,17 @@ class User < Sequel::Model
   end
 
   def in_database(options = {}, &block)
-    configuration = if options[:as] && options[:as] == :superuser
-      ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => self.database_name, :logger => ::Rails.logger
-      )
+    configuration = if options[:as]
+      if options[:as] == :superuser
+        ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          'database' => self.database_name, :logger => ::Rails.logger
+        )
+      elsif options[:as] == :public_user
+        ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          'database' => self.database_name, :logger => ::Rails.logger,
+          'username' => CartoDB::PUBLIC_DB_USER, 'password' => ''
+        )
+      end
     else
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         'database' => self.database_name, :logger => ::Rails.logger,

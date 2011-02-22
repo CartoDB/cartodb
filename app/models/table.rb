@@ -141,6 +141,12 @@ class Table < Sequel::Model(:user_tables)
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     set_lan_lon_columns!(:latitude, :longitude) if schema.flatten.include?(:latitude) && schema.flatten.include?(:longitude)
+
+    unless private?
+      owner.in_database do |user_database|
+        user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
+      end
+    end
   end
 
   def after_destroy
@@ -174,8 +180,19 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def toggle_privacy!
-    private? ? set(:privacy => PUBLIC) : set(:privacy => PRIVATE)
-    save_changes
+    if private?
+      set(:privacy => PUBLIC)
+      save_changes
+      owner.in_database do |user_database|
+        user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
+      end
+    else
+      set(:privacy => PRIVATE)
+      save_changes
+      owner.in_database do |user_database|
+        user_database.run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
+      end
+    end
   end
 
   def pending_to_save?
@@ -583,20 +600,6 @@ TRIGGER
   def set_triggers
     owner.in_database(:as => :superuser) do |user_database|
       user_database.run(<<-TRIGGER
-        -- Sets trigger to protect primary key cartodb_id to be updated
-        DROP TRIGGER IF EXISTS protect_data_trigger ON #{self.name};
-
-        CREATE OR REPLACE FUNCTION protect_data() RETURNS TRIGGER AS $protect_data_trigger$
-          BEGIN
-               NEW.cartodb_id := OLD.cartodb_id;
-               RETURN NEW;
-          END;
-        $protect_data_trigger$ LANGUAGE plpgsql;
-
-        CREATE TRIGGER protect_data_trigger
-        BEFORE UPDATE ON #{self.name}
-            FOR EACH ROW EXECUTE PROCEDURE protect_data();
-
         DROP TRIGGER IF EXISTS update_updated_at_trigger ON #{self.name};
 
         CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at_trigger$

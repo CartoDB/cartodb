@@ -690,4 +690,30 @@ describe Table do
     table.schema(:cartodb_types => true).should include([:age, "number"])
   end
 
+  it "should allow to update the geometry of a row" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    end
+
+    table.set_address_column!(:address)
+
+    new_latitude  = 3.769
+    new_longitude = 40.321
+
+    table.update_geometry!(1, { :lat => new_latitude, :lon => new_longitude, :address => "Hortaleza 48, Madrid" })
+    table.reload
+    row = table.to_json[:rows][0]
+    row[:address].should == "Hortaleza 48, Madrid"
+
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")
+    query_result[:rows][0][:lon].to_s.should match /^40\.32/
+    query_result[:rows][0][:lat].to_s.should match /^3\.76/
+  end
+
 end

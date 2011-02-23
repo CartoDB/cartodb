@@ -1,0 +1,13 @@
+development:
+  adapter: postgres
+  encoding: unicode
+  database: carto_db_development
+  username: postgres
+  password:
+
+test:
+  adapter: postgres
+  encoding: unicode
+  database: carto_db_test
+  username: postgres
+  password:

@@ -27,7 +27,7 @@ set(:deploy_to){
   "/home/ubuntu/www/#{stage}.#{application}.com"
 }
 
-after  "deploy:update_code", :run_migrations, :symlinks, :asset_packages, :set_staging_flag
+after  "deploy:update_code", :symlinks, :run_migrations, :asset_packages, :set_staging_flag
 
 desc "Restart Application"
 deploy.task :restart, :roles => [:app] do

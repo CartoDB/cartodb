@@ -12,10 +12,7 @@
       		
       		//Create the loader element
           $('section.subheader').append('<div class="performing_op"><p class="loading">Loading...</p></div>');
-          
           this.loader = $('section.subheader div.performing_op');
-      		
-      		
       	}
 
       	/*========================================================================================================================*/
@@ -30,6 +27,7 @@
       	    if (this.loader.html()=="") {
       	      this.loader.append('<p class="loading">Loading...</p>');
       	    }
+      	    this.loader.children('p').show();
       	    this.loader.css('width','100px');
             this.loader.css('backgroundColor','#FFEAA4');
             this.loader.css('margin','0 0 0 -50px');
@@ -142,22 +140,4 @@
       	  this.loader.children('p:eq(1)').css("marginLeft",'-'+((new_element_width+24)/2)+'px');
       	  this.loader.children('p:eq(1)').animate({top:'0',opacity:1},700);
       	}
-
-
-
-      	
-      	
-        function test1() {
-          requests_queue.newRequest("a", "tags");
-          requests_queue.newRequest("b", "name");
-          requests_queue.newRequest("c", "privacy");
-          requests_queue.newRequest("d", "update_cell");
-        }
-        
-        function test2() {
-          requests_queue.responseRequest('b','ok');
-          setTimeout(function(){requests_queue.responseRequest('a','error');},10000)
-          requests_queue.responseRequest('d','ok');
-          requests_queue.responseRequest('c','error');
-        }
         

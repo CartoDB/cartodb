@@ -162,7 +162,10 @@
 
   function clearMap() {
     for(var marker in markers){
-        markers[marker].setMap(null);
+      markers[marker].setMap(null);
+      google.maps.event.clearListeners(markers[marker],'dragend');
+      google.maps.event.clearListeners(markers[marker],'dragstart');
+      delete markers[marker];
     }
-    markers = new Array();
+    markers = [];
   }

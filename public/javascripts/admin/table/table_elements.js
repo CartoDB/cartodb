@@ -239,15 +239,17 @@
       if (!$(this).parent().hasClass('selected')) {
         $('section.subheader ul.tab_menu li').removeClass('selected');
         if ($(this).text()=="Table") {
-          $(this).parent().addClass('selected')
+          $(this).parent().addClass('selected');
+          $(document).trigger('click');
+          $('body').trigger('refresh');
+          $('body').trigger('enabled',[true]);
           $('div.table_position').show();
-          $(document).trigger('refresh');
-          $(document).trigger('enabled');
           hideMap();
         } else {
           $(this).parent().addClass('selected')
           $('div.table_position').hide();
-          $(document).trigger('enabled');
+          $(document).trigger('click');
+          $('body').trigger('enabled',[false]);
           showMap();
         }
       } 

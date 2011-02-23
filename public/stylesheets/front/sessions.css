@@ -14,6 +14,7 @@ section form input.error:focus {background-position:0 -72px;}
 section form input[type="submit"].login {float:right; width:82px; height:36px; padding:0; margin:21px 0 0 0; background:url('/images/front/home/login_submit.png') no-repeat 0 0; font:bold 15px Arial; color:#305233; text-shadow:0 1px #A2D797;}
 section form input[type="submit"].create {float:right; width:173px; height:36px; padding:0; margin:21px 0 0 0; background:url('/images/front/home/create_submit.png') no-repeat 0 0; font:bold 15px Arial; color:#305233; text-shadow:0 1px #A2D797;}
 section form input[type="submit"]:hover {background-position:0 -36px; cursor:pointer;}
+section form input:-webkit-autofill {background-color:white!important; background-image: none;}
 section form div.error_content {position:absolute; z-index:10; right:22px; top:112px;}
 section form div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
 section form div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}

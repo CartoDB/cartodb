@@ -416,19 +416,15 @@
         // reuseResults: 100,
         // total: 5000
         
-        
         // var minPage = 0;
         // var maxPage = -1;
         // var actualPage;
         // var total;
         
         //if () {
-          
         //} else {
           //Ir a la última página - Poner mamufas cargando - desaactivar durante el mamufas cargando - meter clase a la tabla para que se quede en la mitad
-          
         //}
-        
       }
       
       
@@ -448,9 +444,9 @@
                                     '</ul></span>';
                                     
                 if (type==0) {
-                  var row = '<tbody style="padding-top:52px"><tr><td class="first"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+                  var row = '<tbody style="padding-top:52px"><tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
                 } else {
-                  var row = '<tr><td class="first"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+                  var row = '<tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
                 }
                                  
 
@@ -600,10 +596,10 @@
       ///////////////////////////////////////
       //  TABLE REFRESH OR ENABLED         //
       ///////////////////////////////////////
-      $(document).livequery('enabled',function(event){
-        enabled = !enabled;
+      $('body').livequery('enabled',function(event,status){
+        enabled = status;
       });
-      $(document).livequery('refresh',function(event){
+      $('body').livequery('refresh',function(event){
         methods.refreshTable();
       });
       
@@ -612,105 +608,108 @@
       //  DOUBLE CLICK -> Open editor      //
       ///////////////////////////////////////
       $(document).dblclick(function(event){
-        var target = event.target || event.srcElement;
-        var targetElement = target.nodeName.toLowerCase();
+        if (enabled) {
+          var target = event.target || event.srcElement;
+          var targetElement = target.nodeName.toLowerCase();
 
-        if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" &&
-          $(target).parent().attr('c')!="updated_at" && $(target).parent().attr('c')!="created_at") {
+          if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" &&
+            $(target).parent().attr('c')!="updated_at" && $(target).parent().attr('c')!="created_at") {
 
-          var target_position = $(target).parent().offset();
-          var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-          $('tbody tr[r="'+data.row+'"]').addClass('editing');
+            var target_position = $(target).parent().offset();
+            var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+            $('tbody tr[r="'+data.row+'"]').addClass('editing');
 
-          //Check if frist row or last column
-          if ($(target).parent().offset().top<230) {$('div.edit_cell').css('top',target_position.top-150+'px');} else {$('div.edit_cell').css('top',target_position.top-192+'px');}
-          if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {$('div.edit_cell').css('left',target_position.left-215+($(target).width()/2)+'px');} else {$('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');}
+            //Check if frist row or last column
+            if ($(target).parent().offset().top<230) {$('div.edit_cell').css('top',target_position.top-150+'px');} else {$('div.edit_cell').css('top',target_position.top-192+'px');}
+            if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {$('div.edit_cell').css('left',target_position.left-215+($(target).width()/2)+'px');} else {$('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');}
 
-          $('div.edit_cell textarea').text(data.value);
-          $('div.edit_cell a.save').attr('r',data.row);
-          $('div.edit_cell a.save').attr('c',data.column);
-          $('div.edit_cell').show();
+            $('div.edit_cell textarea').text(data.value);
+            $('div.edit_cell a.save').attr('r',data.row);
+            $('div.edit_cell a.save').attr('c',data.column);
+            $('div.edit_cell').show();
 
-          if (event.preventDefault) {
-            event.preventDefault();
-            event.stopPropagation();
-          } else {
-            event.stopPropagation();
-            event.returnValue = false;
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
+            }
           }
         }
-      });
 
+      });
 
 
       ///////////////////////////////////////
       //  SIMPLE CLICK -> Open editor      //
       ///////////////////////////////////////
       $(document).click(function(event){
-        var target = event.target || event.srcElement;
-        var targetElement = target.nodeName.toLowerCase();
+        if (enabled) {
+          var target = event.target || event.srcElement;
+          var targetElement = target.nodeName.toLowerCase();
 
-        //Clicking in first column element + Key
-        if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
-          $('tbody tr').removeClass('editing');
-          $('tbody tr').removeClass('selecting_first');
-          $('tbody tr').removeClass('selecting');
-          $('tbody tr').removeClass('selecting_last');
-          $(target).parent().parent().removeClass('selecting_first').removeClass('border').addClass('selected');
-
-          if (event.preventDefault) {
-            event.preventDefault();
-            event.stopPropagation();
-          } else {
-            event.stopPropagation();
-            event.returnValue = false;
-          }
-        }
-
-        //Clicking in first column element
-        if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
-          if (!$(target).parent().parent().parent().hasClass('selecting_first')) {
+          //Clicking in first column element + Key
+          if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
             $('tbody tr').removeClass('editing');
             $('tbody tr').removeClass('selecting_first');
             $('tbody tr').removeClass('selecting');
             $('tbody tr').removeClass('selecting_last');
-            //$('tbody tr').removeClass('selected');
-            if (!$(target).parent().parent().parent().hasClass('selected')) {
-              $(target).parent().parent().parent().addClass('editing');
+            $(target).parent().parent().removeClass('selecting_first').removeClass('border').addClass('selected');
+
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
             }
-            $('body').click(function(event) {
-              if (!$(event.target).closest('tbody tr td div span').length) {
-                $('table tbody tr').removeClass('editing');
-                $('body').unbind('click');
-              };
-            });
           }
 
-          if (!$(target).hasClass('selected')) {
-            $('tbody tr td.first div span').hide();
-            $('tbody tr td.first div a.options').removeClass('selected');
-            $(target).parent().children('span').show();
-            $(target).addClass('selected');
+          //Clicking in first column element
+          if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
+            if (!$(target).parent().parent().parent().hasClass('selecting_first')) {
+              $('tbody tr').removeClass('editing');
+              $('tbody tr').removeClass('selecting_first');
+              $('tbody tr').removeClass('selecting');
+              $('tbody tr').removeClass('selecting_last');
+              //$('tbody tr').removeClass('selected');
+              if (!$(target).parent().parent().parent().hasClass('selected')) {
+                $(target).parent().parent().parent().addClass('editing');
+              }
+              $('body').click(function(event) {
+                if (!$(event.target).closest('tbody tr td div span').length) {
+                  $('table tbody tr').removeClass('editing');
+                  $('body').unbind('click');
+                };
+              });
+            }
 
-            $('body').click(function(event) {
-              if (!$(event.target).closest('tbody tr td div span').length) {
-                $('table tbody tr td.first div a.options').removeClass('selected');
-                $('table tbody tr').removeClass('editing');
-                $('table tbody tr td.first div span').hide();
-                $('body').unbind('click');
-              };
-            });
+            if (!$(target).hasClass('selected')) {
+              $('tbody tr td.first div span').hide();
+              $('tbody tr td.first div a.options').removeClass('selected');
+              $(target).parent().children('span').show();
+              $(target).addClass('selected');
+
+              $('body').click(function(event) {
+                if (!$(event.target).closest('tbody tr td div span').length) {
+                  $('table tbody tr td.first div a.options').removeClass('selected');
+                  $('table tbody tr').removeClass('editing');
+                  $('table tbody tr td.first div span').hide();
+                  $('body').unbind('click');
+                };
+              });
+            }
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
+            }
           }
-          if (event.preventDefault) {
-            event.preventDefault();
-            event.stopPropagation();
-          } else {
-            event.stopPropagation();
-            event.returnValue = false;
-          }
-        }
+        } 
       });
-
 
 
       ///////////////////////////////////////
@@ -795,42 +794,42 @@
             }
           });
         }
-
       });
       $(document).mouseup(function(event){
-        var target = event.target || event.srcElement;
-        var targetElement = target.nodeName.toLowerCase();
+        if (enabled) {
+          var target = event.target || event.srcElement;
+          var targetElement = target.nodeName.toLowerCase();
 
-        if (targetElement == "div" && $(target).parent().is('td')) {
-          var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-          if ($('tbody tr').hasClass('selecting_last')) {
-            $('tbody tr[r="'+data.row+'"]').addClass('selecting_first');
-            $('tbody tr[r="'+data.row+'"]').addClass('border');
-            $('tbody tr.selecting_last').addClass('border');
-          } else {
-            $('tbody tr[r="'+data.row+'"]').addClass('selecting_last').addClass('border');
-            $('tbody tr.selecting_first').addClass('border');
-          }
+          if (targetElement == "div" && $(target).parent().is('td')) {
+            var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+            if ($('tbody tr').hasClass('selecting_last')) {
+              $('tbody tr[r="'+data.row+'"]').addClass('selecting_first');
+              $('tbody tr[r="'+data.row+'"]').addClass('border');
+              $('tbody tr.selecting_last').addClass('border');
+            } else {
+              $('tbody tr[r="'+data.row+'"]').addClass('selecting_last').addClass('border');
+              $('tbody tr.selecting_first').addClass('border');
+            }
 
-          if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_last') && $('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
-            $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
-            $('tbody tr[r="'+data.row+'"]').removeClass('selecting_last');
-            $('tbody tr[r="'+data.row+'"]').removeClass('border');
-            $('tbody tr[r="'+data.row+'"]').removeClass('selecting');
-            $('tbody tr[r="'+data.row+'"]').removeClass('editing');
-            $('tbody tr[r="'+data.row+'"]').removeClass('selected');
+            if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_last') && $('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
+              $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
+              $('tbody tr[r="'+data.row+'"]').removeClass('selecting_last');
+              $('tbody tr[r="'+data.row+'"]').removeClass('border');
+              $('tbody tr[r="'+data.row+'"]').removeClass('selecting');
+              $('tbody tr[r="'+data.row+'"]').removeClass('editing');
+              $('tbody tr[r="'+data.row+'"]').removeClass('selected');
+            }
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
+            }
           }
-          if (event.preventDefault) {
-            event.preventDefault();
-            event.stopPropagation();
-          } else {
-            event.stopPropagation();
-            event.returnValue = false;
-          }
+          $(document).unbind('mousemove');
         }
-        $(document).unbind('mousemove');
       });
-
 
 
       ///////////////////////////////////////

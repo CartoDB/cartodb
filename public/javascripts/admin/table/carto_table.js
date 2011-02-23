@@ -191,7 +191,7 @@
         //Create elements
         methods.createElements();
       }
-      closeAllWindows();
+      //closeAllWindows();
     },
 
 
@@ -363,7 +363,7 @@
                   '<a href="#...x">January</a>'+
                 '</span>'+
                 '<div class="months_list">'+
-                  '<ul>'+
+                  '<ul class="scroll-pane">'+
                     '<li><a href="#January">January</a></li>'+
                     '<li><a href="#February">February</a></li>'+
                     '<li><a href="#March">March</a></li>'+
@@ -401,7 +401,7 @@
           '</span>'+
         '</div>'
       );
-
+      
       //Data error tooltip
       $(table).parent().append(
         '<div class="error_cell">'+
@@ -690,6 +690,11 @@
             
             
             if (type=="date") {
+              var date = parseDate(data.value);
+              $('div.edit_cell div.date div.day input').val(date.day);
+              $('div.edit_cell div.date div.month span.bounds a').text(date.month_text);
+              $('div.edit_cell div.date div.year input').val(date.year);
+              $('div.edit_cell div.date div.hour input').val(date.time);
               $('div.edit_cell div.date').show();
             } else if (type=="boolean") {
               if (data.value == "true") {
@@ -705,7 +710,6 @@
               $('div.edit_cell textarea').text(data.value);
             }
             
-             
             $('div.edit_cell a.save').attr('r',data.row);
             $('div.edit_cell a.save').attr('c',data.column);
             $('div.edit_cell a.save').attr('type',type);
@@ -929,27 +933,43 @@
         var row = $(this).attr('r');
         var column = $(this).attr('c');
         var type = $(this).attr('type');
+        var params = {};
+        params['column_id'] = column;
+        params["row_id"] = row;
         
         
         if (type == "boolean") {
-          
-        } else if (type=="") {
-          
+          if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text().toLowerCase()!=$("div.edit_cell div.boolean ul li.selected a").text().toLowerCase()) {
+            var new_value = $("div.edit_cell div.boolean ul li.selected a").text().toLowerCase();
+            var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
+            if (new_value == 'null') {
+              $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text('');
+            } else {
+              $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
+            }
+          }
+        } else if (type=="date") {
+          if ($("div.edit_cell div.date div.hour input").hasClass('error')) {
+            return false;
+          } else {
+            var month = getMonthNumber($('div.edit_cell div.date div.month span.bounds a').text());
+            var day = $('div.edit_cell div.date div.day input').val();
+            var year = $('div.edit_cell div.date div.year input').val();
+            var hour = $('div.edit_cell div.date div.hour input').val();
+            var new_value = year+'-'+month+'-'+day+ ' '+hour;
+            var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
+            $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
+          }
         } else {
-          
+          if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
+            var new_value = $("div.edit_cell textarea").val();
+            var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
+            $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
+          }
         }
         
-        
-        if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
-          var new_value = $("div.edit_cell textarea").val();
-          var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
-          var params = {};
-          params["row_id"] = row;
-          params[column] = $("div.edit_cell textarea").val();
-          params['column_id'] = column;
-          methods.updateTable("/rows/"+row,params,new_value,old_value,'update_cell',"PUT");
-          $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text($("div.edit_cell textarea").val());
-        }
+        params[column] = new_value;
+        methods.updateTable("/rows/"+row,params,new_value,old_value,'update_cell',"PUT");
         
         $("div.edit_cell").hide();
         $("div.edit_cell textarea").css('width','262px');
@@ -966,8 +986,106 @@
         $("div.edit_cell textarea").css('height','30px');
         $('tbody tr[r="'+row+'"]').removeClass('editing');
       });
+      $("div.edit_cell div.boolean ul li a").livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $("div.edit_cell div.boolean ul li").removeClass('selected');
+        $(this).parent().addClass('selected');
+      });
+      
+      $('div.edit_cell div.date div.day input').livequery('keyup',function(){
+        var value=$(this).val();
+        var orignalValue=value;
+       	value=value.replace(/\./, "");
+        orignalValue=orignalValue.replace(/([^0-9].*)/g, "");
+        $(this).val(orignalValue.substr(0,2));
+      });
+      $('div.edit_cell div.date div.day input').livequery('focusout',function(){
+        if ($(this).val()=='') {$(this).val(1)}
+      });
+      $("div.edit_cell div.date div.day a.up").livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        var input_value = $(this).parent().find('input').val();
+        if (input_value < 31) {
+          $('div.edit_cell div.date div.day input').val(parseInt(input_value)+1);
+        }
+      });
+      $("div.edit_cell div.date div.day a.down").livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        var input_value = $(this).parent().find('input').val();
+        if (input_value > 1) {
+          $('div.edit_cell div.date div.day input').val(parseInt(input_value)-1);
+        }
+      });
+      
+      $('div.edit_cell div.date div.year input').livequery('keyup',function(){
+        var value=$(this).val();
+        var orignalValue=value;
+       	value=value.replace(/\./, "");
+        orignalValue=orignalValue.replace(/([^0-9].*)/g, "");
+        $(this).val(orignalValue.substr(0,4));
+      });
+      $('div.edit_cell div.date div.year input').livequery('focusout',function(){
+        if ($(this).val()=='') {$(this).val(2011)}
+      });
+      $("div.edit_cell div.date div.year a.up").livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        var input_value = $(this).parent().find('input').val();
+        if (input_value < 9999) {
+          $('div.edit_cell div.date div.year input').val(parseInt(input_value)+1);
+        }
+      });
+      $("div.edit_cell div.date div.year a.down").livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        var input_value = $(this).parent().find('input').val();
+        if (input_value > 1) {
+          $('div.edit_cell div.date div.year input').val(parseInt(input_value)-1);
+        }
+      });
 
-
+      $("div.edit_cell div.date div.hour input").livequery('keyup',function(){
+          var pattern = /([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]/;
+          if (pattern.test($(this).val())) {
+            $(this).removeClass('error');
+          } else {
+            $(this).addClass('error');
+          }
+      });
+      
+      $("div.edit_cell div.date div.month span.bounds a").livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $("div.months_list ul").jScrollPane();
+        
+        var custom_scrolls = [];
+        $('.scrollPane').each(function(){
+          custom_scrolls.push($(this).jScrollPane().data().jsp);
+        });
+        $.each(custom_scrolls,function(i) {
+          this.destroy();
+        });
+        $("ul.scroll-pane").jScrollPane();
+        
+        $(this).parent().parent().children('div.months_list').show();
+        $('body').click(function(event) {
+          if (!$(event.target).closest('div.months_list').length) {
+            $('div.months_list').hide();
+            $('body').unbind('click');
+          };
+        });
+      });
+      $("div.months_list ul li a").livequery('click',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $(this).closest('div.month').children('span.bounds').children('a').text($(this).text())
+        $(this).closest('div.months_list').hide();
+      });     
+      
+      
       ///////////////////////////////////////
       //  Header options events            //
       ///////////////////////////////////////
@@ -1581,7 +1699,8 @@
                                 $('thead tr th h3:contains('+params.lon_column+')').parent().append('<p class="geo longitude">geo</p>');
                                 closeAllWindows();
                                 break;
-        case "new_column":      headers[params.column.name] = params.column.type;
+        case "new_column":      closeAllWindows();
+                                headers[params.column.name] = params.column.type;
                                 methods.refreshTable();
                                 break;
         case "delete_column":   delete headers[params.column.name];
@@ -1623,7 +1742,7 @@
                                 setTimeout(function(){element.animate({color:'#b4b4b4'},300);},1000);
                               });
                               break;
-        case "new_column":      closeAllWindows();
+        case "new_column":    closeAllWindows();
         default:              break;
       }
     },
@@ -1661,4 +1780,3 @@
     }
   };
 })( jQuery );
-

@@ -2,6 +2,7 @@
 javascripts:
 - base:
   - plugins/jquery.min
+  - plugins/general_functions
 - dashboard:
   - plugins/jquery.color
   - admin/tables/dashboard

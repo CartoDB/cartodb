@@ -339,8 +339,7 @@
       $('div.mamufas div.georeference_window').hide();
       $('div.mamufas div.export_window').hide();
       $('div.mamufas div.column_window').hide();
+      $(document).unbind('keydown');
+      $('body').unbind('click');
     });
-    
-    $(document).unbind('keydown');
-    $('body').unbind('click');
   }

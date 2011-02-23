@@ -1,11 +1,11 @@
 
 // FUNCIONALITIES
-//   - Editing table data with events
-//   - Resize columns
+//   - Editing table data with events - O
+//   - Resize columns -- KO
 //   - Pagination with ajax --- OK
 //   - Custom style --- OK
 //   - jScrollPane
-//   - Update table (remove columns and rows, add columns and rows, move columns, sort columns)
+//   - Update table (remove columns and rows, add columns and rows, move columns, sort columns) - OK
 //   - Validate fields
 //   - Rows selection for multiple edition
 //   - Floating tHead  --- OK
@@ -24,6 +24,7 @@
   var first = true;
   var table;
   var loading = false;
+  var headers = [];
   
   var minPage = 0;
   var maxPage = -1;
@@ -118,9 +119,10 @@
     drawColumns: function(data) {
       //Draw the columns headers
       var thead = '<thead><tr><th class="first"><div></div></th>';
-
+      headers = [];
+      
       $.each(data,function(index,element){
-
+        headers[element[0]] = element[1];
         var column_types = '<span class="col_types">' +
                         '<p>'+element[1]+'</p>' +
                         '<ul>' +
@@ -189,7 +191,6 @@
         //Create elements
         methods.createElements();
       }
-      
       closeAllWindows();
     },
 
@@ -336,7 +337,64 @@
       $(table).parent().append(
         '<div class="edit_cell">'+
           '<a class="close" href="#">X</a>'+
-          '<textarea></textarea>'+
+          '<div class="inner">'+
+            '<div class="free">'+
+              '<textarea></textarea>'+
+            '</div>'+
+            '<div class="boolean">'+
+              '<ul>'+
+                '<li><a href="#True">True</a></li>'+
+                '<li><a href="#False">False</a></li>'+
+                '<li><a class="null" href="#Null">Null</a></li>'+
+              '</ul>'+
+            '</div>'+
+            '<div class="date">'+
+              '<div class="day">'+
+                '<label>DAY</label>'+
+                '<span class="bounds">'+
+                  '<input value="1" />'+
+                  '<a class="up" href="#one_day_more">up</a>'+
+                  '<a class="down" href="#one_day_less">dowm</a>'+
+                '</span>'+
+              '</div>'+
+              '<div class="month">'+
+                '<label>MONTH</label>'+
+                '<span class="bounds">'+
+                  '<a href="#...x">January</a>'+
+                '</span>'+
+                '<div class="months_list">'+
+                  '<ul>'+
+                    '<li><a href="#January">January</a></li>'+
+                    '<li><a href="#February">February</a></li>'+
+                    '<li><a href="#March">March</a></li>'+
+                    '<li><a href="#April">April</a></li>'+
+                    '<li><a href="#May">May</a></li>'+
+                    '<li><a href="#June">June</a></li>'+
+                    '<li><a href="#July">July</a></li>'+
+                    '<li><a href="#August">August</a></li>'+
+                    '<li><a href="#September">September</a></li>'+
+                    '<li><a href="#October">October</a></li>'+
+                    '<li><a href="#November">November</a></li>'+
+                    '<li><a href="#December">December</a></li>'+
+                  '</ul>'+
+                '</div>'+
+              '</div>'+
+              '<div class="year">'+
+                '<label>YEAR</label>'+
+                '<span class="bounds">'+
+                  '<input value="2011" />'+
+                  '<a class="up" href="#one_year_more">up</a>'+
+                  '<a class="down" href="#one_year_less">dowm</a>'+
+                '</span>'+
+              '</div>'+
+              '<div class="hour">'+
+                '<label>TIME</label>'+
+                '<span class="bounds">'+
+                  '<input value="14:13:13" />'+
+                '</span>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
           '<span>'+
             '<a class="cancel" href="#">Cancel</a>'+
             '<a class="save" href="#">Save changes</a>'+
@@ -517,8 +575,8 @@
         
         //For moving thead when scrolling
         if ($(document).scrollTop()>58) {
-          $('section.subheader').css('top','0');
-          $(table).children('thead').css('top','102px');
+          $('section.subheader').css('top','-3px');
+          $(table).children('thead').css('top','99px');
         } else {
           $('section.subheader').css('top',58-$(document).scrollTop()+'px');
           $(table).children('thead').css('top',160-$(document).scrollTop()+'px');
@@ -623,10 +681,36 @@
             if ($(target).parent().offset().top<230) {$('div.edit_cell').css('top',target_position.top-150+'px');} else {$('div.edit_cell').css('top',target_position.top-192+'px');}
             if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {$('div.edit_cell').css('left',target_position.left-215+($(target).width()/2)+'px');} else {$('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');}
 
-            $('div.edit_cell textarea').text(data.value);
+
+            var type = headers[data.column];
+            $('div.edit_cell div.free').hide();
+            $('div.edit_cell div.boolean').hide();
+            $('div.edit_cell div.date').hide();
+            $('div.table_position div.edit_cell div.boolean ul li').removeClass('selected');
+            
+            
+            if (type=="date") {
+              $('div.edit_cell div.date').show();
+            } else if (type=="boolean") {
+              if (data.value == "true") {
+                $('div.table_position div.edit_cell div.boolean ul li a:contains("True")').parent().addClass('selected');
+              } else if (data.value == "false") {
+                $('div.table_position div.edit_cell div.boolean ul li a:contains("False")').parent().addClass('selected');
+              } else {
+                $('div.table_position div.edit_cell div.boolean ul li a:contains("Null")').parent().addClass('selected');
+              }
+              $('div.edit_cell div.boolean').show();
+            } else {
+              $('div.edit_cell div.free').show();
+              $('div.edit_cell textarea').text(data.value);
+            }
+            
+             
             $('div.edit_cell a.save').attr('r',data.row);
             $('div.edit_cell a.save').attr('c',data.column);
+            $('div.edit_cell a.save').attr('type',type);
             $('div.edit_cell').show();
+            
 
             if (event.preventDefault) {
               event.preventDefault();
@@ -639,6 +723,7 @@
         }
 
       });
+
 
 
       ///////////////////////////////////////
@@ -710,6 +795,7 @@
           }
         } 
       });
+
 
 
       ///////////////////////////////////////
@@ -832,6 +918,7 @@
       });
 
 
+
       ///////////////////////////////////////
       //  Editing table values             //
       ///////////////////////////////////////
@@ -841,6 +928,18 @@
         ev.preventDefault();
         var row = $(this).attr('r');
         var column = $(this).attr('c');
+        var type = $(this).attr('type');
+        
+        
+        if (type == "boolean") {
+          
+        } else if (type=="") {
+          
+        } else {
+          
+        }
+        
+        
         if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
           var new_value = $("div.edit_cell textarea").val();
           var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
@@ -851,6 +950,7 @@
           methods.updateTable("/rows/"+row,params,new_value,old_value,'update_cell',"PUT");
           $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text($("div.edit_cell textarea").val());
         }
+        
         $("div.edit_cell").hide();
         $("div.edit_cell textarea").css('width','262px');
         $("div.edit_cell textarea").css('height','30px');
@@ -904,6 +1004,7 @@
         $('thead tr th div a.options').removeClass('selected');
         $('thead tr th div span.col_ops_list').hide();
         $('thead tr span.col_types').hide();
+        $('div.edit_cell').fadeOut();
         var position = $(this).position();
         $(this).parent().parent().children('span.col_types').find('li').removeClass('selected');
         var column_type = $(this).parent().parent().children('p.long').children('a').text();
@@ -942,6 +1043,9 @@
       $('thead tr th div h3,thead tr th div input,thead tr span.col_types,thead tr span.col_ops_list').livequery('click',function(ev){
         ev.stopPropagation();
         ev.preventDefault();
+        
+        
+        
       });
       $('thead tr th div h3').livequery('dblclick',function(){
         var title = $(this);
@@ -1465,16 +1569,23 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     successRequest: function(params,new_value,old_value,type) {
       switch (type) {
-        case "rename_column":   $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
+        case "rename_column":   var type  = headers[old_value];
+                                delete headers[old_value];
+                                headers[new_value] = type;
+                                $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
+                                break;
+        case "column_type":     headers[params.column.name] = params.column.type;
                                 break;
         case "update_geometry": $('p.geo').remove();
                                 $('thead tr th h3:contains('+params.lat_column+')').parent().append('<p class="geo latitude">geo</p>');
                                 $('thead tr th h3:contains('+params.lon_column+')').parent().append('<p class="geo longitude">geo</p>');
                                 closeAllWindows();
                                 break;
-        case "new_column":      methods.refreshTable();
+        case "new_column":      headers[params.column.name] = params.column.type;
+                                methods.refreshTable();
                                 break;
-        case "delete_column":   methods.refreshTable();
+        case "delete_column":   delete headers[params.column.name];
+                                methods.refreshTable();
                                 break;                                
         case "delete_row":      methods.refreshTable();
                                 break;                        

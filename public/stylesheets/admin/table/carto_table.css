@@ -187,13 +187,66 @@ div.table_position div.edit_cell {position:absolute; display:none; top:200px; le
 div.table_position div.edit_cell a.close {position:absolute; top:-7px; right:-8px; width:24px; height:24px; background:url('/images/admin/table/close.png') no-repeat 0 0; text-indent:-9999px; -moz-box-shadow:0px 0px 10px 2px #999; 
 -webkit-box-shadow:2px -2px 4px 0px #aaa; box-shadow:0px 0px 10px 2px #999; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:10;}
 div.table_position div.edit_cell a.close:hover {background-position:0 -24px;}
-div.table_position div.edit_cell textarea {float:left; min-width:248px; min-height:30px; padding:7px; font:normal 13px "Helvetica",Arial; color:#666666; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px;}
+div.table_position div.edit_cell div.boolean {float:left; display:none; width:248px; height:30px; padding:7px; margin:0; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; background:white;}
+div.table_position div.edit_cell div.boolean ul {float:left; width:248px; margin:6px 0 0 0;}
+div.table_position div.edit_cell div.boolean ul li {float:left; width:auto; padding:; margin:0 0 0 25px;}
+div.table_position div.edit_cell div.boolean ul li a {padding:0 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666; text-decoration:none; background:url('/images/admin/table/boolean_check.png') no-repeat 0 3px;}
+div.table_position div.edit_cell div.boolean ul li a.null {font-style:italic;}
+div.table_position div.edit_cell div.boolean ul li a:hover {background-position:0 -26px; color:#333333;}
+div.table_position div.edit_cell div.boolean ul li.selected a {background-position:0 -26px;}
+div.table_position div.edit_cell div.boolean ul li:hover a {color:#333333;}
+div.table_position div.edit_cell div.boolean ul li.selected a {color:#333333;}
+div.table_position div.edit_cell div.boolean ul li.selected a:hover {cursor:default;}
+
+div.table_position div.edit_cell div.date {display:none; float:left; min-width:248px; min-height:30px; padding:7px; margin:0; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; background:white;}
+div.table_position div.edit_cell div.date div.day {float:left; width:44px;}
+div.table_position div.edit_cell div.date div.day label {float:left; width:40px; padding:0 0 0 3px; margin:0; font:bold 10px "Helvetica",Arial; color:#999999;}
+div.table_position div.edit_cell div.date div.day span.bounds {position:relative!important; float:left!important; top:0; bottom:0; left:0; right:0; width:44px; height:28px; padding:0; margin:5px 0 0 0; overflow:hidden;}
+div.table_position div.edit_cell div.date div.day span.bounds input {float:left; width:15px; height:14px; padding:6px 4px; margin:0; border:1px solid #999999; -webkit-border-top-left-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-topleft: 3px;
+  -moz-border-radius-bottomleft: 3px; border-top-left-radius: 3px; border-bottom-left-radius: 3px; font:normal 11px "Helvetica",Arial; color:#333333; text-align:center;}
+div.table_position div.edit_cell div.date div.day span.bounds input:focus {outline:none;}
+div.table_position div.edit_cell div.date div.day span.bounds a.up {position:absolute; top:0; right:0; width:19px; height:14px; text-indent:-99999px; background:url('/images/admin/table/one_more.png') no-repeat 0 0;}
+div.table_position div.edit_cell div.date div.day span.bounds a.down {position:absolute; bottom:0; right:0; width:19px; height:14px; text-indent:-99999px; background:url('/images/admin/table/one_less.png') no-repeat 0 0;}
+
+div.table_position div.edit_cell div.date div.month {position:relative; float:left; width:92px; margin:0 0 0 8px;}
+div.table_position div.edit_cell div.date div.month label {float:left; width:89px; padding:0 0 0 3px; margin:0; font:bold 10px "Helvetica",Arial; color:#999999;}
+div.table_position div.edit_cell div.date div.month span.bounds {position:relative!important; float:left!important; top:0; bottom:0; left:0; right:0; width:78px; height:16px; margin:5px 0 0 0; padding:5px 7px; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; border:1px solid #999999;
+  background-image:-moz-linear-gradient(100% 100% 90deg, #DBDCDF, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#DBDCDF));}
+div.table_position div.edit_cell div.date div.month span.bounds a {float:left; width:78px!important; margin:2px 0 0 0!important; padding:0 10px 0 0!important; background:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;
+    text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:url('/images/admin/icons/select_arrows.png') no-repeat 70px 5px; text-decoration:none;}
+div.table_position div.edit_cell div.date div.month div.months_list {position:absolute; display:none; top:32px; left:-15px; width:120px; height:115px; background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:10;}
+div.table_position div.edit_cell div.date div.month div.months_list ul {float:left; width:110px; height:90px; margin:20px 0 0 5px; overflow-x:visible; overflow-y:auto;}
+div.table_position div.edit_cell div.date div.month div.months_list ul li {float:left; width:90px; padding:0 0 5px 0;}
+div.table_position div.edit_cell div.date div.month div.months_list ul li a {float:left; font:normal 11px "Helvetica",Arial; color:white; text-decoration:none;}
+div.table_position div.edit_cell div.date div.month div.months_list ul li a:hover {color:#6CBE6C;}
+
+div.table_position div.edit_cell div.date div.year {float:left; width:57px; margin:0 0 0 8px;}
+div.table_position div.edit_cell div.date div.year label {float:left; width:54px; padding:0 0 0 3px; margin:0; font:bold 10px "Helvetica",Arial; color:#999999;}
+div.table_position div.edit_cell div.date div.year span.bounds {position:relative!important; float:left!important; top:0; bottom:0; left:0; right:0; width:57px; height:28px; padding:0; margin:5px 0 0 0; overflow:hidden;}
+div.table_position div.edit_cell div.date div.year span.bounds input {float:left; width:28px; height:14px; padding:6px 4px; margin:0; border:1px solid #999999; -webkit-border-top-left-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-topleft: 3px;
+  -moz-border-radius-bottomleft: 3px; border-top-left-radius: 3px; border-bottom-left-radius: 3px; font:normal 11px "Helvetica",Arial; color:#333333; text-align:center;}
+div.table_position div.edit_cell div.date div.year span.bounds input:focus {outline:none;}
+div.table_position div.edit_cell div.date div.year span.bounds a.up {position:absolute; top:0; right:0; width:19px; height:14px; text-indent:-99999px; background:url('/images/admin/table/one_more.png') no-repeat 0 0;}
+div.table_position div.edit_cell div.date div.year span.bounds a.down {position:absolute; bottom:0; right:0; width:19px; height:14px; text-indent:-99999px; background:url('/images/admin/table/one_less.png') no-repeat 0 0;}
+
+div.table_position div.edit_cell div.date div.hour {float:left; width:57px; margin:0 0 0 8px;}
+div.table_position div.edit_cell div.date div.hour label {float:left; width:40px; padding:0 0 0 3px; margin:0; font:bold 10px "Helvetica",Arial; color:#999999;}
+div.table_position div.edit_cell div.date div.hour span.bounds {position:relative!important; float:left!important; top:0; bottom:0; left:0; right:0; width:57px; height:28px; padding:0; margin:5px 0 0 0; overflow:hidden;}
+div.table_position div.edit_cell div.date div.hour span.bounds input {float:left; width:47px; height:14px; padding:6px 4px; margin:0; border:1px solid #999999; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;
+  font:normal 11px "Helvetica",Arial; color:#333333; text-align:left;}
+div.table_position div.edit_cell div.date div.hour span.bounds input:focus {outline:none;}
+
+div.table_position div.edit_cell div.free {display:none;}
+div.table_position div.edit_cell textarea {float:left; display:block; min-width:248px; min-height:30px; padding:7px; font:normal 13px "Helvetica",Arial; color:#666666; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px;}
 div.table_position div.edit_cell textarea:focus {outline:none; border-color:#666;}
 div.table_position div.edit_cell span {position:absolute; bottom:10px; left:10px; right:10px;}
 div.table_position div.edit_cell a.cancel {position:relative; float:left; margin:7px 0 0 0; font:normal 11px "Helvetica"; color:#333333;}
 div.table_position div.edit_cell a.cancel:hover {color:black;}
 div.table_position div.edit_cell a.save {position:relative; float:right; width:91px; height:14px!important; padding:5px 0; text-align:center; background:url('/images/admin/table/save_button.png') no-repeat 0 0; text-decoration:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;}
 div.table_position div.edit_cell a.save:hover {background-position:0 -24px; color:black;}
+
+
+
 
 /*EDIT ERROR*/
 div.table_position div.error_cell {position:absolute; display:none; overflow:hidden; left:250px; top:300px; width:197px; height:120px; z-index:300;}

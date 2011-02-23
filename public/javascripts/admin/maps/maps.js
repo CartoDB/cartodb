@@ -3,6 +3,8 @@
   var markers = [];
   var bounds;
   var geocoder = new google.maps.Geocoder();
+  var image = new google.maps.MarkerImage('/images/admin/map/marker.png',new google.maps.Size(33, 33),new google.maps.Point(0,0),new google.maps.Point(12, 33));
+  
 
   $(document).ready(function(){
     //Zooms
@@ -75,32 +77,35 @@
       url: "/api/json/tables/query",
       data: ({api_key: api_key, query: query}),
       dataType: "jsonp",
-      success: function( data ) {
+      success: function(result) {
         bounds = new google.maps.LatLngBounds();
-        var image = new google.maps.MarkerImage('/images/admin/map/marker.png',new google.maps.Size(33, 33),new google.maps.Point(0,0),new google.maps.Point(12, 33));
         
-        if(data != null) {
-          markers = [];
-          for(var i=0;i<data.rows.length;i++){
-            if (data.rows[i].lat != null) {
-              var row = data.rows[i];
+        if(result != null) {
+          for(var i=0;i<result.rows.length;i++){
+            if (result.rows[i].lat != null || result.rows[i].lon != null) {
+              var row = result.rows[i];
               var marker = new google.maps.Marker({position: new google.maps.LatLng(row.lat, row.lon), icon: image, map: map, draggable:true, raiseOnDrag:true, data:row});
-              google.maps.event.addListener(marker,"dragstart",function(ev){
-                marker.data.init_latlng = ev.latLng;
-      				});
-              google.maps.event.addListener(marker,"dragend",function(ev){
-      					onMoveOccurrence(ev,marker.data);
-      				});
-              markers[row.cartodb_id] = marker;         
+              markers[row.cartodb_id] = marker;
               bounds.extend(new google.maps.LatLng(row.lat, row.lon));
+              
+              new google.maps.event.addListener(marker,"dragstart",function(ev){
+                this.data.init_latlng = ev.latLng;
+      				});
+              new google.maps.event.addListener(marker,"dragend",function(ev){
+      					onMoveOccurrence(ev,this.data);
+      				});     
             }
           }
           
-          if (data.rows.length<2) {
+          if (result.rows.length==1) {
             map.setCenter(bounds.getCenter());
             map.setZoom(9);
-          } else if (data.rows.length>2) {
-            map.fitBounds(bounds);
+          } else{
+             if (bounds.getCenter().lat()==0 && bounds.getCenter().lng()==-180) {
+              map.setZoom(4);
+             } else {
+               map.fitBounds(bounds);
+             }
           }
         }
         hideLoader();

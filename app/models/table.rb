@@ -375,8 +375,8 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       rows = user_database[name.to_sym].limit(limit,offset).
               order(:cartodb_id).select(*schema.map{ |e| e[0]}).all.map do |row|
-                row[:created_at] = row[:created_at].strftime("%H:%M:%S %Y-%m-%d")
-                row[:updated_at] = row[:updated_at].strftime("%H:%M:%S %Y-%m-%d")
+                row[:created_at] = row[:created_at].strftime("%Y-%m-%d %H:%M:%S")
+                row[:updated_at] = row[:updated_at].strftime("%Y-%m-%d %H:%M:%S")
                 row
              end
     end

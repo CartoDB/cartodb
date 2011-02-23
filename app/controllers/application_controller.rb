@@ -2,7 +2,7 @@
 
 class ApplicationController < ActionController::Base
 
-  # rescue_from RecordNotFound, :with => :render_404
+  rescue_from RecordNotFound, :with => :render_404
 
   protect_from_forgery
 

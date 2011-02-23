@@ -274,10 +274,22 @@ describe Table do
   end
 
   it "should be able to update a row" do
-    table = create_table
-    table.insert_row!({:name => String.random(10), :description => ""})
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, description varchar, time timestamp"
+    table.save
+
+    table.insert_row!({:name => String.random(10), :description => "", :time => "2010-10-13 10:46:32"})
     row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
     row[:description].should be_blank
+    datetime = row[:time]
+    datetime.year.should == 2010
+    datetime.month.should == 10
+    datetime.day.should == 13
+    datetime.hour.should == 10
+    datetime.min.should == 46
+    datetime.sec.should == 32
 
     table.update_row!(row[:cartodb_id], :description => "Description 123")
 

@@ -726,8 +726,8 @@ feature "Tables JSON API" do
     old_lat = row[:latitude]
     old_lon = row[:longitude]
 
-    new_latitude  = Float.random_latitude
-    new_longitude = Float.random_longitude
+    new_latitude  = 3.769
+    new_longitude = 40.321
 
     put_json "/api/json/tables/#{table.id}/update_geometry/1", { :lat => new_latitude, :lon => new_longitude, :address => "bla bla bla" }
     response.status.should == 200
@@ -738,32 +738,45 @@ feature "Tables JSON API" do
     row[:longitude].should == new_longitude
 
     query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")
-    query_result[:rows][0][:lon].to_s.should match /^#{new_longitude}/
-    query_result[:rows][0][:lat].to_s.should match /^#{new_latitude}/
+    query_result[:rows][0][:lon].to_s.should match /^40\.32/
+    query_result[:rows][0][:lat].to_s.should match /^3\.76/
   end
 
   scenario "Update the geometry of a row in a table with address geometry" do
+    res_mock = mock()
+    res_mock.stubs(:body).returns("")
+    Net::HTTP.stubs(:start).returns(res_mock)
+
+    raw_json = {"status"=>"OK", "results"=>[{"types"=>["street_address"], "formatted_address"=>"Calle de Manuel Fernández y González, 8, 28014 Madrid, Spain", "address_components"=>[{"long_name"=>"8", "short_name"=>"8", "types"=>["street_number"]}, {"long_name"=>"Calle de Manuel Fernández y González", "short_name"=>"Calle de Manuel Fernández y González", "types"=>["route"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["locality", "political"]}, {"long_name"=>"Community of Madrid", "short_name"=>"M", "types"=>["administrative_area_level_2", "political"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["administrative_area_level_1", "political"]}, {"long_name"=>"Spain", "short_name"=>"ES", "types"=>["country", "political"]}, {"long_name"=>"28014", "short_name"=>"28014", "types"=>["postal_code"]}], "geometry"=>{"location"=>{"lat"=>40.4151476, "lng"=>-3.6994168}, "location_type"=>"RANGE_INTERPOLATED", "viewport"=>{"southwest"=>{"lat"=>40.4120053, "lng"=>-3.7025647}, "northeast"=>{"lat"=>40.4183006, "lng"=>-3.6962695}}, "bounds"=>{"southwest"=>{"lat"=>40.4151476, "lng"=>-3.6994174}, "northeast"=>{"lat"=>40.4151583, "lng"=>-3.6994168}}}}]}
+    JSON.stubs(:parse).returns(raw_json)
+
     user = create_user
     table = new_table
     table.user_id = user.id
     table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    end
+
     authenticate_api user
 
-    new_latitude  = Float.random_latitude
-    new_longitude = Float.random_longitude
+    table.set_address_column!(:address)
+
+    new_latitude  = 3.769
+    new_longitude = 40.321
 
     put_json "/api/json/tables/#{table.id}/update_geometry/1", { :lat => new_latitude, :lon => new_longitude, :address => "Hortaleza 48, Madrid" }
     response.status.should == 200
 
     table.reload
     row = table.to_json[:rows][0]
-    row["address"].should == "Hortaleza 48, Madrid"
+    row[:address].should == "Hortaleza 48, Madrid"
 
     query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")
-    query_result[:rows][0][:lon].to_s.should match /^#{new_longitude}/
-    query_result[:rows][0][:lat].to_s.should match /^#{new_latitude}/
+    query_result[:rows][0][:lon].to_s.should match /^40\.32/
+    query_result[:rows][0][:lat].to_s.should match /^3\.76/
   end
 
 end

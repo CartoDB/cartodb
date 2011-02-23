@@ -716,4 +716,124 @@ describe Table do
     query_result[:rows][0][:lat].to_s.should match /^3\.76/
   end
 
+  it "should set to null geometry columns when an address column is set and it is removed" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    end
+
+    table.set_address_column!(:address)
+
+    table.address_column.should == :address
+
+    table.drop_column!(:name => :address)
+
+    table.address_column.should be_nil
+  end
+
+  it "should set to null geometry columns when a latitude and longitude column is set and it is removed" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    end
+
+    table.set_lan_lon_columns!(:latitude, :longitude)
+    table.lat_column.should == :latitude
+    table.lon_column.should == :longitude
+
+    table.drop_column!(:name => :latitude)
+    table.lat_column.should be_nil
+    table.lon_column.should be_nil
+  end
+
+  it "should set to null geometry columns when an address column is set to a type that is not string" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    end
+
+    table.set_address_column!(:address)
+    table.address_column.should == :address
+
+    table.modify_column!(:name => "address", :type => "real")
+    table.address_column.should be_nil
+  end
+
+  it "should set to null geometry columns when an lat or lon column are set to a type that is not number" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    end
+
+    table.set_lan_lon_columns!(:latitude, :longitude)
+    table.lat_column.should == :latitude
+    table.lon_column.should == :longitude
+
+    table.modify_column!(:name => "longitude", :type => "string")
+    table.lat_column.should be_nil
+    table.lon_column.should be_nil
+  end
+
+  it "should update the geometry columns when an address column is renamed" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    end
+
+    table.set_address_column!(:address)
+    table.address_column.should == :address
+
+    table.modify_column!(:old_name => "address", :new_name => "new_address")
+    table.address_column.should == :new_address
+  end
+
+  it "should update the geometry columns when an lat or lon columns are renamed" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    10.times do
+      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    end
+
+    table.set_lan_lon_columns!(:latitude, :longitude)
+    table.lat_column.should == :latitude
+    table.lon_column.should == :longitude
+
+    table.modify_column!(:old_name => "latitude", :new_name => "new_latitude")
+    table.lat_column.should == :new_latitude
+    table.lon_column.should == :longitude
+
+    table.modify_column!(:old_name => "longitude", :new_name => "new_longitude")
+    table.lat_column.should == :new_latitude
+    table.lon_column.should == :new_longitude
+  end
+
 end

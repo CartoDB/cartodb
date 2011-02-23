@@ -32,11 +32,13 @@ Warden::Strategies.add(:api_key) do
   def authenticate!
     if params[:api_key]
       if api_key = APIKey[:api_key => params[:api_key]]
-        if api_key.domain == request.host
-          success!(api_key.user)
-        else
-          fail!
-        end
+        success!(api_key.user)
+        # TODO
+        # if api_key.domain == request.host
+        #   success!(api_key.user)
+        # else
+        #   fail!
+        # end
       else
         fail!
       end

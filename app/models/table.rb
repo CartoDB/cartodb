@@ -300,6 +300,10 @@ class Table < Sequel::Model(:user_tables)
 
   def drop_column!(options)
     raise if CARTODB_COLUMNS.include?(options[:name].to_s)
+    if options[:name].to_sym == address_column || options[:name].to_sym == lat_column || options[:name].to_sym == lon_column
+      self.geometry_columns = nil
+      save_changes
+    end
     owner.in_database do |user_database|
       user_database.drop_column name.to_sym, options[:name].to_s
     end
@@ -314,10 +318,28 @@ class Table < Sequel::Model(:user_tables)
         raise if CARTODB_COLUMNS.include?(options[:old_name].to_s)
         user_database.rename_column name.to_sym, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
         new_name = options[:new_name].sanitize
+        if options[:old_name].to_sym == address_column
+          self.geometry_columns = new_name
+          save_changes
+        elsif options[:old_name].to_sym == lat_column
+          self.geometry_columns = "#{new_name}|#{lon_column}"
+          save_changes
+        elsif options[:old_name].to_sym == lon_column
+          self.geometry_columns = "#{lat_column}|#{new_name}"
+          save_changes
+        end
       end
       if options[:type]
         column_name = (options[:new_name] || options[:name]).sanitize
         raise if CARTODB_COLUMNS.include?(column_name)
+        if column_name.to_sym == address_column && cartodb_type && cartodb_type != "string"
+          self.geometry_columns = nil
+          save_changes
+        end
+        if (column_name.to_sym == lat_column || column_name.to_sym == lon_column) && cartodb_type && cartodb_type != "number"
+          self.geometry_columns = nil
+          save_changes
+        end
         begin
           user_database.set_column_type name.to_sym, column_name.to_sym, new_type
         rescue => e
@@ -353,8 +375,8 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       rows = user_database[name.to_sym].limit(limit,offset).
               order(:cartodb_id).select(*schema.map{ |e| e[0]}).all.map do |row|
-                row[:created_at] = row[:created_at].strftime("%H:%M:%S %Y-%m-%d")
-                row[:updated_at] = row[:updated_at].strftime("%H:%M:%S %Y-%m-%d")
+                row[:created_at] = row[:created_at].strftime("%Y-%m-%d %H:%M:%S")
+                row[:updated_at] = row[:updated_at].strftime("%Y-%m-%d %H:%M:%S")
                 row
              end
     end
@@ -366,13 +388,12 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_lan_lon_columns!(lat_column, lon_column)
+    self.geometry_columns = nil
     if lat_column && lon_column
       owner.in_database do |user_database|
         user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
       end
       self.geometry_columns = "#{lat_column}|#{lon_column}"
-    else
-      self.geometry_columns = nil
     end
     save_changes
   end

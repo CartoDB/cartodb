@@ -6,3 +6,4 @@ tmp/**/*
 public/system
 db/schema.rb
 doc/
+config/database.yml

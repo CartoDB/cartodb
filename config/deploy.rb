@@ -19,8 +19,8 @@ ssh_options[:forward_agent] = true
 ssh_options[:keys] = [File.join(ENV["HOME"], ".ec2", "id-vizzuality")]
 set :keep_releases, 5
 
-set :linode_staging, '184.73.254.217'
-set :linode_production, '184.73.254.217'
+set :appserver_staging, '184.73.254.217'
+set :appserver_production, '184.73.254.217'
 set :user,  'ubuntu'
 
 set(:deploy_to){
@@ -48,6 +48,7 @@ task :symlinks, :roles => [:app] do
     ln -s #{shared_path}/system #{release_path}/public/system;
     ln -s #{shared_path}/pdfs #{release_path}/public/;
     ln -s #{shared_path}/cache #{release_path}/public/;
+    ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml;
   CMD
 end
 
@@ -58,4 +59,22 @@ task :asset_packages, :roles => [:app] do
    cd #{release_path} &&
    rake asset:packager:build_all
  CMD
+end
+
+namespace :db do
+  desc "Copy local database.yml.example to server"
+  task :upload_database_yml, :roles => :app do
+    run "mkdir #{deploy_to}/shared/config ; true"
+    upload("config/database.yml", "#{deploy_to}/shared/config/database.yml")
+  end
+
+  desc "Run rake:seed on remote app server"
+  task :seed, :roles => :app do
+    run "cd #{current_release} && RAILS_ENV=#{rails_env} rake db:seed"
+  end
+
+  desc "Setup the database"
+  task :setup, :roles => :app do
+    run "cd #{current_release} && RAILS_ENV=#{rails_env} rake db:setup"
+  end
 end

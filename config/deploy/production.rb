@@ -1,6 +1,6 @@
-role :app, linode_production
-role :web, linode_production
-role :db,  linode_production, :primary => true
+role :app, appserver_production
+role :web, appserver_production
+role :db,  appserver_production, :primary => true
 
 set :branch, "production"
 

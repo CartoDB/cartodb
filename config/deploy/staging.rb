@@ -1,6 +1,6 @@
-role :app, linode_staging
-role :web, linode_staging
-role :db,  linode_staging, :primary => true
+role :app, appserver_staging
+role :web, appserver_staging
+role :db,  appserver_staging, :primary => true
 
 set :branch, "staging"
 

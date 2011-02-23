@@ -70,11 +70,16 @@ namespace :db do
 
   desc "Run rake:seed on remote app server"
   task :seed, :roles => :app do
-    run "cd #{current_release} && RAILS_ENV=#{rails_env} rake db:seed"
+    run "cd #{current_release} && RAILS_ENV=#{stage} rake db:seed"
   end
 
   desc "Setup the database"
   task :setup, :roles => :app do
-    run "cd #{current_release} && RAILS_ENV=#{rails_env} rake db:setup"
+    run "cd #{current_release} && RAILS_ENV=#{stage} rake db:setup"
+  end
+
+  desc "Resets the database"
+  task :reset, :roles => :app do
+    run "cd #{current_release} && RAILS_ENV=#{stage} rake db:reset"
   end
 end

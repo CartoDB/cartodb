@@ -20,7 +20,7 @@ javascripts:
   - admin/table/loading_messages
   - admin/table/loader_queue
   - admin/table/carto_table
-  - admin/table/table_elements
+  - admin/table/out_table_elements
   - admin/maps/maps
   - admin/table/geocoding
   - admin/table/worker_geocoding
@@ -38,6 +38,6 @@ stylesheets:
 - public_tables:
   - admin/tables/public_tables
 - table:
-  - admin/table/table
+  - admin/table/out_table_elements
   - admin/table/carto_table
   - admin/maps/maps

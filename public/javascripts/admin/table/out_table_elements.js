@@ -1,10 +1,50 @@
-
+  
+  //SUBHEADER EVENTS AND FLOATING WINDOWS+//
+  
 
   $(document).ready(function(){
+    
+    ///////////////////////////////////////
+    //  Mamufas addition                 //
+    ///////////////////////////////////////
+    $('div.mamufas').append(
+      '<div class="delete_window">'+
+        '<a href="#close_window" class="close_delete"></a>'+
+        '<div class="inner_">'+
+          '<span class="top">'+
+            '<h3>You are about to delete this table</h3>'+
+            '<p>You will not be able to recover this information. We really recommend to <a class="export_data" href="#export_data">export the data</a> before deleting it.</p>'+
+          '</span>'+
+          '<span class="bottom">'+
+            '<a href="#close_window" class="cancel">cancel</a>'+
+            '<a href="#confirm_delete" class="confirm_delete">Delete this table</a>'+
+          '</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="export_window">'+
+        '<a href="#close_window" class="close_delete"></a>'+
+        '<div class="inner_">'+
+          '<span class="top">'+
+            '<h3>Export your data</h3>'+
+            '<p>Select your desired format for downloading the data</p>'+
+            '<ul>'+
+              '<li class="selected"><a class="option" href="#CSV">CSV (Comma separated values)</a></li>'+
+              '<li><a href="#KML">KML</a></li>'+
+              '<li><a href="#SHP">SHP</a></li>'+
+            '</ul>'+
+          '</span>'+
+          '<span class="bottom">'+
+            '<a href="#close_window" class="cancel">cancel</a>'+
+            '<a href="#download" class="download" type="CSV">Download</a>'+
+          '</span>'+
+        '</div>'+
+      '</div>');
+    
+    
 
-    //SUBHEADER EVENTS AND FLOATING WINDOWS
-
-    //Change title name window
+    ///////////////////////////////////////
+    //  Change title name window         //
+    ///////////////////////////////////////
     $('div.inner_subheader div.left').append(
       '<span class="title_window">'+
         '<p>Pick a name for this table</p>'+
@@ -15,12 +55,11 @@
     //Bind events
     // -Open window
     $('section.subheader h2 a, p.status a.save').livequery('click',function(ev){
-      ev.stopPropagation();
-      ev.preventDefault();
+      stopPropagation(ev);
       if ($('span.title_window').is(':visible')) {
         $('span.title_window').hide();
       } else {
-        closeAllWindows();
+        closeOutTableWindows();
         bindESC();
         $('span.title_window input[type="text"]').attr('value',$('section.subheader h2 a').text());
         $('body').click(function(event) {
@@ -35,8 +74,7 @@
     });
     // -Save table name
     $('#change_name input[type="submit"]').livequery('click',function(ev){
-      ev.preventDefault();
-      ev.stopPropagation();
+      stopPropagation(ev);
       var new_value = sanitizeText($('span.title_window input[type="text"]').attr('value'));
       var old_value = new Object();
       old_value.name = $('section.subheader h2 a').text();
@@ -61,7 +99,11 @@
     });
 
 
-    // Change table status
+
+
+    ///////////////////////////////////////
+    //  Change table status              //
+    ///////////////////////////////////////
     $('div.inner_subheader div.left').append(
       '<span class="privacy_window">'+
         '<ul>'+
@@ -71,8 +113,7 @@
       '</span>');
   
     $('span.privacy_window ul li a').livequery('click',function(ev){
-      ev.stopPropagation();
-      ev.preventDefault();
+      stopPropagation(ev);
       var parent_li = $(this).parent();
       if (parent_li.hasClass('selected')) {
         $('span.privacy_window').hide();
@@ -86,16 +127,14 @@
         changesRequest('/toggle_privacy','privacy',new_value.toUpperCase(),old_value);
       }
     });
-
     $('p.status a').livequery('click',function(ev){
-      ev.stopPropagation();
-      ev.preventDefault();
+      stopPropagation(ev);
       var privacy_window = $(this).parent().parent().children('span.privacy_window');
       if (!$(this).hasClass('save')) {
         if (privacy_window.is(':visible')) {
           privacy_window.hide();
         } else {
-          closeAllWindows();
+          closeOutTableWindows();
           bindESC();
           var status_position = $('p.status a').position();
           privacy_window.css('left',status_position.left-72+'px').show();
@@ -109,12 +148,13 @@
       }
 
     });
-    // End table status binding
 
 
     
     
-    //Change tags
+    ///////////////////////////////////////
+    //  Change table tags                //
+    ///////////////////////////////////////
     $('div.inner_subheader div.left').append(
       '<span class="tags_window">'+
         '<ul id="tags_list"></ul>'+
@@ -122,9 +162,8 @@
       '</span>');
       
     $('span.tags a.add').click(function(ev){
-      ev.stopPropagation();
-      ev.preventDefault();
-      closeAllWindows();
+      stopPropagation(ev);
+      closeOutTableWindows();
       bindESC();
       var values = [];
       $('span.tags p').each(function(index,element){
@@ -143,8 +182,7 @@
       });
     });
     $('span.tags_window a').click(function(ev){
-      ev.stopPropagation();
-      ev.preventDefault();
+      stopPropagation(ev);
       var old_values = [];
       $("span.tags p").each(function(index,element){
         old_values.push($(element).text());
@@ -164,20 +202,21 @@
 
 
 
-    //Advanced options
+    ///////////////////////////////////////
+    //  Advanced options                 //
+    ///////////////////////////////////////
     $('div.inner_subheader div.right').append(
       '<span class="advanced_options">'+
         '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
         '<ul>'+
-          '<li><a href="#export_data">Export data...</a></li>'+
-          '<li><a href="#save_table">Save table as...</a></li>'+
+          '<li class="disabled"><a class="export_data">Export data...</a></li>'+
+          '<li class="disabled"><a class="save_table">Save table as...</a></li>'+
         '</ul>'+
       '</span>');
-      $('p.settings a.settings, span.advanced_options a.advanced').livequery('click',function(ev){
-      ev.stopPropagation();
-      ev.preventDefault();
+    $('p.settings a.settings, span.advanced_options a.advanced').livequery('click',function(ev){
+      stopPropagation(ev);
       if (!$('span.advanced_options').is(':visible')) {
-        closeAllWindows();
+        closeOutTableWindows();
         bindESC();
         $(this).parent().parent().children('span.advanced_options').show();
         $('body').click(function(event) {
@@ -191,14 +230,18 @@
         $('body').unbind('click');
       }
     });
-    //End advanced options
+    $('a.export_data, a.save_table').click(function(ev){
+      stopPropagation(ev);
+    });
     
     
-    //Delete table
+    
+    ///////////////////////////////////////
+    //  Delete table                     //
+    ///////////////////////////////////////
     $('a.delete').click(function(ev){
-      ev.preventDefault();
-      ev.stopPropagation();
-      closeAllWindows();
+      stopPropagation(ev);
+      closeOutTableWindows();
       var table_id = $(this).attr('table-id');
       $('div.mamufas a.confirm_delete').attr('table-id',table_id);
       $('div.mamufas div.delete_window').show();
@@ -206,16 +249,14 @@
       bindESC();
     });
     $('div.mamufas a.cancel, div.mamufas a.close_delete').click(function(ev){
-      ev.preventDefault();
-      ev.stopPropagation();
+      stopPropagation(ev);
       $('div.mamufas').fadeOut('fast',function(){
         $('div.mamufas div.delete_window').hide();
       });
       unbindESC();
     });
     $('a.confirm_delete').click(function(ev){
-      ev.preventDefault();
-      ev.stopPropagation();
+      stopPropagation(ev);
       var table_id = $(this).attr('table-id');
       $.ajax({
         type: "DELETE",
@@ -229,13 +270,14 @@
       });
     });
     
+
     
-    
-    
-    //Change Map-Table toggle tabs
+    ///////////////////////////////////////
+    //  Application tabs menu            //
+    ///////////////////////////////////////
     $('section.subheader ul.tab_menu li a').click(function(ev){
-      ev.stopPropagation();
-      ev.preventDefault();
+      stopPropagation(ev);
+      closeOutTableWindows();
       if (!$(this).parent().hasClass('selected')) {
         $('section.subheader ul.tab_menu li').removeClass('selected');
         if ($(this).text()=="Table") {
@@ -259,8 +301,6 @@
 
 
   function changesRequest(url_change,param,value,old_value) {
-    
-    //TODO add loader queue
     var params = {};
     params[param] = value;
     
@@ -284,9 +324,6 @@
   }
 
   
-
-
-
   function errorActionPerforming(param, old_value,error_text) {
     switch (param) {
       case 'privacy': $('span.privacy_window ul li.'+old_value).addClass('selected');
@@ -305,21 +342,18 @@
                       });
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      default:
+      default:        break;
     }
   }
 
 
-  
-  
   function bindESC() {
     $(document).keydown(function(event){
       if (event.which == '27') {
-        closeAllWindows();
+        closeOutTableWindows();
       }
     });
   }
-  
   function unbindESC() {
     $(document).unbind('keydown');
     $('body').unbind('click');
@@ -327,7 +361,7 @@
   
   
   
-  function closeAllWindows() {
+  function closeOutTableWindows() {
     $('span.privacy_window').hide();
     $('span.title_window').hide();
     $('span.advanced_options').hide();
@@ -336,9 +370,7 @@
     //popup windows
     $('div.mamufas').fadeOut('fast',function(){
       $('div.mamufas div.delete_window').hide();
-      $('div.mamufas div.georeference_window').hide();
       $('div.mamufas div.export_window').hide();
-      $('div.mamufas div.column_window').hide();
       $(document).unbind('keydown');
       $('body').unbind('click');
     });

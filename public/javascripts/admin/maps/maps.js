@@ -7,6 +7,50 @@
   
 
   $(document).ready(function(){
+    
+    ///////////////////////////////////////
+    //  Map elements                     //
+    ///////////////////////////////////////
+    $('div.map_window').append(
+      '<div class="map_curtain"></div>'+
+      '<a href="#zoom_in" class="zoom_in"></a>'+
+      '<a href="#zoom_out" class="zoom_out"></a>'+
+      '<p class="loading">Loading</p>'+
+      '<div class="map_header">'+
+        '<ul>'+
+          '<li class="first">'+
+            '<h4><a href="#">Map type</a></h4>'+
+            '<p>Terrain</p>'+
+            '<a class="open" href="#open_map_type">open</a>'+
+            '<span class="map_type_list">'+
+              '<ul>'+
+                '<li><a map="hybrid" href="#hybrid">Hybrid</a></li>'+
+                '<li><a map="roadmap" href="#roadmap">Roadmap</a></li>'+
+                '<li><a map="satellite" href="#satellite">Satellite</a></li>'+
+                '<li><a map="terrain" href="#terrain">Terrain</a></li>'+
+              '</ul>'+
+            '</span>'+
+          '</li>'+
+          '<li>'+
+            '<h4>Visualization type</h4>'+
+            '<p>Features visualization</p>'+
+          '</li>'+
+          '<li>'+
+            '<h4>Markers customization</h4>'+
+            '<p>Customized dots</p>'+
+          '</li>'+
+          '<li>'+
+            '<h4>Infowindow customization</h4>'+
+            '<p>Default</p>'+
+          '</li>'+
+        '</ul>'+
+      '</div>'+
+      '<div id="map"></div>'
+    );
+    
+    
+    
+    
     //Zooms
     $('a.zoom_in').click(function(ev){
       ev.stopPropagation();
@@ -19,7 +63,10 @@
       map.setZoom(map.getZoom()-1);
     });
 
-
+    
+    ///////////////////////////////////////
+    //  Change map type                  //
+    ///////////////////////////////////////
     $('div.map_header ul:eq(0) li').click(function(ev){
       ev.stopPropagation();
       ev.preventDefault();
@@ -31,8 +78,6 @@
         };
       });
     });
-
-
     $('div.map_header ul:eq(1) li a').click(function(ev){
       ev.stopPropagation();
       ev.preventDefault();
@@ -47,6 +92,8 @@
     });
   });
 
+
+
   function showMap() {
     $('div.map_window div.map_curtain').hide();
     if (map==null) {
@@ -60,6 +107,7 @@
     }
     getMapTableData();
   }
+
 
   function hideMap() {
     $('div.map_window div.map_curtain').show();
@@ -162,7 +210,6 @@
   function hideLoader() {
     $('p.loading').fadeOut();
   }
-
 
 
   function clearMap() {

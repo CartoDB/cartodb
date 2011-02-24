@@ -393,6 +393,7 @@
                 '</span>'+
               '</div>'+
             '</div>'+
+            '<p class="error"><span>Write a correct time</span></p>'+
           '</div>'+
           '<span>'+
             '<a class="cancel" href="#">Cancel</a>'+
@@ -428,8 +429,8 @@
               '<h3>Choose your geocoding method for this column</h3>'+
               '<p>Please select the columns for the lat/lon fields</p>'+
               '<ul>'+
-                '<li class="selected">'+
-                  '<a class="option" href="#lat_lng_column">This is a lat/lon column</a>'+
+                '<li>'+
+                  '<a class="first_ul" href="#lat_lng_column">This is a lat/lon column</a>'+
                   '<div class="select">'+
                     '<label>LATITUDE COLUMN</label>'+
                     '<span class="select latitude">'+
@@ -449,7 +450,15 @@
                     '</span>'+
                   '</div>'+
                 '</li>'+
-                '<li class="disabled"><a>This is an address column</a></li>'+
+                '<li class="selected">'+
+                  '<a class="first_ul" href="#choose_address">This is an address column</a>'+
+                  '<div class="address_option">'+
+                    '<p>For more precission, you can create an address using some columns. Choose in order (Street - region/city - country)</p>'+
+                    '<div class="first_column_address">'+
+                      '<p>For more precission, you can create an address using some columns. Choose in order (Street - region/city - country)</p>'+
+                    '</div>'+
+                  '</div>'+
+                '</li>'+
                 '<li class="disabled"><a>KML or PostGIS geometry</a></li>'+
               '</ul>'+
               '<p class="error">You have to select latitude and longitude</p>'+
@@ -730,7 +739,11 @@
 
             methods.closeTablePopups();
             methods.bindESCkey();
-              
+            
+            $('div.edit_cell p.error').hide();
+            $('div.edit_cell input').removeClass('error');
+            $('div.edit_cell textarea').removeClass('error');
+            
             var target_position = $(target).parent().offset();
             var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
             $('tbody tr[r="'+data.row+'"]').addClass('editing');
@@ -1010,9 +1023,13 @@
             } else {
               $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
             }
+          } else {
+            methods.closeTablePopups();
+            return false;
           }
         } else if (type=="date") {
           if ($("div.edit_cell div.date div.hour input").hasClass('error')) {
+            $("div.edit_cell p.error").html('<span>Write a correct time</span>').fadeIn().delay(2000).fadeOut();
             return false;
           } else {
             var month = getMonthNumber($('div.edit_cell div.date div.month span.bounds a').text());
@@ -1023,11 +1040,32 @@
             var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
             $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
           }
+        } else if (type=="number") {
+          if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
+            var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
+            var value_ = $("div.edit_cell textarea").val();
+            if (pattern.test(value_)) {
+              $('div.edit_cell textarea').removeClass('error');
+              var new_value = $("div.edit_cell textarea").val();
+              var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
+              $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
+            } else {
+              $('div.edit_cell textarea').addClass('error');
+              $("div.edit_cell p.error").html('<span>Write a correct number</span>').fadeIn().delay(2000).fadeOut();
+              return false;
+            }
+          } else {
+            methods.closeTablePopups();
+            return false;
+          }
         } else {
           if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
             var new_value = $("div.edit_cell textarea").val();
             var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
             $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
+          } else {
+            methods.closeTablePopups();
+            return false;
           }
         }
         
@@ -1333,7 +1371,6 @@
            method: "GET",
            url: '/api/json/tables/'+table_id+'/schema',
            success: function(data) {
-
              //Remove ScrollPane
              var custom_scrolls = [];
              $('.scrollPane').each(function(){
@@ -1373,6 +1410,10 @@
                 }
              });
              $('div.georeference_window a.confirm_georeference').removeClass('disabled');
+           },
+           error: function(e) {
+             $('div.georeference_window span.select:eq(0) a:eq(0)').text('Error retrieving cols').attr('c','');
+             $('div.georeference_window span.select:eq(1) a:eq(0)').text('Error retrieving cols').attr('c','');
            }
         });
         $(this).closest('div').find('a.options').removeClass('selected');
@@ -1382,23 +1423,25 @@
       });
       $('div.georeference_window span.select a.option').livequery('click',function(ev){
         stopPropagation(ev);
-        
-        if ($(this).parent().hasClass('clicked')) {
-          $(this).parent().removeClass('clicked');
-        } else {
-          $('span.select').removeClass('clicked');
-          $(document).bind('click',function(ev){
-            if (!$(ev.target).closest('span.select').length) {
-              $('span.select').removeClass('clicked');
-            };
-          });
-          $(this).parent().addClass('clicked');
-          $(this).parent().find('ul').jScrollPane();
+        if (!$(this).parent().hasClass('disabled')) {
+          if ($(this).parent().hasClass('clicked')) {
+            $(this).parent().removeClass('clicked');
+          } else {
+            $('span.select').removeClass('clicked');
+            $('body').bind('click',function(ev){
+              if (!$(ev.target).closest('span.select').length) {
+                $('span.select').removeClass('clicked');
+              };
+            });
+            $(this).parent().addClass('clicked');
+            $(this).parent().find('ul').jScrollPane();
+          }
         }
       });
+
+      
       $('div.georeference_window span.select ul li a').livequery('click',function(ev){
         stopPropagation(ev);
-        
         $(this).closest('span.select').children('a.option').text($(this).text());
         $(this).closest('span.select').children('a.option').attr('c',$(this).text());
         $('span.select').removeClass('clicked');
@@ -1423,25 +1466,36 @@
           $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
         }
       });
+      
+      $('div.georeference_window div.inner_ span.top ul li a.first_ul').livequery('click',function(ev){
+        stopPropagation(ev);
+        if (!$(this).parent().hasClass("disabled")) {
+          $('div.georeference_window div.inner_ span.top ul:eq(0) li').removeClass('selected');
+          $(this).parent().addClass('selected');
+        }
+      });
+
       $('a.confirm_georeference').livequery('click',function(ev){
         stopPropagation(ev);
         
-        var latitude = $('a#latitude').attr('c');
-        var longitude = $('a#longitude').attr('c');
-        if (!(latitude=='' && longitude=='')) {
-          var params = {};
-          params['lat_column'] = (latitude=="Empty")? "nil" : latitude;
-          params['lon_column'] = (longitude=="Empty")? "nil" : longitude;
-          methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry',"PUT");
-          enabled = true;
-        } else {
-          $('div.georeference_window p.error').text('You have to select latitude and longitude');
-          $('div.georeference_window p.error').css('opacity',0);
-          $('div.georeference_window p.error').css('display','block');
-          $('div.georeference_window p.error').fadeTo(300,1);
-          $('div.georeference_window p.error').delay(3000).fadeTo(300,0,function(){
-            $('div.georeference_window p.error').css('display','none');
-          });
+        if (!$(this).hasClass('disabled')) {
+          var latitude = $('a#latitude').attr('c');
+          var longitude = $('a#longitude').attr('c');
+          if (!(latitude=='' && longitude=='')) {
+            var params = {};
+            params['lat_column'] = (latitude=="Empty")? "nil" : latitude;
+            params['lon_column'] = (longitude=="Empty")? "nil" : longitude;
+            methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry',"PUT");
+            enabled = true;
+          } else {
+            $('div.georeference_window p.error').text('You have to select latitude and longitude');
+            $('div.georeference_window p.error').css('opacity',0);
+            $('div.georeference_window p.error').css('display','block');
+            $('div.georeference_window p.error').fadeTo(300,1);
+            $('div.georeference_window p.error').delay(3000).fadeTo(300,0,function(){
+              $('div.georeference_window p.error').css('display','none');
+            });
+          }
         }
       });
       $('div.georeference_window a.close_geo,div.georeference_window a.cancel').livequery('click',function(ev){
@@ -1449,6 +1503,8 @@
         enabled = true;
         methods.closeTablePopups();
       });
+      
+      
       
       
       ///////////////////////////////////////
@@ -1532,27 +1588,28 @@
                 }
              });
              $('div.column_window a.column_add').removeClass('disabled');
+           },
+           error: function(e) {
+              $('div.column_window span.select a.option').text('Error retrieving types').attr('type','');
            }
         });
 
         $('div.mamufas div.column_window').show();
         $('div.mamufas').fadeIn();
-        
-        //methods.addColumn();
       });
       $('div.column_window span.select a.option').livequery('click',function(ev){
         stopPropagation(ev);
-        if ($(this).parent().hasClass('clicked')) {
-          $(this).parent().removeClass('clicked');
-        } else {
-          $('div.column_window span.select').removeClass('clicked');
-          $('body').bind('click',function(ev){
-            if (!$(ev.target).closest('span.select').length) {
-              $('div.column_window span.select').removeClass('clicked');
-            };
-          });
-          $(this).parent().addClass('clicked');
-          $(this).parent().find('ul').jScrollPane();
+        if (!$(this).parent().hasClass('disabled')) {
+          if ($(this).parent().hasClass('clicked')) {
+            $(this).parent().removeClass('clicked');
+          } else {
+            $('body').bind('click',function(ev){
+              if (!$(ev.target).closest('div.column_window span.select').length) {
+                $('div.column_window span.select').removeClass('clicked');
+              };
+            });
+            $(this).parent().addClass('clicked');
+          }
         }
       });
       $('div.column_window span.select ul li a').livequery('click',function(ev){
@@ -1563,7 +1620,7 @@
       });
       $('a.column_add').livequery('click',function(ev){
         stopPropagation(ev);
-        $('div.column_window span.select div.select_content').hide();
+        $('div.column_window span.select').removeClass('clicked');
         
         if ($('div.column_window input').attr('value')!='' && $('div.column_window a.option').attr('type')!='') {
           methods.addColumn($('div.column_window input').attr('value'),$('div.column_window a.option').attr('type'));

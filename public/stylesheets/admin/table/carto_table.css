@@ -162,7 +162,7 @@ div.table_position div.delete_column a:hover {color:#333333;}
 div.table_position div.delete_column a.button {float:right; height:14px; margin:18px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
 div.table_position div.delete_column a.button:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
-/*END*/
+
 
 
 /*SQL CONSOLE*/
@@ -237,11 +237,17 @@ div.table_position div.edit_cell div.date div.hour span.bounds {position:relativ
 div.table_position div.edit_cell div.date div.hour span.bounds input {float:left; width:47px; height:14px; padding:6px 4px; margin:0; border:1px solid #999999; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;
   font:normal 11px "Helvetica",Arial; color:#333333; text-align:left;}
 div.table_position div.edit_cell div.date div.hour span.bounds input:focus {outline:none;}
-div.table_position div.edit_cell div.date div.hour span.bounds input.error {border-color:#FF3300; color:#FF3300;}
+div.table_position div.edit_cell div.date div.hour span.bounds input.error {border-color:#C04E03; color:#C04E03;}
 div.table_position div.edit_cell div.free {display:none;}
 div.table_position div.edit_cell textarea {float:left; display:block; min-width:248px; min-height:30px; padding:7px; font:normal 13px "Helvetica",Arial; color:#666666; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px;}
 div.table_position div.edit_cell textarea:focus {outline:none; border-color:#666;}
+div.table_position div.edit_cell textarea.error {border-color:#C04E03; color:#C04E03;}
+div.table_position div.edit_cell textarea.error:focus {border-color:#C04E03; color:#C04E03;}
 div.table_position div.edit_cell span {position:absolute; bottom:10px; left:10px; right:10px;}
+div.table_position div.edit_cell div.inner p.error {position:absolute; top:-30px!important; right:10px!important; display:none; width:170px!important; height:50px!important; padding:0px!important; margin:0!important; background: url('/images/admin/table/left_error.png') no-repeat 0 0!important;
+  z-index:10;}
+div.table_position div.edit_cell div.inner p.error span {float:left; top:0; height:35px!important; padding:15px 20px 0 0!important; margin:0 0 0 9px; background:url('/images/admin/table/right_error.png') no-repeat right 0!important; font:normal 11px Arial; color:white;
+  text-shadow:0 -1px #C05A16; text-align:center;}
 div.table_position div.edit_cell a.cancel {position:relative; float:left; margin:7px 0 0 0; font:normal 11px "Helvetica"; color:#333333;}
 div.table_position div.edit_cell a.cancel:hover {color:black;}
 div.table_position div.edit_cell a.save {position:relative; float:right; width:91px; height:14px!important; padding:5px 0; text-align:center; background:url('/images/admin/table/save_button.png') no-repeat 0 0; text-decoration:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;}
@@ -270,27 +276,28 @@ div.mamufas div.georeference_window div.inner_ span.top ul li.disabled {opacity:
 div.mamufas div.georeference_window div.inner_ span.top ul li.disabled a:hover {background-position: 0 2px; cursor:default; color:#666666;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.choosen {display:none;}
 div.mamufas div.georeference_window div.inner_ span.top ul li a:hover {background-position:0 -28px; color:#333333;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select {float:left; width:153px; margin:10px 0 0 25px;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.disabled {opacity:0.5;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.disabled a:hover {color:#333333; cursor:default;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select.last {margin:10px 0 0 10px;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select label {float:left; width:100%; text-transform:uppercase; font:normal 10px "Helvetica",Arial; color:#999999;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select {position:relative; float:left; width:137px; height:11px; margin:5px 0 0 0; padding:8px 7px; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999;
+div.mamufas div.georeference_window div.inner_ span.top ul li div.select {display:none;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select {display:block; float:left; width:153px; margin:10px 0 0 25px;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.disabled {opacity:0.5;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.disabled a:hover {color:#333333; cursor:default;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select.last {margin:10px 0 0 10px;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select label {float:left; width:100%; text-transform:uppercase; font:normal 10px "Helvetica",Arial; color:#999999;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select {position:relative; float:left; width:137px; height:11px; margin:5px 0 0 0; padding:8px 7px; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999;
   background-image:-moz-linear-gradient(100% 100% 90deg, #DBDCDF, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#DBDCDF));}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select div.select_content {display:none;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select a {width:127px!important; margin:0!important; padding:0 10px 0 0!important; background:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select div.select_content {display:none;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select a {width:127px!important; margin:0!important; padding:0 10px 0 0!important; background:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;
   text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:url('/images/admin/icons/select_arrows.png') no-repeat 130px 5px;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select a:hover {color:#000000;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select select {display:none;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.clicked a {background-position:130px -15px;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.clicked div.select_content {position:absolute; top:10px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select a:hover {color:#000000;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select select {display:none;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked a {background-position:130px -15px;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked div.select_content {position:absolute; top:10px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
    background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
    border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.clicked ul {float:left; display:default; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.clicked ul li {float:left; width:90px; margin:0; padding:3px 0 2px;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.clicked ul li a {float:left; width:90px; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul {float:left; display:default; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li {float:left; width:90px; margin:0; padding:3px 0 2px;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li a {float:left; width:90px; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
   text-shadow:none;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.select span.select.clicked ul li a:hover {color:#6DBE6D;}  
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li a:hover {color:#6DBE6D;}  
 div.mamufas div.georeference_window div.inner_ span.top p.error {display:none; width:auto; margin:15px 0 0 0!important; padding:5px 7px!important; border:1px solid #E06C6C; color:red; background:#FFC9CF; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
 div.mamufas div.georeference_window div.inner_ span.bottom {float:left; width:385px; padding:0 0 10px; border-top:1px solid white;}
 div.mamufas div.georeference_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}
@@ -333,6 +340,8 @@ div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li a {f
   text-shadow:none; font:normal 11px "Helvetica", Arial;}
 div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li a:hover {color:#6DBE6D;}
 div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li {float:left; margin:3px 0!important;}
+div.mamufas div.column_window div.inner_ span.top span.select.disabled {opacity:0.5;}
+div.mamufas div.column_window div.inner_ span.top span.select.disabled a {cursor:default;}
 div.mamufas div.column_window div.inner_ span.top span.select.error {border-color:#C04E03;}
 div.mamufas div.column_window div.inner_ span.top p.error {position:absolute; top:100px; right:5px; display:none; width:auto; height:50px; padding:0!important; margin:0; background: url('/images/admin/table/left_error.png') no-repeat 0 0;}
 div.mamufas div.column_window div.inner_ span.top p.error span {float:left; height:35px; padding:15px 20px 0 0; margin:0 0 0 19px; background:url('/images/admin/table/right_error.png') no-repeat right 0; font:normal 11px Arial; color:white;

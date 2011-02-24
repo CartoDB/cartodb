@@ -12,8 +12,10 @@ feature "Tables JSON API" do
     user = create_user
     table = create_table :user_id => user.id
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+      end
     end
 
     content = user.run_query("select * from \"#{table.name}\"")[:rows]
@@ -654,8 +656,10 @@ feature "Tables JSON API" do
     user = create_user
     table = create_table :user_id => user.id
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+      end
     end
 
     authenticate_api user
@@ -716,8 +720,10 @@ feature "Tables JSON API" do
     user = create_user
     table = create_table :user_id => user.id
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+      end
     end
 
     authenticate_api user
@@ -756,8 +762,10 @@ feature "Tables JSON API" do
     table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+      end
     end
 
     authenticate_api user
@@ -777,6 +785,23 @@ feature "Tables JSON API" do
     query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")
     query_result[:rows][0][:lon].to_s.should match /^40\.32/
     query_result[:rows][0][:lat].to_s.should match /^3\.76/
+  end
+
+  scenario "Get the address column" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    authenticate_api user
+
+    table.set_address_column!(:address)
+
+    get_json "/api/json/tables/#{table.id}/get_address_column"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['address_column'].should == "address"
   end
 
 end

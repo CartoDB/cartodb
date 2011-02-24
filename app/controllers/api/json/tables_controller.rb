@@ -2,7 +2,7 @@
 
 class Api::Json::TablesController < ApplicationController
 
-  REJECT_PARAMS = %W{ format controller action id row_id requestId column_id }
+  REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key}
 
   skip_before_filter :verify_authenticity_token
 
@@ -363,6 +363,22 @@ class Api::Json::TablesController < ApplicationController
            :status => 400, :callback => params[:callback] and return
   end
 
+  # Get the column with is geolocating via address
+  # * Request Method: +GET+
+  # * URI: +/api/json/tables/:id/get_address_column
+  # * Format: +JSON+
+  # * Response if _success_:
+  #   * status code: 200
+  #   * {'address_column' => 'name of the address column'}
+  def get_address_column
+    response = if @table.address_column
+      {'address_column' => @table.address_column.to_s}
+    else
+      ''
+    end
+    render :json => response.to_json, :status => 200, :callback => params[:callback]
+  end
+
   # Drop a row from a table
   # * Request Method: +DELETE+
   # * URI: +/api/json/tables/:id/rows/:row_id
@@ -372,7 +388,9 @@ class Api::Json::TablesController < ApplicationController
   #   * body: _nothing_
   def delete_row
     if params[:row_id]
-      current_user.run_query("delete from #{@table.name} where cartodb_id = #{params[:row_id].sanitize_sql!}")
+      current_user.in_database do |user_database|
+        user_database.run("delete from #{@table.name} where cartodb_id = #{params[:row_id].sanitize_sql!}")
+      end
       render :json => ''.to_json,
              :callback => params[:callback], :status => 200
     else

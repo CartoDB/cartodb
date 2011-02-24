@@ -451,11 +451,41 @@
                   '</div>'+
                 '</li>'+
                 '<li class="selected">'+
-                  '<a class="first_ul" href="#choose_address">This is an address column</a>'+
+                  '<a class="first_ul" href="#choose_address">Choose or create an address column</a>'+
                   '<div class="address_option">'+
-                    '<p>For more precission, you can create an address using some columns. Choose in order (Street - region/city - country)</p>'+
-                    '<div class="first_column_address">'+
-                      '<p>For more precission, you can create an address using some columns. Choose in order (Street - region/city - country)</p>'+
+                    '<p>Choose the column you want to combine for georeferencing your data.</p>'+
+                    '<div class="first_column_address block">'+
+                      '<label>SELECTED COLUMN 1</label>'+
+                      '<span class="select">'+
+                        '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
+                        '<div class="select_content">'+
+                          '<ul class="scrollPane"></ul>'+
+                        '</div>'+
+                      '</span>'+
+                      '<a class="remove_column" href="#remove_column"></a>'+
+                      '<a class="combine" href="#combine">Combine with...</a>'+
+                    '</div>'+
+                    '<div class="second_column_address block">'+
+                      '<label>SELECTED COLUMN 2</label>'+
+                      '<span class="select">'+
+                        '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
+                        '<div class="select_content">'+
+                          '<ul class="scrollPane"></ul>'+
+                        '</div>'+
+                      '</span>'+
+                      '<a class="remove_column" href="#remove_column"></a>'+
+                      '<a class="combine" href="#combine">Combine with...</a>'+
+                    '</div>'+
+                    '<div class="third_column_address block">'+
+                      '<label>SELECTED COLUMN 3</label>'+
+                      '<span class="select">'+
+                        '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
+                        '<div class="select_content">'+
+                          '<ul class="scrollPane"></ul>'+
+                        '</div>'+
+                      '</span>'+
+                      '<a class="remove_column" href="#remove_column"></a>'+
+                      '<a class="combine" href="#combine">Combine with...</a>'+
                     '</div>'+
                   '</div>'+
                 '</li>'+
@@ -1383,11 +1413,11 @@
              $('div.georeference_window span.select ul li').remove();
              
              for (var i = 0; i<data.length; i++) {
-               
                if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
                  if (data[i][2]==undefined) {
                    $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                  } else {
+                   $('div.georeference_window div.block span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                    if (data[i][2]=="longitude") {
                      $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                      $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
@@ -1438,8 +1468,6 @@
           }
         }
       });
-
-      
       $('div.georeference_window span.select ul li a').livequery('click',function(ev){
         stopPropagation(ev);
         $(this).closest('span.select').children('a.option').text($(this).text());
@@ -1466,7 +1494,6 @@
           $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
         }
       });
-      
       $('div.georeference_window div.inner_ span.top ul li a.first_ul').livequery('click',function(ev){
         stopPropagation(ev);
         if (!$(this).parent().hasClass("disabled")) {
@@ -1474,7 +1501,6 @@
           $(this).parent().addClass('selected');
         }
       });
-
       $('a.confirm_georeference').livequery('click',function(ev){
         stopPropagation(ev);
         

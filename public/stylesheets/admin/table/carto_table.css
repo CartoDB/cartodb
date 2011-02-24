@@ -257,7 +257,7 @@ div.table_position div.edit_cell a.save:hover {background-position:0 -24px; colo
 
 /*Windows belong to mamufas object*/
 /*Geo window mamufas*/
-div.mamufas div.georeference_window {position:absolute; display:none; top:50%; left:50%; width:389px; margin:-150px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
+div.mamufas div.georeference_window {position:absolute; display:none; top:50%; left:50%; width:389px; margin:-250px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
   -moz-box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.georeference_window a.close_geo {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_georeference.png') no-repeat 0 0;}
 div.mamufas div.georeference_window a.close_geo:hover {background-position:0 -24px;}
@@ -298,6 +298,76 @@ div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.selec
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li a {float:left; width:90px; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
   text-shadow:none;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li a:hover {color:#6DBE6D;}  
+
+
+
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option {display:none;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.address_option {display:block;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option p {float:left; width:340px; margin:10px 0!important; padding:0 10px!important; font-size:12px; line-height:16px;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option div.block {position:relative; float:left; width:100%; padding:0 0 10px!important;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option label {float:left; margin:0 0 0 13px; width:340px; font:bold 10px "Helvetica",Arial; color:#999999;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select {position:relative; float:left; width:137px; height:11px; margin:5px 0 0 10px; padding:8px 7px; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999;
+  background-image:-moz-linear-gradient(100% 100% 90deg, #DBDCDF, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#DBDCDF));}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select div.select_content {display:none;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select a {width:127px!important; margin:0!important; padding:0 10px 0 0!important; background:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;
+  text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:url('/images/admin/icons/select_arrows.png') no-repeat 130px 5px;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select a:hover {color:#000000;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content {display:default;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content {position:absolute; top:10px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
+   background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
+   border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content ul {float:left; display:default; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content ul li {float:left; width:90px; margin:0; padding:3px 0 2px;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content ul li a {float:left; width:90px; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
+  text-shadow:none;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content ul li a:hover {color:#6DBE6D;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option a.remove_column {position:absolute; display:block; bottom:16px; left:165px; width:17px; height:17px; padding:0; background:url('/images/admin/table/remove_column_bkg.png') no-repeat 0 0;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option a.remove_column:hover {background-position:0 -17px;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option a.combine {position:absolute; bottom:16px; left:165px; height:15px; padding:1px 0 1px 25px; background:url('/images/admin/table/combine_bkg.png') no-repeat 0 0px; color:#6FBE6F;
+  text-decoration:underline;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option a.combine:hover {background-position:0 -17px; color:#447744}
+
+
+/*'<div class="address_option">'+
+  '<p>You can create an address using columns. Choose in order (Street - region/city - country for example). If you choose more than one column, we\'ll create a new georeference column for you.</p>'+
+  '<div class="first_column_address">'+
+    '<label>SELECTED COLUMN 1</label>'+
+    '<span class="select">'+
+      '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
+      '<div class="select_content">'+
+        '<ul class="scrollPane"></ul>'+
+      '</div>'+
+    '</span>'+
+    '<a class="remove_column" href="#remove_column"></a>'+
+    '<a class="combine" href="#combine">Combine with...</a>'+
+  '</div>'+
+  '<div class="second_column_address">'+
+    '<label>SELECTED COLUMN 2</label>'+
+    '<span class="select">'+
+      '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
+      '<div class="select_content">'+
+        '<ul class="scrollPane"></ul>'+
+      '</div>'+
+    '</span>'+
+    '<a class="remove_column" href="#remove_column"></a>'+
+    '<a class="combine" href="#combine">Combine with...</a>'+
+  '</div>'+
+  '<div class="third_column_address">'+
+    '<label>SELECTED COLUMN 3</label>'+
+    '<span class="select">'+
+      '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
+      '<div class="select_content">'+
+        '<ul class="scrollPane"></ul>'+
+      '</div>'+
+    '</span>'+
+    '<a class="remove_column" href="#remove_column"></a>'+
+    '<a class="combine" href="#combine">Combine with...</a>'+
+  '</div>'+
+'</div>'+*/
+
+
+
+
 div.mamufas div.georeference_window div.inner_ span.top p.error {display:none; width:auto; margin:15px 0 0 0!important; padding:5px 7px!important; border:1px solid #E06C6C; color:red; background:#FFC9CF; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
 div.mamufas div.georeference_window div.inner_ span.bottom {float:left; width:385px; padding:0 0 10px; border-top:1px solid white;}
 div.mamufas div.georeference_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}

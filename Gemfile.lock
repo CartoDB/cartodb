@@ -121,7 +121,7 @@ GEM
       file-tail
       rack
       rake (>= 0.8.1)
-    pg (0.9.0)
+    pg (0.10.1)
     polyglot (0.3.1)
     rack (1.2.1)
     rack-mount (0.6.13)
@@ -205,7 +205,7 @@ DEPENDENCIES
   mocha
   nofxx-georuby
   passenger
-  pg (= 0.9)
+  pg (= 0.10.1)
   rails (= 3.0.4)
   rails_warden
   rdoc

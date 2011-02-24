@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 gem 'rails', '3.0.4'
 gem 'ruby-debug19', :require => 'ruby-debug', :group => [:development, :test], :platforms => :mri_19
 
-gem 'pg', '0.9'
+gem 'pg', '0.10.1'
 gem 'sequel-rails', :git => 'git://github.com/ferblape/sequel-rails.git'
 gem 'nofxx-georuby', :require => 'geo_ruby'
 

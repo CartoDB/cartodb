@@ -30,6 +30,7 @@ CartoDB::Application.routes.draw do
       put    'tables/:id/update'                => 'tables#update'
       put    'tables/:id/update_schema'         => 'tables#update_schema'
       put    'tables/:id/set_geometry_columns'  => 'tables#set_geometry_columns'
+      get    'tables/:id/get_address_column'    => 'tables#get_address_column'
       put    'tables/:id/update_geometry/:row_id' => 'tables#update_geometry'
     end
   end

@@ -787,4 +787,21 @@ feature "Tables JSON API" do
     query_result[:rows][0][:lat].to_s.should match /^3\.76/
   end
 
+  scenario "Get the address column" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    authenticate_api user
+
+    table.set_address_column!(:address)
+
+    get_json "/api/json/tables/#{table.id}/get_address_column"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['address_column'].should == "address"
+  end
+
 end

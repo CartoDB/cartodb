@@ -78,8 +78,10 @@ feature "Tables" do
   end
 
   scenario "Update the value from a cell" do
-    10.times do
-      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    @user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+      end
     end
 
     sleep 2
@@ -96,8 +98,10 @@ feature "Tables" do
   end
 
   scenario "Can't update cartodb_id field" do
-    2.times do
-      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    @user.in_database do |user_database|
+      2.times do
+        user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+      end
     end
 
     sleep 2
@@ -109,8 +113,10 @@ feature "Tables" do
   end
 
   scenario "Can't update cartodb_id field" do
-    2.times do
-      @user.run_query("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    @user.in_database do |user_database|
+      2.times do
+        user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+      end
     end
 
     sleep 2

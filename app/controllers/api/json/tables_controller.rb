@@ -2,7 +2,7 @@
 
 class Api::Json::TablesController < ApplicationController
 
-  REJECT_PARAMS = %W{ format controller action id row_id requestId column_id }
+  REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key}
 
   skip_before_filter :verify_authenticity_token
 

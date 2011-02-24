@@ -121,4 +121,10 @@ feature "Tables" do
     page.find("div.edit_cell textarea").should_not be_visible
   end
 
+  scenario "Visit a table that doesn't exist" do
+    visit "/tables/666"
+
+    page.should have_content("The page you are looking for doesn't exist")
+  end
+
 end

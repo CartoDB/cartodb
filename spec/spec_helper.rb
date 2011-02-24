@@ -22,7 +22,7 @@ RSpec.configure do |config|
     ).map(:datname).each { |user_database_name| Rails::Sequel.connection.run("drop database #{user_database_name}") }
     Rails::Sequel.connection[
       "SELECT u.usename FROM pg_catalog.pg_user u"
-    ].map{ |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user #{username}") if username =~ /^cartodb_user_/ }
+    ].map{ |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user #{username}") if username =~ /^test_cartodb_user_/ }
   end
 
 end

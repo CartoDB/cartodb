@@ -23,7 +23,7 @@ feature "Dashboard", %q{
 
     click_link_or_button('Public tables')
 
-    page.should have_content("0 Public tables in cartoDB")
+    page.should have_content("0 Public tables in CartoDB")
     page.should have_content("Ouch! There are not tables for your search")
 
   end
@@ -182,7 +182,7 @@ feature "Dashboard", %q{
     visit '/dashboard'
     click_link_or_button('Public tables')
 
-    page.should have_content("21 Public tables in cartoDB")
+    page.should have_content("21 Public tables in CartoDB")
 
     page.should have_content("BROWSE BY TAGS")
     page.should have_css("ul li:eq(1) a span", :text => "vodka")

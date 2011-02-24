@@ -77,7 +77,11 @@ class User < Sequel::Model
   #### End of Authentication methods
 
   def database_username
-    "cartodb_user_#{id}"
+    if Rails.env.production?
+      "cartodb_user_#{id}"
+    else
+      "#{Rails.env}_cartodb_user_#{id}"
+    end
   end
 
   def database_password

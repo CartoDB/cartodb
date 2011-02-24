@@ -39,8 +39,10 @@ table.user_id = user.id
 table.force_schema = "name varchar, surname varchar, address varchar, city varchar, country varchar, nif varchar, age integer, twitter_account varchar, postal_code integer"
 table.save
 
-100.times do
-  user.run_query("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','#{String.random(30)}','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',#{rand(100)},'#{String.random(10)}',#{rand(10000)})" )
+user.in_database do |user_database|
+  100.times do
+    user_database.run("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','#{String.random(30)}','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',#{rand(100)},'#{String.random(10)}',#{rand(10000)})" )
+  end
 end
 
 table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',

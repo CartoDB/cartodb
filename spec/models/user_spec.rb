@@ -29,7 +29,7 @@ describe User do
   it "should has his own database, created when the account is created" do
     user = create_user
     user.database_name.should == "cartodb_test_user_#{user.id}_db"
-    user.database_username.should == "cartodb_user_#{user.id}"
+    user.database_username.should == "test_cartodb_user_#{user.id}"
     user.in_database do |user_database|
       user_database.test_connection.should == true
     end
@@ -114,19 +114,7 @@ describe User do
     query_result[:columns].should == [:fam, :login]
     query_result[:rows][0].should == {:fam=>"Polynoidae", :login=>"vzlaturistica "}
 
-    query_result = user.run_query("update antantaric_species set family='polynoidae' where family='Polynoidae'")
-    query_result[:time].should_not be_blank
-    query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
-    query_result[:total_rows].should == 0
-    query_result[:rows].should be_empty
-
     query_result = user.run_query("select count(*) from antantaric_species where family='Polynoidae' ")
-    query_result[:time].should_not be_blank
-    query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
-    query_result[:total_rows].should == 1
-    query_result[:rows][0].should == {:count => 0}
-
-    query_result = user.run_query("select count(*) from antantaric_species where family='polynoidae' ")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 1
@@ -149,7 +137,48 @@ describe User do
     end
   end
 
-  it "can have different keys for accessing via JSONP API requrests" do
+  it "should raise an error when runing a query which is not performing a SELECT" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, age integer"
+    table.save
+    table.should be_public
+
+    lambda {
+      user.run_query("delete from #{table.name}")
+    }.should raise_error(CartoDB::InvalidQuery)
+
+    lambda {
+      user.run_query("update #{table.name} set name = null")
+    }.should raise_error(CartoDB::InvalidQuery)
+
+    lambda {
+      user.run_query("alter table #{table.name} add column wadus varchar")
+    }.should raise_error(CartoDB::InvalidQuery)
+
+    lambda {
+      user.run_query("inert into #{table.name} (name) values ('wadus')")
+    }.should raise_error(CartoDB::InvalidQuery)
+  end
+
+  it "should run only one query if more than one is called" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, age integer"
+    table.save
+    table.should be_public
+
+    lambda {
+      user.run_query("delete from #{table.name}; select * from #{table.name}")
+    }.should raise_error(CartoDB::InvalidQuery)
+
+    result = user.run_query("select * from #{table.name}; delete from #{table.name}")
+    result[:total_rows].should == 0
+  end
+
+  it "can have different keys for accessing via JSONP API requests" do
     user = create_user
     lambda {
       user.create_key ""

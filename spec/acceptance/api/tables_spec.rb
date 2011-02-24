@@ -12,8 +12,10 @@ feature "Tables JSON API" do
     user = create_user
     table = create_table :user_id => user.id
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+      end
     end
 
     content = user.run_query("select * from \"#{table.name}\"")[:rows]
@@ -654,8 +656,10 @@ feature "Tables JSON API" do
     user = create_user
     table = create_table :user_id => user.id
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+      end
     end
 
     authenticate_api user
@@ -716,8 +720,10 @@ feature "Tables JSON API" do
     user = create_user
     table = create_table :user_id => user.id
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+      end
     end
 
     authenticate_api user
@@ -756,8 +762,10 @@ feature "Tables JSON API" do
     table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+      end
     end
 
     authenticate_api user

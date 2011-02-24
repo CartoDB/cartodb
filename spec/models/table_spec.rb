@@ -80,9 +80,11 @@ describe Table do
     ]
     table.to_json[:rows].should be_empty
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES
-                        ('#{String.random(10)}',-3.4234213, 150.323,'#{String.random(100)}')")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES
+                              ('#{String.random(10)}',-3.4234213, 150.323,'#{String.random(100)}')")
+      end
     end
 
     table.to_json[:total_rows].should == 10
@@ -709,8 +711,10 @@ describe Table do
     table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+      end
     end
 
     table.set_address_column!(:address)
@@ -735,8 +739,10 @@ describe Table do
     table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+      end
     end
 
     table.set_address_column!(:address)
@@ -755,8 +761,10 @@ describe Table do
     table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+      end
     end
 
     table.set_lan_lon_columns!(:latitude, :longitude)
@@ -775,8 +783,10 @@ describe Table do
     table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+      end
     end
 
     table.set_address_column!(:address)
@@ -793,8 +803,10 @@ describe Table do
     table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+      end
     end
 
     table.set_lan_lon_columns!(:latitude, :longitude)
@@ -813,8 +825,10 @@ describe Table do
     table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+      end
     end
 
     table.set_address_column!(:address)
@@ -831,8 +845,10 @@ describe Table do
     table.force_schema = "latitude float, longitude float, address varchar"
     table.save
 
-    10.times do
-      user.run_query("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+      end
     end
 
     table.set_lan_lon_columns!(:latitude, :longitude)

@@ -372,7 +372,9 @@ class Api::Json::TablesController < ApplicationController
   #   * body: _nothing_
   def delete_row
     if params[:row_id]
-      current_user.run_query("delete from #{@table.name} where cartodb_id = #{params[:row_id].sanitize_sql!}")
+      current_user.in_database do |user_database|
+        user_database.run("delete from #{@table.name} where cartodb_id = #{params[:row_id].sanitize_sql!}")
+      end
       render :json => ''.to_json,
              :callback => params[:callback], :status => 200
     else

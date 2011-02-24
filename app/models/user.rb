@@ -10,6 +10,14 @@ class CartoDB::ErrorRunningQuery < StandardError
   end
 end
 
+class CartoDB::InvalidQuery < StandardError
+  attr_accessor :message
+
+  def initialize
+    @message = "Only SELECT statement is allowed"
+  end
+end
+
 class User < Sequel::Model
 
   ## Callbacks
@@ -118,7 +126,11 @@ class User < Sequel::Model
     result
   end
 
-  def run_query(query)
+  def run_query(raw_query)
+    query = if match = raw_query.match(/^\s*(select[^;]+);?/i)
+      match.captures[0]
+    end
+    raise CartoDB::InvalidQuery if query.blank?
     rows = []
     time = nil
     in_database do |user_database|

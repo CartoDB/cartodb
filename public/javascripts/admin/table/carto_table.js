@@ -71,7 +71,8 @@
        url: options.getDataUrl,
        data: {
          rows_per_page: options.resultsPerPage,
-         page: actualPage
+         page: actualPage,
+         query: options.query
        },
        success: function(data) {
          if (data.total_rows==0) {
@@ -158,7 +159,7 @@
                         '</ul>' +
                       '</span>';
         thead += '<th c="'+element[0]+'" type="'+element[1]+'">'+
-                    '<div '+((index==0)?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
+                    '<div '+((element[0]=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
                       '<span class="long">'+
                         '<h3 class="'+((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'static':'')+'">'+element[0]+'</h3>'+
                         ((element[2]!=undefined)?'<p class="geo '+element[2]+'">geo</p>':'') +
@@ -428,8 +429,8 @@
             '<span class="top">'+
               '<h3>Choose your geocoding method for this column</h3>'+
               '<p>Please select the columns for the lat/lon fields</p>'+
-              '<ul>'+
-                '<li>'+
+              '<ul class="main_list">'+
+                '<li class="first_list selected">'+
                   '<a class="first_ul" href="#lat_lng_column">This is a lat/lon column</a>'+
                   '<div class="select">'+
                     '<label>LATITUDE COLUMN</label>'+
@@ -450,13 +451,13 @@
                     '</span>'+
                   '</div>'+
                 '</li>'+
-                '<li class="selected">'+
+                '<li class="first_list disabled">'+
                   '<a class="first_ul" href="#choose_address">Choose or create an address column</a>'+
                   '<div class="address_option">'+
                     '<p>Choose the column you want to combine for georeferencing your data.</p>'+
                     '<div class="first_column_address block">'+
                       '<label>SELECTED COLUMN 1</label>'+
-                      '<span class="select">'+
+                      '<span class="select address">'+
                         '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
                         '<div class="select_content">'+
                           '<ul class="scrollPane"></ul>'+
@@ -467,7 +468,7 @@
                     '</div>'+
                     '<div class="second_column_address block">'+
                       '<label>SELECTED COLUMN 2</label>'+
-                      '<span class="select">'+
+                      '<span class="select address">'+
                         '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
                         '<div class="select_content">'+
                           '<ul class="scrollPane"></ul>'+
@@ -478,7 +479,7 @@
                     '</div>'+
                     '<div class="third_column_address block">'+
                       '<label>SELECTED COLUMN 3</label>'+
-                      '<span class="select">'+
+                      '<span class="select address">'+
                         '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
                         '<div class="select_content">'+
                           '<ul class="scrollPane"></ul>'+
@@ -489,7 +490,7 @@
                     '</div>'+
                   '</div>'+
                 '</li>'+
-                '<li class="disabled"><a>KML or PostGIS geometry</a></li>'+
+                '<li class="first_list disabled"><a>KML or PostGIS geometry</a></li>'+
               '</ul>'+
               '<p class="error">You have to select latitude and longitude</p>'+
             '</span>'+
@@ -678,7 +679,10 @@
 
 
         //For paginating data
-        if (!loading && enabled) {
+        console.log(actualPage);
+        var end = total <= ((actualPage+1)*defaults.resultsPerPage);
+        
+        if (!loading && enabled && !end) {
           var difference = $(document).height() - $(window).height();
           if ($(window).scrollTop()==difference) {
             loading = true;
@@ -1401,7 +1405,7 @@
            method: "GET",
            url: '/api/json/tables/'+table_id+'/schema',
            success: function(data) {
-             //Remove ScrollPane
+             // Remove all ScrollPane //
              var custom_scrolls = [];
              $('.scrollPane').each(function(){
          					custom_scrolls.push($(this).jScrollPane().data().jsp);
@@ -1411,6 +1415,7 @@
                 this.destroy();
               });
              $('div.georeference_window span.select ul li').remove();
+             // -------------------- //
              
              for (var i = 0; i<data.length; i++) {
                if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
@@ -1468,7 +1473,7 @@
           }
         }
       });
-      $('div.georeference_window span.select ul li a').livequery('click',function(ev){
+      $('div.georeference_window span.latitude ul li a,div.georeference_window span.longitude ul li a').livequery('click',function(ev){
         stopPropagation(ev);
         $(this).closest('span.select').children('a.option').text($(this).text());
         $(this).closest('span.select').children('a.option').attr('c',$(this).text());
@@ -1494,6 +1499,12 @@
           $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
         }
       });
+      $('div.georeference_window span.address ul li a').livequery('click',function(ev){
+        stopPropagation(ev);
+        $(this).closest('span.select').children('a.option').text($(this).text());
+        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
+        $('span.select').removeClass('clicked');
+      });
       $('div.georeference_window div.inner_ span.top ul li a.first_ul').livequery('click',function(ev){
         stopPropagation(ev);
         if (!$(this).parent().hasClass("disabled")) {
@@ -1501,29 +1512,50 @@
           $(this).parent().addClass('selected');
         }
       });
+      
+      
+      
+      
       $('a.confirm_georeference').livequery('click',function(ev){
         stopPropagation(ev);
         
         if (!$(this).hasClass('disabled')) {
-          var latitude = $('a#latitude').attr('c');
-          var longitude = $('a#longitude').attr('c');
-          if (!(latitude=='' && longitude=='')) {
+          if ($('div.georeference_window ul.main_list li.first_list:eq(1)').hasClass('selected')) {
             var params = {};
-            params['lat_column'] = (latitude=="Empty")? "nil" : latitude;
-            params['lon_column'] = (longitude=="Empty")? "nil" : longitude;
-            methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry',"PUT");
-            enabled = true;
-          } else {
-            $('div.georeference_window p.error').text('You have to select latitude and longitude');
-            $('div.georeference_window p.error').css('opacity',0);
-            $('div.georeference_window p.error').css('display','block');
-            $('div.georeference_window p.error').fadeTo(300,1);
-            $('div.georeference_window p.error').delay(3000).fadeTo(300,0,function(){
-              $('div.georeference_window p.error').css('display','none');
+            var address = '';
+            
+            $('div.georeference_window ul.main_list li.first_list:eq(1) a.option').each(function(index,element){
+              if ($(element).attr('c')!='') {
+                address += $(element).attr('c') + ',';
+              }
             });
+            address = address.substr(0,address.length-1);
+            params['address_column'] = address;
+            methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry',"PUT");
+          } else {
+            var latitude = $('a#latitude').attr('c');
+            var longitude = $('a#longitude').attr('c');
+            if (!(latitude=='' && longitude=='')) {
+              var params = {};
+              params['lat_column'] = (latitude=="Empty")? "nil" : latitude;
+              params['lon_column'] = (longitude=="Empty")? "nil" : longitude;
+              methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry',"PUT");
+            } else {
+              $('div.georeference_window p.error').text('You have to select latitude and longitude');
+              $('div.georeference_window p.error').css('opacity',0);
+              $('div.georeference_window p.error').css('display','block');
+              $('div.georeference_window p.error').fadeTo(300,1);
+              $('div.georeference_window p.error').delay(3000).fadeTo(300,0,function(){
+                $('div.georeference_window p.error').css('display','none');
+              });
+            }
           }
         }
       });
+      
+      
+      
+      
       $('div.georeference_window a.close_geo,div.georeference_window a.cancel').livequery('click',function(ev){
         stopPropagation(ev);
         enabled = true;
@@ -1835,8 +1867,17 @@
         case "column_type":     headers[params.column.name] = params.column.type;
                                 break;
         case "update_geometry": $('p.geo').remove();
-                                $('thead tr th h3:contains('+params.lat_column+')').parent().append('<p class="geo latitude">geo</p>');
-                                $('thead tr th h3:contains('+params.lon_column+')').parent().append('<p class="geo longitude">geo</p>');
+                                if (params.address_column != undefined && params.address_column != '') {
+                                  var address_cols = params.address_column.split(',');
+                                  if (address_cols.length==1) {
+                                    var geo_address = new Geocoding(params.address_column,table_id);
+                                  } else {
+                                    // TODO geo_address for multiple addresses columns
+                                  }
+                                } else {
+                                  $('thead tr th h3:contains('+params.lat_column+')').parent().append('<p class="geo latitude">geo</p>');
+                                  $('thead tr th h3:contains('+params.lon_column+')').parent().append('<p class="geo longitude">geo</p>');
+                                }
                                 methods.closeTablePopups();
                                 break;
         case "new_column":      methods.closeTablePopups();

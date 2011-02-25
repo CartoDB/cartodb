@@ -3,12 +3,13 @@
 
 
     $(document).ready(function(){
-      $("table#cDBtable").cDBtable(
+      $("table#carto_table").cDBtable(
         'start',{
-          getDataUrl: '/api/json/tables/'+table_id,
+          getDataUrl: '/api/json/tables/' + table_id, //-query +table_id
           resultsPerPage: 50,
           reuseResults: 100,
-          total: 5000
+          total: 5000,
+          query: "SELECT cartodb_id,address,created_at FROM "+ table_name
         }
       );
     });

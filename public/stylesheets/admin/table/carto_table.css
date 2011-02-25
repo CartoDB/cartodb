@@ -2,7 +2,7 @@
 
 div.table_position {position:relative; float:left; width:100%; min-width:880px; min-height:55px; margin:103px 0 0 0; padding:0; overflow-y:hidden; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;
   -webkit-user-select:none; -moz-user-select:none; z-index:15;}
-div.table_position.end {padding:0 0 350px;}
+div.table_position.end {padding:0 0 150px;}
 div.table_position table {position:relative!important; width:auto; margin:0; padding:0;}
 
 div.table_position table thead {position:fixed; top:161px; left:0; padding:5px 0 0 0; margin:0; z-index:50; background-color:#FFFFFF; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white;}
@@ -126,7 +126,7 @@ div.table_position div.empty_table p a:hover {color:#333333;}
 
 /*LOADINGS*/
 /*pagination*/
-div.table_position div.loading {position:relative; display:none; float:left; width:100%; height:45px; padding:45px 0 0; margin:1px 0 0 0; background:url('/images/admin/table/loading_bkg.jpg') repeat-x 0 top white;}
+div.table_position div.loading {position:relative!important; display:none; float:left; width:100%; height:45px; padding:45px 0 0; margin:1px 0 0 0; background:url('/images/admin/table/loading_bkg.jpg') repeat-x 0 top white;}
 div.table_position div.loading.loading_previous {margin:59px 0 0 0; border-bottom:none;}
 div.table_position div.loading p {width:100%; text-align:center; font:bold 13px "Helvetica"; color:#666666;}
 div.table_position div.loading p.count {width:100%; padding:5px 0 0 0; text-align:center; font:normal 11px "Helvetica"; color:#B3B3B3;}
@@ -135,6 +135,7 @@ div.table_position div.loading img {position:absolute; width:25; height:25px ; m
 
 /*GENERAL OPTIONS*/
 div.table_position div.general_options {position:fixed; bottom:0; right:0; left:0; height:28px; border-bottom:3px solid #282F49; z-index:200;}
+div.table_position div.general_options.end {bottom:15px;}
 div.table_position div.general_options ul {position:absolute; bottom:0; right:0; width:auto; height:23px!important; padding:5px 5px 0 0; margin:0; background:#282F49; -webkit-border-top-left-radius: 5px; -moz-border-radius-topleft: 5px; border-top-left-radius: 5px; z-index:100;}
 div.table_position div.general_options ul li {float:left; width:auto; margin:0 0 0 5px;}
 div.table_position div.general_options ul li.other {display:none;}
@@ -450,3 +451,4 @@ div.mamufas div.column_window div.inner_ span.bottom a.column_add:hover {backgro
 
 /*ENF OF THE TABLE*/
 span.end_table {position:absolute; left:0; right:0; bottom:-2px; width:100%; height:2px; background:#F0F1F5; z-index:100; border-top:1px solid #e4e5e9; z-index:1;}
+div.table_position.end span.end_table {bottom:-3px;}

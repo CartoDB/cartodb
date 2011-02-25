@@ -67,6 +67,7 @@
        actualPage = minPage;
      }
 
+
      $.ajax({
        method: "GET",
        url: options.getDataUrl,
@@ -557,6 +558,41 @@
     //  CREATE NEW ROW
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addRow: function() {
+      
+      // Three types, when:
+       // - The table is empty.
+       // - You can add a row without paginate 
+       // - You need paginate.
+      
+      // maxPage = Math.ceil(total / defaults.resultsPerPage) - 1;
+      // console.log(maxPage);
+      // minPage = maxPage--;
+      // actualPage = maxPage;
+      // 
+      // $(table).children('tbody').remove();
+      // 
+      // $.ajax({
+      //   method: "GET",
+      //   url: defaults.getDataUrl,
+      //   data: {
+      //     rows_per_page: defaults.resultsPerPage,
+      //     page: maxPage+1,
+      //     query: defaults.query
+      //   },
+      //   success: function(data) {
+      //     console.log(data);
+      //     enabled = false;
+      //     methods.drawRows(defaults,data.rows,'next',actualPage);
+      //     enabled = true
+      //   }
+      // });
+      
+      
+      
+      //Necesito 2 últimas páginas para poder hacer al menos scroll, por si acaso la última página no tiene como en este caso, al menos 50 elementos.
+
+
+      
       var requestId = createUniqueId();
       var type = 0;
       
@@ -570,21 +606,6 @@
         } else {
           type = 1;
         }
-        
-        // getDataUrl: '/api/json/tables/'+table_id,
-        // resultsPerPage: 50,
-        // reuseResults: 100,
-        // total: 5000
-        
-        // var minPage = 0;
-        // var maxPage = -1;
-        // var actualPage;
-        // var total;
-        
-        //if () {
-        //} else {
-          //Ir a la última página - Poner mamufas cargando - desaactivar durante el mamufas cargando - meter clase a la tabla para que se quede en la mitad
-        //}
       }
       
       
@@ -611,7 +632,7 @@
                     var row = '<tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
                   }
                                  
-
+      
                   for (var i = 0; i<data.length; i++) {
                     var text = '';
                     if (data[i][0]=="cartodb_id") {
@@ -677,6 +698,7 @@
     //  ADD SCROLL PAGINATE BINDING
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addScroll: function() {
+      
       $(document).scroll(function(ev) {
         stopPropagation(ev);
         
@@ -684,7 +706,13 @@
         if ($(document).scrollTop()>58) {
           $('section.subheader').css('top','-3px');
           $(table).children('thead').css('top','99px');
+          if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
+            $('div.general_options').addClass('end');
+          } else {
+            $('div.general_options').removeClass('end');
+          }
         } else {
+          $('div.general_options').removeClass('end');
           $('section.subheader').css('top',58-$(document).scrollTop()+'px');
           $(table).children('thead').css('top',160-$(document).scrollTop()+'px');
         }
@@ -704,11 +732,20 @@
             $('div.table_position').removeClass('end');
             methods.showLoader('previous');
             setTimeout(function(){methods.getData(defaults,'previous')},500);
+          } else if (end && actualPage!=0) {
+            $('div.table_position').addClass('end');
           }
         }
       });
 
       $('div.table_position').scroll(function(ev){
+        if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
+          $('div.general_options').addClass('end');
+        } else {
+          $('div.general_options').removeClass('end');
+        }
+        //For moving table paginator loaders
+        $('div.table_position div.loading_next').css('margin-left',$('div.table_position').scrollLeft()+'px');
         //For moving first table column
         $(table).children('tbody').children('tr').children('td.first').css('left',$('div.table_position').scrollLeft()+'px');
         $(table).children('thead').children('tr').children('th.first').css('left',$('div.table_position').scrollLeft()+'px');
@@ -751,6 +788,7 @@
       $('div.loading_previous').hide();
       $(table).children('tbody').css('padding','53px 0 0 0');
       $(table).children('tbody').css('margin','5px 0 0 0');
+      $(document).scroll();
     },
 
 
@@ -793,9 +831,23 @@
             var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
             $('tbody tr[r="'+data.row+'"]').addClass('editing');
 
-            //Check if frist row or last column
-            if ($(target).parent().offset().top<230) {$('div.edit_cell').css('top',target_position.top-150+'px');} else {$('div.edit_cell').css('top',target_position.top-192+'px');}
-            if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {$('div.edit_cell').css('left',target_position.left-215+($(target).width()/2)+'px');} else {$('div.edit_cell').css('left',target_position.left-128+($(target).width()/2)+'px');}
+            //Check if first row or last row
+            if ($(target).parent().offset().top<260) {
+              $('div.edit_cell').css('top','90px');
+            } else if ($(target).parent().offset().top>$(document).height()-60) {
+              $('div.edit_cell').css('top',target_position.top-230+'px');
+            } else {
+              $('div.edit_cell').css('top',target_position.top-192+'px');
+            }
+            
+            //Check if first column or last column
+            if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {
+              $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-215+($(target).width()/2)+'px');
+            } else if (($(target).parent().offset().left+cell_size+28)<170) {
+               $('div.edit_cell').css('left','0px');
+            } else {
+              $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
+            }
 
 
             var type = headers[data.column];
@@ -1523,10 +1575,6 @@
           $(this).parent().addClass('selected');
         }
       });
-      
-      
-      
-      
       $('a.confirm_georeference').livequery('click',function(ev){
         stopPropagation(ev);
         
@@ -1563,17 +1611,11 @@
           }
         }
       });
-      
-      
-      
-      
       $('div.georeference_window a.close_geo,div.georeference_window a.cancel').livequery('click',function(ev){
         stopPropagation(ev);
         enabled = true;
         methods.closeTablePopups();
       });
-      
-      
       
       
       ///////////////////////////////////////
@@ -1800,7 +1842,6 @@
       $(window).resize(function(ev){
         methods.resizeTable();
       });
-
     },
 
 

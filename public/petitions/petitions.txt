@@ -14,3 +14,8 @@
   DATE
   
     - BLAT -> Las fechas no han cambiado al formato que hablamos. 2010-02-00 11:00:00 (Aparece una T y un +1:00 :( )
+    
+  GET ROWS
+  
+    - BLAT -> A la hora de añadir una fila, y la tabla tener muuuuchos registros, necesito que la request de recibir las filas por página me permitas mandarme las 2 últimas páginas para poder 
+    hacer al menos scroll, por si acaso la última página no tiene como en este caso, al menos 50 elementos. Yo explico el lunes.

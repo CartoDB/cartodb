@@ -1,0 +1,16 @@
+
+  GEOREFERENCIAR
+
+    - BLAT -> No puedo guardar las nuevas lat&lon del worder geocoder a la base datos, peta :S.
+
+  
+  QUERY
+  
+    - BLAT -> Me devuelve unas cosas muy raras cuando hago pedir tabla a través de una query. No me devuelve los headers correctamente, ni ordenados, tengo screenshot si necesitas.
+            - Si es posible siempre cartodb_id el primero, el resto como quieras guapo.
+            - Los headers (columnas) parace que llegan diferentes a cuando hacemos una petición normal de la tabla y se escacharra tó :S
+    
+
+  DATE
+  
+    - BLAT -> Las fechas no han cambiado al formato que hablamos. 2010-02-00 11:00:00 (Aparece una T y un +1:00 :( )

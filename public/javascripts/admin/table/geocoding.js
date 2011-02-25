@@ -14,15 +14,12 @@
 	/* 	*/
 	/*============================================================================*/
 	Geocoding.prototype.startGeocoding = function() {
-		var me = this;
+	  var me = this;
 		$.ajax({
-       method: "GET",
-       url: '/api/json/tables/'+this.table,
-       data: {
-         rows_per_page: 200,
-         page: 0
-       },
-       success: function(data) {
+      method: "GET",
+      url: '/api/json/tables/'+this.table,
+      data: {rows_per_page: 200, page: 0},
+      success: function(data) {
         var rows = data.rows;
         var directions = [];
         for (var i=0; i<rows.length; i++) {
@@ -39,8 +36,23 @@
             me.finishGeocoding();
             delete worker;
           } else {
-            console.log(event.data);
-            var latlng = new google.maps.LatLng(event.data.Placemark[0].Point.coordinates[1],event.data.Placemark[0].Point.coordinates[0]);          
+            var params = {};
+            params['lat'] = event.data.Placemark[0].Point.coordinates[1];
+            params['lon'] = event.data.Placemark[0].Point.coordinates[0];
+            
+            $.ajax({
+              type: "PUT",
+              url: '/api/json/tables/'+me.table+'/update_geometry/'+event.data.cartodb_id,
+              data: params,
+              success: function(data) {
+                console.log(data);
+              },
+              error: function(e) {
+                console.log(e);
+              }
+            });
+            
+            //var latlng = new google.maps.LatLng(event.data.Placemark[0].Point.coordinates[1],event.data.Placemark[0].Point.coordinates[0]);          
             // var marker = new google.maps.Marker({position: latlng, map: map,title:"Your position!"});
             // bounds.extend(latlng);
             //console.log(latlng);

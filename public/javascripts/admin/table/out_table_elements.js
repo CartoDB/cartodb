@@ -94,6 +94,7 @@
         }
         $('section.subheader h2 a').text(new_value);
         $('span.title_window').hide();
+        table_name = new_value;
         changesRequest('/update','name',new_value,old_value);
       }
     });
@@ -336,6 +337,7 @@
                       if (old_value.status=="save") {
                         $('p.status a').removeClass('public private').addClass('save').text('save');
                       }
+                      table_name = old_value;
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       case 'tags':    $("span.tags p").remove();

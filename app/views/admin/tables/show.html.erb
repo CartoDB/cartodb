@@ -19,8 +19,14 @@
             </p>
           <span class="tags">
             <% unless @table.tags.blank? %>
-              <% @table.tags.split(',').each do |tag_name| %>
-              <p><%= tag_name %></p>
+              <% tagsSize=@table.tags.split(',').size %>
+              <% @table.tags.split(',').each_with_index do |tag_name,index| %>
+              <% if index==tagsSize-1 %>
+                <p class="last"><%= tag_name %></p>
+              <% else %>
+                <p><%= tag_name %></p>
+              <% end %>
+              
               <% end %>
             <% end %>
             <a href="#" class="add">add tags</a>

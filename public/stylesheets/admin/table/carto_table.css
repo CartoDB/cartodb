@@ -290,7 +290,7 @@ div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.selec
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select a:hover {color:#000000;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select select {display:none;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked a {background-position:130px -15px;}
-div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked div.select_content {position:absolute; top:10px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked div.select_content {position:absolute; top:18px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
    background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
    border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul {float:left; display:default; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
@@ -313,7 +313,7 @@ div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option
   text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:url('/images/admin/icons/select_arrows.png') no-repeat 130px 5px;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select a:hover {color:#000000;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content {display:default;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content {position:absolute; top:10px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content {position:absolute; top:18px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
    background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
    border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content ul {float:left; display:default; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
@@ -402,10 +402,10 @@ div.mamufas div.column_window div.inner_ span.top span.select a {float:left; wid
 div.mamufas div.column_window div.inner_ span.top span.select a:hover {color:#000000;}
 div.mamufas div.column_window div.inner_ span.top span.select select {display:none;}
 div.mamufas div.column_window div.inner_ span.top span.select.clicked a {background-position:188px -15px;}
-div.mamufas div.column_window div.inner_ span.top span.select.clicked div.select_content {position:absolute; top:10px; left:35px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
+div.mamufas div.column_window div.inner_ span.top span.select.clicked div.select_content {position:absolute; top:18px; left:35px; display:block; width:120px; max-height:110px; margin:0!important; padding:2px 0px 5px; 
    background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
    border-bottom-right-radius: 3px; border-bottom-left-radius: 3px; z-index:20;}
-div.mamufas div.column_window div.inner_ span.top span.select.clicked ul {float:left; display:default; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
+div.mamufas div.column_window div.inner_ span.top span.select.clicked ul {float:left; display:default; width:100px; max-height:90px; margin:14px 0 0 1px; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
 div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li a {float:left; width:90px!important; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:white;
   text-shadow:none; font:normal 11px "Helvetica", Arial;}
 div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li a:hover {color:#6DBE6D;}

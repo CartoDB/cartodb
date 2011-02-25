@@ -188,13 +188,15 @@
         old_values.push($(element).text());
       });
       var new_values = '';
-      $("span.tags p").remove();  
+      $("span.tags p").remove();
+      $("span.tags span").remove();  
       $("li.tagit-choice").each(function(index,element){
         var value = (($.trim($(element).text())).slice(0, -2));
         $('<p>'+value+'</p>').insertBefore('a.add');
         new_values+=value+',';
       });
-
+      
+      $("span.tags p:last").last().addClass('last');
       $('span.tags_window').hide();
       changesRequest('/update','tags',new_values,old_values);
     });

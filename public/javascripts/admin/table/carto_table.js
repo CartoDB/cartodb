@@ -17,6 +17,7 @@
 // - div.table_position
 // - section subheader
 // - mamufas
+
 // We are playing with these containers but they don't belong to the plugin
 
 (function( $ ){
@@ -558,13 +559,18 @@
     addRow: function() {
       var requestId = createUniqueId();
       var type = 0;
-      requests_queue.newRequest(requestId,'add_row');
       
       
       if ($('div.empty_table').length>0) {
         type = 0;
       } else {
-        type = 1;
+        var end = total <= ((actualPage+1)*defaults.resultsPerPage);
+        if (!end) {
+          type = 2;
+        } else {
+          type = 1;
+        }
+        
         // getDataUrl: '/api/json/tables/'+table_id,
         // resultsPerPage: 50,
         // reuseResults: 100,
@@ -582,63 +588,69 @@
       }
       
       
+      if (type==0 || type==1) {
+        requests_queue.newRequest(requestId,'add_row');
         
-      $.ajax({
-         type: "POST",
-         url: '/api/json/tables/'+table_id+'/rows',
-         success: function(data) {
-           row_id = data.id;
-           $.ajax({
-              method: "GET",
-              url: '/api/json/tables/'+table_id+'/schema',
-              success: function(data) {
-                requests_queue.responseRequest(requestId,'ok','');
-                var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row</a></li><li><a href="#">Delete row</a></li></ul>' +
-                                    '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#" class="add_row">Add new row</a></li>' +
-                                    '</ul></span>';
+        $.ajax({
+           type: "POST",
+           url: '/api/json/tables/'+table_id+'/rows',
+           success: function(data) {
+             row_id = data.id;
+             $.ajax({
+                method: "GET",
+                url: '/api/json/tables/'+table_id+'/schema',
+                success: function(data) {
+                  requests_queue.responseRequest(requestId,'ok','');
+                  var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row</a></li><li><a href="#">Delete row</a></li></ul>' +
+                                      '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#" class="add_row">Add new row</a></li>' +
+                                      '</ul></span>';
                                     
-                if (type==0) {
-                  var row = '<tbody style="padding-top:52px"><tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
-                } else {
-                  var row = '<tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
-                }
+                  if (type==0) {
+                    var row = '<tbody style="padding-top:52px"><tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+                  } else {
+                    var row = '<tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+                  }
                                  
 
-                for (var i = 0; i<data.length; i++) {
-                  var text = '';
-                  if (data[i][0]=="cartodb_id") {
-                    text = row_id;
-                  } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
-                    var date = new Date();
-                    text = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+' '+date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
-                  } else {
-                    text = '';
+                  for (var i = 0; i<data.length; i++) {
+                    var text = '';
+                    if (data[i][0]=="cartodb_id") {
+                      text = row_id;
+                    } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
+                      var date = new Date();
+                      text = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+' '+date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+                    } else {
+                      text = '';
+                    }
+                    row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+text+'</div></td>';
                   }
-                  row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+text+'</div></td>';
+                
+                  var start = row.lastIndexOf('"width:');
+                  var end = row.lastIndexOf('px"');
+                  row = row.substring(0,start) + '"width:' + last_cell_size + row.substring(end);
+                
+                  if (type==0) {
+                    row += '</tr></tbody>';
+                    $(table).append(row);
+                  } else {
+                    row += '</tr>';
+                    $(table).children('tbody').append(row);
+                  }
+                
+                  if (type==1) {
+                    $('div.table_position').addClass('end');
+                    $(window).scrollTo('100%',500);
+                  }
+                  $('div.empty_table').remove();
+                  methods.resizeTable();
+                },
+                error: function(e) {
+                  requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
                 }
-                
-                var start = row.lastIndexOf('"width:');
-                var end = row.lastIndexOf('px"');
-                row = row.substring(0,start) + '"width:' + last_cell_size + row.substring(end);
-                
-                if (type==0) {
-                  row += '</tr></tbody>';
-                  $(table).append(row);
-                } else {
-                  row += '</tr>';
-                  $(table).children('tbody').append(row);
-                }
-                
-                $('div.empty_table').remove();
-                methods.resizeTable();
-              },
-              error: function(e) {
-                requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
-              }
-           });
-         }
-      });
-      
+             });
+           }
+        });
+      }
       
       //Activamos la tabla
       enabled = true;
@@ -679,23 +691,22 @@
 
 
         //For paginating data
-        console.log(actualPage);
         var end = total <= ((actualPage+1)*defaults.resultsPerPage);
         
-        if (!loading && enabled && !end) {
+        if (!loading && enabled) {
           var difference = $(document).height() - $(window).height();
-          if ($(window).scrollTop()==difference) {
+          if ($(window).scrollTop()==difference && !end) {
             loading = true;
             methods.showLoader('next');
             setTimeout(function(){methods.getData(defaults,'next')},500);
           } else if ($(window).scrollTop()==0 && minPage!=0) {
             loading = true;
+            $('div.table_position').removeClass('end');
             methods.showLoader('previous');
             setTimeout(function(){methods.getData(defaults,'previous')},500);
           }
         }
       });
-
 
       $('div.table_position').scroll(function(ev){
         //For moving first table column

@@ -399,6 +399,22 @@ class Api::Json::TablesController < ApplicationController
     end
   end
 
+  # Update the geometry values from a row
+  # * Request Method: +PUT+
+  # * URI: +/api/json/tables/:id/update_geometry/:row_id
+  # * Format: +JSON+
+  # * Parameters for setting lat and lon columns new values:
+  #     {
+  #       "lat" => "<new lat value>",
+  #       "lon" => "<new lon value>"
+  #     }
+  # * Parameters for setting address_column new value:
+  #     {
+  #       "address" => "<new address value>"
+  #     }
+  # * Response if _success_:
+  #   * status code: 200
+  #   * body: _nothing_
   def update_geometry
     @table.update_geometry!(params[:row_id], params.slice(:lat, :lon, :address))
     render :json => ''.to_json,

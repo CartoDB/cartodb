@@ -716,7 +716,7 @@ feature "Tables JSON API" do
     table.rows_counted.should == 3
   end
 
-  scenario "Update the geometry of a row in a table with latitud and longitude geometry" do
+  scenario "Update the geometry of a row in a table with latitud and longitude geometry and bad address" do
     user = create_user
     table = create_table :user_id => user.id
 
@@ -736,6 +736,38 @@ feature "Tables JSON API" do
     new_longitude = 40.321
 
     put_json "/api/json/tables/#{table.id}/update_geometry/1", { :lat => new_latitude, :lon => new_longitude, :address => "bla bla bla" }
+    response.status.should == 200
+
+    table.reload
+    row = table.to_json[:rows][0]
+    row[:latitude].should  == new_latitude
+    row[:longitude].should == new_longitude
+
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")
+    query_result[:rows][0][:lon].to_s.should match /^40\.32/
+    query_result[:rows][0][:lat].to_s.should match /^3\.76/
+  end
+
+  scenario "Update the geometry of a row in a table with latitud and longitude geometry without address" do
+    user = create_user
+    table = create_table :user_id => user.id
+
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+      end
+    end
+
+    authenticate_api user
+
+    row = table.to_json[:rows][0]
+    old_lat = row[:latitude]
+    old_lon = row[:longitude]
+
+    new_latitude  = 3.769
+    new_longitude = 40.321
+
+    put_json "/api/json/tables/#{table.id}/update_geometry/1", { :lat => new_latitude, :lon => new_longitude }
     response.status.should == 200
 
     table.reload

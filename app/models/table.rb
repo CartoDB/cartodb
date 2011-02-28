@@ -369,14 +369,19 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def to_json(options = {})
-    rows = []
-    limit = (options[:rows_per_page] || 10).to_i
+    rows   = []
+    limit  = (options[:rows_per_page] || 10).to_i
     offset = (options[:page] || 0).to_i*limit
     owner.in_database do |user_database|
       rows = user_database[name.to_sym].limit(limit,offset).
-              order(:cartodb_id).select(*schema.map{ |e| e[0]}).all.map do |row|
-                row[:created_at] = row[:created_at].strftime("%Y-%m-%d %H:%M:%S")
-                row[:updated_at] = row[:updated_at].strftime("%Y-%m-%d %H:%M:%S")
+              order(:cartodb_id).
+              select(*schema.map{ |e| e[0]}).
+              all.map do |row|
+                row.each do |k,v|
+                  if v.is_a?(Date) || v.is_a?(Time)
+                    row[k] = v.strftime("%Y-%m-%d %H:%M:%S")
+                  end
+                end
                 row
              end
     end

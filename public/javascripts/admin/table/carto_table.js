@@ -453,7 +453,7 @@
                     '</span>'+
                   '</div>'+
                 '</li>'+
-                '<li class="first_list disabled">'+
+                '<li class="first_list">'+
                   '<a class="first_ul" href="#choose_address">Choose or create an address column</a>'+
                   '<div class="address_option">'+
                     '<p>Choose the column you want to combine for georeferencing your data.</p>'+

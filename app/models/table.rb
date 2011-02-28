@@ -140,7 +140,7 @@ class Table < Sequel::Model(:user_tables)
   def after_create
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
-    set_lan_lon_columns!(:latitude, :longitude) if schema.flatten.include?(:latitude) && schema.flatten.include?(:longitude)
+    set_lat_lon_columns!(:latitude, :longitude) if schema.flatten.include?(:latitude) && schema.flatten.include?(:longitude)
 
     unless private?
       owner.in_database do |user_database|
@@ -259,10 +259,10 @@ class Table < Sequel::Model(:user_tables)
     return true
   end
 
-  def schema(options = {})
+  def self.schema(user, table, options = {})
     options[:cartodb_types] ||= false
-    temporal_schema = owner.in_database do |user_database|
-      user_database.schema(name.to_sym).map do |column|
+    temporal_schema = user.in_database do |user_database|
+      user_database.schema(table.name.to_sym).map do |column|
         [
           column.first,
           (options[:cartodb_types] == true ? column[1][:db_type].convert_to_cartodb_type : column[1][:db_type])
@@ -273,14 +273,18 @@ class Table < Sequel::Model(:user_tables)
       temporal_schema +
       [[:created_at, (options[:cartodb_types] == true ? "timestamp".convert_to_cartodb_type :  "timestamp")]] +
       [[:updated_at, (options[:cartodb_types] == true ? "timestamp".convert_to_cartodb_type :  "timestamp")]]
-    unless geometry_columns.blank?
+    unless table.geometry_columns.blank?
       schema.each do |col|
-        col << "latitude"  if col[0].to_sym == lat_column
-        col << "longitude" if col[0].to_sym == lon_column
-        col << "address"   if col[0].to_sym == address_column
+        col << "latitude"  if col[0].to_sym == table.lat_column
+        col << "longitude" if col[0].to_sym == table.lon_column
+        col << "address"   if col[0].to_sym == table.address_column
       end
     end
     return schema
+  end
+
+  def schema(options = {})
+    self.class.schema(owner, self, options)
   end
 
   def add_column!(options)
@@ -392,7 +396,7 @@ class Table < Sequel::Model(:user_tables)
     }
   end
 
-  def set_lan_lon_columns!(lat_column, lon_column)
+  def set_lat_lon_columns!(lat_column, lon_column)
     self.geometry_columns = nil
     if lat_column && lon_column
       owner.in_database do |user_database|

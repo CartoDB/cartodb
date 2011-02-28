@@ -509,7 +509,7 @@ describe Table do
     row[:cartodb_id].should == 1
     row[:name].should == "Hawai"
 
-    table.set_lan_lon_columns!(:lat, :lon)
+    table.set_lat_lon_columns!(:lat, :lon)
 
     # Vizzuality HQ
     current_lat = "40.422546"
@@ -551,7 +551,7 @@ describe Table do
 
   it "should be able to un-set geometry columns" do
     table = create_table
-    table.set_lan_lon_columns!(nil, nil)
+    table.set_lat_lon_columns!(nil, nil)
     table.lon_column.should be_nil
     table.lat_column.should be_nil
   end
@@ -795,7 +795,7 @@ describe Table do
       end
     end
 
-    table.set_lan_lon_columns!(:latitude, :longitude)
+    table.set_lat_lon_columns!(:latitude, :longitude)
     table.lat_column.should == :latitude
     table.lon_column.should == :longitude
 
@@ -837,7 +837,7 @@ describe Table do
       end
     end
 
-    table.set_lan_lon_columns!(:latitude, :longitude)
+    table.set_lat_lon_columns!(:latitude, :longitude)
     table.lat_column.should == :latitude
     table.lon_column.should == :longitude
 
@@ -879,7 +879,7 @@ describe Table do
       end
     end
 
-    table.set_lan_lon_columns!(:latitude, :longitude)
+    table.set_lat_lon_columns!(:latitude, :longitude)
     table.lat_column.should == :latitude
     table.lon_column.should == :longitude
 

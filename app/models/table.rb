@@ -434,8 +434,10 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def update_geometry!(row_id, attributes)
-    if address_column && attributes[:address]
-      update_row!(row_id, {address_column => attributes[:address]})
+    if address_column
+      if attributes[:address]
+        update_row!(row_id, {address_column => attributes[:address]})
+      end
       owner.in_database do |user_database|
         user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{attributes[:lon]},#{ attributes[:lat]}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
       end

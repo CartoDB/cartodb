@@ -439,6 +439,10 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  def run_query(query)
+    owner.run_query(query)
+  end
+
   private
 
   def update_updated_at

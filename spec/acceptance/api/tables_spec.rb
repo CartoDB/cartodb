@@ -836,4 +836,40 @@ feature "Tables JSON API" do
     json_response['address_column'].should == "address"
   end
 
+  scenario "Get the address column values paginated" do
+    res_mock = mock()
+    res_mock.stubs(:body).returns("")
+    Net::HTTP.stubs(:start).returns(res_mock)
+
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    table.set_address_column!(:address)
+
+    user.in_database do |user_database|
+      10.times do
+        user_database.run("INSERT INTO \"#{table.name}\" (Address,Latitude,Longitude) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude})")
+      end
+    end
+
+    authenticate_api user
+
+    get_json "/api/json/tables/#{table.id}/addresses"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 10
+    json_response['columns'].should == ["cartodb_id", "address"]
+    json_response['rows'][0]['cartodb_id'].should == 1
+
+    get_json "/api/json/tables/#{table.id}/addresses", {:page => 2, :per_page => 3}
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['total_rows'].should == 3
+    json_response['columns'].should == ["cartodb_id", "address"]
+    json_response['rows'][0]['cartodb_id'].should == 4
+  end
+
 end

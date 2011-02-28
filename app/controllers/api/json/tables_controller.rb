@@ -379,6 +379,32 @@ class Api::Json::TablesController < ApplicationController
     render :json => response.to_json, :status => 200, :callback => params[:callback]
   end
 
+  # Get the values from the address column
+  # * Request Method: +GET+
+  # * URI: +/api/json/tables/:id/addresses
+  # * Format: +JSON+
+  # * Parameters:
+  #     {
+  #       "page" => "<integer>" (by default 1),
+  #       "per_page" => "<integer>" (maximum per_page value is 50, by default 50)
+  #     }
+  # * Sample response if _success_:
+  #   * status code: 200
+  #   * {
+  #       "time":0.006813764572143555,
+  #       "total_rows":10,
+  #       "columns": ["cartodb_id","address"],
+  #       "rows": [{"cartodb_id":1,"address":"SHJxJxdTeyc"},{"cartodb_id":2,"address":"ewTKpIBFTmG"},...]
+  #     }
+  def addresses
+    page = params[:page] ? params[:page].to_i : 1
+    page = 1 if page < 0
+    per_page = params[:per_page] ? params[:per_page].to_i : 50
+    per_page = 50 if per_page < 0 || per_page > 50
+    response = @table.run_query("select cartodb_id, #{@table.address_column} from #{@table.name} limit #{per_page} offset #{(page - 1)*per_page}")
+    render :json => response.to_json, :status => 200, :callback => params[:callback]
+  end
+
   # Drop a row from a table
   # * Request Method: +DELETE+
   # * URI: +/api/json/tables/:id/rows/:row_id

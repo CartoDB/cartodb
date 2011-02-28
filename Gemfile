@@ -9,11 +9,12 @@ gem 'nofxx-georuby', :require => 'geo_ruby'
 
 gem 'warden'
 gem 'rails_warden'
-
-gem 'capistrano'
-gem 'capistrano-ext'
+gem 'polyglot'
+gem 'treetop'
 
 group :development do
+  gem 'capistrano'
+  gem 'capistrano-ext'
   gem 'git-up'
   gem 'rdoc'
   gem 'passenger'

@@ -47,5 +47,8 @@ end
 
 include GeoRuby::SimpleFeatures
 require 'csv'
+require 'sql_parser'
+require 'cartodb/errors'
+require 'cartodb/query_parser'
 
 class RecordNotFound < StandardError; end

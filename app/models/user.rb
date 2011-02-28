@@ -1,23 +1,5 @@
 # coding: UTF-8
 
-class CartoDB::ErrorRunningQuery < StandardError
-  attr_accessor :db_message # the error message from the database
-  attr_accessor :syntax_message # the query and a marker where the error is
-
-  def initialize(message)
-    @db_message = message.split("\n")[0]
-    @syntax_message = message.split("\n")[1..-1].join("\n")
-  end
-end
-
-class CartoDB::InvalidQuery < StandardError
-  attr_accessor :message
-
-  def initialize
-    @message = "Only SELECT statement is allowed"
-  end
-end
-
 class User < Sequel::Model
 
   ## Callbacks
@@ -127,12 +109,10 @@ class User < Sequel::Model
   end
 
   def run_query(raw_query)
-    query = if match = raw_query.match(/^\s*(select[^;]+);?/i)
-      match.captures[0]
-    end
-    raise CartoDB::InvalidQuery if query.blank?
+    query, columns = CartoDB::QueryParser.parse_select(raw_query, self)
     rows = []
     time = nil
+
     in_database do |user_database|
       time = Benchmark.measure {
         rows = user_database[query].all
@@ -141,7 +121,7 @@ class User < Sequel::Model
     {
       :time => time.real,
       :total_rows => rows.size,
-      :columns => (rows.size > 0 ? rows.first.keys - [:the_geom]: []),
+      :columns => columns,
       :rows => rows.map{ |row| row.delete("the_geom"); row }
     }
   rescue => e

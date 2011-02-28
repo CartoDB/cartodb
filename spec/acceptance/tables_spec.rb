@@ -133,4 +133,19 @@ feature "Tables" do
     page.should have_content("The page you are looking for doesn't exist")
   end
 
+  scenario "Add a new column" do
+    page.find("th[c='cartodb_id'] a.options").click
+    page.find("th[c='cartodb_id'] span.col_ops_list ul li.last a.add_column").click
+
+    page.find("div.column_window div.options input:eq(1)").set("Age")
+    page.find("div.column_window div.options span.select a.option").click
+    page.find("div.column_window div.options span.select div.select_content ul li a[href='#Number']").click
+
+    page.find("div.column_window a.column_add").click
+
+    sleep 1
+
+    page.find("th[c='age'][type='number'] h3").text.should == "age"
+  end
+
 end

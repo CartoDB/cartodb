@@ -285,13 +285,7 @@ describe Table do
     table.insert_row!({:name => String.random(10), :description => "", :time => "2010-10-13 10:46:32"})
     row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
     row[:description].should be_blank
-    datetime = row[:time]
-    datetime.year.should == 2010
-    datetime.month.should == 10
-    datetime.day.should == 13
-    datetime.hour.should == 10
-    datetime.min.should == 46
-    datetime.sec.should == 32
+    row[:time].should == "2010-10-13 10:46:32"
 
     table.update_row!(row[:cartodb_id], :description => "Description 123")
 

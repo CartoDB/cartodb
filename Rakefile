@@ -14,10 +14,14 @@ if %(development test).include?(Rails.env)
     RSpec::Core::RakeTask.new(:cartodb_acceptance) do |t|
       t.pattern = "spec/acceptance/**/*_spec.rb"
     end
+    desc "Run the code examples in spec/lib"
+    RSpec::Core::RakeTask.new(:cartodb_lib) do |t|
+      t.pattern = "spec/lib/**/*_spec.rb"
+    end
   end
 end
 
-task :default => ["test:prepare", "spec:models", "spec:cartodb_acceptance"]
+task :default => ["test:prepare", "spec:models", "spec:cartodb_lib", "spec:cartodb_acceptance"]
 
 namespace :cartodb do
   namespace :api do

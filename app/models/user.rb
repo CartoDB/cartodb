@@ -109,7 +109,12 @@ class User < Sequel::Model
   end
 
   def run_query(raw_query)
-    query, columns = CartoDB::QueryParser.parse_select(raw_query, self)
+    # TODO: activate query parser
+    # query, columns = CartoDB::QueryParser.parse_select(raw_query, self)
+    query = if match = raw_query.match(/^\s*(select[^;]+);?/i)
+      match.captures[0]
+    end
+    raise CartoDB::InvalidQuery if query.blank?
     rows = []
     time = nil
 
@@ -121,7 +126,7 @@ class User < Sequel::Model
     {
       :time => time.real,
       :total_rows => rows.size,
-      :columns => columns,
+      :columns => (rows.size > 0 ? rows.first.keys - [:the_geom]: []),
       :rows => rows.map{ |row| row.delete("the_geom"); row }
     }
   rescue => e

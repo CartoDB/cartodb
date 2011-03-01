@@ -204,7 +204,7 @@ div.table_position div.edit_cell div.boolean ul li.selected a {background-positi
 div.table_position div.edit_cell div.boolean ul li:hover a {color:#333333;}
 div.table_position div.edit_cell div.boolean ul li.selected a {color:#333333;}
 div.table_position div.edit_cell div.boolean ul li.selected a:hover {cursor:default;}
-div.table_position div.edit_cell div.date {display:none; float:left; min-width:248px; min-height:30px; padding:7px; margin:0; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; background:white;}
+div.table_position div.edit_cell div.date {display:none; float:left; min-width:274px; min-height:30px; padding:7px; margin:0; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; background:white;}
 div.table_position div.edit_cell div.date div.day {float:left; width:44px;}
 div.table_position div.edit_cell div.date div.day label {float:left; width:40px; padding:0 0 0 3px; margin:0; font:bold 10px "Helvetica",Arial; color:#999999;}
 div.table_position div.edit_cell div.date div.day span.bounds {position:relative!important; float:left!important; top:0; bottom:0; left:0; right:0; width:44px; height:28px; padding:0; margin:5px 0 0 0; overflow:hidden;}
@@ -425,6 +425,14 @@ div.mamufas div.column_window div.inner_ span.bottom a.cancel:hover {color:#3333
 div.mamufas div.column_window div.inner_ span.bottom a.column_add {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
 div.mamufas div.column_window div.inner_ span.bottom a.column_add:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+
+
+div.mamufas div.lastpage_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-107px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
+  -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111;}
+div.mamufas div.lastpage_window div.inner_ {float:left; width:413px; padding:0 0 5px; border:1px solid #FFC209; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+div.mamufas div.lastpage_window div.inner_ span.loading {float:left; display:block; opacity:1; width:347px; height:40px; padding:0 0 0 47px; margin:10px; background:url('/images/admin/icons/loading.gif') no-repeat 0 7px;}
+div.mamufas div.lastpage_window div.inner_ span.loading h5 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.lastpage_window div.inner_ span.loading p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
 
 
 /*jScrollPane CSS*/

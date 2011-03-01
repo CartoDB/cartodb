@@ -88,7 +88,7 @@
       	  } else {
             if (!me.loader.children('p').hasClass('loading')) {
               
-              var element = $('<p class="loading">Loading, <strong>left '+me.count+'</strong>...</p>');
+              var element = $('<p class="loading">Loading...</p>');
           	  element.css('top','30px');
           	  element.css('opacity','0');
           	  this.loader.append(element);

@@ -315,10 +315,10 @@
       $(table).parent().append(
         '<div class="general_options">'+
           '<ul>'+
-            '<li><a class="sql" href="#open_sql"><span>SQL</span></a></li>'+
+            //'<li><a class="sql" href="#open_sql"><span>SQL</span></a></li>'+
             '<li><a href="#add_row" class="add_row"><span>Add row</span></a></li>'+
             '<li><a href="#add_column" class="add_column"><span>Add column</span></a></li>'+
-            '<li><a><span class="dropdown">Views (2)</span></a></li>'+
+            //'<li><a><span class="dropdown">Views (2)</span></a></li>'+
             '<li class="other"><a href="#"><span class="dropdown">Other queries (2)</span></a></li>'+
           '</ul>'+
           //SQL Console
@@ -527,6 +527,16 @@
               '<a href="#add_column" class="column_add">Create</a>'+
             '</span>'+
           '</div>'+
+        '</div>'+
+        
+        
+        '<div class="lastpage_window">'+
+          '<div class="inner_">'+
+            '<span class="loading">'+
+              '<h5>We are redirecting you to the end of your table...</h5>'+
+              '<p>Is not gonna be a lot of time. Just some seconds, right?</p>'+
+            '</span>'+
+          '</div>'+
         '</div>');
       
       
@@ -559,59 +569,49 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addRow: function() {
       
-      // Three types, when:
-       // - The table is empty.
-       // - You can add a row without paginate 
-       // - You need paginate.
-      
-      // maxPage = Math.ceil(total / defaults.resultsPerPage) - 1;
-      // console.log(maxPage);
-      // minPage = maxPage--;
-      // actualPage = maxPage;
-      // 
-      // $(table).children('tbody').remove();
-      // 
-      // $.ajax({
-      //   method: "GET",
-      //   url: defaults.getDataUrl,
-      //   data: {
-      //     rows_per_page: defaults.resultsPerPage,
-      //     page: maxPage+1,
-      //     query: defaults.query
-      //   },
-      //   success: function(data) {
-      //     console.log(data);
-      //     enabled = false;
-      //     methods.drawRows(defaults,data.rows,'next',actualPage);
-      //     enabled = true
-      //   }
-      // });
-      
-      
-      
-      //Necesito 2 últimas páginas para poder hacer al menos scroll, por si acaso la última página no tiene como en este caso, al menos 50 elementos.
+      enabled = false;
+      if (total==undefined) {
+        total = 0;
+      } 
+      var end = total <= ((actualPage+1)*defaults.resultsPerPage);
 
-
-      
-      var requestId = createUniqueId();
-      var type = 0;
-      
-      
-      if ($('div.empty_table').length>0) {
-        type = 0;
-      } else {
-        var end = total <= ((actualPage+1)*defaults.resultsPerPage);
-        if (!end) {
-          type = 2;
+       
+      if (end || $('div.empty_table').length>0) {
+        if ($('div.empty_table').length>0) {
+          $('div.empty_table').remove();
+          addSingleRow(0);
         } else {
-          type = 1;
+          addSingleRow(1);
         }
+      } else {
+        $('div.lastpage_window').show();
+        $('div.mamufas').fadeIn();
+        
+        maxPage = Math.ceil(total / defaults.resultsPerPage) - 1;
+        minPage = maxPage-1;
+        actualPage = maxPage;
+  
+        $.ajax({
+          method: "GET",
+          url: defaults.getDataUrl,
+          data: {
+            rows_per_page: defaults.resultsPerPage,
+            page: minPage+'..'+maxPage,
+            query: defaults.query
+          },
+          success: function(data) {
+            $(table).children('tbody').remove();
+            methods.drawRows(defaults,data.rows,'next',actualPage);
+            addSingleRow(2);
+          }
+        });
       }
       
       
-      if (type==0 || type==1) {
+      function addSingleRow(type) {
+        var requestId = createUniqueId();
         requests_queue.newRequest(requestId,'add_row');
-        
+                
         $.ajax({
            type: "POST",
            url: '/api/json/tables/'+table_id+'/rows',
@@ -622,17 +622,17 @@
                 url: '/api/json/tables/'+table_id+'/schema',
                 success: function(data) {
                   requests_queue.responseRequest(requestId,'ok','');
-                  var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row</a></li><li><a href="#">Delete row</a></li></ul>' +
-                                      '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#" class="add_row">Add new row</a></li>' +
+                  var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row</a></li><li><a href="#delete_row" class="delete_row">Delete row</a></li></ul>' +
+                                      '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#add_row" class="add_row">Add new row</a></li>' +
                                       '</ul></span>';
-                                    
+                                  
                   if (type==0) {
                     var row = '<tbody style="padding-top:52px"><tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
                   } else {
                     var row = '<tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
                   }
-                                 
-      
+                               
+    
                   for (var i = 0; i<data.length; i++) {
                     var text = '';
                     if (data[i][0]=="cartodb_id") {
@@ -645,11 +645,11 @@
                     }
                     row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+text+'</div></td>';
                   }
-                
+              
                   var start = row.lastIndexOf('"width:');
                   var end = row.lastIndexOf('px"');
                   row = row.substring(0,start) + '"width:' + last_cell_size + row.substring(end);
-                
+              
                   if (type==0) {
                     row += '</tr></tbody>';
                     $(table).append(row);
@@ -657,24 +657,24 @@
                     row += '</tr>';
                     $(table).children('tbody').append(row);
                   }
-                
-                  if (type==1) {
+              
+                  if (type==2) {
                     $('div.table_position').addClass('end');
-                    $(window).scrollTo('100%',500);
+                    $(window).scrollTo('100%',500, {onAfter: function(){methods.closeTablePopups()}});
                   }
                   $('div.empty_table').remove();
                   methods.resizeTable();
+                  enabled = true;
+                  total = total + 1;
                 },
                 error: function(e) {
                   requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
+                  enabled = true;
                 }
              });
            }
         });
       }
-      
-      //Activamos la tabla
-      enabled = true;
     },
     
     
@@ -716,6 +716,11 @@
           $('section.subheader').css('top',58-$(document).scrollTop()+'px');
           $(table).children('thead').css('top',160-$(document).scrollTop()+'px');
         }
+        
+        
+        if ($('div.delete_column').is(':visible')) {
+          $('div.delete_column').fadeOut();
+        }
 
 
         //For paginating data
@@ -744,6 +749,11 @@
         } else {
           $('div.general_options').removeClass('end');
         }
+        
+        if ($('div.delete_row').is(':visible')) {
+          $('div.delete_row').fadeOut();
+        }
+        
         //For moving table paginator loaders
         $('div.table_position div.loading_next').css('margin-left',$('div.table_position').scrollLeft()+'px');
         //For moving first table column
@@ -1417,6 +1427,11 @@
         var options_position = $(table).find('th[c="'+column+'"]').find('a.options').position().left;
 
         $('div.delete_column a.button').attr('c',column);
+        if ($(document).scrollTop()>58) {
+          $('div.delete_column').css('top',$(document).scrollTop()-50+'px');
+        } else {
+          $('div.delete_column').css('top','15px');
+        }
         $('div.delete_column').css('left',left_position+options_position-97+'px');
         $('div.delete_column').show();
 
@@ -1636,6 +1651,7 @@
 
         $('div.delete_row a.button').attr('r',cartodb_id);
         $('div.delete_row').css('top',top_position-7+'px');
+        $('div.delete_row').css('left',$('div.table_position').scrollLeft()+10+'px');
         $('div.delete_row').show();
 
         $('body').click(function(event) {
@@ -2023,6 +2039,7 @@
       $('div.mamufas').fadeOut('fast',function(){
         $('div.mamufas div.georeference_window').hide();
         $('div.mamufas div.column_window').hide();
+        $('div.mamufas div.lastpage_window').hide();
       });
       
       closeOutTableWindows();

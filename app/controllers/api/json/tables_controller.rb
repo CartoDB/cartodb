@@ -41,7 +41,7 @@ class Api::Json::TablesController < ApplicationController
   # * URI: +/api/json/tables/1+
   # * Params:
   #   * +rows_per_page+: number of rows in the response. By default +10+
-  #   * +page+: number of the current page. By default +0+
+  #   * +page+: number of the current page. By default +0+. It is possible to give a range of pages with the format: 1..10
   # * Format: +JSON+
   # * Response:
   #     {

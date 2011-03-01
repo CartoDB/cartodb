@@ -375,9 +375,15 @@ class Table < Sequel::Model(:user_tables)
   def to_json(options = {})
     rows   = []
     limit  = (options[:rows_per_page] || 10).to_i
-    offset = (options[:page] || 0).to_i*limit
+    if options[:page] && options[:page].include?('..')
+      first_page, last_page = options[:page].split('..')
+      page = first_page.to_i*limit
+      limit = (last_page.to_i - first_page.to_i + 1) *limit
+    else
+      page = (options[:page] || 0).to_i*limit
+    end
     owner.in_database do |user_database|
-      rows = user_database[name.to_sym].limit(limit,offset).
+      rows = user_database[name.to_sym].limit(limit,page).
               order(:cartodb_id).
               select(*schema.map{ |e| e[0]}).
               all.map do |row|

@@ -40,6 +40,16 @@ feature "Tables JSON API" do
     json_response = JSON(response.body)
     json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
     json_response['rows'][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
+
+    get_json "/api/json/tables/#{table.id}?rows_per_page=2&page=1..3"
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
+    json_response['rows'][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
+    json_response['rows'][2].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[4].slice(:cartodb_id, :name, :location, :description)
+    json_response['rows'][3].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[5].slice(:cartodb_id, :name, :location, :description)
+    json_response['rows'][4].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[6].slice(:cartodb_id, :name, :location, :description)
+    json_response['rows'][5].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[7].slice(:cartodb_id, :name, :location, :description)
   end
 
   scenario "Update the privacy status of a table" do

@@ -50,8 +50,8 @@ section#content div.inner_content div.requests_info div.middle_white p {width:10
 section#content div.inner_content div.requests_info div.middle_white a.close {position:absolute; top:5px; right:13px; width:17px; height:17px; background:url('/images/admin/icons/close_button.png') no-repeat 0 0; text-indent:-9999px;}
 section#content div.inner_content div.requests_info div.middle_white a.close:hover {background-position:0 -17px;}
 section#content div.inner_content div.requests_info div.middle_white img {margin:10px 0 0 0;}
-section#content div.inner_content div.requests_info div.bottom_white {width:906px; height:8px; padding:0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
-section#content div.inner_content div.tables_list {width:906px; padding:50px 0;}
+section#content div.inner_content div.requests_info div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
+section#content div.inner_content div.tables_list {width:906px; padding:10px 0;}
 section#content div.left {display:inline-block; width:626px; vertical-align:top;}
 section#content div.left div.top_blue_medium {float:left; width:626px; height:61px; background:url('/images/admin/backgrounds/top_blue_medium.png') no-repeat 0 0;}
 section#content div.left div.top_blue_medium h3 {float:left; margin:18px 0 0 25px; font:normal 23px "Aller",Arial; color:white; text-shadow:0 1px #718C92;}
@@ -81,7 +81,7 @@ section#content div.left div.middle_white_medium ul li div.meta_info span.info p
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.delete a:hover {color:#FF4400;}
 section#content div.left div.middle_white_medium ul li:hover div.meta_info span.info p.delete {display:block;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.tags {float:right; width:240px;}
-section#content div.left div.middle_white_medium ul li div.meta_info span.tags a {float:right; padding:2px 7px; margin:4px 3px 0 0; font:normal 11px Arial; color:#999999; text-decoration:none; background:#D8E7E9; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;}
+section#content div.left div.middle_white_medium ul li div.meta_info span.tags a {float:right; padding:2px 7px; margin:4px 3px 0 0; font:normal 11px Arial; color:#999999; text-decoration:none; background:#D8E7E9; border-radius:2px; -webkit-border-radius:2px; -moz-border-radius:2px;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.tags a:hover {color:#333333!important; background:#C2DADD;}
 section#content div.left div.bottom_white_medium {float:left; width:626px; height:10px; padding:0; background:url('/images/admin/backgrounds/bottom_white_medium.png') no-repeat 0 top;}
 section#content div.left div.paginate {display:block; float:left; padding:18px 0 0 0;}

@@ -77,7 +77,7 @@ section#content div.left div.middle_white_medium ul li div.meta_info span.watchi
 section#content div.left div.middle_white_medium ul li div.meta_info span.watching a.no_watching {float:left; width:85px; height:17px; padding:4px 0 0 27px; background:url('/images/admin/public_tables/stop_watching.png') no-repeat 0 0; text-decoration:none; font:bold 11px Arial; color:#6C5701; text-shadow:0 1px #FBE28E;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.watching a.no_watching:hover {background-position:0 -21px;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.tags {float:right; margin:3px 0 0 0; width:430px;}
-section#content div.left div.middle_white_medium ul li div.meta_info span.tags a {float:right; padding:2px 7px; margin:4px 3px 0 0; font:normal 11px Arial; color:#999999; text-decoration:none; background:#D8E7E9; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;}
+section#content div.left div.middle_white_medium ul li div.meta_info span.tags a {float:right; padding:2px 7px; margin:4px 3px 0 0; font:normal 11px Arial; color:#999999; text-decoration:none; background:#D8E7E9; border-radius:2px; -webkit-border-radius:2px; -moz-border-radius:2px;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.tags a:hover {color:#333333!important; background:#C2DADD;}
 section#content div.left div.bottom_white_medium {float:left; width:626px; height:10px; padding:0; background:url('/images/admin/backgrounds/bottom_white_medium.png') no-repeat 0 top;}
 section#content div.left div.paginate {display:none; float:left; padding:18px 0 0 0;}

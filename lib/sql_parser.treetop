@@ -193,7 +193,11 @@ grammar Sql
   end
 
   rule item
-    !keyword [a-z_0-9*]+ <SqlParser::ItemNode>
+   !keyword [\"a-z_0-9*]+ <SqlParser::ItemNode> {
+    def value
+      text_value.gsub(/\"/,'').to_sym
+    end
+   }
   end
 
   rule keyword

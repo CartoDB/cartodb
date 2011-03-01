@@ -76,7 +76,7 @@ describe SqlParser do
       ]
     end
     it "should recognize quotes" do
-      @parser.parse("select first_name from \"users\"").table.should == [:users]
+      @parser.parse('select first_name from "users"').tables.should == [:users]
     end
   end
 

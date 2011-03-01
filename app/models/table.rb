@@ -375,7 +375,7 @@ class Table < Sequel::Model(:user_tables)
   def to_json(options = {})
     rows   = []
     limit  = (options[:rows_per_page] || 10).to_i
-    if options[:page] && options[:page].include?('..')
+    if options[:page] && options[:page].is_a?(String) && options[:page].include?('..')
       first_page, last_page = options[:page].split('..')
       page = first_page.to_i*limit
       limit = (last_page.to_i - first_page.to_i + 1) *limit

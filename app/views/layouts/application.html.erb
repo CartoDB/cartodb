@@ -11,7 +11,14 @@
   <body>
     <header>
       <a class="logo" href="/">CartoDB</a>
-      <p class="session"><%= link_to current_user.email, dashboard_path, :class=>"account" %> (<a href="<%= logout_path %>">close session</a>)</p>
+      <ul>
+        <li>
+            <a href="#">Documentation</a>
+        </li>
+        <li class="last">
+          <%= link_to current_user.email, dashboard_path, :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span>
+        </li>
+      </ul>
     </header>
 
     <%= yield %>

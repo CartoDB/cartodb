@@ -5,12 +5,13 @@ body {position:relative; background:url('/images/admin/common/header_bkg.jpg') r
 
 /*HEADER*/
 header {width:900px; height:58px; margin:0 auto; background:none;}
-header a.logo {float:left; width:70px; height:15px; margin:21px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
-header p.session {float:right; margin:22px 0 0 0; font:normal 13px Arial; color:white;}
-header p.session a {text-decoration:underline; color:white;}
-header p.session a:hover {}
-header p.session a.account {text-decoration:none;}
-header p.session a.account:hover {text-decoration:underline;}
+header a.logo {float:left; width:70px; height:15px; margin:22px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
+header ul {float:right; margin: 24px 0 0 0; }
+header ul li {float:left; display: inline; list-style: none; padding: 0 13px 0 0; border-right: solid 1px #949BAB; }
+header ul li.last {padding: 0; border: none; }
+header ul li a { float:left; margin:0 0 0 13px; font:normal 13px Arial; color:#949BAB; text-decoration: none;}
+header ul li a:hover {color:#FFFFFF;}
+header ul li span a { margin:0 0 0 4px; text-decoration: underline; color:#FFFFFF;}
 
 /*SUBHEADER*/
 section.subheader {width:100%; height:52px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}

@@ -6,6 +6,19 @@
       $('div.paginate').css('margin-left', ((626-paginator_width)/2) +'px');
       $('div.paginate').show();
       
+      //Close all modal windows
+      $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_settings, div.mamufas a.close_create').click(function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        $('div.mamufas').fadeOut('fast',function(){
+          $('div.mamufas div.settings_window').hide();
+          $('div.mamufas div.delete_window').hide();
+          $('div.mamufas div.create_window').hide();
+          resetUploadFile();
+        });
+        unbindESC();
+      });      
+      
       //Hover over last item of list
       $('ul.your_tables li.last').hover(function(){
         $('div.tables_list div.left div.bottom_white_medium').css('background-position','0 -11px');
@@ -15,13 +28,13 @@
 
 
 
-      $('a.new_table').click(function(ev){
-        ev.preventDefault();
-        ev.stopPropagation();
-        $('div.create_window').show();
-        $('div.mamufas').fadeIn();
-        bindESC();
-      });
+      // $('a.new_table').click(function(ev){
+      //   ev.preventDefault();
+      //   ev.stopPropagation();
+      //   $('div.create_window').show();
+      //   $('div.mamufas').fadeIn();
+      //   bindESC();
+      // });
       
       
       $('input#create_table').click(function(ev){

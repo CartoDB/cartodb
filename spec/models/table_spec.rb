@@ -312,6 +312,8 @@ describe Table do
     user.tables_count.should == 0
     Tag.count.should == 0
     Table.count == 0
+    user.in_database{|database| database.table_exists?(table.name).should be_false}
+    table.constraints.count.should == 0
   end
 
   it "can be created with a given schema if it is valid" do
@@ -886,4 +888,11 @@ describe Table do
     table.lon_column.should == :new_longitude
   end
 
+  it "should return all table's constraints" do
+    user = create_user
+    table = create_table :user_id => user.id
+    puts table.constraints
+    table.constraints.should have_at_least(1).item
+    table.constraints.should include({:constraint_name => 'enforce_srid_the_geom'})
+  end
 end

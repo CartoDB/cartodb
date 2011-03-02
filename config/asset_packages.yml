@@ -10,6 +10,7 @@ javascripts:
 - public_tables:
   - plugins/jquery.color
   - admin/tables/public_tables
+  - admin/tables/import
 - table:
   - plugins/jquery.mousewheel
   - plugins/jscrollpane.min

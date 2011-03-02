@@ -933,6 +933,8 @@
             
             if (type!='date' && type!='boolean') {
               $('div.edit_cell div.free textarea').focus();
+              var len = $('div.edit_cell div.free textarea').text().length;
+              $('div.edit_cell div.free textarea').selectRange(0,len);
             }
             
             
@@ -955,7 +957,21 @@
 
       });
 
-
+      //AUXILIAR FUNCTION FOR SELECTING A RANGE OF TEXT IN A TEXT AREA
+      $.fn.selectRange = function(start, end) {
+              return this.each(function() {
+                      if(this.setSelectionRange) {
+                              this.focus();
+                              this.setSelectionRange(start, end);
+                      } else if(this.createTextRange) {
+                              var range = this.createTextRange();
+                              range.collapse(true);
+                              range.moveEnd('character', end);
+                              range.moveStart('character', start);
+                              range.select();
+                      }
+              });
+      };
 
       ///////////////////////////////////////
       //  SIMPLE CLICK -> Open editor      //

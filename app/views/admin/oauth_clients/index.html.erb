@@ -1,0 +1,24 @@
+<div class="flash"><%%= flash[:notice] %></div>
+<h1>OAuth Client Applications</h1>
+<h3>Application Developers</h3>
+<% if @client_applications.empty? %>
+  <p>
+    Do you have an application you would like to register for use with us using the <a href="http://oauth.net">OAuth</a> standard?
+  </p>
+  <p>
+    You must register your web application before it can make OAuth requests to this service
+  </p>
+<% else %>
+  <p>
+    You have the following client applications registered:
+  </p>
+  <%% @client_applications.each do |client|%>
+    <%% div_for client do %>
+      <%%= link_to client.name, oauth_client_path(client) %>-
+        <%%= link_to 'Edit', edit_oauth_client_path(client) %>
+        <%%= link_to 'Delete', oauth_client_path(client), :confirm => "Are you sure?", :method => :delete %>
+    <%% end %>
+  <%% end %>
+<% end %>
+<br />
+<h3><%%= link_to "Register your application", :action => :new %></h3>

@@ -11,6 +11,8 @@ gem 'warden'
 gem 'rails_warden'
 gem 'polyglot'
 gem 'treetop'
+gem 'oauth'
+gem 'oauth-plugin', '>=0.4.0.pre1'
 
 group :development do
   gem 'capistrano'

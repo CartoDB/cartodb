@@ -115,6 +115,9 @@ GEM
     nofxx-georuby (1.9.0)
       json_pure (>= 1.4.6)
     nokogiri (1.4.4)
+    oauth (0.4.4)
+    oauth-plugin (0.4.0.pre4)
+      oauth (>= 0.4.4)
     passenger (3.0.2)
       daemon_controller (>= 0.2.5)
       fastthread (>= 1.0.1)
@@ -204,6 +207,8 @@ DEPENDENCIES
   launchy
   mocha
   nofxx-georuby
+  oauth
+  oauth-plugin (>= 0.4.0.pre1)
   passenger
   pg (= 0.10.1)
   polyglot

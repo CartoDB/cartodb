@@ -149,6 +149,11 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  def before_destroy
+    super
+    delete_constraints
+  end
+
   def after_destroy
     super
     Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -460,6 +465,18 @@ class Table < Sequel::Model(:user_tables)
     owner.run_query(query)
   end
 
+  def constraints
+    owner.in_database do |user_database|
+      table_constraints_sql = <<-SQL
+        SELECT constraint_name
+        FROM information_schema.table_constraints
+        WHERE table_name = ? AND constraint_name = ?
+      SQL
+
+      user_database.fetch(table_constraints_sql, name, 'enforce_srid_the_geom').all
+    end
+  end
+
   private
 
   def update_updated_at
@@ -618,6 +635,14 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       user_database.alter_table(self.name.to_sym) do
         add_constraint(:enforce_srid_the_geom, {:st_srid.sql_function(:the_geom) => CartoDB::GOOGLE_SRID})
+      end
+    end
+  end
+
+  def delete_constraints
+    owner.in_database do |user_database|
+      user_database.alter_table(self.name.to_sym) do
+        drop_constraint(:enforce_srid_the_geom)
       end
     end
   end

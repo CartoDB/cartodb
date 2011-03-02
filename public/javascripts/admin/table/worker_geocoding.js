@@ -27,7 +27,7 @@
       if (!stop) {
         event.cartodb_id = place.cartodb_id;
         self.postMessage(event);
-        setTimeout(function(){geocode()},10000);
+        geocode();
       } else {
         stop = false;
         self.postMessage("Stopped");

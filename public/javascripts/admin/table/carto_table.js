@@ -439,6 +439,11 @@
         '<div class="georeference_window">'+
           '<a href="#close_window" class="close_geo"></a>'+
           '<div class="inner_">'+
+            '<span class="loading">'+
+               '<h5>We are georeferencing your columns...</h5>'+
+               '<p>Just some seconds, ok?</p>'+
+             '</span>'+
+          
             '<span class="top">'+
               '<h3>Choose your geocoding method for this column</h3>'+
               '<p>Please select the columns for the lat/lon fields</p>'+
@@ -499,7 +504,6 @@
                         '</div>'+
                       '</span>'+
                       '<a class="remove_column" href="#remove_column"></a>'+
-                      '<a class="combine" href="#combine">Combine with...</a>'+
                     '</div>'+
                   '</div>'+
                 '</li>'+
@@ -599,10 +603,8 @@
         total = 0;
       } 
       var end = total <= ((actualPage+1)*defaults.resultsPerPage);
-      console.log('entra'); 
        
       if (end || $('div.empty_table').length>0) {
-        console.log('jamon');
         if ($('div.empty_table').length>0) {
           $('div.empty_table').remove();
           addSingleRow(0);
@@ -959,18 +961,18 @@
 
       //AUXILIAR FUNCTION FOR SELECTING A RANGE OF TEXT IN A TEXT AREA
       $.fn.selectRange = function(start, end) {
-              return this.each(function() {
-                      if(this.setSelectionRange) {
-                              this.focus();
-                              this.setSelectionRange(start, end);
-                      } else if(this.createTextRange) {
-                              var range = this.createTextRange();
-                              range.collapse(true);
-                              range.moveEnd('character', end);
-                              range.moveStart('character', start);
-                              range.select();
-                      }
-              });
+        return this.each(function() {
+          if (this.setSelectionRange) {
+            this.focus();
+            this.setSelectionRange(start, end);
+          } else if (this.createTextRange) {
+            var range = this.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', end);
+            range.moveStart('character', start);
+            range.select();
+          }
+        });
       };
 
       ///////////////////////////////////////
@@ -1532,6 +1534,7 @@
         methods.closeTablePopups();
         methods.bindESCkey();
         enabled = false;
+        var me = this;
         
         if (geolocating) {
           $('div.mamufas div.stopgeo_window').show();
@@ -1545,10 +1548,25 @@
         
         
         function resetProperties() {
+          $('div.georeference_window div.inner_ span.top').css('opacity',1).show();
+          $('div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
+          $('div.georeference_window a.close_geo').show();
+          $('div.georeference_window').css('height','auto');
+          $('div.georeference_window').removeClass('loading');
           $('div.georeference_window span.select').addClass('disabled');
-          $('div.georeference_window span.select a:eq(0)').text('Retrieving columns...').attr('c','');
+          $('div.georeference_window span.select a.option').each(function(i,ele){
+            $(ele).text('Retrieving columns...').attr('c','');
+          });
           $('div.georeference_window a.confirm_georeference').addClass('disabled');
           $('div.georeference_window span.select').removeClass('clicked');
+          
+          //Reset second item of the main_list (compont geo)
+          $('div.second_column_address').hide();
+          $('div.third_column_address').hide();
+          $('div.first_column_address a.remove_column').hide();
+          $('div.first_column_address a.combine').hide();
+          $('div.first_column_address').show();
+
           
           // Remove selected li class before know where geo column is.
           $('div.georeference_window ul.main_list li').removeClass('selected');
@@ -1572,7 +1590,7 @@
              url: '/api/json/tables/'+table_id+'/schema',
              success: function(data) {
                
-               // Activar según sea la columna si la hay, sino se activa la primera
+               // Select item depending on the kind of referenciation before
                var geo_col_type = '';
                if ($('p.geo').length==0) {
                  $('div.georeference_window ul.main_list li.first_list:eq(0)').addClass('selected');
@@ -1584,13 +1602,8 @@
                  $('div.georeference_window ul.main_list li.first_list:eq(1)').addClass('selected');
                  geo_col_type = 'address';
                }
-               
-               
-               
-               // -------------------- //
 
                for (var i = 0; i<data.length; i++) {
-                 
                  if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
                    if (data[i][2]==undefined) {
                      $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
@@ -1600,7 +1613,7 @@
                        $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                        $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                        $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
-                     } else {
+                     } else if (data[i][2]=="latitude") {
                        $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                        $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                        $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
@@ -1619,6 +1632,10 @@
                   }
                });
                $('div.georeference_window a.confirm_georeference').removeClass('disabled');
+               $(me).closest('div').find('a.options').removeClass('selected');
+               $(me).closest('div').find('span.col_ops_list').hide();
+               $('div.mamufas div.georeference_window').show();
+               $('div.mamufas').fadeIn();
              },
              error: function(e) {
                $('div.georeference_window span.select:eq(0) a:eq(0)').text('Error retrieving cols').attr('c','');
@@ -1626,21 +1643,7 @@
              }
           });
         }
- 
-
-        $(this).closest('div').find('a.options').removeClass('selected');
-        $(this).closest('div').find('span.col_ops_list').hide();
-        $('div.mamufas div.georeference_window').show();
-        $('div.mamufas').fadeIn();
       });
-      
-      
-      
-      
-      
-      
-      
-      
       $('div.georeference_window span.select a.option').livequery('click',function(ev){
         stopPropagation(ev);
         if (!$(this).parent().hasClass('disabled')) {
@@ -1660,7 +1663,6 @@
       });
       $('div.georeference_window span.latitude ul li a,div.georeference_window span.longitude ul li a').livequery('click',function(ev){
         stopPropagation(ev);
-        console.log('entra!!');
         $(this).closest('span.select').children('a.option').text($(this).text());
         $(this).closest('span.select').children('a.option').attr('c',$(this).text());
         $('span.select').removeClass('clicked');
@@ -1690,6 +1692,59 @@
         $(this).closest('span.select').children('a.option').text($(this).text());
         $(this).closest('span.select').children('a.option').attr('c',$(this).text());
         $('span.select').removeClass('clicked');
+        
+        var block_class = $(this).closest('div.block');
+        if (block_class.hasClass('first_column_address')) {
+          if (!$('div.second_column_address').is(':visible')) {
+            $('div.georeference_window div.first_column_address a.combine').show();
+            $('div.georeference_window div.first_column_address a.remove_column').show();
+          }
+        } else if (block_class.hasClass('second_column_address')) {
+          if (!$('div.third_column_address').is(':visible')) {
+            $('div.georeference_window div.second_column_address a.combine').show();
+            $('div.georeference_window div.second_column_address a.remove_column').show();
+          }
+        } else {
+          $('div.georeference_window div.third_column_address a.remove_column').show();
+        }
+      });
+      $('div.georeference_window a.combine').livequery('click',function(ev){
+        stopPropagation(ev);
+        $('span.select').removeClass('clicked');
+        
+        var block_class = $(this).closest('div.block');
+        if (block_class.hasClass('first_column_address')) {
+          $('div.georeference_window div.first_column_address a.remove_column').hide();
+          $('div.georeference_window div.second_column_address a.remove_column').show();
+          $('div.georeference_window div.second_column_address a.combine').hide();
+          $('div.georeference_window div.second_column_address').show();
+          $('div.georeference_window div.first_column_address a.combine').hide();
+        } else {
+          $('div.georeference_window div.second_column_address a.remove_column').hide();
+          $('div.georeference_window div.second_column_address a.combine').hide();
+          $('div.georeference_window div.third_column_address').show();
+        }
+      });
+      $('div.georeference_window a.remove_column').livequery('click',function(ev){
+        stopPropagation(ev);
+        $(this).closest('div.block').children('span.select').children('a.option').text('Select a column');
+        $(this).closest('div.block').children('span.select').children('a.option').attr('c','');
+        $('span.select').removeClass('clicked');
+        
+        var block_class = $(this).closest('div.block');
+        if (block_class.hasClass('first_column_address')) {
+          $('div.georeference_window div.first_column_address a.remove_column').hide();
+          $('div.georeference_window div.first_column_address a.combine').hide();
+        } else if (block_class.hasClass('second_column_address')) {
+          $('div.georeference_window div.first_column_address a.remove_column').show();
+          $('div.georeference_window div.second_column_address').hide();
+          $('div.georeference_window div.second_column_address a.combine').hide();
+          $('div.georeference_window div.second_column_address a.remove_column').hide();
+        } else {
+          $('div.georeference_window div.second_column_address a.remove_column').show();
+          $('div.georeference_window div.third_column_address').hide();
+          $('div.georeference_window div.third_column_address a.remove_column').show();
+        }
       });
       $('div.georeference_window div.inner_ span.top ul li a.first_ul').livequery('click',function(ev){
         stopPropagation(ev);
@@ -1712,8 +1767,19 @@
               }
             });
             address = address.substr(0,address.length-1);
-            params['address_column'] = address;
-            methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry',"PUT");
+            if (address!='') {
+              loadingState();
+              params['address_column'] = address;
+              setTimeout(function(){methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry',"PUT");},1000);
+            } else {
+              $('div.georeference_window p.error').text('You have to select at least one column');
+              $('div.georeference_window p.error').css('opacity',0);
+              $('div.georeference_window p.error').css('display','block');
+              $('div.georeference_window p.error').fadeTo(300,1);
+              $('div.georeference_window p.error').delay(3000).fadeTo(300,0,function(){
+                $('div.georeference_window p.error').css('display','none');
+              });
+            }
           } else {
             var latitude = $('a#latitude').attr('c');
             var longitude = $('a#longitude').attr('c');
@@ -1732,6 +1798,24 @@
               });
             }
           }
+        }
+        
+        
+        function loadingState() {
+          methods.unbindESCkey();
+          $('div.georeference_window').css('overflow','hidden');
+          $('div.georeference_window div.inner_ span.top').animate({opacity:0},200,function(){
+            $(this).hide();
+            $('div.georeference_window a.close_geo').hide();
+            $('div.georeference_window span.loading').css('opacity','0');
+            $('div.georeference_window').addClass('loading');
+            $('div.georeference_window div.inner_ span.loading').animate({opacity:1},200);
+          });
+          $('div.georeference_window div.inner_ span.bottom').animate({opacity:0},200,function(){
+            $(this).hide();
+          });
+          $('div.georeference_window').animate({height:'74px'},500);
+          
         }
       });
       $('div.georeference_window a.close_geo,div.georeference_window a.cancel').livequery('click',function(ev){

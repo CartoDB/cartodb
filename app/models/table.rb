@@ -664,19 +664,19 @@ TRIGGER
   end
 
   def geocode_all_address_columns!
-    owner.in_database do |user_database|
-      result = owner.run_query("select cartodb_id, #{address_column} as address_column FROM #{self.name} order by cartodb_id")
-      result[:rows].each do |row|
-        next if row[:address_column].blank?
-        url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(row[:address_column])}&sensor=false")
-        req = Net::HTTP::Get.new(url.request_uri)
-        res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-        json = JSON.parse(res.body)
-        if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
-          user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{row[:cartodb_id]}")
-        end
-      end
-    end
+    # owner.in_database do |user_database|
+    #   result = owner.run_query("select cartodb_id, #{address_column} as address_column FROM #{self.name} order by cartodb_id")
+    #   result[:rows].each do |row|
+    #     next if row[:address_column].blank?
+    #     url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(row[:address_column])}&sensor=false")
+    #     req = Net::HTTP::Get.new(url.request_uri)
+    #     res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
+    #     json = JSON.parse(res.body)
+    #     if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
+    #       user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{row[:cartodb_id]}")
+    #     end
+    #   end
+    # end
   end
 
   def get_new_column_type(invalid_column, invalid_value)
@@ -692,22 +692,22 @@ TRIGGER
   end
 
   def geocode!(attributes)
-    if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
-      url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(attributes[address_column])}&sensor=false")
-      req = Net::HTTP::Get.new(url.request_uri)
-      res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-      json = JSON.parse(res.body)
-      if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
-        owner.in_database do |user_database|
-          user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-        end
-      end
-    end
-    if !lat_column.blank? && !lon_column.blank?
-      owner.in_database do |user_database|
-        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-      end
-    end
+    # if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
+    #   url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(attributes[address_column])}&sensor=false")
+    #   req = Net::HTTP::Get.new(url.request_uri)
+    #   res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
+    #   json = JSON.parse(res.body)
+    #   if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
+    #     owner.in_database do |user_database|
+    #       user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
+    #     end
+    #   end
+    # end
+    # if !lat_column.blank? && !lon_column.blank?
+    #   owner.in_database do |user_database|
+    #     user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
+    #   end
+    # end
   end
 
 end

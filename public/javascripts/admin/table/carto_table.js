@@ -898,6 +898,7 @@
             } else {
               $('div.edit_cell div.free').show();
               $('div.edit_cell textarea').text(data.value);
+              $('div.edit_cell textarea').focus();
             }
             
             $('div.edit_cell a.save').attr('r',data.row);

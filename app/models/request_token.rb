@@ -8,7 +8,7 @@ class RequestToken < OauthToken
 
   def authorize!(user)
     return false if authorized?
-    self.user_id = user_id
+    self.user_id = user.id
     self.authorized_at = Time.now
     self.verifier=OAuth::Helper.generate_key(20)[0,20] unless oauth10?
     save_changes
@@ -16,8 +16,7 @@ class RequestToken < OauthToken
 
   def exchange!
     return false unless authorized?
-    # FIXME!
-    # return false unless oauth10? || verifier==provided_oauth_verifier
+    return false unless oauth10? || verifier==provided_oauth_verifier
     RequestToken.db.transaction do
       access_token = AccessToken.create(:user => user, :client_application => client_application)
       invalidate!

@@ -2,6 +2,8 @@
 
 class SessionsController < ApplicationController
 
+  before_filter :oauth_authentication, :only => :show
+
   layout 'front_layout'
 
   def new
@@ -18,6 +20,14 @@ class SessionsController < ApplicationController
   def destroy
     logout
     redirect_to root_path
+  end
+
+  def show
+    respond_to do |format|
+      format.json do
+        render :json => {:email => current_user.email, :uid => current_user.id, :username => current_user.username}.to_json, :status => 200
+      end
+    end
   end
 
   def unauthenticated

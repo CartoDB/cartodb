@@ -1,5 +1,5 @@
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
-  manager.default_strategies :password, :api_key
+  manager.default_strategies :password, :api_key, :oauth_token
   manager.failure_app = SessionsController
 end
 
@@ -44,6 +44,28 @@ Warden::Strategies.add(:api_key) do
       end
     else
       fail!
+    end
+  end
+
+  def fail!
+    render :status => 401, :nothing => true
+  end
+end
+
+Warden::Strategies.add(:oauth_token) do
+  def authenticate!
+    if request.headers['Authorization'].blank?
+      fail!
+    else
+      if ClientApplication.verify_request(request) do |request_proxy|
+          @oauth_token = ClientApplication.find_token(request_proxy.token)
+          if @oauth_token.respond_to?(:provided_oauth_verifier=)
+            @oauth_token.provided_oauth_verifier = request_proxy.oauth_verifier
+          end
+        end
+      end
+      user = User[@oauth_token.user_id]
+      success!(user)
     end
   end
 

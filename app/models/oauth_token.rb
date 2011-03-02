@@ -24,10 +24,12 @@ class OauthToken < Sequel::Model
     self.token = OAuth::Helper.generate_key(40)[0,40]
     self.secret = OAuth::Helper.generate_key(40)[0,40]
     self.created_at = Time.now
+    super
   end
 
   def before_save
     self.updated_at = Time.now
+    super
   end
 
 end

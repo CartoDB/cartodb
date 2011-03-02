@@ -1,20 +1,20 @@
 # coding: UTF-8
 
-class OauthClientsController < ApplicationController
+class Admin::OauthClientsController < ApplicationController
 
   before_filter :login_required
 
   def index
-    @client_application = current_user.client_application || ClientApplication.new :user_id => current_user.id
+    @client_application = current_user.client_application || ClientApplication.new(:user_id => current_user.id)
   end
 
   def create
-    @client_application = current_user.client_application.build(params[:client_application])
+    @client_application = ClientApplication.new(params[:client_application].merge(:user_id => current_user.id))
     if @client_application.save
       flash[:notice] = "Registered the information successfully"
-      redirect_to :action => "show", :id => @client_application.id
+      redirect_to :action => "index"
     else
-      render :action => "new"
+      render :action => "index"
     end
   end
 

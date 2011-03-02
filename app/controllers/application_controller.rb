@@ -11,11 +11,15 @@ class ApplicationController < ActionController::Base
   protected
 
   def api_authorization_required
-    api_authenticated? || authenticated? || not_authorized
+    api_key_authenticated? || authenticated? || not_authorized
   end
 
   def api_authenticated?
-    env['warden'].authenticate(:api_key)
+    return env['warden'].authenticate(:api_key)
+  end
+
+  def oauth_authentication
+    return env['warden'].authenticate(:oauth_token)
   end
 
   def render_404

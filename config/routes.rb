@@ -6,6 +6,7 @@ CartoDB::Application.routes.draw do
   get '/login' => 'sessions#new', :as => :login
   get '/logout' => 'sessions#destroy', :as => :logout
   match '/sessions/create' => 'sessions#create', :as => :create_session
+  get '/identity' => 'sessions#show'
 
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard

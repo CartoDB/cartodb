@@ -19,7 +19,8 @@ class ClientApplication < Sequel::Model
   attr_accessor :token_callback_url
 
   def self.find_token(token_key)
-    token = ::RequestToken.first(:token => token_key)
+    return nil if token_key.nil?
+    token = ::RequestToken.first(:token => token_key) || ::AccessToken.first(:token => token_key)
     if token && token.authorized?
       token
     else
@@ -36,14 +37,14 @@ class ClientApplication < Sequel::Model
   end
 
   def self.verify_request(request, options = {}, &block)
-    # begin
+    begin
       signature = OAuth::Signature.build(request, options, &block)
       return false unless OauthNonce.remember(signature.request.nonce, signature.request.timestamp)
       value = signature.verify
       value
-    # rescue OAuth::Signature::UnknownSignatureMethod => e
-    #  false
-    # end
+    rescue OAuth::Signature::UnknownSignatureMethod => e
+      false
+    end
   end
 
   def oauth_server

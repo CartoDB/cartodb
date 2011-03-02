@@ -660,12 +660,24 @@
               
                   if (type==2) {
                     $('div.table_position').addClass('end');
-                    $(window).scrollTo('100%',500, {onAfter: function(){methods.closeTablePopups()}});
                   }
+                  
+                  
+                  
+                  //Si hay más filas de las permitidas por el reuso, borramos las '50' primeras, sumamos una a la página max, min y actual
+                  total = total + 1;
+                  if ($(table).children('tbody').children('tr').size()>defaults.reuseResults) {
+                    maxPage++; minPage++; actualPage++;
+                    $(table).children('tbody').children('tr:lt('+defaults.resultsPerPage+')').remove();
+                  } else {
+                    if ($(table).children('tbody').children('tr').size()>defaults.resultsPerPage) {
+                      maxPage++; actualPage++;
+                    }
+                  }
+                  
+                  $(window).scrollTo('100%',500, {onAfter: function(){methods.closeTablePopups(); enabled = true;}});
                   $('div.empty_table').remove();
                   methods.resizeTable();
-                  enabled = true;
-                  total = total + 1;
                 },
                 error: function(e) {
                   requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
@@ -1638,7 +1650,9 @@
       ///////////////////////////////////////
       $('a.add_row').livequery('click',function(ev){
         stopPropagation(ev);
-        methods.addRow();
+        if (enabled){
+          methods.addRow();
+        }
       });
       $('a.delete_row').livequery('click',function(ev){
         stopPropagation(ev);
@@ -2006,6 +2020,8 @@
       maxPage = -1;
       $(table).children('thead').remove();
       $(table).children('tbody').remove();
+      $(document).scrollTop(0);
+      $('div.table_position').removeClass('end');
       methods.getData(defaults, 'next');
       enabled = true;
     },

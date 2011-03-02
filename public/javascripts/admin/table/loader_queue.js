@@ -26,6 +26,12 @@
       	  if (!this.checking) {
       	    if (this.loader.html()=="") {
       	      this.loader.append('<p class="loading">Loading...</p>');
+      	    } else {
+      	      this.loader.children('p').each(function(index,element){
+      	        if (!$(element).hasClass('loading')) {
+      	          $(element).remove();
+      	        }
+      	      });
       	    }
       	    this.loader.children('p').show();
       	    this.loader.css('width','100px');
@@ -87,7 +93,6 @@
             });
       	  } else {
             if (!me.loader.children('p').hasClass('loading')) {
-              
               var element = $('<p class="loading">Loading...</p>');
           	  element.css('top','30px');
           	  element.css('opacity','0');

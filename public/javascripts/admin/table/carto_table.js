@@ -32,6 +32,7 @@
   var actualPage;
   var total;
   
+  var previous_scroll = 0;
   var defaults;
   var cell_size = 100;
   var last_cell_size = 100;
@@ -59,12 +60,18 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     getData : function(options, direction) {
      //Pagination AJAX adding rows
+     var petition_pages;
      if (direction=="next") {
        maxPage++;
        actualPage = maxPage;
-     } else {
+       petition_pages = actualPage;
+     } else if (direction=="previous") {
        minPage--;
        actualPage = minPage;
+       petition_pages = actualPage;
+     } else {
+       enabled = false;
+       petition_pages = minPage +'..'+ maxPage;
      }
 
 
@@ -73,7 +80,7 @@
        url: options.getDataUrl,
        data: {
          rows_per_page: options.resultsPerPage,
-         page: actualPage,
+         page: petition_pages,
          query: options.query
        },
        success: function(data) {
@@ -205,7 +212,7 @@
     drawRows: function(options,data,direction,page) {
 
       if ($(table).children('tbody').length==0) {
-        var tbody = '<tbody>';
+        var tbody = '<tbody style="padding-top:53px;">';
       } else {
         var tbody = '';
       }
@@ -246,7 +253,11 @@
         (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
       }
       
-      methods.checkReuse(direction);
+      if (direction!='') {
+        methods.checkReuse(direction);
+      } else {
+        $(window).scrollTo({top:previous_scroll+'px',left:'0'},300,{onAfter: function() {loading = false; enabled = true;}});
+      }
     },
 
 
@@ -445,7 +456,7 @@
                   '</div>'+
                   '<div class="select longitude last">'+
                     '<label>LONGITUDE COLUMN</label>'+
-                    '<span class="select">'+
+                    '<span class="select longitude">'+
                       '<a id="longitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
                       '<div class="select_content">'+
                         '<ul class="scrollPane"></ul>'+
@@ -537,7 +548,19 @@
               '<p>Is not gonna be a lot of time. Just some seconds, right?</p>'+
             '</span>'+
           '</div>'+
-        '</div>');
+        '</div>'+
+        
+        
+        '<div class="stopgeo_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="stop">'+
+              '<h5>You are referencing by another column</h5>'+
+              '<p>If you don\'t want to wait, <a href="#cancel_geo" class="cancel_geo">cancel de process</a> in progress.</p>'+
+            '</span>'+
+          '</div>'+
+        '</div>'
+        );
       
       
       //CSS Hack for cover end of table
@@ -559,6 +582,8 @@
           '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a href="#">import a file</a></p>'+
         '</div>'
       );
+      
+      enabled = true;
       methods.resizeTable();
     },
 
@@ -574,9 +599,10 @@
         total = 0;
       } 
       var end = total <= ((actualPage+1)*defaults.resultsPerPage);
-
+      console.log('entra'); 
        
       if (end || $('div.empty_table').length>0) {
+        console.log('jamon');
         if ($('div.empty_table').length>0) {
           $('div.empty_table').remove();
           addSingleRow(0);
@@ -827,7 +853,7 @@
         enabled = status;
       });
       $('body').livequery('refresh',function(event){
-        methods.refreshTable();
+        methods.refreshTable('next');
       });
       
 
@@ -1486,66 +1512,102 @@
         methods.bindESCkey();
         enabled = false;
         
-        $('div.georeference_window span.select').addClass('disabled');
-        $('div.georeference_window span.select a:eq(0)').text('Retrieving columns...').attr('c','');
-        $('div.georeference_window a.confirm_georeference').addClass('disabled');
-        $('div.georeference_window span.select').removeClass('clicked');
+        if (geolocating) {
+          $('div.mamufas div.stopgeo_window').show();
+          $('div.mamufas').fadeIn();
+          return false;
+        }
         
-        $.ajax({
-           method: "GET",
-           url: '/api/json/tables/'+table_id+'/schema',
-           success: function(data) {
-             // Remove all ScrollPane //
-             var custom_scrolls = [];
-             $('.scrollPane').each(function(){
-         					custom_scrolls.push($(this).jScrollPane().data().jsp);
-         				}
-         		  );
-         		  $.each(custom_scrolls,function(i) {
-                this.destroy();
-              });
-             $('div.georeference_window span.select ul li').remove();
-             // -------------------- //
-             
-             for (var i = 0; i<data.length; i++) {
-               if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
-                 if (data[i][2]==undefined) {
-                   $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                 } else {
-                   $('div.georeference_window div.block span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                   if (data[i][2]=="longitude") {
-                     $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                     $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                     $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
+        resetProperties();
+        getColumns();
+        
+        function resetProperties() {
+          $('div.georeference_window span.select').addClass('disabled');
+          $('div.georeference_window span.select a:eq(0)').text('Retrieving columns...').attr('c','');
+          $('div.georeference_window a.confirm_georeference').addClass('disabled');
+          $('div.georeference_window span.select').removeClass('clicked');
+          
+          // Remove all ScrollPane and lists items //
+          var custom_scrolls = [];
+          $('.scrollPane').each(function(){
+       		  custom_scrolls.push($(this).jScrollPane().data().jsp);
+       		});
+     		  $.each(custom_scrolls,function(i) {
+            this.destroy();
+          });
+          $('div.georeference_window span.select ul li').remove();
+        }
+        
+        
+        
+        function getColumns() {
+          $.ajax({
+             method: "GET",
+             url: '/api/json/tables/'+table_id+'/schema',
+             success: function(data) {
+               
+               // Primero ver si hay alguna fila georeferenciada
+               // Si la hay ver de que tipo es, o address o lat+lon
+               // Activar según sea la columna si la hay, sino se activa la primera
+               var geo_col_type = '';
+               // if () {
+               //   
+               // }
+               
+               
+               
+               // -------------------- //
+
+               for (var i = 0; i<data.length; i++) {
+                 if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
+                   if (data[i][2]==undefined) {
+                     $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                    } else {
-                     $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                     $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                     $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
+                     $('div.georeference_window div.block span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                     if (data[i][2]=="longitude") {
+                       $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                       $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                       $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
+                     } else {
+                       $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                       $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                       $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
+                     }
                    }
                  }
                }
-             }
-             $('div.georeference_window span.select:eq(1) ul').append('<li><a href="#no_geo">Empty</a></li>');
-             $('div.georeference_window span.select:eq(0) ul').append('<li><a href="#no_geo">Empty</a></li>');
-             $('div.georeference_window span.select').removeClass('disabled');
+               $('div.georeference_window span.select:eq(1) ul').append('<li><a href="#no_geo">Empty</a></li>');
+               $('div.georeference_window span.select:eq(0) ul').append('<li><a href="#no_geo">Empty</a></li>');
+               $('div.georeference_window span.select').removeClass('disabled');
 
-             $('div.georeference_window span.select a.option').each(function(i,ele){
-               if ($(ele).text()=="Retrieving columns...") {
-                  $(ele).text('Select a column').attr('c','');
-                }
-             });
-             $('div.georeference_window a.confirm_georeference').removeClass('disabled');
-           },
-           error: function(e) {
-             $('div.georeference_window span.select:eq(0) a:eq(0)').text('Error retrieving cols').attr('c','');
-             $('div.georeference_window span.select:eq(1) a:eq(0)').text('Error retrieving cols').attr('c','');
-           }
-        });
+               $('div.georeference_window span.select a.option').each(function(i,ele){
+                 if ($(ele).text()=="Retrieving columns...") {
+                    $(ele).text('Select a column').attr('c','');
+                  }
+               });
+               $('div.georeference_window a.confirm_georeference').removeClass('disabled');
+             },
+             error: function(e) {
+               $('div.georeference_window span.select:eq(0) a:eq(0)').text('Error retrieving cols').attr('c','');
+               $('div.georeference_window span.select:eq(1) a:eq(0)').text('Error retrieving cols').attr('c','');
+             }
+          });
+        }
+ 
+
         $(this).closest('div').find('a.options').removeClass('selected');
         $(this).closest('div').find('span.col_ops_list').hide();
         $('div.mamufas div.georeference_window').show();
         $('div.mamufas').fadeIn();
       });
+      
+      
+      
+      
+      
+      
+      
+      
       $('div.georeference_window span.select a.option').livequery('click',function(ev){
         stopPropagation(ev);
         if (!$(this).parent().hasClass('disabled')) {
@@ -1565,6 +1627,7 @@
       });
       $('div.georeference_window span.latitude ul li a,div.georeference_window span.longitude ul li a').livequery('click',function(ev){
         stopPropagation(ev);
+        console.log('entra!!');
         $(this).closest('span.select').children('a.option').text($(this).text());
         $(this).closest('span.select').children('a.option').attr('c',$(this).text());
         $('span.select').removeClass('clicked');
@@ -1643,6 +1706,13 @@
         enabled = true;
         methods.closeTablePopups();
       });
+      $('a.cancel_geo').livequery('click',function(ev){
+        stopPropagation(ev);
+        methods.closeTablePopups();
+        $(window).trigger('stopGeo');
+        enabled = true;
+      });
+      
       
       
       ///////////////////////////////////////
@@ -1857,7 +1927,8 @@
     },
 
 
-
+    
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  KEEP SIZE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1952,10 +2023,11 @@
                                 if (params.address_column != undefined && params.address_column != '') {
                                   var address_cols = params.address_column.split(',');
                                   if (address_cols.length==1) {
-                                    var geo_address = new Geocoding(params.address_column,table_id);
+                                    $('thead tr th[c='+address_cols[0]+'] h3').parent().append('<p class="geo address">geo</p>');
                                   } else {
-                                    // TODO geo_address for multiple addresses columns
+                                    methods.refreshTable('');
                                   }
+                                  var geo_address = new Geocoding(params.address_column,table_id);
                                 } else {
                                   $('thead tr th h3:contains('+params.lat_column+')').parent().append('<p class="geo latitude">geo</p>');
                                   $('thead tr th h3:contains('+params.lon_column+')').parent().append('<p class="geo longitude">geo</p>');
@@ -1964,12 +2036,12 @@
                                 break;
         case "new_column":      methods.closeTablePopups();
                                 headers[params.column.name] = params.column.type;
-                                methods.refreshTable();
+                                methods.refreshTable('next');
                                 break;
         case "delete_column":   delete headers[params.column.name];
-                                methods.refreshTable();
+                                methods.refreshTable('');
                                 break;                                
-        case "delete_row":      methods.refreshTable();
+        case "delete_row":      methods.refreshTable('');
                                 break;                        
         default:                break;
       }
@@ -2014,15 +2086,19 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  REFRESH TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    refreshTable: function() {
+    refreshTable: function(position) {
       loading = true;
-      minPage = 0;
-      maxPage = -1;
+      if (position!='') {
+        minPage = 0;
+        maxPage = -1;
+      } else {
+        previous_scroll = $(document).scrollTop();
+      }
       $(table).children('thead').remove();
       $(table).children('tbody').remove();
       $(document).scrollTop(0);
       $('div.table_position').removeClass('end');
-      methods.getData(defaults, 'next');
+      methods.getData(defaults, position);
       enabled = true;
     },
     
@@ -2056,6 +2132,7 @@
         $('div.mamufas div.georeference_window').hide();
         $('div.mamufas div.column_window').hide();
         $('div.mamufas div.lastpage_window').hide();
+        $('div.mamufas div.stopgeo_window').hide();
       });
       
       closeOutTableWindows();

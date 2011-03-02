@@ -40,8 +40,8 @@ table.force_schema = "name varchar, surname varchar, address varchar, city varch
 table.save
 
 user.in_database do |user_database|
-  100.times do
-    user_database.run("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','#{String.random(30)}','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',#{rand(100)},'#{String.random(10)}',#{rand(10000)})" )
+  200.times do
+    user_database.run("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','#{String.random(30)}','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',40.#{rand(10000)},'#{String.random(3)}',40.#{rand(10000)})" )
   end
 end
 
@@ -52,11 +52,12 @@ table.force_schema = "name varchar, address varchar, latitude float, longitude f
 table.save
 table.set_lat_lon_columns!(:latitude, :longitude)
 
-table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9", :latitude => 40.423012, :longitude => -3.699732})
-table.insert_row!({:name => "El Estocolmo", :address => "Calle de la Palma 72, Madrid", :latitude => 40.426949, :longitude => -3.708969})
-table.insert_row!({:name => "El Rey del Tallarín", :address => "Plaza Conde de Toreno 2, Madrid", :latitude => 40.424654, :longitude => -3.709570})
-table.insert_row!({:name => "El Lacón", :address => "Plaza Conde de Toreno 2, Madrid", :latitude => 40.415113, :longitude => -3.699871})
-table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid", :latitude => 40.428198, :longitude => -3.703991})
+table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
+table.insert_row!({:name => "El Estocolmo", :address => "Calle de la Palma 72, Madrid, Spain", :latitude => 40.426949, :longitude => -3.708969})
+table.insert_row!({:name => "El Rey del Tallarín", :address => "Plaza Conde de Toreno 2, Madrid, Spain", :latitude => 40.424654, :longitude => -3.709570})
+table.insert_row!({:name => "El Lacón", :address => "Manuel Fernández y González 8, Madrid, Spain", :latitude => 40.415113, :longitude => -3.699871})
+table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
+
 
 table = Table.new :privacy => Table::PUBLIC, :name => 'My favourite bars',
                   :tags => 'bars, personal'

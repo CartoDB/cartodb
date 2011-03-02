@@ -122,16 +122,15 @@
                 "ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat " +
                 "from " + $('h2 a').text();
     $.ajax({
+      method: 'GET',
       url: "/api/json/tables/query",
       data: ({api_key: api_key, query: query}),
-      dataType: "jsonp",
       success: function(result) {
         bounds = new google.maps.LatLngBounds();
         
         if(result != null) {
-          for(var i=0;i<result.rows.length;i++){
-            if (result.rows[i].lat != null || result.rows[i].lon != null) {
-              var row = result.rows[i];
+          $.each(result.rows,function(index,row) {
+            if (row.lat != null || row.lon != null) {
               var marker = new google.maps.Marker({position: new google.maps.LatLng(row.lat, row.lon), icon: image, map: map, draggable:true, raiseOnDrag:true, data:row});
               markers[row.cartodb_id] = marker;
               bounds.extend(new google.maps.LatLng(row.lat, row.lon));
@@ -143,8 +142,8 @@
       					onMoveOccurrence(ev,this.data);
       				});     
             }
-          }
-          
+          })
+
           if (result.rows.length==1) {
             map.setCenter(bounds.getCenter());
             map.setZoom(9);

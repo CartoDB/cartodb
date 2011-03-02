@@ -11,14 +11,13 @@
   
   
   /*============================================================================*/
-	/* 	*/
+	/* Start worker geocoding	*/
 	/*============================================================================*/
 	Geocoding.prototype.startGeocoding = function() {
 	  var me = this;
 		$.ajax({
       method: "GET",
-      url: '/api/json/tables/'+this.table,
-      data: {rows_per_page: 200, page: 0},
+      url: '/api/json/tables/'+this.table+'/addresses',
       success: function(data) {
         var rows = data.rows;
         var directions = [];
@@ -32,9 +31,14 @@
         var worker = new Worker("/javascripts/admin/table/worker_geocoding.js");
 
         worker.onmessage = function(event){
-          if (event.data == "Finish") {
-            me.finishGeocoding();
-            delete worker;
+          if (event.data == "Finish" || event.data == "Stopped") {
+            if (event.data == "Finish") {
+              me.finishGeocoding();
+              delete worker;
+            } else {
+              me.stoppedGeocoding();
+              delete worker;
+            }
           } else {
             var params = {};
             params['lat'] = event.data.Placemark[0].Point.coordinates[1];
@@ -45,31 +49,38 @@
               url: '/api/json/tables/'+me.table+'/update_geometry/'+event.data.cartodb_id,
               data: params,
               success: function(data) {
-                console.log(data);
+                //console.log(data);
               },
               error: function(e) {
-                console.log(e);
+                //console.log(e);
               }
             });
-            
-            //var latlng = new google.maps.LatLng(event.data.Placemark[0].Point.coordinates[1],event.data.Placemark[0].Point.coordinates[0]);          
-            // var marker = new google.maps.Marker({position: latlng, map: map,title:"Your position!"});
-            // bounds.extend(latlng);
-            //console.log(latlng);
           }
         };
-
-        worker.postMessage(directions);
+   
+        worker.postMessage({process: 'start', places: directions});
+        $(window).bind('stopGeo',function(ev){
+          worker.postMessage({process: 'stop', places: null});
+        });
        }
     });
 	}
 	
 	
   /*============================================================================*/
-	/* 	*/
+	/* Finish geocoding	*/
 	/*============================================================================*/
 	Geocoding.prototype.finishGeocoding = function() {
 	  requests_queue.responseRequest(this.requestId,'ok','');
+		geolocating = false;
+	}
+	
+	
+	/*============================================================================*/
+	/* Stop geocoding	*/
+	/*============================================================================*/
+	Geocoding.prototype.stoppedGeocoding = function() {
+	  requests_queue.responseRequest(this.requestId,'error','You have stopped the geocoding...');
 		geolocating = false;
 	}
 	

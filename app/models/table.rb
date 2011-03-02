@@ -449,7 +449,7 @@ class Table < Sequel::Model(:user_tables)
         update_row!(row_id, {address_column => attributes[:address]})
       end
       owner.in_database do |user_database|
-        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{attributes[:lon]},#{ attributes[:lat]}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
+        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{attributes[:lon]},#{ attributes[:lat]}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{row_id}")
       end
     else
       update_row!(row_id, {lat_column => attributes[:lat], lon_column => attributes[:lon]})

@@ -383,11 +383,6 @@ class Api::Json::TablesController < ApplicationController
   # * Request Method: +GET+
   # * URI: +/api/json/tables/:id/addresses
   # * Format: +JSON+
-  # * Parameters:
-  #     {
-  #       "page" => "<integer>" (by default 1),
-  #       "per_page" => "<integer>" (maximum per_page value is 50, by default 50)
-  #     }
   # * Sample response if _success_:
   #   * status code: 200
   #   * {
@@ -397,11 +392,7 @@ class Api::Json::TablesController < ApplicationController
   #       "rows": [{"cartodb_id":1,"address":"SHJxJxdTeyc"},{"cartodb_id":2,"address":"ewTKpIBFTmG"},...]
   #     }
   def addresses
-    page = params[:page] ? params[:page].to_i : 1
-    page = 1 if page < 0
-    per_page = params[:per_page] ? params[:per_page].to_i : 50
-    per_page = 50 if per_page < 0 || per_page > 50
-    response = @table.run_query("select cartodb_id, #{@table.address_column} from #{@table.name} limit #{per_page} offset #{(page - 1)*per_page}")
+    response = @table.run_query("select cartodb_id, #{@table.address_column} from #{@table.name}")
     render :json => response.to_json, :status => 200, :callback => params[:callback]
   end
 

@@ -923,14 +923,18 @@
               $('div.edit_cell div.boolean').show();
             } else {
               $('div.edit_cell div.free').show();
-              $('div.edit_cell textarea').text(data.value);
-              $('div.edit_cell textarea').focus();
+              $('div.edit_cell div.free textarea').text(data.value);
             }
             
             $('div.edit_cell a.save').attr('r',data.row);
             $('div.edit_cell a.save').attr('c',data.column);
             $('div.edit_cell a.save').attr('type',type);
             $('div.edit_cell').show();
+            
+            if (type!='date' && type!='boolean') {
+              $('div.edit_cell div.free textarea').focus();
+            }
+            
             
             $('body').bind('click',function(ev){
               if (!$(ev.target).closest('div.edit_cell').length) {

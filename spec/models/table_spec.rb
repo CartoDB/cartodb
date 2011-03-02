@@ -310,9 +310,10 @@ describe Table do
     table.destroy
     user.reload
     user.tables_count.should == 0
-    table.constraints.count.should == 0
     Tag.count.should == 0
     Table.count == 0
+    user.in_database{|database| database.table_exists?(table.name).should be_false}
+    table.constraints.count.should == 0
   end
 
   it "can be created with a given schema if it is valid" do

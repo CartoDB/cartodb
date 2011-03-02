@@ -43,6 +43,7 @@ section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
 /*CONTENT*/
 section#content {width:100%; background:url('/images/admin/dashboard/content_bkg.png') repeat 0 0;}
 section#content div.inner_content {width:906px; margin:0 auto; padding:40px 0 0 0;}
+section#content div.inner_content div.tables_list {width:906px; padding:0 0 40px 0;}
 section#content div.inner_content div.requests_info div.top_white {width:906px; height:7px; padding:0; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
 section#content div.inner_content div.requests_info div.middle_white {position:relative; width:846px; padding:25px 30px 24px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
 section#content div.inner_content div.requests_info div.middle_white h2 {width:100%; font:bold 21px Arial; color:#333333;}
@@ -51,7 +52,6 @@ section#content div.inner_content div.requests_info div.middle_white a.close {po
 section#content div.inner_content div.requests_info div.middle_white a.close:hover {background-position:0 -17px;}
 section#content div.inner_content div.requests_info div.middle_white img {margin:10px 0 0 0;}
 section#content div.inner_content div.requests_info div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
-section#content div.inner_content div.tables_list {width:906px; padding:10px 0;}
 section#content div.left {display:inline-block; width:626px; vertical-align:top;}
 section#content div.left div.top_blue_medium {float:left; width:626px; height:61px; background:url('/images/admin/backgrounds/top_blue_medium.png') no-repeat 0 0;}
 section#content div.left div.top_blue_medium h3 {float:left; margin:18px 0 0 25px; font:normal 23px "Aller",Arial; color:white; text-shadow:0 1px #718C92;}

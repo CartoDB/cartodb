@@ -1526,11 +1526,16 @@
         resetProperties();
         getColumns();
         
+        
+        
         function resetProperties() {
           $('div.georeference_window span.select').addClass('disabled');
           $('div.georeference_window span.select a:eq(0)').text('Retrieving columns...').attr('c','');
           $('div.georeference_window a.confirm_georeference').addClass('disabled');
           $('div.georeference_window span.select').removeClass('clicked');
+          
+          // Remove selected li class before know where geo column is.
+          $('div.georeference_window ul.main_list li').removeClass('selected');
           
           // Remove all ScrollPane and lists items //
           var custom_scrolls = [];
@@ -1551,19 +1556,25 @@
              url: '/api/json/tables/'+table_id+'/schema',
              success: function(data) {
                
-               // Primero ver si hay alguna fila georeferenciada
-               // Si la hay ver de que tipo es, o address o lat+lon
                // Activar según sea la columna si la hay, sino se activa la primera
                var geo_col_type = '';
-               // if () {
-               //   
-               // }
+               if ($('p.geo').length==0) {
+                 $('div.georeference_window ul.main_list li.first_list:eq(0)').addClass('selected');
+                 geo_col_type = '';
+               } else if ($('p.geo').hasClass('latitude')) {
+                 $('div.georeference_window ul.main_list li.first_list:eq(0)').addClass('selected');
+                 geo_col_type = 'latlng';
+               } else {
+                 $('div.georeference_window ul.main_list li.first_list:eq(1)').addClass('selected');
+                 geo_col_type = 'address';
+               }
                
                
                
                // -------------------- //
 
                for (var i = 0; i<data.length; i++) {
+                 
                  if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
                    if (data[i][2]==undefined) {
                      $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
@@ -1581,6 +1592,7 @@
                    }
                  }
                }
+               
                $('div.georeference_window span.select:eq(1) ul').append('<li><a href="#no_geo">Empty</a></li>');
                $('div.georeference_window span.select:eq(0) ul').append('<li><a href="#no_geo">Empty</a></li>');
                $('div.georeference_window span.select').removeClass('disabled');

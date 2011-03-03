@@ -27,7 +27,7 @@ class Api::Json::TablesController < ApplicationController
   #       }
   #     ]
   def index
-    @tables = Table.select(:id,:user_id,:name,:privacy).all
+    @tables = Table.select(:id,:user_id,:name,:privacy).filter(:user_id => current_user.id).all
     respond_to do |format|
       format.json do
         render :json => @tables.map{ |table| {:id => table.id, :name => table.name, :privacy => table_privacy_text(table)} }.to_json,

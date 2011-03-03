@@ -191,8 +191,7 @@ div.table_position div.general_options div.sql_console textarea:focus {outline:n
 /************************************EDIT FIELDS************************************/
 div.table_position div.edit_cell {position:absolute; display:none; top:200px; left:200px; min-width:262px; padding:7px 7px 42px; -moz-box-shadow:0px 0px 10px 2px #999; -webkit-box-shadow:0px 0px 10px 2px #999; box-shadow:0px 0px 10px 2px #999; border:1px solid #999999; background:#E6F2E4; 
   -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:10;}
-div.table_position div.edit_cell a.close {position:absolute; top:-7px; right:-8px; width:24px; height:24px; background:url('/images/admin/table/close.png') no-repeat 0 0; text-indent:-9999px; -moz-box-shadow:2px -2px 4px 0px #999; 
--webkit-box-shadow:2px -2px 4px 0px #aaa; box-shadow:0px 0px 10px 2px #999; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:10;}
+div.table_position div.edit_cell a.close {position:absolute; top:-7px; right:-8px; width:24px; height:24px; background:url('/images/admin/table/close.png') no-repeat 0 0; text-indent:-9999px;}
 div.table_position div.edit_cell a.close:hover {background-position:0 -24px;}
 div.table_position div.edit_cell div.boolean {float:left; display:none; width:248px; height:30px; padding:7px; margin:0; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; background:white;}
 div.table_position div.edit_cell div.boolean ul {float:left; width:248px; margin:6px 0 0 0;}

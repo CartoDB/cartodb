@@ -4,7 +4,6 @@ class ClientApplication < Sequel::Model
 
   plugin :validation_helpers
 
-  one_to_one :user
   one_to_many :tokens, :class_name => :OauthToken
   one_to_many :access_tokens
   one_to_many :oauth2_verifiers
@@ -34,6 +33,10 @@ class ClientApplication < Sequel::Model
 
   def user
     User[user_id]
+  end
+
+  def user=(value)
+    set(:user_id => value.id)
   end
 
   def self.verify_request(request, options = {}, &block)

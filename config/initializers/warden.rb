@@ -30,7 +30,7 @@ end
 
 Warden::Strategies.add(:api_authentication) do
   def authenticate!
-    if params[:api_key].blank? && request.headers['Authorization'].blank?
+    if params[:api_key].blank? && request.headers['Authorization'].blank? && params[:oauth_token].blank?
       throw(:warden)
     else
       if params[:api_key]

@@ -397,9 +397,11 @@ class Table < Sequel::Model(:user_tables)
              end
     end
     {
+      :id         => id,
+      :name       => name,
       :total_rows => rows_counted,
-      :columns => schema({:cartodb_types => options[:cartodb_types]}),
-      :rows => rows
+      :columns    => schema({:cartodb_types => options[:cartodb_types]}),
+      :rows       => rows
     }
   end
 

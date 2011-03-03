@@ -25,6 +25,8 @@ feature "Tables JSON API" do
     get_json "/api/json/tables/#{table.id}?rows_per_page=2"
     response.status.should == 200
     json_response = JSON(response.body)
+    json_response['id'].should == table.id
+    json_response['name'].should == table.name
     json_response['total_rows'].should == 10
     json_response['columns'].should == [
       ["cartodb_id", "number"], ["name", "string"], ["latitude", "number", "latitude"],
@@ -137,6 +139,7 @@ feature "Tables JSON API" do
 
   scenario "Get a list of tables" do
     user = create_user
+    another_user = create_user
 
     authenticate_api user
 
@@ -146,20 +149,24 @@ feature "Tables JSON API" do
 
     table1 = create_table :user_id => user.id, :name => 'My table #1', :privacy => Table::PUBLIC
     table2 = create_table :user_id => user.id, :name => 'My table #2', :privacy => Table::PRIVATE
+    table3 = create_table :user_id => another_user.id, :name => 'Another table #3', :privacy => Table::PRIVATE
     get_json "/api/json/tables"
     response.status.should == 200
-    response.body.should == [
-      {
-        "id" => table1.id,
-        "name" => "my_table_1",
-        "privacy" => "PUBLIC"
-      },
-      {
-        "id" => table2.id,
-        "name" => "my_table_2",
-        "privacy" => "PRIVATE"
-      }
-    ].to_json
+    response.body.should include({
+      "id" => table1.id,
+      "name" => "my_table_1",
+      "privacy" => "PUBLIC"
+    }.to_json)
+    response.body.should include({
+      "id" => table2.id,
+      "name" => "my_table_2",
+      "privacy" => "PRIVATE"
+    }.to_json)
+    response.body.should_not include({
+      "id" => table3.id,
+      "name" => "another_table_2",
+      "privacy" => "PRIVATE"
+    }.to_json)
   end
 
   scenario "Modify the schema of a table" do

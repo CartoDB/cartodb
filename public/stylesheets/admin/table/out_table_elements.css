@@ -67,9 +67,9 @@ section.subheader div.right span.advanced_options a.advanced {position:relative;
 text-decoration:none; color:#949BAA; z-index:100; border:1px solid black; border-bottom:0; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; 
 border-top-left-radius: 5px; border-top-right-radius: 5px; background:url('/images/admin/table/advanced_options_bkg.jpg') repeat-x 0 top;}
 section.subheader div.right span.advanced_options a.advanced span {position:absolute; right:9px; top:6px; height:16px; width:13px; background:url('/images/admin/icons/settings.png') no-repeat right -13px;}
-section.subheader div.right span.advanced_options ul {float:left; width:100px; height:auto; padding:10px; margin:-1px 0 0 0; background:url('/images/admin/table/advanced_options_bkg.jpg') repeat-x 0 bottom; border:1px solid black; -webkit-border-radius: 5px;
+section.subheader div.right span.advanced_options ul {float:left; width:100px; height:auto; padding:5px 11px 5px 9px; margin:-1px 0 0 0; background:url('/images/admin/table/advanced_options_bkg.jpg') repeat-x 0 bottom; border:1px solid black; -webkit-border-radius: 5px;
   -webkit-border-top-right-radius: 0; -moz-border-radius: 5px; -moz-border-radius-topright: 0; border-radius: 5px; border-top-right-radius: 0;}
-section.subheader div.right span.advanced_options ul li {background:none;}
+section.subheader div.right span.advanced_options ul li {background:none; margin: 0 0 4px 0;}
 section.subheader div.right span.advanced_options ul li a {background:none; font:normal 11px "Helvetica"; color:white; text-decoration:none;}
 section.subheader div.right span.advanced_options ul li a:hover {text-decoration:underline;}
 section.subheader div.right span.advanced_options ul li.disabled a {color:#999;}

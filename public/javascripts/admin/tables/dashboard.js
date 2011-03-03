@@ -65,17 +65,6 @@
           }
         });
       });
-
-
-      //Settings window
-      $('a.settings').click(function(ev){
-        ev.preventDefault();
-        ev.stopPropagation();
-        $('div.mamufas div.settings_window').show();
-        $('div.mamufas').fadeIn('fast');
-        bindESC();
-      });
-
     });
 
 

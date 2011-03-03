@@ -74,17 +74,7 @@
         $('div.mamufas').fadeIn('fast');
         bindESC();
       });
-      
 
-      
-      $('a.settings').click(function(ev){
-        ev.preventDefault();
-        ev.stopPropagation();
-        $('div.mamufas div.settings_window').show();
-        $('div.mamufas').fadeIn('fast');
-        bindESC();
-      });
-      
       $('div.mamufas a.close_settings, div.mamufas a.close_create').click(function(ev){
         ev.preventDefault();
         ev.stopPropagation();

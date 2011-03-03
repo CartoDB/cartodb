@@ -20,6 +20,11 @@
       });
       
       
+      //Function for doing the whole cell on the tables list clickable
+      $('ul.your_tables li').click(function() {
+        window.location.href = $(this).find("h4 > a.tableTitle").attr("href");
+      });
+
       //Close all modal windows
       $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_settings, div.mamufas a.close_create').click(function(ev){
         ev.preventDefault();
@@ -89,3 +94,5 @@
     function unbindESC() {
       $(document).unbind('keydown');
     }
+
+

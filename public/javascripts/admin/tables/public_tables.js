@@ -26,6 +26,11 @@
         $('div.tables_list div.left div.bottom_white_medium').css('background-position','0 0');
       });
 
+      
+      //Function for doing the whole cell on the tables list clickable
+      $('ul.your_tables li').click(function() {
+        window.location.href = $(this).find("h4 > a.tableTitle").attr("href");
+      });
 
 
       // $('a.new_table').click(function(ev){

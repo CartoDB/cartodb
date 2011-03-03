@@ -36,7 +36,7 @@
             <ul class="your_tables">
               <% @tables.each_with_index do |table, i| %>
               <li<%= ' class="last"'.html_safe if i == @tables.current_page_record_count - 1%>>
-                <h4><%= link_to(table.name, table) %></h4>
+                <h4><%= link_to(table.name, table, :class=>'tableTitle')  %></h4>
                 <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
                 <div class="meta_info">
                   <span class="info">

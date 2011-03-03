@@ -6,7 +6,6 @@ CartoDB::Application.routes.draw do
   get '/login' => 'sessions#new', :as => :login
   get '/logout' => 'sessions#destroy', :as => :logout
   match '/sessions/create' => 'sessions#create', :as => :create_session
-  get '/identity' => 'sessions#show'
 
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard
@@ -21,6 +20,7 @@ CartoDB::Application.routes.draw do
   match '/oauth/access_token'   => 'oauth#access_token',  :as => :access_token
   match '/oauth/token'          => 'oauth#token',         :as => :token
   match '/oauth/test_request'   => 'oauth#test_request',  :as => :test_request
+  get   '/oauth/identity'       => 'sessions#show'
 
   namespace :api do
     namespace :json, :format => :json do

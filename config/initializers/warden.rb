@@ -1,16 +1,16 @@
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
-  manager.default_strategies :password, :api_key, :oauth_token
+  manager.default_strategies :password, :api_authentication
   manager.failure_app = SessionsController
 end
 
 # Setup Session Serialization
 class Warden::SessionSerializer
-  def serialize(record)
-    record[:id]
+  def serialize(user)
+    user.id
   end
 
-  def deserialize(keys)
-    User.filter(:id => keys).select(:id,:email,:username,:tables_count,:crypted_password,:database_name).first
+  def deserialize(user_id)
+    User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name).first
   end
 end
 
@@ -28,48 +28,34 @@ Warden::Strategies.add(:password) do
   end
 end
 
-Warden::Strategies.add(:api_key) do
+Warden::Strategies.add(:api_authentication) do
   def authenticate!
-    if params[:api_key]
-      if api_key = APIKey[:api_key => params[:api_key]]
-        success!(api_key.user)
-        # TODO
-        # if api_key.domain == request.host
-        #   success!(api_key.user)
-        # else
-        #   fail!
-        # end
+    if params[:api_key].blank? && request.headers['Authorization'].blank?
+      throw(:warden)
+    else
+      if params[:api_key]
+        if api_key = APIKey[:api_key => params[:api_key]]
+          success!(User[api_key.user_id])
+          # TODO
+          # if api_key.domain == request.host
+          #   success!(api_key.user)
+          # else
+          #   fail!
+          # end
+        else
+          throw(:warden)
+        end
       else
-        fail!
-      end
-    else
-      fail!
-    end
-  end
-
-  def fail!
-    render :status => 401, :nothing => true
-  end
-end
-
-Warden::Strategies.add(:oauth_token) do
-  def authenticate!
-    if request.headers['Authorization'].blank?
-      fail!
-    else
-      if ClientApplication.verify_request(request) do |request_proxy|
-          @oauth_token = ClientApplication.find_token(request_proxy.token)
-          if @oauth_token.respond_to?(:provided_oauth_verifier=)
-            @oauth_token.provided_oauth_verifier = request_proxy.oauth_verifier
+        if ClientApplication.verify_request(request) do |request_proxy|
+            @oauth_token = ClientApplication.find_token(request_proxy.token)
+            throw(:warden) unless @oauth_token
+            if @oauth_token.respond_to?(:provided_oauth_verifier=)
+              @oauth_token.provided_oauth_verifier = request_proxy.oauth_verifier
+            end
           end
         end
+        success!(User[@oauth_token.user_id])
       end
-      user = User[@oauth_token.user_id]
-      success!(user)
     end
-  end
-
-  def fail!
-    render :status => 401, :nothing => true
   end
 end

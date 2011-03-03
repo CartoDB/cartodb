@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/ferblape/sequel-rails.git
-  revision: 9bc05e5
+  revision: 9bc05e5f708d6173f8142218bf67b9cc72fcd558
   specs:
     sequel-rails (0.1.7)
       actionpack (~> 3.0.0.rc)
@@ -10,10 +10,11 @@ GIT
 
 GIT
   remote: https://github.com/plataformatec/capybara-zombie.git
-  revision: 1b8d52a
+  revision: dcbba13730a73116acf70073bdbb54500f8f1875
   specs:
     capybara-zombie (0.0.1)
       capybara (~> 0.4.1)
+      childprocess (~> 0.1.7)
       multi_json (~> 0.0.5)
 
 GEM
@@ -47,7 +48,7 @@ GEM
       activesupport (= 3.0.4)
     activesupport (3.0.4)
     archive-tar-minitar (0.5.2)
-    arel (2.0.8)
+    arel (2.0.9)
     builder (2.1.2)
     capistrano (2.5.19)
       highline
@@ -66,14 +67,14 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (>= 0.0.27)
       xpath (~> 0.1.3)
-    celerity (0.8.7)
-    childprocess (0.1.6)
+    celerity (0.8.8)
+    childprocess (0.1.7)
       ffi (~> 0.6.3)
     colored (1.2)
     columnize (0.3.2)
     configuration (1.2.0)
     culerity (0.2.15)
-    daemon_controller (0.2.5)
+    daemon_controller (0.2.6)
     diff-lcs (1.1.2)
     erubis (2.6.6)
       abstract (>= 1.0.0)
@@ -82,7 +83,7 @@ GEM
       rake (>= 0.8.7)
     file-tail (1.0.5)
       spruz (>= 0.1.0)
-    git-up (0.4.4)
+    git-up (0.5.0)
       colored (>= 1.2)
       grit
     grit (2.4.1)
@@ -91,7 +92,7 @@ GEM
     highline (1.6.1)
     i18n (0.5.0)
     json_pure (1.5.1)
-    launchy (0.3.7)
+    launchy (0.4.0)
       configuration (>= 0.0.5)
       rake (>= 0.8.1)
     linecache19 (0.5.11)
@@ -102,23 +103,22 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.16)
-    mocha (0.9.11)
-      rake
+    mocha (0.9.12)
     multi_json (0.0.5)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
     net-sftp (2.0.5)
       net-ssh (>= 2.0.9)
-    net-ssh (2.1.0)
+    net-ssh (2.1.3)
     net-ssh-gateway (1.0.1)
       net-ssh (>= 1.99.1)
     nofxx-georuby (1.9.0)
       json_pure (>= 1.4.6)
     nokogiri (1.4.4)
     oauth (0.4.4)
-    oauth-plugin (0.4.0.pre4)
+    oauth-plugin (0.4.0.pre3)
       oauth (>= 0.4.4)
-    passenger (3.0.2)
+    passenger (3.0.4)
       daemon_controller (>= 0.2.5)
       fastthread (>= 1.0.1)
       file-tail
@@ -172,12 +172,12 @@ GEM
     ruby_core_source (0.1.4)
       archive-tar-minitar (>= 0.5.2)
     rubyzip (0.9.4)
-    selenium-webdriver (0.1.2)
+    selenium-webdriver (0.1.3)
       childprocess (~> 0.1.5)
       ffi (~> 0.6.3)
       json_pure
       rubyzip
-    sequel (3.20.0)
+    sequel (3.21.0)
     spruz (0.2.5)
     steak (1.1.0)
       rspec (>= 1.3)

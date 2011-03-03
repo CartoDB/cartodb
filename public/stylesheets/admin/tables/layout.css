@@ -8,7 +8,8 @@ header ul li {float:left; display: inline; list-style: none; padding: 0 10px 0 0
 header ul li.last {padding: 0; border: none; }
 header ul li a { float:left; margin:0 0 0 10px; font:normal 13px Arial; color:#949BAB; text-decoration: none;}
 header ul li a:hover {color:#FFFFFF;}
-header ul li span a { margin:0 0 0 4px; text-decoration: underline; color:#FFFFFF;}
+header ul li span a { margin:0 0 0 4px; text-decoration: underline; color:#949BAB;}
+header ul li span a:hover {color:#FFFFFF;}
 
 /*SUBHEADER*/
 section.subheader {width:100%; height:52px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}

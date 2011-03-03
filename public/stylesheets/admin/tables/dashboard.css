@@ -219,7 +219,7 @@ footer section.prefooter {width:900px; height:271px; margin:0 auto;}
 footer section.prefooter div.block {float:left; width:280px; padding:40px 0 0 0; margin:0 30px 0 0;}
 footer section.prefooter div.block.last {margin:0;}
 footer section.prefooter div.block h3 {float:left; width:100%; height:13px; font:normal 13px Arial; color:white; text-transform:uppercase; letter-spacing:-1px; word-spacing:2px;}
-footer section.prefooter div.block h4 {margin:30px 0 0 0; font:bold 19px Arial; color:#CACDD4; text-transform:none;}
+footer section.prefooter div.block h4 {height:40px; margin:30px 0 0 0; font:bold 19px Arial; color:#CACDD4; text-transform:none;}
 footer section.prefooter div.block h4 a {font:bold 19px Arial; color:#CACDD4; text-transform:none; text-decoration:none;}
 footer section.prefooter div.block h4 a:hover {color:white;}
 footer section.prefooter div.block p {margin:20px 0 0 0; font:normal 13px Arial; color:#8F95A4; line-height:17px;}

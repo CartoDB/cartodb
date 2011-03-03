@@ -4,10 +4,12 @@ javascripts:
   - plugins/jquery.min
   - plugins/general_functions
 - dashboard:
+  - plugins/tumblr
   - plugins/jquery.color
   - admin/tables/dashboard
   - admin/tables/import
 - public_tables:
+  - plugins/tumblr
   - plugins/jquery.color
   - admin/tables/public_tables
   - admin/tables/import

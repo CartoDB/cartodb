@@ -924,6 +924,11 @@
               }
               $('div.edit_cell div.boolean').show();
             } else {
+              if (type=="number"){
+                $('div.edit_cell textarea').css({'min-height' : '16px','height' : '16px' });
+              }else{
+                $('div.edit_cell textarea').css({'min-height' : '30px','height' : '30px'});
+              }
               $('div.edit_cell div.free').show();
               $('div.edit_cell div.free textarea').text(data.value);
             }

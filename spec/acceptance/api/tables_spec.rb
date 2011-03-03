@@ -25,6 +25,8 @@ feature "Tables JSON API" do
     get_json "/api/json/tables/#{table.id}?rows_per_page=2"
     response.status.should == 200
     json_response = JSON(response.body)
+    json_response['id'].should == table.id
+    json_response['name'].should == table.name
     json_response['total_rows'].should == 10
     json_response['columns'].should == [
       ["cartodb_id", "number"], ["name", "string"], ["latitude", "number", "latitude"],

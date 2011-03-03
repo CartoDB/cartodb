@@ -29,7 +29,7 @@ section#content div.left div.middle_white_medium ul li h4 a {font:bold 21px Aria
 section#content div.left div.middle_white_medium ul li h4 a:hover {color:black;}
 section#content div.left div.middle_white_medium ul li p.status {float:left; width:auto; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial;}
 section#content div.left div.middle_white_medium ul li p.status.public {color:#6FBE6F; background:#E2F3E1;}
-section#content div.left div.middle_white_medium ul li p.status.private {color:#FF9900; background:#FFF2C5;}
+section#content div.left div.middle_white_medium ul li p.status.private {color:#FFFFFF; background:#FB3E2C;}
 section#content div.left div.middle_white_medium ul li div.meta_info {float:left; width:100%;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info {float:left; width:330px; margin:2px 0 0 0;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.last_op {float:left; width:auto; padding:0 0 0 16px; font:normal 13px Arial; color:#999999; background:url('/images/admin/icons/clock.png') no-repeat 0 0;}

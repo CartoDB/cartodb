@@ -5,3 +5,10 @@
     
     - BLAT -> Devolver en el get de addresses las filas que faltan por georeferenciar (no las georeferenciadas sin encontrar la posición ¿ojo!)
     - BLAT -> Crear un método con las filas de los addresses que faltan por georeferenciar para seguir la tarea.
+
+
+
+  VIERNES 4 MARZO
+    
+    - Solucionar bugs y cambios.
+     

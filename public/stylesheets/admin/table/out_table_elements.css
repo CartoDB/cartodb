@@ -7,9 +7,9 @@ a:focus {outline:none;}
 header {width:100%; min-width:880px; height:58px; margin:0 auto; background:none; z-index:100;}
 header a.logo {float:left; width:70px; height:15px; margin:23px 0 0 40px; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
 header ul {float:right; margin: 24px 40px 0 0; }
-header ul li {float:left; display: inline; list-style: none; padding: 0 13px 0 0; border-right: solid 1px #949BAB; }
+header ul li {float:left; display: inline; list-style: none; padding: 0 10px 0 0; border-right: solid 1px #949BAB; }
 header ul li.last {padding: 0; border: none; }
-header ul li a { float:left; margin:0 0 0 13px; font:normal 13px Arial; color:#949BAB; text-decoration: none;}
+header ul li a { float:left; margin:0 0 0 10px; font:normal 13px Arial; color:#949BAB; text-decoration: none;}
 header ul li a:hover {color:#FFFFFF;}
 header ul li span a { margin:0 0 0 4px; text-decoration: underline; color:#FFFFFF;}
 

@@ -52,7 +52,7 @@ section#content div.left div.paginate ul li a {float:left; width:13px; height:13
 section#content div.left div.paginate ul li a:hover {background-position:0 -13px;}
 section#content div.left div.paginate ul li.selected a {background-position:0 -13px;}
 section#content div.left div.paginate ul li.selected a:hover {background-position:0 -13px; cursor:default;}
-section#content div.right {display:inline-block; vertical-align:top; width:250px; margin:10px 0 0 23px;}
+section#content div.right {display:inline-block; vertical-align:top; width:250px; margin:10px 0 0 16px;}
 section#content div.right span.no_tags {display:block; width:216px; height:117px; padding:17px; background:url('/images/admin/dashboard/no_tags_bkg.png') no-repeat 0 0;}
 section#content div.right p {padding:0 0 10px 0; font:normal 13px "Helvetica",Arial; color:#6C868B; text-shadow:0 1px white;}
 section#content div.right h4 {font:bold 13px "Aller"; padding:0 0 10px 0; color:#83B0B6; text-shadow:0 1px white;}

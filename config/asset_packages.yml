@@ -37,10 +37,10 @@ stylesheets:
 - sessions:
   - front/sessions
 - dashboard:
-  - admin/tables/layout
+  - admin/layout
   - admin/tables/dashboard
 - public_tables:
-  - admin/tables/layout
+  - admin/layout
   - admin/tables/public_tables
 - table:
   - admin/table/out_table_elements

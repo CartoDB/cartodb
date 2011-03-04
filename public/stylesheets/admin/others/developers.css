@@ -1,6 +1,6 @@
-body {position:relative; background:url('/images/admin/common/header_bkg_2.jpg') repeat-x 0 0 #2D3451;}
+body {position:relative; background:url('/images/admin/common/header_bkg_2.jpg') repeat-x center 0 #2D3451;}
 
-section.outer_content {position:relative; width:100%; padding:0 0 50px; background:url('/images/admin/dashboard/content_bkg.png') repeat 0 0;}
+section.outer_content {position:relative; width:100%; padding:0 0 50px; background:url('/images/admin/dashboard/content_bkg.png') repeat center 0;}
 section.outer_content div.mesh1 {position:absolute; display:block; width:100%; min-width:880px; height:150px; background:url('/images/admin/common/header_bkg_2.jpg') repeat-x center -58px; z-index:0;}
 section.outer_content div.mesh2 {position:absolute; display:block; width:100%; min-width:880px; height:151px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0; z-index:0;}
 section.outer_content div.content {position:relative; z-index:2;}

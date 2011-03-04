@@ -1,29 +1,33 @@
 body {position:relative; background:url('/images/admin/common/header_bkg_2.jpg') repeat-x 0 0 #2D3451;}
-section.subheader {height:auto;}
-section.subheader div.inner_subheader {height:auto;}
-section.subheader div.inner_subheader h1 {width:100%; padding:40px 0 70px; font:normal 35px "Aller"; color:white; letter-spacing:-1px; word-spacing:6px; text-align:center;}
-section#content div.inner_content {padding:40px 0 30px;}
-section#content div.small_blocks {padding:0; margin:-80px 0 0 0; height:250px;}
-section#content div.small_blocks div.block {float:left; width:220px; height:160px; margin:0 24px 0 0; padding:33px; background:url('/images/admin/api/block.png') no-repeat 0 0;}
-section#content div.small_blocks div.block.email {background:url('/images/admin/api/block_email.png') no-repeat 0 0;}
-section#content div.small_blocks div.block.gallery {background:url('/images/admin/api/block_gallery.png') no-repeat 0 0;}
-section#content div.small_blocks div.block.last {margin:0;}
-section#content div.small_blocks div.block h2 {font:bold 21px Arial; color:#333333;}
-section#content div.small_blocks div.block p {margin:15px 0 0 0; font:normal 15px Arial; color:#666666;}
-section#content div.small_blocks div.block a {float:left; width:auto; height:35px; margin:15px 0 0 0; padding:0 0 0 5px; text-decoration:none;}
-section#content div.small_blocks div.block a span {float:left; width:auto; height:15px; padding:10px 19px 10px 14px; font:bold 15px Arial; line-height:15px;}
-section#content div.small_blocks div.block a.green {background:url('/images/admin/api/green_left.png') no-repeat 0 0;}
-section#content div.small_blocks div.block a.green span {background:url('/images/admin/api/green_right.png') no-repeat right 0; color:#305233; text-shadow:0 1px #95C994;}
-section#content div.small_blocks div.block a.orange {background:url('/images/admin/api/orange_left.png') no-repeat 0 0;}
-section#content div.small_blocks div.block a.orange span {background:url('/images/admin/api/orange_right.png') no-repeat right 0; color:#895101; text-shadow:0 1px #FFC266;}
-section#content div.small_blocks div.block a:hover {background-position:0 -35px;}
-section#content div.small_blocks div.block a:hover span {background-position:right -35px;}
-section#content div.tutorial {width:100%; padding:0; margin:0;}
-section#content div.tutorial div.top {width:906px; height:7px; padding:0; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
-section#content div.tutorial div.middle {position:relative; width:840px; padding:27px 33px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
-section#content div.tutorial div.middle div {display:inline-block; width:255px; vertical-align:top;}
-section#content div.tutorial div.middle div.right {margin:0 0 0 20px;}
-section#content div.tutorial div.middle h5 {width:100%; font:normal 15px Arial; color:#CCCCCC;}
-section#content div.tutorial div.middle h2 {width:100%; padding:0 0 5px 0; font:bold 21px Arial; color:#333333;}
-section#content div.tutorial div.middle p {width:100%; padding:16px 0 0 0; font:normal 15px Arial; color:#666666;}
-section#content div.tutorial div.bottom {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
+
+section.outer_content {position:relative; width:100%; padding:0 0 50px; background:url('/images/admin/dashboard/content_bkg.png') repeat 0 0;}
+section.outer_content div.mesh1 {position:absolute; display:block; width:100%; min-width:880px; height:150px; background:url('/images/admin/common/header_bkg_2.jpg') repeat-x center -58px; z-index:0;}
+section.outer_content div.mesh2 {position:absolute; display:block; width:100%; min-width:880px; height:151px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0; z-index:0;}
+section.outer_content div.content {position:relative; z-index:2;}
+section.outer_content div.content div.top {width:900px; margin:0 auto; padding:20px 0 30px!important;}
+section.outer_content div.content div.top h1 {width:100%; margin:0; padding:10px 0 0px; font:normal 35px "Aller"; color:white; letter-spacing:-1px; word-spacing:6px; text-align:center;}
+section.outer_content div.content div.middle {width:906px; margin:0 auto; padding:0;}
+section.outer_content div.content div.small_blocks {width:100%; padding:0; margin:0; height:250px;}
+section.outer_content div.content div.small_blocks div.block {float:left; width:220px; height:160px; margin:0 24px 0 0; padding:33px; background:url('/images/admin/api/block.png') no-repeat 0 0;}
+section.outer_content div.content div.small_blocks div.block.email {background:url('/images/admin/api/block_email.png') no-repeat 0 0;}
+section.outer_content div.content div.small_blocks div.block.gallery {background:url('/images/admin/api/block_gallery.png') no-repeat 0 0;}
+section.outer_content div.content div.small_blocks div.block.last {margin:0!important;}
+section.outer_content div.content div.small_blocks div.block h2 {font:bold 21px Arial; color:#333333;}
+section.outer_content div.content div.small_blocks div.block p {margin:15px 0 0 0; font:normal 15px Arial; color:#666666;}
+section.outer_content div.content div.small_blocks div.block a {float:left; width:auto; height:35px; margin:15px 0 0 0; padding:0 0 0 5px; text-decoration:none;}
+section.outer_content div.content div.small_blocks div.block a span {float:left; width:auto; height:15px; padding:10px 19px 10px 14px; font:bold 15px Arial; line-height:15px;}
+section.outer_content div.content div.small_blocks div.block a.green {background:url('/images/admin/api/green_left.png') no-repeat 0 0;}
+section.outer_content div.content div.small_blocks div.block a.green span {background:url('/images/admin/api/green_right.png') no-repeat right 0; color:#305233; text-shadow:0 1px #95C994;}
+section.outer_content div.content div.small_blocks div.block a.orange {background:url('/images/admin/api/orange_left.png') no-repeat 0 0;}
+section.outer_content div.content div.small_blocks div.block a.orange span {background:url('/images/admin/api/orange_right.png') no-repeat right 0; color:#895101; text-shadow:0 1px #FFC266;}
+section.outer_content div.content div.small_blocks div.block a:hover {background-position:0 -35px;}
+section.outer_content div.content div.small_blocks div.block a:hover span {background-position:right -35px;}
+section.outer_content div.content div.tutorial {width:100%; padding:0; margin:0;}
+section.outer_content div.content div.tutorial div.top {width:906px; height:7px; padding:0!important; margin:0!important; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
+section.outer_content div.content div.tutorial div.middle {position:relative; width:840px; margin:0; padding:27px 33px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
+section.outer_content div.content div.tutorial div.middle div {display:inline-block; width:255px; vertical-align:top;}
+section.outer_content div.content div.tutorial div.middle div.right {margin:0 0 0 20px;}
+section.outer_content div.content div.tutorial div.middle h5 {width:100%; font:normal 15px Arial; color:#CCCCCC;}
+section.outer_content div.content div.tutorial div.middle h2 {width:100%; padding:0 0 5px 0; font:bold 21px Arial; color:#333333;}
+section.outer_content div.content div.tutorial div.middle p {width:100%; padding:16px 0 0 0; font:normal 15px Arial; color:#666666;}
+section.outer_content div.content div.tutorial div.bottom {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}

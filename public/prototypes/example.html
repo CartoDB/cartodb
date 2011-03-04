@@ -2,15 +2,28 @@
 <html lang="en"> 
   <head> 
     <meta charset=utf-8 /> 
-    <title>CartoDB - Documentation</title> 
+    <title>CartoDB - Example</title> 
     <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" /> 
     <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" /> 
     <link href="/stylesheets/admin/layout.css" media="screen" rel="stylesheet" type="text/css" /> 
     <link href="/stylesheets/admin/others/developing.css" media="screen" rel="stylesheet" type="text/css" /> 
     <script src="/javascripts/plugins/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/javascripts/plugins/jquery-syntax/public/jquery.syntax.min.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script> 
+    <script type="text/javascript"> 
+      function initialize() {
+        var myLatlng = new google.maps.LatLng(-34.397, 150.644);
+        var myOptions = {
+          zoom: 8,
+          center: myLatlng,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          disableDefaultUI: true
+        }
+        var map = new google.maps.Map(document.getElementById("map"), myOptions);
+      }
+    </script>
   </head> 
-  <body> 
+  <body onload="initialize()"> 
     <header>
       <a class="logo" href="/">CartoDB</a>
       <ul>
@@ -27,52 +40,41 @@
       <div class="content">
         <div class="top">
           <ul class="tables_list">
-            <li class="selected"><a class="oth" href="/prototypes/api.html"><span>Documentation</span></a></li>
-            <li><a class="oth" href="/prototypes/example.html" ><span>Gallery</span></a></li>
+            <li><a class="oth" href="/prototypes/api.html"><span>Documentation</span></a></li>
+            <li class="selected"><a class="oth" href="/prototypes/example.html" ><span>Gallery</span></a></li>
           </ul>
           <a class="get_key" href="#">GET YOUR API KEY</a>
         </div>
         <div class="middle">
           <div class="left">
             <ul class="breadcrumb">
-              <li class="first"><a href="#">CartoDB API</a></li>
-              <li><a href="#">Table Managing</a></li>
-              <li class="selected"><a href="#">Remove table</a></li>
+              <li class="first"><a href="#">Examples gallery</a></li>
+              <li class="selected"><a href="#">Basic operations</a></li>
             </ul>
-            <h1>Remove table</h1>
-            <p>Runs a search for users similar to Find People button on Twitter.com. The results returned by people search on Twitter.com are the same as those returned by this API request.
-              <br/><br/>
-            Only the first 1000 matches are available.</p>
-            <h2>URL</h2>
-            <p>http://www.vizzuality.com</p>
-            <h2>URL</h2>
-            <p>http://www.vizzuality.com</p>
-            <h2>URL</h2>
-            <p><a href="#">http://www.vizzuality.com</a></p>
-            <h2>PARAMETERS</h2>
-            <h3>Required</h3>
-            <ul>
-              <li>
-                <h4>Table Identifier</h4>
-                <p>http://www.vizzuality.com</p>
-                <p>http://www.vizzuality.com</p>
-              </li>
-            </ul>
-            <h3>Required</h3>
-            <ul>
-              <li>
-                <h4>Table Identifier</h4>
-                <p>http://www.vizzuality.com</p>
-                <p>http://www.vizzuality.com</p>
-              </li>
-            </ul>
+            <h1>Create new rows and visualize them in a map</h1>
+            <p>This easy mashup uses some basic operations of the CartoDB API for adding points to a map. Each time a point is added, a new row is created in the table.</p>
             
-            <p class="tab">RUBY</p>
-            <pre class="syntax ruby">
-              
-  jamon = "jamon"
-  a = Array.new(2)
+            <div class="map">
+              <div id="map"></div>
+              <a href="#add_point" id="add_point">Add a point</a>
+            </div>
+            
+            <h2>SOURCE CODE</h2>
+            <p class="tab">JSON</p>
+            <pre class="syntax javascript">
+  
+  [
+    [
+      "response_status":"ok",
+      "callback_function":"none"
+    ]
+  ]
             </pre>
+            <h2>RELATED DOCUMENTATION</h2>
+            <ul>
+              <li><a href="#">http://www.vizzuality.com</a></li>
+              <li><a href="#">http://www.vizzuality.com</a></li>
+            </ul>
           </div>
           <div class="right">
             <ul>

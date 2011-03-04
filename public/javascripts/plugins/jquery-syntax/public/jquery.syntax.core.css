@@ -1,5 +1,5 @@
 pre.syntax{line-height:1.6em;letter-spacing:0.05em;margin:1em 20pt 1em;}
-.syntax-container{float:left; width:100%; padding:0;}
+.syntax-container{float:none; width:100%; padding:0;}
 .syntax{font-family:Menlo,Monaco,Consolas,monospace;line-height:1.5em;}
 .syntax .function{color:#3333ff;}
 .syntax .keyword{color:#33cc33;}

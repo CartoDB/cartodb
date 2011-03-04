@@ -31,6 +31,7 @@
         var worker = new Worker("/javascripts/admin/table/worker_geocoding.js");
 
         worker.onmessage = function(event){
+          console.log('entra');
           if (event.data == "Finish" || event.data == "Stopped") {
             if (event.data == "Finish") {
               me.finishGeocoding();
@@ -41,8 +42,14 @@
             }
           } else {
             var params = {};
-            params['lat'] = event.data.Placemark[0].Point.coordinates[1];
-            params['lon'] = event.data.Placemark[0].Point.coordinates[0];
+            if (event.data.Placemark!=undefined) {
+              params['lat'] = event.data.Placemark[0].Point.coordinates[1];
+              params['lon'] = event.data.Placemark[0].Point.coordinates[0];
+            } else {
+              params['lat'] = -0;
+              params['lon'] = -0;
+            }
+
             
             $.ajax({
               type: "PUT",

@@ -2,7 +2,7 @@
   //SUBHEADER EVENTS AND FLOATING WINDOWS+//
   
 
-  $(document).ready(function(){
+  head(function(){
     
     ///////////////////////////////////////
     //  Mamufas addition                 //
@@ -38,7 +38,21 @@
             '<a href="#download" class="download" type="CSV">Download</a>'+
           '</span>'+
         '</div>'+
-      '</div>');
+      '</div>'+
+      '<div class="save_window">'+
+        '<a href="#close_window" class="close_save"></a>'+
+        '<div class="inner_">'+
+          '<span class="top">'+
+            '<h3>Insert a name for your copy of this table</h3>'+
+            '<input type="text"/>'+
+          '</span>'+
+          '<span class="bottom">'+
+            '<a href="#close_window" class="cancel">cancel</a>'+
+            '<a href="#save_table" class="table_save" >Save table</a>'+
+          '</span>'+
+        '</div>'+
+      '</div>'
+      );
     
     
 
@@ -212,8 +226,8 @@
       '<span class="advanced_options">'+
         '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
         '<ul>'+
-          '<li class="disabled"><a class="export_data">Export data...</a></li>'+
-          '<li class="disabled"><a class="save_table">Save table as...</a></li>'+
+          '<li><a href="#export_data" class="export_data">Export data...</a></li>'+
+          '<li><a href="#save_table" class="save_table">Save table as...</a></li>'+
         '</ul>'+
       '</span>');
     $('p.settings a.settings, span.advanced_options a.advanced').livequery('click',function(ev){
@@ -233,9 +247,25 @@
         $('body').unbind('click');
       }
     });
-    $('a.export_data, a.save_table').click(function(ev){
+    $('a.save_table').click(function(ev){
       stopPropagation(ev);
+      closeOutTableWindows();
+      $('div.mamufas div.save_window').show();
+      $('div.mamufas').fadeIn('fast');
+      bindESC();
     });
+    $('a.table_save').click(function(ev){
+      stopPropagation(ev);
+      closeOutTableWindows();
+    });
+    $('a.export_data').click(function(ev){
+      stopPropagation(ev);
+      closeOutTableWindows();
+      $('div.mamufas div.export_window').show();
+      $('div.mamufas').fadeIn('fast');
+      bindESC();
+    });
+
     
     
     
@@ -251,7 +281,7 @@
       $('div.mamufas').fadeIn('fast');
       bindESC();
     });
-    $('div.mamufas a.cancel, div.mamufas a.close_delete').click(function(ev){
+    $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_save').click(function(ev){
       stopPropagation(ev);
       $('div.mamufas').fadeOut('fast',function(){
         $('div.mamufas div.delete_window').hide();
@@ -375,6 +405,7 @@
     $('div.mamufas').fadeOut('fast',function(){
       $('div.mamufas div.delete_window').hide();
       $('div.mamufas div.export_window').hide();
+      $('div.mamufas div.save_window').hide();
       $(document).unbind('keydown');
       $('body').unbind('click');
     });

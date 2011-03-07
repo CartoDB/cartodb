@@ -1,0 +1,49 @@
+<% content_for(:head) do %>
+  <%= stylesheet_link_tag('admin/layout.css','admin/others/tokens.css') %>
+<% end %>
+
+<section id="content">
+  <div class="inner_content">
+    <div class="tables_list">
+      <div class="left">
+        <div class="top_blue_medium">
+          <h3>Your <strong>apps</strong></h3>
+          <p><a class="oauth selected" href="<%= oauth_credentials_path %>">OAuth</a><a class="jsonp" href="<%= jsonp_credentials_path %>">JSONP</a></p>
+        </div>
+        <div class="middle_white_medium">
+          <div class="end_oauth">
+            <p>Using the key and the secret you can use CartoDB from external applications developed by you.</p>
+            <span class="form_block">
+              <label>YOUR KEY</label>
+              <p><%= current_user.client_application.key %></p>
+            </span>
+            <span class="form_block last">
+              <label>YOUR SECRET</label>
+              <p><%= current_user.client_application.secret %></p>
+            </span>
+            <span class="end_key">
+              <a href="#" class="submit orange"><span>Get new key and secret</span></a>
+              <p>(Be sure you assume <a href="#">the risks of that</a>)</p>
+            </span>
+          </div>
+        </div>
+        <div class="bottom_white_medium"></div>
+      </div>
+      <div class="right">
+        <div class="banner">
+          <div class="top_white_short"></div>
+          <div class="middle_white_short">
+            <h3>Are you creating your first app with CartoDB?</h3>
+            <p>Take a look at the documentation</p>
+            <ul>
+              <li><a href="/prototypes/oauth.html">OAuth authentication</a></li>
+              <li><a href="/prototypes/jsonp.html">JSONP Authentication</a></li>
+              <li><a href="/prototypes/api.html">Activating your apps</a></li>
+            </ul>
+          </div>
+          <div class="bottom_white_short"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

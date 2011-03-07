@@ -4,7 +4,8 @@
     <meta charset=utf-8 />
     <title>CartoDB</title>
     <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
-    <%= stylesheet_link_merged(:base).html_safe %>
+    <%= javascript_include_tag "/javascripts/plugins/head.load.min.js" %>
+    <%= yield :js %>
     <%= yield :head %>
     <%= csrf_meta_tag %>
   </head>
@@ -12,20 +13,12 @@
     <header>
       <a class="logo" href="/">CartoDB</a>
       <ul>
-        <li>
-          <a href="/prototypes/developers.html">Developers</a>
-        </li>
-        <li>
-          <a href="http://cartodb.tumblr.com" target="_blank">Blog</a>
-        </li>        
-        <li class="last">
-          <%= link_to current_user.email, dashboard_path, :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span>
-        </li>
+        <li><a href="/prototypes/developers.html">Developers</a></li>
+        <li><a href="http://cartodb.tumblr.com" target="_blank">Blog</a></li>        
+        <li class="last"><%= link_to current_user.email, '/prototypes/account.html', :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
       </ul>
     </header>
-
     <%= yield %>
-
     <% if show_footer? %>
     <footer>
       <section class="prefooter">
@@ -58,10 +51,6 @@
       </div>
     </footer>
     <% end %>
-
     <%= yield :mamufas %>
-    
-    <%= javascript_include_merged(:base).html_safe %>
-    <%= yield :js %>
   </body>
 </html>

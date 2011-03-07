@@ -1,3 +1,5 @@
+# coding: UTF-8
+
 class UploadController < ApplicationController
 
   def progress

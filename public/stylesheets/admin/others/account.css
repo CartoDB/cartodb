@@ -4,9 +4,28 @@ section#content div.left div.top_blue_medium {float:left; width:626px; height:61
 section#content div.left div.top_blue_medium h3 {float:left; margin:18px 0 0 25px; font:normal 23px "Aller",Arial; color:white; text-shadow:0 1px #718C92;}
 section#content div.left div.top_blue_medium a.new_table {float:right; margin:14px 18px 0 0; width:157px; height:15px; padding:9px 0 11px; text-align:center; background:url('/images/admin/dashboard/create_table.png') no-repeat 0 0; font:bold 15px Arial; color:#305234; text-shadow:0 1px #9ED6A4; text-decoration:none;}
 section#content div.left div.top_blue_medium a.new_table:hover {background-position:0 -35px;}
-section#content div.left div.middle_white_medium {float:left; width:626px; padding:0 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
+section#content div.left div.middle_white_medium {float:left; width:620px; padding:0 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
+section#content div.left div.middle_white_medium p {display:inline-block; margin:20px 0 0 22px; font:normal 15px Arial; color:#333333;}
+section#content div.left div.middle_white_medium span.form_block {display:inline-block; width:277px; margin:15px 16px 0 22px;}
+section#content div.left div.middle_white_medium span.form_block.last {margin:0;}
+section#content div.left div.middle_white_medium span.form_block label {font:bold 10px "Helvetica",Arial; color:#999999;}
+section#content div.left div.middle_white_medium span.form_block input {width:257px; height:15px; padding:9px 10px!important; margin:5px 0 0 0; background:url('/images/admin/api/input_bkg.png') no-repeat 1px 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
+  font:normal 15px Arial; color:#333333; line-height:15px;}
+section#content div.left div.middle_white_medium span.submit_block {display:inline-block; width:598px; height:70px; margin:10px 0 0 0; padding:0 22px 0 0;}
+section#content div.left div.middle_white_medium span.submit_block p {float:right; margin:23px 20px 0 0; font-size:13px; color:#333333;}
+section#content div.left div.middle_white_medium span.submit_block p a {color:#FF9900;}
+section#content div.left div.middle_white_medium span.submit_block p a:hover {color:#FF6600;}
+section#content div.left div.middle_white_medium span.submit_block a.submit {float:right; width:auto; height:35px; margin:15px 0 0 0; padding:0 0 0 5px; text-decoration:none; background:url('/images/admin/api/green_left.png') no-repeat 0 0;} 
+section#content div.left div.middle_white_medium span.submit_block a.submit span {float:right; width:auto; height:15px; padding:10px 19px 10px 14px; font:bold 15px Arial; line-height:15px; background:url('/images/admin/api/green_right.png') no-repeat right 0; color:#305233; text-shadow:0 1px #95C994;}
+section#content div.left div.middle_white_medium span.submit_block a.submit:hover {background-position:0 -35px;}
+section#content div.left div.middle_white_medium span.submit_block a.submit:hover span {background-position:right -35px;}
+section#content div.left div.middle_white_medium div.delete {border-top:1px solid #E0E0E0; padding:14px 0 22px;}
+section#content div.left div.middle_white_medium div.delete a {float:left; width:auto; height:35px; margin:8px 0 0 22px; padding:0 0 0 5px; text-decoration:none; background:url('/images/admin/api/orange_left.png') no-repeat 0 0;}
+section#content div.left div.middle_white_medium div.delete a span {float:left; width:auto; height:15px; padding:10px 19px 10px 14px; font:bold 15px Arial; line-height:15px; background:url('/images/admin/api/orange_right.png') no-repeat right 0; color:#895101; text-shadow:0 1px #FFC266;}
+section#content div.left div.middle_white_medium div.delete a:hover {background-position:0 -35px;}
+section#content div.left div.middle_white_medium div.delete a:hover span {background-position:right -35px;}
+section#content div.left div.middle_white_medium div.delete p {margin-left:15px; padding:0; font-size:13px; color:#666666;}
 section#content div.left div.bottom_white_medium {float:left; width:626px; height:10px; padding:0; background:url('/images/admin/backgrounds/bottom_white_medium.png') no-repeat 0 top;}
-
 section#content div.right {display:inline-block; vertical-align:top; width:260px; margin:0 0 0 16px;}
 section#content div.right div.banner {width:100%;}
 section#content div.right div.banner div.top_white_short {width:100%; height:10px; background:url('/images/admin/backgrounds/top_white_short.png') no-repeat 0 0;}

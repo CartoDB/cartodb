@@ -1,5 +1,5 @@
 
-    $(document).ready(function(){
+    head(function(){
       
       //Put paginator in middle
       var paginator_width = $('div.paginate').width();

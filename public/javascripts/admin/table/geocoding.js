@@ -6,7 +6,6 @@
     this.startGeocoding();
     
     this.requestId = createUniqueId();
-    requests_queue.newRequest(this.requestId,"georeference_address");
   }
   
   
@@ -41,9 +40,14 @@
             }
           } else {
             var params = {};
-            params['lat'] = event.data.Placemark[0].Point.coordinates[1];
-            params['lon'] = event.data.Placemark[0].Point.coordinates[0];
-            
+            if (event.data.Placemark!=undefined) {
+              params['lat'] = event.data.Placemark[0].Point.coordinates[1];
+              params['lon'] = event.data.Placemark[0].Point.coordinates[0];
+            } else {
+              params['lat'] = -0;
+              params['lon'] = -0;
+            }
+
             $.ajax({
               type: "PUT",
               url: '/api/json/tables/'+me.table+'/update_geometry/'+event.data.cartodb_id,
@@ -71,7 +75,7 @@
 	/* Finish geocoding	*/
 	/*============================================================================*/
 	Geocoding.prototype.finishGeocoding = function() {
-	  requests_queue.responseRequest(this.requestId,'ok','');
+	  $('p.geo').removeClass('loading');
 		geolocating = false;
 	}
 	

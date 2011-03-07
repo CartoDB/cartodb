@@ -326,10 +326,10 @@
       $(table).parent().append(
         '<div class="general_options">'+
           '<ul>'+
-            //'<li><a class="sql" href="#open_sql"><span>SQL</span></a></li>'+
+            '<li><a class="sql" href="#open_sql"><span>SQL</span></a></li>'+
             '<li><a href="#add_row" class="add_row"><span>Add row</span></a></li>'+
             '<li><a href="#add_column" class="add_column"><span>Add column</span></a></li>'+
-            //'<li><a><span class="dropdown">Views (2)</span></a></li>'+
+            '<li><a><span class="dropdown">Views (2)</span></a></li>'+
             '<li class="other"><a href="#"><span class="dropdown">Other queries (2)</span></a></li>'+
           '</ul>'+
           //SQL Console
@@ -482,7 +482,6 @@
                         '</div>'+
                       '</span>'+
                       '<a class="remove_column" href="#remove_column"></a>'+
-                      '<a class="combine" href="#combine">Combine with...</a>'+
                     '</div>'+
                     '<div class="second_column_address block">'+
                       '<label>SELECTED COLUMN 2</label>'+
@@ -493,7 +492,6 @@
                         '</div>'+
                       '</span>'+
                       '<a class="remove_column" href="#remove_column"></a>'+
-                      '<a class="combine" href="#combine">Combine with...</a>'+
                     '</div>'+
                     '<div class="third_column_address block">'+
                       '<label>SELECTED COLUMN 3</label>'+
@@ -517,7 +515,6 @@
             '</span>'+
           '</div>'+
         '</div>'+
-
         '<div class="column_window">'+
           '<a href="#close_window" class="close_create"></a>'+
           '<div class="inner_">'+
@@ -543,8 +540,6 @@
             '</span>'+
           '</div>'+
         '</div>'+
-        
-        
         '<div class="lastpage_window">'+
           '<div class="inner_">'+
             '<span class="loading">'+
@@ -553,8 +548,6 @@
             '</span>'+
           '</div>'+
         '</div>'+
-        
-        
         '<div class="stopgeo_window">'+
           '<a href="#close_window" class="close"></a>'+
           '<div class="inner_">'+
@@ -1384,7 +1377,7 @@
          };
         });
       });
-      $('span.col_types ul li a').livequery('click',function(){
+      $('span.col_types ul li a').livequery('click',function(ev){
         stopPropagation(ev);
         
         var parent_element = $(this).closest('span.col_types').parent().children('p.long').children('a');
@@ -1543,6 +1536,7 @@
           $('div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
           $('div.georeference_window a.close_geo').show();
           $('div.georeference_window').css('height','auto');
+          $('div.georeference_window div.inner_').css('height','auto');
           $('div.georeference_window').removeClass('loading');
           $('div.georeference_window span.select').addClass('disabled');
           $('div.georeference_window span.select a.option').each(function(i,ele){
@@ -1687,33 +1681,17 @@
         var block_class = $(this).closest('div.block');
         if (block_class.hasClass('first_column_address')) {
           if (!$('div.second_column_address').is(':visible')) {
-            $('div.georeference_window div.first_column_address a.combine').show();
-            $('div.georeference_window div.first_column_address a.remove_column').show();
+            $('div.georeference_window div.second_column_address').show();
+            $('div.georeference_window div.second_column_address a.remove_column').show();
           }
         } else if (block_class.hasClass('second_column_address')) {
           if (!$('div.third_column_address').is(':visible')) {
-            $('div.georeference_window div.second_column_address a.combine').show();
-            $('div.georeference_window div.second_column_address a.remove_column').show();
+            $('div.georeference_window div.second_column_address a.remove_column').hide();
+            $('div.georeference_window div.third_column_address').show();
+            $('div.georeference_window div.third_column_address a.remove_column').show();
           }
         } else {
           $('div.georeference_window div.third_column_address a.remove_column').show();
-        }
-      });
-      $('div.georeference_window a.combine').livequery('click',function(ev){
-        stopPropagation(ev);
-        $('span.select').removeClass('clicked');
-        
-        var block_class = $(this).closest('div.block');
-        if (block_class.hasClass('first_column_address')) {
-          $('div.georeference_window div.first_column_address a.remove_column').hide();
-          $('div.georeference_window div.second_column_address a.remove_column').show();
-          $('div.georeference_window div.second_column_address a.combine').hide();
-          $('div.georeference_window div.second_column_address').show();
-          $('div.georeference_window div.first_column_address a.combine').hide();
-        } else {
-          $('div.georeference_window div.second_column_address a.remove_column').hide();
-          $('div.georeference_window div.second_column_address a.combine').hide();
-          $('div.georeference_window div.third_column_address').show();
         }
       });
       $('div.georeference_window a.remove_column').livequery('click',function(ev){
@@ -1725,11 +1703,9 @@
         var block_class = $(this).closest('div.block');
         if (block_class.hasClass('first_column_address')) {
           $('div.georeference_window div.first_column_address a.remove_column').hide();
-          $('div.georeference_window div.first_column_address a.combine').hide();
         } else if (block_class.hasClass('second_column_address')) {
           $('div.georeference_window div.first_column_address a.remove_column').show();
           $('div.georeference_window div.second_column_address').hide();
-          $('div.georeference_window div.second_column_address a.combine').hide();
           $('div.georeference_window div.second_column_address a.remove_column').hide();
         } else {
           $('div.georeference_window div.second_column_address a.remove_column').show();
@@ -1805,7 +1781,7 @@
           $('div.georeference_window div.inner_ span.bottom').animate({opacity:0},200,function(){
             $(this).hide();
           });
-          $('div.georeference_window').animate({height:'74px'},500);
+          $('div.georeference_window div.inner_').animate({height:'74px'},400);
           
         }
       });
@@ -1820,7 +1796,10 @@
         $(window).trigger('stopGeo');
         enabled = true;
       });
-      
+      $('a.close').livequery('click',function(ev){
+        stopPropagation(ev);
+        methods.closeTablePopups();
+      });
       
       
       ///////////////////////////////////////
@@ -2131,7 +2110,7 @@
                                 if (params.address_column != undefined && params.address_column != '') {
                                   var address_cols = params.address_column.split(',');
                                   if (address_cols.length==1) {
-                                    $('thead tr th[c='+address_cols[0]+'] h3').parent().append('<p class="geo address">geo</p>');
+                                    $('thead tr th[c='+address_cols[0]+'] h3').parent().append('<p class="geo address loading">geo</p>');
                                   } else {
                                     methods.refreshTable('');
                                   }

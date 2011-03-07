@@ -2,11 +2,11 @@
 <html lang="en"> 
   <head> 
     <meta charset=utf-8 /> 
-    <title>CartoDB - Account</title> 
+    <title>CartoDB - JSONP</title> 
     <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" /> 
     <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" /> 
     <link href="/stylesheets/admin/layout.css" media="screen" rel="stylesheet" type="text/css" /> 
-    <link href="/stylesheets/admin/others/account.css" media="screen" rel="stylesheet" type="text/css" /> 
+    <link href="/stylesheets/admin/others/tokens.css" media="screen" rel="stylesheet" type="text/css" /> 
     <script src="/javascripts/plugins/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/javascripts/plugins/tumblr.js" type="text/javascript" charset="utf-8"></script>
   </head> 
@@ -26,7 +26,7 @@
           <ul class="tables_list">
             <li><a class="oth" href="/dashboard"><span>Your tables</span></a></li>
             <li><a class="oth" href="/dashboard/public" ><span>Public tables</span></a></li>
-            <li><a class="oth" href="/prototypes/oauth.html"><span>Your apps</span></a></li>
+            <li class="selected"><a class="oth" href="/prototypes/oauth.html"><span>Your apps</span></a></li>
           </ul>
         </div>
         <div class="right">
@@ -41,31 +41,36 @@
         <div class="tables_list">
           <div class="left">
             <div class="top_blue_medium">
-              <h3>Your <strong>account settings</strong></h3>
+              <h3>Your <strong>apps</strong></h3>
+              <p><a class="oauth selected" href="/prototypes/oauth.html">OAuth</a><a class="jsonp" href="/prototypes/jsonp.html">JSONP</a></p>
             </div>
             <div class="middle_white_medium">
-              <p>This is your login data. You need it for login into CartoDB</p>
-              <form >
+              <p>Add an application to activate the access to you cartoDB tables by JSONP</p>
+              <form>
                 <span class="form_block">
-                  <label>YOUR EMAIL</label>
-                  <input type="text" value="" disabled="true" />
+                  <label>YOUR APP NAME</label>
+                  <input type="text" value="" />
                 </span>
+                <span class="form_block long">
+                  <label>CALLBACK URL</label>
+                  <input type="text" value="" />
+                </span>
+                <a href="#submit" class="green submit"><span>Activate app</span></a>
+              </form>
+              <div class="end_oauth">
+                <p>Using the key and the secret you can use CartoDB from external applications developed by you.</p>
                 <span class="form_block">
-                  <label>YOUR PASSWORD</label>
-                  <input type="text" value="" disabled="true" />
+                  <label>YOUR KEY</label>
+                  <p>lñasjdflkajsflñsadñlfjñaksdjfñklasjfldksa</p>
                 </span>
                 <span class="form_block last">
-                  <label>CONFIRM YOUR PASSWORD</label>
-                  <input type="text" value="" disabled="true" />
+                  <label>YOUR SECRET</label>
+                  <p>lñasjdflkajsflñsadñlfjñaksdjfñklasjfldksa</p>
                 </span>
-                <span class="submit_block">
-                  <a class="submit" href="#"><span>Save changes</span></a>
-                  <p>To edit this data you need to <a href="#">unlock your chain</a></p>
+                <span class="end_key">
+                  <a href="#" class="submit orange"><span>Get new key and secret</span></a>
+                  <p>(Be sure you assume <a href="#">the risks of that</a>)</p>
                 </span>
-              </form>
-              <div class="delete">
-                <a href="#delete_account"><span>Delete your account</span></a>
-                <p>All your user data and private tables will be erased of our systems</p>
               </div>
             </div>
             <div class="bottom_white_medium"></div>

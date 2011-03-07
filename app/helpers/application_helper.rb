@@ -1,7 +1,8 @@
 module ApplicationHelper
 
   def show_footer?
-    controller_name == 'tables' && action_name != 'show'
+    (controller_name == 'tables' && action_name != 'show') ||
+    (controller_name == 'client_applications')
   end
 
   def in_my_tables?
@@ -35,5 +36,21 @@ module ApplicationHelper
       render(:partial => 'shared/paginate', :locals => {:collection => collection}).html_safe
     end
   end
+  
+  def headjs_include_tag(*sources)
+     keys = []
+     coder = HTMLEntities.new
+     content_tag :script, { :type => Mime::JS }, false do
+       "head.js( #{javascript_include_tag(*sources).scan(/src="([^"]+)"/).flatten.map { |src|
+         src = coder.decode(src)
+         key = URI.parse(src).path[%r{[^/]+\z}].gsub(/\.js$/,'').gsub(/\.min$/,'')
+         while keys.include?(key) do
+           key += '_' + key
+         end
+         keys << key
+         "{ '#{key}': '#{src}' }"
+       }.join(', ')} );".html_safe
+     end
+   end
 
 end

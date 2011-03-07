@@ -3,7 +3,7 @@
     var interval = null;
     
   
-    $(document).ready(function(){
+    head(function(){
       
       //Create new table
       $('a.new_table').click(function(ev){

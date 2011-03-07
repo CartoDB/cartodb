@@ -2,12 +2,11 @@
   var map = null;
   var markers = [];
   var bounds;
-  var geocoder = new google.maps.Geocoder();
-  var image = new google.maps.MarkerImage('/images/admin/map/marker.png',new google.maps.Size(33, 33),new google.maps.Point(0,0),new google.maps.Point(12, 33));
+  var geocoder;
+  var image;
   
 
-  $(document).ready(function(){
-    
+  function initMap() {
     ///////////////////////////////////////
     //  Map elements                     //
     ///////////////////////////////////////
@@ -90,7 +89,7 @@
       $('body').unbind('click');
       $(this).closest('span').toggle();
     });
-  });
+  }
 
 
 
@@ -104,6 +103,8 @@
         mapTypeId: google.maps.MapTypeId.TERRAIN
       }
       map = new google.maps.Map(document.getElementById("map"),myOptions);
+      geocoder = new google.maps.Geocoder();
+      image = new google.maps.MarkerImage('/images/admin/map/marker.png',new google.maps.Size(33, 33),new google.maps.Point(0,0),new google.maps.Point(12, 33));
     }
     getMapTableData();
   }

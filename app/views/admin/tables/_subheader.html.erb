@@ -4,7 +4,7 @@
       <ul class="tables_list">
         <li class="<%= selected_if(current_path == dashboard_path) %>"><a href="<%= dashboard_path %>"><span>Your tables</span></a></li>
         <li class="<%= selected_if(current_path == dashboard_public_path) %>"><a href="<%= dashboard_public_path %>" class="oth <%= selected_if(current_path == dashboard_public_path) %>"><span>Public tables</span></a></li>
-        <li><a class="oth" href="#"><span>Your apps</span></a></li>
+        <li><a class="oth" href="<%= oauth_credentials_path %>"><span>Your apps</span></a></li>
       </ul>
     </div>
     <div class="right">

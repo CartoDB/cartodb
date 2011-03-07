@@ -2,6 +2,8 @@
 
 class SessionsController < ApplicationController
 
+  before_filter :api_authorization_required, :only => :show
+
   layout 'front_layout'
 
   def new
@@ -11,7 +13,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    authenticate!
+    authenticate!(:password)
     redirect_to dashboard_path
   end
 
@@ -20,11 +22,23 @@ class SessionsController < ApplicationController
     redirect_to root_path
   end
 
+  def show
+    respond_to do |format|
+      format.json do
+        render :json => {:email => current_user.email, :uid => current_user.id, :username => current_user.username}.to_json, :status => 200
+      end
+    end
+  end
+
   def unauthenticated
     flash[:alert] = 'Your account or your password is not ok'
     respond_to do |format|
       format.html do
-        render :action => 'new' and return
+        if request.headers['Authorization']
+          render :nothing => true, :status => 401
+        else
+          render :action => 'new' and return
+        end
       end
       format.json do
         render :nothing => true, :status => 401

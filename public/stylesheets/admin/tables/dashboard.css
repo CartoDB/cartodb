@@ -14,8 +14,8 @@ section#content div.left div.top_blue_medium {float:left; width:626px; height:61
 section#content div.left div.top_blue_medium h3 {float:left; margin:18px 0 0 25px; font:normal 23px "Aller",Arial; color:white; text-shadow:0 1px #718C92;}
 section#content div.left div.top_blue_medium a.new_table {float:right; margin:14px 18px 0 0; width:157px; height:15px; padding:9px 0 11px; text-align:center; background:url('/images/admin/dashboard/create_table.png') no-repeat 0 0; font:bold 15px Arial; color:#305234; text-shadow:0 1px #9ED6A4; text-decoration:none;}
 section#content div.left div.top_blue_medium a.new_table:hover {background-position:0 -35px;}
-section#content div.left div.middle_white_medium {float:left; width:626px; padding:0 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
-section#content div.left div.middle_white_medium div.no_tables {width:626px; padding:300px 0 151px 0; background:url('/images/admin/public_tables/no_tables.jpg') no-repeat center 100px;}
+section#content div.left div.middle_white_medium {float:left; width:620px; padding:0 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
+section#content div.left div.middle_white_medium div.no_tables {width:620px; padding:300px 0 151px 0; background:url('/images/admin/public_tables/no_tables.jpg') no-repeat center 100px;}
 section#content div.left div.middle_white_medium div.no_tables h5 {width:100%; text-align:center; font:bold 21px Arial; color:#A4BBC0; letter-spacing:-1px; word-spacing:2px;}
 section#content div.left div.middle_white_medium div.no_tables p {width:100%; padding:4px 0 0 0; text-align:center; font:normal 15px Arial; color:#A4BBC0;}
 section#content div.left div.middle_white_medium div.no_tables p a {color:#666666;}

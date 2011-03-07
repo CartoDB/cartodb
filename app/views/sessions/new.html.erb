@@ -4,14 +4,14 @@
 
   <section>
     <h1>Welcome to Carto<strong>DB</strong></h1>
-    <p>Use your account information to start using CartoDB</p>
+    <p>We are still in private beta. <a href="mailto:beta@cartodb.com">Send us</a> an email to get an account.</p>
     <%= form_tag create_session_path do %>
-      <p>Introduce your account data</p>
-      <%= label_tag :email, 'your e-mail' %>
+      <p>Please login</p>
+      <%= label_tag :email, 'e-mail' %>
       <%= text_field_tag :email, '', :class => (flash[:alert] ? 'error' : nil) %>
-      <%= label_tag :password, 'your password' %>
+      <%= label_tag :password, 'password' %>
       <%= password_field_tag :password, '', :class => (flash[:alert] ? 'error' : nil) %>
-      <%= submit_tag 'Sign in', :class => "login" %>
+      <%= submit_tag 'Log in', :class => "login" %>
       <% if flash[:alert] %>
       <div class="error_content">
         <p><span><%= flash[:alert] %></span></p>
@@ -19,4 +19,4 @@
       <% end %>
     <% end %>
   </section>
-  <footer>CartoDB is a product of <a href="http://www.vizzuality.com" target="_blank">vizzuality</a></footer>
+  <footer>CartoDB is a product of <a href="http://www.vizzuality.com" target="_blank">Vizzuality</a></footer>

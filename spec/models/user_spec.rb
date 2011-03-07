@@ -95,7 +95,6 @@ describe User do
     table.user_id = user.id
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
     table.save
-    table.set_lat_lon_columns!(:lat, :lon)
 
     query_result = user.run_query("select * from antantaric_species where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank

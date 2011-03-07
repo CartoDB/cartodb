@@ -1,11 +1,13 @@
 <html>
   <head>
     <title>CartoDB</title>
+    <%= javascript_include_tag "/javascripts/plugins/head.load.min.js" %>
+    <%= yield :js %>
     <%= yield :head %>
     <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
+    <noscript><meta http-equiv="refresh" content="0;url=/prototypes/javascript.html"></noscript>
   </head>
   <body>
     <%= yield %>
-    <%= yield :js %>
   </body>
 </html>

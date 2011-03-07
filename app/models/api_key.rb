@@ -4,7 +4,7 @@ class APIKey < Sequel::Model(:api_keys)
 
   def validate
     super
-    errors.add(:domain, 'has an invalid format') if !domain || domain.empty? || domain !~ /^http:\/\/[0-9a-z]+/i
+    domain = "http://#{domain}" if domain !~ /^http:\/\//
   end
 
   def before_create

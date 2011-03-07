@@ -515,7 +515,6 @@
             '</span>'+
           '</div>'+
         '</div>'+
-
         '<div class="column_window">'+
           '<a href="#close_window" class="close_create"></a>'+
           '<div class="inner_">'+
@@ -541,8 +540,6 @@
             '</span>'+
           '</div>'+
         '</div>'+
-        
-        
         '<div class="lastpage_window">'+
           '<div class="inner_">'+
             '<span class="loading">'+
@@ -551,8 +548,6 @@
             '</span>'+
           '</div>'+
         '</div>'+
-        
-        
         '<div class="stopgeo_window">'+
           '<a href="#close_window" class="close"></a>'+
           '<div class="inner_">'+
@@ -1541,6 +1536,7 @@
           $('div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
           $('div.georeference_window a.close_geo').show();
           $('div.georeference_window').css('height','auto');
+          $('div.georeference_window div.inner_').css('height','auto');
           $('div.georeference_window').removeClass('loading');
           $('div.georeference_window span.select').addClass('disabled');
           $('div.georeference_window span.select a.option').each(function(i,ele){
@@ -1800,7 +1796,10 @@
         $(window).trigger('stopGeo');
         enabled = true;
       });
-      
+      $('a.close').livequery('click',function(ev){
+        stopPropagation(ev);
+        methods.closeTablePopups();
+      });
       
       
       ///////////////////////////////////////

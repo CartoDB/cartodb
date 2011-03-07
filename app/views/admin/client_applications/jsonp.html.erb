@@ -1,5 +1,5 @@
   <% content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/tumblr", "admin/api/api" %>
+    <%= headjs_include_tag "plugins/jquery.min", "plugins/tumblr", "plugins/general_functions" ,"admin/api/api" %>
   <% end %>  
   <% content_for(:head) do %>
     <%= stylesheet_link_tag('reset','admin/layout','admin/others/tokens') %>
@@ -41,7 +41,7 @@
                     <%= f.label :api_key, "API KEY" %>
                     <%= f.text_field :api_key, :readonly=>"readonly" %>
                   </span>
-                  <a href="#submit" onclick="$('#remove_api_key_<%= api_key.id %>').submit();" class="orange submit"><span>Remove key</span></a>
+                  <a domain="<%= api_key.domain %>" href="#remove_api_key" class="orange submit remove_key" key="<%= api_key.id %>"><span>Remove key</span></a>
                 <% end %>
               <% end %>
             <% end %>
@@ -54,3 +54,21 @@
       </div>
     </div>
   </section>
+  
+  <% content_for(:mamufas) do %>
+    <div class="mamufas">
+      <div class="delete_window">
+        <a href="#close_window" class="close_delete"></a>
+        <div class="inner_">
+          <span class="top">
+            <h3>You are about to remove the key for this domain</h3>
+            <p>You will not be able to recover this information. Are you sure to remove this key?</p>
+          </span>
+          <span class="bottom">
+            <a href="#close_window" class="cancel">cancel</a>
+            <a href="#confirm_delete" class="confirm_delete" key="">Delete this key</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  <% end %>

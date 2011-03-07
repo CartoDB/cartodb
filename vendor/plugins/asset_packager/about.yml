@@ -1,8 +1,0 @@
-author: Scott Becker
-name: AssetPackager
-summary: JavaScript and CSS Asset Compression for Production Rails Apps
-homepage: http://synthesis.sbecker.net/pages/asset_packager
-plugin: http://sbecker.net/shared/plugins/asset_packager
-license: MIT
-version: 0.2
-rails_version: 1.1.2+

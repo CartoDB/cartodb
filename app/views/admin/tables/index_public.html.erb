@@ -1,8 +1,9 @@
-  <% content_for(:head) do %>
-    <%= stylesheet_link_merged(:public_tables).html_safe %>
-  <% end %>
+
   <% content_for(:js) do %>
-    <%= javascript_include_merged(:public_tables).html_safe %>
+    <%= headjs_include_tag "plugins/jquery.min", "plugins/tumblr", "plugins/jquery.color", "admin/tables/public_tables", "admin/tables/import" %>
+  <% end %>
+  <% content_for(:head) do %>
+    <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/public_tables') %>
   <% end %>
 
   <%= render 'subheader' %>

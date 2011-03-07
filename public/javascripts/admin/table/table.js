@@ -2,7 +2,7 @@
     var geolocating = false;
 
 
-    $(document).ready(function(){
+    head(function(){
       $("table#carto_table").cDBtable(
         'start',{
           getDataUrl: '/api/json/tables/' + table_id, //-query +table_id

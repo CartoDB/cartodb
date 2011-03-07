@@ -2,11 +2,15 @@
   var map = null;
   var markers = [];
   var bounds;
-  var geocoder = new google.maps.Geocoder();
-  var image = new google.maps.MarkerImage('/images/admin/map/marker.png',new google.maps.Size(33, 33),new google.maps.Point(0,0),new google.maps.Point(12, 33));
+  var geocoder;
+  var image;
   
 
-  $(document).ready(function(){
+  head(function(){
+    
+    geocoder = new google.maps.Geocoder();
+    image = new google.maps.MarkerImage('/images/admin/map/marker.png',new google.maps.Size(33, 33),new google.maps.Point(0,0),new google.maps.Point(12, 33));
+    
     
     ///////////////////////////////////////
     //  Map elements                     //

@@ -2,7 +2,7 @@
   //SUBHEADER EVENTS AND FLOATING WINDOWS+//
   
 
-  $(document).ready(function(){
+  head(function(){
     
     ///////////////////////////////////////
     //  Mamufas addition                 //

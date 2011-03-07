@@ -11,6 +11,7 @@ gem 'warden'
 gem 'rails_warden'
 gem 'polyglot'
 gem 'treetop'
+gem 'htmlentities'
 
 group :development do
   gem 'capistrano'

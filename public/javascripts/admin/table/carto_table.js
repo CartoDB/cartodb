@@ -156,9 +156,9 @@
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="change_data_type" href="#change_data_type">Change data type</a></li>':'') +
                           ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a class="delete_column" href="#delete_column">Delete column</a></li>':'') +
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'</ul>':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<div class="line"></div>':'') +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<div class="line geo_line"></div>':'') +
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<h5>GEOREFERENCE</h5>':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<ul>':'') +
+                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<ul class="geo_list">':'') +
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a href="#" class="open_georeference">Georeference with...</a></li>':'') +
                         ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'</ul>':'') +
                         '<div class="line"></div>'+
@@ -1345,8 +1345,17 @@
         if (!$(this).hasClass('selected')) {
           methods.closeTablePopups();
           methods.bindESCkey();
-
           $(this).addClass('selected');
+          var col_type = $(this).closest('th').find('a.column_type').text().toLowerCase();
+          if (col_type!="string" && col_type!="number") {
+            $('span.col_ops_list h5:contains("GEOREFERENCE")').hide();
+            $('span.col_ops_list div.geo_line').hide();
+            $('span.col_ops_list ul.geo_list').hide();
+          } else {
+            $('span.col_ops_list h5:contains("GEOREFERENCE")').show();
+            $('span.col_ops_list div.geo_line').show();
+            $('span.col_ops_list ul.geo_list').show();
+          }
           $(this).parent().children('span.col_ops_list').show();
 
           $('body').click(function(event) {
@@ -1589,7 +1598,7 @@
                }
 
                for (var i = 0; i<data.length; i++) {
-                 if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
+                 if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at" && (data[i][1]=="number" || data[i][1]=="string")) {
                    if (data[i][2]==undefined) {
                      $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                    } else {

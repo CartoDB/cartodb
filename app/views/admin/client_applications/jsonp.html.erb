@@ -1,60 +1,56 @@
-<% content_for(:head) do %>
-  <%= stylesheet_link_tag('admin/layout.css','admin/others/tokens.css') %>
-<% end %>
+  <% content_for(:js) do %>
+    <%= headjs_include_tag "plugins/jquery.min", "plugins/tumblr", "admin/api/api" %>
+  <% end %>  
+  <% content_for(:head) do %>
+    <%= stylesheet_link_tag('reset','admin/layout','admin/others/tokens') %>
+  <% end %>
 
-<section id="content">
-  <div class="inner_content">
-    <div class="tables_list">
-      <div class="left">
-        <div class="top_blue_medium">
-          <h3>Your <strong>apps</strong></h3>
-          <p><a class="oauth" href="<%= oauth_credentials_path %>">OAuth</a><a class="jsonp selected" href="<%= jsonp_credentials_path %>">JSONP</a></p>
-        </div>
-        <div class="middle_white_medium">
-          <p>Add an application to activate the access to you cartoDB tables by JSONP</p>
-          <%= form_for(@api_key, :url => jsonp_credentials_path, :method => :post) do |f| %>
-            <% if request.post? && !@api_key.valid? %>
-            <p><%= @api_key.errors.full_messages.join(',') %></p>
+  <%= render :partial => 'admin/tables/subheader' %>
+
+  <section id="content">
+    <div class="inner_content">
+      <div class="tables_list">
+        <div class="left">
+          <div class="top_blue_medium">
+            <h3>Your <strong>apps</strong></h3>
+            <p><a class="oauth" href="<%= oauth_credentials_path %>">OAuth</a><a class="jsonp selected" href="<%= jsonp_credentials_path %>">JSONP</a></p>
+          </div>
+          <div class="middle_white_medium">
+            <p>Add an application to activate the access to you cartoDB tables by JSONP</p>
+            <%= form_for(@api_key, :url => jsonp_credentials_path, :method => :post) do |f| %>
+              <% if request.post? && !@api_key.valid? %>
+                <div class="error_content">
+                  <p><span><%= @api_key.errors.full_messages.join(',').capitalize %></span></p>
+                </div>
+              <% end %>
+              <span class="form_block">
+                <%= f.label :domain, "YOUR APP DOMAIN" %>
+                <% error = (request.post? && !@api_key.valid?)?'error':'' %>
+                <%= f.text_field :domain, :class=> error %>
+              </span>
+              <a href="#submit" onclick="$('#new_api_key').submit();" class="green submit"><span>Get API key</span></a>
             <% end %>
-            <span class="form_block">
-              <%= f.label :domain, "YOUR APP DOMAIN" %>
-              <%= f.text_field :domain %>
-            </span>
-            <a href="#submit" onclick="$('#new_api_key').submit();" class="green submit"><span>Get API key</span></a>
-          <% end %>
-          <% @api_keys.each do |api_key| %>
-            <%= form_tag(destroy_api_key_path(api_key.id), :method => :post, :id => "remove_api_key_#{api_key.id}") do %>
-              <%= fields_for api_key do |f| %>
-                <span class="form_block">
-                  <%= f.label :domain, "APP" %>
-                  <%= f.text_field :domain %>
-                </span>
-                <span class="form_block long">
-                  <%= f.label :api_key, "API KEY" %>
-                  <%= f.text_field :api_key %>
-                </span>
-                <a href="#submit" onclick="$('#remove_api_key_<%= api_key.id %>').submit();" class="orange submit"><span>Remove key</span></a>
+            <% @api_keys.each do |api_key| %>
+              <%= form_tag(destroy_api_key_path(api_key.id), :method => :post, :id => "remove_api_key_#{api_key.id}") do %>
+                <%= fields_for api_key do |f| %>
+                  <span class="form_block">
+                    <%= f.label :domain, "APP" %>
+                    <%= f.text_field :domain, :readonly=>true %>
+                  </span>
+                  <span class="form_block long">
+                    <%= f.label :api_key, "API KEY" %>
+                    <%= f.text_field :api_key, :readonly=>true %>
+                  </span>
+                  <a href="#submit" onclick="$('#remove_api_key_<%= api_key.id %>').submit();" class="orange submit"><span>Remove key</span></a>
+                <% end %>
               <% end %>
             <% end %>
-          <% end %>
-        </div>
-        <div class="bottom_white_medium"></div>
-      </div>
-      <div class="right">
-        <div class="banner">
-          <div class="top_white_short"></div>
-          <div class="middle_white_short">
-            <h3>Are you creating your first app with CartoDB?</h3>
-            <p>Take a look at the documentation</p>
-            <ul>
-              <li><a href="/prototypes/oauth.html">OAuth authentication</a></li>
-              <li><a href="/prototypes/jsonp.html">JSONP Authentication</a></li>
-              <li><a href="/prototypes/api.html">Activating your apps</a></li>
-            </ul>
           </div>
-          <div class="bottom_white_short"></div>
+          <div class="bottom_white_medium"></div>
+        </div>
+        <div class="right">
+          <%= render :partial => 'create_first' %>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>

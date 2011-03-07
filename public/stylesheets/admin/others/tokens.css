@@ -11,7 +11,7 @@ section#content div.left div.top_blue_medium p a.jsonp {display:inline; width:66
 section#content div.left div.top_blue_medium p a.jsonp.selected { text-shadow:0 1px #68767A; background-position:right 0; color:#5F6C70; text-shadow:0 1px #CAE6EE;}
 section#content div.left div.top_blue_medium p a.selected:hover {cursor:default; }
 
-section#content div.left div.middle_white_medium {float:left; width:620px; padding:0 3px 15px 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
+section#content div.left div.middle_white_medium {position:relative; float:left; width:620px; padding:0 3px 15px 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
 section#content div.left div.middle_white_medium p {display:inline-block; margin:20px 0 0 22px; font:normal 15px Arial; color:#333333;}
 section#content div.left div.middle_white_medium span.form_block {display:inline-block; width:197px; margin:15px 0 0 22px;}
 section#content div.left div.middle_white_medium span.form_block.long {width:225px; margin:15px 0 0 11px;}
@@ -29,14 +29,20 @@ section#content div.left div.middle_white_medium a.submit.orange {background:url
 section#content div.left div.middle_white_medium a.submit.orange span {background:url('/images/admin/api/orange_right.png') no-repeat right 0; color:#895101; text-shadow:0 1px #FFC266;}
 section#content div.left div.middle_white_medium a.submit:hover {background-position:0 -35px;}
 section#content div.left div.middle_white_medium a.submit:hover span {background-position:right -35px;}
-
-section#content div.left div.middle_white_medium div.end_oauth {width:576px; margin:25px 0 0 0; padding:22px 22px 0; border-top:1px solid #E0E0E0; }
+section#content div.left div.middle_white_medium div.end_oauth {width:576px; margin:0; padding:22px 22px 0;}
 section#content div.left div.middle_white_medium div.end_oauth p {margin:0; padding:0; font:normal 15px Arial; color:#999999;}
-section#content div.left div.middle_white_medium div.end_oauth span.form_block {display:inline-block; width:275px; margin:15px 20px 0 0;}
-section#content div.left div.middle_white_medium div.end_oauth span.form_block.last {margin:15px 0 0 0;}
+section#content div.left div.middle_white_medium div.end_oauth span.form_block {display:inline-block; width:275px; margin:15px 20px 0 0!important; padding:0; vertical-align:top;}
+section#content div.left div.middle_white_medium div.end_oauth span.form_block.last {margin:15px 0 0 0!important;}
 section#content div.left div.middle_white_medium div.end_oauth span.form_block label {font:bold 10px "Helvetica",Arial; color:#999999;}
-section#content div.left div.middle_white_medium div.end_oauth span.form_block p {width:253px; height:15px; padding:9px 10px!important; margin:5px 0 0 0; background:url('/images/admin/api/input_bkg.png') no-repeat 1px 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
-  font:normal 15px Arial; color:#333333; line-height:15px;}
+section#content div.left div.middle_white_medium div.end_oauth span.form_block input {width:253px; height:15px; padding:9px 10px!important; margin:5px 0 0 0; background:url('/images/admin/api/input_bkg.png') no-repeat 1px 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
+  font:normal 15px Arial; color:#333333; line-height:15px; vertical-align:top;}
+section#content div.left div.middle_white_medium span.form_block input.error {border-color:#FF6600;}
+section#content div.left div.middle_white_medium div.error_content {position:absolute; z-index:10; left:22px; top:17px;}
+section#content div.left div.middle_white_medium div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
+section#content div.left div.middle_white_medium div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial;
+ color:white; text-shadow:0 -1px #C55B14;}
+
+  
 section#content div.left div.middle_white_medium div.end_oauth span.end_key {width:100%; padding:0;}
 section#content div.left div.middle_white_medium div.end_oauth span.end_key a.orange {margin-left:0;}
 section#content div.left div.middle_white_medium div.end_oauth span.end_key p {display:inline-block; padding:0 0 10px 10px; margin:0; font:normal 13px Arial; color:#666666; vertical-align:middle;}

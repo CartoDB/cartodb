@@ -31,8 +31,12 @@ class User < Sequel::Model
       user_database.run("REVOKE ALL ON SCHEMA public FROM public")
       user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
       user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
+      user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
       user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
       user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+      user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+      user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+      
     end
   end
   #### End of Callbacks

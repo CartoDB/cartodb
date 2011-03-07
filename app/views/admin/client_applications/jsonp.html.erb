@@ -35,11 +35,11 @@
                 <%= fields_for api_key do |f| %>
                   <span class="form_block">
                     <%= f.label :domain, "APP" %>
-                    <%= f.text_field :domain, :readonly=>true %>
+                    <%= f.text_field :domain, :readonly=>"readonly" %>
                   </span>
                   <span class="form_block long">
                     <%= f.label :api_key, "API KEY" %>
-                    <%= f.text_field :api_key, :readonly=>true %>
+                    <%= f.text_field :api_key, :readonly=>"readonly" %>
                   </span>
                   <a href="#submit" onclick="$('#remove_api_key_<%= api_key.id %>').submit();" class="orange submit"><span>Remove key</span></a>
                 <% end %>

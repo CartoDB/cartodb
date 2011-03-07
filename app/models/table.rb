@@ -74,7 +74,6 @@ class Table < Sequel::Model(:user_tables)
               String :description, :text => true
               DateTime :created_at, :default => "NOW()"
               DateTime :updated_at, :default => "NOW()"
-              column :the_geom, 'GEOMETRY'
             end
           else
             sanitized_force_schema = force_schema.split(',').map do |column|
@@ -91,7 +90,6 @@ class Table < Sequel::Model(:user_tables)
               sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY")
               sanitized_force_schema.unshift("created_at timestamp")
               sanitized_force_schema.unshift("updated_at timestamp")
-              sanitized_force_schema.unshift("the_geom geometry")
             end
             user_database.run("CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')})")
             if import_from_file.blank?
@@ -104,7 +102,6 @@ class Table < Sequel::Model(:user_tables)
       unless import_from_file.blank?
         import_data_from_file!
       end
-      set_constraints
       set_triggers
     end
     super
@@ -407,6 +404,7 @@ class Table < Sequel::Model(:user_tables)
 
   def set_lat_lon_columns!(lat_column, lon_column)
     self.geometry_columns = nil
+    set_the_geom_column!(:point)
     if lat_column && lon_column
       owner.in_database do |user_database|
         user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
@@ -433,6 +431,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_address_column!(address_column)
+    set_the_geom_column!(:point)
     self.geometry_columns = address_column.try(:to_s)
     save_changes
     geocode_all_address_columns! if rows_counted > 0
@@ -548,7 +547,6 @@ class Table < Sequel::Model(:user_tables)
       user_database.run("alter table #{self.name} add primary key (cartodb_id)")
       user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
       user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
-      user_database.run("alter table #{self.name} add column the_geom geometry")
     end
   ensure
     FileUtils.rm filename
@@ -629,14 +627,6 @@ class Table < Sequel::Model(:user_tables)
     self.force_schema = result.join(', ')
   end
 
-  def set_constraints
-    owner.in_database do |user_database|
-      user_database.alter_table(self.name.to_sym) do
-        add_constraint(:enforce_srid_the_geom, {:st_srid.sql_function(:the_geom) => CartoDB::GOOGLE_SRID})
-      end
-    end
-  end
-
   def delete_constraints
     owner.in_database do |user_database|
       user_database.alter_table(self.name.to_sym) do
@@ -705,11 +695,21 @@ TRIGGER
     #     end
     #   end
     # end
-    # if !lat_column.blank? && !lon_column.blank?
-    #   owner.in_database do |user_database|
-    #     user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-    #   end
-    # end
+    if !lat_column.blank? && !lon_column.blank?
+      owner.in_database do |user_database|
+        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
+      end
+    end
+  end
+
+  def set_the_geom_column!(type)
+    owner.in_database do |user_database|
+      unless user_database.schema(name.to_sym).flatten.include?(:the_geom)
+        if type == :point
+          user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::GOOGLE_SRID},'POINT',2)")
+        end
+      end
+    end
   end
 
 end

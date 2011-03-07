@@ -25,7 +25,6 @@ feature "Dashboard", %q{
 
     page.should have_content("0 Public tables in CartoDB")
     page.should have_content("Ouch! There are not tables for your search")
-
   end
 
   scenario "Login and visit my dashboard and the public tables" do

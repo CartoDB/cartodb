@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.4'
+gem 'rails', '3.0.5'
 gem 'ruby-debug19', :require => 'ruby-debug', :group => [:development, :test], :platforms => :mri_19
 
 gem 'pg', '0.10.1'
@@ -12,6 +12,8 @@ gem 'rails_warden'
 gem 'polyglot'
 gem 'treetop'
 gem 'htmlentities'
+gem 'oauth'
+gem 'oauth-plugin', '>=0.4.0.pre1'
 
 group :development do
   gem 'capistrano'

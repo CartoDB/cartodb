@@ -18,4 +18,25 @@ feature "Sessions" do
     fill_in 'your password', :with => user.email.split('@').first
     click_link_or_button 'Sign in'
   end
+
+  scenario "Get the session information via OAuth" do
+    Capybara.current_driver = :rack_test
+    user = create_user :email => 'fernando.blat@vizzuality.com', :username => 'blat'
+
+    client_application = create_client_application :user => user, :url => "http://www.example.com", :callback_url => "http://www.example.com/oauth/callback/url"
+
+    oauth_consumer = OAuth::Consumer.new(client_application.key, client_application.secret, {
+      :site => client_application.url,
+      :scheme => :query_string,
+      :http_method => :post
+    })
+    access_token = create_access_token :client_application => client_application, :user => user
+
+    req = oauth_consumer.create_signed_request(:get, "/oauth/identity.json", access_token)
+    get req.path
+
+    response.status.should == 200
+    json_response = JSON(response.body)
+    json_response.should == { 'uid' => user.id, 'email' => 'fernando.blat@vizzuality.com', 'username' => 'blat' }
+  end
 end

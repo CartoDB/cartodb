@@ -891,7 +891,6 @@ describe Table do
   it "should return all table's constraints" do
     user = create_user
     table = create_table :user_id => user.id
-    puts table.constraints
     table.constraints.should have_at_least(1).item
     table.constraints.should include({:constraint_name => 'enforce_srid_the_geom'})
   end

@@ -11,7 +11,9 @@ CartoDB::Application.routes.draw do
     match '/dashboard'        => 'tables#index', :as => :dashboard
     match '/dashboard/public' => 'tables#index', :as => :dashboard_public, :defaults => {:public => true}
     resources :tables, :only => [:show]
-    match '/oauth_authentication' => 'oauth_clients#show', :as => :oauth_authentication
+    match '/your_apps/oauth' => 'client_applications#oauth', :as => :oauth_credentials
+    match '/your_apps/jsonp' => 'client_applications#jsonp', :as => :jsonp_credentials
+    post '/your_apps/jsonp/:id/destroy' => 'client_applications#remove_api_key', :as => :destroy_api_key
   end
 
   # Oauth

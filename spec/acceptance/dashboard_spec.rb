@@ -271,4 +271,43 @@ feature "Dashboard", %q{
     page.should have_css("p.status a.save", :text => 'SAVE')
   end
 
+  scenario "Get OAuth credentials" do
+    user = create_user
+
+    login_as user
+
+    click "Your apps"
+    page.should have_content("Using the key and the secret you can use CartoDB from external applications developed by you.")
+
+    within("span.form_block") do
+      page.should have_content("YOUR KEY")
+      page.should have_content(user.client_application.key)
+    end
+
+    within("span.form_block.last") do
+      page.should have_content("YOUR SECRET")
+      page.should have_content(user.client_application.secret)
+    end
+  end
+
+  scenario "Manage JSONP API keys" do
+    user = create_user
+
+    login_as user
+
+    click "Your apps"
+
+    click "JSONP"
+
+    fill_in "YOUR APP DOMAIN", :with => "http://test-app.heroku.com"
+    click "Get API key"
+
+    page.should have_field("APP", :content => "http://test-app.heroku.com")
+    page.should have_field("API KEY", :content => APIKey.first.api_key)
+
+    click "Remove key"
+
+    APIKey.filter(:user_id => user.id).all.size.should == 0
+  end
+
 end

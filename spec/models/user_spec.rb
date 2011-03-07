@@ -222,4 +222,9 @@ describe User do
     }.should raise_error(Sequel::DatabaseError)
   end
 
+  it "should create a client_application for each user" do
+    user = create_user
+    user.client_application.should_not be_nil
+  end
+
 end

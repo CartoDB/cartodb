@@ -195,8 +195,8 @@ describe User do
       user.create_key ""
     }.should raise_error
     key = user.create_key "mymashup.com"
-    api_key = APIKey.filter(:user_id => user.id, :domain => 'mymashup.com').first
-    api_key.api_key.should == key
+    api_key = APIKey.filter(:user_id => user.id, :domain => 'http://mymashup.com').first
+    api_key.api_key.should == key.api_key
   end
 
   it "should only be accessed by the public user if its status is public" do

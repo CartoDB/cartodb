@@ -602,7 +602,7 @@ feature "Tables JSON API" do
     api_key2 = user.create_key "127.0.0.1"
 
     post_json "/api/json/tables", {
-                    :api_key => api_key,
+                    :api_key => api_key.api_key,
                     :name => "antantaric species",
                     :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
                }
@@ -613,7 +613,7 @@ feature "Tables JSON API" do
 
     FileUtils.cp("#{Rails.root}/spec/support/test_jsonp.html", "#{Rails.root}/public/")
 
-    visit "/test_jsonp.html?api_key=#{api_key2}"
+    visit "/test_jsonp.html?api_key=#{api_key2.api_key}"
 
     page.find("div#results").text.should == "Barrukia cristata"
 

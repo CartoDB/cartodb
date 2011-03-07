@@ -153,7 +153,6 @@ class User < Sequel::Model
     raise "domain argument can't be blank" if domain.blank?
     key = self.class.secure_digest(domain)
     APIKey.create :api_key => key, :user_id => self.id, :domain => domain
-    key
   end
 
   def reset_client_application!

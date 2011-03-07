@@ -2,6 +2,9 @@
 
 class User < Sequel::Model
 
+  one_to_one :client_application
+  one_to_many :tokens, :class => :OauthToken
+
   ## Callbacks
   def after_create
     super

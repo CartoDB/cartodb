@@ -1,3 +1,5 @@
+# coding: UTF-8
+
 class Tag < Sequel::Model
 
   # Ignore mass-asigment on not allowed columns

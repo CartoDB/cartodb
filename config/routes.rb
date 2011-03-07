@@ -1,5 +1,4 @@
 CartoDB::Application.routes.draw do
-
   root :to => "home#index"
 
   get '/progress' => 'upload#progress', :format => :json
@@ -12,7 +11,16 @@ CartoDB::Application.routes.draw do
     match '/dashboard'        => 'tables#index', :as => :dashboard
     match '/dashboard/public' => 'tables#index', :as => :dashboard_public, :defaults => {:public => true}
     resources :tables, :only => [:show]
+    match '/oauth_authentication' => 'oauth_clients#show', :as => :oauth_authentication
   end
+
+  # Oauth
+  match '/oauth/authorize'      => 'oauth#authorize',     :as => :authorize
+  match '/oauth/request_token'  => 'oauth#request_token', :as => :request_token
+  match '/oauth/access_token'   => 'oauth#access_token',  :as => :access_token
+  match '/oauth/token'          => 'oauth#token',         :as => :token
+  match '/oauth/test_request'   => 'oauth#test_request',  :as => :test_request
+  get   '/oauth/identity'       => 'sessions#show'
 
   namespace :api do
     namespace :json, :format => :json do
@@ -35,5 +43,4 @@ CartoDB::Application.routes.draw do
       put    'tables/:id/update_geometry/:row_id' => 'tables#update_geometry'
     end
   end
-
 end

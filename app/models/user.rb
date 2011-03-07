@@ -156,4 +156,11 @@ class User < Sequel::Model
     key
   end
 
+  def reset_client_application!
+    if client_application
+      client_application.destroy
+    end
+    ClientApplication.create(:user_id => self.id)
+  end
+
 end

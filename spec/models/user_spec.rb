@@ -226,4 +226,14 @@ describe User do
     user.client_application.should_not be_nil
   end
 
+  it "should reset its client application" do
+    user = create_user
+    old_key = user.client_application.key
+
+    user.reset_client_application!
+    user.reload
+
+    user.client_application.key.should_not == old_key
+  end
+
 end

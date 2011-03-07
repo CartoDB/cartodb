@@ -1,5 +1,5 @@
   <% content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/tumblr" %>
+    <%= headjs_include_tag "plugins/jquery.min", "plugins/tumblr", "admin/api/api" %>
   <% end %>
   <% content_for(:head) do %>
     <%= stylesheet_link_tag('reset','admin/layout','admin/others/tokens') %>
@@ -24,11 +24,11 @@
               </span>
               <span class="form_block last">
                 <label>YOUR SECRET</label>
-                <input type="text" value="<%= current_user.client_application.key %>" readonly="readonly"/>
+                <input type="text" value="<%= current_user.client_application.secret %>" readonly="readonly"/>
                 <p></p>
               </span>
               <span class="end_key">
-                <a href="#" class="submit orange"><span>Get new key and secret</span></a>
+                <a href="<%= oauth_credentials_path %>" class="submit orange"><span>Get new key and secret</span></a>
                 <p>(Be sure you assume <a href="#">the risks of that</a>)</p>
               </span>
             </div>

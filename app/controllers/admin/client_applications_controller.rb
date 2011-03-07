@@ -6,6 +6,9 @@ class Admin::ClientApplicationsController < ApplicationController
 
   def oauth
     @client_application = current_user.client_application
+    return if request.get?
+    current_user.reset_client_application!
+    redirect_to oauth_credentials_path, :flash => {:success => "Your OAuth credentials have been updated successuflly"}
   end
 
   def jsonp

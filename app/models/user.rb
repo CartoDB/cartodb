@@ -8,6 +8,7 @@ class User < Sequel::Model
   ## Callbacks
   def after_create
     super
+    ClientApplication.create(:user_id => self.id)
     self.database_name = case Rails.env
       when 'development'
         "cartodb_dev_user_#{self.id}_db"

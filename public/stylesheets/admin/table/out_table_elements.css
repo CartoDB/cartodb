@@ -123,7 +123,7 @@ section.subheader span.tags_window a:hover {background-image:-moz-linear-gradien
 /*Mamufas*/
 div.mamufas {position:fixed; display:none; top:0; left:0; height:100%; width:100%; background:rgba(0,0,0,0.65); z-index:1000;}
 
-div.mamufas div.delete_window {position:absolute; display:none; top:50%; left:50%; width:434px; height:139px; margin:-69px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
+div.mamufas div.delete_window {position:absolute; display:none; top:50%; left:50%; width:434px; height:139px; margin:-120px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
   -moz-box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.delete_window a.close_delete {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0;}
 div.mamufas div.delete_window a.close_delete:hover {background-position:0 -24px;}
@@ -139,6 +139,24 @@ div.mamufas div.delete_window div.inner_ span.bottom a.cancel:hover {color:#3333
 div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
 div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+
+
+div.mamufas div.save_window {position:absolute; display:none; top:50%; left:50%; width:389px; margin:-120px 0 0 -203px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
+  -moz-box-shadow:0 0 50px 3px #111111;}
+div.mamufas div.save_window a.close_save {position:absolute; right:-9px; top:-7px; width:24px; height:24px; background:url('/images/admin/table/close_georeference.png') no-repeat 0 0;}
+div.mamufas div.save_window a.close_save:hover {background-position:0 -24px;}
+div.mamufas div.save_window div.inner_ {float:left; width:387px; border:2px solid #FFC209; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+div.mamufas div.save_window div.inner_ span.top {float:left; width:357px; padding:14px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.save_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.save_window div.inner_ span.top input {width:341px; height:13px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat 1px 0; border:1px solid #999999; webkit-border-radius:4px; 
+border-radius:4px; -moz-border-radius:4px; font:normal 13px Arial; color:#333333; line-height:13px;}
+div.mamufas div.save_window div.inner_ span.top input:focus {outline:none;}
+div.mamufas div.save_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; padding:0 0 18px 0; font:normal 13px "Helvetica",Arial; color:#666666;}
+div.mamufas div.save_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
+div.mamufas div.save_window div.inner_ span.bottom a.table_save {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
+div.mamufas div.save_window div.inner_ span.bottom a.table_save:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+
 
 
 div.mamufas div.export_window {position:absolute; display:none; top:50%; left:50%; width:389px; margin:-150px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;

@@ -38,19 +38,20 @@
             '<a href="#download" class="download" type="CSV">Download</a>'+
           '</span>'+
         '</div>'+
-      '</div>'//+
-      // '<div class="save_window">'+
-      //   '<div class="inner_">'+
-      //     '<span class="top">'+
-      //       '<h3>Insert a name for your copy of this table</h3>'+
-      //       '<input type="text"/>'+
-      //     '</span>'+
-      //     '<span class="bottom">'+
-      //       '<a href="#close_window" class="cancel">cancel</a>'+
-      //       '<a href="#download" class="download" type="CSV">Download</a>'+
-      //     '</span>'+
-      //   '</div>'+
-      // '</div>'
+      '</div>'+
+      '<div class="save_window">'+
+        '<a href="#close_window" class="close_save"></a>'+
+        '<div class="inner_">'+
+          '<span class="top">'+
+            '<h3>Insert a name for your copy of this table</h3>'+
+            '<input type="text"/>'+
+          '</span>'+
+          '<span class="bottom">'+
+            '<a href="#close_window" class="cancel">cancel</a>'+
+            '<a href="#save_table" class="table_save" >Save table</a>'+
+          '</span>'+
+        '</div>'+
+      '</div>'
       );
     
     
@@ -249,7 +250,13 @@
     $('a.save_table').click(function(ev){
       stopPropagation(ev);
       closeOutTableWindows();
-      
+      $('div.mamufas div.save_window').show();
+      $('div.mamufas').fadeIn('fast');
+      bindESC();
+    });
+    $('a.table_save').click(function(ev){
+      stopPropagation(ev);
+      closeOutTableWindows();
     });
     $('a.export_data').click(function(ev){
       stopPropagation(ev);
@@ -258,7 +265,7 @@
       $('div.mamufas').fadeIn('fast');
       bindESC();
     });
-    
+
     
     
     
@@ -274,7 +281,7 @@
       $('div.mamufas').fadeIn('fast');
       bindESC();
     });
-    $('div.mamufas a.cancel, div.mamufas a.close_delete').click(function(ev){
+    $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_save').click(function(ev){
       stopPropagation(ev);
       $('div.mamufas').fadeOut('fast',function(){
         $('div.mamufas div.delete_window').hide();
@@ -398,6 +405,7 @@
     $('div.mamufas').fadeOut('fast',function(){
       $('div.mamufas div.delete_window').hide();
       $('div.mamufas div.export_window').hide();
+      $('div.mamufas div.save_window').hide();
       $(document).unbind('keydown');
       $('body').unbind('click');
     });

@@ -6,7 +6,6 @@
     this.startGeocoding();
     
     this.requestId = createUniqueId();
-    requests_queue.newRequest(this.requestId,"georeference_address");
   }
   
   
@@ -31,7 +30,6 @@
         var worker = new Worker("/javascripts/admin/table/worker_geocoding.js");
 
         worker.onmessage = function(event){
-          console.log('entra');
           if (event.data == "Finish" || event.data == "Stopped") {
             if (event.data == "Finish") {
               me.finishGeocoding();
@@ -50,7 +48,6 @@
               params['lon'] = -0;
             }
 
-            
             $.ajax({
               type: "PUT",
               url: '/api/json/tables/'+me.table+'/update_geometry/'+event.data.cartodb_id,
@@ -78,7 +75,7 @@
 	/* Finish geocoding	*/
 	/*============================================================================*/
 	Geocoding.prototype.finishGeocoding = function() {
-	  requests_queue.responseRequest(this.requestId,'ok','');
+	  $('p.geo').removeClass('loading');
 		geolocating = false;
 	}
 	

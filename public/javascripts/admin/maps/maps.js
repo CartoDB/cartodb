@@ -6,8 +6,7 @@
   var image;
   
 
-  head(function(){
-
+  function initMap() {
     ///////////////////////////////////////
     //  Map elements                     //
     ///////////////////////////////////////
@@ -90,7 +89,7 @@
       $('body').unbind('click');
       $(this).closest('span').toggle();
     });
-  });
+  }
 
 
 

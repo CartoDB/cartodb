@@ -18,9 +18,7 @@
         <li class="last"><%= link_to current_user.email, '/prototypes/account.html', :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
       </ul>
     </header>
-
     <%= yield %>
-
     <% if show_footer? %>
     <footer>
       <section class="prefooter">

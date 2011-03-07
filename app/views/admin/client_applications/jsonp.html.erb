@@ -12,28 +12,31 @@
         </div>
         <div class="middle_white_medium">
           <p>Add an application to activate the access to you cartoDB tables by JSONP</p>
-          <form>
+          <%= form_for(@api_key, :url => jsonp_credentials_path, :method => :post) do |f| %>
+            <% if request.post? && !@api_key.valid? %>
+            <p><%= @api_key.errors.full_messages.join(',') %></p>
+            <% end %>
             <span class="form_block">
-              <label>YOUR APP DOMAIN</label>
-              <input type="text" value="" />
+              <%= f.label :domain, "YOUR APP DOMAIN" %>
+              <%= f.text_field :domain %>
             </span>
-            <span class="form_block long">
-              <label>API KEY</label>
-              <input type="text" value="" />
-            </span>
-            <a href="#submit" class="green submit"><span>Get API key</span></a>
-          </form>
-          <form>
-            <span class="form_block">
-              <label>APP 1</label>
-              <input type="text" value="" disabled="true" />
-            </span>
-            <span class="form_block long">
-              <label>API KEY</label>
-              <input type="text" value="" disabled="true" />
-            </span>
-            <a href="#submit" class="orange submit"><span>Remove key</span></a>
-          </form>
+            <a href="#submit" onclick="$('#new_api_key').submit();" class="green submit"><span>Get API key</span></a>
+          <% end %>
+          <% @api_keys.each do |api_key| %>
+            <%= form_tag(destroy_api_key_path(api_key.id), :method => :post, :id => "remove_api_key_#{api_key.id}") do %>
+              <%= fields_for api_key do |f| %>
+                <span class="form_block">
+                  <%= f.label :domain, "APP" %>
+                  <%= f.text_field :domain %>
+                </span>
+                <span class="form_block long">
+                  <%= f.label :api_key, "API KEY" %>
+                  <%= f.text_field :api_key %>
+                </span>
+                <a href="#submit" onclick="$('#remove_api_key_<%= api_key.id %>').submit();" class="orange submit"><span>Remove key</span></a>
+              <% end %>
+            <% end %>
+          <% end %>
         </div>
         <div class="bottom_white_medium"></div>
       </div>

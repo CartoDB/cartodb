@@ -290,4 +290,24 @@ feature "Dashboard", %q{
     end
   end
 
+  scenario "Manage JSONP API keys" do
+    user = create_user
+
+    login_as user
+
+    click "Your apps"
+
+    click "JSONP"
+
+    fill_in "YOUR APP DOMAIN", :with => "http://test-app.heroku.com"
+    click "Get API key"
+
+    page.should have_field("APP", :content => "http://test-app.heroku.com")
+    page.should have_field("API KEY", :content => APIKey.first.api_key)
+
+    click "Remove key"
+
+    APIKey.filter(:user_id => user.id).all.size.should == 0
+  end
+
 end

@@ -13,6 +13,7 @@ CartoDB::Application.routes.draw do
     resources :tables, :only => [:show]
     match '/your_apps/oauth' => 'client_applications#oauth', :as => :oauth_credentials
     match '/your_apps/jsonp' => 'client_applications#jsonp', :as => :jsonp_credentials
+    post '/your_apps/jsonp/:id/destroy' => 'client_applications#remove_api_key', :as => :destroy_api_key
   end
 
   # Oauth

@@ -11,7 +11,7 @@ CartoDB::Application.routes.draw do
     match '/dashboard'        => 'tables#index', :as => :dashboard
     match '/dashboard/public' => 'tables#index', :as => :dashboard_public, :defaults => {:public => true}
     resources :tables, :only => [:show]
-    resources :oauth_clients
+    match '/oauth_authentication' => 'oauth_clients#show', :as => :oauth_authentication
   end
 
   # Oauth

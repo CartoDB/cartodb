@@ -2,18 +2,9 @@ require 'oauth'
 
 class ClientApplication < Sequel::Model
 
-  plugin :validation_helpers
-
   one_to_many :tokens, :class_name => :OauthToken
   one_to_many :access_tokens
-  one_to_many :oauth2_verifiers
   one_to_many :oauth_tokens
-
-  def validate
-    validates_format /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/i, :url
-    validates_format /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/i, :support_url,  :allow_blank => true
-    validates_format /\Ahttp(s?):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/i, :callback_url, :allow_blank => true
-  end
 
   attr_accessor :token_callback_url
 

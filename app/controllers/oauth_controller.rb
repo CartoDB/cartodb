@@ -6,14 +6,20 @@ class OauthController < ApplicationController
 
   include OAuth::Controllers::ProviderController
 
+  skip_before_filter :login_required, :only => :authorize
+
   def authorize
     if params[:oauth_token]
       unless @token = ::RequestToken.find_by_token(params[:oauth_token])
         render :action => "authorize_failure" and return
       end
       unless @token.invalidated?
-        @token.authorize!(current_user)
-        @redirect_url = URI.parse(@token.oob? ? @token.client_application.callback_url : @token.callback_url)
+        if logged_in?
+          @token.authorize!(current_user)
+        else
+          @token.authorize!(@token.client_application.user)
+        end
+        @redirect_url = URI.parse(@token.oob? ? @token.client_application.callback_url || "http://cartodb.com" : @token.callback_url)
 
         unless @redirect_url.to_s.blank?
           @redirect_url.query = @redirect_url.query.blank? ?

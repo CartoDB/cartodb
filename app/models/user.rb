@@ -9,6 +9,17 @@ class User < Sequel::Model
 
   self.raise_on_save_failure = false
   set_allowed_columns :email
+  plugin :validation_helpers
+
+  self.raise_on_save_failure = false
+
+  ## Validations
+  def validate
+    super
+    validates_presence :email
+    validates_unique :email, :message => 'is already taken'
+    validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
+  end
 
   ## Validations
   def validate

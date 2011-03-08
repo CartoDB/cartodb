@@ -45,4 +45,10 @@ CartoDB::Application.routes.draw do
       put    'tables/:id/update_geometry/:row_id' => 'tables#update_geometry'
     end
   end
+
+  namespace :superadmin do
+    resources :users
+  end
+  match '/superadmin' => 'superadmin/users#index'
+
 end

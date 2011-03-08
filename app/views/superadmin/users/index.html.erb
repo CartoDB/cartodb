@@ -1,0 +1,10 @@
+<% [:success, :error].each do |key| %>
+<% if flash[key] %>
+<div class="<%= key %>"><%= flash[key] %></div>
+<% end %>
+<% end %>
+<ul class="users">
+<% @users.each do |user| %>
+  <li><%= link_to "#{user.username} - #{user.email}", superadmin_user_path(user) %></li>
+<% end %>
+</ul>

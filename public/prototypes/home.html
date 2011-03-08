@@ -2,9 +2,10 @@
 <html> 
   <head> 
     <title>CartoDB</title> 
+    <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" /> 
+    <link href="/stylesheets/front/home.css" media="screen" rel="stylesheet" type="text/css" /> 
   </head> 
   <body> 
-    <link href="/stylesheets/front/home.css" media="screen" rel="stylesheet" type="text/css" /> 
     <section> 
       <h1>We love <strong>open-data*</strong><span>*With some <a href="#">limitations</a></span></h1> 
       <p>CartoDB is a new geospatial database on the cloud that allows you to manage your data and create engaging visualizations with it</p> 
@@ -13,8 +14,11 @@
         <span>
           <input id="email" name="email" type="text" /><input name="commit" type="submit" value="Sign up" />
         </span>
+        <div class="error_content">
+          <p><span>This email is already taken</span></p>
+        </div>
       </form>
-      <p class="follow">or <a href="#" class="twitter">follow us on twitter</a></p>
+      <p class="follow">or <a href="http://www.twitter.com/cartodb" class="twitter" target="_blank">follow us on twitter</a></p>
     </section> 
     <footer>CartoDB is a product of <a href="http://www.vizzuality.com" target="_blank">vizzuality</a></footer> 
   </body>

@@ -4,18 +4,21 @@ section h1 {width:100%; padding:0; margin:0; font:normal 41px "Aller"; color:whi
 section h1 span {position:absolute; right:100px; top:42px; font:normal 13px "Helvetica",Arial;}
 section h1 span a {color:white;}
 section p {width:100%; padding:0; margin:30px 0 0 0; text-shadow:0 -1px black; font:normal 17px "Helvetica",Arial; color:#6C7690; text-align:center;}
-section form {margin:42px 0 0 96px; width:282px; padding:24px 26px; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; -moz-box-shadow:0 0 5px 2px #333333; -webkit-box-shadow:0 0 5px 2px #333333;
+section form {position:relative; margin:42px 0 0 96px; width:282px; padding:24px 26px; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; -moz-box-shadow:0 0 5px 2px #333333; -webkit-box-shadow:0 0 5px 2px #333333;
   background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0.23, rgb(217,219,228)),color-stop(0.5, rgb(249,250,254))); background-image: -moz-linear-gradient(center bottom,rgb(217,219,228) 23%,rgb(249,250,254) 50%);}
 section form span {display:block; width:100%; height:35px; margin:0!important; padding:0;}
 section form p {float:left; width:auto; padding:0; margin:0; text-align:left; font:bold 17px "Aller"; color:#26324C; text-shadow:none;}
 section form a {float:right; padding:0; margin:1px 0 0 0; font:normal 13px "Helvetica", Arial; color:#FF6600;}
 section form a:hover {color:#FF4400;}
-section form input {float:left; width:201px; height:36px; margin:0!important; padding:6px; background:url('/images/front/home/text_input_bkg.png') no-repeat 0 0; border:none; font:normal 15px "Helvetica",Arial; color:#333333;}
+section form input {float:left; width:189px; height:24px; margin:0!important; padding:6px; background:url('/images/front/home/text_input_bkg.png') no-repeat 0 0; border:none; font:normal 15px "Helvetica",Arial; color:#333333;}
 section form input:focus {outline:none; background-position:0 -36px;}
 section form input.error {background-position:0 -72px;}
 section form input.error:focus {background-position:0 -72px;}
 section form input[type="submit"] {float:left; width:81px; height:36px; padding:0; margin:0!important; background:url('/images/front/home/sign_up.png') no-repeat 0 0; font:bold 15px Arial; color:#305233; text-shadow:0 1px #A2D797;}
 section form input[type="submit"]:hover {background-position:0 -36px; cursor:pointer;}
+section form div.error_content {position:absolute; z-index:10; right:92px; top:22px;}
+section form div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
+section form div.error_content p span {float:left; width:auto; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}
 section p.follow {font:normal 13px "Helvetica", Arial; color:white; text-shadow:0 2px 3px #222222;}
 section p.follow a.twitter {padding:5px 36px 5px 0; color:white; background:url('/images/front/home/twitter.png') no-repeat right 2px;}
 footer {position:absolute; left:50%; bottom:15px; width:200px; margin:0 0 0 -100px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}

@@ -5,6 +5,8 @@ class User < Sequel::Model
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
 
+  set_allowed_columns :email
+
   ## Callbacks
   def after_create
     super
@@ -160,5 +162,4 @@ class User < Sequel::Model
     end
     ClientApplication.create(:user_id => self.id)
   end
-
 end

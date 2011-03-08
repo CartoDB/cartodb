@@ -1,0 +1,14 @@
+<nav>
+  <ul>
+    <li><%= link_to 'Edit user', edit_superadmin_user_path %></li>
+    <li><%= link_to 'Remove user', superadmin_user_path(@user), :confirm => 'Are you sure?', :method => :delete %></li>
+  </ul>
+</nav>
+<span>Id: <%= @user.id %></span>
+<span>Username: <%= @user.username %></span>
+<span>E-mail: <%= @user.email %></span>
+<span>Database name: <%= @user.database_name %></span>
+<span>Tables count: <%= @user.tables_count %></span>
+<% if @user.admin %>
+<span>Has administrator role</span>
+<% end %>

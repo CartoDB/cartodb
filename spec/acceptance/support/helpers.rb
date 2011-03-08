@@ -2,9 +2,9 @@ module HelperMethods
 
   def login_as(user)
     visit login_path
-    fill_in 'your e-mail', :with => user.email
-    fill_in 'your password', :with => user.email.split('@').first
-    click_link_or_button 'Sign in'
+    fill_in 'e-mail', :with => user.email
+    fill_in 'password', :with => user.email.split('@').first
+    click_link_or_button 'Log in'
   end
 
   def authenticate_api(user)

@@ -7,8 +7,16 @@ module NavigationHelpers
     "/login"
   end
 
+  def logout_path
+    "/logout"
+  end
+
   def dashboard_path
     "/dashboard"
+  end
+
+  def superadmin_path
+    "/superadmin"
   end
 end
 

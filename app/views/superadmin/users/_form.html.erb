@@ -1,0 +1,24 @@
+<%= form_for [:superadmin, @user] do |form| %>
+<ul>
+  <li>
+  <%= form.label :username %><br />
+  <%= form.text_field :username %>
+  </li>
+  <li>
+  <%= form.label :email %><br />
+  <%= form.text_field :email %>
+  </li>
+  <li>
+  <%= label_tag 'user[password]', 'Password' %><br />
+  <%= text_field_tag 'user[password]' %>
+  </li>
+
+  <li>
+  <%= form.check_box :admin %>
+  <%= form.label :admin %>
+  </li>
+  <li>
+    <%= form.submit %>
+  </li>
+</ul>
+<% end %>

@@ -118,7 +118,7 @@ div.table_position table tbody tr.editing td.first div a.options.selected:hover 
 
 /*new table*/
 div.table_position table.new {height:100%; width:100%;}
-div.table_position div.empty_table {position:absolute; top:50%; left:50%; width:300px; height:230px; margin:-115px 0 0 -150px; padding:170px 0 0 0; background:url('/images/admin/table/new_table.png') no-repeat center 0;}
+div.table_position div.empty_table {position:fixed; top:62%; left:50%; width:300px; height:230px; margin:-115px 0 0 -150px; padding:170px 0 0 0; background:url('/images/admin/table/new_table.png') no-repeat center 0;}
 div.table_position div.empty_table h5 {width:100%; text-align:center; font:bold 21px Arial; color:#666666; letter-spacing:-1px; word-spacing:2px; text-shadow:0 1px white;}
 div.table_position div.empty_table p {width:100%; padding:9px 0 0 0; text-align:center; font:normal 15px Arial; color:#999999; text-shadow:0 1px white;}
 div.table_position div.empty_table p a {color:#999999;}

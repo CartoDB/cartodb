@@ -572,6 +572,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     startTable: function() {
       enabled = false;
+      $(table).append('<span class="full_table" style="float:left; width:'+$(table).children('thead').width()+'px; height:1px"></span>');
       
       $(table).parent().append(
         '<div class="empty_table">'+
@@ -600,6 +601,7 @@
       if (end || $('div.empty_table').length>0) {
         if ($('div.empty_table').length>0) {
           $('div.empty_table').remove();
+          $('span.full_table').remove();
           addSingleRow(0);
         } else {
           addSingleRow(1);
@@ -761,7 +763,7 @@
         
         if (!loading && enabled) {
           var difference = $(document).height() - $(window).height();
-          if ($(window).scrollTop()==difference && !end) {
+          if ($(window).scrollTop()==difference && !end && maxPage!=0) {
             loading = true;
             methods.showLoader('next');
             setTimeout(function(){methods.getData(defaults,'next')},500);
@@ -2048,8 +2050,6 @@
     //  RESIZE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     resizeTable: function() {
-      console.log('jamon');
-      
       $('div.table_position').width($(window).width());
       var parent_width = $(window).width();
       var width_table_content = (($(table).children('thead').children('tr').children('th').size()-2)*(cell_size+27)) + 140;

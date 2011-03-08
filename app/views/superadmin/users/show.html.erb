@@ -1,6 +1,7 @@
 <nav>
   <ul>
     <li><%= link_to 'Edit user', edit_superadmin_user_path %></li>
+    <li><%= link_to 'Remove user', superadmin_user_path(@user), :confirm => 'Are you sure?', :method => :delete %></li>
   </ul>
 </nav>
 <span>Id: <%= @user.id %></span>

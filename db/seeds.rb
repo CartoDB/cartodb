@@ -19,13 +19,28 @@ end
 
 ## Create users
 
-User.create :email => 'admin@example.com', :password => 'example', :username => 'admin'
-User.create :email => 'user1@example.com', :password => 'user1',   :username => 'user1'
-User.create :email => 'jmedina@vizzuality.com', :password => 'jmedina', :username => 'jmedina'
+admin = User.new
+admin.email    = 'admin@example.com'
+admin.password = 'example'
+admin.username = 'admin'
+admin.admin = true
+admin.save
+
+user = User.new
+user.email    = 'user1@example.com'
+user.password = 'user1'
+user.username = 'user1'
+user.save
+
+user = User.new
+user.email    = 'jmedina@vizzuality.com'
+user.password = 'jmedina'
+user.username = 'jmedina'
+user.save
 
 ## Development demo data for admin@example.com
 
-user = User.first
+user = admin
 
 20.times do
   t = Table.new :name => "Table #{rand(1000)}"

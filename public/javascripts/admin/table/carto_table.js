@@ -1991,6 +1991,7 @@
         methods.closeTablePopups();
         
         var scrollable = $('div.table_position').scrollLeft();
+        console.log(scrollable);
         var window_width = $(window).width();
         var second = $('table thead tr th:eq(2)').position().left;
         var test_1 = $('table thead tr th:eq(3)').position().left;
@@ -2047,6 +2048,8 @@
     //  RESIZE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     resizeTable: function() {
+      console.log('jamon');
+      
       $('div.table_position').width($(window).width());
       var parent_width = $(window).width();
       var width_table_content = (($(table).children('thead').children('tr').children('th').size()-2)*(cell_size+27)) + 140;
@@ -2061,7 +2064,7 @@
           last_cell_size = parent_width-width_table_content + cell_size;
         });
       }
-
+      
       // HEIGTH
       var parent_height = $(window).height();
       if ((parent_height-162)>($(table).parent().height())) {

@@ -7,6 +7,8 @@ CartoDB::Application.routes.draw do
   get '/logout' => 'sessions#destroy', :as => :logout
   match '/sessions/create' => 'sessions#create', :as => :create_session
 
+  resources :users, :only => [:create]
+
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard
     match '/dashboard/public' => 'tables#index', :as => :dashboard_public, :defaults => {:public => true}

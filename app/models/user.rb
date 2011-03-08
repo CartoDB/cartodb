@@ -5,10 +5,10 @@ class User < Sequel::Model
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
 
-  set_allowed_columns :email
   plugin :validation_helpers
 
   self.raise_on_save_failure = false
+  set_allowed_columns :email
 
   ## Validations
   def validate
@@ -177,7 +177,6 @@ class User < Sequel::Model
     end
     ClientApplication.create(:user_id => self.id)
   end
-
   def self.find_with_custom_fields(user_id)
     User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin).first
   end

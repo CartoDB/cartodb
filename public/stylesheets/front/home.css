@@ -10,7 +10,7 @@ section form span {display:block; width:100%; height:35px; margin:0!important; p
 section form p {float:left; width:auto; padding:0; margin:0; text-align:left; font:bold 17px "Aller"; color:#26324C; text-shadow:none;}
 section form a {float:right; padding:0; margin:1px 0 0 0; font:normal 13px "Helvetica", Arial; color:#FF6600;}
 section form a:hover {color:#FF4400;}
-section form input {float:left; width:189px; height:24px; margin:0!important; padding:6px; background:url('/images/front/home/text_input_bkg.png') no-repeat 0 0; border:none; font:normal 15px "Helvetica",Arial; color:#333333;}
+section form input {float:left; width:189px; height:36px; margin:0!important; padding:6px; background:url('/images/front/home/text_input_bkg.png') no-repeat 0 0; border:none; font:normal 15px "Helvetica",Arial; color:#333333;}
 section form input:focus {outline:none; background-position:0 -36px;}
 section form input.error {background-position:0 -72px;}
 section form input.error:focus {background-position:0 -72px;}

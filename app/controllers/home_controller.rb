@@ -8,7 +8,7 @@ class HomeController < ApplicationController
     if logged_in?
       redirect_to dashboard_path and return
     else
-      redirect_to login_path and return
+      @user = User.new
     end
   end
 

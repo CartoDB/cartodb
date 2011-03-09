@@ -14,6 +14,7 @@ gem 'treetop'
 gem 'htmlentities'
 gem 'oauth'
 gem 'oauth-plugin', '>=0.4.0.pre1'
+gem 'sequel_column_type_array'
 
 group :development do
   gem 'capistrano'

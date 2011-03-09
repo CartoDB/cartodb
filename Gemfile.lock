@@ -179,6 +179,7 @@ GEM
       json_pure
       rubyzip
     sequel (3.21.0)
+    sequel_column_type_array (0.0.2)
     spruz (0.2.5)
     steak (1.1.0)
       rspec (>= 1.3)
@@ -221,6 +222,7 @@ DEPENDENCIES
   rspec-rails
   ruby-debug19
   sequel-rails!
+  sequel_column_type_array
   steak
   timecop
   treetop

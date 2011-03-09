@@ -132,12 +132,16 @@ class User < Sequel::Model
         rows = user_database[query].all
       }
     end
+    
+    #TODO: This part of the code should be using memcache.
+    
+    
     {
       :time => time.real,
       :total_rows => rows.size,
       :columns => (rows.size > 0 ? rows.first.keys - [:the_geom]: []),
       :rows => rows.map{ |row| row.delete("the_geom"); row }
-    }
+    }    
   rescue => e
     if e.message =~ /^PGError/
       raise CartoDB::ErrorRunningQuery.new(e.message)

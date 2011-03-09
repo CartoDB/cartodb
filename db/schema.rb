@@ -81,6 +81,7 @@ Sequel.migration do
       String :geometry_columns, :text=>true
       Integer :rows_counted, :default=>0
       Integer :rows_estimated, :default=>0
+      String :indexes
       
       index [:name, :user_id], :unique=>true
       index [:user_id]

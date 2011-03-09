@@ -10,7 +10,7 @@ class Warden::SessionSerializer
   end
 
   def deserialize(user_id)
-    User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin).first
+    User.find_with_custom_fields(user_id)
   end
 end
 
@@ -51,10 +51,7 @@ Warden::Strategies.add(:api_authentication) do
               unless oauth_token = ClientApplication.find_token(request_proxy.token)
                 throw(:warden)
               else
-                if oauth_token.respond_to?(:provided_oauth_verifier=)
-                  oauth_token.provided_oauth_verifier = request_proxy.oauth_verifier
-                end
-                success!(User[oauth_token.user_id])
+                success!(User.find_with_custom_fields(oauth_token.user_id))
               end
             end
           end
@@ -62,7 +59,7 @@ Warden::Strategies.add(:api_authentication) do
           unless oauth_token = ClientApplication.find_token(params[:oauth_token])
             throw(:warden)
           else
-            success!(User[oauth_token.user_id])
+            success!(User.find_with_custom_fields(oauth_token.user_id))
           end
         end
       end

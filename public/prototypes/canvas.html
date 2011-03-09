@@ -111,11 +111,10 @@
           var lngSpan = northEast.lng() - southWest.lng();
           var latSpan = northEast.lat() - southWest.lat();
           
-          for(var i=0;i<1;i++){
+          for(var i=0;i<1000;i++){
             var point = new google.maps.LatLng(southWest.lat() + latSpan * Math.random(),southWest.lng() + lngSpan * Math.random());
             //var club_marker = new google.maps.Marker({position:point,map:map});
             var club_marker = new ClubMarker(point,null,map);
-            
           }
           
         }
@@ -135,9 +134,7 @@
         ClubMarker.prototype = new google.maps.OverlayView();
 
         ClubMarker.prototype.draw = function() {
-
           var me = this;
-          var num = 0;
 
           var div = this.div_;
           if (!div) {
@@ -150,27 +147,9 @@
             var panes = this.getPanes();
             //panes.overlayLayer.appendChild(div);	
             panes.floatPane.appendChild(div);
-            
-
-            
-            
+ 
             jQuery(div).draggable({stop:function(event,ui){
-              //console.log(event);
-              console.log(ui);
-              //console.log(me);
-              //me.setPosition();
-              //console.log(jQuery(me.div_).position());
-              var position = jQuery(me.div_).position();
-              //console.log(me.offsetHorizontal_);
-              //console.log(position  );
-              //console.log(me.getProjection().fromContainerPixelToLatLng(new google.maps.Point(position.left+ me.offsetHorizontal_,position.top+ me.offsetVertical_)));
-              me.latlng_ = me.getProjection().fromContainerPixelToLatLng(new google.maps.Point(ui.position.left,ui.position.top));
-              console.log(me.latlng_);
-            },
-            start: function(event,ui){
-              console.log(me.latlng_);
-              //console.log(jQuery(me.div_).position());
-              //console.log(me.getProjection().fromContainerPixelToLatLng(new google.maps.Point(position.left+ me.offsetHorizontal_,position.top+ me.offsetVertical_)));
+              me.latlng_ = me.getProjection().fromDivPixelToLatLng(new google.maps.Point(ui.position.left-me.offsetHorizontal_,ui.position.top-me.offsetVertical_));
             }});
           }
 

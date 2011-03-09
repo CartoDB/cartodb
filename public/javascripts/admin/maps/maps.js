@@ -7,6 +7,14 @@
   
 
   function initMap() {
+    
+    var body = document.getElementsByTagName('body').item(0);
+    script = document.createElement('script');
+    script.src = '/javascripts/admin/maps/CartoMarker.js';
+    script.type = 'text/javascript';
+    body.appendChild(script);
+    
+    
     ///////////////////////////////////////
     //  Map elements                     //
     ///////////////////////////////////////
@@ -47,8 +55,7 @@
       '<div id="map"></div>'
     );
     
-    
-    
+
     
     //Zooms
     $('a.zoom_in').click(function(ev){
@@ -125,23 +132,16 @@
     $.ajax({
       method: 'GET',
       url: "/api/json/tables/query",
-      data: ({api_key: api_key, query: query}),
+      data: ({api_key: api_key, sql: query}),
       success: function(result) {
         bounds = new google.maps.LatLngBounds();
         
         if(result != null) {
           $.each(result.rows,function(index,row) {
             if (row.lat != null || row.lon != null) {
-              var marker = new google.maps.Marker({position: new google.maps.LatLng(row.lat, row.lon), icon: image, map: map, draggable:true, raiseOnDrag:true, data:row});
+              var marker = new CartoMarker(new google.maps.LatLng(row.lat, row.lon), row.cartodb_id, map);
               markers[row.cartodb_id] = marker;
               bounds.extend(new google.maps.LatLng(row.lat, row.lon));
-              
-              new google.maps.event.addListener(marker,"dragstart",function(ev){
-                this.data.init_latlng = ev.latLng;
-      				});
-              new google.maps.event.addListener(marker,"dragend",function(ev){
-      					onMoveOccurrence(ev,this.data);
-      				});     
             }
           })
 
@@ -165,15 +165,15 @@
   }
   
   
-  function onMoveOccurrence(event,occu_data) {
+  function onMoveOccurrence(latlng, cartodb_id, occu_data) {
     var requestId = createUniqueId();
     requests_queue.newRequest(requestId,'change_latlng');
     
-    geocoder.geocode({'latLng': event.latLng}, function(results, status) {
+    geocoder.geocode({'latLng': latlng}, function(results, status) {
       
       var params = {};
-      params.lat = event.latLng.lat();
-      params.lon = event.latLng.lng();
+      params.lat = latlng.lat();
+      params.lon = latlng.lng();
       params.address = '';
       
       if (status == google.maps.GeocoderStatus.OK) {
@@ -183,7 +183,7 @@
       $.ajax({
         dataType: 'json',
         type: 'PUT',
-        url: '/api/json/tables/'+table_id+'/update_geometry/'+occu_data.cartodb_id,
+        url: '/api/json/tables/'+table_id+'/update_geometry/'+cartodb_id,
         data: params,
         success: function(data) {
           requests_queue.responseRequest(requestId,'ok','');
@@ -194,7 +194,7 @@
           } catch (e) {
             requests_queue.responseRequest(requestId,'error','Seems like you don\'t have Internet connection');
           }
-          markers[occu_data.cartodb_id].setPosition(markers[occu_data.cartodb_id].data.init_latlng);
+          markers[cartodb_id].setPosition(markers[cartodb_id].init_latlng);
         }
       });
       
@@ -214,9 +214,7 @@
 
   function clearMap() {
     for(var marker in markers){
-      markers[marker].setMap(null);
-      google.maps.event.clearListeners(markers[marker],'dragend');
-      google.maps.event.clearListeners(markers[marker],'dragstart');
+      markers[marker].remove();
       delete markers[marker];
     }
     markers = [];

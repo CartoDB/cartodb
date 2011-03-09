@@ -1,8 +1,8 @@
   function CartoMarker(latlng, cartodb_id, map) {
     this.latlng_ = latlng;
     this.map_ = map;
-    this.offsetVertical_ = -12;
-    this.offsetHorizontal_ = -33;
+    this.offsetVertical_ = -33;
+    this.offsetHorizontal_ = -12;
     this.height_ = 33;
     this.width_ = 33;
     this.cartodb_id = cartodb_id;

@@ -1,10 +1,10 @@
   function CartoMarker(latlng, cartodb_id, map) {
     this.latlng_ = latlng;
     this.map_ = map;
-    this.offsetVertical_ = -33;
-    this.offsetHorizontal_ = -12;
-    this.height_ = 33;
-    this.width_ = 33;
+    this.offsetVertical_ = -10;
+    this.offsetHorizontal_ = -10;
+    this.height_ = 21;
+    this.width_ = 21;
     this.cartodb_id = cartodb_id;
     this.setMap(map);
   }
@@ -19,9 +19,9 @@
       div = this.div_ = document.createElement('canvas');
       div.style.border = "none";
       div.style.position = "absolute";
-      div.style.width = '33px';
-      div.style.height = '33px';
-      div.style.background = 'url("/images/admin/map/marker.png") no-repeat 0 0';
+      div.style.width = this.width_ + 'px';
+      div.style.height = this.height_ + 'px';
+      div.style.background = 'url("/images/admin/map/orange_marker.png") no-repeat 0 0';
       var panes = this.getPanes();
       panes.floatPane.appendChild(div);
 
@@ -31,6 +31,11 @@
       },start: function(event,ui) {
           me.init_latlng = me.getProjection().fromDivPixelToLatLng(new google.maps.Point(ui.position.left-me.offsetHorizontal_,ui.position.top-me.offsetVertical_));
       }});
+      
+      $(div).hover(function(ev){
+        globalZindex++;
+        $(this).css('zIndex',globalZindex); 
+      });
     }
 
     var pixPosition = me.getProjection().fromLatLngToDivPixel(me.latlng_);

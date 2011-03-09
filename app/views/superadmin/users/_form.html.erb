@@ -12,10 +12,13 @@
   <%= label_tag 'user[password]', 'Password' %><br />
   <%= text_field_tag 'user[password]' %>
   </li>
-
   <li>
   <%= form.check_box :admin %>
   <%= form.label :admin %>
+  </li>
+  <li>
+  <%= form.check_box :enabled %>
+  <%= form.label :enabled, 'Enabled user' %>
   </li>
   <li>
     <%= form.submit %>

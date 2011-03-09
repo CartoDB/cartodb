@@ -6,6 +6,7 @@
 <% if @user.admin %>
 <span>Has administrator role</span><br />
 <% end %>
+<span><%= @user.enabled ? 'Enabled' : 'Disabled' %> user</span>
 <br />
 <nav>
   <ul>

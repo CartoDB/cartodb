@@ -36,6 +36,10 @@ module HelperMethods
     page.execute_script('window.confirm = function() { return true; }')
   end
 
+  def peich
+    save_and_open_page
+  end
+
 end
 
 RSpec.configuration.include HelperMethods, :type => :acceptance

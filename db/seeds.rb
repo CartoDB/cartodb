@@ -20,19 +20,22 @@ end
 ## Create users
 
 admin = User.new
+admin.enabled  = true
 admin.email    = 'admin@example.com'
 admin.password = 'example'
 admin.username = 'admin'
-admin.admin = true
+admin.admin    = true
 admin.save
 
 user = User.new
+user.enabled  = true
 user.email    = 'user1@example.com'
 user.password = 'user1'
 user.username = 'user1'
 user.save
 
 user = User.new
+user.enabled  = true
 user.email    = 'jmedina@vizzuality.com'
 user.password = 'jmedina'
 user.username = 'jmedina'

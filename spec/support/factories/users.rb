@@ -7,6 +7,7 @@ module CartoDB
       user.email    = attributes[:email]    || String.random(5).downcase + '@' + String.random(5).downcase + '.com'
       user.password = attributes[:password] || user.email.split('@').first
       user.admin    = attributes[:admin]    || false
+      user.enabled  = attributes[:enabled] == false ? false : true
       user
     end
 

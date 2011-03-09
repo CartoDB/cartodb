@@ -13,12 +13,14 @@ feature "Invitations", %q{
 
     visit homepage
 
-    page.find("input#email").set(user.email)
+    fill_in "email", :with => user.email
+
     click "Sign up"
 
-    page.should have_content("This email is already taken")
+    page.should have_content("Email is already taken")
 
-    page.find("input#email").set(String.random(5) + '@example.com')
+    fill_in "email", :with => String.random(5) + '@example.com'
+
     click "Sign up"
 
     page.should have_content("Thank you!")

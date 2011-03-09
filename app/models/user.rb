@@ -32,37 +32,48 @@ class User < Sequel::Model
   ## Callbacks
   def after_create
     super
-    ClientApplication.create(:user_id => self.id)
-    self.database_name = case Rails.env
-      when 'development'
-        "cartodb_dev_user_#{self.id}_db"
-      when 'test'
-        "cartodb_test_user_#{self.id}_db"
-      else
-        "cartodb_user_#{self.id}_db"
-    end
-    save
-    Thread.new do
-      Rails::Sequel.connection.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
-      Rails::Sequel.connection.run("CREATE DATABASE #{self.database_name}
-        WITH TEMPLATE = template_postgis
-        OWNER = postgres
-        ENCODING = 'UTF8'
-        CONNECTION LIMIT=-1")
-    end.join
-    in_database(:as => :superuser) do |user_database|
-      user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")
-      user_database.run("REVOKE ALL ON SCHEMA public FROM public")
-      user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
-      user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
-      user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
-      user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
-      user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-      user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-      user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-    end
+    setup_user
   end
   #### End of Callbacks
+
+  ## User's databases setup methods
+  def setup_user
+    return if disabled?
+
+    ClientApplication.create(:user_id => self.id)
+    unless database_exists?
+      self.database_name = case Rails.env
+        when 'development'
+          "cartodb_dev_user_#{self.id}_db"
+        when 'test'
+          "cartodb_test_user_#{self.id}_db"
+        else
+          "cartodb_user_#{self.id}_db"
+      end
+      save
+
+      Thread.new do
+        Rails::Sequel.connection.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
+        Rails::Sequel.connection.run("CREATE DATABASE #{self.database_name}
+          WITH TEMPLATE = template_postgis
+          OWNER = postgres
+          ENCODING = 'UTF8'
+          CONNECTION LIMIT=-1")
+      end.join
+      in_database(:as => :superuser) do |user_database|
+        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")
+        user_database.run("REVOKE ALL ON SCHEMA public FROM public")
+        user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
+        user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
+        user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+      end
+    end
+  end
+  ## End of User's databases setup methods
 
   ## Authentication methods
   AUTH_DIGEST = '999f2da2a5fd99c5af493af3daf22fde939c0e67'
@@ -191,4 +202,36 @@ class User < Sequel::Model
   def self.find_with_custom_fields(user_id)
     User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin).first
   end
+
+  def enabled?
+    self.enabled
+  end
+
+  def disabled?
+    !self.enabled
+  end
+
+  def self.new_from_email(email)
+    user = self.new
+    if email.present?
+      username = email.scan(/.[^@]*/)
+      user.username = username
+      user.email    = email
+      user.password = username
+    end
+    user
+  end
+
+  def database_exists?
+    database_exist = false
+    connection     = nil
+
+    in_database(:as => :superuser) do |user_database|
+      results = user_database[:pg_database].filter(:datname => database_name).all
+      database_exist = results.any?? true : false
+    end
+
+    database_exist
+  end
+  private :database_exists?
 end

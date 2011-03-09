@@ -5,7 +5,7 @@
 <% end %>
 <ul class="users">
 <% @users.each do |user| %>
-  <li><%= link_to "#{user.username} - #{user.email}", superadmin_user_path(user) %></li>
+  <li><%= link_to "#{user.username} - #{user.email}", superadmin_user_path(user) %> - <%= user.enabled ? 'Enabled' : 'Disabled' %> user.</li>
 <% end %>
 </ul>
 <%= link_to 'Add new user', new_superadmin_user_path %>

@@ -22,6 +22,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.email    = attributes[:email]
       @user.password = attributes[:password]
       @user.admin    = attributes[:admin]
+      @user.enabled  = true
       if @user.save
         redirect_to superadmin_users_path, :flash => {:success => 'User created successfully'}
       else
@@ -40,7 +41,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.email    = attributes[:email]
       @user.password = attributes[:password]
       @user.admin    = attributes[:admin]
+      @user.enabled  = attributes[:enabled]
       if @user.save
+        @user.setup_user
         redirect_to superadmin_users_path, :flash => {:success => 'User updated successfully'}
       else
         render edit_superadmin_user_path(@user)

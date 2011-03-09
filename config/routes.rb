@@ -8,6 +8,7 @@ CartoDB::Application.routes.draw do
   match '/sessions/create' => 'sessions#create', :as => :create_session
 
   resources :users, :only => [:create]
+  match '/thanks' => 'users#thanks', :as => :thanks
 
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard

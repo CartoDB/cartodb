@@ -92,7 +92,8 @@
              cell_size = ((window_width-150)/(data.columns.length-1))-27;
              last_cell_size = cell_size;
            }
-
+           
+           maxPage = -1;
            if ($(table).children('thead').length==0) {methods.drawColumns(data.columns);}
            methods.startTable();
          } else {
@@ -763,7 +764,7 @@
         
         if (!loading && enabled) {
           var difference = $(document).height() - $(window).height();
-          if ($(window).scrollTop()==difference && !end && maxPage!=0) {
+          if ($(window).scrollTop()==difference && !end && maxPage!=-1) {
             loading = true;
             methods.showLoader('next');
             setTimeout(function(){methods.getData(defaults,'next')},500);

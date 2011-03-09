@@ -67,7 +67,7 @@ class User < Sequel::Model
   end
 
   def self.authenticate(email, password)
-    if candidate = User.filter(:email => email).first
+    if candidate = User.filter({:email => email} | {:username => email}).first
       candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
     else
       nil

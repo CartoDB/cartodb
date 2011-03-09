@@ -117,13 +117,13 @@ class User < Sequel::Model
     result
   end
 
-  def run_query(raw_query)
+  def run_query(query)
     # TODO: activate query parser
     # query, columns = CartoDB::QueryParser.parse_select(raw_query, self)
-    query = if match = raw_query.match(/^\s*(select[^;]+);?/i)
-      match.captures[0]
-    end
-    raise CartoDB::InvalidQuery if query.blank?
+    # query = if match = raw_query.match(/^\s*(select[^;]+);?/i)
+    #   match.captures[0]
+    # end
+    # raise CartoDB::InvalidQuery if query.blank?
     rows = []
     time = nil
 

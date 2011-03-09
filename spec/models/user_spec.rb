@@ -109,6 +109,12 @@ describe User do
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
 
+    query_result = user.run_query("update antantaric_species set family='polynoidae' where family='Polynoidae'")
+    query_result = user.run_query("select * from antantaric_species where family='Polynoidae' limit 10")
+    query_result[:total_rows].should == 0
+    query_result = user.run_query("select * from antantaric_species where family='polynoidae' limit 10")
+    query_result[:total_rows].should == 2
+
     table2 = new_table :name => 'twitts'
     table2.user_id = user.id
     table2.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
@@ -144,49 +150,6 @@ describe User do
     lambda {
       user.run_query("selectttt * from antantaric_species where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
-  end
-
-  it "should raise an error when runing a query which is not performing a SELECT" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.force_schema = "name varchar, age integer"
-    table.save
-    table.should be_public
-
-    lambda {
-      user.run_query("delete from #{table.name}")
-    }.should raise_error(CartoDB::InvalidQuery)
-
-    lambda {
-      user.run_query("update #{table.name} set name = null")
-    }.should raise_error(CartoDB::InvalidQuery)
-
-    lambda {
-      user.run_query("alter table #{table.name} add column wadus varchar")
-    }.should raise_error(CartoDB::InvalidQuery)
-
-    lambda {
-      user.run_query("inert into #{table.name} (name) values ('wadus')")
-    }.should raise_error(CartoDB::InvalidQuery)
-  end
-
-  it "should run only one query if more than one is called" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.force_schema = "name varchar, age integer"
-    table.save
-    table.should be_public
-
-    lambda {
-      user.run_query("delete from #{table.name}; select * from #{table.name}")
-    }.should raise_error(CartoDB::InvalidQuery)
-
-    # TODO
-    # lambda {
-    #   user.run_query("select * from #{table.name}; delete from #{table.name}")
-    # }.should raise_error(CartoDB::InvalidQuery)
   end
 
   it "can have different keys for accessing via JSONP API requests" do

@@ -1,6 +1,9 @@
 # coding: UTF-8
 
 class Api::Json::TablesController < ApplicationController
+  ssl_required :index, :show, :create, :query, :schema, :toggle_privacy, :update, :update_schema, :create_row, :update_row,
+               :delete, :set_geometry_columns, :get_address_column, :addresses, :delete_row, :update_geometry
+
 
   REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key}
 

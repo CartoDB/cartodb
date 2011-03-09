@@ -1,6 +1,7 @@
 # coding: UTF-8
 
 class Api::Json::MetaController < ApplicationController
+  ssl_required :column_types
 
   skip_before_filter :verify_authenticity_token
 

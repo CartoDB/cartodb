@@ -1,4 +1,6 @@
 class Superadmin::UsersController < Superadmin::SuperadminController
+  ssl_required :index, :show, :new, :create, :edit, :update, :destroy
+
   before_filter :get_user, :only => [:show, :edit, :update, :destroy]
 
   def index

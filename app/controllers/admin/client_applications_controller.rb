@@ -1,6 +1,7 @@
 # coding: UTF-8
 
 class Admin::ClientApplicationsController < ApplicationController
+  ssl_required :oauth, :jsonp, :remove_api_key
 
   before_filter :login_required
 

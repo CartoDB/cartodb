@@ -4,6 +4,7 @@
   var bounds;
   var geocoder;
   var image;
+  var globalZindex = 1;
   
 
   function initMap() {

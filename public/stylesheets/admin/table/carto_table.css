@@ -303,8 +303,8 @@ div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.selec
    background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
    border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul {float:left; display:default; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
-div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li {float:left; width:90px; margin:0; padding:3px 0 2px;}
-div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li a {float:left; width:90px; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li {float:left; width:90px!important; margin:0; padding:3px 0 2px;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li a {float:left; width:90px!important; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
   text-shadow:none;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li a:hover {color:#6DBE6D;}  
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option {display:none;}
@@ -406,7 +406,7 @@ div.mamufas div.stopgeo_window div.inner_ span.stop p a:hover {color:#333333;}
 
 /*jScrollPane CSS*/
 .jspContainer{overflow:hidden;position:relative;}
-.jspPane{position:absolute;}
+.jspPane{position:absolute; width:90px;}
 .jspVerticalBar{position:absolute;top:0px;right:3px;width:6px;height:100%; background:none;}
 .jspHorizontalBar{position:absolute;bottom:0;left:0;width:100%;height:16px;background:none;}
 .jspVerticalBar *,

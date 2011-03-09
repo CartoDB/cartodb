@@ -1993,7 +1993,6 @@
         methods.closeTablePopups();
         
         var scrollable = $('div.table_position').scrollLeft();
-        console.log(scrollable);
         var window_width = $(window).width();
         var second = $('table thead tr th:eq(2)').position().left;
         var test_1 = $('table thead tr th:eq(3)').position().left;

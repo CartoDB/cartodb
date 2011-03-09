@@ -46,15 +46,25 @@ Warden::Strategies.add(:api_authentication) do
           throw(:warden)
         end
       else
-        if ClientApplication.verify_request(request) do |request_proxy|
-            @oauth_token = ClientApplication.find_token(request_proxy.token)
-            throw(:warden) unless @oauth_token
-            if @oauth_token.respond_to?(:provided_oauth_verifier=)
-              @oauth_token.provided_oauth_verifier = request_proxy.oauth_verifier
+        if request.headers['Authorization'].present?
+          if ClientApplication.verify_request(request) do |request_proxy|
+              unless oauth_token = ClientApplication.find_token(request_proxy.token)
+                throw(:warden)
+              else
+                if oauth_token.respond_to?(:provided_oauth_verifier=)
+                  oauth_token.provided_oauth_verifier = request_proxy.oauth_verifier
+                end
+                success!(User[oauth_token.user_id])
+              end
             end
           end
+        elsif params[:oauth_token].present?
+          unless oauth_token = ClientApplication.find_token(params[:oauth_token])
+            throw(:warden)
+          else
+            success!(User[oauth_token.user_id])
+          end
         end
-        success!(User[@oauth_token.user_id])
       end
     end
   end

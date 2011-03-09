@@ -1,6 +1,7 @@
 # coding: UTF-8
 
 class SessionsController < ApplicationController
+  ssl_required :new, :create, :destroy, :show, :unauthenticated
 
   before_filter :api_authorization_required, :only => :show
 

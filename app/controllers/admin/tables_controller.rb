@@ -1,6 +1,7 @@
 # coding: UTF-8
 
 class Admin::TablesController < ApplicationController
+  ssl_required :index, :show
 
   before_filter :login_required
 

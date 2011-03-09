@@ -1,12 +1,21 @@
 # coding: UTF-8
 
 class ApplicationController < ActionController::Base
-
-  rescue_from RecordNotFound, :with => :render_404
-
   protect_from_forgery
 
+  rescue_from RecordNotFound, :with => :render_404
   $progress ||= {}
+
+  include SslRequirement
+
+  unless Rails.env.production?
+    def self.ssl_required(*splat)
+      false
+    end
+    def self.ssl_allowed(*splat)
+      true
+    end
+  end
 
   protected
 

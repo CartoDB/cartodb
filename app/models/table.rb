@@ -207,7 +207,7 @@ class Table < Sequel::Model(:user_tables)
   def insert_row!(raw_attributes)
     primary_key = nil
     owner.in_database do |user_database|
-      attributes = raw_attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
+      attributes = raw_attributes.dup.select{ |k,v| user_database.schema(name.to_sym).map{|c| c.first}.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
@@ -232,7 +232,7 @@ class Table < Sequel::Model(:user_tables)
 
   def update_row!(row_id, raw_attributes)
     owner.in_database do |user_database|
-      attributes = raw_attributes.dup.select{ |k,v| user_database[name.to_sym].columns.include?(k.to_sym) }
+      attributes = raw_attributes.dup.select{ |k,v| user_database.schema(name.to_sym).map{|c| c.first}.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end

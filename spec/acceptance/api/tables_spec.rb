@@ -585,7 +585,7 @@ feature "Tables JSON API" do
     table_id = response.location.match(/\/(\d+)$/)[1].to_i
 
     get_json "/api/json/tables/query", {
-      :query => "select * from antantaric_species where family='Polynoidae' limit 10"
+      :sql => "select * from antantaric_species where family='Polynoidae' limit 10"
     }
     response.status.should == 200
     json_response = JSON(response.body)

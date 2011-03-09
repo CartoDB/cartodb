@@ -106,7 +106,7 @@ class Api::Json::TablesController < ApplicationController
   def query
     respond_to do |format|
       format.json do
-        render :json => current_user.run_query(params[:query]).to_json, :callback => params[:callback]
+        render :json => current_user.run_query(params[:sql]).to_json, :callback => params[:callback]
       end
     end
   end

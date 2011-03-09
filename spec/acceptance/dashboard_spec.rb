@@ -320,6 +320,7 @@ feature "Dashboard", %q{
     page.should have_field("API KEY", :content => APIKey.first.api_key)
 
     click "Remove key"
+    page.find("div.mamufas a.confirm_delete").click
 
     APIKey.filter(:user_id => user.id).all.size.should == 0
   end

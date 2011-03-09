@@ -24,7 +24,7 @@
     $(document).ready(function() {
       $.ajax({
         url: "/api/json/tables/query",
-        data: ({api_key: $.getUrlVar('api_key'), query: "select * from antantaric_species where family='Polynoidae' limit 10"}),
+        data: ({api_key: $.getUrlVar('api_key'), sql: "select * from antantaric_species where family='Polynoidae' limit 10"}),
         dataType: "jsonp",
         success: function( data ) {
           if(data != null) {

@@ -1,7 +1,7 @@
 require 'capistrano/ext/multistage'
 
 set :stages, %w(staging production)
-set :default_stage, "staging"
+set :default_stage, "production"
 
 require "bundler/capistrano"
 

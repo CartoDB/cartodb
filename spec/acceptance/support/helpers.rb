@@ -31,6 +31,11 @@ module HelperMethods
     click_link_or_button(*args)
   end
 
+  def disable_confirm_dialogs
+    # Disables confirm dialogs in selenium
+    page.execute_script('window.confirm = function() { return true; }')
+  end
+
 end
 
 RSpec.configuration.include HelperMethods, :type => :acceptance

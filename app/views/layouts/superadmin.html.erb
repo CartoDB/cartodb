@@ -4,9 +4,8 @@
     <meta charset=utf-8 />
     <title>CartoDB</title>
     <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
-    <%= javascript_include_tag "/javascripts/plugins/head.load.min.js" %>
-    <%= yield :js %>
-    <%= yield :head %>
+    <%= javascript_include_tag "plugins/jquery.min", "rails" %>
+    <%= stylesheet_link_tag('reset.css','superadmin/layout') %>
     <%= csrf_meta_tag %>
     <noscript><meta http-equiv="refresh" content="0;url=/prototypes/javascript.html"></noscript>
   </head>
@@ -18,11 +17,13 @@
         <li><%= link_to 'Superadmin', superadmin_path %></li>
         <% end %>
         <li><a href="/prototypes/developers.html">Developers</a></li>
-        <li><a href="http://blog.cartodb.com" target="_blank">Blog</a></li>        
+        <li><a href="http://cartodb.tumblr.com" target="_blank">Blog</a></li>
         <li class="last"><%= link_to current_user.email, '/prototypes/account.html', :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
       </ul>
     </header>
-    <%= yield %>
+    <section id="content">
+      <%= yield %>
+    </section>
     <% if show_footer? %>
     <footer>
       <section class="prefooter">
@@ -56,7 +57,5 @@
     </footer>
     <% end %>
     <%= yield :mamufas %>
-    <%= render 'shared/analytics' %>
-
   </body>
 </html>

@@ -5,7 +5,6 @@ require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
 feature "Superadmin's users administration" do
 
   background do
-    Capybara.default_driver    = :rack_test
     @admin_user  = create_admin
     @common_user = create_user
     4.times{ create_user }
@@ -18,11 +17,12 @@ feature "Superadmin's users administration" do
     login_as @common_user
     visit superadmin_path
     current_path.should == dashboard_path
+    page.should have_no_link 'Superadmin'
 
     visit logout_path
 
     login_as @admin_user
-    visit superadmin_path
+    click_link 'Superadmin'
     current_path.should == superadmin_path
   end
 
@@ -103,7 +103,9 @@ feature "Superadmin's users administration" do
     page.should have_content 'Tables count: 0'
     page.should have_no_content 'Has administrator role'
 
+    disable_confirm_dialogs
     click_link 'Remove user'
+
     page.should have_content 'User removed successfully'
     page.should have_css('ul.users li a', :count => 5)
     page.should have_no_link "#{@common_user.username} - #{@common_user.email}"

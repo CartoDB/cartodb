@@ -1,14 +1,15 @@
+<span>Id: <%= @user.id %></span><br />
+<span>Username: <%= @user.username %></span><br />
+<span>E-mail: <%= @user.email %></span><br />
+<span>Database name: <%= @user.database_name %></span><br />
+<span>Tables count: <%= @user.tables_count %></span><br />
+<% if @user.admin %>
+<span>Has administrator role</span><br />
+<% end %>
+<br />
 <nav>
   <ul>
     <li><%= link_to 'Edit user', edit_superadmin_user_path %></li>
     <li><%= link_to 'Remove user', superadmin_user_path(@user), :confirm => 'Are you sure?', :method => :delete %></li>
   </ul>
 </nav>
-<span>Id: <%= @user.id %></span>
-<span>Username: <%= @user.username %></span>
-<span>E-mail: <%= @user.email %></span>
-<span>Database name: <%= @user.database_name %></span>
-<span>Tables count: <%= @user.tables_count %></span>
-<% if @user.admin %>
-<span>Has administrator role</span>
-<% end %>

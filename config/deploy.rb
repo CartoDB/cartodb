@@ -49,6 +49,7 @@ task :symlinks, :roles => [:app] do
     ln -s #{shared_path}/pdfs #{release_path}/public/;
     ln -s #{shared_path}/cache #{release_path}/public/;
     ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml;
+    ln -nfs #{shared_path}/config/app_config.yml #{release_path}/config/app_config.yml;
   CMD
 end
 
@@ -63,9 +64,10 @@ end
 
 namespace :db do
   desc "Copy local database.yml.example to server"
-  task :upload_database_yml, :roles => :app do
+  task :upload_yml_files, :roles => :app do
     run "mkdir #{deploy_to}/shared/config ; true"
     upload("config/database.yml", "#{deploy_to}/shared/config/database.yml")
+    upload("config/app_config.yml", "#{deploy_to}/shared/config/app_config.yml")
   end
 
   desc "Run rake:seed on remote app server"

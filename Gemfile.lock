@@ -49,6 +49,14 @@ GEM
     activesupport (3.0.5)
     archive-tar-minitar (0.5.2)
     arel (2.0.9)
+    aws-ses (0.4.1)
+      builder
+      builder
+      mail (~> 2.2.5)
+      mime-types
+      mime-types
+      xml-simple
+      xml-simple
     builder (2.1.2)
     capistrano (2.5.19)
       highline
@@ -76,6 +84,8 @@ GEM
     culerity (0.2.15)
     daemon_controller (0.2.6)
     diff-lcs (1.1.2)
+    email_spec (1.1.1)
+      rspec (~> 2.0)
     erubis (2.6.6)
       abstract (>= 1.0.0)
     fastthread (1.0.7)
@@ -194,6 +204,7 @@ GEM
       nokogiri (>= 1.2.0)
       rack (>= 1.0)
       rack-test (>= 0.5.3)
+    xml-simple (1.0.14)
     xpath (0.1.3)
       nokogiri (~> 1.3)
 
@@ -201,10 +212,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  aws-ses (= 0.4.1)
   capistrano
   capistrano-ext
   capybara
   capybara-zombie!
+  email_spec
   git-up
   htmlentities
   launchy

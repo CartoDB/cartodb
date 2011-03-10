@@ -16,6 +16,8 @@ gem 'oauth'
 gem 'oauth-plugin', '>=0.4.0.pre1'
 gem 'sequel_column_type_array'
 
+gem "aws-ses", '0.4.1', :require => 'aws/ses'
+
 group :development do
   gem 'capistrano'
   gem 'capistrano-ext'
@@ -34,4 +36,5 @@ group :test, :development do
   gem 'webrat'
   gem 'capybara-zombie', :git => 'https://github.com/plataformatec/capybara-zombie.git'
   gem 'timecop'
+  gem 'email_spec'
 end

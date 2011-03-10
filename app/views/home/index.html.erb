@@ -10,7 +10,7 @@
   <%= form_for @user do |f| %>
     <span><p>Join the beta</p><a href="<%= login_path %>">already registered?</a></span>
     <span>
-      <input id="email" name="email" type="text" class="<%= (@user.errors.any?)?'error':'' %>" />
+      <input id="email" name="email" type="text"  class="<%= (@user.errors.any?)?'error':'' %>" value="Insert your email"/>
       <input name="commit" type="submit" value="Sign up" />
     </span>
     <% if @user.errors.any? %>

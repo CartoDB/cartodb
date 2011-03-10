@@ -214,10 +214,9 @@ class User < Sequel::Model
   def self.new_from_email(email)
     user = self.new
     if email.present?
-      username = email.scan(/.[^@]*/).first
-      user.username = username
+      user.username = email
       user.email    = email
-      user.password = username
+      user.password = email
     end
     user
   end

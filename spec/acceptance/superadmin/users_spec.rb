@@ -68,17 +68,17 @@ feature "Superadmin's users administration" do
     fill_in 'email', :with => 'invitation@example.com'
     click 'Sign up'
 
-    user = User.filter(:username => 'invitation').first
+    user = User.filter(:username => 'invitation@example.com').first
 
     login_as @admin_user
 
     visit superadmin_path
     page.should have_css('ul.users li a', :count => 7)
 
-    click_link 'invitation - invitation@example.com'
+    click_link 'invitation@example.com - invitation@example.com'
 
     page.should have_content "Id: #{user.id}"
-    page.should have_content 'Username: invitation'
+    page.should have_content 'Username: invitation@example.com'
     page.should have_content 'E-mail: invitation@example.com'
     page.should have_content "Database name: "
     page.should have_content 'Tables count: 0'

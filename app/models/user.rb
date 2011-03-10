@@ -165,16 +165,16 @@ class User < Sequel::Model
         rows = user_database[query].all
       }
     end
-    
+
     #TODO: This part of the code should be using memcache.
-    
-    
+
+
     {
       :time => time.real,
       :total_rows => rows.size,
       :columns => (rows.size > 0 ? rows.first.keys - [:the_geom]: []),
       :rows => rows.map{ |row| row.delete("the_geom"); row }
-    }    
+    }
   rescue => e
     if e.message =~ /^PGError/
       raise CartoDB::ErrorRunningQuery.new(e.message)
@@ -214,7 +214,7 @@ class User < Sequel::Model
   def self.new_from_email(email)
     user = self.new
     if email.present?
-      username = email.scan(/.[^@]*/)
+      username = email.scan(/.[^@]*/).first
       user.username = username
       user.email    = email
       user.password = username

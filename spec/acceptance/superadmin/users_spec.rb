@@ -64,17 +64,21 @@ feature "Superadmin's users administration" do
   end
 
   scenario "Admins can activate a disabled user" do
-    user = create_user :username => 'Guest', :email => 'invitation@example.com', :enabled => false
+    visit homepage
+    fill_in 'email', :with => 'invitation@example.com'
+    click 'Sign up'
+
+    user = User.filter(:username => 'invitation').first
+
     login_as @admin_user
 
     visit superadmin_path
     page.should have_css('ul.users li a', :count => 7)
 
-
-    click_link 'Guest - invitation@example.com'
+    click_link 'invitation - invitation@example.com'
 
     page.should have_content "Id: #{user.id}"
-    page.should have_content 'Username: Guest'
+    page.should have_content 'Username: invitation'
     page.should have_content 'E-mail: invitation@example.com'
     page.should have_content "Database name: "
     page.should have_content 'Tables count: 0'

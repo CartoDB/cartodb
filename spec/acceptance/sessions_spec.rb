@@ -23,7 +23,7 @@ feature "Sessions" do
     Capybara.current_driver = :rack_test
     user = create_user :email => 'fernando.blat@vizzuality.com', :username => 'blat'
 
-    client_application = create_client_application :user => user, :url => "http://www.example.com", :callback_url => "http://www.example.com/oauth/callback/url"
+    client_application = create_client_application :user => user, :url => "#{API_HOST}", :callback_url => "#{API_HOST}/oauth/callback/url"
 
     oauth_consumer = OAuth::Consumer.new(client_application.key, client_application.secret, {
       :site => client_application.url,
@@ -32,11 +32,12 @@ feature "Sessions" do
     })
     access_token = create_access_token :client_application => client_application, :user => user
 
-    req = oauth_consumer.create_signed_request(:get, "/oauth/identity.json", access_token)
+    req = oauth_consumer.create_signed_request(:get, "#{API_HOST}/oauth/identity.json", access_token)
     get req.path
 
-    response.status.should == 200
-    json_response = JSON(response.body)
-    json_response.should == { 'uid' => user.id, 'email' => 'fernando.blat@vizzuality.com', 'username' => 'blat' }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body.should == { :uid => user.id, :email => 'fernando.blat@vizzuality.com', :username => 'blat' }
+    end
   end
 end

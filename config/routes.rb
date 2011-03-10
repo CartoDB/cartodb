@@ -26,6 +26,15 @@ CartoDB::Application.routes.draw do
   end
 
   constraints :subdomain => "api" do
+    scope :oauth, :path => :oauth do
+      match '/authorize'      => 'oauth#authorize',     :as => :authorize
+      match '/request_token'  => 'oauth#request_token', :as => :request_token
+      match '/access_token'   => 'oauth#access_token',  :as => :access_token
+      match '/token'          => 'oauth#token',         :as => :token
+      match '/test_request'   => 'oauth#test_request',  :as => :test_request
+      get   '/identity'       => 'sessions#show'
+    end
+
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
       get '/' => 'queries#run'
     end
@@ -33,12 +42,7 @@ CartoDB::Application.routes.draw do
 
 
   # Oauth
-  # match '/oauth/authorize'      => 'oauth#authorize',     :as => :authorize
-  # match '/oauth/request_token'  => 'oauth#request_token', :as => :request_token
-  # match '/oauth/access_token'   => 'oauth#access_token',  :as => :access_token
-  # match '/oauth/token'          => 'oauth#token',         :as => :token
-  # match '/oauth/test_request'   => 'oauth#test_request',  :as => :test_request
-  # get   '/oauth/identity'       => 'sessions#show'
+
   #
   # namespace :api do
   #   namespace :json, :format => :json do

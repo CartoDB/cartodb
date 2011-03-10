@@ -18,6 +18,6 @@ section form input:-webkit-autofill {border:1px solid #666666; -webkit-border-ra
 section form div.error_content {position:absolute; z-index:10; right:22px; top:112px;}
 section form div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
 section form div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}
-footer {position:absolute; left:50%; bottom:15px; width:200px!important; padding:0; margin:0 0 0 -100px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}
+footer {position:absolute; left:50%; bottom:15px; width:300px!important; padding:0; margin:0 0 0 -150px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}
 footer a {color:white;}
 footer a:hover {color:white;}

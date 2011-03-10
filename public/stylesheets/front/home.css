@@ -21,6 +21,6 @@ section form div.error_content p {float:left; height:52px; padding:0 0 0 19px; b
 section form div.error_content p span {float:left; width:auto; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}
 section p.follow {font:normal 13px "Helvetica", Arial; color:white; text-shadow:0 2px 3px #222222;}
 section p.follow a.twitter {padding:5px 36px 5px 0; color:white; background:url('/images/front/home/twitter.png') no-repeat right 2px;}
-footer {position:absolute; left:50%; bottom:15px; width:200px; margin:0 0 0 -100px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}
+footer {position:absolute; left:50%; bottom:15px; width:300px!important; padding:0; margin:0 0 0 -150px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}
 footer a {color:white;}
 footer a:hover {color:white;}

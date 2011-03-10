@@ -4,6 +4,6 @@ section h1 {width:100%; padding:0; margin:0; font:normal 41px "Aller"; color:whi
 section h1 strong {}
 section p {width:100%; padding:0; margin:20px 0 0 0; text-shadow:0 -1px black; font:normal 17px "Helvetica",Arial; color:#6C7690; text-align:center;}
 section p strong {color:#ABB7CA; font-weight:normal;}
-footer {position:absolute; left:50%; bottom:15px; width:200px!important; padding:0; margin:0 0 0 -100px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}
+footer {position:absolute; left:50%; bottom:15px; width:300px!important; padding:0; margin:0 0 0 -150px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}
 footer a {color:white;}
 footer a:hover {color:white;}

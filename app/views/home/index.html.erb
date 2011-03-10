@@ -2,8 +2,8 @@
   <%= stylesheet_link_tag('reset', 'front/home') %>
 <% end %>
 <section>
-  <h1>We love <strong>open-data*</strong><span>*With some <%= link_to 'limitations', limits_path %></span></h1>
-  <p>CartoDB is a new geospatial database on the cloud that allows you to manage your data and create engaging visualizations with it</p>
+  <h1>We love <strong>open-data*</strong><span>*Within reasonable <%= link_to 'limits', limits_path %></span></h1>
+  <p>CartoDB is a new geospatial database in the cloud that allows you to develop location aware applications quickly and easily</p>
   <%= form_for @user do |f| %>
     <span><p>Join the beta</p><a href="<%= login_path %>">already registered?</a></span>
     <span>
@@ -16,6 +16,6 @@
     </div>
     <% end %>
   <% end %>
-  <p class="follow">or <a href="http://www.twitter.com/cartodb" class="twitter" target="_blank" rel="nofollow">follow us on twitter</a></p>
+  <p class="follow">and <a href="http://www.twitter.com/cartodb" class="twitter" target="_blank" rel="nofollow">follow us on twitter</a></p>
 </section>
-<footer>CartoDB is a product of <a href="http://www.vizzuality.com" target="_blank" rel="nofollow">vizzuality</a></footer>
+<footer>CartoDB is a product from <a href="http://www.vizzuality.com" target="_blank" rel="nofollow">vizzuality</a></footer>

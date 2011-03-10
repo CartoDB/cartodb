@@ -123,8 +123,32 @@ feature "API 1.0 tables management" do
     parse_json(response) do |r|
       r.status.should == 400
     end
+
+    put_json api_table_url(table1.name), {:name => ""}
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:name].should == "untitle_table"
+    end
   end
 
+  scenario "Delete a table of mine" do
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+
+    delete_json api_table_url(table1.name)
+    parse_json(response) do |r|
+      r.status.should be_success
+    end
+  end
+
+  scenario "Delete a table of another user" do
+    another_user = create_user
+    table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+
+    delete_json api_table_url(table1.name)
+    parse_json(response) do |r|
+      r.status.should == 404
+    end
+  end
 
 
   # TODO
@@ -303,72 +327,9 @@ feature "API 1.0 tables management" do
 
 
 
-  # scenario "Retrieve different pages of rows from a table" do
-  #   user = create_user
-  #   table = create_table :user_id => user.id
+
   #
-  #   user.in_database do |user_database|
-  #     10.times do
-  #       user_database.run("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
-  #     end
-  #   end
-  #
-  #   content = user.run_query("select * from \"#{table.name}\"")[:rows]
-  #
-  #   authenticate_api user
-  #
-  #   get_json "/api/json/tables/#{table.id}?rows_per_page=2"
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response['id'].should == table.id
-  #   json_response['name'].should == table.name
-  #   json_response['total_rows'].should == 10
-  #   json_response['columns'].should == [
-  #     ["cartodb_id", "number"], ["name", "string"], ["latitude", "number", "latitude"],
-  #     ["longitude", "number", "longitude"], ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
-  #   ]
-  #   json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
-  #     should == content[0].slice(:cartodb_id, :name, :location, :description)
-  #   json_response['rows'][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
-  #     should == content[1].slice(:cartodb_id, :name, :location, :description)
-  #
-  #   get_json "/api/json/tables/#{table.id}?rows_per_page=2&page=1"
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
-  #   json_response['rows'][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
-  #
-  #   get_json "/api/json/tables/#{table.id}?rows_per_page=2&page=1..3"
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response['rows'][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
-  #   json_response['rows'][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
-  #   json_response['rows'][2].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[4].slice(:cartodb_id, :name, :location, :description)
-  #   json_response['rows'][3].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[5].slice(:cartodb_id, :name, :location, :description)
-  #   json_response['rows'][4].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[6].slice(:cartodb_id, :name, :location, :description)
-  #   json_response['rows'][5].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[7].slice(:cartodb_id, :name, :location, :description)
-  # end
-  #
-  # scenario "Update the privacy status of a table" do
-  #   user = create_user
-  #   table = create_table :user_id => user.id, :privacy => Table::PRIVATE
-  #
-  #   table.should be_private
-  #
-  #   authenticate_api user
-  #
-  #   put_json "/api/json/tables/#{table.id}/toggle_privacy"
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response['privacy'].should == 'PUBLIC'
-  #   table.reload.should_not be_private
-  #
-  #   put_json "/api/json/tables/#{table.id}/toggle_privacy"
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response['privacy'].should == 'PRIVATE'
-  #   table.reload.should be_private
-  # end
+
   #
   # scenario "Update the name of a table" do
   #   user = create_user
@@ -399,23 +360,7 @@ feature "API 1.0 tables management" do
   #   old_table.name.should == "old_table"
   # end
   #
-  # scenario "Update the tags of a table" do
-  #   user = create_user
-  #   table = create_table :user_id => user.id
-  #
-  #   authenticate_api user
-  #
-  #   put_json "/api/json/tables/#{table.id}/update", {:tags => "tag1, tag2, tag3"}
-  #   response.status.should == 200
-  #   Tag.count.should == 3
-  #   tags = Tag.filter(:user_id => user.id, :table_id => table.id).all
-  #   tags.size.should == 3
-  #   tags.map(&:name).sort.should == %W{ tag1 tag2 tag3 }
-  #
-  #   put_json "/api/json/tables/#{table.id}/update", {:tags => ""}
-  #   response.status.should == 200
-  #   Tag.count.should == 0
-  # end
+
   #
   # scenario "Get the schema of a table" do
   #   user = create_user

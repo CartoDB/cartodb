@@ -150,7 +150,7 @@ class Table < Sequel::Model(:user_tables)
     super
     Tag.filter(:user_id => user_id, :table_id => id).delete
     User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
-    owner.in_database{|user_database| user_database.drop_table(name)}
+    owner.in_database{|user_database| user_database.drop_table(name.to_sym)}
   end
   ## End of Callbacks
 

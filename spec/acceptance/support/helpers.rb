@@ -36,7 +36,7 @@ module HelperMethods
   end
 
   def parse_json(response, &block)
-    response_parsed = JSON.parse(response.body)
+    response_parsed = response.body.blank? ? {} : JSON.parse(response.body)
     yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status)
   end
 

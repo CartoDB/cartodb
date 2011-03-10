@@ -10,6 +10,7 @@ class Api::Json::TablesController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   before_filter :api_authorization_required
+  before_filter :load_table, :only => [:show, :update, :destroy]
 
   def index
     @tables = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
@@ -53,10 +54,6 @@ class Api::Json::TablesController < ApplicationController
   end
 
   def show
-    @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
-                            array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
-                          from user_tables
-                          where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
     render :json => {
               :id => @table.id,
               :name => @table.name,
@@ -89,6 +86,15 @@ class Api::Json::TablesController < ApplicationController
   rescue => e
     render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
            :status => 400, :callback => params[:callback] and return
+  end
+
+  def destroy
+    @table = Table.fetch("select id, user_id, name
+                          from user_tables
+                          where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
+    raise RecordNotFound if @table.nil?
+    @table.destroy
+    render :nothing => true, :status => 200, :callback => params[:callback]
   end
 
 
@@ -226,17 +232,6 @@ class Api::Json::TablesController < ApplicationController
     end
   end
 
-  # Drop the table
-  # * Request Method: +DELETE+
-  # * URI: +/api/json/tables/:id
-  # * Format: +JSON+
-  # * Response if _success_:
-  #   * status code: 200
-  #   * body: _nothing_
-  def delete
-    @table.destroy
-    render :json => ''.to_json, :status => 200, :location => dashboard_path, :callback => params[:callback]
-  end
 
   # Set the columns of the geometry of the table
   # * Request Method: +PUT+
@@ -354,8 +349,11 @@ class Api::Json::TablesController < ApplicationController
   protected
 
   def load_table
-    @table = Table.select(:id,:user_id,:name,:privacy,:geometry_columns).filter(:id => params[:id]).first
-    raise RecordNotFound if @table.user_id != current_user.id
+    @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
+                            array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+                          from user_tables
+                          where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
+    raise RecordNotFound if @table.nil?
   end
 
 end

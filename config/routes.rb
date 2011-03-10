@@ -9,6 +9,7 @@ CartoDB::Application.routes.draw do
 
   resources :users, :only => [:create]
   match '/thanks' => 'users#thanks', :as => :thanks
+  match '/limits' => 'home#limits', :as => :limits
 
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard

@@ -2,7 +2,7 @@
   <%= stylesheet_link_tag('reset', 'front/home') %>
 <% end %>
 <section>
-  <h1>We love <strong>open-data*</strong><span>*With some <a href="#">limitations</a></span></h1>
+  <h1>We love <strong>open-data*</strong><span>*With some <%= link_to 'limitations', limits_path %></span></h1>
   <p>CartoDB is a new geospatial database on the cloud that allows you to manage your data and create engaging visualizations with it</p>
   <%= form_for @user do |f| %>
     <span><p>Join the beta</p><a href="<%= login_path %>">already registered?</a></span>

@@ -45,4 +45,19 @@ feature "API 1.0 queries interface" do
     end
   end
 
+  pending "Perform a query using JSONP and api key authorization" do
+    Capybara.current_driver = :selenium
+
+    api_key  = @user.create_key "example.org"
+    api_key2 = @user.create_key "127.0.0.1"
+
+    FileUtils.cp("#{Rails.root}/spec/support/test_jsonp.html", "#{Rails.root}/public/")
+
+    visit "/test_jsonp.html?api_key=#{api_key2.api_key}"
+
+    page.find("div#results").text.should == "Barrukia cristata"
+
+    FileUtils.rm("#{Rails.root}/public/test_jsonp.html")
+  end
+
 end

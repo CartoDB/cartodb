@@ -14,26 +14,41 @@ class Api::Json::TablesController < ApplicationController
 
   # Get the list of tables of a user
   # * Request Method: +GET+
-  # * URI: +/api/json/tables+
+  # * URI: +/v1/tables+
   # * Format: +JSON+
   # * Response:
   #     [
   #       {
   #         "id" => 1,
   #         "name" => "My table",
-  #         "privacy" => "PUBLIC"
+  #         "privacy" => "PUBLIC",
+  #         "tags" => "tag 1,tag 2,..."
+  #         "schema" => [["cartodb_id", "number"],[...],...]
   #       },
   #       {
   #         "id" => 2,
   #         "name" => "My private data",
-  #         "privacy" => "PRIVATE"
+  #         "privacy" => "PRIVATE",
+  #         "tags" => ""
+  #         "schema" => [["cartodb_id", "number"],[...],...]
   #       }
   #     ]
   def index
-    @tables = Table.select(:id,:user_id,:name,:privacy).filter(:user_id => current_user.id).all
+    @tables = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
+                            array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+                          from user_tables
+                          where user_tables.user_id = ?", current_user.id).all
     respond_to do |format|
       format.json do
-        render :json => @tables.map{ |table| {:id => table.id, :name => table.name, :privacy => table_privacy_text(table)} }.to_json,
+        render :json => @tables.map{ |table|
+                  {
+                    :id => table.id,
+                    :name => table.name,
+                    :privacy => table_privacy_text(table),
+                    :tags => table[:tags_names],
+                    :schema => table.schema(:cartodb_types => true)
+                  }
+                }.to_json,
                :callback => params[:callback]
       end
     end

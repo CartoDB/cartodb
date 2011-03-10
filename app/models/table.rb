@@ -138,7 +138,6 @@ class Table < Sequel::Model(:user_tables)
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     set_lat_lon_columns!(:latitude, :longitude) if schema.flatten.include?(:latitude) && schema.flatten.include?(:longitude)
-
     unless private?
       owner.in_database do |user_database|
         user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")

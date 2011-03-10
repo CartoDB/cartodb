@@ -22,7 +22,17 @@ module NavigationHelpers
   end
 
   def api_query_url
-    "#{API_HOST}/#{CartoDB::API::VERSION_1}/"
+    "#{api_url_prefix}/"
+  end
+
+  def api_tables_url
+    "#{api_url_prefix}/tables"
+  end
+
+  private
+
+  def api_url_prefix
+    "#{API_HOST}/#{CartoDB::API::VERSION_1}"
   end
 
 end

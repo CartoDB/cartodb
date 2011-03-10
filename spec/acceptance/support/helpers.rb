@@ -1,3 +1,7 @@
+class Fixnum
+  def success?; self == 200; end
+end
+
 module HelperMethods
 
   def login_as(user)
@@ -29,6 +33,11 @@ module HelperMethods
 
   def click(*args)
     click_link_or_button(*args)
+  end
+
+  def parse_json(response, &block)
+    response_parsed = JSON.parse(response.body)
+    yield OpenStruct.new(:body => response_parsed.symbolize_keys, :status => response.status)
   end
 
   def disable_confirm_dialogs

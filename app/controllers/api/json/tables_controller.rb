@@ -94,26 +94,6 @@ class Api::Json::TablesController < ApplicationController
            :status => 400, :callback => params[:callback] and return
   end
 
-  # Run a query against your database
-  # * Request Method: +GET+
-  # * URI: +/api/json/tables/query+
-  # * Params:
-  #   * +query+: the query to be executed
-  # * Format: +JSON+
-  # * Response:
-  #     {
-  #       "total_rows" => 100,
-  #       "columns" => [:id, :name, ...],
-  #       "rows" => [{:id=>1, :name=>"name 1", :location=>"...", :description=>"description 1"}]
-  #     }
-  def query
-    respond_to do |format|
-      format.json do
-        render :json => current_user.run_query(params[:sql]).to_json, :callback => params[:callback]
-      end
-    end
-  end
-
   # Gets the scehma from a table
   #
   # * Request Method: +GET+

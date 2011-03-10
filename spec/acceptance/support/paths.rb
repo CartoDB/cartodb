@@ -1,4 +1,6 @@
 module NavigationHelpers
+  API_HOST = "http://api.localhost.lan"
+
   def homepage
     "/"
   end
@@ -18,6 +20,11 @@ module NavigationHelpers
   def superadmin_path
     "/superadmin"
   end
+
+  def api_query_url
+    "#{API_HOST}/#{CartoDB::API::VERSION_1}/"
+  end
+
 end
 
 RSpec.configuration.include NavigationHelpers, :type => :acceptance

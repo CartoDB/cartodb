@@ -12,4 +12,11 @@ module CartoDB
     "date"    => ["timestamp", "timestamp without time zone"],
     "boolean" => ["boolean"]
   }
+
+  module API
+
+    VERSION_1 = "v1"
+
+  end
+
 end

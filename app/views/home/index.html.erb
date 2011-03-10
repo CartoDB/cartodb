@@ -1,3 +1,6 @@
+<% content_for :js do %>
+  <%= headjs_include_tag "plugins/jquery.min", "front/home" %>
+<% end %>
 <% content_for :head do %>
   <%= stylesheet_link_tag('reset', 'front/home') %>
 <% end %>
@@ -7,7 +10,7 @@
   <%= form_for @user do |f| %>
     <span><p>Join the beta</p><a href="<%= login_path %>">already registered?</a></span>
     <span>
-      <input id="email" name="email" type="text" />
+      <input id="email" name="email" type="text" class="<%= (@user.errors.any?)?'error':'' %>" />
       <input name="commit" type="submit" value="Sign up" />
     </span>
     <% if @user.errors.any? %>

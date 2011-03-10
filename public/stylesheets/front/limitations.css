@@ -1,5 +1,5 @@
-body {background:url('/images/front/home/carto_bkg.jpg') repeat-x center 0;}
-section {position:absolute; top:50%; left:50%; width:610px; height:170px; margin:-85px 0 0 -285px; z-index:10;}
+body {background:url('/images/front/home/carto_bkg_2.jpg') repeat-x center 0;}
+section {position:absolute; top:50%; left:50%; width:610px; height:170px; margin:-85px 0 0 -305px; z-index:10;}
 section h1 {width:100%; padding:0; margin:0; font:normal 41px "Aller"; color:white; text-align:center; text-shadow:0 2px rgba(0,0,0,0.5); letter-spacing:-1px;}
 section h1 strong {}
 section p {width:100%; padding:0; margin:20px 0 0 0; text-shadow:0 -1px black; font:normal 17px "Helvetica",Arial; color:#6C7690; text-align:center;}

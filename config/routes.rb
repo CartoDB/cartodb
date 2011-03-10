@@ -36,8 +36,12 @@ CartoDB::Application.routes.draw do
     end
 
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
-      get '/' => 'queries#run'
-      get '/tables' => 'tables#index'
+      get   '/'           => 'queries#run'
+      get   '/tables'     => 'tables#index'
+      post  '/tables'     => 'tables#create'
+      get   '/tables/:id' => 'tables#show'
+      put   '/tables/:id' => 'tables#update'
+
     end
   end
 

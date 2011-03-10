@@ -49,6 +49,13 @@ module HelperMethods
     save_and_open_page
   end
 
+  def default_schema
+    [
+      ["cartodb_id", "number"], ["name", "string"], ["latitude", "number", "latitude"], ["longitude", "number", "longitude"],
+      ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
+    ]
+  end
+
 end
 
 RSpec.configuration.include HelperMethods, :type => :acceptance

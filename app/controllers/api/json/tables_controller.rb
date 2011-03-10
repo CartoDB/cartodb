@@ -10,83 +10,24 @@ class Api::Json::TablesController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   before_filter :api_authorization_required
-  before_filter :load_table, :except => [:index, :create, :query]
 
-  # Get the list of tables of a user
-  # * Request Method: +GET+
-  # * URI: +/v1/tables+
-  # * Format: +JSON+
-  # * Response:
-  #     [
-  #       {
-  #         "id" => 1,
-  #         "name" => "My table",
-  #         "privacy" => "PUBLIC",
-  #         "tags" => "tag 1,tag 2,..."
-  #         "schema" => [["cartodb_id", "number"],[...],...]
-  #       },
-  #       {
-  #         "id" => 2,
-  #         "name" => "My private data",
-  #         "privacy" => "PRIVATE",
-  #         "tags" => ""
-  #         "schema" => [["cartodb_id", "number"],[...],...]
-  #       }
-  #     ]
   def index
     @tables = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
                             array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                           from user_tables
                           where user_tables.user_id = ?", current_user.id).all
-    respond_to do |format|
-      format.json do
-        render :json => @tables.map{ |table|
-                  {
-                    :id => table.id,
-                    :name => table.name,
-                    :privacy => table_privacy_text(table),
-                    :tags => table[:tags_names],
-                    :schema => table.schema(:cartodb_types => true)
-                  }
-                }.to_json,
-               :callback => params[:callback]
-      end
-    end
+    render :json => @tables.map{ |table|
+              {
+                :id => table.id,
+                :name => table.name,
+                :privacy => table_privacy_text(table),
+                :tags => table[:tags_names],
+                :schema => table.schema(:cartodb_types => true)
+              }
+            }.to_json,
+           :callback => params[:callback]
   end
 
-  # Gets the rows from a table
-  # * Request Method: +GET+
-  # * URI: +/api/json/tables/1+
-  # * Params:
-  #   * +rows_per_page+: number of rows in the response. By default +10+
-  #   * +page+: number of the current page. By default +0+. It is possible to give a range of pages with the format: 1..10
-  # * Format: +JSON+
-  # * Response:
-  #     {
-  #       "total_rows" => 100,
-  #       "columns" => [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]],
-  #       "rows" => [{:id=>1, :name=>"name 1", :location=>"...", :description=>"description 1"}]
-  #     }
-  def show
-    respond_to do |format|
-      format.json do
-        render :json => @table.to_json(:rows_per_page => params[:rows_per_page], :page => params[:page], :cartodb_types => true),
-               :callback => params[:callback]
-      end
-    end
-  end
-
-  # Create a new table
-  # * Request Method: +POST+
-  # * URI: +/api/json/tables
-  # * Format: +JSON+
-  # * Response if _success_:
-  #   * status code: 302
-  #   * location: the url of the new table
-  # * Response if _error_:
-  #   * status code +400+
-  #   * body:
-  #       { "errors" => ["error message"] }
   def create
     @table = Table.new
     @table.user_id = current_user.id
@@ -99,7 +40,9 @@ class Api::Json::TablesController < ApplicationController
     end
     @table.force_schema = params[:schema] if params[:schema]
     if @table.valid? && @table.save
-      render :json => { :id => @table.id }.to_json, :status => 200, :location => table_path(@table),
+      render :json => { :id => @table.id, :name => @table.name, :schema => @table.schema(:cartodb_types => true) }.to_json,
+             :status => 200,
+             :location => table_path(@table),
              :callback => params[:callback]
     else
       render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400, :callback => params[:callback]
@@ -109,73 +52,45 @@ class Api::Json::TablesController < ApplicationController
            :status => 400, :callback => params[:callback] and return
   end
 
-  # Gets the scehma from a table
-  #
-  # * Request Method: +GET+
-  # * URI: +/api/json/tables/1/schema+
-  # * Format: +JSON+
-  # * Response:
-  #     [[:id, "integer"], [:name, "text"], [:location, "geometry"], [:description, "text"]]
-  def schema
-    respond_to do |format|
-      format.json do
-        render :json => @table.schema(:cartodb_types => true).to_json, :callback => params[:callback]
-      end
-    end
+  def show
+    @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
+                            array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+                          from user_tables
+                          where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
+    render :json => {
+              :id => @table.id,
+              :name => @table.name,
+              :privacy => table_privacy_text(@table),
+              :tags => @table[:tags_names],
+              :schema => @table.schema(:cartodb_types => true)
+            }.to_json,
+           :callback => params[:callback]
   end
 
-  # Toggle the privacy of a table. Returns the new privacy status
-  # * Request Method: +PUT+
-  # * URI: +/api/json/tables/1/toggle_privacy+
-  # * Format: +JSON+
-  # * Response:
-  #     { "privacy" => "PUBLIC" }
-  def toggle_privacy
-    @table.toggle_privacy!
-    respond_to do |format|
-      format.json do
-        render :json => { :privacy => table_privacy_text(@table) }.to_json, :callback => params[:callback]
-      end
-    end
-  end
-
-  # Update a table
-  # * Request Method: +PUT+
-  # * URI: +/api/json/tables/1/update+
-  # * Format: +JSON+
-  # * Parameters: a hash with keys representing the attributes and values with the new values for that attributes
-  #     {
-  #       "tags" => "new tag #1, new tag #2",
-  #       "name" => "new name"
-  #     }
-  # * Response if _success_:
-  #   * status code: 200
-  #   * body:
-  #       {
-  #         "tags" => "new tag #1, new tag #2"
-  #         "name" => "new name"
-  #       }
-  # * Response if _error_:
-  #   * status code +400+
-  #   * body:
-  #       { "errors" => ["error #1", "error #2"] }
   def update
-    respond_to do |format|
-      format.json do
-        begin
-          @table.set_all(params)
-          if @table.save
-            render :json => params.merge(@table.reload.values).to_json, :status => 200, :callback => params[:callback]
-          else
-            render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400, :callback => params[:callback]
-          end
-        rescue => e
-          render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
-                 :status => 400, :callback => params[:callback] and return
-        end
-      end
+    @table = Table.filter(:user_id => current_user.id, :name => params[:id]).first
+    @table.set_all(params)
+    @table.tags = params[:tags] if params[:tags]
+    if @table.save
+      @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
+                              array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+                            from user_tables
+                            where id=?",@table.id).first
+      render :json => {
+        :id => @table.id,
+        :name => @table.name,
+        :privacy => table_privacy_text(@table),
+        :tags => @table[:tags_names],
+        :schema => @table.schema(:cartodb_types => true)
+      }.to_json, :status => 200, :callback => params[:callback]
+    else
+      render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400, :callback => params[:callback]
     end
+  rescue => e
+    render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
+           :status => 400, :callback => params[:callback] and return
   end
+
 
   # Update the schema of a table
   # * Request Method: +PUT+

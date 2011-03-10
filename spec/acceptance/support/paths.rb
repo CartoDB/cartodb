@@ -29,6 +29,10 @@ module NavigationHelpers
     "#{api_url_prefix}/tables"
   end
 
+  def api_table_url(table_identifier)
+    "#{api_url_prefix}/tables/#{table_identifier}"
+  end
+
   private
 
   def api_url_prefix

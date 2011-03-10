@@ -370,9 +370,10 @@ class Table < Sequel::Model(:user_tables)
     return {:name => new_name, :type => new_type, :cartodb_type => cartodb_type}
   end
 
-  def to_json(options = {})
-    rows   = []
-    limit  = (options[:rows_per_page] || 10).to_i
+  def records(options = {})
+    rows  = []
+    limit = (options[:rows_per_page] || 10).to_i
+    limit = 5000 if limit > 5000
     if options[:page] && options[:page].is_a?(String) && options[:page].include?('..')
       first_page, last_page = options[:page].split('..')
       page = first_page.to_i*limit
@@ -397,7 +398,6 @@ class Table < Sequel::Model(:user_tables)
       :id         => id,
       :name       => name,
       :total_rows => rows_counted,
-      :columns    => schema({:cartodb_types => options[:cartodb_types]}),
       :rows       => rows
     }
   end

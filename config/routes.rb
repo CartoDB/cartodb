@@ -42,6 +42,7 @@ CartoDB::Application.routes.draw do
       get    '/tables/:id' => 'tables#show'
       put    '/tables/:id' => 'tables#update'
       delete '/tables/:id' => 'tables#destroy'
+      get    '/tables/:table_id/records' => 'records#index'
     end
   end
 

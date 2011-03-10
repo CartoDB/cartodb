@@ -34,12 +34,13 @@ feature "Invitations", %q{
     ask_for_invitation_email.subject.should be == 'Thanks for signing up for cartodb beta'
     ask_for_invitation_email.from.should include('wadus@cartodb.com')
     ask_for_invitation_email.to.should include(random_email)
-    ask_for_invitation_email.body.should match /You are invited to CartoDB/
-    ask_for_invitation_email.body.should match /Develop location aware applications quickly and easily/
-    ask_for_invitation_email.body.should match /We are happy/
-    ask_for_invitation_email.body.should match /to invite you to use our/
-    ask_for_invitation_email.body.should match /brand new service/
-    ask_for_invitation_email.body.should match /CartoDB is a geospatial database in the cloud that allows you to develop location aware applications quickly and easily./
+    ask_for_invitation_email.body.should match /Thanks, we have received your request/
+    ask_for_invitation_email.body.should match /We are still on private beta and is going to take us some time to approve your request/
+    ask_for_invitation_email.body.should match /We will email you back/
+    ask_for_invitation_email.body.should match /once we are ready,/
+    ask_for_invitation_email.body.should match /CartoDB is a geospatial database in the cloud that allows you to develop location aware applications quickly and easily. If you feel you  really desperately need your invitation,/
+    ask_for_invitation_email.body.should match /reply to this email/
+    ask_for_invitation_email.body.should match /and explain us why./
   end
 
   scenario "Invited users can't login" do

@@ -6,4 +6,4 @@ en:
     ask_for_invitation:
       subject: 'Thanks for signing up for cartodb beta'
     invitation_sent:
-      subject: ''
+      subject: 'Thanks for signing up for cartodb beta'

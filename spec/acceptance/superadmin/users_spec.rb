@@ -64,11 +64,10 @@ feature "Superadmin's users administration" do
   end
 
   scenario "Admins can activate a disabled user" do
-    visit homepage
-    fill_in 'email', :with => 'invitation@example.com'
-    click 'Sign up'
-
-    user = User.filter(:username => 'invitation@example.com').first
+    user = create_user :username => 'invitation@example.com',
+                       :email => 'invitation@example.com',
+                       :password => 'invitation@example.com',
+                       :enabled => false
 
     login_as @admin_user
 
@@ -90,7 +89,22 @@ feature "Superadmin's users administration" do
     fill_in 'Email', :with => 'fulano@example.com'
     fill_in 'Password', :with => 'fulanito'
     check 'Enabled user'
-    click_button 'Update User'
+
+    expect {
+      click_button 'Update User'
+    }.to change{ActionMailer::Base.deliveries.size}.from(0).to(1)
+
+    ask_for_invitation_email = ActionMailer::Base.deliveries.first
+
+    ask_for_invitation_email.subject.should be == 'Thanks for signing up for cartodb beta'
+    ask_for_invitation_email.from.should include('wadus@cartodb.com')
+    ask_for_invitation_email.to.should include('fulano@example.com')
+    ask_for_invitation_email.body.should match /You are invited to CartoDB/
+    ask_for_invitation_email.body.should match /Develop location aware applications quickly and easily/
+    ask_for_invitation_email.body.should match /We are happy/
+    ask_for_invitation_email.body.should match /to invite you to use our/
+    ask_for_invitation_email.body.should match /brand new service/
+    ask_for_invitation_email.body.should match /CartoDB is a geospatial database in the cloud that allows you to develop location aware applications quickly and easily./
 
     page.should have_content 'User updated successfully'
     page.should have_css('ul.users li a', :count => 7)

@@ -1,7 +1,6 @@
 # coding: UTF-8
 
 class User < Sequel::Model
-
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
 
@@ -203,12 +202,21 @@ class User < Sequel::Model
     User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin).first
   end
 
+  def enable(enabled_flag)
+    @was_disabled = self.disabled?
+    self.enabled = enabled_flag
+  end
+
   def enabled?
     self.enabled
   end
 
   def disabled?
     !self.enabled
+  end
+
+  def was_disabled?
+    @was_disabled
   end
 
   def self.new_from_email(email)

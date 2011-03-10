@@ -157,5 +157,37 @@ feature "Superadmin's users administration" do
     page.should have_no_link "#{@common_user.username} - #{@common_user.email}"
   end
 
+  scenario "Editing a user without touching his password doesn't change it" do
+    user = create_user :username => 'test', :email => 'test@example.com', :password => 'test'
+    login_as @admin_user
+
+    visit superadmin_path
+    page.should have_css('ul.users li a', :count => 7)
+
+    click_link 'test - test@example.com'
+
+    page.should have_content "Id: #{user.id}"
+    page.should have_content 'Username: test'
+    page.should have_content 'E-mail: test@example.com'
+    page.should have_content "Database name: cartodb_test_user_#{user.id}_db"
+    page.should have_content 'Tables count: 0'
+    page.should have_no_content 'Has administrator role'
+    page.should have_content 'Enabled user'
+
+    click_link 'Edit user'
+    fill_in 'Username', :with => 'Fulano'
+    fill_in 'Email', :with => 'fulano@example.com'
+    fill_in 'Password', :with => ''
+    click_button 'Update User'
+
+    visit logout_path
+
+    visit login_path
+    fill_in 'e-mail', :with => 'fulano@example.com'
+    fill_in 'password', :with => 'test'
+    click_link_or_button 'Log in'
+
+    current_path.should be == dashboard_path
+  end
 
 end

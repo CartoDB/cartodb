@@ -39,7 +39,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       attributes = params[:user]
       @user.username = attributes[:username]
       @user.email    = attributes[:email]
-      @user.password = attributes[:password]
+      @user.password = attributes[:password] if attributes[:password].present?
       @user.admin    = attributes[:admin]
       @user.enabled  = attributes[:enabled]
       if @user.save

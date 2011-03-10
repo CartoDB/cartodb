@@ -62,13 +62,14 @@ task :asset_packages, :roles => [:app] do
  CMD
 end
 
+desc "Uploads config yml files to app server's shared config folder"
+task :upload_yml_files, :roles => :app do
+  run "mkdir #{deploy_to}/shared/config ; true"
+  upload("config/database.yml", "#{deploy_to}/shared/config/database.yml")
+  upload("config/app_config.yml", "#{deploy_to}/shared/config/app_config.yml")
+end
+
 namespace :db do
-  desc "Copy local database.yml.example to server"
-  task :upload_yml_files, :roles => :app do
-    run "mkdir #{deploy_to}/shared/config ; true"
-    upload("config/database.yml", "#{deploy_to}/shared/config/database.yml")
-    upload("config/app_config.yml", "#{deploy_to}/shared/config/app_config.yml")
-  end
 
   desc "Run rake:seed on remote app server"
   task :seed, :roles => :app do

@@ -10,7 +10,7 @@
 
       <% [:success, :error].each do |key| %>
         <% if flash[key] %>
-          <div class="<%= key %>"><%= flash[key] %></div>
+          <div class="flash <%= key %>"><%= flash[key] %></div>
         <% end %>
       <% end %>
 

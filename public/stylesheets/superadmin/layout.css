@@ -11,17 +11,18 @@ section#content div.right div.banner div.middle_white_short ul li a {float:none;
 section#content div.right div.banner div.middle_white_short ul li a:hover {color:#FF6600;}
 section#content div.right div.banner div.bottom_white_short {float:left; width:100%; height:15px; background:url('/images/admin/backgrounds/bottom_white_short.png') no-repeat 0 0;}
 section#content p.info {float:none; display:inline-block; width:100%; padding:5px 0 0 0; font:normal 14px Arial; color:#999999;}
-
 section#content div.left div.middle_white_medium span {float:left; width:500px; margin:15px 0 0 23px; font:normal 15px Arial; color:#777777;}
 section#content div.left div.middle_white_medium a.remove {display:inline-block; width:114px!important; height:15px; margin:30px 0 20px 23px; padding:10px 0; text-align:center; line-height:15px; font:bold 15px Arial; color:#FF3300; text-decoration:none;
   background:url('/images/admin/others/red_button.jpg') no-repeat 0 0; text-shadow:0 1px #f7f7f7;} 
 section#content div.left div.middle_white_medium a.remove:hover {background-position:0 -35px;}
-
 section#content div.left div.middle_white_medium ul.user_form {margin:10px 0 0 0;}
 section#content div.left div.middle_white_medium ul.user_form li {border:none; padding:10px 23px;}
+section#content div.left div.middle_white_medium ul.user_form li:hover {background:none; cursor:default;}
 section#content div.left div.middle_white_medium label {font:bold 12px Arial; color:#999999; text-transform:uppercase;}
-section#content div.left div.middle_white_medium input[type="text"],section#content div.left div.middle_white_medium input[type="password"] {width:175px; height:15px; padding:9px 10px!important; margin:5px 0 0 0; background:url('/images/admin/api/input_bkg.png') no-repeat 1px 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
+section#content div.left div.middle_white_medium input[type="text"],section#content div.left div.middle_white_medium input[type="password"] {width:190px; height:15px; padding:9px 7px!important; margin:5px 0 0 0; background:url('/images/admin/api/input_bkg.png') no-repeat 1px 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
   font:normal 15px Arial; color:#333333; line-height:15px;}
 section#content div.left div.middle_white_medium input[type="submit"] {margin:14px 18px 15px 0; width:157px; height:35px; padding:9px 0 11px; text-align:center; background:url('/images/admin/dashboard/create_table.png') no-repeat 0 0; font:bold 15px Arial; 
   color:#305234; text-shadow:0 1px #9ED6A4; text-decoration:none; border:none;}
 section#content div.left div.middle_white_medium input[type="submit"]:hover {background-position:0 -35px; cursor:pointer;}
+section#content div.flash {display:inline-block; width:auto!important; margin:0 0 20px; padding:10px; font:normal 14px Arial; color:green; border-radius:4px; -webkit-border-radius:4px; -moz-border-radius:4px; 
+  border:1px solid green; background:#bbe5ba;}

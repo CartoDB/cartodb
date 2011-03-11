@@ -1,26 +1,26 @@
 <%= form_for [:superadmin, @user] do |form| %>
-<ul>
+<ul class="user_form">
   <li>
-  <%= form.label :username %><br />
-  <%= form.text_field :username %>
+    <%= form.label :username %><br />
+    <%= form.text_field :username %>
   </li>
   <li>
-  <%= form.label :email %><br />
-  <%= form.text_field :email %>
+    <%= form.label :email %><br />
+    <%= form.text_field :email %>
   </li>
   <li>
-  <%= label_tag 'user[password]', 'Password' %><br />
-  <%= password_field_tag 'user[password]' %>
+    <%= label_tag 'user[password]', 'Password' %><br />
+    <%= password_field_tag 'user[password]' %>
   </li>
   <li>
-  <%= form.check_box :admin %>
-  <%= form.label :admin %>
+    <%= form.check_box :admin %>
+    <%= form.label :admin %>
   </li>
   <li>
-  <%= form.check_box :enabled %>
-  <%= form.label :enabled, 'Enabled user' %>
+    <%= form.check_box :enabled %>
+    <%= form.label :enabled, 'Enabled user' %>
   </li>
-  <li>
+  <li class="last">
     <%= form.submit %>
   </li>
 </ul>

@@ -5,7 +5,7 @@
     <title>CartoDB</title>
     <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
     <%= javascript_include_tag "plugins/jquery.min", "rails" %>
-    <%= stylesheet_link_tag('reset.css','superadmin/layout') %>
+    <%= yield :head %>
     <%= csrf_meta_tag %>
     <noscript><meta http-equiv="refresh" content="0;url=/prototypes/javascript.html"></noscript>
   </head>
@@ -21,9 +21,9 @@
         <li class="last"><%= link_to current_user.email, '/prototypes/account.html', :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
       </ul>
     </header>
-    <section id="content">
-      <%= yield %>
-    </section>
+    
+    <%= yield %>
+    
     <% if show_footer? %>
     <footer>
       <section class="prefooter">

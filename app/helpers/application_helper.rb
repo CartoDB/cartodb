@@ -2,7 +2,7 @@ module ApplicationHelper
 
   def show_footer?
     (controller_name == 'tables' && action_name != 'show') ||
-    (controller_name == 'client_applications')
+    (controller_name == 'client_applications') || (controller_name == 'users')
   end
 
   def in_my_tables?

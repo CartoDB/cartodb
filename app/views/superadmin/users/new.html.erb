@@ -1,3 +1,24 @@
-<h2>Create a new user</h2>
-<%= render 'form' %>
-<%= link_to 'Go back to users list', superadmin_users_path %>
+<%= content_for(:head) do %>
+  <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/dashboard', 'superadmin/layout') %>
+<% end %>
+
+<%= render :partial => 'admin/tables/subheader' %>
+
+<section id="content">
+  <div class="inner_content">
+    <div class="tables_list">
+      <div class="left">
+        <div class="top_blue_medium">
+          <h3><strong>Create a new user</strong></h3>
+        </div>
+        <div class="middle_white_medium">
+          <%= render 'form' %>
+        </div>
+        <div class="bottom_white_medium"></div>
+      </div>
+      <div class="right">
+        <%= render :partial => 'right_part' %>
+      </div>
+    </div>
+  </div>
+</section>

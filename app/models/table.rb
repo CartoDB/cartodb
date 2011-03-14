@@ -43,8 +43,9 @@ class Table < Sequel::Model(:user_tables)
   ## Callbacks
   def validate
     super
-    errors.add(:user_id, 'can\'t be blank')  if user_id.blank?
-    errors.add(:name,    'can\'t be blank')  if name.blank?
+    errors.add(:user_id, 'can\'t be blank') if user_id.blank?
+    errors.add(:name,    'can\'t be blank') if name.blank?
+    errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
     validates_unique [:name, :user_id], :message => 'is already taken'
   end
 
@@ -138,7 +139,6 @@ class Table < Sequel::Model(:user_tables)
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     set_lat_lon_columns!(:latitude, :longitude) if schema.flatten.include?(:latitude) && schema.flatten.include?(:longitude)
-
     unless private?
       owner.in_database do |user_database|
         user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
@@ -150,7 +150,7 @@ class Table < Sequel::Model(:user_tables)
     super
     Tag.filter(:user_id => user_id, :table_id => id).delete
     User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
-    owner.in_database{|user_database| user_database.drop_table(name)}
+    owner.in_database{|user_database| user_database.drop_table(name.to_sym)}
   end
   ## End of Callbacks
 
@@ -231,6 +231,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def update_row!(row_id, raw_attributes)
+    rows_updated = 0
     owner.in_database do |user_database|
       attributes = raw_attributes.dup.select{ |k,v| user_database.schema(name.to_sym).map{|c| c.first}.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
@@ -238,7 +239,7 @@ class Table < Sequel::Model(:user_tables)
       end
       unless attributes.empty?
         begin
-          user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes)
+          rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes)
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
           message = e.message.split("\n")[0]
@@ -254,7 +255,7 @@ class Table < Sequel::Model(:user_tables)
         geocode!(attributes)
       end
     end
-    return true
+    rows_updated
   end
 
   def self.schema(user, table, options = {})
@@ -312,9 +313,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def modify_column!(options)
-    new_name = options[:name]
-    new_type = options[:type].try(:convert_to_db_type)
-    cartodb_type = options[:type].try(:convert_to_cartodb_type)
+    new_name = options[:name] || options[:old_name]
+    new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema.select{ |c| c[0] == new_name.to_sym }.first.last
+    cartodb_type = new_type.try(:convert_to_cartodb_type)
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
         raise if CARTODB_COLUMNS.include?(options[:old_name].to_s)
@@ -363,6 +364,8 @@ class Table < Sequel::Model(:user_tables)
                 user_database.rename_column name.to_sym, random_name, column_name.to_sym
               end
             end
+          else
+            raise e
           end
         end
       end
@@ -370,9 +373,10 @@ class Table < Sequel::Model(:user_tables)
     return {:name => new_name, :type => new_type, :cartodb_type => cartodb_type}
   end
 
-  def to_json(options = {})
-    rows   = []
-    limit  = (options[:rows_per_page] || 10).to_i
+  def records(options = {})
+    rows  = []
+    limit = (options[:rows_per_page] || 10).to_i
+    limit = 5000 if limit > 5000
     if options[:page] && options[:page].is_a?(String) && options[:page].include?('..')
       first_page, last_page = options[:page].split('..')
       page = first_page.to_i*limit
@@ -397,9 +401,24 @@ class Table < Sequel::Model(:user_tables)
       :id         => id,
       :name       => name,
       :total_rows => rows_counted,
-      :columns    => schema({:cartodb_types => options[:cartodb_types]}),
       :rows       => rows
     }
+  end
+
+  def record(identifier)
+    owner.in_database do |user_database|
+      row = user_database[name.to_sym].
+        select(*schema.map{ |e| e[0]}).
+        where(:cartodb_id => identifier).
+        first
+      raise if row.empty?
+      row.each do |k,v|
+        if v.is_a?(Date) || v.is_a?(Time)
+          row[k] = v.strftime("%Y-%m-%d %H:%M:%S")
+        end
+      end
+      row
+    end
   end
 
   def set_lat_lon_columns!(lat_column, lon_column)

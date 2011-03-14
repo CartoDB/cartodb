@@ -3,8 +3,8 @@ CartoDB::Application.routes.draw do
 
   get '/progress' => 'upload#progress', :format => :json
 
-  get '/login' => 'sessions#new', :as => :login
-  get '/logout' => 'sessions#destroy', :as => :logout
+  get   '/login' => 'sessions#new', :as => :login
+  get   '/logout' => 'sessions#destroy', :as => :logout
   match '/sessions/create' => 'sessions#create', :as => :create_session
 
   resources :users, :only => [:create]
@@ -17,42 +17,69 @@ CartoDB::Application.routes.draw do
     resources :tables, :only => [:show]
     match '/your_apps/oauth' => 'client_applications#oauth', :as => :oauth_credentials
     match '/your_apps/jsonp' => 'client_applications#jsonp', :as => :jsonp_credentials
-    post '/your_apps/jsonp/:id/destroy' => 'client_applications#remove_api_key', :as => :destroy_api_key
-  end
-
-  # Oauth
-  match '/oauth/authorize'      => 'oauth#authorize',     :as => :authorize
-  match '/oauth/request_token'  => 'oauth#request_token', :as => :request_token
-  match '/oauth/access_token'   => 'oauth#access_token',  :as => :access_token
-  match '/oauth/token'          => 'oauth#token',         :as => :token
-  match '/oauth/test_request'   => 'oauth#test_request',  :as => :test_request
-  get   '/oauth/identity'       => 'sessions#show'
-
-  namespace :api do
-    namespace :json, :format => :json do
-      get    'column_types'                       => 'meta#column_types'
-      get    'tables'                             => 'tables#index'
-      post   'tables'                             => 'tables#create'
-      get    'tables/query'                       => 'tables#query'
-      get    'tables/:id'                         => 'tables#show'
-      delete 'tables/:id'                         => 'tables#delete'
-      post   'tables/:id/rows'                    => 'tables#create_row'
-      put    'tables/:id/rows/:row_id'            => 'tables#update_row'
-      delete 'tables/:id/rows/:row_id'            => 'tables#delete_row'
-      get    'tables/:id/schema'                  => 'tables#schema'
-      put    'tables/:id/toggle_privacy'          => 'tables#toggle_privacy'
-      put    'tables/:id/update'                  => 'tables#update'
-      put    'tables/:id/update_schema'           => 'tables#update_schema'
-      put    'tables/:id/set_geometry_columns'    => 'tables#set_geometry_columns'
-      get    'tables/:id/get_address_column'      => 'tables#get_address_column'
-      get    'tables/:id/addresses'               => 'tables#addresses'
-      put    'tables/:id/update_geometry/:row_id' => 'tables#update_geometry'
-    end
+    post  '/your_apps/jsonp/:id/destroy' => 'client_applications#remove_api_key', :as => :destroy_api_key
   end
 
   namespace :superadmin do
-    resources :users
+    match '/' => 'users#index'
+    resources :users, :except => [:index]
   end
-  match '/superadmin' => 'superadmin/users#index'
 
+  constraints :subdomain => "api" do
+    scope :oauth, :path => :oauth do
+      match '/authorize'      => 'oauth#authorize',     :as => :authorize
+      match '/request_token'  => 'oauth#request_token', :as => :request_token
+      match '/access_token'   => 'oauth#access_token',  :as => :access_token
+      match '/token'          => 'oauth#token',         :as => :token
+      match '/test_request'   => 'oauth#test_request',  :as => :test_request
+      get   '/identity'       => 'sessions#show'
+    end
+
+    namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
+      get    '/'           => 'queries#run'
+      get    '/tables'     => 'tables#index'
+      post   '/tables'     => 'tables#create'
+      get    '/tables/:id' => 'tables#show'
+      put    '/tables/:id' => 'tables#update'
+      delete '/tables/:id' => 'tables#destroy'
+      get    '/tables/:table_id/records'             => 'records#index'
+      post   '/tables/:table_id/records'             => 'records#create'
+      get    '/tables/:table_id/records/:id'         => 'records#show'
+      put    '/tables/:table_id/records/:id'         => 'records#update'
+      delete '/tables/:table_id/records/:id'         => 'records#destroy'
+      get    '/tables/:table_id/columns'             => 'columns#index'
+      post   '/tables/:table_id/columns'             => 'columns#create'
+      get    '/tables/:table_id/columns/:id'         => 'columns#show'
+      put    '/tables/:table_id/columns/:id'         => 'columns#update'
+      delete '/tables/:table_id/columns/:id'         => 'columns#delete'
+      get    '/tables/:table_id/records/:record_id/columns/:id' => 'records#show_column'
+      put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
+    end
+  end
+
+
+  # Oauth
+
+  #
+  # namespace :api do
+  #   namespace :json, :format => :json do
+  #     get    'column_types'                       => 'meta#column_types'
+  #     get    'tables'                             => 'tables#index'
+  #     post   'tables'                             => 'tables#create'
+  #     get    'tables/query'                       => 'tables#query'
+  #     get    'tables/:id'                         => 'tables#show'
+  #     delete 'tables/:id'                         => 'tables#delete'
+  #     post   'tables/:id/rows'                    => 'tables#create_row'
+  #     put    'tables/:id/rows/:row_id'            => 'tables#update_row'
+  #     delete 'tables/:id/rows/:row_id'            => 'tables#delete_row'
+  #     get    'tables/:id/schema'                  => 'tables#schema'
+  #     put    'tables/:id/toggle_privacy'          => 'tables#toggle_privacy'
+  #     put    'tables/:id/update'                  => 'tables#update'
+  #     put    'tables/:id/update_schema'           => 'tables#update_schema'
+  #     put    'tables/:id/set_geometry_columns'    => 'tables#set_geometry_columns'
+  #     get    'tables/:id/get_address_column'      => 'tables#get_address_column'
+  #     get    'tables/:id/addresses'               => 'tables#addresses'
+  #     put    'tables/:id/update_geometry/:row_id' => 'tables#update_geometry'
+  #   end
+  # end
 end

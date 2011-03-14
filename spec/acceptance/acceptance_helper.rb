@@ -10,9 +10,10 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 Capybara.default_driver    = :selenium
 Capybara.default_wait_time = 10
 
-RSpec.configuration.include Capybara, :type => :acceptance
-
 RSpec.configure do |config|
+
+  config.include Warden::Test::Helpers
+  config.include Capybara, :type => :acceptance
 
   config.before(:each) do
     Rails.cache.clear

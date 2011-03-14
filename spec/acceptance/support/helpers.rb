@@ -1,3 +1,7 @@
+class Fixnum
+  def success?; self == 200; end
+end
+
 module HelperMethods
 
   def login_as(user)
@@ -31,6 +35,11 @@ module HelperMethods
     click_link_or_button(*args)
   end
 
+  def parse_json(response, &block)
+    response_parsed = response.body.blank? ? {} : JSON.parse(response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status)
+  end
+
   def disable_confirm_dialogs
     # Disables confirm dialogs in selenium
     page.execute_script('window.confirm = function() { return true; }')
@@ -38,6 +47,13 @@ module HelperMethods
 
   def peich
     save_and_open_page
+  end
+
+  def default_schema
+    [
+      ["cartodb_id", "number"], ["name", "string"], ["latitude", "number", "latitude"], ["longitude", "number", "longitude"],
+      ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
+    ]
   end
 
 end

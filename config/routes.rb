@@ -42,11 +42,18 @@ CartoDB::Application.routes.draw do
       get    '/tables/:id' => 'tables#show'
       put    '/tables/:id' => 'tables#update'
       delete '/tables/:id' => 'tables#destroy'
-      get    '/tables/:table_id/records'     => 'records#index'
-      post   '/tables/:table_id/records'     => 'records#create'
-      get    '/tables/:table_id/records/:id' => 'records#show'
-      put    '/tables/:table_id/records/:id' => 'records#update'
-      delete '/tables/:table_id/records/:id' => 'records#destroy'
+      get    '/tables/:table_id/records'             => 'records#index'
+      post   '/tables/:table_id/records'             => 'records#create'
+      get    '/tables/:table_id/records/:id'         => 'records#show'
+      put    '/tables/:table_id/records/:id'         => 'records#update'
+      delete '/tables/:table_id/records/:id'         => 'records#destroy'
+      get    '/tables/:table_id/columns'             => 'columns#index'
+      post   '/tables/:table_id/columns'             => 'columns#create'
+      get    '/tables/:table_id/columns/:id'         => 'columns#show'
+      put    '/tables/:table_id/columns/:id'         => 'columns#update'
+      delete '/tables/:table_id/columns/:id'         => 'columns#delete'
+      get    '/tables/:table_id/records/:record_id/columns/:id' => 'records#show_column'
+      put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
     end
   end
 

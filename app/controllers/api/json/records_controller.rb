@@ -3,6 +3,7 @@
 class Api::Json::RecordsController < ApplicationController
   ssl_required :index
 
+  REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key table_id }
 
   skip_before_filter :verify_authenticity_token
   before_filter :api_authorization_required
@@ -11,6 +12,59 @@ class Api::Json::RecordsController < ApplicationController
   def index
     render :json => @table.records(params.slice(:page, :rows_per_page)).to_json,
            :callback => params[:callback]
+  end
+
+  def create
+    primary_key = @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)})
+    respond_to do |format|
+      format.json do
+        render :json => {:id => primary_key}.to_json, :status => 200, :callback => params[:callback]
+      end
+    end
+  rescue => e
+    render :json => { :errors => [e.error_message] }.to_json, :status => 400,
+           :callback => params[:callback]
+  end
+
+  def show
+    render :json => @table.record(params[:id]).to_json,
+           :callback => params[:callback]
+  rescue => e
+    render :json => { :errors => ["Record #{params[:id]} not found"] }.to_json, :status => 404,
+           :callback => params[:callback]
+  end
+
+  def update
+    unless params[:id].blank?
+      begin
+        resp = @table.update_row!(params[:id], params.reject{|k,v| REJECT_PARAMS.include?(k)})
+        if resp > 0
+          render :nothing => true, :status => 200
+        else
+          render :json => { :errors => ["row identified with #{params[:id]} not found"] }.to_json,
+                 :status => 404, :callback => params[:callback] and return
+        end
+      rescue => e
+        render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400,
+               :callback => params[:callback] and return
+      end
+    else
+      render :json => { :errors => ["id can't be blank"] }.to_json,
+             :status => 404, :callback => params[:callback] and return
+    end
+  end
+
+  def destroy
+    if params[:id]
+      current_user.in_database do |user_database|
+        user_database.run("delete from #{@table.name} where cartodb_id = #{params[:id].sanitize_sql!}")
+      end
+      render :nothing => true,
+             :callback => params[:callback], :status => 200
+    else
+      render :json => { :errors => ["row identified with #{params[:id]} not found"] }.to_json,
+             :status => 404, :callback => params[:callback] and return
+    end
   end
 
   protected

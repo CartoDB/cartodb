@@ -3,8 +3,8 @@ CartoDB::Application.routes.draw do
 
   get '/progress' => 'upload#progress', :format => :json
 
-  get '/login' => 'sessions#new', :as => :login
-  get '/logout' => 'sessions#destroy', :as => :logout
+  get   '/login' => 'sessions#new', :as => :login
+  get   '/logout' => 'sessions#destroy', :as => :logout
   match '/sessions/create' => 'sessions#create', :as => :create_session
 
   resources :users, :only => [:create]
@@ -42,7 +42,11 @@ CartoDB::Application.routes.draw do
       get    '/tables/:id' => 'tables#show'
       put    '/tables/:id' => 'tables#update'
       delete '/tables/:id' => 'tables#destroy'
-      get    '/tables/:table_id/records' => 'records#index'
+      get    '/tables/:table_id/records'     => 'records#index'
+      post   '/tables/:table_id/records'     => 'records#create'
+      get    '/tables/:table_id/records/:id' => 'records#show'
+      put    '/tables/:table_id/records/:id' => 'records#update'
+      delete '/tables/:table_id/records/:id' => 'records#destroy'
     end
   end
 

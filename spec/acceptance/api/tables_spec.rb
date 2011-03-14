@@ -458,24 +458,6 @@ feature "API 1.0 tables management" do
   #   json_response['errors'].should == ["column parameter can't be blank"]
   # end
   #
-  # scenario "Insert a new row in a table" do
-  #   user = create_user
-  #   table = create_table :user_id => user.id
-  #
-  #   authenticate_api user
-  #
-  #   post_json "/api/json/tables/#{table.id}/rows", {
-  #       :name => "Name 123",
-  #       :description => "The description"
-  #   }
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response['id'].should == 1
-  #   table.reload
-  #   table.rows_counted.should == 1
-  #   table.to_json[:total_rows].should == 1
-  # end
-  #
   # scenario "Update the value from a ceil" do
   #   user = create_user
   #   table = create_table :user_id => user.id

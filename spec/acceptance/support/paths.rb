@@ -37,6 +37,10 @@ module NavigationHelpers
     "#{api_url_prefix}/tables/#{table_identifier}/records"
   end
 
+  def api_table_record_url(table_identifier, row_identifier)
+    "#{api_url_prefix}/tables/#{table_identifier}/records/#{row_identifier}"
+  end
+
   private
 
   def api_url_prefix

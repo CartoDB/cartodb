@@ -5,8 +5,6 @@ class Api::Json::TablesController < ApplicationController
                :delete, :set_geometry_columns, :get_address_column, :addresses, :delete_row, :update_geometry
 
 
-  REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key}
-
   skip_before_filter :verify_authenticity_token
 
   before_filter :api_authorization_required
@@ -164,34 +162,6 @@ class Api::Json::TablesController < ApplicationController
   end
 
   # Insert a new row in a table
-  # * Request Method: +POST+
-  # * URI: +/api/json/tables/:id/rows+
-  # * Format: +JSON+
-  # * Parameters:
-  #     {
-  #       "column_name1" => "value1",
-  #       "column_name2" => "value2"
-  #     }
-  # * Response if _success_:
-  #   * status code: 200
-  #   * body: _nothing_
-  # * Response if _error_:
-  #   * status code +400+
-  #   * body:
-  #       { "errors" => ["error message"] }
-  def create_row
-    primary_key = @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)})
-    respond_to do |format|
-      format.json do
-        render :json => {:id => primary_key}.to_json, :status => 200, :callback => params[:callback]
-      end
-    end
-  rescue => e
-    render :json => { :errors => [e.error_message] }.to_json, :status => 400,
-           :callback => params[:callback] and return
-  end
-
-  # Insert a new row in a table
   # * Request Method: +PUT+
   # * URI: +/api/json/tables/:id/rows/:row_id+
   # * Format: +JSON+
@@ -206,31 +176,6 @@ class Api::Json::TablesController < ApplicationController
   #   * status code +400+
   #   * body:
   #       { "errors" => ["error message"] }
-  def update_row
-    respond_to do |format|
-      format.json do
-        unless params[:row_id].blank?
-          begin
-            if resp = @table.update_row!(params[:row_id], params.reject{|k,v| REJECT_PARAMS.include?(k)})
-              render :json => ''.to_json, :status => 200
-            else
-              case resp
-                when 404
-                  render :json => { :errors => ["row identified with #{params[:row_id]} not found"] }.to_json,
-                         :status => 400, :callback => params[:callback] and return
-              end
-            end
-          rescue => e
-            render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400,
-                   :callback => params[:callback] and return
-          end
-        else
-          render :json => { :errors => ["row_id can't be blank"] }.to_json,
-                 :status => 400, :callback => params[:callback] and return
-        end
-      end
-    end
-  end
 
 
   # Set the columns of the geometry of the table
@@ -304,25 +249,6 @@ class Api::Json::TablesController < ApplicationController
     render :json => response.to_json, :status => 200, :callback => params[:callback]
   end
 
-  # Drop a row from a table
-  # * Request Method: +DELETE+
-  # * URI: +/api/json/tables/:id/rows/:row_id
-  # * Format: +JSON+
-  # * Response if _success_:
-  #   * status code: 200
-  #   * body: _nothing_
-  def delete_row
-    if params[:row_id]
-      current_user.in_database do |user_database|
-        user_database.run("delete from #{@table.name} where cartodb_id = #{params[:row_id].sanitize_sql!}")
-      end
-      render :json => ''.to_json,
-             :callback => params[:callback], :status => 200
-    else
-      render :json => {:errros => ["Invalid parameters"]}.to_json,
-             :status => 404, :callback => params[:callback] and return
-    end
-  end
 
   # Update the geometry values from a row
   # * Request Method: +PUT+

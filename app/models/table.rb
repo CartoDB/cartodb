@@ -231,6 +231,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def update_row!(row_id, raw_attributes)
+    rows_updated = 0
     owner.in_database do |user_database|
       attributes = raw_attributes.dup.select{ |k,v| user_database.schema(name.to_sym).map{|c| c.first}.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
@@ -238,7 +239,7 @@ class Table < Sequel::Model(:user_tables)
       end
       unless attributes.empty?
         begin
-          user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes)
+          rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes)
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
           message = e.message.split("\n")[0]
@@ -254,7 +255,7 @@ class Table < Sequel::Model(:user_tables)
         geocode!(attributes)
       end
     end
-    return true
+    rows_updated
   end
 
   def self.schema(user, table, options = {})
@@ -400,6 +401,22 @@ class Table < Sequel::Model(:user_tables)
       :total_rows => rows_counted,
       :rows       => rows
     }
+  end
+
+  def record(identifier)
+    owner.in_database do |user_database|
+      row = user_database[name.to_sym].
+        select(*schema.map{ |e| e[0]}).
+        where(:cartodb_id => identifier).
+        first
+      raise if row.empty?
+      row.each do |k,v|
+        if v.is_a?(Date) || v.is_a?(Time)
+          row[k] = v.strftime("%Y-%m-%d %H:%M:%S")
+        end
+      end
+      row
+    end
   end
 
   def set_lat_lon_columns!(lat_column, lon_column)

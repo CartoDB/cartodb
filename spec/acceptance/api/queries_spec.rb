@@ -20,9 +20,9 @@ feature "API 1.0 queries interface" do
 
     parse_json(response) do |r|
       r.status.should be_success
-      r.body['total_rows'].should == 2
-      r.body['rows'][0].symbolize_keys[:name_of_species].should == "Barrukia cristata"
-      r.body['rows'][1].symbolize_keys[:name_of_species].should == "Eulagisca gigantea"
+      r.body[:total_rows].should == 2
+      r.body[:rows][0].symbolize_keys[:name_of_species].should == "Barrukia cristata"
+      r.body[:rows][1].symbolize_keys[:name_of_species].should == "Eulagisca gigantea"
     end
   end
 

@@ -313,9 +313,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def modify_column!(options)
-    new_name = options[:name]
-    new_type = options[:type].try(:convert_to_db_type)
-    cartodb_type = options[:type].try(:convert_to_cartodb_type)
+    new_name = options[:name] || options[:old_name]
+    new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema.select{ |c| c[0] == new_name.to_sym }.first.last
+    cartodb_type = new_type.try(:convert_to_cartodb_type)
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
         raise if CARTODB_COLUMNS.include?(options[:old_name].to_s)
@@ -364,6 +364,8 @@ class Table < Sequel::Model(:user_tables)
                 user_database.rename_column name.to_sym, random_name, column_name.to_sym
               end
             end
+          else
+            raise e
           end
         end
       end

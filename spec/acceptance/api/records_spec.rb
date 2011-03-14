@@ -109,7 +109,31 @@ feature "API 1.0 records management" do
 
     delete_json api_table_record_url(@table.name,1)
     parse_json(response) do |r|
-      r.status.should == 200
+      r.status.should be_success
+    end
+  end
+
+  scenario "Get the value from a column in a given record" do
+    @user.in_database do |user_database|
+      user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('Blat',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    end
+
+    get_json api_table_record_column_url(@table.name,1,:name)
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:name].should == "Blat"
+    end
+  end
+
+  scenario "Update the from a column in a given record" do
+    @user.in_database do |user_database|
+      user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('Blat',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
+    end
+
+    put_json api_table_record_column_url(@table.name,1,:name), {:value => "Fernando Blat"}
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:name].should == "Fernando Blat"
     end
   end
 

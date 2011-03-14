@@ -41,6 +41,18 @@ module NavigationHelpers
     "#{api_url_prefix}/tables/#{table_identifier}/records/#{row_identifier}"
   end
 
+  def api_table_columns_url(table_identifier)
+    "#{api_url_prefix}/tables/#{table_identifier}/columns"
+  end
+
+  def api_table_column_url(table_identifier, column_name)
+    "#{api_url_prefix}/tables/#{table_identifier}/columns/#{column_name}"
+  end
+
+  def api_table_record_column_url(table_identifier, row_identifier, column_name)
+    "#{api_url_prefix}/tables/#{table_identifier}/records/#{row_identifier}/columns/#{column_name}"
+  end
+
   private
 
   def api_url_prefix

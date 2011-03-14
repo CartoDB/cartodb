@@ -30,7 +30,7 @@ feature "API 1.0 tables management" do
         "id" => table1.id,
         "name" => "my_table_1",
         "privacy" => "PUBLIC",
-        "tags" => "tag 3,tag 2,tag 1",
+        "tags" => "tag 1,tag 2,tag 3",
         "schema" => default_schema
       })
       r.body.map{ |t| t['name'] }.should_not include("another_table_3")
@@ -94,7 +94,7 @@ feature "API 1.0 tables management" do
         :id => table1.id,
         :name => "my_table_1",
         :privacy => "PUBLIC",
-        :tags => "tag 3,tag 2,tag 1",
+        :tags => "tag 1,tag 2,tag 3",
         :schema => default_schema
       }
     end
@@ -110,7 +110,7 @@ feature "API 1.0 tables management" do
         :id => table1.id,
         :name => "my_table_2",
         :privacy => "PRIVATE",
-        :tags => "disco,bars",
+        :tags => "bars,disco",
         :schema => default_schema
       }
     end
@@ -150,381 +150,181 @@ feature "API 1.0 tables management" do
     end
   end
 
-
+  # ------
   # TODO
-   #
-   # scenario "Create a new table from importing file twitters.csv" do
-   #   user = create_user
-   #
-   #   authenticate_api user
-   #
-   #   post_json "/api/json/tables", {
-   #                   :name => "Twitts",
-   #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-   #              }
-   #   response.status.should == 200
-   #   response.location.should =~ /tables\/(\d+)$/
-   #   json_response = JSON(response.body)
-   #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
-   #
-   #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
-   #   response.status.should == 200
-   #   json_response = JSON(response.body)
-   #   json_response['total_rows'].should == 7
-   #   row0 = json_response['rows'][0].symbolize_keys
-   #   row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
-   #   row0[:login].should == "vzlaturistica "
-   #   row0[:country].should == " Venezuela "
-   #   row0[:followers_count].should == 211
-   # end
-   #
-   # scenario "Create a new table from importing file import_csv_1.csv" do
-   #   user = create_user
-   #
-   #   authenticate_api user
-   #
-   #   post_json "/api/json/tables", {
-   #                   :name => "Twitts",
-   #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-   #              }
-   #   response.status.should == 200
-   #   response.location.should =~ /tables\/(\d+)$/
-   #   json_response = JSON(response.body)
-   #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
-   #
-   #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
-   #   response.status.should == 200
-   #   json_response = JSON(response.body)
-   #   json_response['total_rows'].should == 100
-   #   row = json_response['rows'][6].symbolize_keys
-   #   row[:id].should == 6
-   #   row[:name_of_species].should == "Laetmonice producta 6"
-   #   row[:kingdom].should == "Animalia"
-   #   row[:family].should == "Aphroditidae"
-   #   row[:lat].should == 0.2
-   #   row[:lon].should == 2.8
-   #   row[:views].should == 540
-   # end
-   #
-   # scenario "Create a new table from importing file import_csv_1.csv" do
-   #   user = create_user
-   #
-   #   authenticate_api user
-   #
-   #   post_json "/api/json/tables", {
-   #                   :name => "Twitts",
-   #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-   #              }
-   #   response.status.should == 200
-   #   response.location.should =~ /tables\/(\d+)$/
-   #   json_response = JSON(response.body)
-   #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
-   #
-   #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
-   #   response.status.should == 200
-   #   json_response = JSON(response.body)
-   #   json_response['total_rows'].should == 100
-   #   row = json_response['rows'][6].symbolize_keys
-   #   row[:id].should == 6
-   #   row[:name_of_species].should == "Laetmonice producta 6"
-   #   row[:kingdom].should == "Animalia"
-   #   row[:family].should == "Aphroditidae"
-   #   row[:lat].should == 0.2
-   #   row[:lon].should == 2.8
-   #   row[:views].should == 540
-   # end
-   #
-   # scenario "Create a new table from importing file import_csv_2.csv" do
-   #   user = create_user
-   #
-   #   authenticate_api user
-   #
-   #   post_json "/api/json/tables", {
-   #                   :name => "Twitts",
-   #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
-   #              }
-   #   response.status.should == 200
-   #   response.location.should =~ /tables\/(\d+)$/
-   #   json_response = JSON(response.body)
-   #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
-   #
-   #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
-   #   response.status.should == 200
-   #   json_response = JSON(response.body)
-   #   json_response['total_rows'].should == 100
-   #   row = json_response['rows'][6].symbolize_keys
-   #   row[:id].should == 6
-   #   row[:name_of_specie].should == "Laetmonice producta 6"
-   #   row[:kingdom].should == "Animalia"
-   #   row[:family].should == "Aphroditidae"
-   #   row[:lat].should == 0.2
-   #   row[:lon].should == 2.8
-   #   row[:views].should == 540
-   # end
-   #
-   # scenario "Create a new table from importing file import_csv_3.csv" do
-   #   user = create_user
-   #
-   #   authenticate_api user
-   #
-   #   post_json "/api/json/tables", {
-   #                   :name => "Twitts",
-   #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_3.csv", "text/csv")
-   #              }
-   #   response.status.should == 200
-   #   response.location.should =~ /tables\/(\d+)$/
-   #   json_response = JSON(response.body)
-   #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
-   #
-   #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
-   #   response.status.should == 200
-   #   json_response = JSON(response.body)
-   #   json_response['total_rows'].should == 100
-   #   row = json_response['rows'][6].symbolize_keys
-   #   row[:id].should == 6
-   #   row[:name_of_specie].should == "Laetmonice producta 6"
-   #   row[:kingdom].should == "Animalia"
-   #   row[:family].should == "Aphroditidae"
-   #   row[:lat].should == 0.2
-   #   row[:lon].should == 2.8
-   #   row[:views].should == 540
-   # end
-   #
-   # scenario "Create a new table from importing file import_csv_4.csv" do
-   #   user = create_user
-   #
-   #   authenticate_api user
-   #
-   #   post_json "/api/json/tables", {
-   #                   :name => "Twitts",
-   #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_4.csv", "text/csv")
-   #              }
-   #   response.status.should == 200
-   #   response.location.should =~ /tables\/(\d+)$/
-   #   json_response = JSON(response.body)
-   #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
-   #
-   #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
-   #   response.status.should == 200
-   #   json_response = JSON(response.body)
-   #   json_response['total_rows'].should == 100
-   #   row = json_response['rows'][6].symbolize_keys
-   #   row[:id].should == 6
-   #   row[:name_of_specie].should == "Laetmonice producta 6"
-   #   row[:kingdom].should == "Animalia"
-   #   row[:family].should == "Aphroditidae"
-   #   row[:lat].should == 0.2
-   #   row[:lon].should == 2.8
-   #   row[:views].should == 540
-   # end
-
-
-
-
-
-
-
-
-
-
-
   #
-
-  #
-  # scenario "Update the name of a table" do
-  #   user = create_user
-  #   old_table = create_table :user_id => user.id, :privacy => Table::PRIVATE, :name => 'Old table'
-  #   table = create_table :user_id => user.id, :privacy => Table::PRIVATE
-  #
-  #   authenticate_api user
-  #
-  #   put_json "/api/json/tables/#{table.id}/update", {:name => "My brand new name"}
-  #   response.status.should == 200
-  #   table.reload
-  #   table.name.should == "my_brand_new_name"
-  #   json_response = JSON(response.body)
-  #   json_response['name'].should == 'my_brand_new_name'
-  #
-  #   put_json "/api/json/tables/#{table.id}/update", {:name => ""}
-  #   response.status.should == 200
-  #   table.reload
-  #   table.name.should == "untitle_table"
-  #   json_response = JSON(response.body)
-  #   json_response['name'].should == 'untitle_table'
-  #
-  #   put_json "/api/json/tables/#{old_table.id}/update", {:name => "Untitle table"}
-  #   response.status.should == 400
-  #   json_response = JSON(response.body)
-  #   json_response['errors'].should == ["A table with name \"untitle_table\" already exists"]
-  #   old_table.reload
-  #   old_table.name.should == "old_table"
-  # end
-  #
-
-  #
-  # scenario "Get the schema of a table" do
-  #   user = create_user
-  #   table = create_table :user_id => user.id
-  #
-  #   authenticate_api user
-  #
-  #   get_json "/api/json/tables/#{table.id}/schema"
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response.should == [
-  #     ["cartodb_id", "number"], ["name", "string"], ["latitude", "number", "latitude"],
-  #     ["longitude", "number", "longitude"], ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
-  #   ]
-  # end
-  #
-  #
-  # scenario "Modify the schema of a table" do
-  #   user = create_user
-  #   table = create_table :user_id => user.id
-  #
-  #   authenticate_api user
-  #
-  #   put_json "/api/json/tables/#{table.id}/update_schema", {
-  #                                                             :what => "add", :column => {
-  #                                                                 :type => "Number", :name => "postal code"
-  #                                                             }
-  #                                                           }
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response.should == {"name" => "postal_code", "type" => "integer", "cartodb_type" => "number"}
-  #   table.reload
-  #
-  #   put_json "/api/json/tables/#{table.id}/update_schema", {
-  #                                                             :what => "modify", :column => {
-  #                                                                 :type => "string", :name => "postal_code"
-  #                                                             }
-  #                                                          }
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response.should == {"name" => "postal_code", "type" => "varchar", "cartodb_type" => "string"}
-  #
-  #
-  #   put_json "/api/json/tables/#{table.id}/update_schema", {
-  #                                                             :what => "modify", :column => {
-  #                                                                 :type => "number", :name => "postal_code"
-  #                                                             }
-  #                                                          }
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response.should == {"name" => "postal_code", "type" => "integer", "cartodb_type" => "number"}
-  #
-  #   put_json "/api/json/tables/#{table.id}/update_schema", {
-  #                                                             :what => "add", :column => {
-  #                                                                 :type => "integerrrr", :name => "no matter what"
-  #                                                             }
-  #                                                          }
-  #   response.status.should == 400
-  #   json_response = JSON(response.body)
-  #   json_response['errors'].should == ["PGError: ERROR:  type \"integerrrr\" does not exist"]
-  #
-  #   put_json "/api/json/tables/#{table.id}/update_schema", {
-  #                                                             :what => "drop", :column => {
-  #                                                               :name => "postal_code"
-  #                                                             }
-  #                                                          }
-  #   response.status.should == 200
-  #
-  #   put_json "/api/json/tables/#{table.id}/update_schema", {
-  #                                                             :what => "drop", :column => {
-  #                                                               :name => "postal_code"
-  #                                                             }
-  #                                                          }
-  #   response.status.should == 400
-  #   table.reload
-  #   json_response = JSON(response.body)
-  #   json_response['errors'].should == ["PGError: ERROR:  column \"postal_code\" of relation \"#{table.name}\" does not exist"]
-  #
-  #   put_json "/api/json/tables/#{table.id}/update_schema", {
-  #                                                             :what => "wadus", :column => {
-  #                                                               :name => "postal_code"
-  #                                                             }
-  #                                                          }
-  #   response.status.should == 400
-  #   table.reload
-  #   json_response = JSON(response.body)
-  #   json_response['errors'].should == ["what parameter has an invalid value"]
-  #
-  #   put_json "/api/json/tables/#{table.id}/update_schema", {
-  #                                                             :what => "add", :column => {}
-  #                                                          }
-  #   response.status.should == 400
-  #   table.reload
-  #   json_response = JSON(response.body)
-  #   json_response['errors'].should == ["column parameter can't be blank"]
-  # end
-  #
-  # scenario "Update the value from a ceil" do
-  #   user = create_user
-  #   table = create_table :user_id => user.id
-  #
-  #   authenticate_api user
-  #
-  #   table.insert_row!({:name => String.random(12)})
-  #
-  #   row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
-  #   row[:description].should be_blank
-  #
-  #   put_json "/api/json/tables/#{table.id}/rows/#{row[:cartodb_id]}", {:description => "Description 123", :column_id => "description"}
-  #   response.status.should == 200
-  #   table.reload
-  #   row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
-  #   row[:description].should == "Description 123"
-  # end
-  #
-  # scenario "Update the value from a ceil with an invalid value" do
-  #   user = create_user
-  #   table = new_table
-  #   table.force_schema = "age integer"
-  #   table.user_id = user.id
-  #   table.save
-  #
-  #   authenticate_api user
-  #
-  #   table.insert_row!({:age => rand(100)})
-  #
-  #   put_json "/api/json/tables/#{table.id}/rows/1", {:age => "abc10"}
-  #   response.status.should == 400
-  #   json_response = JSON(response.body)
-  #   json_response['errors'].should == ["PGError: ERROR:  invalid input syntax for integer: \"abc10\""]
-  # end
-  #
-  # scenario "Drop a table" do
-  #   user = create_user
-  #   table = create_table :user_id => user.id
-  #   other = create_user
-  #   table_other = create_table :user_id => other.id
-  #
-  #   authenticate_api user
-  #
-  #   delete_json "/api/json/tables/#{table.id}"
-  #   response.status.should == 200
-  #   Table[table.id].should be_nil
-  #   response.location.should =~ /^\/dashboard$/
-  #
-  #   delete_json "/api/json/tables/#{table_other.id}"
-  #   response.status.should == 404
-  #
-  #   Table[table_other.id].should_not be_nil
-  # end
-  #
-  #
-
-  #
-  # scenario "Get the available types for columns" do
+  # scenario "Create a new table from importing file twitters.csv" do
   #   user = create_user
   #
   #   authenticate_api user
   #
-  #   get_json "/api/json/column_types"
+  #   post_json "/api/json/tables", {
+  #                   :name => "Twitts",
+  #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+  #              }
+  #   response.status.should == 200
+  #   response.location.should =~ /tables\/(\d+)$/
+  #   json_response = JSON(response.body)
+  #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+  #
+  #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
   #   response.status.should == 200
   #   json_response = JSON(response.body)
-  #   json_response.should == %W{ Number String Date Boolean }
+  #   json_response['total_rows'].should == 7
+  #   row0 = json_response['rows'][0].symbolize_keys
+  #   row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+  #   row0[:login].should == "vzlaturistica "
+  #   row0[:country].should == " Venezuela "
+  #   row0[:followers_count].should == 211
   # end
+  #
+  # scenario "Create a new table from importing file import_csv_1.csv" do
+  #   user = create_user
+  #
+  #   authenticate_api user
+  #
+  #   post_json "/api/json/tables", {
+  #                   :name => "Twitts",
+  #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+  #              }
+  #   response.status.should == 200
+  #   response.location.should =~ /tables\/(\d+)$/
+  #   json_response = JSON(response.body)
+  #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+  #
+  #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+  #   response.status.should == 200
+  #   json_response = JSON(response.body)
+  #   json_response['total_rows'].should == 100
+  #   row = json_response['rows'][6].symbolize_keys
+  #   row[:id].should == 6
+  #   row[:name_of_species].should == "Laetmonice producta 6"
+  #   row[:kingdom].should == "Animalia"
+  #   row[:family].should == "Aphroditidae"
+  #   row[:lat].should == 0.2
+  #   row[:lon].should == 2.8
+  #   row[:views].should == 540
+  # end
+  #
+  # scenario "Create a new table from importing file import_csv_1.csv" do
+  #   user = create_user
+  #
+  #   authenticate_api user
+  #
+  #   post_json "/api/json/tables", {
+  #                   :name => "Twitts",
+  #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+  #              }
+  #   response.status.should == 200
+  #   response.location.should =~ /tables\/(\d+)$/
+  #   json_response = JSON(response.body)
+  #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+  #
+  #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+  #   response.status.should == 200
+  #   json_response = JSON(response.body)
+  #   json_response['total_rows'].should == 100
+  #   row = json_response['rows'][6].symbolize_keys
+  #   row[:id].should == 6
+  #   row[:name_of_species].should == "Laetmonice producta 6"
+  #   row[:kingdom].should == "Animalia"
+  #   row[:family].should == "Aphroditidae"
+  #   row[:lat].should == 0.2
+  #   row[:lon].should == 2.8
+  #   row[:views].should == 540
+  # end
+  #
+  # scenario "Create a new table from importing file import_csv_2.csv" do
+  #   user = create_user
+  #
+  #   authenticate_api user
+  #
+  #   post_json "/api/json/tables", {
+  #                   :name => "Twitts",
+  #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
+  #              }
+  #   response.status.should == 200
+  #   response.location.should =~ /tables\/(\d+)$/
+  #   json_response = JSON(response.body)
+  #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+  #
+  #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+  #   response.status.should == 200
+  #   json_response = JSON(response.body)
+  #   json_response['total_rows'].should == 100
+  #   row = json_response['rows'][6].symbolize_keys
+  #   row[:id].should == 6
+  #   row[:name_of_specie].should == "Laetmonice producta 6"
+  #   row[:kingdom].should == "Animalia"
+  #   row[:family].should == "Aphroditidae"
+  #   row[:lat].should == 0.2
+  #   row[:lon].should == 2.8
+  #   row[:views].should == 540
+  # end
+  #
+  # scenario "Create a new table from importing file import_csv_3.csv" do
+  #   user = create_user
+  #
+  #   authenticate_api user
+  #
+  #   post_json "/api/json/tables", {
+  #                   :name => "Twitts",
+  #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_3.csv", "text/csv")
+  #              }
+  #   response.status.should == 200
+  #   response.location.should =~ /tables\/(\d+)$/
+  #   json_response = JSON(response.body)
+  #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+  #
+  #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+  #   response.status.should == 200
+  #   json_response = JSON(response.body)
+  #   json_response['total_rows'].should == 100
+  #   row = json_response['rows'][6].symbolize_keys
+  #   row[:id].should == 6
+  #   row[:name_of_specie].should == "Laetmonice producta 6"
+  #   row[:kingdom].should == "Animalia"
+  #   row[:family].should == "Aphroditidae"
+  #   row[:lat].should == 0.2
+  #   row[:lon].should == 2.8
+  #   row[:views].should == 540
+  # end
+  #
+  # scenario "Create a new table from importing file import_csv_4.csv" do
+  #   user = create_user
+  #
+  #   authenticate_api user
+  #
+  #   post_json "/api/json/tables", {
+  #                   :name => "Twitts",
+  #                   :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_4.csv", "text/csv")
+  #              }
+  #   response.status.should == 200
+  #   response.location.should =~ /tables\/(\d+)$/
+  #   json_response = JSON(response.body)
+  #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
+  #
+  #   get_json "/api/json/tables/#{json_response['id']}?rows_per_page=10"
+  #   response.status.should == 200
+  #   json_response = JSON(response.body)
+  #   json_response['total_rows'].should == 100
+  #   row = json_response['rows'][6].symbolize_keys
+  #   row[:id].should == 6
+  #   row[:name_of_specie].should == "Laetmonice producta 6"
+  #   row[:kingdom].should == "Animalia"
+  #   row[:family].should == "Aphroditidae"
+  #   row[:lat].should == 0.2
+  #   row[:lon].should == 2.8
+  #   row[:views].should == 540
+  # end
+  # ------------------------------------
+
+
+
+
+
+
+
   #
   # scenario "Set the geometry from a table to latitude and longitude" do
   #   user = create_user

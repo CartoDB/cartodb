@@ -276,7 +276,7 @@ class Api::Json::TablesController < ApplicationController
 
   def load_table
     @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
-                            array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+                            array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
                           from user_tables
                           where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
     raise RecordNotFound if @table.nil?

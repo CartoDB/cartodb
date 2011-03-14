@@ -69,16 +69,12 @@ describe Table do
     ]
   end
 
-  it "has a to_json method that allows to fetch rows with pagination" do
+  it "has a records method that allows to fetch rows with pagination" do
     user = create_user
     table = create_table :user_id => user.id
 
-    table.to_json[:total_rows].should == 0
-    table.to_json[:columns].should == [
-      [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"],
-      [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
-    table.to_json[:rows].should be_empty
+    table.records[:total_rows].should == 0
+    table.records[:rows].should be_empty
 
     user.in_database do |user_database|
       10.times do
@@ -87,18 +83,18 @@ describe Table do
       end
     end
 
-    table.to_json[:total_rows].should == 10
-    table.to_json[:rows].size.should == 10
+    table.records[:total_rows].should == 10
+    table.records[:rows].size.should == 10
 
     content = user.run_query("select * from \"#{table.name}\"")[:rows]
 
-    table.to_json(:rows_per_page => 1)[:rows].size.should == 1
-    table.to_json(:rows_per_page => 1)[:rows].first.slice(:name, :latitude, :longitude, :description).
+    table.records(:rows_per_page => 1)[:rows].size.should == 1
+    table.records(:rows_per_page => 1)[:rows].first.slice(:name, :latitude, :longitude, :description).
       should == content[0].slice(:name, :latitude, :longitude, :description)
-    table.to_json(:rows_per_page => 1)[:rows].first.should == table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
-    table.to_json(:rows_per_page => 1, :page => 1)[:rows].first.slice(:name, :latitude, :longitude, :description).
+    table.records(:rows_per_page => 1)[:rows].first.should == table.records(:rows_per_page => 1, :page => 0)[:rows].first
+    table.records(:rows_per_page => 1, :page => 1)[:rows].first.slice(:name, :latitude, :longitude, :description).
       should == content[1].slice(:name, :latitude, :longitude, :description)
-    table.to_json(:rows_per_page => 1, :page => 2)[:rows].first.slice(:name, :latitude, :longitude, :description).
+    table.records(:rows_per_page => 1, :page => 2)[:rows].first.slice(:name, :latitude, :longitude, :description).
       should == content[2].slice(:name, :latitude, :longitude, :description)
   end
 
@@ -197,7 +193,7 @@ describe Table do
     table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column_new_name, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     resp = table.modify_column!(:old_name => "my_new_column_new_name", :new_name => "my new column")
-    resp.should == {:name => 'my_new_column', :type => nil, :cartodb_type => nil}
+    resp.should == {:name => 'my_new_column', :type => "text", :cartodb_type => "string"}
     table.reload
     table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
@@ -254,7 +250,7 @@ describe Table do
     table.reload
     table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column_new_name, "integer"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
-    rows = table.to_json
+    rows = table.records
     rows[:rows][0][:my_new_column_new_name].should == 1
   end
 
@@ -264,7 +260,7 @@ describe Table do
     primary_key = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
     table.reload
     table.rows_counted.should == 1
-    primary_key.should == table.to_json(:rows_per_page => 1)[:rows].first[:cartodb_id]
+    primary_key.should == table.records(:rows_per_page => 1)[:rows].first[:cartodb_id]
 
     lambda {
       table.insert_row!({})
@@ -283,7 +279,7 @@ describe Table do
     table.save
 
     table.insert_row!({:name => String.random(10), :description => "", :time => "2010-10-13 10:46:32"})
-    row = table.to_json(:rows_per_page => 1, :page => 0)[:rows].first
+    row = table.records(:rows_per_page => 1, :page => 0)[:rows].first
     row[:description].should be_blank
     row[:time].should == "2010-10-13 10:46:32"
 
@@ -337,7 +333,7 @@ describe Table do
     table.save
 
     table.rows_counted.should == 7
-    row0 = table.to_json[:rows][0]
+    row0 = table.records[:rows][0]
     row0[:cartodb_id].should == 1
     row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
     row0[:login].should == "vzlaturistica "
@@ -390,7 +386,7 @@ describe Table do
 
     table.rows_counted.should == 7
     table.schema.should == [[:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
-    row = table.to_json[:rows][0]
+    row = table.records[:rows][0]
     row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
     row[:login].should == "vzlaturistica "
     row[:country].should == " Venezuela "
@@ -404,7 +400,7 @@ describe Table do
     table.save
 
     table.rows_counted.should == 100
-    row = table.to_json[:rows][6]
+    row = table.records[:rows][6]
     row[:cartodb_id] == 6
     row[:id].should == 6
     row[:name_of_species].should == "Laetmonice producta 6"
@@ -422,7 +418,7 @@ describe Table do
     table.save
 
     table.rows_counted.should == 100
-    row = table.to_json[:rows][6]
+    row = table.records[:rows][6]
     row[:id].should == 6
     row[:name_of_specie].should == "Laetmonice producta 6"
     row[:kingdom].should == "Animalia"
@@ -439,7 +435,7 @@ describe Table do
     table.save
 
     table.rows_counted.should == 100
-    row = table.to_json[:rows][6]
+    row = table.records[:rows][6]
     row[:id].should == 6
     row[:name_of_specie].should == "Laetmonice producta 6"
     row[:kingdom].should == "Animalia"
@@ -456,7 +452,7 @@ describe Table do
     table.save
 
     table.rows_counted.should == 100
-    row = table.to_json[:rows][6]
+    row = table.records[:rows][6]
     row[:id].should == 6
     row[:name_of_specie].should == "Laetmonice producta 6"
     row[:kingdom].should == "Animalia"
@@ -481,7 +477,7 @@ describe Table do
         [:ordenparada, "integer"], [:idsiguienteparada, "integer"], [:created_at, "timestamp"],
         [:updated_at, "timestamp"]
     ]
-    row = table.to_json[:rows][0]
+    row = table.records[:rows][0]
     row[:cartodb_id].should == 1
     row[:idautobus].should == 330
     row[:horaactualizacion].should == "14:23:10"
@@ -501,7 +497,7 @@ describe Table do
     table.schema.should == [[:cartodb_id, "integer"], [:id, "integer"], [:name, "character varying"], [:lat, "double precision"],
         [:lon, "double precision"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
-    row = table.to_json[:rows][0]
+    row = table.records[:rows][0]
     row[:cartodb_id].should == 1
     row[:name].should == "Hawai"
 
@@ -748,7 +744,7 @@ describe Table do
 
     table.update_geometry!(1, { :lat => new_latitude, :lon => new_longitude, :address => "Hortaleza 48, Madrid" })
     table.reload
-    row = table.to_json[:rows][0]
+    row = table.records[:rows][0]
     row[:address].should == "Hortaleza 48, Madrid"
 
     query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")

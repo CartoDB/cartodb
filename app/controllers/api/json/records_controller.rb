@@ -67,6 +67,17 @@ class Api::Json::RecordsController < ApplicationController
     end
   end
 
+  def show_column
+    render :json => current_user.run_query("select #{params[:id].sanitize_sql!} from #{@table.name} where cartodb_id = #{params[:record_id].sanitize_sql!}")[:rows].first.to_json,
+           :status => 200
+  end
+
+  def update_column
+    @table.update_row!(params[:record_id], {params[:id].to_sym => params[:value]})
+    render :json => {params[:id] => params[:value]}.to_json,
+           :status => 200
+  end
+
   protected
 
   def load_table

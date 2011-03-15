@@ -1,0 +1,35 @@
+<ul class="breadcrumb">
+  <li class="first"><a href="/">CartoDB API</a></li>
+  <li>Columns</li>
+  <li class="selected"><a href="/columns/get">Get the schema from a table</a></li>
+</ul>
+
+<h1>Get the schema from a table</h1>
+<p>Returns the schema from a table</p>
+
+<h2>URL</h2>
+<code>/v1/table/&lt;identifier&gt;/columns</code>
+
+<h2>METHOD</h2>
+<code>GET</code>
+
+<h2>PARAMETERS</h2>
+<p>Required</p>
+<ul>
+  <li><code>identifier</code>: the name of the table</li>
+</ul>
+
+<h2>EXAMPLE</h2>
+<pre><code>
+  GET
+    /v1/tables/species_occurrences/columns
+</code></pre>
+<p class="tab">JSON</p>
+<pre class="syntax json">
+  [
+    ["cartodb_id","number"],["name","string"],
+    ["latitude","number","latitude"],["longitude","number","longitude"],
+    ["description","string"],["created_at","date"],
+    ["updated_at","date"]
+  ]
+</pre>

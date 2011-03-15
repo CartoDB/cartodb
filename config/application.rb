@@ -8,6 +8,8 @@ require "action_mailer/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env) if defined?(Bundler)
 
+require 'cartodb/api_documentation_server'
+
 module CartoDB
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
@@ -41,7 +43,9 @@ module CartoDB
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
 
-    ::Sequel.extension(:pagination)
+    ::Sequel.extension(:pagination)  
+    
+    config.middleware.use CartoDB::ApiDocumentationServer  
   end
 end
 
@@ -50,5 +54,3 @@ require 'csv'
 require 'sql_parser'
 require 'cartodb/errors'
 require 'cartodb/query_parser'
-
-class RecordNotFound < StandardError; end

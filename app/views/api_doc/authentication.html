@@ -1,0 +1,23 @@
+<ul class="breadcrumb">
+  <li class="first"><a href="/">CartoDB API</a></li>
+  <li class="selected"><a href="/authentication">Authentication</a></li>
+</ul>
+<h1>Authentication</h1>
+<p>CartoDB implements two different authentication methods:</p>
+<ul>
+  <li><a href="http://oauth.net/">OAuth 1.0</a></li>
+  <li>API key limited to a domain</li>
+</ul>
+<p>The reason to implement the second method is to allow JSONP requests in a easy way.</p>
+
+<h2>OAuth</h2>
+<p>This is the authentication method we recommend. To start using it you need to <a href="/your_apps/oauth">get a token and a secret</a>. Negotiation URLs are the following:</p>
+<ul>
+  <li><code>http://api.cartodb.com/oauth/request_token</code></li>
+  <li><code>http://api.cartodb.com/oauth/authorize</code></li>
+  <li><code>http://api.cartodb.com/oauth/access_token</code></li>
+</ul>
+<p>For the moment, access tokens don't expire, but we may change this politic in the next weeks.</p>
+
+<h2>API key</h2>
+<p>API key method consists in signing every request with a parameter named <code>api_key</code> which is associated whith the referrer domain of the request. If you share this <code>api_key</code> anybody can make requests as if were you, so be careful with your code.</p>

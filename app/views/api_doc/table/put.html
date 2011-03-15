@@ -1,0 +1,41 @@
+<ul class="breadcrumb">
+  <li class="first"><a href="/">CartoDB API</a></li>
+  <li>Tables</li>
+  <li class="selected"><a href="/table/put">Update a table meta information</a></li>
+</ul>
+<h1>Update a table meta information</h1>
+<p>Updates the meta information from a table</p>
+
+<h2>URL</h2>
+<code>/v1/table/&lt;identifier&gt;</code>
+
+<h2>METHOD</h2>
+<code>PUT</code>
+
+<h2>PARAMETERS</h2>
+<p>Required</p>
+<ul>
+  <li><code>identifier</code>: the name of the table</li>
+  <li>the new values for the attributes</li>
+</ul>
+
+<h2>EXAMPLE</h2>
+<pre><code>
+  PUT
+    /v1/tables/species_occurrences
+      {
+        "name": "species_occurrences_preprocessed",
+        "tags": "species,biodiversity,preprocessed_data",
+        "privacy": "PRIVATE"
+      }
+</code></pre>
+<p class="tab">JSON</p>
+<pre class="syntax json">
+  {
+    "id": "1",
+    "name": "species_occurrences_preprocessed",
+    "tags": "species,biodiversity,preprocessed_data",
+    "privacy": "PRIVATE",
+    "schema": [["cartodb_id","number"],["name","string"],["description","string"],["latitude","number"],["longitude","number"],["created_at","date"], ["updated_at","date"]]
+  }
+</pre>

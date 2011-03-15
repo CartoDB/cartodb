@@ -1,0 +1,37 @@
+<ul class="breadcrumb">
+  <li class="first"><a href="/">CartoDB API</a></li>
+  <li>Rows</li>
+  <li class="selected"><a href="/records/post">Create a new row</a></li>
+</ul>
+<h1>Create a new row</h1>
+<p>Creates a new row in the table. Returns the primary key of that row.</p>
+
+<h2>URL</h2>
+<code>/v1/table/&lt;identifier&gt;/records</code>
+
+<h2>METHOD</h2>
+<code>GET</code>
+
+<h2>PARAMETERS</h2>
+<p>Required</p>
+<ul>
+  <li><code>identifier</code>: the name of the table</li>
+  <li>The list of colums names and their values</li>
+</ul>
+
+<h2>EXAMPLE</h2>
+<pre><code>
+  POST
+    /v1/tables/species_occurrences/records
+      {
+        "name": "Laetmonice producta",
+        "description", "",
+        ...
+      }
+</code></pre>
+<p class="tab">JSON</p>
+<pre class="syntax json">
+  {
+    "id": 33    
+  }
+</pre>

@@ -1,0 +1,28 @@
+<ul class="breadcrumb">
+  <li class="first selected"><a href="/">CartoDB API</a></li>
+</ul>
+<h1>CartoDB API</h1>
+
+<p>CartoDB offers a REST API that allows you to interact with your tables, fetch rows and perform common database operations + GIS operations in a easy way.</p>
+
+<h2>Overwiew</h2>
+
+<p>As a CartoDB user, you can create tables to store your data. Every table, which can be public or private, is composed by a set of rows and a set of columns and is identified by a name, which is unique in your database.</p>
+
+<p>Every column has a name, which identifies it and a type. The available types are:</p>
+
+<ul>
+  <li>String</li>
+  <li>Number</li>
+  <li>Date</li>
+  <li>Boolean</li>
+</ul>
+
+<p>Every row is identified by our primary key, which is a column named <code>cartodb_id</code>.</p>
+
+<p>You need to be authenticated when performing API requests. Refer to the <a href="/authentication">Authentication section</a> to get more information.</p>
+
+<h2>Endpoint</h2>
+
+<p>The endpoint is <code>http://api.cartodb.com/</code>. You should perform all the request to this host.</p>
+

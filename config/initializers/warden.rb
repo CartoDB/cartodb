@@ -1,4 +1,4 @@
-Rails.configuration.middleware.use RailsWarden::Manager do |manager|
+Rails.configuration.middleware.insert_before CartoDB::ApiDocumentationServer, RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
   manager.failure_app = SessionsController
 end

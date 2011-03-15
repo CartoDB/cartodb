@@ -1,3 +1,5 @@
+class RecordNotFound < StandardError; end
+
 class CartoDB::ErrorRunningQuery < StandardError
   attr_accessor :db_message # the error message from the database
   attr_accessor :syntax_message # the query and a marker where the error is

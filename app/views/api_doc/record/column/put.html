@@ -1,0 +1,36 @@
+<ul class="breadcrumb">
+  <li class="first"><a href="/">CartoDB API</a></li>
+  <li>Records</li>
+  <li class="selected"><a href="/record/column/put">Update the value from a row and a column</a></li>
+</ul>
+
+<h1>Update the value from a row and a column</h1>
+<p>Updates the value of a ceil</p>
+
+<h2>URL</h2>
+<code>/v1/table/&lt;identifier&gt;/records/&lt;primary_key&gt;/columns/&gt;column_name&lt;</code>
+
+<h2>METHOD</h2>
+<code>PUT</code>
+
+<h2>PARAMETERS</h2>
+<p>Required</p>
+<ul>
+  <li><code>identifier</code>: the name of the table</li>
+  <li><code>primary_key</code>: the primary key of the row</li>
+  <li><code>column_name</code>: the name of the column</li>
+  <li>the new value of the ceil</li>
+</ul>
+
+<h2>EXAMPLE</h2>
+<pre><code>
+  PUT
+    /v1/tables/species_occurrences/records/1/columns/name
+      { "name": "Laetmonice" }
+</code></pre>
+<p class="tab">JSON</p>
+<pre class="syntax json">
+  {
+    "name": "Laetmonice"
+  }
+</pre>

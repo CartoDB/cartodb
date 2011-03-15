@@ -1,0 +1,27 @@
+<ul class="breadcrumb">
+  <li class="first"><a href="/">CartoDB API</a></li>
+  <li>Rows</li>
+  <li class="selected"><a href="/record/delete">Delete a row</a></li>
+</ul>
+<h1>Delete a row</h1>
+<p>Deletes a row</p>
+
+<h2>URL</h2>
+<code>/v1/table/&lt;identifier&gt;/records/&lt;primary_key&gt;</code>
+
+<h2>METHOD</h2>
+<code>DELETE</code>
+
+<h2>PARAMETERS</h2>
+<p>Required</p>
+<ul>
+  <li><code>identifier</code>: the name of the table</li>
+  <li><code>primary_key</code>: the primary key of the row</li>
+</ul>
+
+<h2>EXAMPLE</h2>
+<pre><code>
+  DELETE
+    /v1/tables/species_occurrences/records/1
+</code></pre>
+<p>The method doesn't return nothing. If you want to check the success, check the HTTP status header.</p>

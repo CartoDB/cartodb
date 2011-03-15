@@ -65,6 +65,14 @@ class Api::Json::TablesController < ApplicationController
   def update
     @table = Table.filter(:user_id => current_user.id, :name => params[:id]).first
     @table.set_all(params)
+    if params.keys.include?("latitude_column") && params.keys.include?("longitude_column")
+      latitude_column = params[:latitude_column] == "nil" ? nil : params[:latitude_column].try(:to_sym)
+      longitude_column = params[:longitude_column] == "nil" ? nil : params[:longitude_column].try(:to_sym)
+      @table.set_lat_lon_columns!(latitude_column, longitude_column)
+    elsif params.keys.include?("address_column")
+      address_column = params[:address_column] == "nil" ? nil : params[:address_column].try(:to_sym)
+      @table.set_address_column!(address_column)
+    end
     @table.tags = params[:tags] if params[:tags]
     if @table.save
       @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
@@ -96,107 +104,6 @@ class Api::Json::TablesController < ApplicationController
   end
 
 
-  # Update the schema of a table
-  # * Request Method: +PUT+
-  # * URI: +/api/json/tables/:id/update_schema+
-  # * Format: +JSON+
-  # * Parameters for adding or removing a column:
-  #     {
-  #       "what" => ("add"|"drop")
-  #       "column" => {
-  #          "name" => "new column name",
-  #          "type" => "type"
-  #       }
-  #     }
-  # * Parameters for modifying a column:
-  #     {
-  #       "what" => "modify"
-  #       "column" => {
-  #          "old_name" => "old column name"
-  #          "new_name" => "new column name",
-  #          "type" => "the new type"
-  #       }
-  #     }
-  # * Response if _success_:
-  #   * status code: 200
-  #   * body: _nothing_
-  # * Response if _error_:
-  #   * status code +400+
-  #   * body:
-  #       { "errors" => ["error message"] }
-  def update_schema
-    respond_to do |format|
-      format.json do
-        if params[:what] && %W{ add drop modify }.include?(params[:what])
-          unless params[:column].blank? || params[:column].empty?
-            begin
-              if params[:what] == 'add'
-                resp = @table.add_column!(params[:column])
-                render :json => resp.to_json, :status => 200, :callback => params[:callback] and return
-              elsif params[:what] == 'drop'
-                @table.drop_column!(params[:column])
-                render :json => ''.to_json, :status => 200, :callback => params[:callback] and return
-              else
-                resp = @table.modify_column!(params[:column])
-                render :json => resp.to_json, :status => 200, :callback => params[:callback] and return
-              end
-            rescue => e
-              errors = if e.is_a?(CartoDB::InvalidType)
-                [e.db_message]
-              else
-                [translate_error(e.message.split("\n").first)]
-              end
-              render :json => { :errors => errors }.to_json, :status => 400,
-                     :callback => params[:callback] and return
-            end
-          else
-            render :json => { :errors => ["column parameter can't be blank"] }.to_json, :status => 400,
-                   :callback => params[:callback] and return
-          end
-        else
-          render :json => { :errors => ["what parameter has an invalid value"] }.to_json, :status => 400,
-                 :callback => params[:callback] and return
-        end
-      end
-    end
-  end
-
-  # Insert a new row in a table
-  # * Request Method: +PUT+
-  # * URI: +/api/json/tables/:id/rows/:row_id+
-  # * Format: +JSON+
-  # * Parameters:
-  #     {
-  #       "column_name" => "new value"
-  #     }
-  # * Response if _success_:
-  #   * status code: 200
-  #   * body: _nothing_
-  # * Response if _error_:
-  #   * status code +400+
-  #   * body:
-  #       { "errors" => ["error message"] }
-
-
-  # Set the columns of the geometry of the table
-  # * Request Method: +PUT+
-  # * URI: +/api/json/tables/:id/set_geometry_columns
-  # * Format: +JSON+
-  # * Parameters for setting lat and lon columns:
-  #     {
-  #       "lat_column" => "<lat_column_name>",
-  #       "lon_column" => "<lon_column_name>"
-  #     }
-  # * Parameters for setting an address column:
-  #     {
-  #       "address_column" => "<address_column_name>"
-  #     }
-  # * Response if _success_:
-  #   * status code: 200
-  # * Response if _error_:
-  #   * status code +400+
-  #   * body:
-  #       { "errors" => ["error message"] }
   def set_geometry_columns
     if params.keys.include?("lat_column") && params.keys.include?("lon_column")
       lat_column = params[:lat_column] == "nil" ? nil : params[:lat_column].try(:to_sym)

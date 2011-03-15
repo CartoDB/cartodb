@@ -136,5 +136,48 @@ feature "API 1.0 records management" do
       r.body[:name].should == "Fernando Blat"
     end
   end
+  
+  scenario "Create a new row of type number and insert float values" do
+    post_json api_tables_url, {
+      :name => "My new imported table",
+      :schema => "name varchar, age integer"
+    }
+
+    table_id = nil
+    parse_json(response) do |r|
+      r.status.should be_success
+      table_id = r.body[:name]
+    end
+
+    post_json api_table_records_url(table_id), {
+        :name => "Fernando Blat",
+        :age => "29"
+    }
+    parse_json(response) do |r|
+      r.status.should be_success
+    end
+
+    post_json api_table_records_url(table_id), {
+        :name => "Beatriz",
+        :age => "30.2"
+    }
+    row_id = nil
+    parse_json(response) do |r|
+      r.status.should be_success
+      row_id = r.body[:id]
+    end
+    
+    get_json api_table_columns_url(table_id)
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body.should include(["age", "number"])
+    end
+    
+    get_json api_table_record_column_url(table_id,row_id,:age)
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body.should == {:age => 30.2}
+    end    
+  end
 
 end

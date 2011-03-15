@@ -149,6 +149,28 @@ feature "API 1.0 tables management" do
       r.status.should == 404
     end
   end
+  
+  scenario "Update a table and set the lat and lot columns to nil" do
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+
+    put_json api_table_url(table1.name), {
+      :latitude_column => "nil",
+      :longitude_column => "nil"
+    }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:schema].should include(["latitude", "number"])
+      r.body[:schema].should include(["longitude", "number"])
+    end
+    
+    put_json api_table_url(table1.name), {
+      :address_column => "name"
+    }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:schema].should include(["name", "string", "address"])
+    end
+  end
 
   # ------
   # TODO
@@ -322,111 +344,6 @@ feature "API 1.0 tables management" do
 
 
 
-
-
-
-  #
-  # scenario "Set the geometry from a table to latitude and longitude" do
-  #   user = create_user
-  #   table = new_table
-  #   table.user_id = user.id
-  #   table.save
-  #
-  #   authenticate_api user
-  #
-  #   put_json "/api/json/tables/#{table.id}/set_geometry_columns", {:lat_column => :latitude, :lon_column => :longitude}
-  #   response.status.should == 200
-  #
-  #   table.reload
-  #   table.lat_column.should == :latitude
-  #   table.lon_column.should == :longitude
-  #
-  #   put_json "/api/json/tables/#{table.id}/set_geometry_columns", {:lat_column => nil, :lon_column => "nil"}
-  #   response.status.should == 200
-  #
-  #   table.reload
-  #   table.lat_column.should be_nil
-  #   table.lon_column.should be_nil
-  # end
-  #
-  # scenario "Set the geometry from a table to an address column" do
-  #   user = create_user
-  #   table = new_table
-  #   table.user_id = user.id
-  #   table.save
-  #
-  #   authenticate_api user
-  #
-  #   put_json "/api/json/tables/#{table.id}/set_geometry_columns", {:address_column => :address}
-  #   response.status.should == 200
-  #
-  #   table.reload
-  #   table.address_column.should == :address
-  # end
-  #
-  # scenario "Delete a row" do
-  #   user = create_user
-  #   table = create_table :user_id => user.id
-  #
-  #   user.in_database do |user_database|
-  #     10.times do
-  #       user_database.run("INSERT INTO \"#{table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
-  #     end
-  #   end
-  #
-  #   authenticate_api user
-  #
-  #   delete_json "/api/json/tables/#{table.id}/rows/1"
-  #   response.status.should == 200
-  #
-  #   get_json "/api/json/tables/#{table.id}?rows_per_page=10"
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response['total_rows'].should == 9
-  #   json_response['rows'].map{ |r| r['cartodb_id'] }.should_not include(1)
-  # end
-  #
-  # scenario "Create a new row of type number and insert float values" do
-  #   user = create_user
-  #   authenticate_api user
-  #
-  #   post_json "/api/json/tables", {
-  #     :name => "My new imported table",
-  #     :schema => "name varchar, age integer"
-  #   }
-  #   response.status.should == 200
-  #   response.location.should =~ /tables\/(\d+)$/
-  #   json_response = JSON(response.body)
-  #   json_response['id'].should == response.location.match(/\/(\d+)$/)[1].to_i
-  #   table_id = json_response['id'].to_i
-  #
-  #   post_json "/api/json/tables/#{table_id}/rows", {
-  #       :name => "Fernando Blat",
-  #       :age => "29"
-  #   }
-  #   response.status.should == 200
-  #
-  #   post_json "/api/json/tables/#{table_id}/rows", {
-  #       :name => "Javier Jamon",
-  #       :age => "25.4"
-  #   }
-  #   response.status.should == 200
-  #
-  #   get_json "/api/json/tables/#{table_id}/schema"
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response.should == [
-  #     ["cartodb_id", "number"], ["name", "string"], ["age", "number"], ["created_at", "date"], ["updated_at", "date"]
-  #   ]
-  #
-  #   post_json "/api/json/tables/#{table_id}/rows"
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response['id'].should == 3
-  #
-  #   table = Table[table_id]
-  #   table.rows_counted.should == 3
-  # end
   #
   # scenario "Update the geometry of a row in a table with latitud and longitude geometry and bad address" do
   #   user = create_user
@@ -529,23 +446,6 @@ feature "API 1.0 tables management" do
   #   query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")
   #   query_result[:rows][0][:lon].to_s.should match /^40\.32/
   #   query_result[:rows][0][:lat].to_s.should match /^3\.76/
-  # end
-  #
-  # scenario "Get the address column" do
-  #   user = create_user
-  #   table = new_table
-  #   table.user_id = user.id
-  #   table.force_schema = "latitude float, longitude float, address varchar"
-  #   table.save
-  #
-  #   authenticate_api user
-  #
-  #   table.set_address_column!(:address)
-  #
-  #   get_json "/api/json/tables/#{table.id}/get_address_column"
-  #   response.status.should == 200
-  #   json_response = JSON(response.body)
-  #   json_response['address_column'].should == "address"
   # end
   #
   # scenario "Get the address column values paginated" do

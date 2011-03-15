@@ -77,7 +77,7 @@ class Api::Json::RecordsController < ApplicationController
     render :json => {params[:id] => params[:value]}.to_json,
            :status => 200
   end
-
+  
   protected
 
   def load_table

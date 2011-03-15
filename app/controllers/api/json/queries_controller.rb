@@ -3,6 +3,7 @@
 class Api::Json::QueriesController < ApplicationController
   ssl_required :run
 
+  before_filter :api_authorization_required
   # Run a query against your database
   # * Request Method: +GET+
   # * URI: +/v1+

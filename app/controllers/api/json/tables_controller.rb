@@ -1,9 +1,7 @@
 # coding: UTF-8
 
 class Api::Json::TablesController < ApplicationController
-  ssl_required :index, :show, :create, :query, :schema, :toggle_privacy, :update, :update_schema, :create_row, :update_row,
-               :delete, :set_geometry_columns, :get_address_column, :addresses, :delete_row, :update_geometry
-
+  ssl_required :index, :show, :create, :update, :destroy
 
   skip_before_filter :verify_authenticity_token
 
@@ -101,82 +99,6 @@ class Api::Json::TablesController < ApplicationController
     raise RecordNotFound if @table.nil?
     @table.destroy
     render :nothing => true, :status => 200, :callback => params[:callback]
-  end
-
-
-  def set_geometry_columns
-    if params.keys.include?("lat_column") && params.keys.include?("lon_column")
-      lat_column = params[:lat_column] == "nil" ? nil : params[:lat_column].try(:to_sym)
-      lon_column = params[:lon_column] == "nil" ? nil : params[:lon_column].try(:to_sym)
-      @table.set_lat_lon_columns!(lat_column, lon_column)
-      render :json => ''.to_json, :status => 200, :callback => params[:callback]
-    elsif params.keys.include?("address_column")
-      address_column = params[:address_column] == "nil" ? nil : params[:address_column].try(:to_sym)
-      @table.set_address_column!(address_column)
-      render :json => ''.to_json, :status => 200, :callback => params[:callback]
-    else
-      render :json => { :errors => ["Invalid parameters"] }.to_json,
-             :status => 400, :callback => params[:callback] and return
-    end
-  rescue => e
-    render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
-           :status => 400, :callback => params[:callback] and return
-  end
-
-  # Get the column with is geolocating via address
-  # * Request Method: +GET+
-  # * URI: +/api/json/tables/:id/get_address_column
-  # * Format: +JSON+
-  # * Response if _success_:
-  #   * status code: 200
-  #   * {'address_column' => 'name of the address column'}
-  def get_address_column
-    response = if @table.address_column
-      {'address_column' => @table.address_column.to_s}
-    else
-      ''
-    end
-    render :json => response.to_json, :status => 200, :callback => params[:callback]
-  end
-
-  # Get the values from the address column
-  # * Request Method: +GET+
-  # * URI: +/api/json/tables/:id/addresses
-  # * Format: +JSON+
-  # * Sample response if _success_:
-  #   * status code: 200
-  #   * {
-  #       "time":0.006813764572143555,
-  #       "total_rows":10,
-  #       "columns": ["cartodb_id","address"],
-  #       "rows": [{"cartodb_id":1,"address":"SHJxJxdTeyc"},{"cartodb_id":2,"address":"ewTKpIBFTmG"},...]
-  #     }
-  def addresses
-    response = @table.run_query("select cartodb_id, #{@table.address_column} from #{@table.name}")
-    render :json => response.to_json, :status => 200, :callback => params[:callback]
-  end
-
-
-  # Update the geometry values from a row
-  # * Request Method: +PUT+
-  # * URI: +/api/json/tables/:id/update_geometry/:row_id
-  # * Format: +JSON+
-  # * Parameters for setting lat and lon columns new values:
-  #     {
-  #       "lat" => "<new lat value>",
-  #       "lon" => "<new lon value>"
-  #     }
-  # * Parameters for setting address_column new value:
-  #     {
-  #       "address" => "<new address value>"
-  #     }
-  # * Response if _success_:
-  #   * status code: 200
-  #   * body: _nothing_
-  def update_geometry
-    @table.update_geometry!(params[:row_id], params.slice(:lat, :lon, :address))
-    render :json => ''.to_json,
-           :callback => params[:callback], :status => 200
   end
 
   protected

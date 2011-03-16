@@ -455,6 +455,14 @@ class Table < Sequel::Model(:user_tables)
 
   def set_address_column!(address_column)
     set_the_geom_column!(:point)
+    if address_column.include?(',')
+      aggregated_address_name = "aggregated_address"
+      owner.in_database do |user_database|
+        user_database.run("alter table #{self.name} add column #{aggregated_address_name} varchar")
+        user_database.run("update #{self.name} set #{aggregated_address_name}=#{address_column.split(',').map{ |c| c.strip }.join('||\',\'||')}")
+      end
+      address_column = aggregated_address_name
+    end
     self.geometry_columns = address_column.try(:to_s)
     save_changes
     geocode_all_address_columns! if rows_counted > 0

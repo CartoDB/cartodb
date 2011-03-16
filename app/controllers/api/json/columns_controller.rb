@@ -1,7 +1,7 @@
 # coding: UTF-8
 
 class Api::Json::ColumnsController < ApplicationController
-  ssl_required :index
+  ssl_required :index, :create, :show, :update, :delete
 
   skip_before_filter :verify_authenticity_token
   before_filter :api_authorization_required

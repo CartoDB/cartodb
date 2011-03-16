@@ -17,15 +17,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  before_filter :debug_host
-
   protected
-
-  def debug_host
-    puts "================"
-    puts "request.host: #{request.host} - #{request.path}"
-    puts "================"
-  end
 
   def render_404
     respond_to do |format|

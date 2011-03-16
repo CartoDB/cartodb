@@ -1,7 +1,7 @@
 # coding: UTF-8
 
 class Api::Json::RecordsController < ApplicationController
-  ssl_required :index
+  ssl_required :index, :create, :show, :update, :destroy, :show_column, :update_column
 
   REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key table_id }
 

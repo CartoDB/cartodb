@@ -1,5 +1,6 @@
   <%= content_for(:js) do %>
     <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/tumblr", "admin/tables/dashboard", "plugins/jquery.color", "admin/tables/import"  %>
+    <script type="text/javascript">var api_host = <%= API_HOST %></script>
   <% end %>
   <%= content_for(:head) do %>
     <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/dashboard') %>
@@ -36,16 +37,23 @@
               <ul class="your_tables">
                 <% @tables.each_with_index do |table, i| %>
                 <li<%= ' class="last"'.html_safe if i == @tables.current_page_record_count - 1%>>
-                  <h4><%= link_to(table.name, table, :class=>'tableTitle')  %></h4>
-                  <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
                   <div class="meta_info">
                     <span class="info">
-                      <% unless table.updated_at.blank? %>
-                      <p class="last_op">Last operation <%= time_ago_in_words(table.updated_at) %> ago</p>
+                      <h4><%= link_to(table.name, table, :class=>'tableTitle')  %> </h4>
+                      <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
+                      <p class="delete"> | <a table-name="<%= table.name %>" href="#" class="delete">delete table</a></p>
+                      <p class="columns"><strong>Columns:</strong> 
+                      <% table.columns.each_with_index do |column, i| %>
+                        <% if i<5 %>
+                        <%= column %>,
+                        <% end %>
                       <% end %>
-                      <p class="delete"> | <a table-id="<%= table.id %>" href="#" class="delete">delete table</a></p>
+                      ...</p>
                     </span>
                     <span class="tags">
+                      <% unless table.updated_at.blank? %>
+                      <p class="last_op"><%= time_ago_in_words(table.updated_at) %> ago</p>
+                      <% end %>
                       <% unless table.tags.blank? %>
                         <% table.tags.split(',').each do |tag_name| %>
                         <a href="#"><%= tag_name %></a>

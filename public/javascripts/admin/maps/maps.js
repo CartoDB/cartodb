@@ -9,12 +9,7 @@
 
   function initMap() {
     
-    var body = document.getElementsByTagName('body').item(0);
-    script = document.createElement('script');
-    script.src = '/javascripts/admin/maps/CartoMarker.js';
-    script.type = 'text/javascript';
-    body.appendChild(script);
-    
+    head.js("/javascripts/admin/maps/CartoMarker.js");
     
     ///////////////////////////////////////
     //  Map elements                     //
@@ -126,14 +121,15 @@
 
   function getMapTableData() {
     showLoader();
-    var api_key = ""; // API key is not necessary if you are at localhost:3000 and you are logged in in CartoDB
+    var api_key = "8523ab8065a69338d5006c34310dc8d2c0179ebb";
     var query = "select cartodb_id," +
                 "ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat " +
                 "from " + $('h2 a').text();
     $.ajax({
       method: 'GET',
-      url: "/api/json/tables/query",
+      url: api_host + "/v1/",
       data: ({api_key: api_key, sql: query}),
+      dataType: 'jsonp',
       success: function(result) {
         bounds = new google.maps.LatLngBounds();
         

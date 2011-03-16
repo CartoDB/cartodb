@@ -44,8 +44,8 @@
       $('a.delete').click(function(ev){
         ev.preventDefault();
         ev.stopPropagation();
-        var table_id = $(this).attr('table-id');
-        $('div.mamufas a.confirm_delete').attr('table-id',table_id);
+        var table_name = $(this).attr('table-name');
+        $('div.mamufas a.confirm_delete').attr('table-name',table_name);
         $('div.mamufas div.delete_window').show();
         $('div.mamufas').fadeIn('fast');
         bindESC();
@@ -53,10 +53,10 @@
       $('a.confirm_delete').click(function(ev){
         ev.preventDefault();
         ev.stopPropagation();
-        var table_id = $(this).attr('table-id');
+        var table_name = $(this).attr('table-name');
         $.ajax({
           type: "DELETE",
-          url: '/api/json/tables/'+table_id,
+          url: api_host + '/v1/table/'+table_name,
           success: function(data, textStatus, XMLHttpRequest) {
             window.location.href = XMLHttpRequest.getResponseHeader("Location");
           },

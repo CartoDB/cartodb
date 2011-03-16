@@ -1,14 +1,11 @@
 
   GEOREFERENCIAR
 
-    + BLAT -> No puedo guardar las nuevas lat&lon del worker geocoder a la base datos, peta :S.
-    
+    - BLAT -> No puedo guardar las nuevas lat&lon del worker geocoder a la base datos, peta :S.
     - BLAT -> Devolver en el get de addresses las filas que faltan por georeferenciar (no las georeferenciadas sin encontrar la posición ¿ojo!)
     - BLAT -> Crear un método con las filas de los addresses que faltan por georeferenciar para seguir la tarea.
-
-
-
-  VIERNES 4 MARZO
-    
-    - Solucionar bugs y cambios.
-     
+    - BLAT -> Update geometry para mapas no funca.
+    - BLAT -> Api key global para localhost.
+    - BLAT -> En el dashboard de cada usuario, cada tabla ahora muestra las columnas que tiene, como información, muestra más de las que enseñamos en el interfaz real, revisar.
+    - BLAT -> Enlazar la web de developers con el index de la documentación.
+    - BLAT -> Enlazar sesión de usuario con la documentación / Mostrar solo el tab de la galería si estas logado

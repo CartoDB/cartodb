@@ -25,16 +25,21 @@
       var panes = this.getPanes();
       panes.floatPane.appendChild(div);
 
-      $(div).draggable({stop:  function(event,ui) {
+      $(div).draggable({
+        stop:  function(event,ui) {
           me.latlng_ = me.getProjection().fromDivPixelToLatLng(new google.maps.Point(ui.position.left-me.offsetHorizontal_,ui.position.top-me.offsetVertical_));
           onMoveOccurrence(me.latlng_,me.cartodb_id, me);
-      },start: function(event,ui) {
+      },
+        start: function(event,ui) {
           me.init_latlng = me.getProjection().fromDivPixelToLatLng(new google.maps.Point(ui.position.left-me.offsetHorizontal_,ui.position.top-me.offsetVertical_));
       }});
       
       $(div).hover(function(ev){
         globalZindex++;
+        map.draggable = false;
         $(this).css('zIndex',globalZindex); 
+      },function(){
+        map.draggable = true;
       });
     }
 

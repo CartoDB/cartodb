@@ -3,9 +3,12 @@
 
 
     head(function(){
+      
+      head.js("http://maps.google.com/maps/api/js?sensor=false&callback=initMap");
+      
       $("table#carto_table").cDBtable(
         'start',{
-          getDataUrl: '/api/json/tables/' + table_id, //-query +table_id
+          getDataUrl: '/v1/table/' + table_name, //-query +table_id
           resultsPerPage: 50,
           reuseResults: 100,
           total: 5000,

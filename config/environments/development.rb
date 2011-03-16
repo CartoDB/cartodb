@@ -28,3 +28,4 @@ CartoDB::Application.configure do
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 end
 
+API_HOST = "http://api.localhost.lan:3000"

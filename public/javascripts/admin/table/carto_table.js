@@ -75,52 +75,80 @@
      }
 
 
+     var columns,total_rows,rows;
+     var count = 0;
+     
+     $(document).bind('arrived',function(){
+       count++;
+       if (count==2) {
+         startTable();
+         $(document).unbind('arrived');
+       }
+     });
+     
+
      $.ajax({
        method: "GET",
        url: options.getDataUrl,
-       data: {
-         rows_per_page: options.resultsPerPage,
-         page: petition_pages,
-         query: options.query
-       },
 			 headers: {"cartodbclient":"true"},
        success: function(data) {
-         // if (data.total_rows==0) {
-         //   //Start new table
-         //   //Calculate width of th on header
-         //   var window_width = $(window).width();
-         //   if (window_width>((data.columns.length*113)+42)) {
-         //     cell_size = ((window_width-150)/(data.columns.length-1))-27;
-         //     last_cell_size = cell_size;
-         //   }
-         //   
-         //   maxPage = -1;
-         //   if ($(table).children('thead').length==0) {methods.drawColumns(data.columns);}
-         //   methods.startTable();
-         // } else {
-         //   total = data.total_rows;
-         //   if (data.rows.length>0) {
-         //     if ($(table).children('thead').length==0) {
-         //       //Calculate width of th on header
-         //       var window_width = $(window).width();
-         //       if (window_width>((data.columns.length*113)+42)) {
-         //         cell_size = ((window_width-150)/(data.columns.length-1))-27;
-         //         last_cell_size = cell_size;
-         //       }
-         //       methods.drawColumns(data.columns);
-         //     }
-         //     methods.drawRows(options,data.rows,direction,actualPage);
-         //   } else {
-         //     methods.hideLoader();
-         //     if (direction=="next") {
-         //        maxPage--;
-         //     } else {
-         //        minPage++;
-         //     }
-         //   }
-         // }
+         columns = data.schema;
+         $(document).trigger('arrived');
        }
      });
+     
+     $.ajax({
+        method: "GET",
+        url: options.getDataUrl+'/records',
+        data: {
+          rows_per_page: options.resultsPerPage,
+          page: petition_pages
+        },
+ 			 headers: {"cartodbclient":"true"},
+       success: function(data) {
+         rows = data.rows;
+         total_rows = data.total_rows;
+         $(document).trigger('arrived');
+       }
+     });
+     
+     
+      function startTable() {
+        if (total_rows==0) {
+          //Start new table
+          //Calculate width of th on header
+          var window_width = $(window).width();
+          if (window_width>((columns.length*113)+42)) {
+            cell_size = ((window_width-150)/(columns.length-1))-27;
+            last_cell_size = cell_size;
+          }
+          
+          maxPage = -1;
+          if ($(table).children('thead').length==0) {methods.drawColumns(columns);}
+          methods.startTable();
+        } else {
+          total = total_rows;
+          if (rows.length>0) {
+            if ($(table).children('thead').length==0) {
+              //Calculate width of th on header
+              var window_width = $(window).width();
+              if (window_width>((columns.length*113)+42)) {
+                cell_size = ((window_width-150)/(columns.length-1))-27;
+                last_cell_size = cell_size;
+              }
+              methods.drawColumns(columns);
+            }
+            methods.drawRows(options,rows,direction,actualPage);
+          } else {
+            methods.hideLoader();
+            if (direction=="next") {
+               maxPage--;
+            } else {
+               minPage++;
+            }
+          }
+        }
+      }
     },
 
 
@@ -270,7 +298,8 @@
     getColumnTypes: function() {
       $.ajax({
          method: "GET",
-         url: '/api/json/column_types',
+         url: '/v1/column_types',
+         headers: {"cartodbclient": true},
          success: function(data) {
            $('span.col_types').each(function(index,element){
              $(element).children('ul').children('li').remove();
@@ -619,6 +648,7 @@
         $.ajax({
           method: "GET",
           url: defaults.getDataUrl,
+          headers: {"cartodbclient": true},
           data: {
             rows_per_page: defaults.resultsPerPage,
             page: minPage+'..'+maxPage,
@@ -640,11 +670,13 @@
         $.ajax({
            type: "POST",
            url: '/api/json/tables/'+table_id+'/rows',
+           headers: {"cartodbclient": true},
            success: function(data) {
              row_id = data.id;
              $.ajax({
                 method: "GET",
                 url: '/api/json/tables/'+table_id+'/schema',
+                headers: {"cartodbclient": true},
                 success: function(data) {
                   requests_queue.responseRequest(requestId,'ok','');
                   var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row</a></li><li><a href="#delete_row" class="delete_row">Delete row</a></li></ul>' +
@@ -721,12 +753,10 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addColumn: function(name,type) {
       var params = {};
-      params['what'] = "add";
-      params['column'] = {};
-      params['column']['name'] = sanitizeText(name);
-      params['column']['type'] = type.charAt(0).toUpperCase() + type.slice(1);
+      params['name'] = sanitizeText(name);
+      params['type'] = type.charAt(0).toUpperCase() + type.slice(1);
 
-      methods.updateTable('/update_schema',params,params.column,null,"new_column","PUT");
+      methods.updateTable('/columns',params,params.column,null,"new_column","POST");
     },
     
     
@@ -1478,6 +1508,7 @@
         methods.closeTablePopups();
         methods.bindESCkey();
         
+        
         $(this).closest('div').find('a.options').removeClass('selected');
         $(this).closest('div').find('span.col_ops_list').hide();
         var column = $(this).closest('th').attr('c');
@@ -1495,8 +1526,7 @@
 
         $('body').click(function(event) {
          if (!$(event.target).closest('div.delete_column').length) {
-           $('div.delete_column').hide();
-           $('body').unbind('click');
+           methods.closeTablePopups();
          };
         });
       });
@@ -1586,6 +1616,7 @@
           $.ajax({
              method: "GET",
              url: '/api/json/tables/'+table_id+'/schema',
+             headers: {"cartodbclient": true},
              success: function(data) {
                
                // Select item depending on the kind of referenciation before
@@ -1877,7 +1908,8 @@
         
         $.ajax({
            method: "GET",
-           url: '/api/json/column_types',
+           url: '/v1/column_types',
+           headers: {"cartodbclient": true},
            success: function(data) {
              //Remove ScrollPane
              var custom_scrolls = [];
@@ -2088,7 +2120,9 @@
       $.ajax({
         dataType: 'json',
         type: request_type,
-        url: '/api/json/tables/'+table_id+url_change,
+        dataType: (request_type=="DELETE")?"text":'json',
+        headers: {"cartodbclient": true},
+        url: '/v1/tables/'+table_name+url_change,
         data: params,
         success: function(data) {
           requests_queue.responseRequest(requestId,'ok','');
@@ -2098,7 +2132,7 @@
           try {
             requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
           } catch (e) {
-            requests_queue.responseRequest(requestId,'error','Seems like you don\'t have Internet connection');
+            requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
           }
           methods.errorRequest(params,new_value,old_value,type);
         }
@@ -2135,10 +2169,10 @@
                                 methods.closeTablePopups();
                                 break;
         case "new_column":      methods.closeTablePopups();
-                                headers[params.column.name] = params.column.type;
+                                headers[params.name] = params.type;
                                 methods.refreshTable('next');
                                 break;
-        case "delete_column":   delete headers[params.column.name];
+        case "delete_column":   delete headers[params.name];
                                 methods.refreshTable('');
                                 break;                                
         case "delete_row":      methods.refreshTable('');

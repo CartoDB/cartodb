@@ -289,12 +289,13 @@
     });
     $('a.confirm_delete').click(function(ev){
       stopPropagation(ev);
-      var table_id = $(this).attr('table-id');
       $.ajax({
         type: "DELETE",
-        url: '/api/json/tables/'+table_id,
+        url: '/v1/tables/'+table_name,
+        dataType: "text",
+        headers: {'cartodbclient':true},
         success: function(data, textStatus, XMLHttpRequest) {
-          window.location.href = XMLHttpRequest.getResponseHeader("Location");
+          window.location.href = '/dashboard';
         },
         error: function(e) {
           console.debug(e);

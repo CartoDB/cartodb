@@ -1,6 +1,5 @@
 class APISubdomainConstraint
   def matches?(req)
-    debugger
     if req.headers["cartodbclient"].blank?
       req.host =~ /^api\./
     else

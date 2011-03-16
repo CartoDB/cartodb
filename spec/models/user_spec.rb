@@ -173,7 +173,8 @@ describe User do
       user_database.run("select * from #{table.name}")
     end
 
-    table.toggle_privacy!
+    table.privacy = "PRIVATE"
+    table.save
     table.reload
 
     lambda {

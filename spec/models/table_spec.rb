@@ -98,20 +98,6 @@ describe Table do
       should == content[2].slice(:name, :latitude, :longitude, :description)
   end
 
-  it "has a toggle_privacy! method to toggle the table privacy" do
-    user = create_user
-    table = create_table :user_id => user.id, :privacy => Table::PRIVATE
-    table.should be_private
-
-    table.toggle_privacy!
-    table.reload
-    table.should_not be_private
-
-    table.toggle_privacy!
-    table.reload
-    table.should be_private
-  end
-
   it "can be associated to many tags" do
     user = create_user
     table = create_table :user_id => user.id, :tags => "tag 1, tag 2,tag 3, tag 3"

@@ -1,3 +1,15 @@
+class APISubdomainConstraint
+  def matches?(req)
+    debugger
+    if req.headers["cartodbclient"].blank?
+      req.host =~ /^api\./
+    else
+      return true
+    end
+  end
+end
+
+
 CartoDB::Application.routes.draw do
   root :to => "home#index"
 
@@ -25,7 +37,7 @@ CartoDB::Application.routes.draw do
     resources :users, :except => [:index]
   end
 
-  constraints :subdomain => "api" do
+  constraints APISubdomainConstraint.new do
     scope :oauth, :path => :oauth do
       match '/authorize'      => 'oauth#authorize',     :as => :authorize
       match '/request_token'  => 'oauth#request_token', :as => :request_token

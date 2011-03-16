@@ -83,6 +83,7 @@
          page: petition_pages,
          query: options.query
        },
+			 headers: {"cartodbclient":"true"},
        success: function(data) {
          if (data.total_rows==0) {
            //Start new table

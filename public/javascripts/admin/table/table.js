@@ -8,7 +8,7 @@
       
       $("table#carto_table").cDBtable(
         'start',{
-          getDataUrl: '/v1/table/' + table_name, //-query +table_id
+          getDataUrl: '/v1/tables/' + table_name, //-query +table_id
           resultsPerPage: 50,
           reuseResults: 100,
           total: 5000,

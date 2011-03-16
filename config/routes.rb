@@ -1,3 +1,6 @@
+# All the requests from a host with the header
+# cartodbclient are allowed in other subdomain
+# that api
 class APISubdomainConstraint
   def matches?(req)
     if req.headers["cartodbclient"].blank?
@@ -7,7 +10,6 @@ class APISubdomainConstraint
     end
   end
 end
-
 
 CartoDB::Application.routes.draw do
   root :to => "home#index"

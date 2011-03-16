@@ -108,8 +108,7 @@
         }
         $('section.subheader h2 a').text(new_value);
         $('span.title_window').hide();
-        table_name = new_value;
-        changesRequest('/update','name',new_value,old_value);
+        changesRequest('name',new_value,old_value);
       }
     });
 
@@ -139,7 +138,7 @@
         var new_value = $('span.privacy_window ul li.selected a strong').text().toLowerCase();
         $('span.privacy_window').hide();
         $('p.status a').removeClass('public private').addClass(new_value).text(new_value);
-        changesRequest('/toggle_privacy','privacy',new_value.toUpperCase(),old_value);
+        changesRequest('privacy',new_value.toUpperCase(),old_value);
       }
     });
     $('p.status a').livequery('click',function(ev){
@@ -213,7 +212,7 @@
       
       $("span.tags p:last").last().addClass('last');
       $('span.tags_window').hide();
-      changesRequest('/update','tags',new_values,old_values);
+      changesRequest('tags',new_values,old_values);
     });
     
 
@@ -333,7 +332,7 @@
 
 
 
-  function changesRequest(url_change,param,value,old_value) {
+  function changesRequest(param,value,old_value) {
     var params = {};
     params[param] = value;
     
@@ -344,10 +343,14 @@
     $.ajax({
       dataType: 'json',
       type: "PUT",
-      url: '/api/json/tables/'+table_id+url_change,
+      url: '/v1/tables/'+table_name,
       data: params,
+      headers: {'cartodbclient':true},
       success: function(data) {
         requests_queue.responseRequest(requestId,'ok','');
+        if (param=="name") {
+          table_name = value;
+        }
       },
       error: function(e) {
         requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText));
@@ -367,7 +370,6 @@
                       if (old_value.status=="save") {
                         $('p.status a').removeClass('public private').addClass('save').text('save');
                       }
-                      table_name = old_value;
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       case 'tags':    $("span.tags p").remove();

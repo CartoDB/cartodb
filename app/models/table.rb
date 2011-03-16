@@ -172,6 +172,10 @@ class Table < Sequel::Model(:user_tables)
   def private?
     privacy == PRIVATE
   end
+  
+  def privacy=(value)
+    value == "PRIVATE" ? 0 : 1
+  end
 
   def public?
     !private?

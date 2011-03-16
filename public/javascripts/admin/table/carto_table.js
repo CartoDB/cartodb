@@ -85,40 +85,40 @@
        },
 			 headers: {"cartodbclient":"true"},
        success: function(data) {
-         if (data.total_rows==0) {
-           //Start new table
-           //Calculate width of th on header
-           var window_width = $(window).width();
-           if (window_width>((data.columns.length*113)+42)) {
-             cell_size = ((window_width-150)/(data.columns.length-1))-27;
-             last_cell_size = cell_size;
-           }
-           
-           maxPage = -1;
-           if ($(table).children('thead').length==0) {methods.drawColumns(data.columns);}
-           methods.startTable();
-         } else {
-           total = data.total_rows;
-           if (data.rows.length>0) {
-             if ($(table).children('thead').length==0) {
-               //Calculate width of th on header
-               var window_width = $(window).width();
-               if (window_width>((data.columns.length*113)+42)) {
-                 cell_size = ((window_width-150)/(data.columns.length-1))-27;
-                 last_cell_size = cell_size;
-               }
-               methods.drawColumns(data.columns);
-             }
-             methods.drawRows(options,data.rows,direction,actualPage);
-           } else {
-             methods.hideLoader();
-             if (direction=="next") {
-                maxPage--;
-             } else {
-                minPage++;
-             }
-           }
-         }
+         // if (data.total_rows==0) {
+         //   //Start new table
+         //   //Calculate width of th on header
+         //   var window_width = $(window).width();
+         //   if (window_width>((data.columns.length*113)+42)) {
+         //     cell_size = ((window_width-150)/(data.columns.length-1))-27;
+         //     last_cell_size = cell_size;
+         //   }
+         //   
+         //   maxPage = -1;
+         //   if ($(table).children('thead').length==0) {methods.drawColumns(data.columns);}
+         //   methods.startTable();
+         // } else {
+         //   total = data.total_rows;
+         //   if (data.rows.length>0) {
+         //     if ($(table).children('thead').length==0) {
+         //       //Calculate width of th on header
+         //       var window_width = $(window).width();
+         //       if (window_width>((data.columns.length*113)+42)) {
+         //         cell_size = ((window_width-150)/(data.columns.length-1))-27;
+         //         last_cell_size = cell_size;
+         //       }
+         //       methods.drawColumns(data.columns);
+         //     }
+         //     methods.drawRows(options,data.rows,direction,actualPage);
+         //   } else {
+         //     methods.hideLoader();
+         //     if (direction=="next") {
+         //        maxPage--;
+         //     } else {
+         //        minPage++;
+         //     }
+         //   }
+         // }
        }
      });
     },

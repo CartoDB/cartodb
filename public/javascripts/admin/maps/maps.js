@@ -127,8 +127,9 @@
                 "from " + $('h2 a').text();
     $.ajax({
       method: 'GET',
-      url: api_host + "/v1/",
+      url: "/v1/",
       data: ({api_key: api_key, sql: query}),
+      headers: {'cartodbclient':true},
       dataType: 'jsonp',
       success: function(result) {
         bounds = new google.maps.LatLngBounds();
@@ -180,6 +181,7 @@
       $.ajax({
         dataType: 'json',
         type: 'PUT',
+        headers: {'cartodbclient':true},
         url: '/api/json/tables/'+table_id+'/update_geometry/'+cartodb_id,
         data: params,
         success: function(data) {

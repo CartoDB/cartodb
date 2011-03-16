@@ -56,6 +56,7 @@
               function fetch(uuid) {
                 $.ajax({
                   type: "GET",
+                  headers: {'cartodbclient':true},
                   url: '/progress?X-Progress-ID='+uuid,
                   success: function(result, textStatus, XMLHttpRequest) {
                     var percentage = result.received / result.size;
@@ -127,9 +128,10 @@
         $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
           $.ajax({
             type: "POST",
-            url: '/api/json/tables/',
+            url: '/v1/tables/',
+            headers: {'cartodbclient':true},
             success: function(data, textStatus, XMLHttpRequest) {
-              window.location.href = XMLHttpRequest.getResponseHeader("Location");
+              window.location.href = "/tables/"+data.id;
             },
             error: function(e) {
               console.debug(e);

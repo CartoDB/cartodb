@@ -56,9 +56,11 @@
         var table_name = $(this).attr('table-name');
         $.ajax({
           type: "DELETE",
-          url: api_host + '/v1/table/'+table_name,
+          dataType: "text",
+          url:'/v1/tables/'+table_name,
+          headers: {'cartodbclient':true},
           success: function(data, textStatus, XMLHttpRequest) {
-            window.location.href = XMLHttpRequest.getResponseHeader("Location");
+            window.location.href = "/dashboard";
           },
           error: function(e) {
             console.debug(e);

@@ -1,6 +1,5 @@
   <%= content_for(:js) do %>
     <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/tumblr", "admin/tables/dashboard", "plugins/jquery.color", "admin/tables/import"  %>
-    <script type="text/javascript">var api_host = <%= API_HOST %></script>
   <% end %>
   <%= content_for(:head) do %>
     <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/dashboard') %>

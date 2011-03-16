@@ -174,27 +174,25 @@ class Table < Sequel::Model(:user_tables)
   end
   
   def privacy=(value)
-    value == "PRIVATE" ? 0 : 1
+    if value == "PRIVATE" || value == PRIVATE 
+      self[:privacy] = PRIVATE
+      if !new?
+        owner.in_database do |user_database|
+          user_database.run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
+        end
+      end
+    elsif value == "PUBLIC" || value == PUBLIC
+      self[:privacy] = PUBLIC
+      if !new?
+        owner.in_database do |user_database|
+          user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
+        end
+      end
+    end
   end
 
   def public?
     !private?
-  end
-
-  def toggle_privacy!
-    if private?
-      set(:privacy => PUBLIC)
-      save_changes
-      owner.in_database do |user_database|
-        user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
-      end
-    else
-      set(:privacy => PRIVATE)
-      save_changes
-      owner.in_database do |user_database|
-        user_database.run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
-      end
-    end
   end
 
   def pending_to_save?
@@ -455,7 +453,7 @@ class Table < Sequel::Model(:user_tables)
 
   def set_address_column!(address_column)
     set_the_geom_column!(:point)
-    if address_column.include?(',')
+    if address_column.is_a?(String) && address_column.include?(',')
       aggregated_address_name = "aggregated_address"
       owner.in_database do |user_database|
         user_database.run("alter table #{self.name} add column #{aggregated_address_name} varchar")

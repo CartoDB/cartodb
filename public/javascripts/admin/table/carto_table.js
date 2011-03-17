@@ -647,12 +647,11 @@
   
         $.ajax({
           method: "GET",
-          url: defaults.getDataUrl,
+          url: defaults.getDataUrl+'/records',
           headers: {"cartodbclient": true},
           data: {
             rows_per_page: defaults.resultsPerPage,
-            page: minPage+'..'+maxPage,
-            query: defaults.query
+            page: minPage+'..'+maxPage
           },
           success: function(data) {
             $(table).children('tbody').remove();
@@ -669,15 +668,16 @@
                 
         $.ajax({
            type: "POST",
-           url: '/api/json/tables/'+table_id+'/rows',
+           url: '/v1/tables/'+table_name+'/records',
            headers: {"cartodbclient": true},
            success: function(data) {
              row_id = data.id;
              $.ajax({
                 method: "GET",
-                url: '/api/json/tables/'+table_id+'/schema',
+                url: defaults.getDataUrl,
                 headers: {"cartodbclient": true},
                 success: function(data) {
+                  data = data.schema;
                   requests_queue.responseRequest(requestId,'ok','');
                   var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row</a></li><li><a href="#delete_row" class="delete_row">Delete row</a></li></ul>' +
                                       '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#add_row" class="add_row">Add new row</a></li>' +
@@ -718,8 +718,6 @@
                   if (type==2) {
                     $('div.table_position').addClass('end');
                   }
-                  
-                  
                   
                   //Si hay más filas de las permitidas por el reuso, borramos las '50' primeras, sumamos una a la página max, min y actual
                   total = total + 1;
@@ -901,6 +899,7 @@
             methods.bindESCkey();
             
             $('div.edit_cell p.error').hide();
+            $('div.edit_cell div.months_list').hide();
             $('div.edit_cell input').removeClass('error');
             $('div.edit_cell textarea').removeClass('error');
             
@@ -1256,7 +1255,7 @@
         }
         
         params[column] = new_value;
-        methods.updateTable("/rows/"+row,params,new_value,old_value,'update_cell',"PUT");
+        methods.updateTable("/records/"+row,params,new_value,old_value,'update_cell',"PUT");
         
         $("div.edit_cell").hide();
         $("div.edit_cell textarea").css('width','262px');
@@ -1431,12 +1430,10 @@
           var column = $(this).closest('th').attr('c');
           parent_element.text(new_value);
           var params = {};
-          params['what'] = "modify";
-          params['column'] = {};
-          params['column']['name'] = column;
-          params['column']['type'] = new_value;
+          params['name'] = column;
+          params['type'] = new_value;
 
-          methods.updateTable('/update_schema',params,new_value,old_value,"column_type","PUT");
+          methods.updateTable('/columns/'+column,params,new_value,old_value,"column_type","PUT");
         }
         methods.closeTablePopups();
       });
@@ -1457,12 +1454,9 @@
 
           if (old_value!=new_value && new_value.length>0) {
             var params = {};
-            params["what"] = "modify";
-            params.column={};
-            params["column"].new_name = new_value;
-            params["column"].old_name = old_value;
-            params["column"].index = title.parent().parent().parent().index();
-            methods.updateTable("/update_schema",params,new_value,old_value,'rename_column',"PUT");
+            params["new_name"] = new_value;
+            params["index"] = title.parent().parent().parent().index();
+            methods.updateTable("/columns/"+old_value,params,new_value,old_value,'rename_column',"PUT");
             input.parent().children('h3').text(new_value);
             input.closest('th').attr('c',new_value);
             input.hide();
@@ -1538,12 +1532,8 @@
         stopPropagation(ev);
         var column = $(this).attr('c');
         var params = {};
-        params['what'] = "drop";
-        params['column'] = {};
-        params['column']['name'] = column;
-        params['column']['type'] = '';
         $('body').trigger('click');
-        methods.updateTable('/update_schema',params,params.column,null,"delete_column","PUT");
+        methods.updateTable('/columns/'+column,params,null,null,"delete_column","DELETE");
       });
       //TODO change data type list values
       $('thead tr th').livequery('click',function(ev){
@@ -1615,7 +1605,7 @@
         function getColumns() {
           $.ajax({
              method: "GET",
-             url: '/api/json/tables/'+table_id+'/schema',
+             url: '/v1/tables/'+table_id+'/schema',
              headers: {"cartodbclient": true},
              success: function(data) {
                
@@ -1872,7 +1862,6 @@
         $('body').click(function(event) {
          if (!$(event.target).closest('div.delete_row').length) {
            methods.closeTablePopups();
-           $('body').unbind('click');
          };
         });
         
@@ -1883,9 +1872,9 @@
         
         var row = $(this).attr('r');
         var params = {};
-        params.row = row;
+        params.primary_key = row;
         
-        methods.updateTable('/rows/'+row,params,null,null,"delete_row","DELETE");
+        methods.updateTable('/records/'+row,params,null,null,"delete_row","DELETE");
       });
       
       
@@ -2123,7 +2112,7 @@
       $.ajax({
         dataType: 'json',
         type: request_type,
-        dataType: (request_type=="DELETE")?"text":'json',
+        dataType: "text",
         headers: {"cartodbclient": true},
         url: '/v1/tables/'+table_name+url_change,
         data: params,
@@ -2132,6 +2121,8 @@
           methods.successRequest(params,new_value,old_value,type);
         },
         error: function(e, textStatus) {
+          console.log(e);
+          console.log(textStatus);
           try {
             requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
           } catch (e) {
@@ -2154,7 +2145,7 @@
                                 headers[new_value] = type;
                                 $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
                                 break;
-        case "column_type":     headers[params.column.name] = params.column.type;
+        case "column_type":     headers[params.name] = params.type;
                                 break;
         case "update_geometry": $('p.geo').remove();
                                 if (params.address_column != undefined && params.address_column != '') {
@@ -2198,7 +2189,7 @@
                               });
                               break;
 
-        case "rename_column": var element = $('table thead tr th:eq('+params.column.index+') h3');
+        case "rename_column": var element = $('table thead tr th:eq('+params.index+') h3');
                               element.text(old_value);
                               element.closest('th').attr('c',old_value);
                               element.animate({color:'#FF3300'},300,function(){
@@ -2208,7 +2199,7 @@
         case "update_geometry": methods.closeTablePopups();
                               break;
         
-        case "column_type":   var element = $('th[c="'+params.column.name+'"]').find('p.long').children('a');
+        case "column_type":   var element = $('th[c="'+params.name+'"]').find('p.long').children('a');
                               element.text(old_value);
                               element.animate({color:'#FF3300'},300,function(){
                                 setTimeout(function(){element.animate({color:'#b4b4b4'},300);},1000);

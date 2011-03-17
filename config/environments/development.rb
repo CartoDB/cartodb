@@ -27,10 +27,6 @@ CartoDB::Application.configure do
 
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
   
-  # Disable delivery errors, bad email addresses will be ignored
-  # config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.delivery_method = :ses
-
 end
 
 API_HOST = "http://api.localhost.lan:3000"

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset=utf-8 />
+    <title>Clubs - Static Mashup</title>
+    <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
+    <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
+
+    <style type="text/css">
+      body {position:relative; background:#2D3451;}
+      /*HEADER*/
+      header {width:900px; height:100px; margin:0 auto; padding:20px 0 50px 0; background:none;}
+      header a.logo {float:left; width:200px; height:100px; margin:21px 0 0 0; background:url('/images/admin/others/logo_mashup.png') no-repeat 0 0; text-indent:-9999px;}
+      h1 {float:right; margin:38px 0 0 0; font:bold 40px "Helvetica",Arial; color:white; letter-spacing:-3px;}
+      section.map {position:relative; margin:0 auto; width:900px; height:600px; -wekit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid black;}
+      section.map div#map {float:left; width:900px; height:600px;}
+      section.map span.top-left {position:absolute; width:5px; height:5px; background-image:url('/images/admin/others/corners_mashup.png');top:-1px; left:-1px; background-position:0 0;}
+      section.map span.top-right {position:absolute; width:5px; height:5px; background-image:url('/images/admin/others/corners_mashup.png');top:-1px; right:-1px; background-position:-5px 0;}
+      section.map span.bottom-left {position:absolute; width:5px; height:5px; background-image:url('/images/admin/others/corners_mashup.png');bottom:-1px; left:-1px; background-position:0 -5px;}
+      section.map span.bottom-right {position:absolute; width:5px; height:5px; background-image:url('/images/admin/others/corners_mashup.png');bottom:-1px; right:-1px; background-position:-5px -5px;}
+      section.map p.loading {position:absolute; display:none; top:10px; left:50%; margin:0 0 0 -47px; padding:5px 30px 5px 10px; background:url('/images/admin/others/activity_indicator.gif') no-repeat 68px 5px rgba(0,0,0,0.9);
+       -wekit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; font:normal 15px Arial; color:white;}
+
+      section.map a.zoom_in {position:absolute; top:10px; left:10px; width:26px; height:26px; background:url('/images/admin/map/zoomin.png') no-repeat 0 0;}
+      section.map a.zoom_in:hover {background-position:0 -26px; cursor:pointer;}
+      section.map a.zoom_out {position:absolute; top:40px; left:10px; width:26px; height:26px; background:url('/images/admin/map/zoomout.png') no-repeat 0 0;}
+      section.map a.zoom_out:hover {background-position:0 -26px; cursor:pointer;}
+      /*Infowindow*/
+      a.clubMarker {float:left; display:block; width:25px; height:25px; background:url("/images/admin/others/marker.png") no-repeat 0 0; text-indent:-9999px;}
+      a.clubMarker:hover {cursor:pointer;}
+      div.hidden {position:absolute; top:-200px; left:-105px; display:none; width:233px; height:207px; margin:0; padding:0; background:url("/images/admin/others/infowindow.png") no-repeat 0 0;}
+      div.hidden a.close {position:absolute; right:1px; top:0px; width:21px; height:21px; background:url("/images/admin/others/close.png") no-repeat 0 0; text-indent:-9999px;}
+      div.hidden a.close:hover {background-position:0 -21px;}
+      div.hidden h3 {float:left; width:193px; margin:20px 0 0 20px; font:bold 16px "Helvetica",Arial; color:#333333; letter-spacing:-1px;}
+      div.hidden div.content {float:left; width:193px; margin:0 0 0 20px;}
+      div.hidden div.content img {float:left; width:50px; margin:10px 10px 10px 0; border:1px solid black;}
+      div.hidden div.content p {float:none; padding:8px 0 0 0; font:normal 14px Arial; color:#666666;}
+    </style>
+
+    <script src="/javascripts/plugins/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&region=ES&language=ES"></script>
+  </head>
+  <body>
+    <header>
+      <a class="logo" href="/">CartoDB</a>
+    </header>
+
+    <section class="map">
+      <div id="map"><img src="" /></div>
+      <span class="top-right"></span>
+      <span class="top-left"></span>
+      <span class="bottom-left"></span>
+      <span class="bottom-right"></span>
+      <p class="loading">Loading</p>
+      <a href="#zoom_in" class="zoom_in"></a>
+      <a href="#zoom_out" class="zoom_out"></a>
+    </section>
+
+    <script type="text/javascript">
+        var map;
+        var bounds = new google.maps.LatLngBounds();
+        var globalIndex = 0;
+        var directionsService = new google.maps.DirectionsService();
+
+        jQuery(function($) {
+            showLoader();
+
+
+
+            $('a.zoom_in').click(function(ev){
+              ev.stopPropagation();
+              ev.preventDefault();
+              map.setZoom(map.getZoom()+1);
+            });
+            $('a.zoom_out').click(function(ev){
+              ev.stopPropagation();
+              ev.preventDefault();
+              map.setZoom(map.getZoom()-1);
+            });
+
+            
+            var hospital_position = new google.maps.LatLng(22.2470437, -97.8624641);
+            var random = new google.maps.LatLng(22.22912329158703, -97.82119274139404);
+            
+
+
+        	  var request = {
+        	      origin:random, 
+        	      destination:hospital_position,
+        	      travelMode: google.maps.DirectionsTravelMode.DRIVING
+        	  };
+        	  directionsService.route(request, function(response, status) {
+        	    if (status == google.maps.DirectionsStatus.OK) {
+        				var steps = response.routes[0].legs[0].steps;
+        				console.log(steps);     
+        				
+        				var path = '';
+        				
+        			  for (var i=0; i<steps.length; i++) {
+        			    path += steps[i].path[0].lat().toFixed(4) + "," + steps[i].path[0].lng().toFixed(4) + '|';
+        			  }
+        			  
+        			  path = path.substr(0,path.length-2);
+        			  $('img').attr('src',"http://maps.google.com/maps/api/staticmap?path=color:0xff0000ff|weight:5|"+path+"&size=640x600&sensor=false");
+        			  
+        			  
+        				hideLoader();
+        			}
+        	  });
+
+
+
+
+
+        });
+
+
+
+        function showLoader() {
+          $('p.loading').fadeIn();
+        }
+
+
+        function hideLoader() {
+          $('p.loading').fadeOut();
+        }
+
+
+    </script>
+
+  </body>
+</html>

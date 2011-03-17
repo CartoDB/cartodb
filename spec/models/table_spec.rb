@@ -533,6 +533,47 @@ describe Table do
     table.lon_column.should be_nil
     table.lat_column.should be_nil
   end
+  
+  it "should update the_geom when setting latitude_column and longitude_column new values" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.save
+    table.lat_column.should == :latitude
+    table.lon_column.should == :longitude
+    
+    new_lat = Float.random_latitude
+    new_lon = Float.random_longitude
+    
+    pk = table.insert_row!(:name => "element 1", :latitude => new_lat, :longitude => new_lon)
+    
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+    ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % new_lon)
+    ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % new_lat)
+  end
+
+  it "should update the_geom when updating latitude_column and longitude_column new values" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.save
+    table.lat_column.should == :latitude
+    table.lon_column.should == :longitude
+    
+    new_lat = Float.random_latitude
+    new_lon = Float.random_longitude
+    
+    pk = table.insert_row!(:name => "element 1", :latitude => new_lat, :longitude => new_lon)
+
+    updated_lat = Float.random_latitude
+    updated_lon = Float.random_longitude
+    
+    table.update_row!(pk, {:latitude => updated_lat, :longitude => updated_lon})
+    
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+    ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % updated_lon)
+    ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % updated_lat)
+  end
 
   it "should be able to set an address column to a given column on a empty table" do
     res_mock = mock()
@@ -557,7 +598,7 @@ describe Table do
 
     table.insert_row!({:name => 'El Lacón', :address => 'Calle de Manuel Fernández y González 8, Madrid'})
 
-    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} limit 1")
     query_result[:rows][0][:lon].to_s.should match /^-3\.699416/
     query_result[:rows][0][:lat].to_s.should match /^40\.415147/
 
@@ -566,7 +607,7 @@ describe Table do
 
     table.update_row!(query_result[:rows][0][:cartodb_id], {:name => 'El Estocolmo', :address => 'Calle de La Palma 72, Madrid'})
 
-    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} limit 1")
     query_result[:rows][0][:lon].to_s.should match /^\-3\.708944/
     query_result[:rows][0][:lat].to_s.should match /^40\.426833/
   end
@@ -591,7 +632,7 @@ describe Table do
 
     table.set_address_column!(:address)
 
-    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name}")
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name}")
     query_result[:rows][0][:lon].to_s.should match /^\-3\.699416/
     query_result[:rows][0][:lat].to_s.should match /^40\.415147/
     query_result[:rows][1][:lon].to_s.should match /^\-3\.708944/
@@ -657,7 +698,7 @@ describe Table do
 
     table.insert_row!({:name => 'El Lacón', :address => ''})
 
-    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} limit 1")
     query_result[:rows][0][:lon].should be_nil
     query_result[:rows][0][:lat].should be_nil
 
@@ -666,7 +707,7 @@ describe Table do
 
     table.update_row!(query_result[:rows][0][:cartodb_id], {:name => 'El Estocolmo', :address => 'Calle de La Palma 72, Madrid'})
 
-    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} limit 1")
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} limit 1")
     query_result[:rows][0][:lon].to_s.should match /^\-3\.708944/
     query_result[:rows][0][:lat].to_s.should match /^40\.426833/
   end
@@ -728,7 +769,7 @@ describe Table do
     row = table.records[:rows][0]
     row[:address].should == "Hortaleza 48, Madrid"
 
-    query_result = user.run_query("select ST_X(ST_Transform(the_geom, 4326)) as lon, ST_Y(ST_Transform(the_geom, 4326)) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{row[:cartodb_id]}")
     query_result[:rows][0][:lon].to_s.should match /^40\.32/
     query_result[:rows][0][:lat].to_s.should match /^3\.76/
   end

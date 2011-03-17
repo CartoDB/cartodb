@@ -5,6 +5,7 @@
 </ul>
 <h1>Create a new row</h1>
 <p>Creates a new row in the table. Returns the primary key of that row.</p>
+<p>If you want to set the geometry field of the row you have to use <code>the_geom</code> and conver the geometry to a GeoJSON representation.</p>
 
 <h2>URL</h2>
 <code>/v1/tables/&lt;identifier&gt;/records</code>
@@ -15,7 +16,7 @@
 <h2>PARAMETERS</h2>
 <p>Required</p>
 <ul>
-  <li><code>identifier</code>: the name of the table</li>
+  <li><code>identifier</code>: the name of the table (in the URL of the request)</li>
   <li>The list of colums names and their values</li>
 </ul>
 
@@ -25,8 +26,9 @@
     /v1/tables/species_occurrences/records
       {
         "name": "Laetmonice producta",
-        "description", "",
-        ...
+        "description": "",
+        "the_geom": "{\"type\":\"Point\","coordinates\":[1,2]}",
+        "..."
       }
 </code></pre>
 <p class="tab">JSON</p>

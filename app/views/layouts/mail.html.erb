@@ -5,8 +5,8 @@
      <style type="text/css" media="screen">
         * {margin:0; padding:0;}
         body {background-color: #ffffff;}
-        h1 {font:bold 23px Arial; color:white; text-shadow:0 1px black;}
-        p.subtitle {font:normal 15px Arial!important; text-shadow:0 1px black;}
+        h1 {font:bold 27px Arial; color: #333333; }
+        p.subtitle {font:normal 15px Arial!important; text-decoration:italic; }
         a {border: none;text-decoration:none;}
         a:hover {text-decoration:underline; color:#333333;}
         a.activate:hover {color:#132114;}
@@ -23,7 +23,7 @@
       <tbody>
         <tr border="0">
           <td align="left" width="34" height="90" border="0" valign="top"></td>
-          <td align="left" width="606" height="90" border="0" valign="top" background="http://www.cartodb.com/images/admin/mail/header.jpg">
+          <td align="left" width="606" height="90" border="0" valign="top">
             <table width="606" border="0" cellspacing="0" cellpadding="0">
               <tr width="606" height="18">
                 <td height="18"></td>
@@ -31,7 +31,7 @@
               <tr>
                 <td width="20"></td>
                 <td color="#FFFFFF" width="576" valign="middle">
-                  <h1 style="margin-top:0; margin-bottom:0; margin-left:0; margin-right:0, padding-right:0; padding-top:0; padding-bottom:0; padding-left:0; font:bold 23px Arial; color:white; text-shadow:0 1px black;"><%= yield :title %></h1>
+                  <h1 style="margin-top:0; margin-bottom:0; margin-left:0; margin-right:0, padding-right:0; padding-top:0; padding-bottom:0; padding-left:0; font:bold 27px Arial; color:#333333; "><%= yield :title %></h1>
                 </td>
               </tr>
               <tr width="606" height="5">
@@ -40,7 +40,7 @@
               <tr>
                 <td width="20"></td>
                 <td color="#FFFFFF" width="576" valign="middle">
-                  <p style="margin-top:0; margin-bottom:0; margin-left:0; margin-right:0, padding-right:0; padding-top:0; padding-bottom:0; padding-left:0; font:normal 15px Arial; color:white; text-shadow:0 1px black;" ><%= yield :subtitle %></p>
+                  <p style="margin-top:0; margin-bottom:0; margin-left:0; margin-right:0, padding-right:0; padding-top:0; padding-bottom:0; padding-left:0; font:normal 15px Arial; color:#666666;" ><%= yield :subtitle %></p>
                 </td>
               </tr>
             </table>

@@ -78,7 +78,9 @@ section.subheader div.right span.advanced_options ul li.disabled a:hover {color:
 section.subheader div.right span.paginate {position:absolute; right:0; bottom:5px;  width:100%;}
 section.subheader div.right span.paginate a {float:right; width:27px; height:23px; text-indent:-9999px;}
 section.subheader div.right span.paginate a.previous {margin:0 3px 0 0; background:url('/images/admin/icons/left_button.png') no-repeat 0 0;}
+section.subheader div.right span.paginate a.previous_disabled {margin:0 3px 0 0; background:url('/images/admin/icons/left_button_disabled.png') no-repeat 0 0;}
 section.subheader div.right span.paginate a.next {background:url('/images/admin/icons/right_button.png') no-repeat 0 0;}
+section.subheader div.right span.paginate a.next_disabled {background:url('/images/admin/icons/right_button_disabled.png') no-repeat 0 0;}
 section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
 
 

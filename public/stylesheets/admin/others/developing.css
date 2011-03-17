@@ -31,6 +31,7 @@ section.outer_content div.content div.middle div.left ul.breadcrumb li.selected 
 section.outer_content div.content div.middle div.left ul.breadcrumb li.selected a {color:#999999;}
 section.outer_content div.content div.middle div.left ul.breadcrumb li.selected a:hover {text-decoration:none; cursor:default;}
 
+
 section.outer_content div.content div.middle div.left h1 {display:inline-block; width:100%; padding:6px 0 20px 0; font:bold 21px Arial; color:#333333; text-align:left;}
 section.outer_content div.content div.middle div.left p {font:normal 15px Arial; color:#666666}
 section.outer_content div.content div.middle div.left p a {color:#666666;}

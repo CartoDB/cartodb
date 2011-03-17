@@ -15,7 +15,7 @@ class Api::Json::RecordsController < ApplicationController
   end
 
   def create
-    primary_key = @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)})
+    primary_key = @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
     respond_to do |format|
       format.json do
         render :json => {:id => primary_key}.to_json, :status => 200, :callback => params[:callback]
@@ -37,7 +37,7 @@ class Api::Json::RecordsController < ApplicationController
   def update
     unless params[:id].blank?
       begin
-        resp = @table.update_row!(params[:id], params.reject{|k,v| REJECT_PARAMS.include?(k)})
+        resp = @table.update_row!(params[:id], params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
         if resp > 0
           render :nothing => true, :status => 200
         else

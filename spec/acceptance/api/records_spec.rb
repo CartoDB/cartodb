@@ -125,7 +125,7 @@ feature "API 1.0 records management" do
     end
   end
 
-  scenario "Update the from a column in a given record" do
+  scenario "Update the value from a column in a given record" do
     @user.in_database do |user_database|
       user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('Blat',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
     end
@@ -180,4 +180,53 @@ feature "API 1.0 records management" do
     end    
   end
 
+  scenario "Create a new row including the_geom field" do
+    @table.set_lat_lon_columns!(nil, nil)
+    
+    lat = Float.random_latitude
+    lon = Float.random_longitude
+    
+    post_json api_table_records_url(@table.name), {
+        :name => "Fernando Blat",
+        :description => "Geolocated programmer",
+        :the_geom => %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+    }
+    pk = nil
+    parse_json(response) do |r|
+      r.status.should be_success
+      pk = r.body[:id]
+    end
+    
+    query_result = @user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{@table.name} where cartodb_id = #{pk} limit 1")
+    ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
+    ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
+  end
+
+  scenario "Update a row including the_geom field" do
+    @table.set_lat_lon_columns!(nil, nil)
+    
+    lat = Float.random_latitude
+    lon = Float.random_longitude
+    
+    post_json api_table_records_url(@table.name), {
+        :name => "Fernando Blat",
+        :description => "Geolocated programmer"
+    }
+    pk = nil
+    parse_json(response) do |r|
+      r.status.should be_success
+      pk = r.body[:id]
+    end
+    
+    put_json api_table_record_url(@table.name,1), {
+      :the_geom => %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+    }
+    parse_json(response) do |r|
+      r.status.should be_success
+    end
+    
+    query_result = @user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{@table.name} where cartodb_id = #{pk} limit 1")
+    ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
+    ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
+  end
 end

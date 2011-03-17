@@ -258,6 +258,7 @@ class Table < Sequel::Model(:user_tables)
         geocode!(attributes, row_id)
       else
         if attributes.size == 1 && attributes.keys == [:the_geom]
+          rows_updated = 1
           geocode!(attributes, row_id)
         end
       end

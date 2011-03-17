@@ -121,7 +121,8 @@ feature "API 1.0 tables management" do
 
     put_json api_table_url(table1.name), {:privacy => "bad privacy value"}
     parse_json(response) do |r|
-      r.status.should == 400
+      r.status.should be_success
+      r.body[:privacy].should == "PUBLIC"
     end
 
     put_json api_table_url(table1.name), {:name => ""}
@@ -151,9 +152,9 @@ feature "API 1.0 tables management" do
   end
   
   scenario "Update a table and set the lat and lot columns to nil" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table = create_table :user_id => @user.id, :name => 'My table #1'
 
-    put_json api_table_url(table1.name), {
+    put_json api_table_url(table.name), {
       :latitude_column => "nil",
       :longitude_column => "nil"
     }
@@ -163,7 +164,7 @@ feature "API 1.0 tables management" do
       r.body[:schema].should include(["longitude", "number"])
     end
     
-    put_json api_table_url(table1.name), {
+    put_json api_table_url(table.name), {
       :address_column => "name"
     }
     parse_json(response) do |r|
@@ -172,6 +173,42 @@ feature "API 1.0 tables management" do
     end
   end
 
+  scenario "Update a table and set the the address column" do
+    table = create_table :user_id => @user.id, :name => 'My table #1'
+
+    put_json api_table_url(table.name), {
+      :address_column => "name"
+    }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:schema].should include(["name", "string", "address"])
+    end
+    
+    put_json api_table_url(table.name), {
+      :address_column => "nil"
+    }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:schema].should include(["name", "string"])
+    end
+  end
+  
+  scenario "Update a table and set the the address column to an aggregated of columns" do
+    table = new_table
+    table.user_id = @user.id
+    table.force_schema = "name varchar, address varchar, region varchar, country varchar"
+    table.save
+    
+    put_json api_table_url(table.name), {
+      :address_column => "address,region, country"
+    }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:schema].should include(["aggregated_address", "string", "address"])
+    end
+  end
+  
+  
   # ------
   # TODO
   #

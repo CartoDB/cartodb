@@ -4,7 +4,19 @@
   <li class="selected"><a href="/table/put">Update a table meta information</a></li>
 </ul>
 <h1>Update a table meta information</h1>
-<p>Updates the meta information from a table</p>
+<p>Updates the attributes of a table:</p>
+<ul>
+	<li><code>name</code></li>
+	<li><code>tags</code></li>
+	<li><code>privacy</code>: allowed values are <code>"PUBLIC"</code> and <code>"PRIVATE"</code></li>
+</ul>
+
+<p>Also, this method can be used to update the geometry columns of the table using the attributes:</p>
+<ul>
+	<li><code>latitude_column</code> and <code>longitude_column</code> if your table is georeferenced by a latitude column and a longitude column</li>
+	<li>or <code>address_column</code> if your table is georeferenced by an address. This atribute allows upto three columns, separated by commas. In this case,
+	  a new column is created with the content of the three columns separated by commas</li>
+</ul>
 
 <h2>URL</h2>
 <code>/v1/tables/&lt;identifier&gt;</code>
@@ -30,7 +42,7 @@
       }
 </code></pre>
 <p class="tab">JSON</p>
-<pre class="syntax json">
+<pre class="syntax javascript">
   {
     "id": "1",
     "name": "species_occurrences_preprocessed",
@@ -39,3 +51,26 @@
     "schema": [["cartodb_id","number"],["name","string"],["description","string"],["latitude","number"],["longitude","number"],["created_at","date"], ["updated_at","date"]]
   }
 </pre>
+<h2>EXAMPLE</h2>
+<pre><code>
+  # Setting an aggregated address column
+  # Our table "check_ins" has the columns address, region and country 
+  # and we want to georeference the table using those three columns
+  
+  PUT
+    /v1/tables/check_ins
+      {
+        "address_column": "address,region,country"
+      }
+</code></pre>
+<p class="tab">JSON</p>
+<pre class="syntax javascript">
+  {
+    "id": "1",
+    "name": "check_ins",
+    "tags": "...",
+    "privacy": "...",
+    "schema": [["cartodb_id","number"],["name","string"],["address","string"],["region","string"],["country","string"],["aggregated_address","string","address_column"],["created_at","date"], ["updated_at","date"]]
+  }
+</pre>
+

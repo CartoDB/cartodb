@@ -174,14 +174,14 @@ class Table < Sequel::Model(:user_tables)
   end
   
   def privacy=(value)
-    if value == "PRIVATE" || value == PRIVATE 
+    if value == "PRIVATE" || value == PRIVATE || value == PRIVATE.to_s
       self[:privacy] = PRIVATE
       if !new?
         owner.in_database do |user_database|
           user_database.run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
         end
       end
-    elsif value == "PUBLIC" || value == PUBLIC
+    elsif value == "PUBLIC" || value == PUBLIC || value == PUBLIC.to_s
       self[:privacy] = PUBLIC
       if !new?
         owner.in_database do |user_database|

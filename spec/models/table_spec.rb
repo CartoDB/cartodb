@@ -627,12 +627,14 @@ describe Table do
     table.insert_row!({:name => 'El Rincón', :address => 'Calle de Manuel Candela 8', :region => 'Valencia', :country => 'Spain'})
 
     table.set_address_column!("address,region,country")
+    table.reload
+    
     table.schema.should == [
       [:cartodb_id, "integer"], [:name, "character varying"], [:address, "character varying"],
       [:region, "character varying"], [:country, "character varying"], [:aggregated_address, "character varying", "address"],
       [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
-    
+    table.address_column.should == :aggregated_address
     table.record(3)[:aggregated_address].should == "Calle de Manuel Candela 8,Valencia,Spain"
   end
 

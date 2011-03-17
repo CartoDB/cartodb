@@ -68,7 +68,7 @@ class Api::Json::TablesController < ApplicationController
       longitude_column = params[:longitude_column] == "nil" ? nil : params[:longitude_column].try(:to_sym)
       @table.set_lat_lon_columns!(latitude_column, longitude_column)
     elsif params.keys.include?("address_column")
-      address_column = params[:address_column] == "nil" ? nil : params[:address_column].try(:to_sym)
+      address_column = params[:address_column] == "nil" ? nil : params[:address_column]
       @table.set_address_column!(address_column)
     end
     @table.tags = params[:tags] if params[:tags]

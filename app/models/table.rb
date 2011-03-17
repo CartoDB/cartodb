@@ -38,7 +38,7 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file, :import_from_external_url
 
-  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
+  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom address_geolocated }
 
   ## Callbacks
   def validate
@@ -273,7 +273,7 @@ class Table < Sequel::Model(:user_tables)
         [
           column.first,
           (options[:cartodb_types] == true ? column[1][:db_type].convert_to_cartodb_type : column[1][:db_type])
-        ] unless CARTODB_COLUMNS.include?(column.first.to_s)
+        ] if !CARTODB_COLUMNS.include?(column.first.to_s) && column.first.to_s != "address_column"
       end.compact
     end
     schema = [[:cartodb_id, (options[:cartodb_types] == true ? "integer".convert_to_cartodb_type :  "integer")]] +
@@ -312,11 +312,15 @@ class Table < Sequel::Model(:user_tables)
   def drop_column!(options)
     raise if CARTODB_COLUMNS.include?(options[:name].to_s)
     if options[:name].to_sym == address_column || options[:name].to_sym == lat_column || options[:name].to_sym == lon_column
+      old_address_column = address_column
       self.geometry_columns = nil
       save_changes
     end
     owner.in_database do |user_database|
       user_database.drop_column name.to_sym, options[:name].to_s
+      if options[:name].to_sym == old_address_column
+        user_database.drop_column name.to_sym, "address_geolocated"
+      end
     end
   end
 
@@ -468,8 +472,17 @@ class Table < Sequel::Model(:user_tables)
       address_column = aggregated_address_name
     end
     self.geometry_columns = address_column.try(:to_s)
+    unless address_column.blank?
+      owner.in_database do |user_database|
+        user_database.run("alter table #{self.name} add column address_geolocated boolean default null")
+      end
+    else
+      owner.in_database do |user_database|
+        user_database.run("alter table #{self.name} drop column address_geolocated")
+      end      
+    end
     save_changes
-    geocode_all_address_columns! if rows_counted > 0
+    # geocode_all_address_columns! if rows_counted > 0
   end
 
   def address_column
@@ -719,24 +732,25 @@ TRIGGER
   end
 
   def geocode!(attributes, primary_key)
-    if attributes[:the_geom]      
-      owner.in_database do |user_database|
+    owner.in_database do |user_database|
+      if attributes[:the_geom]      
         user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-      end
-    else
-      # if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
-      #   url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(attributes[address_column])}&sensor=false")
-      #   req = Net::HTTP::Get.new(url.request_uri)
-      #   res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-      #   json = JSON.parse(res.body)
-      #   if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
-      #     owner.in_database do |user_database|
-      #       user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-      #     end
-      #   end
-      # end
-      if !lat_column.blank? && !lon_column.blank?
-        owner.in_database do |user_database|
+        if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
+          user_database.run("UPDATE #{self.name} SET address_geolocated = true")
+        end
+      else
+        # if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
+        #   url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(attributes[address_column])}&sensor=false")
+        #   req = Net::HTTP::Get.new(url.request_uri)
+        #   res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
+        #   json = JSON.parse(res.body)
+        #   if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
+        #     owner.in_database do |user_database|
+        #       user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
+        #     end
+        #   end
+        # end
+        if !lat_column.blank? && !lon_column.blank?
           user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{primary_key}")
         end
       end

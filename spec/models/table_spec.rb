@@ -828,12 +828,62 @@ describe Table do
     end
 
     table.set_address_column!(:address)
-
     table.address_column.should == :address
-
     table.drop_column!(:name => :address)
-
     table.address_column.should be_nil
+  end
+  
+  it "should create a meta-column named address_geolocated which mustn't appear in the schema of the table" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.save
+    table.set_address_column!(:address)
+    table.address_column.should == :address
+    
+    user.in_database do |user_database|
+      user_database.schema(table.name.to_sym).should include(
+        [:address_geolocated, {:db_type=>"boolean", :default=>nil, :allow_null=>true, :primary_key=>false, :type=>:boolean, :ruby_default=>nil}]
+      )
+    end
+    table.schema.should_not include([:address_geolocated, "boolean"])
+  end
+  
+  it "should remove the meta-column named address_geolocated when address_column is set to null" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.save
+    table.set_address_column!(:address)
+    table.address_column.should == :address
+    
+    table.set_address_column!(nil)
+    
+    user.in_database do |user_database|
+      user_database.schema(table.name.to_sym).should_not include(
+        [:address_geolocated, {:db_type=>"boolean", :default=>nil, :allow_null=>true, :primary_key=>false, :type=>:boolean, :ruby_default=>nil}]
+      )
+    end
+  end
+
+  it "should remove the meta-column named address_geolocated when address_column is removed" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.save
+    table.set_address_column!(:address)
+    table.address_column.should == :address
+    
+    table.drop_column!(:name => :address)
+    
+    user.in_database do |user_database|
+      user_database.schema(table.name.to_sym).should_not include(
+        [:address_geolocated, {:db_type=>"boolean", :default=>nil, :allow_null=>true, :primary_key=>false, :type=>:boolean, :ruby_default=>nil}]
+      )
+    end
   end
 
   it "should set to null geometry columns when a latitude and longitude column is set and it is removed" do
@@ -952,4 +1002,44 @@ describe Table do
     table.constraints.should have_at_least(1).item
     table.constraints.should include({:constraint_name => 'enforce_srid_the_geom'})
   end
+  
+  it "should set address_geolocated to true when set on the address_column and a valid the_geom" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.save
+    
+    table.set_address_column!(:address)
+    pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+    query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address_geolocated].should be_true    
+  end
+  
+  it "should set address_geolocated to nil when set on the address_column and a null the_geom" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.save
+    
+    table.set_address_column!(:address)
+    pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia"})
+    query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address_geolocated].should be_nil    
+  end
+  
+  it "should set address_geolocated to false when set on the address_column and a null the_geom" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.save
+    
+    table.set_address_column!(:address)
+    pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :address_geolocated => false})
+    query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address_geolocated].should be_false    
+  end
+  
 end

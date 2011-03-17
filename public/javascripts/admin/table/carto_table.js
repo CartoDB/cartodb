@@ -2012,9 +2012,10 @@
       //  Move table -> left/right         //
       ///////////////////////////////////////
       $('span.paginate a.next').click(function(ev){
+
         stopPropagation(ev);
         methods.closeTablePopups();
-        
+                  
         var scrollable = $('div.table_position').scrollLeft();
         var window_width = $(window).width();
         var second = $('table thead tr th:eq(2)').position().left;
@@ -2030,10 +2031,12 @@
           $('div.table_position').scrollTo({top:'0',left:'100%'},200);
         }
       });
+      
       $('span.paginate a.previous').click(function(ev){
+        
         stopPropagation(ev);
         methods.closeTablePopups();
-        
+      
         var scrollable = $('div.table_position').scrollLeft();
         var window_width = $(window).width();
         var second = $('table thead tr th:eq(2)').position().left;
@@ -2046,7 +2049,6 @@
         $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
       });
     },
-
 
     
     
@@ -2093,6 +2095,7 @@
         $('span.end_table').css('bottom','-3px');
         $(table).parent().height(parent_height-162);
       }
+      
     },
 
 

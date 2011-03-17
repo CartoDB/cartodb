@@ -256,6 +256,25 @@ describe Table do
       table.insert_row!({:non_existing => "bad value"})
     }.should raise_error(CartoDB::InvalidAttributes)
   end
+  
+  it "should be able to insert a row with a geometry value" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.save
+    table.reload
+    
+    table.set_lat_lon_columns!(nil, nil)
+    
+    lat = Float.random_latitude
+    lon = Float.random_longitude
+    the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+    pk = table.insert_row!({:name => "First check_in", :latitude => lat, :longitude => lon, :the_geom => the_geom})
+    
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+    ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
+    ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
+  end
 
   it "should be able to update a row" do
     user = create_user
@@ -274,6 +293,27 @@ describe Table do
     lambda {
       table.update_row!(row[:cartodb_id], :non_existing => 'ignore it, please', :description => "Description 123")
     }.should raise_error(CartoDB::InvalidAttributes)
+  end
+  
+  it "should be able to update a row with a geometry value" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.save
+    table.reload
+    
+    table.set_lat_lon_columns!(nil, nil)
+
+    lat = Float.random_latitude
+    lon = Float.random_longitude    
+    pk = table.insert_row!({:name => "First check_in", :latitude => lat, :longitude => lon})
+    
+    the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+    table.update_row!(pk, {:the_geom => the_geom})
+    
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+    ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
+    ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
   end
 
   it "should increase the tables_count counter" do

@@ -15,6 +15,8 @@ gem 'htmlentities'
 gem 'oauth'
 gem 'oauth-plugin', '>=0.4.0.pre1'
 gem 'sequel_column_type_array'
+gem 'rgeo'
+gem 'rgeo-geojson', :require => 'rgeo/geo_json'
 
 gem "aws-ses", '0.4.1', :require => 'aws/ses'
 

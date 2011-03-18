@@ -170,20 +170,21 @@
     geocoder.geocode({'latLng': latlng}, function(results, status) {
       
       var params = {};
-      params.lat = latlng.lat();
-      params.lon = latlng.lng();
-      params.address = '';
+      
+      params['the_geom'] = {"type":"Point","coordinates":[latlng.lng(),latlng.lat()]};
+      params['address_column'] = '';
       
       if (status == google.maps.GeocoderStatus.OK) {
-        params.address = results[0].formatted_address;
+        params['address_column'] = results[0].formatted_address;
       }
       
       $.ajax({
         dataType: 'json',
         type: 'PUT',
         headers: {'cartodbclient':true},
-        url: '/api/json/tables/'+table_id+'/update_geometry/'+cartodb_id,
+        url: '/v1/tables/'+table_name+'/records/'+cartodb_id,
         data: params,
+        dataType: 'text',
         success: function(data) {
           requests_queue.responseRequest(requestId,'ok','');
         },
@@ -191,7 +192,7 @@
           try {
             requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
           } catch (e) {
-            requests_queue.responseRequest(requestId,'error','Seems like you don\'t have Internet connection');
+            requests_queue.responseRequest(requestId,'error','There has been an error...');
           }
           markers[cartodb_id].setPosition(markers[cartodb_id].init_latlng);
         }

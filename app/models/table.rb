@@ -209,7 +209,8 @@ class Table < Sequel::Model(:user_tables)
   def insert_row!(raw_attributes)
     primary_key = nil
     owner.in_database do |user_database|
-      attributes = raw_attributes.dup.select{ |k,v| user_database.schema(name.to_sym).map{|c| c.first}.include?(k.to_sym) }
+      schema = user_database.schema(name.to_sym).map{|c| c.first}
+      attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
@@ -236,7 +237,8 @@ class Table < Sequel::Model(:user_tables)
   def update_row!(row_id, raw_attributes)
     rows_updated = 0
     owner.in_database do |user_database|
-      attributes = raw_attributes.dup.select{ |k,v| user_database.schema(name.to_sym).map{|c| c.first}.include?(k.to_sym) }
+      schema = user_database.schema(name.to_sym).map{|c| c.first}
+      attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
@@ -415,6 +417,13 @@ class Table < Sequel::Model(:user_tables)
       :total_rows => rows_counted,
       :rows       => rows
     }
+  end
+  
+  def get_records_with_pending_addresses(options = {})
+    limit = (options[:rows_per_page] || 10).to_i
+    limit = 5000 if limit > 5000
+    offset = (options[:page] || 0).to_i*limit
+    owner.run_query("select cartodb_id,#{address_column} from #{self.name} where address_geolocated is null limit #{limit} offset #{offset}")[:rows]
   end
 
   def record(identifier)

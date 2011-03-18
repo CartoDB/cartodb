@@ -229,4 +229,36 @@ feature "API 1.0 records management" do
     ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
   end
+  
+  scenario "Get the records where the addresses haven't been geolocated yet" do
+    table = new_table
+    table.user_id = @user.id
+    table.force_schema = "name varchar, address varchar, region varchar, country varchar"
+    table.save
+    
+    put_json api_table_url(table.name), {
+      :address_column => "address,region, country"
+    }
+
+    post_json api_table_records_url(table.name), {
+      :name => "Fernando Blat",
+      :address => "Calle de la Villa",
+      :region => 'Madrid',
+      :country => 'Spain',
+      :aggregated_address => "Calle de la Villa,Madrid,Spain"
+    }
+    
+    pk = nil
+    parse_json(response) do |r|
+      r.status.should be_success
+      pk = r.body[:id]
+    end
+    
+    get api_table_records_pending_addresses_url(table.name)
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body.should == [{"cartodb_id" => pk, "aggregated_address" => "Calle de la Villa,Madrid,Spain"}]
+    end
+  end
+  
 end

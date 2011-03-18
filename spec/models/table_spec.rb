@@ -885,6 +885,45 @@ describe Table do
       )
     end
   end
+  
+  it "should remove the meta-column named address_geolocated when latitude_column and longitude_column is set" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar, lat float, lon float"
+    table.save
+    table.set_address_column!(:address)
+    table.address_column.should == :address
+    
+    table.set_lat_lon_columns!(:lat, :lon)
+    
+    user.in_database do |user_database|
+      user_database.schema(table.name.to_sym).should_not include(
+        [:address_geolocated, {:db_type=>"boolean", :default=>nil, :allow_null=>true, :primary_key=>false, :type=>:boolean, :ruby_default=>nil}]
+      )
+    end
+  end
+  
+  it "should set to null all values from address_geolocated when address_column changes" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address1 varchar, address2 varchar"
+    table.save
+
+    table.set_address_column!(:address1)
+    table.address_column.should == :address1
+
+    pk = table.insert_row!({:address1 => "C/ Santa Ana", :address2 => "Santa Ana st.", :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+    query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address_geolocated].should be_true
+    
+    table.set_address_column!(:address2)
+    table.address_column.should == :address2
+
+    query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address_geolocated].should be_nil
+  end
 
   it "should set to null geometry columns when a latitude and longitude column is set and it is removed" do
     user = create_user

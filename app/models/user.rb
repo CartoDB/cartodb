@@ -196,6 +196,7 @@ class User < Sequel::Model
     end
     ClientApplication.create(:user_id => self.id)
   end
+
   def self.find_with_custom_fields(user_id)
     User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin).first
   end
@@ -239,4 +240,5 @@ class User < Sequel::Model
     database_exist
   end
   private :database_exists?
+
 end

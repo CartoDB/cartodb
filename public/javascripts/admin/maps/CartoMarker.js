@@ -70,3 +70,17 @@
   CartoMarker.prototype.getPosition = function() {
    return this.latlng_;
   };
+  
+  CartoMarker.prototype.setPosition = function(latlng) {
+   this.latlng_ = latlng;
+   var div = this.div_;
+   
+   var pixPosition = this.getProjection().fromLatLngToDivPixel(this.latlng_);
+   if (pixPosition) {
+     div.style.width = this.width_ + 'px';
+     div.style.left = (pixPosition.x + this.offsetHorizontal_) + 'px';
+     div.style.height = this.height_ + 'px';
+     div.style.top = (pixPosition.y + this.offsetVertical_) + 'px';
+   }
+  };
+  

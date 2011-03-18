@@ -1786,8 +1786,8 @@
             var longitude = $('a#longitude').attr('c');
             if (!(latitude=='' && longitude=='')) {
               var params = {};
-              params['lat_column'] = (latitude=="Empty")? "nil" : latitude;
-              params['lon_column'] = (longitude=="Empty")? "nil" : longitude;
+              params['latitude_column'] = (latitude=="Empty")? "nil" : latitude;
+              params['longitude_column'] = (longitude=="Empty")? "nil" : longitude;
               methods.updateTable("",params,null,null,'update_geometry',"PUT");
             } else {
               $('div.georeference_window p.error').text('You have to select latitude and longitude');

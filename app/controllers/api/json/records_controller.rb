@@ -22,6 +22,7 @@ class Api::Json::RecordsController < ApplicationController
       end
     end
   rescue => e
+    puts e.error_message
     render :json => { :errors => [e.error_message] }.to_json, :status => 400,
            :callback => params[:callback]
   end
@@ -75,6 +76,12 @@ class Api::Json::RecordsController < ApplicationController
   def update_column
     @table.update_row!(params[:record_id], {params[:id].to_sym => params[:value]})
     render :json => {params[:id] => params[:value]}.to_json,
+           :status => 200
+  end
+  
+  def pending_addresses
+    records = @table.get_records_with_pending_addresses(:page => params[:page], :rows_per_page => params[:per_page])
+    render :json => records.to_json,
            :status => 200
   end
   

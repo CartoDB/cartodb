@@ -52,6 +52,10 @@ module NavigationHelpers
   def api_table_record_column_url(table_identifier, row_identifier, column_name)
     "#{api_url_prefix}/tables/#{table_identifier}/records/#{row_identifier}/columns/#{column_name}"
   end
+  
+  def api_table_records_pending_addresses_url(table_identifier)
+    "#{api_url_prefix}/tables/#{table_identifier}/records/pending_addresses"
+  end
 
   private
 

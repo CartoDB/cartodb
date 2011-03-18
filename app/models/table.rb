@@ -208,6 +208,9 @@ class Table < Sequel::Model(:user_tables)
 
   def insert_row!(raw_attributes)
     primary_key = nil
+    if raw_attributes[:address_column] && address_column
+      raw_attributes[address_column] = raw_attributes.delete(:address_column)
+    end
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -236,6 +239,9 @@ class Table < Sequel::Model(:user_tables)
 
   def update_row!(row_id, raw_attributes)
     rows_updated = 0
+    if raw_attributes[:address_column] && address_column
+      raw_attributes[address_column] = raw_attributes.delete(:address_column)
+    end
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }

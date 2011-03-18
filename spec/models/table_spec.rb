@@ -315,6 +315,24 @@ describe Table do
     ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
   end
+  
+  it "should accept insert and update address_column if an attribute address_column is set" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.save
+    table.reload
+    table.set_address_column!(:address)
+
+    pk = table.insert_row!({:address_column => "Calle Santa Ana 1"})
+    query_result = user.run_query("select address from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address].should == "Calle Santa Ana 1"
+
+    table.update_row!(pk, {:address_column => "Calle Santa Ana 2"})
+    query_result = user.run_query("select address from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address].should == "Calle Santa Ana 2"
+  end
 
   it "should increase the tables_count counter" do
     user = create_user

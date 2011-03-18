@@ -448,6 +448,7 @@ class Table < Sequel::Model(:user_tables)
     if lat_column && lon_column
       owner.in_database do |user_database|
         user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
+        user_database.run("alter table #{self.name} drop column address_geolocated") if user_database.schema(name.to_sym).map{|e| e[0]}.include?(:address_geolocated)
       end
       self.geometry_columns = "#{lat_column}|#{lon_column}"
     end
@@ -483,7 +484,11 @@ class Table < Sequel::Model(:user_tables)
     self.geometry_columns = address_column.try(:to_s)
     unless address_column.blank?
       owner.in_database do |user_database|
-        user_database.run("alter table #{self.name} add column address_geolocated boolean default null")
+        if user_database.schema(name.to_sym).map{|e| e[0]}.include?(:address_geolocated)
+          user_database.run("update #{self.name} set address_geolocated = null")
+        else
+          user_database.run("alter table #{self.name} add column address_geolocated boolean default null")
+        end
       end
     else
       owner.in_database do |user_database|

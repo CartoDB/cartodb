@@ -8,7 +8,7 @@ require "action_mailer/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env) if defined?(Bundler)
 
-require 'cartodb/api_documentation_server'
+require File.expand_path('../../lib/cartodb/api_documentation_server', __FILE__)
 
 module CartoDB
   class Application < Rails::Application

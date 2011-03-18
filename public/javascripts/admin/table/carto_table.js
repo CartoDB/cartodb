@@ -1605,10 +1605,10 @@
         function getColumns() {
           $.ajax({
              method: "GET",
-             url: '/v1/tables/'+table_id+'/schema',
-             headers: {"cartodbclient": true},
+             url: defaults.getDataUrl,
+      			 headers: {"cartodbclient":"true"},
              success: function(data) {
-               
+               data = data.schema;
                // Select item depending on the kind of referenciation before
                var geo_col_type = '';
                if ($('p.geo').length==0) {
@@ -1771,7 +1771,7 @@
             if (address!='') {
               loadingState();
               params['address_column'] = address;
-              setTimeout(function(){methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry',"PUT");},1000);
+              setTimeout(function(){methods.updateTable("",params,null,null,'update_geometry',"PUT");},1000);
             } else {
               $('div.georeference_window p.error').text('You have to select at least one column');
               $('div.georeference_window p.error').css('opacity',0);
@@ -1788,7 +1788,7 @@
               var params = {};
               params['lat_column'] = (latitude=="Empty")? "nil" : latitude;
               params['lon_column'] = (longitude=="Empty")? "nil" : longitude;
-              methods.updateTable("/set_geometry_columns",params,null,null,'update_geometry',"PUT");
+              methods.updateTable("",params,null,null,'update_geometry',"PUT");
             } else {
               $('div.georeference_window p.error').text('You have to select latitude and longitude');
               $('div.georeference_window p.error').css('opacity',0);

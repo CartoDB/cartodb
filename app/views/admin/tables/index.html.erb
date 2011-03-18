@@ -41,12 +41,8 @@
                       <h4><%= link_to(table.name, table, :class=>'tableTitle')  %> </h4>
                       <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
                       <p class="delete"> | <a table-name="<%= table.name %>" href="#" class="delete">delete table</a></p>
-                      <p class="columns"><strong>Columns:</strong> 
-                      <% table.columns.each_with_index do |column, i| %>
-                        <% if i<5 %>
-                        <%= column %>,
-                        <% end %>
-                      <% end %>
+                      <p class="columns"><strong>Columns:</strong>
+                      <%= table.schema.map{ |e| e.first }[1...5].join(',') %>
                       ...</p>
                     </span>
                     <span class="tags">

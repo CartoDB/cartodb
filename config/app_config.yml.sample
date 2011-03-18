@@ -1,0 +1,12 @@
+development:
+  amazon_access_key: ''
+  amazon_secret_key: ''
+test:
+  amazon_access_key: ''
+  amazon_secret_key: ''
+staging:
+  amazon_access_key: ''
+  amazon_secret_key: ''
+production:
+  amazon_access_key: ''
+  amazon_secret_key: ''

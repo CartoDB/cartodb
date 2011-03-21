@@ -80,7 +80,7 @@ class Api::Json::RecordsController < ApplicationController
   end
   
   def pending_addresses
-    records = @table.get_records_with_pending_addresses(:page => params[:page], :rows_per_page => params[:per_page])
+    records = @table.get_records_with_pending_addresses(:page => params[:page], :rows_per_page => params[:rows_per_page])
     render :json => records.to_json,
            :status => 200
   end

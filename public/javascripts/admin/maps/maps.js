@@ -48,6 +48,7 @@
           '</li>'+
         '</ul>'+
       '</div>'+
+      '<p class="georeferencing"></p>'+
       '<div id="map"></div>'
     );
     
@@ -98,6 +99,7 @@
 
   function showMap() {
     $('div.map_window div.map_curtain').hide();
+    $('p.georeferencing').hide();
     if (map==null) {
       var myOptions = {
         zoom: 3,
@@ -155,10 +157,41 @@
           }
         }
         hideLoader();
+        checkGeoPoints();
       },
       error: function(req, textStatus, e) {
         hideLoader();
       }
+    });
+  }
+  
+  
+  function checkGeoPoints() {
+    $.ajax({
+      method: "GET",
+      url: '/v1/tables/'+table_name+'/records/pending_addresses',
+      data: {rows_per_page:5000},
+      headers: {'cartodbclient':true},
+      success: function(data) {
+        if (data.length>0) {
+          var column_name;
+          $.each(data[0],function(key,value){
+            if (key!="cartodb_id") {
+              column_name = key;
+            }
+          });
+          $('p.georeferencing').html('There '+((data.length>1)?'are':'is')+' '+data.length+' '+((data.length>1)?'points':'point')+' without georeference yet, <a class="map_georeference" href="#georeference">do it now!</a>');
+          var width_geo = $('p.georeferencing').width();
+          $('p.georeferencing').css('marginLeft','-'+(width_geo/2)+'px');
+          $('p.georeferencing').fadeIn();
+          $('a.map_georeference').click(function(ev){
+            stopPropagation(ev);
+            geolocating = true;
+            $('ul.tab_menu a:contains("Table")').trigger('click');
+            var geo_address = new Geocoding(column_name,table_id);
+          });
+        }
+       }
     });
   }
   

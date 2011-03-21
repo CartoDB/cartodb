@@ -6,8 +6,8 @@ class ApplicationController < ActionController::Base
   class NoHTML5Compliant < Exception; end;
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   before_filter :browser_is_html5_compliant?
-  
-  
+
+
   rescue_from RecordNotFound, :with => :render_404
   $progress ||= {}
 
@@ -21,9 +21,9 @@ class ApplicationController < ActionController::Base
       true
     end
   end
-  
+
   protected
-  
+
   def render_404
     respond_to do |format|
       format.html do
@@ -66,7 +66,7 @@ class ApplicationController < ActionController::Base
       return error_message
     end
   end
-  
+
   def no_html5_compliant
     render :file => "#{Rails.root}/public/HTML5.html", :status => 500, :layout => false
   end
@@ -74,7 +74,7 @@ class ApplicationController < ActionController::Base
   private
     def browser_is_html5_compliant?
       user_agent = request.user_agent.downcase
-      unless user_agent.blank? || user_agent.match(/firefox\/4|safari\/5|chrome\/7/)
+      unless request.subdomain.eql?('api') || user_agent.blank? || user_agent.match(/firefox\/4|safari\/5|chrome\/7/)
         raise NoHTML5Compliant
       end
     end

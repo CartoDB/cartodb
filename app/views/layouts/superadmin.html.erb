@@ -14,7 +14,7 @@
       <a class="logo" href="/">CartoDB</a>
       <ul>
         <% if current_user.admin %>
-        <li><%= link_to 'Superadmin', superadmin_path %></li>
+        <li><%= link_to 'Superadmin', superadmin_users_path %></li>
         <% end %>
         <li><a href="/prototypes/developers.html">Developers</a></li>
         <li><a href="http://cartodb.tumblr.com" target="_blank">Blog</a></li>

@@ -1096,7 +1096,33 @@ describe Table do
     table.set_address_column!(:address)
     pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :address_geolocated => false})
     query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
-    query_result[:rows][0][:address_geolocated].should be_false    
+    query_result[:rows][0][:address_geolocated].should be_false
+
+    pk = table.insert_row!({:address => "C/ Santa Ana, 1, Valencia", :address_geolocated => "false"})
+    query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address_geolocated].should be_false
+  end
+  
+  it "should update the_geom even if the address is not geolocated correctly" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.save
+    
+    lat = Float.random_latitude
+    lon = Float.random_longitude
+    the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+    
+    table.set_address_column!(:address)
+    pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => the_geom})
+    query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address_geolocated].should be_true
+    
+    table.update_row!(pk, {:address => "C/ Pilar Martínez nº 16 pta 13, Burjassot, Valencia", :address_geolocated => false})
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:lon].should be_nil
+    query_result[:rows][0][:lat].should be_nil
   end
   
 end

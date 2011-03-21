@@ -211,12 +211,12 @@ class Table < Sequel::Model(:user_tables)
     if raw_attributes[:address_column] && address_column
       raw_attributes[address_column] = raw_attributes.delete(:address_column)
     end
+    if raw_attributes[:address_geolocated] && raw_attributes[:address_geolocated] == 'false'
+      raw_attributes[:address_geolocated] = false
+    end
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
-      if attributes[:address_geolocated]
-        attributes[:address_geolocated] = false if attributes[:address_geolocated] == 'false'
-      end
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
@@ -245,12 +245,12 @@ class Table < Sequel::Model(:user_tables)
     if raw_attributes[:address_column] && address_column
       raw_attributes[address_column] = raw_attributes.delete(:address_column)
     end
+    if raw_attributes[:address_geolocated] && raw_attributes[:address_geolocated] == 'false'
+      raw_attributes[:address_geolocated] = false
+    end
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
-      if attributes[:address_geolocated]
-        attributes[:address_geolocated] = false if attributes[:address_geolocated] == 'false'
-      end
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
@@ -759,25 +759,29 @@ TRIGGER
 
   def geocode!(attributes, primary_key)
     owner.in_database do |user_database|
-      if attributes[:the_geom]      
-        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})  where cartodb_id = #{primary_key}")
-        if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
-          user_database.run("UPDATE #{self.name} SET address_geolocated = true")
-        end
+      if attributes.keys.include?(:address_geolocated) && attributes[:address_geolocated] == false
+        user_database.run("UPDATE #{self.name} SET the_geom = NULL")
       else
-        # if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
-        #   url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(attributes[address_column])}&sensor=false")
-        #   req = Net::HTTP::Get.new(url.request_uri)
-        #   res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-        #   json = JSON.parse(res.body)
-        #   if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
-        #     owner.in_database do |user_database|
-        #       user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-        #     end
-        #   end
-        # end
-        if !lat_column.blank? && !lon_column.blank?
-          user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{primary_key}")
+        if attributes[:the_geom]      
+          user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})  where cartodb_id = #{primary_key}")
+          if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
+            user_database.run("UPDATE #{self.name} SET address_geolocated = true")
+          end
+        else
+          # if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
+          #   url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(attributes[address_column])}&sensor=false")
+          #   req = Net::HTTP::Get.new(url.request_uri)
+          #   res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
+          #   json = JSON.parse(res.body)
+          #   if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
+          #     owner.in_database do |user_database|
+          #       user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
+          #     end
+          #   end
+          # end
+          if !lat_column.blank? && !lon_column.blank?
+            user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{primary_key}")
+          end
         end
       end
     end

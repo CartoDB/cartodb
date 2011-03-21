@@ -9,6 +9,10 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 Capybara.default_driver    = :selenium
 Capybara.default_wait_time = 10
+Capybara.default_host = APP_CONFIG[:app_host]
+Capybara.app_host = APP_CONFIG[:app_host]
+Capybara.server_port = 53716
+
 
 RSpec.configure do |config|
 

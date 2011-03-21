@@ -53,20 +53,4 @@ module ApplicationHelper
     end
   end
    
-  def developers_host
-    if request.host !~ /^developers\./
-      "developers.#{request.host_with_port}"
-    else
-      request.host_with_port
-    end
-  end
-  
-  def cartodb_host
-    if request.host !~ /^developers\.([^\/]+)/
-      request.host_with_port
-    else
-      $1
-    end
-  end
-
 end

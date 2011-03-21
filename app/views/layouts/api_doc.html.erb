@@ -12,12 +12,17 @@
   </head> 
   <body> 
     <header>
-      <a class="logo" href="/">CartoDB</a>
+      <a class="logo" href="<%= APP_CONFIG[:app_host] %>">CartoDB</a>
       <ul>
-        <li><a href="/">Developers</a></li>
-        <li><a href="http://cartodb.tumblr.com" target="_blank">Blog</a></li>        
+        <li><a href="<%= APP_CONFIG[:developers_host] %>">Developers</a></li>
+        <li><a href="http://cartodb.tumblr.com" target="_blank">Blog</a></li>
         <li class="last">
-          <a href="http://cartodb.com/login">Login</a>
+          <% if env['warden'].authenticated? %>
+            <a href="<%= APP_CONFIG[:app_host] %>/dashboard"><%= env['warden'].user.email %></a>
+            <span><a href="<%= APP_CONFIG[:app_host] %>/logout">(close session)</a></span>
+          <% else %>
+            <a href="<%= APP_CONFIG[:app_host] %>/login">Login</a>
+          <% end %>
         </li>
       </ul>
     </header>    
@@ -30,7 +35,7 @@
             <li class="selected"><a class="oth" href="/"><span>Documentation</span></a></li> 
             <li><a class="oth" href="#"><span>Gallery</span></a></li> 
           </ul> 
-          <a class="get_key" href="http://cartodb.com/your_apps/oauth">GET YOUR API KEY</a> 
+          <a class="get_key" href="<%= APP_CONFIG[:app_host] %>/your_apps/oauth">GET YOUR API KEY</a> 
         </div>
         <div class="middle">
           <div class="left">
@@ -103,7 +108,7 @@
       </section> 
       <div class="outer_footer"> 
         <section class="footer"> 
-          <a class="logo" href="/">CartoDB</a> 
+          <a class="logo" href="<%= APP_CONFIG[:app_host] %>">CartoDB</a> 
           <div class="long"> 
             <p class="rights">All rights reserved 2011. <a href="#" target="_blank">Contact us</a> / <a href="#" target="_blank">Give us your feedback</a> / <a href="#" target="_blank">Read the TOS</a></p> 
             <span class="poweredby"> 

@@ -2148,17 +2148,20 @@
         case "column_type":     headers[params.name] = params.type;
                                 break;
         case "update_geometry": $('p.geo').remove();
+                                console.log(params);
                                 if (params.address_column != undefined && params.address_column != '') {
                                   var address_cols = params.address_column.split(',');
                                   if (address_cols.length==1) {
                                     $('thead tr th[c='+address_cols[0]+'] h3').parent().append('<p class="geo address loading">geo</p>');
                                   } else {
                                     methods.refreshTable('');
+                                    
+                                    
                                   }
                                   var geo_address = new Geocoding(params.address_column,table_id);
                                 } else {
-                                  $('thead tr th h3:contains('+params.lat_column+')').parent().append('<p class="geo latitude">geo</p>');
-                                  $('thead tr th h3:contains('+params.lon_column+')').parent().append('<p class="geo longitude">geo</p>');
+                                  $('thead tr th h3:contains('+params.latitude_column+')').parent().append('<p class="geo latitude">geo</p>');
+                                  $('thead tr th h3:contains('+params.longitude_column+')').parent().append('<p class="geo longitude">geo</p>');
                                 }
                                 methods.closeTablePopups();
                                 break;

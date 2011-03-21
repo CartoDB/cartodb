@@ -214,6 +214,9 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
+      if attributes[:address_geolocated]
+        attributes[:address_geolocated] = false if attributes[:address_geolocated] == 'false'
+      end
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
@@ -245,6 +248,9 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
+      if attributes[:address_geolocated]
+        attributes[:address_geolocated] = false if attributes[:address_geolocated] == 'false'
+      end
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end

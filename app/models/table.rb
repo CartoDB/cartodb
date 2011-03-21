@@ -184,12 +184,7 @@ class Table < Sequel::Model(:user_tables)
 
   def insert_row!(raw_attributes)
     primary_key = nil
-    if raw_attributes[:address_column] && address_column
-      raw_attributes[address_column] = raw_attributes.delete(:address_column)
-    end
-    if raw_attributes[:address_geolocated] && raw_attributes[:address_geolocated] == 'false'
-      raw_attributes[:address_geolocated] = false
-    end
+    prepare_attributes!(raw_attributes)
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -218,12 +213,7 @@ class Table < Sequel::Model(:user_tables)
 
   def update_row!(row_id, raw_attributes)
     rows_updated = 0
-    if raw_attributes[:address_column] && address_column
-      raw_attributes[address_column] = raw_attributes.delete(:address_column)
-    end
-    if raw_attributes[:address_geolocated] && raw_attributes[:address_geolocated] == 'false'
-      raw_attributes[:address_geolocated] = false
-    end
+    prepare_attributes!(raw_attributes)
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -771,6 +761,19 @@ TRIGGER
           user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::GOOGLE_SRID},'POINT',2)")
         end
       end
+    end
+  end
+  
+  def prepare_attributes!(raw_attributes)
+    if raw_attributes[:address_column]
+      if address_column
+        raw_attributes[address_column] = raw_attributes.delete(:address_column)
+      else
+        raw_attributes.delete(:address_column)
+      end
+    end
+    if raw_attributes[:address_geolocated] && raw_attributes[:address_geolocated] == 'false'
+      raw_attributes[:address_geolocated] = false
     end
   end
 

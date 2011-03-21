@@ -1148,4 +1148,19 @@ describe Table do
     query_result[:rows][0][:lat].should be_nil
   end
   
+  it "should ignore the attribute address_column when address_column is nil" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "latitude float, longitude float, address varchar"
+    table.save
+
+    pk = table.insert_row!({:address_column => "C/ Pilar Martí, nº16, pta 13", :latitude => Float.random_latitude, :longitude => Float.random_longitude})
+    pk.should_not be_nil
+
+    lambda {
+      table.update_row!(pk, {:address_column => "C/ Pilar Martínez, nº16, pta 13", :latitude => Float.random_latitude, :longitude => Float.random_longitude})
+    }.should_not raise_error
+  end
+  
 end

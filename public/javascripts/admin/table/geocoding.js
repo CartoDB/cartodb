@@ -16,6 +16,7 @@
       method: "GET",
       url: '/v1/tables/'+table_name+'/records/pending_addresses',
       headers: {'cartodbclient':true},
+      data: {rows_per_page:5000},
       success: function(data) {
         var rows = data;
         var directions = [];

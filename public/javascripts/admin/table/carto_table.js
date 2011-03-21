@@ -201,7 +201,7 @@
                     '<div '+((element[0]=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
                       '<span class="long">'+
                         '<h3 class="'+((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'static':'')+'">'+element[0]+'</h3>'+
-                        ((element[2]!=undefined)?'<p class="geo '+element[2]+'">geo</p>':'') +
+                        ((element[2]!=undefined)?'<p class="geo '+element[2]+' '+((geolocating)?'loading':'')+'">geo</p>':'') +
                         ((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'':'<input type="text" value="'+element[0]+'"/>') +
                       '</span>'+
                       '<p class="long">'+
@@ -231,7 +231,6 @@
         //Create elements
         methods.createElements();
       }
-      //closeAllWindows();
     },
 
 
@@ -583,7 +582,7 @@
           '<a href="#close_window" class="close"></a>'+
           '<div class="inner_">'+
             '<span class="stop">'+
-              '<h5>You are referencing by another column</h5>'+
+              '<h5>Sorry, but we are georeferencing your rows...</h5>'+
               '<p>If you don\'t want to wait, <a href="#cancel_geo" class="cancel_geo">cancel de process</a> in progress.</p>'+
             '</span>'+
           '</div>'+
@@ -898,93 +897,102 @@
             methods.closeTablePopups();
             methods.bindESCkey();
             
-            $('div.edit_cell p.error').hide();
-            $('div.edit_cell div.months_list').hide();
-            $('div.edit_cell input').removeClass('error');
-            $('div.edit_cell textarea').removeClass('error');
-            
-            var target_position = $(target).parent().offset();
             var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-            $('tbody tr[r="'+data.row+'"]').addClass('editing');
-
-            //Check if first row or last row
-            if ($(target).parent().offset().top<260) {
-              $('div.edit_cell').css('top','90px');
-            } else if ($(target).parent().offset().top>$(document).height()-60) {
-              $('div.edit_cell').css('top',target_position.top-230+'px');
+            var geo_column = $('p.geo').closest('th').attr('c');
+            
+            if (geolocating && data.column==geo_column) {
+              $('p.geo').trigger('click');
             } else {
-              $('div.edit_cell').css('top',target_position.top-192+'px');
-            }
-            
-            //Check if first column or last column
-            if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {
-              $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-215+($(target).width()/2)+'px');
-            } else if (($(target).parent().offset().left+cell_size+28)<170) {
-               $('div.edit_cell').css('left','0px');
-            } else {
-              $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
-            }
+              $('div.edit_cell p.error').hide();
+              $('div.edit_cell div.months_list').hide();
+              $('div.edit_cell input').removeClass('error');
+              $('div.edit_cell textarea').removeClass('error');
 
+              var target_position = $(target).parent().offset();
+              $('tbody tr[r="'+data.row+'"]').addClass('editing');
 
-            var type = headers[data.column];
-            $('div.edit_cell div.free').hide();
-            $('div.edit_cell div.boolean').hide();
-            $('div.edit_cell div.date').hide();
-            $('div.table_position div.edit_cell div.boolean ul li').removeClass('selected');
-            
-            
-            if (type=="date") {
-              var date = parseDate(data.value);
-              $('div.edit_cell div.date div.day input').val(date.day);
-              $('div.edit_cell div.date div.month span.bounds a').text(date.month_text);
-              $('div.edit_cell div.date div.year input').val(date.year);
-              $('div.edit_cell div.date div.hour input').val(date.time);
-              $('div.edit_cell div.date').show();
-            } else if (type=="boolean") {
-              if (data.value == "true") {
-                $('div.table_position div.edit_cell div.boolean ul li a:contains("True")').parent().addClass('selected');
-              } else if (data.value == "false") {
-                $('div.table_position div.edit_cell div.boolean ul li a:contains("False")').parent().addClass('selected');
+              //Check if first row or last row
+              if ($(target).parent().offset().top<260) {
+                $('div.edit_cell').css('top','90px');
+              } else if ($(target).parent().offset().top>$(document).height()-60) {
+                $('div.edit_cell').css('top',target_position.top-230+'px');
               } else {
-                $('div.table_position div.edit_cell div.boolean ul li a:contains("Null")').parent().addClass('selected');
+                $('div.edit_cell').css('top',target_position.top-192+'px');
               }
-              $('div.edit_cell div.boolean').show();
-            } else {
-              if (type=="number"){
-                $('div.edit_cell textarea').css({'min-height' : '16px','height' : '16px' });
-              }else{
-                $('div.edit_cell textarea').css({'min-height' : '30px','height' : '30px'});
-              }
-              $('div.edit_cell div.free').show();
-              $('div.edit_cell div.free textarea').text(data.value);
-            }
-            
-            $('div.edit_cell a.save').attr('r',data.row);
-            $('div.edit_cell a.save').attr('c',data.column);
-            $('div.edit_cell a.save').attr('type',type);
-            $('div.edit_cell').show();
-            
-            if (type!='date' && type!='boolean') {
-              $('div.edit_cell div.free textarea').focus();
-              var len = $('div.edit_cell div.free textarea').text().length;
-              $('div.edit_cell div.free textarea').selectRange(0,len);
-            }
-            
-            
-            $('body').bind('click',function(ev){
-              if (!$(ev.target).closest('div.edit_cell').length) {
-                methods.closeTablePopups();
-                $('tbody tr').removeClass('editing');
-              };
-            });
 
-            if (event.preventDefault) {
-              event.preventDefault();
-              event.stopPropagation();
-            } else {
-              event.stopPropagation();
-              event.returnValue = false;
+              //Check if first column or last column
+              if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {
+                $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-215+($(target).width()/2)+'px');
+              } else if (($(target).parent().offset().left+cell_size+28)<170) {
+                 $('div.edit_cell').css('left','0px');
+              } else {
+                $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
+              }
+
+
+              var type = headers[data.column];
+              $('div.edit_cell div.free').hide();
+              $('div.edit_cell div.boolean').hide();
+              $('div.edit_cell div.date').hide();
+              $('div.table_position div.edit_cell div.boolean ul li').removeClass('selected');
+
+
+              if (type=="date") {
+                var date = parseDate(data.value);
+                $('div.edit_cell div.date div.day input').val(date.day);
+                $('div.edit_cell div.date div.month span.bounds a').text(date.month_text);
+                $('div.edit_cell div.date div.year input').val(date.year);
+                $('div.edit_cell div.date div.hour input').val(date.time);
+                $('div.edit_cell div.date').show();
+              } else if (type=="boolean") {
+                if (data.value == "true") {
+                  $('div.table_position div.edit_cell div.boolean ul li a:contains("True")').parent().addClass('selected');
+                } else if (data.value == "false") {
+                  $('div.table_position div.edit_cell div.boolean ul li a:contains("False")').parent().addClass('selected');
+                } else {
+                  $('div.table_position div.edit_cell div.boolean ul li a:contains("Null")').parent().addClass('selected');
+                }
+                $('div.edit_cell div.boolean').show();
+              } else {
+                if (type=="number"){
+                  $('div.edit_cell textarea').css({'min-height' : '16px','height' : '16px' });
+                }else{
+                  $('div.edit_cell textarea').css({'min-height' : '30px','height' : '30px'});
+                }
+                $('div.edit_cell div.free').show();
+                $('div.edit_cell div.free textarea').text(data.value);
+              }
+
+              $('div.edit_cell a.save').attr('r',data.row);
+              $('div.edit_cell a.save').attr('c',data.column);
+              $('div.edit_cell a.save').attr('type',type);
+              $('div.edit_cell').show();
+
+              if (type!='date' && type!='boolean') {
+                $('div.edit_cell div.free textarea').focus();
+                var len = $('div.edit_cell div.free textarea').text().length;
+                $('div.edit_cell div.free textarea').selectRange(0,len);
+              }
+
+
+              $('body').bind('click',function(ev){
+                if (!$(ev.target).closest('div.edit_cell').length) {
+                  methods.closeTablePopups();
+                  $('tbody tr').removeClass('editing');
+                };
+              });
+
+              if (event.preventDefault) {
+                event.preventDefault();
+                event.stopPropagation();
+              } else {
+                event.stopPropagation();
+                event.returnValue = false;
+              }
             }
+            
+            
+            
           }
         }
 
@@ -1405,19 +1413,23 @@
         methods.closeTablePopups();
         methods.bindESCkey();
         
-        var position = $(this).position();
-        $(this).parent().parent().children('span.col_types').find('li').removeClass('selected');
-        var column_type = $(this).parent().parent().children('p.long').children('a').text();
-        column_type = column_type.charAt(0).toUpperCase() + column_type.slice(1);
-        $(this).parent().parent().children('span.col_types').children('p').text(column_type);
-        $(this).parent().parent().children('span.col_types').children('ul').children('li').children('a:contains("'+column_type+'")').parent().addClass('selected');
-        $(this).parent().parent().children('span.col_types').css('top',position.top-5+'px');
-        $(this).parent().parent().children('span.col_types').show();
-        $('body').click(function(event) {
-         if (!$(event.target).closest('thead tr span.col_types').length) {
-           methods.closeTablePopups();
-         };
-        });
+        if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
+          $('p.geo').trigger('click');
+        } else {
+          var position = $(this).position();
+          $(this).parent().parent().children('span.col_types').find('li').removeClass('selected');
+          var column_type = $(this).parent().parent().children('p.long').children('a').text();
+          column_type = column_type.charAt(0).toUpperCase() + column_type.slice(1);
+          $(this).parent().parent().children('span.col_types').children('p').text(column_type);
+          $(this).parent().parent().children('span.col_types').children('ul').children('li').children('a:contains("'+column_type+'")').parent().addClass('selected');
+          $(this).parent().parent().children('span.col_types').css('top',position.top-5+'px');
+          $(this).parent().parent().children('span.col_types').show();
+          $('body').click(function(event) {
+           if (!$(event.target).closest('thead tr span.col_types').length) {
+             methods.closeTablePopups();
+           };
+          });
+        }
       });
       $('span.col_types ul li a').livequery('click',function(ev){
         stopPropagation(ev);
@@ -1444,85 +1456,100 @@
       $('thead tr th div h3').livequery('dblclick',function(){
         methods.closeTablePopups();
         
-        var title = $(this);
-        var input = $(this).parent().children('input');
-        input.attr('value',title.text());
+        if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
+          $('p.geo').trigger('click');
+        } else {
+          var title = $(this);
+          var input = $(this).parent().children('input');
+          input.attr('value',title.text());
 
-        function updateColumnName() {
-          var old_value = title.text();
-          var new_value = sanitizeText(input.attr('value'));
+          function updateColumnName() {
+            var old_value = title.text();
+            var new_value = sanitizeText(input.attr('value'));
 
-          if (old_value!=new_value && new_value.length>0) {
-            var params = {};
-            params["new_name"] = new_value;
-            params["index"] = title.parent().parent().parent().index();
-            methods.updateTable("/columns/"+old_value,params,new_value,old_value,'rename_column',"PUT");
-            input.parent().children('h3').text(new_value);
-            input.closest('th').attr('c',new_value);
-            input.hide();
-            input.unbind('focusout');
-            input.unbind('keydown');
-          } else {
-            input.hide();
-            input.unbind('focusout');
-            input.unbind('keydown');
+            if (old_value!=new_value && new_value.length>0) {
+              var params = {};
+              params["new_name"] = new_value;
+              params["index"] = title.parent().parent().parent().index();
+              methods.updateTable("/columns/"+old_value,params,new_value,old_value,'rename_column',"PUT");
+              input.parent().children('h3').text(new_value);
+              input.closest('th').attr('c',new_value);
+              input.hide();
+              input.unbind('focusout');
+              input.unbind('keydown');
+            } else {
+              input.hide();
+              input.unbind('focusout');
+              input.unbind('keydown');
+            }
           }
-        }
 
 
-        input.show().focus();
-        input.keydown(function(ev){
-          if (ev.which == 13) {
-            stopPropagation(ev);
+          input.show().focus();
+          input.keydown(function(ev){
+            if (ev.which == 13) {
+              stopPropagation(ev);
+              updateColumnName();
+            }
+          });
+          input.focusout(function(){
             updateColumnName();
-          }
-        });
-        input.focusout(function(){
-          updateColumnName();
-        });
-
+          });
+        }
 
       });
       $('thead a.rename_column').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-        $(this).closest('div').find('a.options').removeClass('selected');
-        $(this).closest('div').find('span.col_ops_list').hide();
-        $(this).closest('div').find('h3').trigger('dblclick');
+        if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
+          $('p.geo').trigger('click');
+        } else {
+          $(this).closest('div').find('a.options').removeClass('selected');
+          $(this).closest('div').find('span.col_ops_list').hide();
+          $(this).closest('div').find('h3').trigger('dblclick');
+        }
       });
       $('thead a.change_data_type').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-        $(this).closest('div').find('a.options').removeClass('selected');
-        $(this).closest('div').find('span.col_ops_list').hide();
-        $(this).closest('div').find('a.column_type').trigger('click');
+        if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
+          $('p.geo').trigger('click');
+        } else {
+          $(this).closest('div').find('a.options').removeClass('selected');
+          $(this).closest('div').find('span.col_ops_list').hide();
+          $(this).closest('div').find('a.column_type').trigger('click');
+        }
       });
       $('thead a.delete_column').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
         methods.bindESCkey();
         
-        
-        $(this).closest('div').find('a.options').removeClass('selected');
-        $(this).closest('div').find('span.col_ops_list').hide();
-        var column = $(this).closest('th').attr('c');
-        var left_position = $(table).find('th[c="'+column+'"]').position().left;
-        var options_position = $(table).find('th[c="'+column+'"]').find('a.options').position().left;
-
-        $('div.delete_column a.button').attr('c',column);
-        if ($(document).scrollTop()>58) {
-          $('div.delete_column').css('top',$(document).scrollTop()-50+'px');
+        if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
+          $('p.geo').trigger('click');
         } else {
-          $('div.delete_column').css('top','15px');
-        }
-        $('div.delete_column').css('left',left_position+options_position-97+'px');
-        $('div.delete_column').show();
+          $(this).closest('div').find('a.options').removeClass('selected');
+          $(this).closest('div').find('span.col_ops_list').hide();
+          var column = $(this).closest('th').attr('c');
+          var left_position = $(table).find('th[c="'+column+'"]').position().left;
+          var options_position = $(table).find('th[c="'+column+'"]').find('a.options').position().left;
 
-        $('body').click(function(event) {
-         if (!$(event.target).closest('div.delete_column').length) {
-           methods.closeTablePopups();
-         };
-        });
+          $('div.delete_column a.button').attr('c',column);
+          if ($(document).scrollTop()>58) {
+            $('div.delete_column').css('top',$(document).scrollTop()-50+'px');
+          } else {
+            $('div.delete_column').css('top','15px');
+          }
+          $('div.delete_column').css('left',left_position+options_position-97+'px');
+          $('div.delete_column').show();
+
+          $('body').click(function(event) {
+           if (!$(event.target).closest('div.delete_column').length) {
+             methods.closeTablePopups();
+           };
+          });
+        }
+
       });
       $('div.delete_column a.cancel_delete, div.delete_row a.cancel_delete').livequery('click',function(ev){
         stopPropagation(ev);
@@ -1577,6 +1604,7 @@
           });
           $('div.georeference_window a.confirm_georeference').addClass('disabled');
           $('div.georeference_window span.select').removeClass('clicked');
+          $('div.georeference_window').css('overflow','visible');
           
           //Reset second item of the main_list (compont geo)
           $('div.second_column_address').hide();
@@ -1850,21 +1878,24 @@
         methods.closeTablePopups();
         methods.bindESCkey();
         
-        var cartodb_id = $(this).closest('tr').attr('r');
-        
-        var top_position = $(table).find('tr[r="'+cartodb_id+'"]').position().top;
+        if (geolocating) {
+          $('p.geo').trigger('click');
+        } else {
+          var cartodb_id = $(this).closest('tr').attr('r');
 
-        $('div.delete_row a.button').attr('r',cartodb_id);
-        $('div.delete_row').css('top',top_position-7+'px');
-        $('div.delete_row').css('left',$('div.table_position').scrollLeft()+10+'px');
-        $('div.delete_row').show();
+          var top_position = $(table).find('tr[r="'+cartodb_id+'"]').position().top;
 
-        $('body').click(function(event) {
-         if (!$(event.target).closest('div.delete_row').length) {
-           methods.closeTablePopups();
-         };
-        });
-        
+          $('div.delete_row a.button').attr('r',cartodb_id);
+          $('div.delete_row').css('top',top_position-7+'px');
+          $('div.delete_row').css('left',$('div.table_position').scrollLeft()+10+'px');
+          $('div.delete_row').show();
+
+          $('body').click(function(event) {
+           if (!$(event.target).closest('div.delete_row').length) {
+             methods.closeTablePopups();
+           };
+          });
+        }
       });
       $('div.delete_row a.button').livequery('click',function(ev){
         stopPropagation(ev);
@@ -2121,8 +2152,6 @@
           methods.successRequest(params,new_value,old_value,type);
         },
         error: function(e, textStatus) {
-          console.log(e);
-          console.log(textStatus);
           try {
             requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
           } catch (e) {
@@ -2148,15 +2177,17 @@
         case "column_type":     headers[params.name] = params.type;
                                 break;
         case "update_geometry": $('p.geo').remove();
-                                console.log(params);
                                 if (params.address_column != undefined && params.address_column != '') {
                                   var address_cols = params.address_column.split(',');
                                   if (address_cols.length==1) {
                                     $('thead tr th[c='+address_cols[0]+'] h3').parent().append('<p class="geo address loading">geo</p>');
                                   } else {
                                     methods.refreshTable('');
-                                    
-                                    
+                                    setTimeout(function(){
+                                      geolocating = true;
+                                      var place = $('p.geo').offset();
+                                      $('div.table_position').scrollTo({top:'0',left:place.left},300);
+                                    },1000);
                                   }
                                   var geo_address = new Geocoding(params.address_column,table_id);
                                 } else {

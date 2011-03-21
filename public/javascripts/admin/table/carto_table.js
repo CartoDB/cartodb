@@ -207,7 +207,7 @@
                       '<p class="long">'+
                         ((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'<a class="static">'+element[1]+'</a>':'<a href="#" class="column_type">'+element[1]+'</a>') +
                       '</p>'+
-                      '<a class="options" href="#">options</a>'+
+                      '<a class="options" href="#options">options</a>'+
                       col_ops_list+
                       ((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at")?'':column_types) +
                     '</div>'+
@@ -261,7 +261,7 @@
                                 '<li class="last"><a href="#add_row" class="add_row">Add new row</a></li>' +
                               '</ul>' +
                             '</span>';
-        tbody += '<tr r="'+element.cartodb_id+'"><td class="first" r="'+ element.cartodb_id +'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+        tbody += '<tr r="'+element.cartodb_id+'"><td class="first" r="'+ element.cartodb_id +'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
         $.each(element, function(j,elem){
           tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element.cartodb_id +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((elem==null)?'':elem)+'</div></td>';
         });
@@ -588,11 +588,6 @@
           '</div>'+
         '</div>'
         );
-      
-      
-      //CSS Hack for cover end of table
-      //Data error tooltip
-      $(table).append('<span class="end_table"></span>');
     },
 
 
@@ -683,9 +678,9 @@
                                       '</ul></span>';
                                   
                   if (type==0) {
-                    var row = '<tbody style="padding-top:52px"><tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+                    var row = '<tbody style="padding-top:52px"><tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
                   } else {
-                    var row = '<tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#" class="options">options</a>'+options_list+'</div></td>';
+                    var row = '<tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
                   }
                                
     
@@ -2123,7 +2118,6 @@
       // HEIGTH
       var parent_height = $(window).height();
       if ((parent_height-162)>($(table).parent().height())) {
-        $('span.end_table').css('bottom','-3px');
         $(table).parent().height(parent_height-162);
       }
       

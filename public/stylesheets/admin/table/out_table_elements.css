@@ -1,4 +1,4 @@
-body {position:relative; background:url('/images/admin/common/header_bkg.jpg') repeat-x center 0 #2D3451; overflow-x:hidden; -webkit-user-select:none; -moz-user-select:none;}
+body {position:relative; background:url('/images/admin/common/header_bkg.jpg') repeat-x center 0 #2D3451; overflow-x:hidden;}
 body, html {height:100%;} /*table hack*/
 a:focus {outline:none;}
 

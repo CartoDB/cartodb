@@ -27,7 +27,7 @@ section#content div.left div.middle_white_medium ul li:hover {background:#F4F8F8
 section#content div.left div.middle_white_medium ul li div.meta_info {float:left; width:100%;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info {float:left; width:330px; margin:2px 0 0 0;}
 
-section#content div.left div.middle_white_medium ul li h4 {float:left; width:auto; max-width:185px; letter-spacing:-1px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
+section#content div.left div.middle_white_medium ul li h4 {float:left; width:auto; max-width:180px; letter-spacing:-1px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 section#content div.left div.middle_white_medium ul li h4 a {font:bold 21px Arial; color:#333333; letter-spacing:-1px; text-decoration:none; line-height:21px;}
 section#content div.left div.middle_white_medium ul li h4 a:hover {color:black;}
 section#content div.left div.middle_white_medium ul li p.status {float:left; width:auto; padding:2px 7px!important; margin:5px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; line-height:11px;}

@@ -25,9 +25,9 @@ class CartoDB::InvalidType < StandardError
   def initialize(message)
     @db_message = message.split("\n")[0]
     @syntax_message = message.split("\n")[1..-1].join("\n")
-    logger.info "========== CartoDB::InvalidType ==========="
-    logger.info message
-    logger.info "==========================================="
+    Rails.logger.info "========== CartoDB::InvalidType ==========="
+    Rails.logger.info message
+    Rails.logger.info "==========================================="
   end
 end
 
@@ -35,9 +35,9 @@ class CartoDB::EmtpyAttributes < StandardError
   attr_accessor :error_message
   def initialize(message)
     @error_message = message
-    logger.info "========== CartoDB::EmtpyAttributes ==========="
-    logger.info message
-    logger.info "==============================================="
+    Rails.logger.info "========== CartoDB::EmtpyAttributes ==========="
+    Rails.logger.info message
+    Rails.logger.info "==============================================="
   end
 end
 
@@ -45,8 +45,8 @@ class CartoDB::InvalidAttributes < StandardError
   attr_accessor :error_message
   def initialize(message)
     @error_message = message
-    logger.info "========== CartoDB::InvalidAttributes ==========="
-    logger.info message
-    logger.info "================================================="
+    Rails.logger.info "========== CartoDB::InvalidAttributes ==========="
+    Rails.logger.info message
+    Rails.logger.info "================================================="
   end
 end

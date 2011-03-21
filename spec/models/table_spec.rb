@@ -851,6 +851,29 @@ describe Table do
     table.address_column.should be_nil
   end
   
+  it "should set the geometry to null when removing a geometry column" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.save
+    
+    lat = Float.random_latitude
+    lon = Float.random_longitude
+    the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+    
+    table.set_address_column!(:address)
+    pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => the_geom})
+    query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address_geolocated].should be_true
+    
+    table.drop_column!(:name => :address)
+
+    query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:lon].should be_nil
+    query_result[:rows][0][:lat].should be_nil
+  end
+  
   it "should create a meta-column named address_geolocated which mustn't appear in the schema of the table" do
     user = create_user
     table = new_table

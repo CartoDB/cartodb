@@ -331,6 +331,7 @@ class Table < Sequel::Model(:user_tables)
       save_changes
     end
     owner.in_database do |user_database|
+      user_database.run("UPDATE #{self.name} SET the_geom = NULL") if geometry_columns.nil?
       user_database.drop_column name.to_sym, options[:name].to_s
       if options[:name].to_sym == old_address_column
         user_database.drop_column name.to_sym, "address_geolocated"

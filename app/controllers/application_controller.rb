@@ -16,9 +16,9 @@ class ApplicationController < ActionController::Base
       true
     end
   end
-
+  
   protected
-
+  
   def render_404
     respond_to do |format|
       format.html do

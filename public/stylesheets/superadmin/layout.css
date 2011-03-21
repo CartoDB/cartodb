@@ -12,8 +12,8 @@ section#content div.right div.banner div.middle_white_short ul li a:hover {color
 section#content div.right div.banner div.bottom_white_short {float:left; width:100%; height:15px; background:url('/images/admin/backgrounds/bottom_white_short.png') no-repeat 0 0;}
 section#content p.info {float:none; display:inline-block; width:100%; padding:5px 0 0 0; font:normal 14px Arial; color:#999999;}
 section#content div.left div.middle_white_medium span {float:left; width:500px; margin:15px 0 0 23px; font:normal 15px Arial; color:#777777;}
-section#content div.left div.middle_white_medium a.remove {display:inline-block; width:114px!important; height:15px; margin:30px 0 20px 23px; padding:10px 0; text-align:center; line-height:15px; font:bold 15px Arial; color:#FF3300; text-decoration:none;
-  background:url('/images/admin/others/red_button.jpg') no-repeat 0 0; text-shadow:0 1px #f7f7f7;} 
+section#content div.left div.middle_white_medium a.remove {display:inline-block; width:114px!important; height:15px; margin:30px 0 20px 23px; padding:10px 0; text-align:center; line-height:15px; font:bold 15px Arial; color:#f7f7f7; text-decoration:none;
+  background:url('/images/admin/others/red_button.jpg') no-repeat 0 0; text-shadow:0 1px #ff0000;} 
 section#content div.left div.middle_white_medium a.remove:hover {background-position:0 -35px;}
 section#content div.left div.middle_white_medium ul.user_form {margin:10px 0 0 0;}
 section#content div.left div.middle_white_medium ul.user_form li {border:none; padding:10px 23px;}

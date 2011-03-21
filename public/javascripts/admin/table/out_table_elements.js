@@ -312,8 +312,8 @@
       stopPropagation(ev);
       closeOutTableWindows();
       if (!$(this).parent().hasClass('selected')) {
-        $('section.subheader ul.tab_menu li').removeClass('selected');
         if ($(this).text()=="Table") {
+          $('section.subheader ul.tab_menu li').removeClass('selected');
           $(this).parent().addClass('selected');
           $(document).trigger('click');
           $('body').trigger('refresh');
@@ -321,11 +321,16 @@
           $('div.table_position').show();
           hideMap();
         } else {
-          $(this).parent().addClass('selected')
-          $('div.table_position').hide();
-          $(document).trigger('click');
-          $('body').trigger('enabled',[false]);
-          showMap();
+          if (geolocating) {
+            $('p.geo').trigger('click');
+          } else {
+            $('section.subheader ul.tab_menu li').removeClass('selected');
+            $(this).parent().addClass('selected')
+            $('div.table_position').hide();
+            $(document).trigger('click');
+            $('body').trigger('enabled',[false]);
+            showMap();
+          }
         }
       } 
     });

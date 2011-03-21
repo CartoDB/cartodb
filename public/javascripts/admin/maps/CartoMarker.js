@@ -37,8 +37,10 @@
       $(div).hover(function(ev){
         globalZindex++;
         map.draggable = false;
-        $(this).css('zIndex',globalZindex); 
+        $(this).css('zIndex',globalZindex);
+        $('body').css('cursor','pointer');
       },function(){
+        $('body').css('cursor','default');
         map.draggable = true;
       });
     }

@@ -582,7 +582,7 @@
           '<a href="#close_window" class="close"></a>'+
           '<div class="inner_">'+
             '<span class="stop">'+
-              '<h5>Sorry, but we are georeferencing your rows...</h5>'+
+              '<h5>Sorry, but we are georeferencing a column...</h5>'+
               '<p>If you don\'t want to wait, <a href="#cancel_geo" class="cancel_geo">cancel de process</a> in progress.</p>'+
             '</span>'+
           '</div>'+

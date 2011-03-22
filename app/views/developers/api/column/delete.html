@@ -1,0 +1,35 @@
+<div class="middle">
+  <div class="left">
+    <ul class="breadcrumb">
+      <li class="first"><a href="/api/">CartoDB API</a></li>
+      <li>Columns</li>
+      <li class="selected"><a href="/api/column/delete">Delete a column</a></li>
+    </ul>
+
+    <h1>Delete a column</h1>
+    <p>Drops a column from the table</p>
+
+    <h2>URL</h2>
+    <code>/v1/tables/&lt;identifier&gt;/columns/&lt;column_name&gt;</code>
+
+    <h2>METHOD</h2>
+    <code>DELETE</code>
+
+    <h2>PARAMETERS</h2>
+    <p>Required</p>
+    <ul>
+      <li><code>identifier</code>: the name of the table (in the URL of the request)</li>
+      <li><code>column_name</code>: the name of the column (in the URL of the request)</li>
+    </ul>
+
+    <h2>EXAMPLE</h2>
+    <pre><code>
+      DELETE
+        /v1/tables/species_occurrences/columns/name
+    </code></pre>
+    <p>The method doesn't return nothing. If you want to check the success, check the HTTP status header.</p>
+  </div>
+  <div class="right">
+    {{sidebar}}
+  </div>
+</div>

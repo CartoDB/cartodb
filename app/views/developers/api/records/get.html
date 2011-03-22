@@ -1,0 +1,55 @@
+<div class="middle">
+  <div class="left">
+    <ul class="breadcrumb">
+      <li class="first"><a href="/api/">CartoDB API</a></li>
+      <li>Rows</li>
+      <li class="selected"><a href="/api/records/get">Get the rows</a></li>
+    </ul>
+    <h1>Get the rows</h1>
+    <p>Returns a collection of rows from the table. This collection is limited to 5,000 entries.</p>
+
+    <h2>URL</h2>
+    <code>/v1/tables/&lt;identifier&gt;/records</code>
+
+    <h2>METHOD</h2>
+    <code>GET</code>
+
+    <h2>PARAMETERS</h2>
+    <p>Required</p>
+    <ul>
+      <li><code>identifier</code>: the name of the table (in the URL of the request)</li>
+    </ul>
+
+    <p>Optional</p>
+    <ul>
+      <li><code>page</code>: page number, starting in 0. By default is 0</li>
+      <li><code>rows_per_page</code>: the number of rows in each page. By default 10</li>
+    </ul>
+
+    <h2>EXAMPLE</h2>
+    <pre><code>
+      GET
+        /v1/tables/species_occurrences/records
+    </code></pre>
+    <p class="tab">JSON</p>
+    <pre class="syntax javascript">
+      {
+        "id": 1,
+        "name": "species_occurrences",
+        "total_rows": 10,
+        "rows": [
+          {
+            "cartodb_id": 1,
+            "name": "Laetmonice producta",
+            "description": "",
+            ...
+          },
+          ...
+        ]
+      }
+    </pre>
+  </div>
+  <div class="right">
+    {{sidebar}}
+  </div>
+</div>

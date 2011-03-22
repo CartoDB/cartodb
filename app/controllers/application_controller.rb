@@ -3,12 +3,13 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
-  class NoHTML5Compliant < Exception; end;
-  rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   before_filter :browser_is_html5_compliant?
 
+  class NoHTML5Compliant < Exception; end;
 
+  rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound, :with => :render_404
+
   $progress ||= {}
 
   include SslRequirement
@@ -73,8 +74,9 @@ class ApplicationController < ActionController::Base
 
   private
     def browser_is_html5_compliant?
-      user_agent = request.user_agent.downcase
-      unless request.subdomain.eql?('api') || user_agent.blank? || user_agent.match(/firefox\/4|safari\/5|chrome\/7/)
+      return true if request.subdomain.eql?('api')
+      user_agent = request.user_agent.try(:downcase)
+      unless user_agent.blank? || user_agent.match(/firefox\/4|safari\/5|chrome\/7/)
         raise NoHTML5Compliant
       end
     end

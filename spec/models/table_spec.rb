@@ -59,11 +59,13 @@ describe Table do
 
   it "has a default schema" do
     table = create_table
-    table.schema.should == [
+    table.stored_schema.should == ["cartodb_id,integer,number","name,text,string","latitude,double precision,number",
+                                   "longitude,double precision,number","description,text,string","created_at,timestamp,date","updated_at,timestamp,date"]
+    table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"],
       [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
-    table.schema(:cartodb_types => true).should == [
+    table.schema.should == [
       [:cartodb_id, "number"], [:name, "string"], [:latitude, "number", "latitude"], [:longitude, "number", "longitude"],
       [:description, "string"], [:created_at, "date"], [:updated_at, "date"]
     ]
@@ -126,7 +128,7 @@ describe Table do
 
   it "can add a column of a CartoDB::TYPE type" do
     table = create_table
-    table.schema.should == [
+    table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"],
       [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
@@ -134,7 +136,7 @@ describe Table do
     resp = table.add_column!(:name => "my new column", :type => "number")
     resp.should == {:name => "my_new_column", :type => "integer", :cartodb_type => "number"}
     table.reload
-    table.schema.should == [
+    table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"],
       [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column, "integer"],
       [:created_at, "timestamp"], [:updated_at, "timestamp"]
@@ -143,7 +145,7 @@ describe Table do
 
   it "can modify a column using a CartoDB::TYPE type" do
     table = create_table
-    table.schema.should == [
+    table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"],
       [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
@@ -154,7 +156,7 @@ describe Table do
 
   it "can modify it's schema" do
     table = create_table
-    table.schema.should == [
+    table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"],
       [:longitude, "double precision", "longitude"], [:description, "text"], [:created_at, "timestamp"],
       [:updated_at, "timestamp"]
@@ -167,7 +169,7 @@ describe Table do
     resp = table.add_column!(:name => "my new column", :type => "integer")
     resp.should == {:name => 'my_new_column', :type => 'integer', :cartodb_type => 'number'}
     table.reload
-    table.schema.should == [
+    table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"],
       [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column, "integer"],
       [:created_at, "timestamp"], [:updated_at, "timestamp"]
@@ -176,65 +178,65 @@ describe Table do
     resp = table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "text")
     resp.should == {:name => 'my_new_column_new_name', :type => 'text', :cartodb_type => 'string'}
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column_new_name, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column_new_name, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     resp = table.modify_column!(:old_name => "my_new_column_new_name", :new_name => "my new column")
     resp.should == {:name => 'my_new_column', :type => "text", :cartodb_type => "string"}
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     resp = table.modify_column!(:name => "my_new_column", :type => "text")
     resp.should == {:name => 'my_new_column', :type => 'text', :cartodb_type => 'string'}
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     table.drop_column!(:name => "description")
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     lambda {
       table.drop_column!(:name => "description")
     }.should raise_error
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
   end
 
   it "cannot modify :cartodb_id column" do
     table = create_table
-    original_schema = table.schema
+    original_schema = table.schema(:cartodb_types => false)
 
     lambda {
       table.modify_column!(:old_name => "cartodb_id", :new_name => "new_id", :type => "integer")
     }.should raise_error
     table.reload
-    table.schema.should == original_schema
+    table.schema(:cartodb_types => false).should == original_schema
 
     lambda {
       table.modify_column!(:old_name => "cartodb_id", :new_name => "cartodb_id", :type => "float")
     }.should raise_error
     table.reload
-    table.schema.should == original_schema
+    table.schema(:cartodb_types => false).should == original_schema
 
     lambda {
       table.drop_column!(:name => "cartodb_id")
     }.should raise_error
     table.reload
-    table.schema.should == original_schema
+    table.schema(:cartodb_types => false).should == original_schema
   end
 
   it "should be able to modify it's schema with castings that the DB engine doesn't support" do
     table = create_table
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     table.add_column!(:name => "my new column", :type => "text")
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column, "text"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     pk = table.insert_row!(:name => "Text", :my_new_column => "1")
 
     table.modify_column!(:old_name => "my_new_column", :new_name => "my new column new name", :type => "integer", :force_value => "NULL")
     table.reload
-    table.schema.should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column_new_name, "integer"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"], [:longitude, "double precision", "longitude"], [:description, "text"], [:my_new_column_new_name, "integer"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
 
     rows = table.records
     rows[:rows][0][:my_new_column_new_name].should == 1
@@ -360,14 +362,14 @@ describe Table do
     table = new_table
     table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    table.schema.should == [[:cartodb_id, "integer"], [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
   end
 
   it "should sanitize columns from a given schema" do
     table = new_table
     table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    table.schema.should == [[:cartodb_id, "integer"], [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
   end
 
   it "should import a CSV if the schema is given and is valid" do
@@ -429,7 +431,7 @@ describe Table do
     table.reload
 
     table.rows_counted.should == 7
-    table.schema.should == [[:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"], [:created_at, "timestamp"], [:updated_at, "timestamp"]]
     row = table.records[:rows][0]
     row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
     row[:login].should == "vzlaturistica "
@@ -514,7 +516,7 @@ describe Table do
     table.save
 
     table.rows_counted.should == 7
-    table.schema.should == [[:cartodb_id, "integer"], [:idautobus, "integer"], [:utmx, "integer"],
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:idautobus, "integer"], [:utmx, "integer"],
         [:utmy, "integer"], [:horaactualizacion, "character varying"], [:fechaactualizacion, "character varying"],
         [:idtrayecto, "integer"], [:idparada, "integer"], [:minutos, "integer"], [:distancia, "double precision"],
         [:idlinea, "integer"], [:matricula, "character varying"], [:modelo, "character varying"],
@@ -538,7 +540,7 @@ describe Table do
     table.save
 
     table.rows_counted.should == 5
-    table.schema.should == [[:cartodb_id, "integer"], [:id, "integer"], [:name, "character varying"], [:lat, "double precision"],
+    table.schema(:cartodb_types => false).should == [[:cartodb_id, "integer"], [:id, "integer"], [:name, "character varying"], [:lat, "double precision"],
         [:lon, "double precision"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     row = table.records[:rows][0]
@@ -566,7 +568,7 @@ describe Table do
     table = create_table
     table.lat_column.should == :latitude
     table.lon_column.should == :longitude
-    table.schema.should == [
+    table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:name, "text"], [:latitude, "double precision", "latitude"],
       [:longitude, "double precision", "longitude"], [:description, "text"],
       [:created_at, "timestamp"], [:updated_at, "timestamp"]
@@ -707,7 +709,7 @@ describe Table do
     table.lon_column.should == :longitude
 
     table.set_address_column!(:address)
-    table.schema.should == [
+    table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:name, "character varying"], [:address, "character varying", "address"],
       [:latitude, "double precision"], [:longitude, "double precision"],
       [:created_at, "timestamp"], [:updated_at, "timestamp"]
@@ -728,7 +730,7 @@ describe Table do
     table.set_address_column!("address,region,country")
     table.reload
     
-    table.schema.should == [
+    table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:name, "character varying"], [:address, "character varying"],
       [:region, "character varying"], [:country, "character varying"], [:aggregated_address, "character varying", "address"],
       [:created_at, "timestamp"], [:updated_at, "timestamp"]
@@ -783,8 +785,8 @@ describe Table do
     pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.4")
     table.rows_counted.should == 2
 
-    table.schema.should include([:age, "real"])
-    table.schema(:cartodb_types => true).should include([:age, "number"])
+    table.schema(:cartodb_types => false).should include([:age, "real"])
+    table.schema.should include([:age, "number"])
   end
 
   it "should alter the schema automatically to a a wide range of numbers when updating" do
@@ -800,8 +802,8 @@ describe Table do
     pk_row2 = table.update_row!(pk_row1, :name => 'Javi Jam', :age => "25.4")
     table.rows_counted.should == 1
 
-    table.schema.should include([:age, "real"])
-    table.schema(:cartodb_types => true).should include([:age, "number"])
+    table.schema(:cartodb_types => false).should include([:age, "real"])
+    table.schema.should include([:age, "number"])
   end
 
   it "should allow to update the geometry of a row" do
@@ -888,7 +890,7 @@ describe Table do
         [:address_geolocated, {:db_type=>"boolean", :default=>nil, :allow_null=>true, :primary_key=>false, :type=>:boolean, :ruby_default=>nil}]
       )
     end
-    table.schema.should_not include([:address_geolocated, "boolean"])
+    table.schema(:cartodb_types => false).should_not include([:address_geolocated, "boolean"])
   end
   
   it "should remove the meta-column named address_geolocated when address_column is set to null" do

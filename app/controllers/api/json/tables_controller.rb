@@ -9,7 +9,7 @@ class Api::Json::TablesController < ApplicationController
   before_filter :load_table, :only => [:show, :update, :destroy]
 
   def index
-    @tables = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
+    @tables = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,stored_schema,
                             array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                           from user_tables
                           where user_tables.user_id = ?", current_user.id).all
@@ -19,7 +19,7 @@ class Api::Json::TablesController < ApplicationController
                 :name => table.name,
                 :privacy => table_privacy_text(table),
                 :tags => table[:tags_names],
-                :schema => table.schema(:cartodb_types => true)
+                :schema => table.schema
               }
             }.to_json,
            :callback => params[:callback]
@@ -37,7 +37,7 @@ class Api::Json::TablesController < ApplicationController
     end
     @table.force_schema = params[:schema] if params[:schema]
     if @table.valid? && @table.save
-      render :json => { :id => @table.id, :name => @table.name, :schema => @table.schema(:cartodb_types => true) }.to_json,
+      render :json => { :id => @table.id, :name => @table.name, :schema => @table.schema }.to_json,
              :status => 200,
              :location => table_path(@table),
              :callback => params[:callback]
@@ -55,7 +55,7 @@ class Api::Json::TablesController < ApplicationController
               :name => @table.name,
               :privacy => table_privacy_text(@table),
               :tags => @table[:tags_names],
-              :schema => @table.schema(:cartodb_types => true)
+              :schema => @table.schema
             }.to_json,
            :callback => params[:callback]
   end
@@ -73,7 +73,7 @@ class Api::Json::TablesController < ApplicationController
     end
     @table.tags = params[:tags] if params[:tags]
     if @table.save
-      @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,
+      @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,stored_schema,
                               array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                             from user_tables
                             where id=?",@table.id).first
@@ -82,12 +82,15 @@ class Api::Json::TablesController < ApplicationController
         :name => @table.name,
         :privacy => table_privacy_text(@table),
         :tags => @table[:tags_names],
-        :schema => @table.schema(:cartodb_types => true)
+        :schema => @table.schema
       }.to_json, :status => 200, :callback => params[:callback]
     else
       render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400, :callback => params[:callback]
     end
   rescue => e
+    Rails.logger.info "========== #{e.class.name} ==========="
+    Rails.logger.info $!
+    Rails.logger.info "======================================"
     render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
            :status => 400, :callback => params[:callback] and return
   end

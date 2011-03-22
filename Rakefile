@@ -18,6 +18,10 @@ if %(development test).include?(Rails.env)
     RSpec::Core::RakeTask.new(:cartodb_lib) do |t|
       t.pattern = "spec/lib/**/*_spec.rb"
     end
+    desc "Run the code examples in spec/acceptance/api"
+    RSpec::Core::RakeTask.new(:cartodb_api) do |t|
+      t.pattern = "spec/acceptance/api/*_spec.rb"
+    end
   end
 end
 

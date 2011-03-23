@@ -10,8 +10,8 @@ feature "Dashboard", %q{
 
   scenario "Login and visit public tables wit no tables" do
     user = create_user :username => 'fulano'
-    login_as user
-
+    log_in_as user
+peich
     within(:css, "header") do
       page.should have_link("CartoDB")
       page.should have_content(user.email)
@@ -57,7 +57,7 @@ feature "Dashboard", %q{
 
     Timecop.travel(t + 6.minutes)
 
-    login_as user
+    log_in_as user
 
     within(:css, "header") do
       page.should have_link("CartoDB")
@@ -247,7 +247,7 @@ feature "Dashboard", %q{
   #   create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE,
   #                :tags => "movies, personal"
   #
-  #   login_as user
+  #   log_in_as user
   #
   #   # debugger
   #
@@ -263,7 +263,7 @@ feature "Dashboard", %q{
   scenario "Create a new table" do
     user = create_user
 
-    login_as user
+    log_in_as user
 
     click_link_or_button('Create a new table')
     page.find('div.create_window ul li:eq(1) a').click
@@ -276,7 +276,7 @@ feature "Dashboard", %q{
   scenario "Get OAuth credentials" do
     user = create_user
 
-    login_as user
+    log_in_as user
 
     click "Your apps"
     page.should have_content("Using the key and the secret you can use CartoDB from external applications developed by you.")
@@ -309,7 +309,7 @@ feature "Dashboard", %q{
   scenario "Manage JSONP API keys" do
     user = create_user
 
-    login_as user
+    log_in_as user
 
     click "Your apps"
 

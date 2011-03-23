@@ -507,6 +507,28 @@ describe Table do
     row[:lon].should == 2.8
     row[:views].should == 540
   end
+  
+  it "should import file ngos.xlsx" do
+    Table.send(:public, *Table.private_instance_methods)
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos.xlsx", "application/download")
+    table.save
+    
+    table.schema(:cartodb_types => false).should == [
+      [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"], 
+      [:organization_s_work_in_haiti, "character varying"], [:calculation_of_number_of_people_reached, "character varying"], 
+      [:private_funding, "double precision"], [:relief, "character varying"], [:reconstruction, "character varying"], 
+      [:private_funding_spent, "double precision"], [:spent_on_relief, "character varying"], [:spent_on_reconstruction, "character varying"], 
+      [:usg_funding, "integer"], [:usg_funding_spent, "integer"], [:other_funding, "integer"], [:other_funding_spent, "integer"], 
+      [:international_staff, "integer"], [:national_staff, "integer"], [:us_contact_name, "character varying"], [:us_contact_title, "character varying"], 
+      [:us_contact_phone, "character varying"], [:us_contact_e_mail, "character varying"], [:media_contact_name, "character varying"], 
+      [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"], 
+      [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"], 
+      [:city, "character varying"], [:state, "character varying"], [:zip_code, "integer"], [:donation_website, "character varying"], [:created_at, "timestamp"], 
+      [:updated_at, "timestamp"]
+    ]
+    table.rows_counted.should == 76
+  end
 
   it "should import data from an external url returning JSON data" do
     json = JSON.parse(File.read("#{Rails.root}/spec/support/bus_gijon.json"))

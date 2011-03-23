@@ -31,7 +31,6 @@
             directions.push(elem);
           });
         }
-        
         me.processGeocoding(directions);
        }
     });
@@ -56,7 +55,7 @@
         }
       } else {
         var params = {};
-        if (event.data.Placemark!=undefined) {
+        if (event.data.Placemark != undefined) {
           params['the_geom'] = {"type":"Point","coordinates":[event.data.Placemark[0].Point.coordinates[0],event.data.Placemark[0].Point.coordinates[1]]};
         } else {
           params['address_geolocated'] = false;

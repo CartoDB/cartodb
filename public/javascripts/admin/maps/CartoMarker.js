@@ -27,10 +27,12 @@
 
       $(div).draggable({
         stop:  function(event,ui) {
+          map.draggable = true;
           me.latlng_ = me.getProjection().fromDivPixelToLatLng(new google.maps.Point(ui.position.left-me.offsetHorizontal_,ui.position.top-me.offsetVertical_));
           onMoveOccurrence(me.latlng_,me.cartodb_id, me);
       },
         start: function(event,ui) {
+          map.draggable = false;
           me.init_latlng = me.getProjection().fromDivPixelToLatLng(new google.maps.Point(ui.position.left-me.offsetHorizontal_,ui.position.top-me.offsetVertical_));
       }});
       

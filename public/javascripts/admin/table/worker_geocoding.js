@@ -16,7 +16,7 @@
       if (places.length>0) {
         place = places.shift();
         place.address = place.address.toLowerCase().replace(/é/g,'e').replace(/á/g,'a').replace(/í/g,'i').replace(/ó/g,'').replace(/ú/g,'u');
-        importScripts('http://maps.google.com/maps/geo?q='+encodeURIComponent(place.address)+'&sensor=false&output=json&callback=onResultGeocode');
+        importScripts('http://maps.google.com/maps/geo?q='+encodeURIComponent(place.address)+'&sensor=false&output=json&callback=onResultGeocode&key=');
       } else {
         self.postMessage("Finish");
       }

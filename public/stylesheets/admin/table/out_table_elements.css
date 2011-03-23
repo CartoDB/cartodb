@@ -113,8 +113,8 @@ section.subheader span.tags_window ul#tags_list li.tagit-choice {padding:2px 4px
 section.subheader span.tags_window ul#tags_list li.tagit-choice:hover {background-color:#bbcef1; border-color:#6d95e0;}
 section.subheader span.tags_window ul#tags_list li.tagit-new {padding:0px 4px 1px 0;}
 section.subheader span.tags_window ul#tags_list li.tagit-choice input { display:block; float:left; margin:2px 5px 2px 0;}
-section.subheader span.tags_window ul#tags_list li.tagit-choice a.close {float:none; width:auto; padding:2px 0 2px 3px!important; font:bold 12px Arial; color:#777777; cursor:pointer; text-decoration:none; text-shadow:none; border:none; background:none;}
-section.subheader span.tags_window ul#tags_list li.tagit-choice a.close:hover {color:#333333;}
+section.subheader span.tags_window ul#tags_list li.tagit-choice a.remove_tag {float:none; width:auto; padding:2px 0 2px 3px!important; font:bold 12px Arial; color:#777777; cursor:pointer; text-decoration:none; text-shadow:none; border:none; background:none;}
+section.subheader span.tags_window ul#tags_list li.tagit-choice a.remove_tag:hover {color:#333333;}
 section.subheader span.tags_window ul#tags_list input[type="text"] {width:120px; margin:0; padding:0; background-color:#FFFFFF; color:#333333; border:none; font:normal 12px Arial;}
 section.subheader span.tags_window ul#tags_list input[type="text"]:focus {outline:none;}
 section.subheader span.tags_window a {float:right; width:46px; height:14px; margin:5px 5px 5px 0; padding:6px 0; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #000000; text-decoration:none; text-shadow:0 1px white;

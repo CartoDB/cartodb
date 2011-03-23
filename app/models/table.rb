@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file, :import_from_external_url
+  attr_accessor :force_schema, :import_from_file, :import_from_external_url, :imported_table_name
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom address_geolocated }
 
@@ -44,10 +44,10 @@ class Table < Sequel::Model(:user_tables)
     import_data_from_external_url! unless import_from_external_url.blank?
     unless import_from_file.blank?
       handle_import_file!
-      guess_schema if force_schema.blank?
+      guess_schema if force_schema.blank? && imported_table_name.blank?
     end
     set_table_schema!
-    unless import_from_file.blank?
+    if !import_from_file.blank? && imported_table_name.blank?
       import_data_from_file!
     end
     set_triggers
@@ -766,7 +766,7 @@ TRIGGER
   
   def set_table_schema!
     owner.in_database do |user_database|
-      if !user_database.table_exists?(self.name.to_sym)
+      if imported_table_name.blank?
         if force_schema.blank?
           user_database.create_table self.name.to_sym do
             column :cartodb_id, "SERIAL PRIMARY KEY"
@@ -799,6 +799,21 @@ TRIGGER
             user_database.run("alter table #{self.name} alter column updated_at SET DEFAULT now()")
           end
         end
+      else
+        debugger
+        user_database.rename_table self.imported_table_name, self.name
+        self.imported_table_name = nil
+        user_database.run("alter table #{self.name} add column cartodb_id integer")
+        user_database.run("create sequence #{self.name}_cartodb_id_seq")
+        user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")
+        user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('#{self.name}_cartodb_id_seq')")
+        user_database.run("alter table #{self.name} alter column cartodb_id set not null")
+        user_database.run("alter table #{self.name} add unique (cartodb_id)")
+        user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
+        user_database.run("alter table #{self.name} add primary key (cartodb_id)")
+        user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
+        user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
+        debugger
       end
       update_stored_schema(user_database)
     end
@@ -824,33 +839,55 @@ TRIGGER
       import_from_file.path
     end
     ext = File.extname(original_filename)
-    return unless %W{ .ods .xls .xlsx }.include?(ext)
-    
-    csv_name = File.basename(original_filename, ext)
     path = if import_from_file.respond_to?(:tempfile)
       import_from_file.tempfile.path
     else
       import_from_file.path
     end
-    new_path = "/tmp/#{csv_name}#{ext}"
-    fd = File.open(new_path,'w')
-    fd.write(import_from_file.read.force_encoding('utf-8'))
-    fd.close
-    s = case ext
-    when '.xls'
-      Excel.new(new_path)
-    when '.xlsx'
-      Excelx.new(new_path)
-    when '.ods'
-      Openoffice.new(new_path)
-      # when ''
+    
+    # If it is a zip file we should find a shp file
+    if ext == '.zip'
+      Zip::ZipFile.foreach(path) do |entry|
+        if File.extname(entry.name) == '.shp'
+          ext = '.shp'
+          path = "/tmp/#{entry.name}"
+          original_filename = entry.name
+        end
+        entry.extract("/tmp/#{entry.name}")
+      end
+    end    
+    return unless %W{ .ods .xls .xlsx .shp }.include?(ext)
+
+    if ext == '.shp'
+      db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
+      host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
+      port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
+      output = `\`which shp2pgsql\` -p -WLATIN1  #{path}`
+      self.imported_table_name = output.scan(/CREATE TABLE\s\"([^"]+)\"/i).first.first
+      system("`which shp2pgsql` -WLATIN1 -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -W '#{owner.database_password}' #{owner.database_name}")
+      return
     else
-      Google.new(new_path)
-      # else
-      # raise ArgumentError, "Don't know how to open file #{file}"
+      csv_name = File.basename(original_filename, ext)
+      new_path = "/tmp/#{csv_name}#{ext}"
+      fd = File.open(new_path,'w')
+      fd.write(import_from_file.read.force_encoding('utf-8'))
+      fd.close
+      s = case ext
+      when '.xls'
+        Excel.new(new_path)
+      when '.xlsx'
+        Excelx.new(new_path)
+      when '.ods'
+        Openoffice.new(new_path)
+        # when ''
+      else
+        Google.new(new_path)
+        # else
+        # raise ArgumentError, "Don't know how to open file #{file}"
+      end
+      s.to_csv("/tmp/#{csv_name}.csv")
+      self.import_from_file = File.open("/tmp/#{csv_name}.csv",'r')
     end
-    s.to_csv("/tmp/#{csv_name}.csv")
-    self.import_from_file = File.open("/tmp/#{csv_name}.csv",'r')
   end
 
 end

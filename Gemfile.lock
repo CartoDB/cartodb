@@ -248,6 +248,7 @@ DEPENDENCIES
   rspec
   rspec-rails
   ruby-debug19
+  rubyzip
   sequel-rails!
   sequel_column_type_array
   spreadsheet

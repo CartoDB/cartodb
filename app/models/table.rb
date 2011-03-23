@@ -32,12 +32,24 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # Before creating a user table a table should be created in the database.
-  # This table has an empty schema
+  # A serie of steps should be done:
+  #  - set the new updated_at value
+  #  - if the table is created and imported from a file
+  #    - convert the file to a well known format
+  #    - read or guess the schema
+  #  - set the cartodb schema, adding cartodb primary key, etc..
+  #  - import the data if necessary
   def before_create
     update_updated_at
     import_data_from_external_url! unless import_from_external_url.blank?
+    unless import_from_file.blank?
+      handle_import_file!
+      guess_schema if force_schema.blank?
+    end
     set_table_schema!
-    import_data_from_file! unless import_from_file.blank?
+    unless import_from_file.blank?
+      import_data_from_file!
+    end
     set_triggers
     super
   end
@@ -565,12 +577,11 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def guess_schema
-    return if self.import_from_file.nil?
     @col_separator = ','
     options = {:col_sep => @col_separator}
     schemas = []
     uk_column_counter = 0
-
+    
     path = if import_from_file.respond_to?(:tempfile)
       import_from_file.tempfile.path
     else
@@ -618,14 +629,20 @@ class Table < Sequel::Model(:user_tables)
           end
         end
         if schemas[i].nil?
-          if line[i] =~ /^[0-9]+$/
-            schemas[i] = "integer"
-          elsif line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
+          if line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
             schemas[i] = "float"
+          elsif line[i] =~ /^[0-9]+$/
+            schemas[i] = "integer"
           else
             schemas[i] = "varchar"
           end
         else
+          case schemas[i]
+          when "integer"
+            if line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
+              schemas[i] = "float"
+            end
+          end
         end
       end
     end
@@ -748,7 +765,6 @@ TRIGGER
   end
   
   def set_table_schema!
-    guess_schema if force_schema.blank? && !import_from_file.blank?
     owner.in_database do |user_database|
       if !user_database.table_exists?(self.name.to_sym)
         if force_schema.blank?
@@ -799,6 +815,42 @@ TRIGGER
     else
       nil
     end
+  end
+  
+  def handle_import_file!
+    original_filename = if import_from_file.respond_to?(:original_filename)
+      import_from_file.original_filename
+    else
+      import_from_file.path
+    end
+    ext = File.extname(original_filename)
+    return unless %W{ .ods .xls .xlsx }.include?(ext)
+    
+    csv_name = File.basename(original_filename, ext)
+    path = if import_from_file.respond_to?(:tempfile)
+      import_from_file.tempfile.path
+    else
+      import_from_file.path
+    end
+    new_path = "/tmp/#{csv_name}#{ext}"
+    fd = File.open(new_path,'w')
+    fd.write(import_from_file.read.force_encoding('utf-8'))
+    fd.close
+    s = case ext
+    when '.xls'
+      Excel.new(new_path)
+    when '.xlsx'
+      Excelx.new(new_path)
+    when '.ods'
+      Openoffice.new(new_path)
+      # when ''
+    else
+      Google.new(new_path)
+      # else
+      # raise ArgumentError, "Don't know how to open file #{file}"
+    end
+    s.to_csv("/tmp/#{csv_name}.csv")
+    self.import_from_file = File.open("/tmp/#{csv_name}.csv",'r')
   end
 
 end

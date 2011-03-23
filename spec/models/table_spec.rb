@@ -424,7 +424,6 @@ describe Table do
   end
 
   it "should import file twitters.csv" do
-    Table.send(:public, *Table.private_instance_methods)
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
     table.save
@@ -440,7 +439,6 @@ describe Table do
   end
 
   it "should import file import_csv_1.csv" do
-    Table.send(:public, *Table.private_instance_methods)
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
     table.save
@@ -458,7 +456,6 @@ describe Table do
   end
 
   it "should import file import_csv_2.csv" do
-    Table.send(:public, *Table.private_instance_methods)
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
     table.save
@@ -475,7 +472,6 @@ describe Table do
   end
 
   it "should import file import_csv_3.csv" do
-    Table.send(:public, *Table.private_instance_methods)
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_3.csv", "text/csv")
     table.save
@@ -492,7 +488,6 @@ describe Table do
   end
 
   it "should import file import_csv_4.csv" do
-    Table.send(:public, *Table.private_instance_methods)
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_4.csv", "text/csv")
     table.save
@@ -509,7 +504,6 @@ describe Table do
   end
   
   it "should import file ngos.xlsx" do
-    Table.send(:public, *Table.private_instance_methods)
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos.xlsx", "application/download")
     table.save
@@ -528,6 +522,14 @@ describe Table do
       [:updated_at, "timestamp"]
     ]
     table.rows_counted.should == 76
+  end
+  
+  it "should import world_merc.zip" do
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/world_merc.zip", "application/download")
+    table.save
+    
+    
   end
 
   it "should import data from an external url returning JSON data" do

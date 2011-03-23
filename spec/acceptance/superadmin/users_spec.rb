@@ -20,9 +20,9 @@ feature "Superadmin's users administration" do
     page.should have_no_link 'Superadmin'
 
     visit logout_path
-    
+
     log_in_as @admin_user
-        
+
     click_link 'Superadmin'
     current_path.should == superadmin_path
   end
@@ -32,7 +32,7 @@ feature "Superadmin's users administration" do
 
     visit superadmin_path
     page.should have_css('ul.users li a', :count => 6)
-    
+
     click_link 'Admin'
 
     page.should have_content "Id: #{@admin_user.id}"

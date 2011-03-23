@@ -11,7 +11,7 @@ feature "Dashboard", %q{
   scenario "Login and visit public tables wit no tables" do
     user = create_user :username => 'fulano'
     log_in_as user
-peich
+
     within(:css, "header") do
       page.should have_link("CartoDB")
       page.should have_content(user.email)
@@ -74,7 +74,7 @@ peich
     within("ul.your_tables li:eq(1)") do
       page.should have_link("downloaded_movies")
       page.should have_content("PRIVATE")
-      page.should have_content("Last operation 4 minutes ago")
+      page.should have_content("4 minutes ago")
       within(:css, "span.tags") do
         page.should have_content("movies")
         page.should have_content("personal")
@@ -84,7 +84,7 @@ peich
     within("ul.your_tables li:eq(2)") do
       page.should have_link("my_check_ins")
       page.should have_content("PUBLIC")
-      page.should have_content("Last operation 5 minutes ago")
+      page.should have_content("5 minutes ago")
       within(:css, "span.tags") do
         page.should have_content("4sq")
         page.should have_content("personal")
@@ -95,7 +95,7 @@ peich
     within("ul.your_tables li:eq(10).last") do
       page.should have_link("table_8")
       page.should have_content("PUBLIC")
-      page.should have_content("Last operation 6 minutes ago")
+      page.should have_content("6 minutes ago")
       within(:css, "span.tags") do
         page.should have_content("personal")
       end
@@ -236,7 +236,7 @@ peich
 
     visit '/dashboard'
     click_link_or_button('close session')
-    page.current_path.should == login_path
+    page.current_path.should == homepage
   end
 
   # TODO: implement it

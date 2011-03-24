@@ -39,7 +39,7 @@ task :run_migrations, :roles => [:app] do
   run <<-CMD
     export RAILS_ENV=#{stage} &&
     cd #{release_path} &&
-    rake db:migrate
+    rake db:migrate --trace
   CMD
 end
 

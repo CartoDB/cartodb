@@ -7,8 +7,8 @@ module CartoDB
   SRID = 4326
 
   TYPES = {
-    "number"  => ["integer", "real", "double precision"],
-    "string"  => ["varchar", "character varying", "text", "character varying(255)"],
+    "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "real", "double precision"],
+    "string"  => ["varchar", "character varying", "text", /character\svarying\(\d+\)/],
     "date"    => ["timestamp", "timestamp without time zone"],
     "boolean" => ["boolean"]
   }

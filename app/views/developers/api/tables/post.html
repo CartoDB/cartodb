@@ -1,0 +1,41 @@
+<div class="middle">
+  <div class="left">
+    <ul class="breadcrumb">
+      <li class="first"><a href="/api/">CartoDB API</a></li>
+      <li>Tables</li>
+      <li class="selected"><a href="/api/tables/post">Create a table</a></li>
+    </ul>
+    <h1>Create a table</h1>
+    <p>Creates a new table</p>
+
+    <h2>URL</h2>
+    <code>/v1/tables</code>
+
+    <h2>REQUEST METHOD</h2>
+    <code>POST</code>
+
+    <h2>PARAMETERS</h2>
+    <h3>Optional</h3>
+    <ul>
+      <li><code>name</code>: the name of the table</li>
+      <li><code>schema</code> the schema, in SQL, of the table</li>
+    </ul> 
+
+    <h2>EXAMPLE</h2>
+    <pre><code>
+      POST
+        /v1/tables
+          { "name": "species occurrences" }
+    </code></pre>
+    <p class="tab">JSON</p>
+    <pre class="syntax javascript">
+      {
+        "id": "1",
+        "name": "species_occurrences"
+      }
+    </pre>
+  </div>
+  <div class="right">
+    {{sidebar}}
+  </div>
+</div>

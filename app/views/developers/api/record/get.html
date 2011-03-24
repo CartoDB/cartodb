@@ -1,0 +1,42 @@
+<div class="middle">
+  <div class="left">
+    <ul class="breadcrumb">
+      <li class="first"><a href="/api/">CartoDB API</a></li>
+      <li>Rows</li>
+      <li class="selected"><a href="/api/record/get">Get a single row</a></li>
+    </ul>
+    <h1>Get a single row</h1>
+    <p>Returns the values from a single row</p>
+
+    <h2>URL</h2>
+    <code>/v1/tables/&lt;identifier&gt;/records/&lt;primary_key&gt;</code>
+
+    <h2>METHOD</h2>
+    <code>GET</code>
+
+    <h2>PARAMETERS</h2>
+    <p>Required</p>
+    <ul>
+      <li><code>identifier</code>: the name of the table (in the URL of the request)</li>
+      <li><code>primary_key</code>: the primary key of the row (in the URL of the request)</li>
+    </ul>
+
+    <h2>EXAMPLE</h2>
+    <pre><code>
+      GET
+        /v1/tables/species_occurrences/records/1
+    </code></pre>
+    <p class="tab">JSON</p>
+    <pre class="syntax javascript">
+      {
+        "cartodb_id": 1,
+        "name": "Laetmonice producta",
+        "description": "",
+        ...
+      }
+    </pre>
+  </div>
+  <div class="right">
+    {{sidebar}}
+  </div>
+</div>

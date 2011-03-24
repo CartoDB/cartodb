@@ -1,6 +1,4 @@
 module NavigationHelpers
-  API_HOST = "http://api.localhost.lan"
-
   def homepage
     "/"
   end
@@ -60,7 +58,7 @@ module NavigationHelpers
   private
 
   def api_url_prefix
-    "#{API_HOST}/#{CartoDB::API::VERSION_1}"
+    "#{APP_CONFIG[:api_host]}/#{CartoDB::API::VERSION_1}"
   end
 
 end

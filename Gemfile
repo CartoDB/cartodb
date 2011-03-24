@@ -17,8 +17,11 @@ gem 'oauth-plugin', '>=0.4.0.pre1'
 gem 'sequel_column_type_array'
 gem 'rgeo'
 gem 'rgeo-geojson', :require => 'rgeo/geo_json'
-
+gem 'roo'
+gem 'spreadsheet'
+gem 'google-spreadsheet-ruby', :require => 'google_spreadsheet'
 gem "aws-ses", '0.4.1', :require => 'aws/ses'
+gem 'rubyzip', :require => 'zip/zip'
 
 group :development do
   gem 'capistrano'

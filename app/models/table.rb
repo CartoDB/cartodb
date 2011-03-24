@@ -1,29 +1,5 @@
 # coding: UTF-8
 
-class CartoDB::InvalidType < StandardError
-  attr_accessor :db_message # the error message from the database
-  attr_accessor :syntax_message # the query and a marker where the error is
-
-  def initialize(message)
-    @db_message = message.split("\n")[0]
-    @syntax_message = message.split("\n")[1..-1].join("\n")
-  end
-end
-
-class CartoDB::EmtpyAttributes < StandardError
-  attr_accessor :error_message
-  def initialize(message)
-    @error_message = message
-  end
-end
-
-class CartoDB::InvalidAttributes < StandardError
-  attr_accessor :error_message
-  def initialize(message)
-    @error_message = message
-  end
-end
-
 class Table < Sequel::Model(:user_tables)
 
   # Privacy constants
@@ -36,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file, :import_from_external_url
+  attr_accessor :force_schema, :import_from_file, :import_from_external_url, :imported_table_name
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom address_geolocated }
 
@@ -56,55 +32,25 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # Before creating a user table a table should be created in the database.
-  # This table has an empty schema
+  # A serie of steps should be done:
+  #  - set the new updated_at value
+  #  - if the table is created and imported from a file
+  #    - convert the file to a well known format
+  #    - read or guess the schema
+  #  - set the cartodb schema, adding cartodb primary key, etc..
+  #  - import the data if necessary
   def before_create
     update_updated_at
-    unless import_from_external_url.blank?
-      import_data_from_external_url!
+    import_data_from_external_url! unless import_from_external_url.blank?
+    unless import_from_file.blank?
+      handle_import_file!
+      guess_schema if force_schema.blank? && imported_table_name.blank?
     end
-    guess_schema if force_schema.blank? && !import_from_file.blank?
-    unless self.user_id.blank? || self.name.blank?
-      owner.in_database do |user_database|
-        if !user_database.table_exists?(self.name.to_sym)
-          if force_schema.blank?
-            user_database.create_table self.name.to_sym do
-              column :cartodb_id, "SERIAL PRIMARY KEY"
-              String :name
-              Float :latitude
-              Float :longitude
-              String :description, :text => true
-              DateTime :created_at, :default => "NOW()"
-              DateTime :updated_at, :default => "NOW()"
-            end
-          else
-            sanitized_force_schema = force_schema.split(',').map do |column|
-              if column =~ /^\s*\"([^\"]+)\"(.*)$/
-                "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,"UNIQUE")}"
-              else
-                column.gsub(/primary\s+key/i,"UNIQUE")
-              end
-            end
-            # If import_from_file is blank primary key is added now.
-            # If not we add it after importing the CSV file, becaus the number of columns
-            # will not match
-            if import_from_file.blank?
-              sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY")
-              sanitized_force_schema.unshift("created_at timestamp")
-              sanitized_force_schema.unshift("updated_at timestamp")
-            end
-            user_database.run("CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')})")
-            if import_from_file.blank?
-              user_database.run("alter table #{self.name} alter column created_at SET DEFAULT now()")
-              user_database.run("alter table #{self.name} alter column updated_at SET DEFAULT now()")
-            end
-          end
-        end
-      end
-      unless import_from_file.blank?
-        import_data_from_file!
-      end
-      set_triggers
+    set_table_schema!
+    if !import_from_file.blank? && imported_table_name.blank?
+      import_data_from_file!
     end
+    set_triggers
     super
   end
 
@@ -208,9 +154,8 @@ class Table < Sequel::Model(:user_tables)
 
   def insert_row!(raw_attributes)
     primary_key = nil
-    if raw_attributes[:address_column] && address_column
-      raw_attributes[address_column] = raw_attributes.delete(:address_column)
-    end
+    modified_schema = false
+    prepare_attributes!(raw_attributes)
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -226,6 +171,7 @@ class Table < Sequel::Model(:user_tables)
         invalid_value = message.match(/"([^"]+)"$/)[1]
         invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
         if new_column_type = get_new_column_type(invalid_column, invalid_value)
+          modified_schema = true
           user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
           retry
         else
@@ -234,14 +180,16 @@ class Table < Sequel::Model(:user_tables)
       end
       geocode!(attributes, primary_key)
     end
+    if modified_schema
+      update_stored_schema!
+    end
     return primary_key
   end
 
   def update_row!(row_id, raw_attributes)
     rows_updated = 0
-    if raw_attributes[:address_column] && address_column
-      raw_attributes[address_column] = raw_attributes.delete(:address_column)
-    end
+    modified_schema = false
+    prepare_attributes!(raw_attributes)
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -257,6 +205,7 @@ class Table < Sequel::Model(:user_tables)
           invalid_value = message.match(/"([^"]+)"$/)[1]
           invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
           if new_column_type = get_new_column_type(invalid_column, invalid_value)
+            modified_schema = true
             user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
             retry
           else
@@ -271,35 +220,17 @@ class Table < Sequel::Model(:user_tables)
         end
       end
     end
+    if modified_schema
+      update_stored_schema!
+    end
     rows_updated
   end
 
-  def self.schema(user, table, options = {})
-    options[:cartodb_types] ||= false
-    temporal_schema = user.in_database do |user_database|
-      user_database.schema(table.name.to_sym).map do |column|
-        [
-          column.first,
-          (options[:cartodb_types] == true ? column[1][:db_type].convert_to_cartodb_type : column[1][:db_type])
-        ] if !CARTODB_COLUMNS.include?(column.first.to_s) && column.first.to_s != "address_column"
-      end.compact
-    end
-    schema = [[:cartodb_id, (options[:cartodb_types] == true ? "integer".convert_to_cartodb_type :  "integer")]] +
-      temporal_schema +
-      [[:created_at, (options[:cartodb_types] == true ? "timestamp".convert_to_cartodb_type :  "timestamp")]] +
-      [[:updated_at, (options[:cartodb_types] == true ? "timestamp".convert_to_cartodb_type :  "timestamp")]]
-    unless table.geometry_columns.blank?
-      schema.each do |col|
-        col << "latitude"  if col[0].to_sym == table.lat_column
-        col << "longitude" if col[0].to_sym == table.lon_column
-        col << "address"   if col[0].to_sym == table.address_column
-      end
-    end
-    return schema
-  end
-
   def schema(options = {})
-    self.class.schema(owner, self, options)
+    self.stored_schema.map do |column| 
+      c = column.split(',')
+      [c[0].to_sym, c[options[:cartodb_types] == false ? 1 : 2], schema_geometry_column(c[0].to_sym)].compact
+    end
   end
 
   def add_column!(options)
@@ -308,6 +239,7 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       user_database.add_column name.to_sym, options[:name].to_s.sanitize, type
     end
+    update_stored_schema!
     return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^PGError/
@@ -325,16 +257,18 @@ class Table < Sequel::Model(:user_tables)
       save_changes
     end
     owner.in_database do |user_database|
+      user_database.run("UPDATE #{self.name} SET the_geom = NULL") if geometry_columns.nil?
       user_database.drop_column name.to_sym, options[:name].to_s
       if options[:name].to_sym == old_address_column
         user_database.drop_column name.to_sym, "address_geolocated"
       end
     end
+    update_stored_schema!
   end
 
   def modify_column!(options)
     new_name = options[:name] || options[:old_name]
-    new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema.select{ |c| c[0] == new_name.to_sym }.first.last
+    new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema(:cartodb_types => false).select{ |c| c[0] == new_name.to_sym }.first[1]
     cartodb_type = new_type.try(:convert_to_cartodb_type)
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
@@ -390,6 +324,7 @@ class Table < Sequel::Model(:user_tables)
         end
       end
     end
+    update_stored_schema!
     return {:name => new_name, :type => new_type, :cartodb_type => cartodb_type}
   end
 
@@ -454,7 +389,10 @@ class Table < Sequel::Model(:user_tables)
     if lat_column && lon_column
       owner.in_database do |user_database|
         user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-        user_database.run("alter table #{self.name} drop column address_geolocated") if user_database.schema(name.to_sym).map{|e| e[0]}.include?(:address_geolocated)
+        if user_database.schema(name.to_sym).map{|e| e[0]}.include?(:address_geolocated)
+          user_database.run("alter table #{self.name} drop column address_geolocated") 
+          update_stored_schema(user_database)
+        end
       end
       self.geometry_columns = "#{lat_column}|#{lon_column}"
     end
@@ -488,18 +426,17 @@ class Table < Sequel::Model(:user_tables)
       address_column = aggregated_address_name
     end
     self.geometry_columns = address_column.try(:to_s)
-    unless address_column.blank?
-      owner.in_database do |user_database|
+    owner.in_database do |user_database|
+      unless address_column.blank?
         if user_database.schema(name.to_sym).map{|e| e[0]}.include?(:address_geolocated)
           user_database.run("update #{self.name} set address_geolocated = null")
         else
           user_database.run("alter table #{self.name} add column address_geolocated boolean default null")
         end
-      end
-    else
-      owner.in_database do |user_database|
+      else
         user_database.run("alter table #{self.name} drop column address_geolocated")
-      end      
+      end
+      update_stored_schema(user_database)
     end
     save_changes
     # geocode_all_address_columns! if rows_counted > 0
@@ -540,6 +477,24 @@ class Table < Sequel::Model(:user_tables)
 
       user_database.fetch(table_constraints_sql, name, 'enforce_srid_the_geom').all
     end
+  end
+  
+  def update_stored_schema(user_database)
+    temporal_schema = user_database.schema(self.name.to_sym).map do |column|
+      if !CARTODB_COLUMNS.include?(column.first.to_s) && column.first.to_s != "address_column"
+        "#{column.first},#{column[1][:db_type].gsub(/,\d+/,"")},#{column[1][:db_type].convert_to_cartodb_type}"
+      end
+    end.compact
+    self.stored_schema = ["cartodb_id,integer,#{"integer".convert_to_cartodb_type}"] +
+      temporal_schema +
+      ["created_at,timestamp,#{"timestamp".convert_to_cartodb_type}","updated_at,timestamp,#{"timestamp".convert_to_cartodb_type}"]
+  end
+  
+  def update_stored_schema!
+    owner.in_database do |user_database|
+      update_stored_schema(user_database)
+    end
+    save_changes
   end
 
   private
@@ -622,12 +577,11 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def guess_schema
-    return if self.import_from_file.nil?
     @col_separator = ','
     options = {:col_sep => @col_separator}
     schemas = []
     uk_column_counter = 0
-
+    
     path = if import_from_file.respond_to?(:tempfile)
       import_from_file.tempfile.path
     else
@@ -675,14 +629,20 @@ class Table < Sequel::Model(:user_tables)
           end
         end
         if schemas[i].nil?
-          if line[i] =~ /^[0-9]+$/
-            schemas[i] = "integer"
-          elsif line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
+          if line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
             schemas[i] = "float"
+          elsif line[i] =~ /^[0-9]+$/
+            schemas[i] = "integer"
           else
             schemas[i] = "varchar"
           end
         else
+          case schemas[i]
+          when "integer"
+            if line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
+              schemas[i] = "float"
+            end
+          end
         end
       end
     end
@@ -740,12 +700,18 @@ TRIGGER
   end
 
   def get_new_column_type(invalid_column, invalid_value)
-    flatten_cartodb_schema = schema(:cartodb_types => true).flatten
+    flatten_cartodb_schema = schema.flatten
     cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]
-    flatten_schema = schema.flatten
+    flatten_schema = schema(:cartodb_types => false).flatten
     column_type = flatten_schema[flatten_schema.index(invalid_column.to_sym) + 1]
-    new_column_type = if cartodb_column_type == "number" && invalid_value =~ /^\-?[0-9]+[\.|\,][0-9]+$/
-      CartoDB::TYPES[cartodb_column_type][CartoDB::TYPES.keys.index(cartodb_column_type) + 1]
+    if cartodb_column_type == "number" && invalid_value =~ /^\-?[0-9]+[\.|\,][0-9]+$/
+      i = CartoDB::TYPES[cartodb_column_type].index(column_type) + 1
+      t = CartoDB::TYPES[cartodb_column_type][i]
+      while !t.is_a?(String)
+        i+=1
+        t = CartoDB::TYPES[cartodb_column_type][i]
+      end
+      t
     else
       nil
     end
@@ -753,25 +719,29 @@ TRIGGER
 
   def geocode!(attributes, primary_key)
     owner.in_database do |user_database|
-      if attributes[:the_geom]      
-        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})  where cartodb_id = #{primary_key}")
-        if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
-          user_database.run("UPDATE #{self.name} SET address_geolocated = true")
-        end
+      if attributes.keys.include?(:address_geolocated) && attributes[:address_geolocated] == false
+        user_database.run("UPDATE #{self.name} SET the_geom = NULL")
       else
-        # if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
-        #   url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(attributes[address_column])}&sensor=false")
-        #   req = Net::HTTP::Get.new(url.request_uri)
-        #   res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-        #   json = JSON.parse(res.body)
-        #   if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
-        #     owner.in_database do |user_database|
-        #       user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-        #     end
-        #   end
-        # end
-        if !lat_column.blank? && !lon_column.blank?
-          user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{primary_key}")
+        if attributes[:the_geom]      
+          user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})  where cartodb_id = #{primary_key}")
+          if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
+            user_database.run("UPDATE #{self.name} SET address_geolocated = true")
+          end
+        else
+          # if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
+          #   url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(attributes[address_column])}&sensor=false")
+          #   req = Net::HTTP::Get.new(url.request_uri)
+          #   res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
+          #   json = JSON.parse(res.body)
+          #   if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
+          #     owner.in_database do |user_database|
+          #       user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
+          #     end
+          #   end
+          # end
+          if !lat_column.blank? && !lon_column.blank?
+            user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{primary_key}")
+          end
         end
       end
     end
@@ -784,6 +754,149 @@ TRIGGER
           user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::GOOGLE_SRID},'POINT',2)")
         end
       end
+    end
+  end
+  
+  def prepare_attributes!(raw_attributes)
+    if raw_attributes[:address_column]
+      if address_column
+        raw_attributes[address_column] = raw_attributes.delete(:address_column)
+      else
+        raw_attributes.delete(:address_column)
+      end
+    end
+    if raw_attributes[:address_geolocated] && raw_attributes[:address_geolocated] == 'false'
+      raw_attributes[:address_geolocated] = false
+    end
+  end
+  
+  def set_table_schema!
+    owner.in_database do |user_database|
+      if imported_table_name.blank?
+        if force_schema.blank?
+          user_database.create_table self.name.to_sym do
+            column :cartodb_id, "SERIAL PRIMARY KEY"
+            String :name
+            Float :latitude
+            Float :longitude
+            String :description, :text => true
+            DateTime :created_at, :default => "NOW()"
+            DateTime :updated_at, :default => "NOW()"
+          end
+        else
+          sanitized_force_schema = force_schema.split(',').map do |column|
+            if column =~ /^\s*\"([^\"]+)\"(.*)$/
+              "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,"UNIQUE")}"
+            else
+              column.gsub(/primary\s+key/i,"UNIQUE")
+            end
+          end
+          # If import_from_file is blank primary key is added now.
+          # If not we add it after importing the CSV file, becaus the number of columns
+          # will not match
+          if import_from_file.blank?
+            sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY")
+            sanitized_force_schema.unshift("created_at timestamp")
+            sanitized_force_schema.unshift("updated_at timestamp")
+          end
+          user_database.run("CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')})")
+          if import_from_file.blank?
+            user_database.run("alter table #{self.name} alter column created_at SET DEFAULT now()")
+            user_database.run("alter table #{self.name} alter column updated_at SET DEFAULT now()")
+          end
+        end
+      else
+        user_database.rename_table self.imported_table_name, self.name      
+        if pk = user_database.schema(self.name).select{ |c| c[1][:primary_key] == true }.first[0]
+          user_database.rename_column name.to_sym, pk, :cartodb_id
+        else
+          user_database.run("alter table #{self.name} add column cartodb_id integer")
+          user_database.run("create sequence #{self.name}_cartodb_id_seq")
+          user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")
+          user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('#{self.name}_cartodb_id_seq')")
+          user_database.run("alter table #{self.name} alter column cartodb_id set not null")
+          user_database.run("alter table #{self.name} add unique (cartodb_id)")
+          user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
+          user_database.run("alter table #{self.name} add primary key (cartodb_id)")
+        end
+        user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
+        user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
+      end
+      update_stored_schema(user_database)
+    end
+  end
+  
+  def schema_geometry_column(name)
+    case name
+    when lat_column
+      "latitude"
+    when lon_column
+      "longitude"
+    when address_column
+      "address"
+    else
+      nil
+    end
+  end
+  
+  def handle_import_file!
+    original_filename = if import_from_file.respond_to?(:original_filename)
+      import_from_file.original_filename
+    else
+      import_from_file.path
+    end
+    ext = File.extname(original_filename)
+    path = if import_from_file.respond_to?(:tempfile)
+      import_from_file.tempfile.path
+    else
+      import_from_file.path
+    end
+    
+    # If it is a zip file we should find a shp file
+    entries = []
+    if ext == '.zip'
+      Zip::ZipFile.foreach(path) do |entry|
+        entries << "/tmp/#{entry.name}"
+        if File.extname(entry.name) == '.shp'
+          ext = '.shp'
+          path = "/tmp/#{entry.name}"
+          original_filename = entry.name
+        end
+        entry.extract("/tmp/#{entry.name}")
+      end
+    end    
+    return unless %W{ .ods .xls .xlsx .shp }.include?(ext)
+
+    if ext == '.shp'
+      db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
+      host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
+      port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
+      output = `\`which shp2pgsql\` -p -WLATIN1  #{path}`
+      self.imported_table_name = output.scan(/CREATE TABLE\s\"([^"]+)\"/i).first.first
+      system("`which shp2pgsql` -WLATIN1 -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
+      # system("echo #{owner.database_password}")
+      if entries.any?
+        entries.each{ |e| FileUtils.rm(e) }
+      end
+      return
+    else
+      csv_name = File.basename(original_filename, ext)
+      new_path = "/tmp/#{csv_name}#{ext}"
+      fd = File.open(new_path,'w')
+      fd.write(import_from_file.read.force_encoding('utf-8'))
+      fd.close
+      s = case ext
+      when '.xls'
+        Excel.new(new_path)
+      when '.xlsx'
+        Excelx.new(new_path)
+      when '.ods'
+        Openoffice.new(new_path)
+      else
+        raise ArgumentError, "Don't know how to open file #{file}"
+      end
+      s.to_csv("/tmp/#{csv_name}.csv")
+      self.import_from_file = File.open("/tmp/#{csv_name}.csv",'r')
     end
   end
 

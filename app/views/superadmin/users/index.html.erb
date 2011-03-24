@@ -21,7 +21,7 @@
             <%= link_to 'Add new user', new_superadmin_user_path, :class=>"new_table" %>
           </div>
           <div class="middle_white_medium">
-              <ul class="your_tables">
+              <ul class="your_tables users">
                 <% @users.each_with_index do |user,i| %>
                   <li class="<%= (@users.size-1==i)?"last":""%>">
                     <h4><%= link_to "#{user.username}", superadmin_user_path(user) %></h4>

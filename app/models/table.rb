@@ -482,7 +482,7 @@ class Table < Sequel::Model(:user_tables)
   def update_stored_schema(user_database)
     temporal_schema = user_database.schema(self.name.to_sym).map do |column|
       if !CARTODB_COLUMNS.include?(column.first.to_s) && column.first.to_s != "address_column"
-        "#{column.first},#{column[1][:db_type]},#{column[1][:db_type].convert_to_cartodb_type}"
+        "#{column.first},#{column[1][:db_type].gsub(/,\d+/,"")},#{column[1][:db_type].convert_to_cartodb_type}"
       end
     end.compact
     self.stored_schema = ["cartodb_id,integer,#{"integer".convert_to_cartodb_type}"] +
@@ -704,8 +704,14 @@ TRIGGER
     cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]
     flatten_schema = schema(:cartodb_types => false).flatten
     column_type = flatten_schema[flatten_schema.index(invalid_column.to_sym) + 1]
-    new_column_type = if cartodb_column_type == "number" && invalid_value =~ /^\-?[0-9]+[\.|\,][0-9]+$/
-      CartoDB::TYPES[cartodb_column_type][CartoDB::TYPES.keys.index(cartodb_column_type) + 1]
+    if cartodb_column_type == "number" && invalid_value =~ /^\-?[0-9]+[\.|\,][0-9]+$/
+      i = CartoDB::TYPES[cartodb_column_type].index(column_type) + 1
+      t = CartoDB::TYPES[cartodb_column_type][i]
+      while !t.is_a?(String)
+        i+=1
+        t = CartoDB::TYPES[cartodb_column_type][i]
+      end
+      t
     else
       nil
     end
@@ -800,20 +806,21 @@ TRIGGER
           end
         end
       else
-        debugger
-        user_database.rename_table self.imported_table_name, self.name
-        self.imported_table_name = nil
-        user_database.run("alter table #{self.name} add column cartodb_id integer")
-        user_database.run("create sequence #{self.name}_cartodb_id_seq")
-        user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")
-        user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('#{self.name}_cartodb_id_seq')")
-        user_database.run("alter table #{self.name} alter column cartodb_id set not null")
-        user_database.run("alter table #{self.name} add unique (cartodb_id)")
-        user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
-        user_database.run("alter table #{self.name} add primary key (cartodb_id)")
+        user_database.rename_table self.imported_table_name, self.name      
+        if pk = user_database.schema(self.name).select{ |c| c[1][:primary_key] == true }.first[0]
+          user_database.rename_column name.to_sym, pk, :cartodb_id
+        else
+          user_database.run("alter table #{self.name} add column cartodb_id integer")
+          user_database.run("create sequence #{self.name}_cartodb_id_seq")
+          user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")
+          user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('#{self.name}_cartodb_id_seq')")
+          user_database.run("alter table #{self.name} alter column cartodb_id set not null")
+          user_database.run("alter table #{self.name} add unique (cartodb_id)")
+          user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
+          user_database.run("alter table #{self.name} add primary key (cartodb_id)")
+        end
         user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
         user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
-        debugger
       end
       update_stored_schema(user_database)
     end
@@ -846,8 +853,10 @@ TRIGGER
     end
     
     # If it is a zip file we should find a shp file
+    entries = []
     if ext == '.zip'
       Zip::ZipFile.foreach(path) do |entry|
+        entries << "/tmp/#{entry.name}"
         if File.extname(entry.name) == '.shp'
           ext = '.shp'
           path = "/tmp/#{entry.name}"
@@ -864,7 +873,11 @@ TRIGGER
       port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
       output = `\`which shp2pgsql\` -p -WLATIN1  #{path}`
       self.imported_table_name = output.scan(/CREATE TABLE\s\"([^"]+)\"/i).first.first
-      system("`which shp2pgsql` -WLATIN1 -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -W '#{owner.database_password}' #{owner.database_name}")
+      system("`which shp2pgsql` -WLATIN1 -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
+      # system("echo #{owner.database_password}")
+      if entries.any?
+        entries.each{ |e| FileUtils.rm(e) }
+      end
       return
     else
       csv_name = File.basename(original_filename, ext)
@@ -879,11 +892,8 @@ TRIGGER
         Excelx.new(new_path)
       when '.ods'
         Openoffice.new(new_path)
-        # when ''
       else
-        Google.new(new_path)
-        # else
-        # raise ArgumentError, "Don't know how to open file #{file}"
+        raise ArgumentError, "Don't know how to open file #{file}"
       end
       s.to_csv("/tmp/#{csv_name}.csv")
       self.import_from_file = File.open("/tmp/#{csv_name}.csv",'r')

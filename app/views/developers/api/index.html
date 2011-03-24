@@ -1,0 +1,40 @@
+<div class="middle">
+  <div class="left">
+    <ul class="breadcrumb">
+      <li class="first selected"><a href="/api/">CartoDB API</a></li>
+    </ul>
+    <h1>CartoDB API</h1>
+    
+    <p>CartoDB is a geospatial database on the cloud that helps you create location aware applications quickly and easily.</p>
+
+    <h2>Overview</h2>
+    
+    <p>Everything that is done through our user interface can be performed through the API. We have developed 3 separate APIs for different use cases, keep updated with the documentation and don't forget to subscribe to the mailing list to keep updated.</p>
+      
+      <ul>
+        <li><a href="rest">REST API:</a> Allows you to create tables, insert data, read metadata, etc, all in friendly REST way.<br><br></li>
+        <li><a href="sql">SQL API:</a> For advance users, there is nothing better than straight SQL access to their CartoDB.<br><br></li>
+        <li><a href="maps">Maps API:</a> If you want to embed your maps on other websites.</li>
+      </ul>
+      
+      </p>
+
+  
+  <h2>Authorization</h2>
+    <p>For most operations you will need to authorize with CartoDB before. We have implemented OAuth 1.0 and JSON Token authorization. <a href="authentication">Read more about Authorization.</a><br><br></p>
+
+    <h2>Endpoint</h2>
+
+    <p>The endpoint is <code>https://api.cartodb.com/</code>. You should perform all the request to this host.<br><br></p>
+    <p>The whole API works with JSON. If you need to use JSONP add the parameter "callback".
+
+    <h2>Libraries</h2>
+
+    <p>We are working on different libraries for different languages. We have a gem for Ruby and a PHP library. Soon we will have other languages available, but in general all you need is an OAuth client and a JSON parser.<br><br></p>
+    <p>Soon you will also have a Javascript library available to embed CartoDB maps on other websites.</p>
+  </div>
+  
+  <div class="right">
+    {{sidebar}}
+  </div>
+</div>

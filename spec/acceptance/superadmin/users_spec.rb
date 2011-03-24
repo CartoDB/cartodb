@@ -14,25 +14,26 @@ feature "Superadmin's users administration" do
     visit superadmin_path
     current_path.should == login_path
 
-    login_as @common_user
+    log_in_as @common_user
     visit superadmin_path
     current_path.should == dashboard_path
     page.should have_no_link 'Superadmin'
 
     visit logout_path
-
-    login_as @admin_user
+    
+    log_in_as @admin_user
+        
     click_link 'Superadmin'
     current_path.should == superadmin_path
   end
 
   scenario "Admins can edit an existing user" do
-    login_as @admin_user
+    log_in_as @admin_user
 
     visit superadmin_path
     page.should have_css('ul.users li a', :count => 6)
-
-    click_link 'Admin - admin@example.com'
+    
+    click_link 'Admin'
 
     page.should have_content "Id: #{@admin_user.id}"
     page.should have_content 'Username: Admin'
@@ -51,7 +52,7 @@ feature "Superadmin's users administration" do
     page.should have_content 'User updated successfully'
     page.should have_css('ul.users li a', :count => 6)
 
-    click_link 'Fulano - fulano@example.com'
+    click_link 'Fulano'
 
     page.should have_content "Id: #{@admin_user.id}"
     page.should have_content 'Username: Fulano'
@@ -69,12 +70,12 @@ feature "Superadmin's users administration" do
                        :password => 'invitation@example.com',
                        :enabled => false
 
-    login_as @admin_user
+    log_in_as @admin_user
 
     visit superadmin_path
     page.should have_css('ul.users li a', :count => 7)
 
-    click_link 'invitation@example.com - invitation@example.com'
+    click_link 'invitation@example.com'
 
     page.should have_content "Id: #{user.id}"
     page.should have_content 'Username: invitation@example.com'
@@ -109,7 +110,7 @@ feature "Superadmin's users administration" do
     page.should have_content 'User updated successfully'
     page.should have_css('ul.users li a', :count => 7)
 
-    click_link 'Fulano - fulano@example.com'
+    click_link 'Fulano'
 
     page.should have_content "Id: #{user.id}"
     page.should have_content 'Username: Fulano'
@@ -122,7 +123,7 @@ feature "Superadmin's users administration" do
   end
 
   scenario "Admins can create new users" do
-    login_as @admin_user
+    log_in_as @admin_user
 
     visit superadmin_path
 
@@ -136,7 +137,7 @@ feature "Superadmin's users administration" do
     page.should have_content 'User created successfully'
     page.should have_css('ul.users li a', :count => 7)
 
-    click_link 'Fulano - fulano@example.com'
+    click_link 'Fulano'
 
     fulano = User.all.last
 
@@ -149,12 +150,12 @@ feature "Superadmin's users administration" do
   end
 
   scenario "Admins can remove an existing user" do
-    login_as @admin_user
+    log_in_as @admin_user
 
     visit superadmin_path
     page.should have_css('ul.users li a', :count => 6)
 
-    click_link "#{@common_user.username} - #{@common_user.email}"
+    click_link "#{@common_user.username}"
 
     page.should have_content "Id: #{@common_user.id}"
     page.should have_content "Username: #{@common_user.username}"
@@ -173,12 +174,12 @@ feature "Superadmin's users administration" do
 
   scenario "Editing a user without touching his password doesn't change it" do
     user = create_user :username => 'test', :email => 'test@example.com', :password => 'test'
-    login_as @admin_user
+    log_in_as @admin_user
 
     visit superadmin_path
     page.should have_css('ul.users li a', :count => 7)
 
-    click_link 'test - test@example.com'
+    click_link 'test'
 
     page.should have_content "Id: #{user.id}"
     page.should have_content 'Username: test'

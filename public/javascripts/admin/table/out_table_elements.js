@@ -172,7 +172,7 @@
     $('div.inner_subheader div.left').append(
       '<span class="tags_window">'+
         '<ul id="tags_list"></ul>'+
-        '<a href="#save_tags">Save</a>'+
+        '<a id="save_all_tags" href="#save_tags">Save</a>'+
       '</span>');
       
     $('span.tags a.add').click(function(ev){
@@ -195,7 +195,7 @@
         };
       });
     });
-    $('span.tags_window a').click(function(ev){
+    $('span.tags_window a#save_all_tags').click(function(ev){
       stopPropagation(ev);
       var old_values = [];
       $("span.tags p").each(function(index,element){
@@ -312,8 +312,8 @@
       stopPropagation(ev);
       closeOutTableWindows();
       if (!$(this).parent().hasClass('selected')) {
-        $('section.subheader ul.tab_menu li').removeClass('selected');
         if ($(this).text()=="Table") {
+          $('section.subheader ul.tab_menu li').removeClass('selected');
           $(this).parent().addClass('selected');
           $(document).trigger('click');
           $('body').trigger('refresh');
@@ -321,11 +321,16 @@
           $('div.table_position').show();
           hideMap();
         } else {
-          $(this).parent().addClass('selected')
-          $('div.table_position').hide();
-          $(document).trigger('click');
-          $('body').trigger('enabled',[false]);
-          showMap();
+          if (geolocating) {
+            $('p.geo').trigger('click');
+          } else {
+            $('section.subheader ul.tab_menu li').removeClass('selected');
+            $(this).parent().addClass('selected')
+            $('div.table_position').hide();
+            $(document).trigger('click');
+            $('body').trigger('enabled',[false]);
+            showMap();
+          }
         }
       } 
     });

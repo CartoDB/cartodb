@@ -3,7 +3,7 @@
 class Api::Json::RecordsController < ApplicationController
   ssl_required :index, :create, :show, :update, :destroy, :show_column, :update_column
 
-  REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key table_id }
+  REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key table_id oauth_token oauth_token_secret }
 
   skip_before_filter :verify_authenticity_token
   before_filter :api_authorization_required
@@ -22,7 +22,7 @@ class Api::Json::RecordsController < ApplicationController
       end
     end
   rescue => e
-    puts e.error_message
+    puts $!
     render :json => { :errors => [e.error_message] }.to_json, :status => 400,
            :callback => params[:callback]
   end
@@ -80,7 +80,7 @@ class Api::Json::RecordsController < ApplicationController
   end
   
   def pending_addresses
-    records = @table.get_records_with_pending_addresses(:page => params[:page], :rows_per_page => params[:per_page])
+    records = @table.get_records_with_pending_addresses(:page => params[:page], :rows_per_page => params[:rows_per_page])
     render :json => records.to_json,
            :status => 200
   end

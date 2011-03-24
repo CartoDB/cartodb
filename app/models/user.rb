@@ -52,12 +52,20 @@ class User < Sequel::Model
       save
 
       Thread.new do
-        Rails::Sequel.connection.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
-        Rails::Sequel.connection.run("CREATE DATABASE #{self.database_name}
-          WITH TEMPLATE = template_postgis
-          OWNER = postgres
-          ENCODING = 'UTF8'
-          CONNECTION LIMIT=-1")
+        begin
+          Rails::Sequel.connection.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
+        rescue
+          puts "USER #{database_username} already exists"
+        end
+        begin
+          Rails::Sequel.connection.run("CREATE DATABASE #{self.database_name}
+            WITH TEMPLATE = template_postgis
+            OWNER = postgres
+            ENCODING = 'UTF8'
+            CONNECTION LIMIT=-1")
+        rescue
+          puts "DATABASE #{self.database_name} already exists"
+        end
       end.join
       in_database(:as => :superuser) do |user_database|
         user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")

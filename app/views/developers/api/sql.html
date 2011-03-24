@@ -1,0 +1,75 @@
+<div class="middle">
+  <div class="left">
+    <ul class="breadcrumb">
+      <li class="first"><a href="/api/">CartoDB API</a></li>
+      <li class="selected"><a href="/api/authentication">Authentication</a></li>
+    </ul>
+    <h1>SQL API</h1>
+    <p>CartoDB is based on the rock solid PostgreSQL database. All your tables are inside a single database which means you can perform complex queries joining tables or performing complicated geospatial operations.<br><br></p>
+    
+    <p>The best place to learn about PostgreSQL SQL language is the <a href="http://www.postgresql.org/docs/9.0/interactive/sql.html" target="_blank">official documentation</a><br><br></p>
+    <p>CartoDB is also based on PostGIS, so take a look at the <a href="http://postgis.refractions.net/documentation/manual-1.5/">PostGIS official reference</a> to know what functionality we support in terms on geospatial operations. All our tables include a collumn called "the_geom" with the geometry field and indexes on them.</p>
+
+    <h2>Example SELECT</h2>
+    <code>/v1/?sql=SELECT * FROM mytable</code>
+    <p><br><br>Keep in mind that what you send in the sql parameter has to be URL encoded.</p>
+
+    <h2>Response</h2>
+    <p>The response of the query is a JSON document.</p>
+    <p class="tab">JSON - Example return for a SELECT</p>
+    <pre class="syntax javascript">
+    {
+      "time":0.009730100631713867,
+      "total_rows":1,
+      "rows":
+        [
+          {
+            "cartodb_id":1,
+            "name":"zxczxc",
+            "latitude":1.0,
+            "longitude":2.0,
+            "description":"asd",
+            "created_at":"2011-03-23T18:48:33+01:00",
+            "updated_at":"2011-03-23T20:00:13+01:00",
+            "the_geom":
+                {
+                  "type": "Point",
+                  "coordinates": [-80.66252,35.04267]
+                }
+          }
+        ]
+    }
+    </pre>
+    
+    <h2>Example UPDATE</h2>
+    <code>/v1?sql=UPDATE my_favourite_bars SET name='another name' WHERE cartodb_id=1</code>
+
+    <h2>Response</h2>
+    <p class="tab">JSON - Example return for a SELECT</p>
+    <pre class="syntax javascript">
+    {
+      "time":0.030539989471435547,
+      "total_rows":0,
+      "rows":[]
+    }
+    </pre>    
+    
+    <h2>Errors</h2>
+    <p>If you send incorrect SQL or there is any problem executing your queries you will get error descriptions.<br><br></p>
+    <code>/v1?sql=UPDATE non_existing_table SET name='another name' WHERE cartodb_id=1</code>
+
+    <h2>Response</h2>
+    <p class="tab">JSON - Example error result</p>
+    <pre class="syntax javascript">
+    {
+      TO BE DONE.
+    }
+    </pre>    
+    
+    
+  </div>
+
+  <div class="right">
+    {{sidebar}}
+  </div>
+</div>

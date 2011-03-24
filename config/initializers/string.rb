@@ -84,6 +84,11 @@ class String
     if inverse_types.keys.include?(self.downcase)
       inverse_types[self.downcase]
     else
+      inverse_types.keys.select{ |t| !t.is_a?(String) }.each do |re|
+        if self.downcase.match(re)
+          return inverse_types[re]
+        end
+      end
       self.downcase
     end
   end

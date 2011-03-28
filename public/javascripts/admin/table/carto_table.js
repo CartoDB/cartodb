@@ -25,7 +25,7 @@
   var first = true;
   var table;
   var loading = false;
-  var headers = [];
+  var headers = {};
   
   var minPage = 0;
   var maxPage = -1;
@@ -159,7 +159,7 @@
     drawColumns: function(data) {
       //Draw the columns headers
       var thead = '<thead><tr><th class="first"><div></div></th>';
-      headers = [];
+      headers = {};
       
       $.each(data,function(index,element){
         headers[element[0]] = element[1];
@@ -261,10 +261,10 @@
                                 '<li class="last"><a href="#add_row" class="add_row">Add new row</a></li>' +
                               '</ul>' +
                             '</span>';
-        tbody += '<tr r="'+element.cartodb_id+'"><td class="first" r="'+ element.cartodb_id +'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
-        $.each(element, function(j,elem){
-          tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element.cartodb_id +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((elem==null)?'':elem)+'</div></td>';
-        });
+        tbody += '<tr r="'+element['cartodb_id']+'"><td class="first" r="'+ element['cartodb_id'] +'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
+		for(var j in element){
+			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
+		}
         
         var start = tbody.lastIndexOf('"width:');
         var end = tbody.lastIndexOf('px"');

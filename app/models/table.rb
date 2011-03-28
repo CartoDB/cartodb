@@ -361,6 +361,7 @@ class Table < Sequel::Model(:user_tables)
   end
   
   def get_records_with_pending_addresses(options = {})
+    return [] if address_column.blank?
     limit = (options[:rows_per_page] || 10).to_i
     limit = 5000 if limit > 5000
     offset = (options[:page] || 0).to_i*limit

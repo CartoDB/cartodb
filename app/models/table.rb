@@ -640,8 +640,12 @@ class Table < Sequel::Model(:user_tables)
         else
           case schemas[i]
           when "integer"
-            if line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
-              schemas[i] = "float"
+            if line[i] !~ /^[0-9]+$/
+              if line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
+                schemas[i] = "float"
+              else
+                schemas[i] = "varchar"
+              end
             end
           end
         end

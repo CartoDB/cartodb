@@ -1197,4 +1197,29 @@ describe Table do
     }.should_not raise_error
   end
   
+  it "should return pending rows to be geocoded" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.save
+    
+    lat = Float.random_latitude
+    lon = Float.random_longitude
+    the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+    
+    table.set_address_column!(:address)
+    pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => the_geom})
+    query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
+    query_result[:rows][0][:address_geolocated].should be_true
+
+    pk2 = table.insert_row!({:address => "C/ Villa 2, Madrid"})
+    table.get_records_with_pending_addresses[0][:address].should == "C/ Villa 2, Madrid"    
+    table.get_records_with_pending_addresses.size.should == 1
+  end
+  
+  it "should return an empty array when there is no address column" do
+    table = create_table
+    table.get_records_with_pending_addresses.should be_empty
+  end
 end

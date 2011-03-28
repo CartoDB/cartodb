@@ -861,13 +861,14 @@ TRIGGER
     entries = []
     if ext == '.zip'
       Zip::ZipFile.foreach(path) do |entry|
-        entries << "/tmp/#{entry.name}"
-        if File.extname(entry.name) == '.shp'
+        name = entry.name.tr('/','_')
+        entries << "/tmp/#{name}"
+        if File.extname(name) == '.shp'
           ext = '.shp'
-          path = "/tmp/#{entry.name}"
-          original_filename = entry.name
+          path = "/tmp/#{name}"
+          original_filename = name
         end
-        entry.extract("/tmp/#{entry.name}")
+        entry.extract("/tmp/#{name}")
       end
     end    
     return unless %W{ .ods .xls .xlsx .shp }.include?(ext)

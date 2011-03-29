@@ -37,6 +37,7 @@ section#content div.left div.middle_white_medium ul li div.meta_info span.info p
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.delete a {color:#FF3300; text-decoration:underline;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.delete a:hover {color:#FF1100; cursor:pointer;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.columns {float:left; width:100%; margin:10px 0 0 0; font:normal 13px Arial; color:#999999;}
+section#content div.left div.middle_white_medium ul li div.meta_info span.info p.columns strong {color: #333333; font-weight: normal;}
 section#content div.left div.middle_white_medium ul li:hover div.meta_info span.info p.delete {display:block;}
 
 section#content div.left div.middle_white_medium ul li div.meta_info span.tags {float:right; width:240px;}

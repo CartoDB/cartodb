@@ -877,9 +877,9 @@ TRIGGER
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
       host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
       port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-      output = `\`which shp2pgsql\` -p -WLATIN1  #{path}`
+      output = `\`which shp2pgsql\` -p -WLATIN1 -I #{path}`
       self.imported_table_name = output.scan(/CREATE TABLE\s\"([^"]+)\"/i).first.first
-      system("`which shp2pgsql` -WLATIN1 -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
+      system("`which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
       # system("echo #{owner.database_password}")
       if entries.any?
         entries.each{ |e| FileUtils.rm(e) }

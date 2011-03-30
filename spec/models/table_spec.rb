@@ -153,6 +153,13 @@ describe Table do
     resp = table.modify_column!(:name => "latitude", :type => "string")
     resp.should == {:name => "latitude", :type => "varchar", :cartodb_type => "string"}
   end
+  
+  it "should not modify the name of a column to a number" do
+    table = create_table
+    lambda {
+      table.modify_column!(:old_name => "name", :new_name => "1")
+    }.should raise_error(CartoDB::InvalidColumnName)
+  end
 
   it "can modify it's schema" do
     table = create_table

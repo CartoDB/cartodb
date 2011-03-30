@@ -2,11 +2,11 @@ require 'erb'
 
 module CartoDB
   class ApiDocumentationServer
-    
+
     def initialize(app)
       @app = app
     end
-    
+
     def call(env)
       if env['HTTP_HOST'] =~ /^developers\./
         layout_path = "#{Rails.root}/app/views/layouts/developers.html.erb"
@@ -20,6 +20,7 @@ module CartoDB
           [ 200, {'Content-Type' => 'text/html'}, ERB.new(html).result(binding) ]
         end
       else
+        puts env
         @app.call(env)
       end
     end

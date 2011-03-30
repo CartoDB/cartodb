@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file, :import_from_external_url, :imported_table_name
+  attr_accessor :force_schema, :import_from_file, :import_from_external_url, :imported_table_name, :the_geom_type
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom address_geolocated }
 
@@ -90,6 +90,9 @@ class Table < Sequel::Model(:user_tables)
         user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
       end
     end
+    unless the_geom_type.blank?
+      set_the_geom_column!(the_geom_type.to_sym)
+    end
   end
 
   def after_destroy
@@ -118,7 +121,7 @@ class Table < Sequel::Model(:user_tables)
   def private?
     privacy == PRIVATE
   end
-  
+
   def privacy=(value)
     if value == "PRIVATE" || value == PRIVATE || value == PRIVATE.to_s
       self[:privacy] = PRIVATE
@@ -162,7 +165,7 @@ class Table < Sequel::Model(:user_tables)
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
-      
+
       begin
         primary_key = user_database[name.to_sym].insert(attributes.except(:the_geom))
       rescue Sequel::DatabaseError => e
@@ -227,7 +230,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema(options = {})
-    self.stored_schema.map do |column| 
+    self.stored_schema.map do |column|
       c = column.split(',')
       [c[0].to_sym, c[options[:cartodb_types] == false ? 1 : 2], schema_geometry_column(c[0].to_sym)].compact
     end
@@ -359,7 +362,7 @@ class Table < Sequel::Model(:user_tables)
       :rows       => rows
     }
   end
-  
+
   def get_records_with_pending_addresses(options = {})
     return [] if address_column.blank?
     limit = (options[:rows_per_page] || 10).to_i
@@ -386,12 +389,12 @@ class Table < Sequel::Model(:user_tables)
 
   def set_lat_lon_columns!(lat_column, lon_column)
     self.geometry_columns = nil
-    set_the_geom_column!(:point)
+    set_the_geom_column!(:point) if the_geom_type.blank?
     if lat_column && lon_column
       owner.in_database do |user_database|
         user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
         if user_database.schema(name.to_sym).map{|e| e[0]}.include?(:address_geolocated)
-          user_database.run("alter table #{self.name} drop column address_geolocated") 
+          user_database.run("alter table #{self.name} drop column address_geolocated")
           update_stored_schema(user_database)
         end
       end
@@ -417,7 +420,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_address_column!(address_column)
-    set_the_geom_column!(:point)
+    set_the_geom_column!(:point) if the_geom_type.blank?
     if address_column.is_a?(String) && address_column.include?(',')
       aggregated_address_name = "aggregated_address"
       owner.in_database do |user_database|
@@ -479,7 +482,7 @@ class Table < Sequel::Model(:user_tables)
       user_database.fetch(table_constraints_sql, name, 'enforce_srid_the_geom').all
     end
   end
-  
+
   def update_stored_schema(user_database)
     temporal_schema = user_database.schema(self.name.to_sym).map do |column|
       if !CARTODB_COLUMNS.include?(column.first.to_s) && column.first.to_s != "address_column"
@@ -490,7 +493,7 @@ class Table < Sequel::Model(:user_tables)
       temporal_schema +
       ["created_at,timestamp,#{"timestamp".convert_to_cartodb_type}","updated_at,timestamp,#{"timestamp".convert_to_cartodb_type}"]
   end
-  
+
   def update_stored_schema!
     owner.in_database do |user_database|
       update_stored_schema(user_database)
@@ -582,7 +585,7 @@ class Table < Sequel::Model(:user_tables)
     options = {:col_sep => @col_separator}
     schemas = []
     uk_column_counter = 0
-    
+
     path = if import_from_file.respond_to?(:tempfile)
       import_from_file.tempfile.path
     else
@@ -727,7 +730,7 @@ TRIGGER
       if attributes.keys.include?(:address_geolocated) && attributes[:address_geolocated] == false
         user_database.run("UPDATE #{self.name} SET the_geom = NULL")
       else
-        if attributes[:the_geom]      
+        if attributes[:the_geom]
           user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})  where cartodb_id = #{primary_key}")
           if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
             user_database.run("UPDATE #{self.name} SET address_geolocated = true")
@@ -757,11 +760,13 @@ TRIGGER
       unless user_database.schema(name.to_sym).flatten.include?(:the_geom)
         if type == :point
           user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::GOOGLE_SRID},'POINT',2)")
+        elsif type == :polygon
+          user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::GOOGLE_SRID},'POLYGON',2)")
         end
       end
     end
   end
-  
+
   def prepare_attributes!(raw_attributes)
     if raw_attributes[:address_column]
       if address_column
@@ -774,7 +779,7 @@ TRIGGER
       raw_attributes[:address_geolocated] = false
     end
   end
-  
+
   def set_table_schema!
     owner.in_database do |user_database|
       if imported_table_name.blank?
@@ -811,7 +816,7 @@ TRIGGER
           end
         end
       else
-        user_database.rename_table self.imported_table_name, self.name      
+        user_database.rename_table self.imported_table_name, self.name
         if pk = user_database.schema(self.name).select{ |c| c[1][:primary_key] == true }.first[0]
           user_database.rename_column name.to_sym, pk, :cartodb_id
         else
@@ -830,7 +835,7 @@ TRIGGER
       update_stored_schema(user_database)
     end
   end
-  
+
   def schema_geometry_column(name)
     case name
     when lat_column
@@ -843,7 +848,7 @@ TRIGGER
       nil
     end
   end
-  
+
   def handle_import_file!
     original_filename = if import_from_file.respond_to?(:original_filename)
       import_from_file.original_filename
@@ -856,7 +861,7 @@ TRIGGER
     else
       import_from_file.path
     end
-    
+
     # If it is a zip file we should find a shp file
     entries = []
     if ext == '.zip'
@@ -870,7 +875,7 @@ TRIGGER
         end
         entry.extract("/tmp/#{name}")
       end
-    end    
+    end
     return unless %W{ .ods .xls .xlsx .shp }.include?(ext)
 
     if ext == '.shp'

@@ -44,7 +44,7 @@
           '</li>'+
           '<li class="query">'+
             '<h4>Map query</h4>'+
-            '<p><form id="query_form"><input type="text" /><input type="submit" /></form></p>'+
+            '<p><form id="query_form"><input type="text" value="SELECT * FROM '+table_name+' WHERE cartodb_id = 1"/><input type="submit" /></form></p>'+
           '</li>'+
         '</ul>'+
       '</div>'+
@@ -69,12 +69,38 @@
     
     
     //Query 
+
+    $('#query_form input[type="text"]').livequery('focusin',function(ev){
+      ev.stopPropagation();
+      ev.preventDefault();
+      var value = $(this).val();
+      if (value=='SELECT * FROM '+table_name+' WHERE cartodb_id = 1') {
+        $(this).val('');
+        $(this).css('font-style','normal');
+        $(this).css('color','#333333');
+      }
+    });
+    
+    $('#query_form input[type="text"]').livequery('focusout',function(ev){
+      ev.stopPropagation();
+      ev.preventDefault();
+      var value = $(this).val();
+      if (value=='SELECT * FROM '+table_name+' WHERE cartodb_id = 1' || value=='') {
+        $(this).val('SELECT * FROM '+table_name+' WHERE cartodb_id = 1');
+        $(this).css('font-style','italic');
+        $(this).css('color','#bbbbbb');
+      }
+    });
+    
+    
     $('#query_form').livequery('submit',function(ev){
       ev.stopPropagation();
       ev.preventDefault();
-      var sql = $('#query_form input[type="text"]').val();
+      var sql = '('+$('#query_form input[type="text"]').val()+') as t';
       if (sql!='') {
         layer.url(po.url(tile_url + '/1/' + escape(sql) + '/point')).reload();
+      } else {
+        layer.url(po.url(tile_url + '/1/'+table_name+'/point'));
       }
     });
   }
@@ -105,7 +131,9 @@
 
             layer = po.image().url(po.url(tile_url + '/1/'+table_name+'/point'));
             map.add(layer);
-      } 
+      } else {
+        layer.url(po.url(tile_url + '/1/'+table_name+'/point'));
+      }
   }
 
 

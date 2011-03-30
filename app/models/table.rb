@@ -732,7 +732,7 @@ TRIGGER
       else
         if attributes[:the_geom]      
           user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})  where cartodb_id = #{primary_key}")
-          if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
+          if !address_column.blank?
             user_database.run("UPDATE #{self.name} SET address_geolocated = true")
           end
         else

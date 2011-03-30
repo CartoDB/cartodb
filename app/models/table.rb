@@ -99,7 +99,10 @@ class Table < Sequel::Model(:user_tables)
     super
     Tag.filter(:user_id => user_id, :table_id => id).delete
     User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
-    owner.in_database{|user_database| user_database.drop_table(name.to_sym)}
+    owner.in_database(:as => :superuser) do |user_database|
+      user_database.drop_table(name.to_sym)
+      user_database.run("DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq")
+    end
   end
   ## End of Callbacks
 
@@ -732,7 +735,7 @@ TRIGGER
       else
         if attributes[:the_geom]
           user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})  where cartodb_id = #{primary_key}")
-          if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
+          if !address_column.blank?
             user_database.run("UPDATE #{self.name} SET address_geolocated = true")
           end
         else
@@ -816,7 +819,6 @@ TRIGGER
           end
         end
       else
-        user_database.rename_table self.imported_table_name, self.name
         if pk = user_database.schema(self.name).select{ |c| c[1][:primary_key] == true }.first[0]
           user_database.rename_column name.to_sym, pk, :cartodb_id
         else
@@ -865,6 +867,7 @@ TRIGGER
     # If it is a zip file we should find a shp file
     entries = []
     if ext == '.zip'
+      Rails.logger.info "Importing zip file: #{path}"
       Zip::ZipFile.foreach(path) do |entry|
         name = entry.name.tr('/','_')
         entries << "/tmp/#{name}"
@@ -872,6 +875,10 @@ TRIGGER
           ext = '.shp'
           path = "/tmp/#{name}"
           original_filename = name
+          Rails.logger.info "Found original shapefile #{name} in path #{path}"
+        end
+        if File.file?("/tmp/#{name}")
+          FileUtils.rm("/tmp/#{name}")
         end
         entry.extract("/tmp/#{name}")
       end
@@ -882,10 +889,10 @@ TRIGGER
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
       host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
       port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-      output = `\`which shp2pgsql\` -p -WLATIN1  #{path}`
-      self.imported_table_name = output.scan(/CREATE TABLE\s\"([^"]+)\"/i).first.first
-      system("`which shp2pgsql` -WLATIN1 -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
-      # system("echo #{owner.database_password}")
+      self.imported_table_name = self.name
+      Rails.logger.info "Table name to import: #{self.imported_table_name}"
+      system("`which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} #{self.name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
+      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} #{self.name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
       if entries.any?
         entries.each{ |e| FileUtils.rm(e) }
       end

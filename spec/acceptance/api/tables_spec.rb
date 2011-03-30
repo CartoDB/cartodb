@@ -30,7 +30,7 @@ feature "API 1.0 tables management" do
         "id" => table1.id,
         "name" => "my_table_1",
         "privacy" => "PUBLIC",
-        "tags" => "tag 1,tag 2,tag 3",
+        "tags" => "tag 3,tag 2,tag 1",
         "schema" => default_schema
       })
       r.body.map{ |t| t['name'] }.should_not include("another_table_3")
@@ -110,7 +110,7 @@ feature "API 1.0 tables management" do
         :id => table1.id,
         :name => "my_table_2",
         :privacy => "PRIVATE",
-        :tags => "bars,disco",
+        :tags => "disco,bars",
         :schema => default_schema
       }
     end
@@ -150,7 +150,7 @@ feature "API 1.0 tables management" do
       r.status.should == 404
     end
   end
-  
+
   scenario "Update a table and set the lat and lot columns to nil" do
     table = create_table :user_id => @user.id, :name => 'My table #1'
 
@@ -163,7 +163,7 @@ feature "API 1.0 tables management" do
       r.body[:schema].should include(["latitude", "number"])
       r.body[:schema].should include(["longitude", "number"])
     end
-    
+
     put_json api_table_url(table.name), {
       :address_column => "name"
     }
@@ -183,7 +183,7 @@ feature "API 1.0 tables management" do
       r.status.should be_success
       r.body[:schema].should include(["name", "string", "address"])
     end
-    
+
     put_json api_table_url(table.name), {
       :address_column => "nil"
     }
@@ -192,13 +192,13 @@ feature "API 1.0 tables management" do
       r.body[:schema].should include(["name", "string"])
     end
   end
-  
+
   scenario "Update a table and set the the address column to an aggregated of columns" do
     table = new_table
     table.user_id = @user.id
     table.force_schema = "name varchar, address varchar, region varchar, country varchar"
     table.save
-    
+
     put_json api_table_url(table.name), {
       :address_column => "address,region, country"
     }
@@ -242,7 +242,6 @@ feature "API 1.0 tables management" do
       ]
     end
   end
-  
   scenario "Create a new table importing file world_merc.zip" do
     post_json api_tables_url, {
       :name => "My new imported table", 
@@ -256,6 +255,23 @@ feature "API 1.0 tables management" do
         ["area", "number"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["lon", "number"], ["lat", "number"], 
         ["created_at", "date"], ["updated_at", "date"]
       ]
+    end    
+  end
+  
+  scenario "Create a table, remove a table, and recreate it with the same name" do
+    post_json api_tables_url, {:name => "wadus", :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")}
+    parse_json(response) do |r|
+      r.status.should be_success
+    end       
+    
+    delete_json api_table_url("wadus")
+    parse_json(response) do |r|
+      r.status.should be_success
+    end
+
+    post_json api_tables_url, {:name => "wadus", :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")}
+    parse_json(response) do |r|
+      r.status.should be_success
     end    
   end
   

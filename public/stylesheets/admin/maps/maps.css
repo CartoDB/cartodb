@@ -20,6 +20,8 @@ background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#283A5A), to(#282
 div.map_window div.map_header ul li span ul li {height:auto; width:70px; padding:3px 0 2px 10px; margin:0; border:none;}
 div.map_window div.map_header ul li span ul li a {font:normal 11px "Helvetica",Arial; color:white; text-decoration:none;}
 div.map_window div.map_header ul li span ul li a:hover {text-decoration:underline;}
+div.map_window div.map_header ul li.query  {height:41px; padding:6px 55px 8px 6px;}
+div.map_window div.map_header ul li input[type="text"] {width:200px; padding:3px 5px; border:1px solid #CCCCCC; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:normal 13px Arial; color:#333333;}
 div.map_window p.georeferencing {position:absolute; display:none; top:70px; left:50%; margin:0 0 0 -47px; padding:5px 10px 5px 10px; background:rgba(0,0,0,0.8);
  -wekit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; font:normal 15px Arial; color:white; z-index:10;}
 div.map_window p.georeferencing a {color:white; text-decoration:underline;}

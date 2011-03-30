@@ -4,7 +4,8 @@
 
     head(function(){
       
-      head.js("http://maps.google.com/maps/api/js?sensor=false&callback=initMap");
+      //head.js("http://maps.google.com/maps/api/js?sensor=false&callback=initMap");
+      initMap();
       
       $("table#carto_table").cDBtable(
         'start',{

@@ -1216,6 +1216,9 @@ describe Table do
     pk2 = table.insert_row!({:address => "C/ Villa 2, Madrid"})
     table.get_records_with_pending_addresses[0][:address].should == "C/ Villa 2, Madrid"
     table.get_records_with_pending_addresses.size.should == 1
+
+    table.update_row!(pk2,{:the_geom => the_geom})
+    table.get_records_with_pending_addresses.should be_empty
   end
 
   it "should return an empty array when there is no address column" do

@@ -20,9 +20,9 @@ feature "Superadmin's users administration" do
     page.should have_no_link 'Superadmin'
 
     visit logout_path
-    
+
     log_in_as @admin_user
-        
+
     click_link 'Superadmin'
     current_path.should == superadmin_path
   end
@@ -32,7 +32,7 @@ feature "Superadmin's users administration" do
 
     visit superadmin_path
     page.should have_css('ul.users li a', :count => 6)
-    
+
     click_link 'Admin'
 
     page.should have_content "Id: #{@admin_user.id}"
@@ -93,9 +93,9 @@ feature "Superadmin's users administration" do
 
     expect {
       click_button 'Update User'
-    }.to change{ActionMailer::Base.deliveries.size}.from(0).to(1)
+    }.to change{ActionMailer::Base.deliveries.size}.by(1)
 
-    ask_for_invitation_email = ActionMailer::Base.deliveries.first
+    ask_for_invitation_email = ActionMailer::Base.deliveries.last
 
     ask_for_invitation_email.subject.should be == 'Thanks for signing up for cartodb beta'
     ask_for_invitation_email.from.should include('wadus@cartodb.com')

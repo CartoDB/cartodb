@@ -18,13 +18,13 @@ section.subheader div.left {position:relative; float:left; width:auto; padding:1
 section.subheader div.left ul.tables_list {float:left; width:auto; margin:0;}
 section.subheader div.left ul.tables_list li {float:left; width:auto; margin:0 10px 0 0;}
 section.subheader div.left ul.tables_list li a {float:left; height:31px; padding:0 0 0 4px; background:url('/images/admin/dashboard/nav_left.png') no-repeat 0 0; color:white; text-decoration:none;}
-section.subheader div.left ul.tables_list li a.oth {color:#FFCC00;}
+section.subheader div.left ul.tables_list li a.oth {color:#FFFFFF;}
 section.subheader div.left ul.tables_list li a span {float:left; padding:8px 10px 8px 5px; font:normal 13px Arial; text-shadow:0 1px black; background:url('/images/admin/dashboard/nav_right.png') no-repeat right 0; color:white;}
-section.subheader div.left ul.tables_list li a.oth span {color:#FFCC00;}
+section.subheader div.left ul.tables_list li a.oth span {color:#FFFFFF;}
 section.subheader div.left ul.tables_list li a:hover {background-position:0 -31px;}
 section.subheader div.left ul.tables_list li a:hover span {background-position:right -31px;}
 section.subheader div.left ul.tables_list li.selected a {background-position:0 -31px;}
-section.subheader div.left ul.tables_list li.selected a span {background-position:right -31px; color: white;}
+section.subheader div.left ul.tables_list li.selected a span {background-position:right -31px; color: #949BAB;}
 section.subheader div.left ul.tables_list li.selected a:hover {background-position:0 -31px; cursor:default;}
 section.subheader div.left ul.tables_list li.selected a:hover span {background-position:right -31px;}
 section.subheader div.right {position:relative; float:right; width:auto; padding:18px 0 0 0; color:white!important;}

@@ -278,6 +278,7 @@ class Table < Sequel::Model(:user_tables)
     cartodb_type = new_type.try(:convert_to_cartodb_type)
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
+        raise CartoDB::InvalidColumnName if options[:new_name] =~ /^[^a-zA-Z]+$/
         raise if CARTODB_COLUMNS.include?(options[:old_name].to_s)
         user_database.rename_column name.to_sym, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
         new_name = options[:new_name].sanitize

@@ -147,5 +147,5 @@ feature "Tables" do
 
     page.find("th[c='age'][type='number'] h3").text.should == "age"
   end
-
+  
 end

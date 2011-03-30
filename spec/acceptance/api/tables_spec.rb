@@ -258,4 +258,21 @@ feature "API 1.0 tables management" do
     end    
   end
   
+  scenario "Create a table, remove a table, and recreate it with the same name" do
+    post_json api_tables_url, {:name => "wadus", :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")}
+    parse_json(response) do |r|
+      r.status.should be_success
+    end       
+    
+    delete_json api_table_url("wadus")
+    parse_json(response) do |r|
+      r.status.should be_success
+    end
+
+    post_json api_tables_url, {:name => "wadus", :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")}
+    parse_json(response) do |r|
+      r.status.should be_success
+    end    
+  end
+  
 end

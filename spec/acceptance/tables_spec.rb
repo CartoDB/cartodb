@@ -9,7 +9,7 @@ feature "Tables" do
     @table = create_table :user_id => @user.id, :name => 'Twitter followers', :privacy => Table::PUBLIC,
                           :tags => 'twitter'
 
-    login_as @user
+    log_in_as @user
 
     click_link_or_button("twitter_followers")
   end
@@ -40,7 +40,7 @@ feature "Tables" do
     page.find("h2").text.should == "new_name"
   end
 
-  scenario "Add and remove tags from a table" do
+  it "Add and remove tags from a table" do
     click_link_or_button("add tags")
     page.find("li.tagit-new input.tagit-input").set("tag1,")
     page.find_link("Save").click
@@ -61,7 +61,7 @@ feature "Tables" do
     page.all("span.tags p")[2].text.should == 'tag3'
 
     click_link_or_button("add tags")
-    page.find("li.tagit-choice", :text => "tag3").find("a.close").click
+    page.find("li.tagit-choice", :text => "tag3").find("a.remove_tag").click
     page.find_link("Save").click
 
     page.all("span.tags p")[0].text.should == 'twitter'
@@ -72,7 +72,7 @@ feature "Tables" do
   scenario "Delete a table" do
     click_link_or_button("delete table")
 
-    page.find("div.mamufas div.delete_window a.confirm_delete").click
+    click_link_or_button("Delete this table")
 
     page.current_path.should == dashboard_path
   end
@@ -88,13 +88,13 @@ feature "Tables" do
 
     visit page.current_path
 
-    page.execute_script("$('table#cDBtable td[r=1][c=name] div').trigger('dblclick')")
+    page.execute_script("$('table#carto_table td[r=1][c=name] div').trigger('dblclick')")
     page.find("div.edit_cell textarea").set("wadus")
     page.find("div.edit_cell a.save").click
-    page.find("table#cDBtable tr[@r='1'] td[@r='1'][c='name']").text.should == "wadus"
+    page.find("table#carto_table tr[@r='1'] td[@r='1'][c='name']").text.should == "wadus"
 
     visit page.current_path
-    page.find("table#cDBtable tr:eq(1)[@r='1'] td[@r='1'][c='name']").text.should == "wadus"
+    page.find("table#carto_table tr:eq(1)[@r='1'] td[@r='1'][c='name']").text.should == "wadus"
   end
 
   scenario "Can't update cartodb_id field" do
@@ -108,7 +108,7 @@ feature "Tables" do
 
     visit page.current_path
 
-    page.execute_script("$('table#cDBtable td[r=1][c=cartodb_id] div').trigger('dblclick')")
+    page.execute_script("$('table#carto_table td[r=1][c=cartodb_id] div').trigger('dblclick')")
     page.find("div.edit_cell textarea").should_not be_visible
   end
 
@@ -123,7 +123,7 @@ feature "Tables" do
 
     visit page.current_path
 
-    page.execute_script("$('table#cDBtable td[r=1][c=cartodb_id] div').trigger('dblclick')")
+    page.execute_script("$('table#carto_table td[r=1][c=cartodb_id] div').trigger('dblclick')")
     page.find("div.edit_cell textarea").should_not be_visible
   end
 
@@ -147,5 +147,5 @@ feature "Tables" do
 
     page.find("th[c='age'][type='number'] h3").text.should == "age"
   end
-
+  
 end

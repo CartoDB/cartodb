@@ -258,21 +258,21 @@ describe Table do
       table.insert_row!({:non_existing => "bad value"})
     }.should raise_error(CartoDB::InvalidAttributes)
   end
-  
+
   it "should be able to insert a row with a geometry value" do
     user = create_user
     table = new_table
     table.user_id = user.id
     table.save
     table.reload
-    
+
     table.set_lat_lon_columns!(nil, nil)
-    
+
     lat = Float.random_latitude
     lon = Float.random_longitude
     the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
     pk = table.insert_row!({:name => "First check_in", :latitude => lat, :longitude => lon, :the_geom => the_geom})
-    
+
     query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
     ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
@@ -296,28 +296,28 @@ describe Table do
       table.update_row!(row[:cartodb_id], :non_existing => 'ignore it, please', :description => "Description 123")
     }.should raise_error(CartoDB::InvalidAttributes)
   end
-  
+
   it "should be able to update a row with a geometry value" do
     user = create_user
     table = new_table
     table.user_id = user.id
     table.save
     table.reload
-    
+
     table.set_lat_lon_columns!(nil, nil)
 
     lat = Float.random_latitude
-    lon = Float.random_longitude    
+    lon = Float.random_longitude
     pk = table.insert_row!({:name => "First check_in", :latitude => lat, :longitude => lon})
-    
+
     the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
     table.update_row!(pk, {:the_geom => the_geom})
-    
+
     query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
     ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
   end
-  
+
   it "should accept insert and update address_column if an attribute address_column is set" do
     user = create_user
     table = new_table
@@ -502,36 +502,36 @@ describe Table do
     row[:lon].should == 2.8
     row[:views].should == 540
   end
-  
+
   it "should import file ngos.xlsx" do
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos.xlsx", "application/download")
     table.save
-    
+
     table.schema(:cartodb_types => false).should == [
-      [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"], 
-      [:organization_s_work_in_haiti, "character varying"], [:calculation_of_number_of_people_reached, "character varying"], 
-      [:private_funding, "double precision"], [:relief, "character varying"], [:reconstruction, "character varying"], 
-      [:private_funding_spent, "double precision"], [:spent_on_relief, "character varying"], [:spent_on_reconstruction, "character varying"], 
-      [:usg_funding, "integer"], [:usg_funding_spent, "integer"], [:other_funding, "integer"], [:other_funding_spent, "integer"], 
-      [:international_staff, "integer"], [:national_staff, "integer"], [:us_contact_name, "character varying"], [:us_contact_title, "character varying"], 
-      [:us_contact_phone, "character varying"], [:us_contact_e_mail, "character varying"], [:media_contact_name, "character varying"], 
-      [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"], 
-      [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"], 
-      [:city, "character varying"], [:state, "character varying"], [:zip_code, "integer"], [:donation_website, "character varying"], [:created_at, "timestamp"], 
+      [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"],
+      [:organization_s_work_in_haiti, "character varying"], [:calculation_of_number_of_people_reached, "character varying"],
+      [:private_funding, "double precision"], [:relief, "character varying"], [:reconstruction, "character varying"],
+      [:private_funding_spent, "double precision"], [:spent_on_relief, "character varying"], [:spent_on_reconstruction, "character varying"],
+      [:usg_funding, "integer"], [:usg_funding_spent, "integer"], [:other_funding, "integer"], [:other_funding_spent, "integer"],
+      [:international_staff, "integer"], [:national_staff, "integer"], [:us_contact_name, "character varying"], [:us_contact_title, "character varying"],
+      [:us_contact_phone, "character varying"], [:us_contact_e_mail, "character varying"], [:media_contact_name, "character varying"],
+      [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"],
+      [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"],
+      [:city, "character varying"], [:state, "character varying"], [:zip_code, "integer"], [:donation_website, "character varying"], [:created_at, "timestamp"],
       [:updated_at, "timestamp"]
     ]
     table.rows_counted.should == 76
   end
-  
+
   it "should import world_merc.zip" do
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/world_merc.zip", "application/download")
     table.save
-    
+
     table.schema(:cartodb_types => false).should == [
-      [:cartodb_id, "integer"], [:fips, "character varying(2)"], [:iso2, "character varying(2)"], [:iso3, "character varying(3)"], [:un, "smallint"], 
-      [:name, "character varying(50)"], [:area, "integer"], [:pop2005, "numeric(10)"], [:region, "smallint"], [:subregion, "smallint"], 
+      [:cartodb_id, "integer"], [:fips, "character varying(2)"], [:iso2, "character varying(2)"], [:iso3, "character varying(3)"], [:un, "smallint"],
+      [:name, "character varying(50)"], [:area, "integer"], [:pop2005, "numeric(10)"], [:region, "smallint"], [:subregion, "smallint"],
       [:lon, "double precision"], [:lat, "double precision"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     table.rows_counted.should == 245
@@ -622,7 +622,7 @@ describe Table do
     table.lon_column.should be_nil
     table.lat_column.should be_nil
   end
-  
+
   it "should update the_geom when setting latitude_column and longitude_column new values" do
     user = create_user
     table = new_table
@@ -630,12 +630,12 @@ describe Table do
     table.save
     table.lat_column.should == :latitude
     table.lon_column.should == :longitude
-    
+
     new_lat = Float.random_latitude
     new_lon = Float.random_longitude
-    
+
     pk = table.insert_row!(:name => "element 1", :latitude => new_lat, :longitude => new_lon)
-    
+
     query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
     ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % new_lon)
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % new_lat)
@@ -648,17 +648,17 @@ describe Table do
     table.save
     table.lat_column.should == :latitude
     table.lon_column.should == :longitude
-    
+
     new_lat = Float.random_latitude
     new_lon = Float.random_longitude
-    
+
     pk = table.insert_row!(:name => "element 1", :latitude => new_lat, :longitude => new_lon)
 
     updated_lat = Float.random_latitude
     updated_lon = Float.random_longitude
-    
+
     table.update_row!(pk, {:latitude => updated_lat, :longitude => updated_lon})
-    
+
     query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
     ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % updated_lon)
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % updated_lat)
@@ -686,18 +686,18 @@ describe Table do
     table.address_column.should == :address
 
     table.insert_row!({:name => 'El Lacón', :address => 'Calle de Manuel Fernández y González 8, Madrid'})
-    
+
     # TODO
     # geolocating
     # query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} limit 1")
     # query_result[:rows][0][:lon].to_s.should match /^-3\.699416/
     # query_result[:rows][0][:lat].to_s.should match /^40\.415147/
-    # 
+    #
     # raw_json = {"status"=>"OK", "results"=>[{"types"=>["street_address"], "formatted_address"=>"Calle de la Palma, 72, 28015 Madrid, Spain", "address_components"=>[{"long_name"=>"72", "short_name"=>"72", "types"=>["street_number"]}, {"long_name"=>"Calle de la Palma", "short_name"=>"Calle de la Palma", "types"=>["route"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["locality", "political"]}, {"long_name"=>"Community of Madrid", "short_name"=>"M", "types"=>["administrative_area_level_2", "political"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["administrative_area_level_1", "political"]}, {"long_name"=>"Spain", "short_name"=>"ES", "types"=>["country", "political"]}, {"long_name"=>"28015", "short_name"=>"28015", "types"=>["postal_code"]}], "geometry"=>{"location"=>{"lat"=>40.4268336, "lng"=>-3.7089444}, "location_type"=>"RANGE_INTERPOLATED", "viewport"=>{"southwest"=>{"lat"=>40.4236786, "lng"=>-3.7120931}, "northeast"=>{"lat"=>40.4299739, "lng"=>-3.7057979}}, "bounds"=>{"southwest"=>{"lat"=>40.4268189, "lng"=>-3.7089466}, "northeast"=>{"lat"=>40.4268336, "lng"=>-3.7089444}}}}]}
     # JSON.stubs(:parse).returns(raw_json)
-    # 
+    #
     # table.update_row!(query_result[:rows][0][:cartodb_id], {:name => 'El Estocolmo', :address => 'Calle de La Palma 72, Madrid'})
-    # 
+    #
     # query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} limit 1")
     # query_result[:rows][0][:lon].to_s.should match /^\-3\.708944/
     # query_result[:rows][0][:lat].to_s.should match /^40\.426833/
@@ -746,21 +746,21 @@ describe Table do
       [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
   end
-  
+
   it "allow to set the address column as an aggregation of different columns" do
     user = create_user
     table = new_table
     table.user_id = user.id
     table.force_schema = "name varchar, address varchar, region varchar, country varchar"
     table.save
-    
+
     table.insert_row!({:name => 'El Lacón', :address => 'Calle de Manuel Fernández y González 8', :region => 'Madrid', :country => 'Spain'})
     table.insert_row!({:name => 'El Tío Timón', :address => 'Calle de Manuela Malasaña 8', :region => 'Madrid', :country => 'Spain'})
     table.insert_row!({:name => 'El Rincón', :address => 'Calle de Manuel Candela 8', :region => 'Valencia', :country => 'Spain'})
 
     table.set_address_column!("address,region,country")
     table.reload
-    
+
     table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:name, "character varying"], [:address, "character varying"],
       [:region, "character varying"], [:country, "character varying"], [:aggregated_address, "character varying", "address"],
@@ -796,9 +796,9 @@ describe Table do
     # TODO: geolocation
     # raw_json = {"status"=>"OK", "results"=>[{"types"=>["street_address"], "formatted_address"=>"Calle de la Palma, 72, 28015 Madrid, Spain", "address_components"=>[{"long_name"=>"72", "short_name"=>"72", "types"=>["street_number"]}, {"long_name"=>"Calle de la Palma", "short_name"=>"Calle de la Palma", "types"=>["route"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["locality", "political"]}, {"long_name"=>"Community of Madrid", "short_name"=>"M", "types"=>["administrative_area_level_2", "political"]}, {"long_name"=>"Madrid", "short_name"=>"Madrid", "types"=>["administrative_area_level_1", "political"]}, {"long_name"=>"Spain", "short_name"=>"ES", "types"=>["country", "political"]}, {"long_name"=>"28015", "short_name"=>"28015", "types"=>["postal_code"]}], "geometry"=>{"location"=>{"lat"=>40.4268336, "lng"=>-3.7089444}, "location_type"=>"RANGE_INTERPOLATED", "viewport"=>{"southwest"=>{"lat"=>40.4236786, "lng"=>-3.7120931}, "northeast"=>{"lat"=>40.4299739, "lng"=>-3.7057979}}, "bounds"=>{"southwest"=>{"lat"=>40.4268189, "lng"=>-3.7089466}, "northeast"=>{"lat"=>40.4268336, "lng"=>-3.7089444}}}}]}
     # JSON.stubs(:parse).returns(raw_json)
-    # 
+    #
     # table.update_row!(query_result[:rows][0][:cartodb_id], {:name => 'El Estocolmo', :address => 'Calle de La Palma 72, Madrid'})
-    # 
+    #
     # query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} limit 1")
     # query_result[:rows][0][:lon].to_s.should match /^\-3\.708944/
     # query_result[:rows][0][:lat].to_s.should match /^40\.426833/
@@ -884,30 +884,30 @@ describe Table do
     table.drop_column!(:name => :address)
     table.address_column.should be_nil
   end
-  
+
   it "should set the geometry to null when removing a geometry column" do
     user = create_user
     table = new_table
     table.user_id = user.id
     table.force_schema = "address varchar"
     table.save
-    
+
     lat = Float.random_latitude
     lon = Float.random_longitude
     the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
-    
+
     table.set_address_column!(:address)
     pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => the_geom})
     query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
     query_result[:rows][0][:address_geolocated].should be_true
-    
+
     table.drop_column!(:name => :address)
 
     query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
     query_result[:rows][0][:lon].should be_nil
     query_result[:rows][0][:lat].should be_nil
   end
-  
+
   it "should create a meta-column named address_geolocated which mustn't appear in the schema of the table" do
     user = create_user
     table = new_table
@@ -916,7 +916,7 @@ describe Table do
     table.save
     table.set_address_column!(:address)
     table.address_column.should == :address
-    
+
     user.in_database do |user_database|
       user_database.schema(table.name.to_sym).should include(
         [:address_geolocated, {:db_type=>"boolean", :default=>nil, :allow_null=>true, :primary_key=>false, :type=>:boolean, :ruby_default=>nil}]
@@ -924,7 +924,7 @@ describe Table do
     end
     table.schema(:cartodb_types => false).should_not include([:address_geolocated, "boolean"])
   end
-  
+
   it "should remove the meta-column named address_geolocated when address_column is set to null" do
     user = create_user
     table = new_table
@@ -933,9 +933,9 @@ describe Table do
     table.save
     table.set_address_column!(:address)
     table.address_column.should == :address
-    
+
     table.set_address_column!(nil)
-    
+
     user.in_database do |user_database|
       user_database.schema(table.name.to_sym).should_not include(
         [:address_geolocated, {:db_type=>"boolean", :default=>nil, :allow_null=>true, :primary_key=>false, :type=>:boolean, :ruby_default=>nil}]
@@ -951,16 +951,16 @@ describe Table do
     table.save
     table.set_address_column!(:address)
     table.address_column.should == :address
-    
+
     table.drop_column!(:name => :address)
-    
+
     user.in_database do |user_database|
       user_database.schema(table.name.to_sym).should_not include(
         [:address_geolocated, {:db_type=>"boolean", :default=>nil, :allow_null=>true, :primary_key=>false, :type=>:boolean, :ruby_default=>nil}]
       )
     end
   end
-  
+
   it "should remove the meta-column named address_geolocated when latitude_column and longitude_column is set" do
     user = create_user
     table = new_table
@@ -969,16 +969,16 @@ describe Table do
     table.save
     table.set_address_column!(:address)
     table.address_column.should == :address
-    
+
     table.set_lat_lon_columns!(:lat, :lon)
-    
+
     user.in_database do |user_database|
       user_database.schema(table.name.to_sym).should_not include(
         [:address_geolocated, {:db_type=>"boolean", :default=>nil, :allow_null=>true, :primary_key=>false, :type=>:boolean, :ruby_default=>nil}]
       )
     end
   end
-  
+
   it "should set to null all values from address_geolocated when address_column changes" do
     user = create_user
     table = new_table
@@ -992,7 +992,7 @@ describe Table do
     pk = table.insert_row!({:address1 => "C/ Santa Ana", :address2 => "Santa Ana st.", :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
     query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
     query_result[:rows][0][:address_geolocated].should be_true
-    
+
     table.set_address_column!(:address2)
     table.address_column.should == :address2
 
@@ -1116,40 +1116,40 @@ describe Table do
     table.constraints.should have_at_least(1).item
     table.constraints.should include({:constraint_name => 'enforce_srid_the_geom'})
   end
-  
+
   it "should set address_geolocated to true when set on the address_column and a valid the_geom" do
     user = create_user
     table = new_table
     table.user_id = user.id
     table.force_schema = "address varchar"
     table.save
-    
+
     table.set_address_column!(:address)
     pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
     query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
-    query_result[:rows][0][:address_geolocated].should be_true    
+    query_result[:rows][0][:address_geolocated].should be_true
   end
-  
+
   it "should set address_geolocated to nil when set on the address_column and a null the_geom" do
     user = create_user
     table = new_table
     table.user_id = user.id
     table.force_schema = "address varchar"
     table.save
-    
+
     table.set_address_column!(:address)
     pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia"})
     query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
-    query_result[:rows][0][:address_geolocated].should be_nil    
+    query_result[:rows][0][:address_geolocated].should be_nil
   end
-  
+
   it "should set address_geolocated to false when set on the address_column and a null the_geom" do
     user = create_user
     table = new_table
     table.user_id = user.id
     table.force_schema = "address varchar"
     table.save
-    
+
     table.set_address_column!(:address)
     pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :address_geolocated => false})
     query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
@@ -1159,29 +1159,29 @@ describe Table do
     query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
     query_result[:rows][0][:address_geolocated].should be_false
   end
-  
+
   it "should update the_geom even if the address is not geolocated correctly" do
     user = create_user
     table = new_table
     table.user_id = user.id
     table.force_schema = "address varchar"
     table.save
-    
+
     lat = Float.random_latitude
     lon = Float.random_longitude
     the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
-    
+
     table.set_address_column!(:address)
     pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => the_geom})
     query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
     query_result[:rows][0][:address_geolocated].should be_true
-    
+
     table.update_row!(pk, {:address => "C/ Pilar Martínez nº 16 pta 13, Burjassot, Valencia", :address_geolocated => false})
     query_result = user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
     query_result[:rows][0][:lon].should be_nil
     query_result[:rows][0][:lat].should be_nil
   end
-  
+
   it "should ignore the attribute address_column when address_column is nil" do
     user = create_user
     table = new_table
@@ -1196,30 +1196,47 @@ describe Table do
       table.update_row!(pk, {:address_column => "C/ Pilar Martínez, nº16, pta 13", :latitude => Float.random_latitude, :longitude => Float.random_longitude})
     }.should_not raise_error
   end
-  
+
   it "should return pending rows to be geocoded" do
     user = create_user
     table = new_table
     table.user_id = user.id
     table.force_schema = "address varchar"
     table.save
-    
+
     lat = Float.random_latitude
     lon = Float.random_longitude
     the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
-    
+
     table.set_address_column!(:address)
     pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => the_geom})
     query_result = user.run_query("select address_geolocated from #{table.name} where cartodb_id = #{pk} limit 1")
     query_result[:rows][0][:address_geolocated].should be_true
 
     pk2 = table.insert_row!({:address => "C/ Villa 2, Madrid"})
-    table.get_records_with_pending_addresses[0][:address].should == "C/ Villa 2, Madrid"    
+    table.get_records_with_pending_addresses[0][:address].should == "C/ Villa 2, Madrid"
     table.get_records_with_pending_addresses.size.should == 1
   end
-  
+
   it "should return an empty array when there is no address column" do
     table = create_table
     table.get_records_with_pending_addresses.should be_empty
+  end
+
+  it "should be able to store a polygon" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "address varchar"
+    table.the_geom_type = "polygon"
+    table.save
+
+    the_geom = %Q{\{"type":"Polygon","coordinates":[[[-4.976720809936523,40.56963630849391],[-4.735021591186523,40.87977970146914],[-4.507055282592773,40.53624641730805]]]\}}
+
+
+    pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => the_geom})
+    #query_result = user.run_query("select cartodb_id FROM #{table.name} WHERE ST_Intersects(ST_SetSRID(ST_Point(-4.7048, 40.6613), #{CartoDB::SRID}),ST_SetSRID(the_geom, #{CartoDB::SRID} )) = true")
+    query_result = user.run_query("SELECT ST_NPoints(the_geom) from #{table.name} where cartodb_id = #{pk}");
+    query_result[:rows][0][:st_npoints].should == 4
   end
 end

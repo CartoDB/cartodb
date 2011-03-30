@@ -27,7 +27,7 @@ feature "API 1.0 columns management" do
       r.status.should be_success
       r.body.should == {
         :name => "postal_code",
-        :type => "integer",
+        :type => "smallint",
         :cartodb_type => "number"
       }
     end
@@ -61,7 +61,7 @@ feature "API 1.0 columns management" do
       r.status.should be_success
       r.body.should == {
         :name => "name",
-        :type => "integer",
+        :type => "smallint",
         :cartodb_type => "number"
       }
     end

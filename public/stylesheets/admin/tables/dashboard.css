@@ -25,10 +25,10 @@ section#content div.left div.middle_white_medium ul li {float:left; width:570px;
 section#content div.left div.middle_white_medium ul li.last {padding:25px 25px 18px 25px; border:none;}
 section#content div.left div.middle_white_medium ul li:hover {background:#F4F8F8; cursor:pointer;}
 section#content div.left div.middle_white_medium ul li div.meta_info {float:left; width:100%;}
-section#content div.left div.middle_white_medium ul li div.meta_info span.info {float:left; width:330px; margin:2px 0 0 0;}
+section#content div.left div.middle_white_medium ul li div.meta_info span.info {float:left; width:330px; margin:0;}
 
 section#content div.left div.middle_white_medium ul li h4 {float:left; width:auto; max-width:180px; letter-spacing:-1px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
-section#content div.left div.middle_white_medium ul li h4 a {font:bold 21px Arial; color:#333333; letter-spacing:-1px; text-decoration:none; line-height:21px;}
+section#content div.left div.middle_white_medium ul li h4 a {font:bold 21px Arial; color:#333333; letter-spacing:-1px; text-decoration:none; line-height:26px; margin: 0 0 0 0;}
 section#content div.left div.middle_white_medium ul li h4 a:hover {color:black;}
 section#content div.left div.middle_white_medium ul li p.status {float:left; width:auto; padding:2px 7px!important; margin:5px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; line-height:11px;}
 section#content div.left div.middle_white_medium ul li p.status.public {color:#6FBE6F; background:#E2F3E1;}
@@ -36,7 +36,7 @@ section#content div.left div.middle_white_medium ul li p.status.private {color:#
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.delete {float:left; display:none; width:auto; margin:4px 0 0 0; padding:0 0 0 6px; font:normal 13px Arial; color:#999999;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.delete a {color:#FF3300; text-decoration:underline;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.delete a:hover {color:#FF1100; cursor:pointer;}
-section#content div.left div.middle_white_medium ul li div.meta_info span.info p.columns {float:left; width:100%; margin:10px 0 0 0; font:normal 13px Arial; color:#999999;}
+section#content div.left div.middle_white_medium ul li div.meta_info span.info p.columns {float:left; width:100%; margin:4px 0 0 0; font:normal 13px Arial; color:#999999;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.columns strong {color: #333333; font-weight: normal;}
 section#content div.left div.middle_white_medium ul li:hover div.meta_info span.info p.delete {display:block;}
 

@@ -120,8 +120,8 @@
       if (map==null) {
         map = po.map()
             .container(document.getElementById('map').appendChild(po.svg('svg')))
-            .center({lat: 0, lon: 0})
-            .zoom(5)
+            .center({lon: -1.3183, lat: 29.075})
+            .zoom(2)
             .zoomRange([1, 20])
             .add(po.drag())
             .add(po.wheel())
@@ -136,9 +136,6 @@
             var tile_url = 'http://ec2-50-16-103-51.compute-1.amazonaws.com/tiles/{X}/{Y}/{Z}';
             var layer = po.image().url(po.url(tile_url + '/1/'+table_name+'/point'));
             map.add(layer);
-            
-            
-            
       } 
     
     

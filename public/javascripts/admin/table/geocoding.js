@@ -45,6 +45,7 @@
     var worker = new Worker("/javascripts/admin/table/worker_geocoding.js");
 
     worker.onmessage = function(event){
+      console.log(event.data);
       if (event.data == "Finish" || event.data == "Stopped") {
         if (event.data == "Finish") {
           me.finishGeocoding();

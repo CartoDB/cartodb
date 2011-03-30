@@ -21,10 +21,12 @@ div.map_window div.map_header ul li span ul li {height:auto; width:70px; padding
 div.map_window div.map_header ul li span ul li a {font:normal 11px "Helvetica",Arial; color:white; text-decoration:none;}
 div.map_window div.map_header ul li span ul li a:hover {text-decoration:underline;}
 div.map_window div.map_header ul li.query  {height:41px; padding:6px 55px 8px 6px;}
-div.map_window div.map_header ul li input[type="text"] {width:200px; padding:3px 5px; border:1px solid #CCCCCC; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:normal 13px Arial; color:#333333;}
+div.map_window div.map_header ul li input[type="text"] {width:240px; height:19px; padding:3px 5px; border:1px solid #CCCCCC; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:italic 13px Arial; color:#bbbbbb; line-height:13px;}
+div.map_window div.map_header ul li input[type="submit"] {width:auto; height:25px; padding:0 5px; border:1px solid #666666; background:#666666; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; text-align:center; text-transform:uppercase; font:bold 13px Arial;
+  color:white;}
+div.map_window div.map_header ul li input[type="submit"]:hover {background:#333333; cursor:pointer;}
 div.map_window p.georeferencing {position:absolute; display:none; top:70px; left:50%; margin:0 0 0 -47px; padding:5px 10px 5px 10px; background:rgba(0,0,0,0.8);
  -wekit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; font:normal 15px Arial; color:white; z-index:10;}
 div.map_window p.georeferencing a {color:white; text-decoration:underline;}
 div.map_window p.loading {position:absolute; display:none; top:70px; left:50%; margin:0 0 0 -47px; padding:5px 30px 5px 10px; background:url('/images/admin/others/activity_indicator.gif') no-repeat 68px 5px rgba(0,0,0,0.8);
  -wekit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; font:normal 15px Arial; color:white; z-index:10;}
-

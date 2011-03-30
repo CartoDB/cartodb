@@ -811,7 +811,6 @@ TRIGGER
           end
         end
       else
-        user_database.rename_table self.imported_table_name, self.name      
         if pk = user_database.schema(self.name).select{ |c| c[1][:primary_key] == true }.first[0]
           user_database.rename_column name.to_sym, pk, :cartodb_id
         else
@@ -870,6 +869,9 @@ TRIGGER
           original_filename = name
           Rails.logger.info "Found original shapefile #{name} in path #{path}"
         end
+        if File.file?("/tmp/#{name}")
+          FileUtils.rm("/tmp/#{name}")
+        end
         entry.extract("/tmp/#{name}")
       end
     end    
@@ -879,13 +881,10 @@ TRIGGER
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
       host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
       port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-      Rails.logger.info "Running shp2pgsql: \`which shp2pgsql\` -p -WLATIN1 -I #{path}"
-      output = `\`which shp2pgsql\` -p -WLATIN1 -I #{path}`
-      Rails.logger.info "> #{output}"
-      self.imported_table_name = output.scan(/CREATE TABLE\s\"([^"]+)\"/i).first.first
+      self.imported_table_name = self.name
       Rails.logger.info "Table name to import: #{self.imported_table_name}"
-      system("`which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
-      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
+      system("`which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} #{self.name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
+      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} #{self.name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
       if entries.any?
         entries.each{ |e| FileUtils.rm(e) }
       end

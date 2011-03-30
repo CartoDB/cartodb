@@ -44,7 +44,7 @@
           '</li>'+
           '<li class="query">'+
             '<h4>Map query</h4>'+
-            '<p><form id="query_form"><input type="text" value="SELECT * FROM '+table_name+' WHERE cartodb_id = 1"/><input type="submit" /></form></p>'+
+            '<p><form id="query_form"><input type="text" value="SELECT * FROM '+table_name+'"/><input type="submit" /></form></p>'+
           '</li>'+
         '</ul>'+
       '</div>'+
@@ -74,7 +74,7 @@
       ev.stopPropagation();
       ev.preventDefault();
       var value = $(this).val();
-      if (value=='SELECT * FROM '+table_name+' WHERE cartodb_id = 1') {
+      if (value=='SELECT * FROM '+table_name+'') {
         $(this).val('');
         $(this).css('font-style','normal');
         $(this).css('color','#333333');
@@ -85,8 +85,8 @@
       ev.stopPropagation();
       ev.preventDefault();
       var value = $(this).val();
-      if (value=='SELECT * FROM '+table_name+' WHERE cartodb_id = 1' || value=='') {
-        $(this).val('SELECT * FROM '+table_name+' WHERE cartodb_id = 1');
+      if (value=='SELECT * FROM '+table_name+'' || value=='') {
+        $(this).val('SELECT * FROM '+table_name+'');
         $(this).css('font-style','italic');
         $(this).css('color','#bbbbbb');
       }

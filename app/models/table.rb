@@ -860,6 +860,7 @@ TRIGGER
     # If it is a zip file we should find a shp file
     entries = []
     if ext == '.zip'
+      Rails.logger.info "Importing zip file: #{path}"
       Zip::ZipFile.foreach(path) do |entry|
         name = entry.name.tr('/','_')
         entries << "/tmp/#{name}"
@@ -867,6 +868,7 @@ TRIGGER
           ext = '.shp'
           path = "/tmp/#{name}"
           original_filename = name
+          Rails.logger.info "Found original shapefile #{name} in path #{path}"
         end
         entry.extract("/tmp/#{name}")
       end
@@ -877,10 +879,13 @@ TRIGGER
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
       host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
       port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
+      Rails.logger.info "Running shp2pgsql: \`which shp2pgsql\` -p -WLATIN1 -I #{path}"
       output = `\`which shp2pgsql\` -p -WLATIN1 -I #{path}`
+      Rails.logger.info "> #{output}"
       self.imported_table_name = output.scan(/CREATE TABLE\s\"([^"]+)\"/i).first.first
+      Rails.logger.info "Table name to import: #{self.imported_table_name}"
       system("`which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
-      # system("echo #{owner.database_password}")
+      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
       if entries.any?
         entries.each{ |e| FileUtils.rm(e) }
       end

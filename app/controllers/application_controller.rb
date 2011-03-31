@@ -71,15 +71,13 @@ class ApplicationController < ActionController::Base
   def no_html5_compliant
     render :file => "#{Rails.root}/public/HTML5.html", :status => 500, :layout => false
   end
-
-  private
   
-    def browser_is_html5_compliant?
-      return true if Rails.env.test? || request.subdomain.eql?('api')
-      user_agent = request.user_agent.try(:downcase)
-      unless user_agent.blank? || user_agent.match(/firefox\/4|safari\/5|chrome\/7/)
-        raise NoHTML5Compliant
-      end
+  def browser_is_html5_compliant?
+    return true if Rails.env.test? || request.subdomain.eql?('api')
+    user_agent = request.user_agent.try(:downcase)
+    unless user_agent.blank? || user_agent.match(/firefox\/4|safari\/5|chrome\/7/)
+      raise NoHTML5Compliant
     end
+  end
 
 end

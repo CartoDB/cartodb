@@ -168,7 +168,6 @@ class Table < Sequel::Model(:user_tables)
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
-
       begin
         primary_key = user_database[name.to_sym].insert(attributes.except(:the_geom))
       rescue Sequel::DatabaseError => e
@@ -179,6 +178,7 @@ class Table < Sequel::Model(:user_tables)
         if new_column_type = get_new_column_type(invalid_column, invalid_value)
           modified_schema = true
           user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
+          update_stored_schema!
           retry
         else
           raise e

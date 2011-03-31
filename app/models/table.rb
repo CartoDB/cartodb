@@ -163,7 +163,7 @@ class Table < Sequel::Model(:user_tables)
     modified_schema = false
     prepare_attributes!(raw_attributes)
     owner.in_database do |user_database|
-      schema = user_database.schema(name.to_sym).map{|c| c.first}
+      schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
@@ -197,7 +197,7 @@ class Table < Sequel::Model(:user_tables)
     modified_schema = false
     prepare_attributes!(raw_attributes)
     owner.in_database do |user_database|
-      schema = user_database.schema(name.to_sym).map{|c| c.first}
+      schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
@@ -393,11 +393,11 @@ class Table < Sequel::Model(:user_tables)
 
   def set_lat_lon_columns!(lat_column, lon_column)
     self.geometry_columns = nil
-    set_the_geom_column!(:point) if the_geom_type.blank?
+    set_the_geom_column!(:point)
     if lat_column && lon_column
       owner.in_database do |user_database|
         user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-        if user_database.schema(name.to_sym).map{|e| e[0]}.include?(:address_geolocated)
+        if user_database.schema(name.to_sym, :reload => true).map{|e| e[0]}.include?(:address_geolocated)
           user_database.run("alter table #{self.name} drop column address_geolocated")
           update_stored_schema(user_database)
         end
@@ -424,7 +424,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_address_column!(address_column)
-    set_the_geom_column!(:point) if the_geom_type.blank?
+    set_the_geom_column!(:point)
     if address_column.is_a?(String) && address_column.include?(',')
       aggregated_address_name = "aggregated_address"
       owner.in_database do |user_database|
@@ -436,7 +436,7 @@ class Table < Sequel::Model(:user_tables)
     self.geometry_columns = address_column.try(:to_s)
     owner.in_database do |user_database|
       unless address_column.blank?
-        if user_database.schema(name.to_sym).map{|e| e[0]}.include?(:address_geolocated)
+        if user_database.schema(name.to_sym, :reload => true).map{|e| e[0]}.include?(:address_geolocated)
           user_database.run("update #{self.name} set address_geolocated = null")
         else
           user_database.run("alter table #{self.name} add column address_geolocated boolean default null")
@@ -488,7 +488,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def update_stored_schema(user_database)
-    temporal_schema = user_database.schema(self.name.to_sym).map do |column|
+    temporal_schema = user_database.schema(self.name.to_sym, :reload => true).map do |column|
       if !CARTODB_COLUMNS.include?(column.first.to_s) && column.first.to_s != "address_column"
         "#{column.first},#{column[1][:db_type].gsub(/,\d+/,"")},#{column[1][:db_type].convert_to_cartodb_type}"
       end
@@ -761,7 +761,7 @@ TRIGGER
 
   def set_the_geom_column!(type)
     owner.in_database do |user_database|
-      unless user_database.schema(name.to_sym).flatten.include?(:the_geom)
+      unless user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
         if type == :point
           user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::GOOGLE_SRID},'POINT',2)")
         elsif type == :polygon

@@ -20,7 +20,6 @@ module CartoDB
           [ 200, {'Content-Type' => 'text/html'}, ERB.new(html).result(binding) ]
         end
       else
-        puts env
         @app.call(env)
       end
     end

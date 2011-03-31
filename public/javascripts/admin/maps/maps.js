@@ -110,30 +110,29 @@
   function showMap() {
     $('div.map_window div.map_curtain').hide();
     $('p.georeferencing').hide();
-    po = org.polymaps;
-
       
-      if (map==null) {
-        map = po.map()
-            .container(document.getElementById('map').appendChild(po.svg('svg')))
-            .center({lon: -1.3183, lat: 29.075})
-            .zoom(2)
-            .zoomRange([1, 20])
-            .add(po.drag())
-            .add(po.wheel())
-            .add(po.dblclick());
+    if (map==null) {
+      po = org.polymaps;
+      map = po.map()
+          .container(document.getElementById('map').appendChild(po.svg('svg')))
+          .center({lon: -1.3183, lat: 29.075})
+          .zoom(2)
+          .zoomRange([1, 20])
+          .add(po.drag())
+          .add(po.wheel())
+          .add(po.dblclick());
 
-            map.add(po.image()
-                .url(po.url("http://{S}tile.cloudmade.com"
-                + "/1a1b06b230af4efdbb989ea99e9841af"
-                + "/998/256/{Z}/{X}/{Y}.png")
-                .hosts(["a.", "b.", "c.", ""])));
+          map.add(po.image()
+              .url(po.url("http://{S}tile.cloudmade.com"
+              + "/1a1b06b230af4efdbb989ea99e9841af"
+              + "/998/256/{Z}/{X}/{Y}.png")
+              .hosts(["a.", "b.", "c.", ""])));
 
-            layer = po.image().url(po.url(tile_url + '/1/'+table_name+'/point'));
-            map.add(layer);
-      } else {
-        layer.url(po.url(tile_url + '/1/'+table_name+'/point'));
-      }
+          layer = po.image().url(po.url(tile_url + '/1/'+table_name+'/point'));
+          map.add(layer);
+    } else {
+      layer.url(po.url(tile_url + '/1/'+table_name+'/point'));
+    }
   }
 
 

@@ -145,16 +145,10 @@ class User < Sequel::Model
         'username' => database_username, 'password' => database_password
       )
     end
-    connection = ::Sequel.connect(configuration)
-    result = nil
-    begin
-      result = yield(connection)
-      connection.disconnect
-    rescue => e
-      connection.disconnect
-      raise e
+    connection = $pool.fetch(configuration) do
+      ::Sequel.connect(configuration)
     end
-    result
+    yield(connection)
   end
 
   def run_query(query)

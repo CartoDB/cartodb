@@ -233,7 +233,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema(options = {})
-    self.stored_schema.map do |column|
+    return [] if stored_schema.blank?
+    stored_schema.map do |column|
       c = column.split(',')
       [c[0].to_sym, c[options[:cartodb_types] == false ? 1 : 2], schema_geometry_column(c[0].to_sym)].compact
     end
@@ -516,7 +517,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def owner
-    @owner ||= User.select(:id,:database_name,:crypted_password).filter(:id => self.user_id).first
+    User.select(:id,:database_name,:crypted_password).filter(:id => self.user_id).first
   end
 
   def set_table_name

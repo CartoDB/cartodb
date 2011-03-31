@@ -171,6 +171,7 @@ div.table_position div.delete_column a.button:hover {background-image:-moz-linea
 /*SQL CONSOLE*/
 div.table_position div.general_options div.sql_console {position:fixed; display:none; bottom:0; left:0; right:0; min-height:158px; padding:36px; border-bottom:3px solid black; z-index:0; background:#282F49; 
   background-image: url('/images/admin/table/console_bkg.jpg'); background-image: url('/images/admin/table/console_bkg.jpg'), -moz-linear-gradient(100% 100% 90deg, #2D3451, #1B1F33); background-image: url('/images/admin/table/console_bkg.jpg'), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2D3451), to(#1B1F33));}
+div.table_position div.general_options div.sql_console.end {bottom:15px;}
 div.table_position div.general_options div.sql_console span {float:left; width:100%;}
 div.table_position div.general_options div.sql_console span h3 {float:left; width:auto; padding:5px 0; font:normal 13px Arial; color:white; text-shadow:0 1px black;}
 div.table_position div.general_options div.sql_console span h3 strong {color:#FFCC00;}
@@ -404,7 +405,7 @@ div.mamufas div.stopgeo_window div.inner_ span.stop p a:hover {color:#333333;}
 
 
 /*jScrollPane CSS*/
-.jspContainer{overflow:hidden;position:relative;}
+/*.jspContainer{overflow:hidden;position:relative;}
 .jspPane{position:absolute; width:90px;}
 .jspVerticalBar{position:absolute;top:0px;right:3px;width:6px;height:100%; background:none;}
 .jspHorizontalBar{position:absolute;bottom:0;left:0;width:100%;height:16px;background:none;}
@@ -422,4 +423,6 @@ div.mamufas div.stopgeo_window div.inner_ span.stop p a:hover {color:#333333;}
 .jspVerticalBar .jspArrow{height:16px;}
 .jspHorizontalBar .jspArrow{width:16px;float:left;height:100%;}
 .jspVerticalBar .jspArrow:focus{outline:none;}
-.jspCorner{background:#eeeef4;float:left;height:100%;}
+.jspCorner{background:#eeeef4;float:left;height:100%;}*/
+
+

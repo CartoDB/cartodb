@@ -37,7 +37,9 @@
   var cell_size = 100;
   var last_cell_size = 100;
 
+  var query_mode = false;
   var enabled = true;
+  
   var methods = {
 
 
@@ -262,9 +264,9 @@
                               '</ul>' +
                             '</span>';
         tbody += '<tr r="'+element['cartodb_id']+'"><td class="first" r="'+ element['cartodb_id'] +'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
-		for(var j in element){
-			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
-		}
+    		for(var j in element){
+    			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
+    		}
         
         var start = tbody.lastIndexOf('"width:');
         var end = tbody.lastIndexOf('px"');
@@ -368,10 +370,10 @@
               '<h3>Saved Query 2 / <strong>187 results</strong> <a class="get_api_call" href="#get_api_call">GET API CALL</a></h3>'+
               '<a href="#close_this_view" class="close">close this view</a>'+
             '</span>'+
-            '<textarea></textarea>'+
+            '<textarea id="sql_textarea"></textarea>'+
             '<span>'+
               '<a class="try_query">Try query</a>'+
-              '<a class="save_query">Save this query</a>'+
+              // '<a class="save_query">Save this query</a>'+
             '</span>'+
           '</div>'+
         '</div>');
@@ -588,6 +590,18 @@
           '</div>'+
         '</div>'
         );
+        
+        editAreaLoader.init({
+        			id: "sql_textarea"	// id of the textarea to transform		
+        			,start_highlight: true	// if start with highlight
+        			,allow_resize: false
+        			,allow_toggle: false
+        			,word_wrap: true
+        			,syntax: "sql"
+        			,show_line_colors: true
+        			,toolbar: ""
+        			,syntax_selection_allow: "sql"
+        		});
     },
 
 
@@ -767,11 +781,14 @@
           $(table).children('thead').css('top','99px');
           if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
             $('div.general_options').addClass('end');
+            $('div.sql_console').addClass('end');
           } else {
             $('div.general_options').removeClass('end');
+            $('div.sql_console').removeClass('end');
           }
         } else {
           $('div.general_options').removeClass('end');
+          $('div.sql_console').removeClass('end');
           $('section.subheader').css('top',58-$(document).scrollTop()+'px');
           $(table).children('thead').css('top',160-$(document).scrollTop()+'px');
         }
@@ -805,8 +822,10 @@
       $('div.table_position').scroll(function(ev){
         if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
           $('div.general_options').addClass('end');
+          $('div.sql_console').addClass('end');
         } else {
           $('div.general_options').removeClass('end');
+          $('div.sql_console').removeClass('end');
         }
         
         if ($('div.delete_row').is(':visible')) {
@@ -819,8 +838,9 @@
         $(table).children('tbody').children('tr').children('td.first').css('left',$('div.table_position').scrollLeft()+'px');
         $(table).children('thead').children('tr').children('th.first').css('left',$('div.table_position').scrollLeft()+'px');
         $(table).children('thead').css('left',-$('div.table_position').scrollLeft()+'px');
+        
+        methods.paginateControls();
       });
-
     },
 
 
@@ -871,6 +891,11 @@
       //  TABLE REFRESH OR ENABLED         //
       ///////////////////////////////////////
       $('body').livequery('enabled',function(event,status){
+        if (!status) {
+          $('span.paginate').fadeOut();
+        } else {
+          $('span.paginate').fadeIn();
+        }
         enabled = status;
       });
       $('body').livequery('refresh',function(event){
@@ -2032,13 +2057,22 @@
         $('div.general_options div.sql_console').show();
         $('div.general_options ul').addClass('sql');
       });
+      $('div.general_options a.try_query').livequery('click',function(ev){
+        $.ajax({
+          method: "GET",
+          url: '/v1?sql='+escape(editAreaLoader.getValue('sql_textarea')),
+   			 headers: {"cartodbclient":"true"},
+          success: function(data) {
+            //console.log(data);
+          }
+        });
+      });
 
 
       ///////////////////////////////////////
       //  Move table -> left/right         //
       ///////////////////////////////////////
       $('span.paginate a.next').click(function(ev){
-
         stopPropagation(ev);
         methods.closeTablePopups();
                   
@@ -2048,18 +2082,21 @@
         var test_1 = $('table thead tr th:eq(3)').position().left;
         var test_2 = $('table thead tr th:eq(4)').position().left;
         var length = test_2 - test_1;
-
+        
+        $('span.paginate a#previousButton').removeClass('disabled');
+        
         try {
           var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+3;
           var position = $('table thead tr th:eq('+column_position+')').offset().left;
           $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
+          $('span.paginate a#nextButton').removeClass('disabled');
         } catch (e) {
+          $('span.paginate a#nextButton').addClass('disabled');
           $('div.table_position').scrollTo({top:'0',left:'100%'},200);
         }
       });
-      
+         
       $('span.paginate a.previous').click(function(ev){
-        
         stopPropagation(ev);
         methods.closeTablePopups();
       
@@ -2071,8 +2108,17 @@
         var length = test_2 - test_1;
 
         var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+1;
+        if (column_position>$('thead tr th').size()) {
+          column_position = $('thead tr th').size()-1;
+        }
         var position = $('table thead tr th:eq('+column_position+')').offset().left;
         $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
+        $('span.paginate a#nextButton').removeClass('disabled');
+        if (scrollable+position-window_width<1) {
+          $('span.paginate a#previousButton').addClass('disabled');
+        } else {
+          $('span.paginate a#previousButton').removeClass('disabled');
+        }
       });
     },
 
@@ -2094,6 +2140,34 @@
       });
     },
 
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  PAGINATE CONTROLS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    paginateControls: function(){
+      var scrollable = $('div.table_position').scrollLeft();
+      var window_width = $(window).width();
+      var table_width = $(table).width();
+
+      if (window_width==table_width) {
+        $('span.paginate a#previousButton').addClass('disabled');
+        $('span.paginate a#nextButton').addClass('disabled');
+      } else {
+        if (scrollable<1) {
+          $('span.paginate a#previousButton').addClass('disabled');
+          $('span.paginate a#nextButton').removeClass('disabled');
+        } else if ((window_width+scrollable)<=$(table).width()) {
+          $('span.paginate a#nextButton').addClass('disabled');
+          $('span.paginate a#previousButton').removeClass('disabled');
+        } else {
+          $('span.paginate a#previousButton').removeClass('disabled');
+          $('span.paginate a#nextButton').removeClass('disabled');
+        }
+      }
+    },
+    
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2121,6 +2195,8 @@
         $(table).parent().height(parent_height-162);
       }
       
+      //Control pagination
+      methods.paginateControls();
     },
 
 

@@ -13,7 +13,7 @@
           resultsPerPage: 50,
           reuseResults: 100,
           total: 5000,
-          query: "SELECT cartodb_id,address,created_at FROM "+ table_name
+          query: "SELECT * FROM "+ table_name
         }
       );
     });

@@ -21,6 +21,7 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do
+    $pool.close_connections!
     Rails::Sequel.connection[Rails::Sequel.connection.tables.first].with_sql(
       "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
     ).map(:datname).each { |user_database_name| Rails::Sequel.connection.run("drop database #{user_database_name}") }

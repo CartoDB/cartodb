@@ -184,7 +184,7 @@ div.table_position div.general_options div.sql_console span a.save_query {float:
 div.table_position div.general_options div.sql_console span a.save_query:hover {color:#93FF93;}
 div.table_position div.general_options div.sql_console span a.try_query {float:right; margin:10px 0 0 10px; padding:8px 9px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927; font:bold 12px Arial; text-shadow:0 1px white; 
   color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #ffffff, #cacecb); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cacecb)); text-decoration:none;}
-div.table_position div.general_options div.sql_console span a.try_query:hover {background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cacecb), to(#ffffff));}
+div.table_position div.general_options div.sql_console span a.try_query:hover {background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cacecb), to(#ffffff)); cursor:pointer;}
 div.table_position div.general_options div.sql_console span p.errors {display:none; float:left; width:auto; padding:5px 10px; margin:10px 0 0 0; background:red; color:white; border:1px solid red; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial;}
 div.table_position div.general_options div.sql_console textarea {float:left; min-width:98.7%; max-width:98.7%; min-height:63px; max-height:350px; margin:7px 0 0 0; padding:7px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927;
   font:normal 13px Arial; color:#333333;}

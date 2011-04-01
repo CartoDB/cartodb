@@ -387,6 +387,8 @@
       } else {
         $(window).scrollTo({top:previous_scroll+'px',left:'0'},300,{onAfter: function() {loading = false; enabled = true;}});
       }
+
+      
     },
 
 
@@ -700,6 +702,7 @@
         			,toolbar: ""
         			,syntax_selection_allow: "sql"
         		});
+        		
     },
 
 
@@ -2147,6 +2150,9 @@
         $('div.general_options div.sql_console').hide();
         $('div.general_options ul').removeClass('sql');
       });
+      $(document).bind('sqlEnter',function(ev){
+        $('div.general_options a.try_query').trigger('click');
+      });
       // General options
       $('div.general_options ul li a.sql').livequery('click',function(ev){
         stopPropagation(ev);
@@ -2168,15 +2174,14 @@
         stopPropagation(ev);
         methods.closeTablePopups();
                   
-        var scrollable = $('div.table_position').scrollLeft();
-        var window_width = $(window).width();
-        var second = $('table thead tr th:eq(2)').position().left;
-        var test_1 = $('table thead tr th:eq(3)').position().left;
-        var test_2 = $('table thead tr th:eq(4)').position().left;
-        var length = test_2 - test_1;
-        
-        
         try {
+          var scrollable = $('div.table_position').scrollLeft();
+          var window_width = $(window).width();
+          var second = $('table thead tr th:eq(2)').position().left;
+          var test_1 = $('table thead tr th:eq(3)').position().left;
+          var test_2 = $('table thead tr th:eq(4)').position().left;
+          var length = test_2 - test_1;
+          
           var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+3;
           var position = $('table thead tr th:eq('+column_position+')').offset().left;
           $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
@@ -2190,19 +2195,24 @@
         stopPropagation(ev);
         methods.closeTablePopups();
       
-        var scrollable = $('div.table_position').scrollLeft();
-        var window_width = $(window).width();
-        var second = $('table thead tr th:eq(2)').position().left;
-        var test_1 = $('table thead tr th:eq(3)').position().left;
-        var test_2 = $('table thead tr th:eq(4)').position().left;
-        var length = test_2 - test_1;
+        try {
+          var scrollable = $('div.table_position').scrollLeft();
+          var window_width = $(window).width();
+          var second = $('table thead tr th:eq(2)').position().left;
+          var test_1 = $('table thead tr th:eq(3)').position().left;
+          var test_2 = $('table thead tr th:eq(4)').position().left;
+          var length = test_2 - test_1;
 
-        var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+1;
-        if (column_position>$('thead tr th').size()) {
-          column_position = $('thead tr th').size()-1;
+          var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+1;
+          if (column_position>$('thead tr th').size()) {
+            column_position = $('thead tr th').size()-1;
+          }
+          var position = $('table thead tr th:eq('+column_position+')').offset().left;
+          $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
+        } catch (e) {
+          $('div.table_position').scrollTo({top:'0',left:'0px'},200);
         }
-        var position = $('table thead tr th:eq('+column_position+')').offset().left;
-        $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
+
         methods.paginateControls();
       });
     },

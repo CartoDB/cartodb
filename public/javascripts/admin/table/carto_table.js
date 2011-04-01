@@ -89,64 +89,92 @@
      });
      
 
-     $.ajax({
-       method: "GET",
-       url: options.getDataUrl,
-			 headers: {"cartodbclient":"true"},
-       success: function(data) {
-         columns = data.schema;
-         $(document).trigger('arrived');
-       }
-     });
-     
-     $.ajax({
-        method: "GET",
-        url: options.getDataUrl+'/records',
-        data: {
-          rows_per_page: options.resultsPerPage,
-          page: petition_pages
-        },
- 			 headers: {"cartodbclient":"true"},
-       success: function(data) {
-         rows = data.rows;
-         total_rows = data.total_rows;
-         $(document).trigger('arrived');
-       }
-     });
+
+     if (!query_mode) {
+       $.ajax({
+         method: "GET",
+         url: options.getDataUrl,
+  			 headers: {"cartodbclient":"true"},
+         success: function(data) {
+           columns = data.schema;
+           $(document).trigger('arrived');
+         }
+       });
+
+       $.ajax({
+          method: "GET",
+          url: options.getDataUrl+'/records',
+          data: {
+            rows_per_page: options.resultsPerPage,
+            page: petition_pages
+          },
+   			 headers: {"cartodbclient":"true"},
+         success: function(data) {
+           rows = data.rows;
+           total_rows = data.total_rows;
+           $(document).trigger('arrived');
+         }
+       });
+     } else {
+       $.ajax({
+         method: "GET",
+         url: '/v1?sql='+escape(editAreaLoader.getValue('sql_textarea')),
+         data: {
+           rows_per_page: options.resultsPerPage,
+           page: petition_pages
+         },
+  			 headers: {"cartodbclient":"true"},
+         success: function(data) {
+           rows = data.rows;
+           total_rows = data.total_rows;
+           $(document).trigger('arrived');
+           $(document).trigger('arrived');
+         }
+       });
+     }
+
      
      
       function startTable() {
-        if (total_rows==0) {
-          //Start new table
-          //Calculate width of th on header
-          var window_width = $(window).width();
-          if (window_width>((columns.length*113)+42)) {
-            cell_size = ((window_width-150)/(columns.length-1))-27;
-            last_cell_size = cell_size;
-          }
-          
-          maxPage = -1;
-          if ($(table).children('thead').length==0) {methods.drawColumns(columns);}
-          methods.startTable();
+        
+        if (query_mode) {
+          cell_size = 100;
+          last_cell_size = 100;
+          methods.drawQueryRows(options,rows,direction,actualPage);
+          methods.drawQueryColumns(rows);
         } else {
-          total = total_rows;
-          if (rows.length>0) {
-            if ($(table).children('thead').length==0) {
-              //Calculate width of th on header
-              var window_width = $(window).width();
-              if (window_width>((columns.length*113)+42)) {
-                cell_size = ((window_width-150)/(columns.length-1))-27;
-                last_cell_size = cell_size;
-              }
-              methods.drawColumns(columns);
+          if (total_rows==0) {
+            //Start new table
+            //Calculate width of th on header
+            var window_width = $(window).width();
+            if (window_width>((columns.length*113)+42)) {
+              cell_size = ((window_width-150)/(columns.length-1))-27;
+              last_cell_size = cell_size;
             }
-            methods.drawRows(options,rows,direction,actualPage);
+
+            maxPage = -1;
+            if ($(table).children('thead').length==0) {methods.drawColumns(columns);}
+            methods.startTable();
           } else {
-            methods.hideLoader();
-            if (direction=="next") {
-               maxPage--;
+            total = total_rows;
+            if (rows.length>0) {
+              if ($(table).children('thead').length==0) {
+                //Calculate width of th on header
+                var window_width = $(window).width();
+                if (window_width>((columns.length*113)+42)) {
+                  cell_size = ((window_width-150)/(columns.length-1))-27;
+                  last_cell_size = cell_size;
+                }
+                methods.drawColumns(columns);
+              }
+              methods.drawRows(options,rows,direction,actualPage);
             } else {
-               minPage++;
+              methods.hideLoader();
+              if (direction=="next") {
+                 maxPage--;
+              } else {
+                 minPage++;
+              }
             }
           }
         }
@@ -238,6 +266,31 @@
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  DRAW COLUMNS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    drawQueryColumns: function(data) {
+      //Draw the columns headers
+      var thead = '<thead><tr><th class="first"><div></div></th>';
+      headers = {};
+            
+      $.each(data[0],function(i,ele){
+        thead += '<th>'+
+                   '<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
+                     '<span class="long">'+
+                       '<h3 class="'+((i=="cartodb_id" || i=="created_at" || i=="updated_at")?'static':'')+'">'+i+'</h3>'+
+                     '</span>'+
+                   '</div>'+
+                 '</th>';
+                 
+      });
+      
+      thead += "</thead></tr>";
+      $(table).append(thead);
+    },
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW ROWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawRows: function(options,data,direction,page) {
@@ -264,6 +317,51 @@
                               '</ul>' +
                             '</span>';
         tbody += '<tr r="'+element['cartodb_id']+'"><td class="first" r="'+ element['cartodb_id'] +'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
+    		for(var j in element){
+    			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
+    		}
+        
+        var start = tbody.lastIndexOf('"width:');
+        var end = tbody.lastIndexOf('px"');
+        tbody = tbody.substring(0,start) + '"width:' + last_cell_size + tbody.substring(end);
+        
+        tbody += '</tr>';
+      });
+
+
+      if ($(table).children('tbody').length==0) {
+        tbody += '</tbody>';
+        $(table).append(tbody);
+        methods.resizeTable();
+      } else {
+        (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
+      }
+      
+      if (direction!='') {
+        methods.checkReuse(direction);
+      } else {
+        $(window).scrollTo({top:previous_scroll+'px',left:'0'},300,{onAfter: function() {loading = false; enabled = true;}});
+      }
+    },
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  DRAW QUERY ROWS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    drawQueryRows: function(options,data,direction,page) {
+
+      if ($(table).children('tbody').length==0) {
+        var tbody = '<tbody style="padding-top:53px;">';
+      } else {
+        var tbody = '';
+      }
+
+
+      //Loop all the data
+      $.each(data, function(i,element){
+
+        tbody += '<tr><td class="first"><div></div></td>';
     		for(var j in element){
     			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
     		}
@@ -2058,14 +2156,8 @@
         $('div.general_options ul').addClass('sql');
       });
       $('div.general_options a.try_query').livequery('click',function(ev){
-        $.ajax({
-          method: "GET",
-          url: '/v1?sql='+escape(editAreaLoader.getValue('sql_textarea')),
-   			 headers: {"cartodbclient":"true"},
-          success: function(data) {
-            //console.log(data);
-          }
-        });
+        query_mode = true;
+        methods.refreshTable(0);
       });
 
 
@@ -2132,7 +2224,6 @@
         methods.resizeTable();
       });
     },
-
 
 
 

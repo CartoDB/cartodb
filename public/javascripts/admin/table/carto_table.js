@@ -373,7 +373,7 @@
             '<textarea id="sql_textarea"></textarea>'+
             '<span>'+
               '<a class="try_query">Try query</a>'+
-              // '<a class="save_query">Save this query</a>'+
+              '<p class="errors">Your query is not correct, try again with another ;)</p>'+
             '</span>'+
           '</div>'+
         '</div>');
@@ -2083,17 +2083,15 @@
         var test_2 = $('table thead tr th:eq(4)').position().left;
         var length = test_2 - test_1;
         
-        $('span.paginate a#previousButton').removeClass('disabled');
         
         try {
           var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+3;
           var position = $('table thead tr th:eq('+column_position+')').offset().left;
           $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
-          $('span.paginate a#nextButton').removeClass('disabled');
         } catch (e) {
-          $('span.paginate a#nextButton').addClass('disabled');
           $('div.table_position').scrollTo({top:'0',left:'100%'},200);
         }
+        methods.paginateControls();
       });
          
       $('span.paginate a.previous').click(function(ev){
@@ -2113,12 +2111,7 @@
         }
         var position = $('table thead tr th:eq('+column_position+')').offset().left;
         $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
-        $('span.paginate a#nextButton').removeClass('disabled');
-        if (scrollable+position-window_width<1) {
-          $('span.paginate a#previousButton').addClass('disabled');
-        } else {
-          $('span.paginate a#previousButton').removeClass('disabled');
-        }
+        methods.paginateControls();
       });
     },
 

@@ -340,6 +340,7 @@ class Table < Sequel::Model(:user_tables)
     rows  = []
     limit = (options[:rows_per_page] || 10).to_i
     limit = 5000 if limit > 5000
+    # Allow to set the page number as a range between two pages
     if options[:page] && options[:page].is_a?(String) && options[:page].include?('..')
       first_page, last_page = options[:page].split('..')
       page = first_page.to_i*limit
@@ -351,14 +352,14 @@ class Table < Sequel::Model(:user_tables)
       rows = user_database[name.to_sym].limit(limit,page).
               order(:cartodb_id).
               select(*schema.map{ |e| e[0]}).
-              all.map do |row|
-                row.each do |k,v|
-                  if v.is_a?(Date) || v.is_a?(Time)
-                    row[k] = v.strftime("%Y-%m-%d %H:%M:%S")
-                  end
-                end
-                row
-             end
+              all# .map do |row|
+              #                 row.each do |k,v|
+              #                   if v.is_a?(Date) || v.is_a?(Time)
+              #                     row[k] = v.strftime("%Y-%m-%d %H:%M:%S")
+              #                   end
+              #                 end
+              #                 row
+              #              end
     end
     {
       :id         => id,

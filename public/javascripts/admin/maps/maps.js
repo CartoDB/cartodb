@@ -44,7 +44,7 @@
           '</li>'+
           '<li class="query">'+
             '<h4>Map query</h4>'+
-            '<p><form id="query_form"><input type="text" value="SELECT * FROM '+table_name+'"/><input type="submit" /></form></p>'+
+            '<p><form id="query_form"><input type="text" value="SELECT * FROM '+table_name+'"/><input type="submit" value="SEND"/></form></p>'+
           '</li>'+
         '</ul>'+
       '</div>'+

@@ -5,6 +5,7 @@ log/*.log
 tmp/*
 tmp/**/*
 public/system
+public/uploads
 db/schema.rb
 doc/
 config/app_config.yml

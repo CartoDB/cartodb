@@ -1,10 +1,10 @@
 
     var create_type = 0;
     var interval = null;
-    
-  
+
+
     head(function(){
-      
+
       //Create new table
       $('a.new_table').click(function(ev){
          ev.preventDefault();
@@ -13,8 +13,8 @@
          $('div.mamufas').fadeIn();
          bindESC();
        });
-      
-      
+
+
       $('div.create_window ul li a').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
@@ -24,8 +24,8 @@
           (create_type==0)?create_type++:create_type--;
         }
       });
-      
-      
+
+
       $('span.file input').hover(function(ev){
         $('span.file a').addClass('hover');
         $(document).css('cursor','pointer');
@@ -33,66 +33,43 @@
         $('span.file a').removeClass('hover');
         $(document).css('cursor','default');
       });
-      
-      
-      
-      $('input[type="file"]').change(function(ev){
-        $('div.select_file p').text($(this).attr('value').split('\\')[2]);
-        if ($('form input[type="file"]').attr('value')!='' && !$('form input[type="submit"]').hasClass('disabled')) {
+
+      var uploader = new qq.FileUploader({
+        element: document.getElementById('uploader'),
+        action: '/upload',
+        params: {},
+        allowedExtensions: ['csv', 'xls', 'zip'],
+        sizeLimit: 0, // max size
+        minSizeLimit: 0, // min size
+        debug: true,
+
+        onSubmit: function(id, fileName){
           $('div.create_window ul li:eq(0)').addClass('disabled');
           $('form input[type="submit"]').addClass('disabled');
           $('span.file').addClass('uploading');
-
-          var uuid= '';
-          for (i = 0; i < 32; i++) {
-            uuid += Math.floor(Math.random() * 16).toString(16);
-          }
-
-          $.ajax({
-            type: "POST",
-            url: '/api/json/tables/?X-Progress-ID='+uuid,
-            success: function(data, textStatus, XMLHttpRequest) {
-
-              function fetch(uuid) {
-                $.ajax({
-                  type: "GET",
-                  headers: {'cartodbclient':true},
-                  url: '/progress?X-Progress-ID='+uuid,
-                  success: function(result, textStatus, XMLHttpRequest) {
-                    var percentage = result.received / result.size;
-                    $('span.progress').width((346*percentage)/1);
-                    if (result.state == 'done') {
-                     window.clearTimeout(interval);
-                     georeferenceImport();
-                    }
-                  },
-                  error: function(e) {
-                    console.debug(e);
-                  }
-                });
-              }
-
-              interval = window.setInterval(function () {fetch(uuid);},200);
-            },
-            error: function(e) {
-              console.debug(e);
-            }
-          });
-        }
+        },
+        onProgress: function(id, fileName, loaded, total){
+          var percentage = loaded / total;
+          $('span.progress').width((346*percentage)/1);
+        },
+        onComplete: function(id, fileName, responseJSON){
+          createNewToFinish(responseJSON.file_uri);
+           // {file_uri:"sdfasdfasfsadfadsf"}
+        },
+        onCancel: function(id, fileName){},
+        showMessage: function(message){ alert(message); }
       });
-      
-      
-      
+
       $('form#import_file').submit(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         if (create_type==0) {
-          createNewToFinish();
+          createNewToFinish('');
         }
       });
     });
-    
-    
+
+
     function resetUploadFile() {
       window.clearTimeout(interval);
       create_type = 0;
@@ -109,26 +86,20 @@
     }
 
 
-    function georeferenceImport() {
-      $('div.create_window').addClass('georeferencing');
-      $('span.georeference ul li:eq(0)').addClass('selected');
-      $('div.create_window ul li:eq(1)').addClass('finished');
-      $('form input[type="submit"]').removeClass('disabled');
-      $('span.file div.progress p').html('<strong>69 rows</strong> correctly imported!');
-      
-      
-      
-    }
-
-    
-    function createNewToFinish () {
+    function createNewToFinish (url) {
       $('div.create_window div.inner_').animate({borderColor:'#FFC209', height:'68px'},500);
       $('div.create_window div.inner_ form').animate({opacity:0},300,function(){
         $('div.create_window div.inner_ span.loading').show();
         $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
+          var params = {}
+          if (url!='') {
+            params = {file:url};
+          }
+          
           $.ajax({
             type: "POST",
             url: '/v1/tables/',
+            data: params,
             headers: {'cartodbclient':true},
             success: function(data, textStatus, XMLHttpRequest) {
               window.location.href = "/tables/"+data.id;

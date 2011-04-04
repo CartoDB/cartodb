@@ -3,7 +3,7 @@
 class Api::Json::MetaController < ApplicationController
   ssl_required :column_types
 
-  skip_before_filter :verify_authenticity_token
+  skip_before_filter :app_host_required, :verify_authenticity_token
 
   before_filter :api_authorization_required
 

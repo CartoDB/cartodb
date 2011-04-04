@@ -3,7 +3,7 @@
 class Api::Json::TablesController < ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
 
-  skip_before_filter :verify_authenticity_token
+  skip_before_filter :app_host_required, :verify_authenticity_token
 
   before_filter :api_authorization_required
   before_filter :load_table, :only => [:show, :update, :destroy]

@@ -15,6 +15,7 @@ CartoDB::Application.routes.draw do
   root :to => "home#index"
 
   get '/progress' => 'upload#progress', :format => :json
+  post '/upload' => 'upload#create', :format => :json
 
   get   '/login' => 'sessions#new', :as => :login
   get   '/logout' => 'sessions#destroy', :as => :logout
@@ -51,7 +52,7 @@ CartoDB::Application.routes.draw do
 
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
       get    '/'             => 'queries#run'
-      get    '/column_types' => 'meta#column_types' 
+      get    '/column_types' => 'meta#column_types'
       get    '/tables'       => 'tables#index'
       post   '/tables'       => 'tables#create'
       get    '/tables/:id'   => 'tables#show'
@@ -72,6 +73,6 @@ CartoDB::Application.routes.draw do
       put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
     end
   end
-  
+
   # Subdomain "developers." is served by rack application ApiDocumentationServer
 end

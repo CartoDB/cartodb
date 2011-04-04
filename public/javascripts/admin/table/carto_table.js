@@ -38,6 +38,7 @@
   var last_cell_size = 100;
 
   var query_mode = false;
+  var editor;
   var enabled = true;
   
   var methods = {
@@ -118,17 +119,25 @@
      } else {
        $.ajax({
          method: "GET",
-         url: '/v1?sql='+escape(editAreaLoader.getValue('sql_textarea')),
+         url: '/v1?sql='+escape(editor.getCode()),
          data: {
            rows_per_page: options.resultsPerPage,
            page: petition_pages
          },
   			 headers: {"cartodbclient":"true"},
          success: function(data) {
+           $('div.sql_console p.errors').fadeOut();
            rows = data.rows;
            total_rows = data.total_rows;
-           $(document).trigger('arrived');
-           $(document).trigger('arrived');
+           cell_size = 100;
+           last_cell_size = 100;
+           methods.drawQueryColumns(rows);
+           methods.drawQueryRows(rows,direction,actualPage);
+           $(document).unbind('arrived');
+         },
+         error: function() {
+           $('div.sql_console p.errors').stop().fadeIn().delay(10000).fadeOut();
+           methods.drawQueryColumns([{'':''}]);
          }
        });
      }
@@ -137,44 +146,37 @@
      
       function startTable() {
         
-        if (query_mode) {
-          cell_size = 100;
-          last_cell_size = 100;
-          methods.drawQueryRows(options,rows,direction,actualPage);
-          methods.drawQueryColumns(rows);
-        } else {
-          if (total_rows==0) {
-            //Start new table
-            //Calculate width of th on header
-            var window_width = $(window).width();
-            if (window_width>((columns.length*113)+42)) {
-              cell_size = ((window_width-150)/(columns.length-1))-27;
-              last_cell_size = cell_size;
-            }
+        if (total_rows==0) {
+          //Start new table
+          //Calculate width of th on header
+          var window_width = $(window).width();
+          if (window_width>((columns.length*113)+42)) {
+            cell_size = ((window_width-150)/(columns.length-1))-27;
+            last_cell_size = cell_size;
+          }
 
-            maxPage = -1;
-            if ($(table).children('thead').length==0) {methods.drawColumns(columns);}
-            methods.startTable();
+          maxPage = -1;
+          if ($(table).children('thead').length==0) {methods.drawColumns(columns);}
+          methods.startTable();
+        } else {
+          total = total_rows;
+          if (rows.length>0) {
+            if ($(table).children('thead').length==0) {
+              //Calculate width of th on header
+              var window_width = $(window).width();
+              if (window_width>((columns.length*113)+42)) {
+                cell_size = ((window_width-150)/(columns.length-1))-27;
+                last_cell_size = cell_size;
+              }
+              methods.drawColumns(columns);
+            }
+            methods.drawRows(options,rows,direction,actualPage);
           } else {
-            total = total_rows;
-            if (rows.length>0) {
-              if ($(table).children('thead').length==0) {
-                //Calculate width of th on header
-                var window_width = $(window).width();
-                if (window_width>((columns.length*113)+42)) {
-                  cell_size = ((window_width-150)/(columns.length-1))-27;
-                  last_cell_size = cell_size;
-                }
-                methods.drawColumns(columns);
-              }
-              methods.drawRows(options,rows,direction,actualPage);
+            methods.hideLoader();
+            if (direction=="next") {
+               maxPage--;
             } else {
-              methods.hideLoader();
-              if (direction=="next") {
-                 maxPage--;
-              } else {
-                 minPage++;
-              }
+               minPage++;
             }
           }
         }
@@ -272,20 +274,24 @@
       //Draw the columns headers
       var thead = '<thead><tr><th class="first"><div></div></th>';
       headers = {};
-            
-      $.each(data[0],function(i,ele){
-        thead += '<th>'+
-                   '<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
-                     '<span class="long">'+
-                       '<h3 class="'+((i=="cartodb_id" || i=="created_at" || i=="updated_at")?'static':'')+'">'+i+'</h3>'+
-                     '</span>'+
-                   '</div>'+
-                 '</th>';
-                 
-      });
+      
+      if (data.length>0) {
+        $.each(data[0],function(i,ele){
+          thead += '<th>'+
+                     '<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
+                       '<span class="long">'+
+                         '<h3 class="'+((i=="cartodb_id" || i=="created_at" || i=="updated_at")?'static':'')+'">'+i+'</h3>'+
+                       '</span>'+
+                     '</div>'+
+                   '</th>';
+
+        });
+      }  
+
       
       thead += "</thead></tr>";
       $(table).append(thead);
+      methods.resizeTable();
     },
 
 
@@ -349,7 +355,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW QUERY ROWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    drawQueryRows: function(options,data,direction,page) {
+    drawQueryRows: function(data,direction,page) {
 
       if ($(table).children('tbody').length==0) {
         var tbody = '<tbody style="padding-top:53px;">';
@@ -470,7 +476,7 @@
               '<h3>Saved Query 2 / <strong>187 results</strong> <a class="get_api_call" href="#get_api_call">GET API CALL</a></h3>'+
               '<a href="#close_this_view" class="close">close this view</a>'+
             '</span>'+
-            '<textarea id="sql_textarea"></textarea>'+
+            '<div class="outer_textarea"><textarea id="sql_textarea">SELECT * FROM '+table_name+'</textarea></div>'+
             '<span>'+
               '<a class="try_query">Try query</a>'+
               '<p class="errors">Your query is not correct, try again with another ;)</p>'+
@@ -691,18 +697,15 @@
         '</div>'
         );
         
-        editAreaLoader.init({
-        			id: "sql_textarea"	// id of the textarea to transform		
-        			,start_highlight: true	// if start with highlight
-        			,allow_resize: false
-        			,allow_toggle: false
-        			,word_wrap: true
-        			,syntax: "sql"
-        			,show_line_colors: true
-        			,toolbar: ""
-        			,syntax_selection_allow: "sql"
-        		});
-        		
+        
+        var textarea = $('#sql_textarea')[0];
+        editor = CodeMirror.fromTextArea('sql_textarea', {
+          height: "50px",
+          parserfile: "parsesql.js",
+          stylesheet: "/stylesheets/admin/table/sqlcolors.css",
+          path: "/javascripts/plugins/codemirror/"
+        });
+        //console.log(editor.getCode());
     },
 
 
@@ -1008,7 +1011,7 @@
       //  DOUBLE CLICK -> Open editor      //
       ///////////////////////////////////////
       $(document).dblclick(function(event){
-        if (enabled) {
+        if (enabled && !query_mode) {
           var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
@@ -1132,11 +1135,6 @@
           //Clicking in first column element + Key
           if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
             methods.closeTablePopups();
-            
-            // $('tbody tr').removeClass('selecting_first');
-            // $('tbody tr').removeClass('selecting');
-            // $('tbody tr').removeClass('selecting_last');
-            // $(target).parent().parent().removeClass('selecting_first').removeClass('border').addClass('selected');
 
             if (event.preventDefault) {
               event.preventDefault();
@@ -1151,11 +1149,6 @@
           if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
             if (!$(target).parent().parent().parent().hasClass('selecting_first')) {
               methods.closeTablePopups();
-              // $('tbody tr').removeClass('editing');
-              // $('tbody tr').removeClass('selecting_first');
-              // $('tbody tr').removeClass('selecting');
-              // $('tbody tr').removeClass('selecting_last');
-              //$('tbody tr').removeClass('selected');
               
               if (!$(target).parent().parent().parent().hasClass('selected')) {
                 $(target).parent().parent().parent().addClass('editing');
@@ -1190,127 +1183,6 @@
           }
         } 
       });
-
-
-
-      ///////////////////////////////////////
-      //  Editing selected rows            //
-      ///////////////////////////////////////
-      // $(document).mousedown(function(event){
-      //   if (enabled) {
-      //     var target = event.target || event.srcElement;
-      //     var targetElement = target.nodeName.toLowerCase();
-      // 
-      //     if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
-      //       $('table tbody tr td.first div span').hide();
-      //       $('table tbody tr td.first div a.options').removeClass('selected');
-      //       $('tbody tr').removeClass('editing');
-      //       $('tbody tr').removeClass('selecting_first').removeClass('border');
-      //       $('tbody tr').removeClass('selecting');
-      //       $('tbody tr').removeClass('selecting_last');
-      //       $('tbody tr').removeClass('selected');
-      //       var first_row = $(target).parent().parent();
-      //       first_row.addClass('selecting_first');
-      //       var initial_x = first_row.position().top;
-      // 
-      //       if (event.preventDefault) {
-      //         event.preventDefault();
-      //         event.stopPropagation();
-      //       } else {
-      //         event.stopPropagation();
-      //         event.returnValue = false;
-      //       }
-      //     }
-      // 
-      //     $(document).mousemove(function(event){
-      //       var target = event.target || event.srcElement;
-      //       var targetElement = target.nodeName.toLowerCase();
-      // 
-      //       if (targetElement == "div" && $(target).parent().is('td')) {
-      //         var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-      //         var current_row = $(target).parent().parent();
-      //         var current_x = current_row.position().top;
-      //         $(table).children('tbody').children('tr').removeClass('selecting');
-      //         current_row.addClass('selecting');
-      //         var find = false;
-      //         var cursor = first_row;
-      // 
-      //         while (!find) {
-      //           if (initial_x<current_x) {
-      //             first_row.removeClass('selecting_last').addClass('selecting_first');
-      //             if (cursor.attr('r')==current_row.attr('r')) {
-      //               cursor.addClass('selecting');
-      //               cursor.next().removeClass('selecting');
-      //               find=true;
-      //             } else {
-      //               cursor.next().removeClass('selecting');
-      //               cursor.addClass('selecting');
-      //               cursor = cursor.next();
-      //             }
-      //           } else if (initial_x>current_x) {
-      //             first_row.removeClass('selecting_first').addClass('selecting_last');
-      //             if (cursor.attr('r')==current_row.attr('r')) {
-      //               cursor.addClass('selecting');
-      //               cursor.prev().removeClass('selecting');
-      //               find=true;
-      //             } else {
-      //               cursor.prev().removeClass('selecting');
-      //               cursor.addClass('selecting');
-      //               cursor = cursor.prev();
-      //             }
-      //           } else {
-      //             find=true;
-      //             return false;
-      //           }
-      //         }
-      // 
-      //       } else {
-      //       }
-      //       if (event.preventDefault) {
-      //         event.preventDefault();
-      //         event.stopPropagation();
-      //       } else {
-      //         event.stopPropagation();
-      //         event.returnValue = false;
-      //       }
-      //     });
-      //   }
-      // });
-      // $(document).mouseup(function(event){
-      //   if (enabled) {
-      //     var target = event.target || event.srcElement;
-      //     var targetElement = target.nodeName.toLowerCase();
-      // 
-      //     if (targetElement == "div" && $(target).parent().is('td')) {
-      //       var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-      //       if ($('tbody tr').hasClass('selecting_last')) {
-      //         $('tbody tr[r="'+data.row+'"]').addClass('selecting_first');
-      //         $('tbody tr[r="'+data.row+'"]').addClass('border');
-      //         $('tbody tr.selecting_last').addClass('border');
-      //       } else {
-      //         $('tbody tr[r="'+data.row+'"]').addClass('selecting_last').addClass('border');
-      //         $('tbody tr.selecting_first').addClass('border');
-      //       }
-      // 
-      //       if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_last') && $('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('selecting_last');
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('border');
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('selecting');
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('editing');
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('selected');
-      //       }
-      //       if (event.preventDefault) {
-      //         event.preventDefault();
-      //         event.stopPropagation();
-      //       } else {
-      //         event.stopPropagation();
-      //         event.returnValue = false;
-      //       }
-      //     }
-      //     $(document).unbind('mousemove');
-      //   }
-      // });
 
 
 
@@ -2150,14 +2022,14 @@
         $('div.general_options div.sql_console').hide();
         $('div.general_options ul').removeClass('sql');
       });
-      $(document).bind('sqlEnter',function(ev){
-        $('div.general_options a.try_query').trigger('click');
-      });
+      // $(document).bind('sqlEnter',function(ev){
+      //   $('div.general_options a.try_query').trigger('click');
+      // });
       // General options
       $('div.general_options ul li a.sql').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-        
+
         $('div.general_options div.sql_console').show();
         $('div.general_options ul').addClass('sql');
       });

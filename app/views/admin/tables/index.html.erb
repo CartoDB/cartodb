@@ -1,5 +1,5 @@
   <%= content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/tumblr", "admin/tables/dashboard", "plugins/jquery.color", "admin/tables/import"  %>
+    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/tumblr", "plugins/file_uploader", "admin/tables/dashboard", "plugins/jquery.color", "admin/tables/import"  %>
   <% end %>
   <%= content_for(:head) do %>
     <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/dashboard') %>
@@ -9,7 +9,7 @@
 
   <section id="content">
     <div class="inner_content">
-      <div class="requests_info">
+      <!-- <div class="requests_info">
         <div class="top_white"></div>
         <div class="middle_white">
           <a class="close" href="#close_stats">close</a>
@@ -18,7 +18,7 @@
           <img src="https://chart.googleapis.com/chart?chxr=0,6.667,100&chxs=0,676767,0,0,_,676767|1,676767,0,0,_,676767&chxt=x,y&chbh=37,1,1&chs=849x60&cht=bvg&chco=D7E6E8|D7E6E8|D7E6E8|D7E6E8|D7E6E8|D7E6E8|D7E6E8|BFD6D9|BFD6D9|BFD6D9|BFD6D9|BFD6D9|BFD6D9|BFD6D9|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4&chd=s1:ibYXZabeaaaglfiiklqpmn,fl9YMYS&chp=0.033" width="849" height="60" alt="Requests stats" />
         </div>
         <div class="bottom_white"></div>
-      </div>
+      </div> -->
 
       <div class="tables_list">
         <div class="left">
@@ -86,7 +86,7 @@
 
   <%= content_for(:mamufas) do %>
     <div class="mamufas">
-    
+
       <div class="create_window">
         <a href="#close_window" class="close_create"></a>
         <div class="inner_">
@@ -104,9 +104,8 @@
                   <a href="#">I want to start with some imported data...</a>
                   <span class="file">
                     <div class="select_file">
-                      <a href="#select_file">Select files...</a>
+                      <div id="uploader"></div>
                       <p>You can import .csv and .xls files</p>
-                      <input type="file" value="select your file" name="file"/>
                     </div>
                     <div class="progress">
                       <p>Uploading your file...</p>
@@ -140,7 +139,7 @@
                     </ul>
                   </span>
                 </li>
-              </ul>                       
+              </ul>
             </span>
             <span class="bottom">
               <a href="#" class="cancel">cancel</a>
@@ -149,7 +148,7 @@
           </form>
         </div>
       </div>
-    
+
       <div class="delete_window">
         <a href="#close_window" class="close_delete"></a>
         <div class="inner_">

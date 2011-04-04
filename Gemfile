@@ -29,6 +29,7 @@ group :development do
   gem 'git-up'
   gem 'rdoc'
   gem 'passenger'
+  gem 'unicorn'
 end
 
 group :test, :development do

@@ -41,7 +41,7 @@
         allowedExtensions: ['csv', 'xls', 'zip'],
         sizeLimit: 0, // max size
         minSizeLimit: 0, // min size
-        debug: true,
+        debug: false,
 
         onSubmit: function(id, fileName){
           $('div.create_window ul li:eq(0)').addClass('disabled');
@@ -57,7 +57,10 @@
            // {file_uri:"sdfasdfasfsadfadsf"}
         },
         onCancel: function(id, fileName){},
-        showMessage: function(message){ alert(message); }
+        showMessage: function(message){
+          $('div.select_file p').text(message); 
+          $('div.select_file p').addClass('error'); 
+        }
       });
 
       $('form#import_file').submit(function(ev){
@@ -71,7 +74,6 @@
 
 
     function resetUploadFile() {
-      window.clearTimeout(interval);
       create_type = 0;
       $('div.create_window ul li:eq(0)').removeClass('disabled');
       $('div.create_window ul li').removeClass('selected');
@@ -79,7 +81,8 @@
       $('form input[type="submit"]').removeClass('disabled');
       $('span.file').removeClass('uploading');
       $('span.file input[type="file"]').attr('value','');
-      $('div.select_file p').text('You can import .csv and .xls files');
+      $('div.select_file p').text('You can import .csv, .xls and .zip files');
+      $('div.select_file p').removeClass('error'); 
       $('span.progress').width(5);
       $('div.create_window ul li:eq(1)').removeClass('finished');
       $('div.create_window').removeClass('georeferencing');
@@ -93,9 +96,8 @@
         $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
           var params = {}
           if (url!='') {
-            params = {file:url};
+            params = {file:'http://'+window.location.host + url};
           }
-          
           $.ajax({
             type: "POST",
             url: '/v1/tables/',

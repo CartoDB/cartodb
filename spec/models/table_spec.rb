@@ -533,7 +533,7 @@ describe Table do
   it "should raise an error if importing a SHP file without indicating an SRID" do
     lambda {
       table = new_table
-      table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/world_merc.zip", "application/download")
+      table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download")
       table.save
     }.should raise_error(CartoDB::InvalidSRID)
   end

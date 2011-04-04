@@ -35,6 +35,7 @@ class Api::Json::TablesController < ApplicationController
         $progress[params["X-Progress-ID".to_sym]] = 0
       end
     end
+    @table.importing_SRID = params[:srid] if params[:srid]
     @table.force_schema = params[:schema] if params[:schema]
     if @table.valid? && @table.save
       render :json => { :id => @table.id, :name => @table.name, :schema => @table.schema }.to_json,

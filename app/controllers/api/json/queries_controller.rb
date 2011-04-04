@@ -2,6 +2,8 @@
 
 class Api::Json::QueriesController < ApplicationController
   ssl_required :run
+  
+  skip_before_filter :app_host_required
 
   before_filter :api_authorization_required
   # Run a query against your database
@@ -21,6 +23,9 @@ class Api::Json::QueriesController < ApplicationController
         render :json => current_user.run_query(params[:sql]).to_json, :callback => params[:callback]
       end
     end
+  rescue CartoDB::ErrorRunningQuery => e
+    render :json => { :errors => [e.db_message, e.syntax_message] }.to_json, :status => 400,
+           :callback => params[:callback]
   end
 
 end

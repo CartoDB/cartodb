@@ -242,18 +242,18 @@ feature "API 1.0 tables management" do
       ]
     end
   end
-  scenario "Create a new table importing file world_merc.zip" do
+  scenario "Create a new table importing file EjemploVizzuality.zip" do
     post_json api_tables_url, {
-      :name => "My new imported table", 
-      :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/world_merc.zip", "application/download")
+      :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download"),
+      :srid => CartoDB::SRID
     }
     parse_json(response) do |r|
       r.status.should be_success
-      r.body[:name].should == "my_new_imported_table"
+      r.body[:name].should == "vizzuality_shp"
       r.body[:schema].should == [
-        ["cartodb_id", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["un", "number"], ["name", "string"], 
-        ["area", "number"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["lon", "number"], ["lat", "number"], 
-        ["created_at", "date"], ["updated_at", "date"]
+        ["cartodb_id", "number"], ["gid", "number"], ["subclass", "string"], ["x", "number"], ["y", "number"], ["length", "string"], ["area", "string"], 
+        ["angle", "number"], ["name", "string"], ["pid", "number"], ["lot_navteq", "string"], ["version_na", "string"], ["vitesse_sp", "number"], 
+        ["id", "number"], ["nombrerest", "string"], ["tipocomida", "string"], ["created_at", "date"], ["updated_at", "date"]
       ]
     end    
   end

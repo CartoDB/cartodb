@@ -54,7 +54,6 @@
         },
         onComplete: function(id, fileName, responseJSON){
           createNewToFinish(responseJSON.file_uri);
-           // {file_uri:"sdfasdfasfsadfadsf"}
         },
         onCancel: function(id, fileName){},
         showMessage: function(message){

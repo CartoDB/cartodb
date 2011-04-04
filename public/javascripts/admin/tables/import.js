@@ -38,7 +38,7 @@
         element: document.getElementById('uploader'),
         action: '/upload',
         params: {},
-        allowedExtensions: ['csv', 'xls', 'zip'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip'],
         sizeLimit: 0, // max size
         minSizeLimit: 0, // min size
         debug: false,
@@ -57,8 +57,8 @@
         },
         onCancel: function(id, fileName){},
         showMessage: function(message){
-          $('div.select_file p').text(message); 
-          $('div.select_file p').addClass('error'); 
+          $('div.select_file p').text(message);
+          $('div.select_file p').addClass('error');
         }
       });
 
@@ -81,7 +81,7 @@
       $('span.file').removeClass('uploading');
       $('span.file input[type="file"]').attr('value','');
       $('div.select_file p').text('You can import .csv, .xls and .zip files');
-      $('div.select_file p').removeClass('error'); 
+      $('div.select_file p').removeClass('error');
       $('span.progress').width(5);
       $('div.create_window ul li:eq(1)').removeClass('finished');
       $('div.create_window').removeClass('georeferencing');

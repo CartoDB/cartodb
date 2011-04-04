@@ -556,11 +556,13 @@ class Table < Sequel::Model(:user_tables)
 
   def import_data_from_file!
     return if self.import_from_file.blank?
+
     path = if import_from_file.respond_to?(:tempfile)
       import_from_file.tempfile.path
     else
       import_from_file.path
     end
+
     filename = "#{Rails.root}/tmp/importing_csv_#{self.user_id}.csv"
     system("awk 'NR>1{print $0}' #{path} > #{filename}")
     owner.in_database(:as => :superuser) do |user_database|
@@ -852,6 +854,25 @@ TRIGGER
   end
 
   def handle_import_file!
+
+    if import_from_file.is_a?(String)
+
+      open(import_from_file) do |res|
+        ext = case res.content_type
+        when 'text/csv'
+          'csv'
+        when 'text/plain'
+          'xlsx'
+        when 'application/zip'
+          'zip'
+        end
+
+        self.import_from_file = File.new("#{Rails.root}/tmp/uploading_#{user_id}.#{ext}", 'w+')
+        self.import_from_file.write(res.read.force_encoding('utf-8'))
+        self.import_from_file.close
+      end
+    end
+
     original_filename = if import_from_file.respond_to?(:original_filename)
       import_from_file.original_filename
     else

@@ -18,7 +18,7 @@ class UploadController < ApplicationController
       file.write(request.body.read.force_encoding('utf-8'))
     end
 
-    render :json => {:file_uri => "/uploads/#{user_id}/" + file_name}
+    render :json => {:file_uri => "/uploads/#{user_id}/" + file_name,:success=>true}
 
   end
 

@@ -183,12 +183,14 @@ div.table_position div.general_options div.sql_console span a.close:hover {}
 div.table_position div.general_options div.sql_console span a.save_query {float:right; margin:20px 0 0 0; font:bold 12px Arial; color:#6FBE6F; text-decoration:underline;}
 div.table_position div.general_options div.sql_console span a.save_query:hover {color:#93FF93;}
 div.table_position div.general_options div.sql_console span a.try_query {float:right; margin:10px 0 0 10px; padding:8px 9px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927; font:bold 12px Arial; text-shadow:0 1px white; 
-  color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #ffffff, #cacecb); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cacecb)); text-decoration:none;}
-div.table_position div.general_options div.sql_console span a.try_query:hover {background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cacecb), to(#ffffff)); cursor:pointer;}
+  color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cacecb)); text-decoration:none;}
+div.table_position div.general_options div.sql_console span a.try_query:hover {background:-moz-linear-gradient(100% 100% 90deg, #ffffff, #cacecb); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cacecb), to(#ffffff)); cursor:pointer;}
 div.table_position div.general_options div.sql_console span p.errors {display:none; float:left; width:auto; padding:5px 10px; margin:10px 0 0 0; background:red; color:white; border:1px solid red; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial;}
 div.table_position div.general_options div.sql_console textarea {float:left; min-width:98.7%; max-width:98.7%; min-height:63px; max-height:350px; margin:7px 0 0 0; padding:7px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927;
   font:normal 13px Arial; color:#333333;}
 div.table_position div.general_options div.sql_console textarea:focus {outline:none; border:1px solid black;}
+.outer_textarea{float:left;width:100%;min-height:73px; margin:10px 0 0 0; padding:5px 0 0 0; background:white;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;}
+
 
 /************************************EDIT FIELDS************************************/
 div.table_position div.edit_cell {position:absolute; display:none; top:200px; left:200px; min-width:262px; padding:7px 7px 42px; -moz-box-shadow:0px 0px 10px 2px #999; -webkit-box-shadow:0px 0px 10px 2px #999; box-shadow:0px 0px 10px 2px #999; border:1px solid #999999; background:#E6F2E4; 
@@ -404,26 +406,5 @@ div.mamufas div.stopgeo_window div.inner_ span.stop p {padding:6px 0 0 0; font:n
 div.mamufas div.stopgeo_window div.inner_ span.stop p a {color:#666666;}
 div.mamufas div.stopgeo_window div.inner_ span.stop p a:hover {color:#333333;}
 
-
-/*jScrollPane CSS*/
-/*.jspContainer{overflow:hidden;position:relative;}
-.jspPane{position:absolute; width:90px;}
-.jspVerticalBar{position:absolute;top:0px;right:3px;width:6px;height:100%; background:none;}
-.jspHorizontalBar{position:absolute;bottom:0;left:0;width:100%;height:16px;background:none;}
-.jspVerticalBar *,
-.jspHorizontalBar *{margin:0;padding:0;}
-.jspCap{display:none;}
-.jspHorizontalBar .jspCap{float:left;}
-.jspTrack{background:#28304A;position:relative; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
-.jspDrag{background:#DBDCDF;position:relative;top:0;left:0;cursor:pointer; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
-.jspDrag:hover {background:#fff;}
-.jspHorizontalBar .jspTrack,
-.jspHorizontalBar .jspDrag{float:left;height:100%;}
-.jspArrow{background:#50506d;text-indent:-20000px;display:block;cursor:pointer;}
-.jspArrow.jspDisabled{cursor:default;background:#80808d;}
-.jspVerticalBar .jspArrow{height:16px;}
-.jspHorizontalBar .jspArrow{width:16px;float:left;height:100%;}
-.jspVerticalBar .jspArrow:focus{outline:none;}
-.jspCorner{background:#eeeef4;float:left;height:100%;}*/
 
 

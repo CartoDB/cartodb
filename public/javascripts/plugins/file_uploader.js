@@ -614,7 +614,7 @@ qq.extend(qq.FileUploader.prototype, {
         var item = this._getItemByFileId(id);
         qq.remove(this._find(item, 'cancel'));
         qq.remove(this._find(item, 'spinner'));
-
+        
         if (result.success){
             qq.addClass(item, this._classes.success);
         } else {

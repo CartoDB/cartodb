@@ -41,19 +41,22 @@
         allowedExtensions: ['csv', 'xls', 'zip'],
         sizeLimit: 0, // max size
         minSizeLimit: 0, // min size
-        debug: false,
+        debug: true,
 
-        onSubmit: function(id, fileName){},
+        onSubmit: function(id, fileName){
+          $('div.create_window ul li:eq(0)').addClass('disabled');
+          $('form input[type="submit"]').addClass('disabled');
+          $('span.file').addClass('uploading');
+        },
         onProgress: function(id, fileName, loaded, total){
-          console.debug(id, fileName, loaded, total);
+          var percentage = loaded / total;
+          $('span.progress').width((346*percentage)/1);
         },
         onComplete: function(id, fileName, responseJSON){
-          console.debug(responseJSON);
+          createNewToFinish(responseJSON.file_uri);
+           // {file_uri:"sdfasdfasfsadfadsf"}
         },
         onCancel: function(id, fileName){},
-        messages: {
-            // error messages, see qq.FileUploaderBasic for content
-        },
         showMessage: function(message){ alert(message); }
       });
 
@@ -61,7 +64,7 @@
         ev.stopPropagation();
         ev.preventDefault();
         if (create_type==0) {
-          createNewToFinish();
+          createNewToFinish('');
         }
       });
     });
@@ -83,26 +86,20 @@
     }
 
 
-    function georeferenceImport() {
-      $('div.create_window').addClass('georeferencing');
-      $('span.georeference ul li:eq(0)').addClass('selected');
-      $('div.create_window ul li:eq(1)').addClass('finished');
-      $('form input[type="submit"]').removeClass('disabled');
-      $('span.file div.progress p').html('<strong>69 rows</strong> correctly imported!');
-
-
-
-    }
-
-
-    function createNewToFinish () {
+    function createNewToFinish (url) {
       $('div.create_window div.inner_').animate({borderColor:'#FFC209', height:'68px'},500);
       $('div.create_window div.inner_ form').animate({opacity:0},300,function(){
         $('div.create_window div.inner_ span.loading').show();
         $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
+          var params = {}
+          if (url!='') {
+            params = {file:url};
+          }
+          
           $.ajax({
             type: "POST",
             url: '/v1/tables/',
+            data: params,
             headers: {'cartodbclient':true},
             success: function(data, textStatus, XMLHttpRequest) {
               window.location.href = "/tables/"+data.id;

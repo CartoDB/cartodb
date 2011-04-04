@@ -12,7 +12,9 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file, :import_from_external_url, :imported_table_name, :the_geom_type
+  attr_accessor :force_schema, :import_from_file, :import_from_external_url, 
+                :imported_table_name, :the_geom_type, :importing_SRID,
+                :importing_encoding
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom address_geolocated }
 
@@ -815,7 +817,9 @@ TRIGGER
           end
         end
       else
-        if pk = user_database.schema(self.name).select{ |c| c[1][:primary_key] == true }.first[0]
+        pk = user_database.schema(self.name).select{ |c| c[1][:primary_key] == true }
+        if pk.size > 0
+          pk = pk.first[0] if pk.size > 1
           user_database.rename_column name.to_sym, pk, :cartodb_id
         else
           user_database.run("alter table #{self.name} add column cartodb_id integer")
@@ -865,7 +869,7 @@ TRIGGER
     if ext == '.zip'
       Rails.logger.info "Importing zip file: #{path}"
       Zip::ZipFile.foreach(path) do |entry|
-        name = entry.name.tr('/','_')
+        name = entry.name.split('/').last
         entries << "/tmp/#{name}"
         if File.extname(name) == '.shp'
           ext = '.shp'
@@ -882,13 +886,23 @@ TRIGGER
     return unless %W{ .ods .xls .xlsx .shp }.include?(ext)
 
     if ext == '.shp'
+      raise CartoDB::InvalidSRID if self.importing_SRID.blank?
+      self.importing_encoding ||= 'LATIN1'
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
       host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
       port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-      self.imported_table_name = self.name
-      Rails.logger.info "Table name to import: #{self.imported_table_name}"
-      system("`which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} #{self.name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
-      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -WLATIN1 -I -s #{CartoDB::GOOGLE_SRID} #{path} #{self.name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
+      self.name = self.imported_table_name = File.basename(path).tr('.','_').downcase
+      random_name = "importing_table_#{self.imported_table_name}"
+      Rails.logger.info "Table name to import: #{random_name}"
+      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"      
+      system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
+      owner.in_database do |user_database|
+        imported_schema = user_database[random_name.to_sym].columns
+        user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as the_geom FROM #{random_name}")
+        user_database.run("DROP TABLE #{random_name}")
+        user_database.run("CREATE INDEX #{self.imported_table_name}_the_geom_idx ON #{self.imported_table_name} USING GIST(the_geom)")
+        user_database.run("VACUUM ANALYZE #{self.imported_table_name}")
+      end
       if entries.any?
         entries.each{ |e| FileUtils.rm(e) }
       end

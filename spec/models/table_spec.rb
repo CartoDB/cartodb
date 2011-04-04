@@ -529,18 +529,30 @@ describe Table do
     ]
     table.rows_counted.should == 76
   end
-
-  it "should import world_merc.zip" do
+  
+  it "should raise an error if importing a SHP file without indicating an SRID" do
+    lambda {
+      table = new_table
+      table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/world_merc.zip", "application/download")
+      table.save
+    }.should raise_error(CartoDB::InvalidSRID)
+  end
+  
+  it "should import EjemploVizzuality.zip" do
     table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/world_merc.zip", "application/download")
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download")
+    table.importing_SRID = CartoDB::SRID
+    table.importing_encoding = 'LATIN1'
     table.save
 
     table.schema(:cartodb_types => false).should == [
-      [:cartodb_id, "integer"], [:fips, "character varying(2)"], [:iso2, "character varying(2)"], [:iso3, "character varying(3)"], [:un, "smallint"],
-      [:name, "character varying(50)"], [:area, "integer"], [:pop2005, "numeric(10)"], [:region, "smallint"], [:subregion, "smallint"],
-      [:lon, "double precision"], [:lat, "double precision"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:cartodb_id, "integer"], [:gid, "integer"], [:subclass, "character varying(255)"], [:x, "double precision"], [:y, "double precision"], 
+      [:length, "character varying(255)"], [:area, "character varying(255)"], [:angle, "double precision"], [:name, "character varying(255)"], 
+      [:pid, "double precision"], [:lot_navteq, "character varying(255)"], [:version_na, "character varying(255)"], [:vitesse_sp, "double precision"], 
+      [:id, "double precision"], [:nombrerest, "character varying(255)"], [:tipocomida, "character varying(255)"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
-    table.rows_counted.should == 245
+    table.rows_counted.should == 11
+    table.name.should == "vizzuality_shp"
   end
 
   it "should import data from an external url returning JSON data" do

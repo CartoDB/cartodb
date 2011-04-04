@@ -1,7 +1,7 @@
 class RecordNotFound < StandardError; end
 
-class CartoDB::InvalidColumnName < StandardError
-end
+class CartoDB::InvalidColumnName < StandardError; end
+class CartoDB::InvalidSRID < StandardError; end
 
 class CartoDB::ErrorRunningQuery < StandardError
   attr_accessor :db_message # the error message from the database

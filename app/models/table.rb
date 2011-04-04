@@ -352,14 +352,7 @@ class Table < Sequel::Model(:user_tables)
       rows = user_database[name.to_sym].limit(limit,page).
               order(:cartodb_id).
               select(*schema.map{ |e| e[0]}).
-              all# .map do |row|
-              #                 row.each do |k,v|
-              #                   if v.is_a?(Date) || v.is_a?(Time)
-              #                     row[k] = v.strftime("%Y-%m-%d %H:%M:%S")
-              #                   end
-              #                 end
-              #                 row
-              #              end
+              all
     end
     {
       :id         => id,

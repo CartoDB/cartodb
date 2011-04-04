@@ -3,7 +3,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
-  before_filter :browser_is_html5_compliant?, :app_host_required
+  before_filter :browser_is_html5_compliant?
 
   class NoHTML5Compliant < Exception; end;
 
@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   protected
   
   def app_host_required
-    request.protocol + request.host_with_port == APP_CONFIG[:app_host] || (render_404 and return false)
+    (request.protocol + request.host_with_port == APP_CONFIG[:app_host]) || (render_404 and return false)
   end
 
   def render_404

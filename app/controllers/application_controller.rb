@@ -3,7 +3,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
-  before_filter :browser_is_html5_compliant?
+  before_filter :browser_is_html5_compliant?, :app_host_required
 
   class NoHTML5Compliant < Exception; end;
 
@@ -24,6 +24,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+  
+  def app_host_required
+    request.protocol + request.host_with_port == APP_CONFIG[:app_host] || (render_404 and return false)
+  end
 
   def render_404
     respond_to do |format|
@@ -71,13 +75,17 @@ class ApplicationController < ActionController::Base
   def no_html5_compliant
     render :file => "#{Rails.root}/public/HTML5.html", :status => 500, :layout => false
   end
+
+  def api_request?
+    request.subdomain.eql?('api')
+  end
   
   def browser_is_html5_compliant?
-    return true if Rails.env.test? || request.subdomain.eql?('api')
+    return true if Rails.env.test? || api_request?
     user_agent = request.user_agent.try(:downcase)
     unless user_agent.blank? || user_agent.match(/firefox\/4|safari\/5|chrome\/7/)
       raise NoHTML5Compliant
     end
   end
-
+  
 end

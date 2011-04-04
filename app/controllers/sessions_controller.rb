@@ -4,6 +4,7 @@ class SessionsController < ApplicationController
   ssl_required :new, :create, :destroy, :show, :unauthenticated
 
   before_filter :api_authorization_required, :only => :show
+  skip_before_filter :app_host_required, :only => :show
 
   layout 'front_layout'
 
@@ -35,7 +36,7 @@ class SessionsController < ApplicationController
     flash[:alert] = 'Your account or your password is not ok'
     respond_to do |format|
       format.html do
-        if request.headers['Authorization']
+        if api_request?
           render :nothing => true, :status => 401
         else
           render :action => 'new' and return

@@ -23,8 +23,6 @@ gem 'google-spreadsheet-ruby', :require => 'google_spreadsheet'
 gem "aws-ses", '0.4.1', :require => 'aws/ses'
 gem 'rubyzip', :require => 'zip/zip'
 
-gem 'unicorn'
-
 group :development do
   gem 'capistrano'
   gem 'capistrano-ext'

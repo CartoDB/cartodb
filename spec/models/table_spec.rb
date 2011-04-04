@@ -292,10 +292,9 @@ describe Table do
     table.force_schema = "name varchar, description varchar, time timestamp"
     table.save
 
-    table.insert_row!({:name => String.random(10), :description => "", :time => "2010-10-13 10:46:32"})
+    table.insert_row!({:name => String.random(10), :description => ""})
     row = table.records(:rows_per_page => 1, :page => 0)[:rows].first
     row[:description].should be_blank
-    row[:time].should == "2010-10-13 10:46:32"
 
     table.update_row!(row[:cartodb_id], :description => "Description 123")
 

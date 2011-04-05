@@ -8,7 +8,7 @@
     <link href="/stylesheets/admin/layout.css" media="screen" rel="stylesheet" type="text/css" /> 
     <link href="/stylesheets/admin/others/account.css" media="screen" rel="stylesheet" type="text/css" /> 
     <script src="/javascripts/plugins/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/javascripts/plugins/tumblr.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/javascripts/admin/other/account.js" type="text/javascript" charset="utf-8"></script>
   </head> 
   <body> 
     <header>
@@ -60,7 +60,7 @@
                 </span>
                 <span class="submit_block">
                   <a class="submit" href="#"><span>Save changes</span></a>
-                  <p>To edit this data you need to <a href="#">unlock your chain</a></p>
+                  <p>To edit this data you need to <a class="open_unlock" href="#unlock_account">unlock your chain</a></p>
                 </span>
               </form>
               <div class="delete">
@@ -88,7 +88,6 @@
         </div>
       </div>
     </section>
-
 
     <footer> 
       <section class="prefooter"> 
@@ -120,5 +119,27 @@
         </section> 
       </div> 
     </footer>
+    
+    <div class="mamufas">
+      <div class="unlock_window">
+        <a href="#close_unlock" class="close_unlock">Close</a>
+        <div class="inner_">
+          <form action="#">
+            <span class="top">
+              <input type="password" value=""/>
+              <p>Insert your current password</p>
+              <a class="forget">did you forget it?</a>
+            </span>
+            <span class="bottom">
+              <a class="cancel">cancel</a>
+              <input type="submit" value="Unlock" />
+            </span>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- HABLAR CON JAMON CUANDO SE IMPLEMENTE ESTA VISTA -->
+    
   </body> 
 </html>

@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file, :import_from_external_url, 
+  attr_accessor :force_schema, :import_from_file, :import_from_external_url,
                 :imported_table_name, :the_geom_type, :importing_SRID,
                 :importing_encoding
 
@@ -858,14 +858,8 @@ TRIGGER
     if import_from_file.is_a?(String)
 
       open(import_from_file) do |res|
-        ext = case res.content_type
-        when 'text/csv'
-          'csv'
-        when 'text/plain'
-          'xlsx'
-        when 'application/zip'
-          'zip'
-        end
+        file_name = File.basename(import_from_file)
+        ext = File.extname(file_name)
 
         self.import_from_file = File.new("#{Rails.root}/tmp/uploading_#{user_id}.#{ext}", 'w+')
         self.import_from_file.write(res.read.force_encoding('utf-8'))
@@ -915,7 +909,7 @@ TRIGGER
       self.name = self.imported_table_name = File.basename(path).tr('.','_').downcase
       random_name = "importing_table_#{self.imported_table_name}"
       Rails.logger.info "Table name to import: #{random_name}"
-      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"      
+      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
       system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
       owner.in_database do |user_database|
         imported_schema = user_database[random_name.to_sym].columns

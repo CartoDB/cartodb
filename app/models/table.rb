@@ -574,6 +574,8 @@ class Table < Sequel::Model(:user_tables)
     system("awk 'NR>1{print $0}' #{path} > #{filename}")
     owner.in_database(:as => :superuser) do |user_database|
       user_database.run("copy #{self.name} from '#{filename}' WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote || '"'}'")
+    end
+    owner.in_database do |user_database|
       user_database.run("alter table #{self.name} add column cartodb_id integer")
       user_database.run("create sequence #{self.name}_cartodb_id_seq")
       user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")

@@ -393,6 +393,18 @@ describe Table do
     row0[:followers_count].should == 211
   end
 
+  it "should be able to insert rows in a table imported from a CSV file" do
+    table = new_table
+    table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+    table.save
+
+    lambda {
+      pk = table.insert_row!({:url => 'http://twitter.com/ferblape/statuses/1231231', :login => 'ferblape', :country => 'Spain', :followers_count => 33})
+      pk.should_not be_nil
+    }.should_not raise_error
+  end
+
   it "should guess the schema from import file import_csv_1.csv" do
     Table.send(:public, *Table.private_instance_methods)
     table = new_table

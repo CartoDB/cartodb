@@ -24,7 +24,7 @@ CartoDB::Application.routes.draw do
   resources :users, :only => [:create]
   match '/thanks' => 'users#thanks', :as => :thanks
   match '/limits' => 'home#limits', :as => :limits
-  get '/status'   => 'home#status', :as => :status
+  match '/status' => 'home#app_status'
 
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard

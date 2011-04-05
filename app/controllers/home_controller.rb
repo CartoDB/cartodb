@@ -2,6 +2,8 @@
 
 class HomeController < ApplicationController
 
+  skip_before_filter :browser_is_html5_compliant?, :only => :app_status
+
   layout 'front_layout'
 
   def index

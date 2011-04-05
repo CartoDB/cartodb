@@ -30,27 +30,27 @@ describe CartoDB::SqlParser do
   
   it "should parse queries containing geojson()" do
     CartoDB::SqlParser.parse("SELECT 1 as foo, geojson(the_geom) from restaurants r").should ==
-      "SELECT 1 as foo, ST_AsGeoJSON(ST_Transform(the_geom, 4326)) from restaurants r"
+      "SELECT 1 as foo, ST_AsGeoJSON(ST_Transform(the_geom,4326)) from restaurants r"
   end
   
   it "should parse queries containing kml()" do
     CartoDB::SqlParser.parse("SELECT 1 as foo, kml(the_geom) from restaurants r").should ==
-      "SELECT 1 as foo, ST_AsKML(ST_Transform(the_geom, 4326),6) from restaurants r"
+      "SELECT 1 as foo, ST_AsKML(ST_Transform(the_geom,4326),6) from restaurants r"
   end  
   
   it "should parse queries containing svg()" do
     CartoDB::SqlParser.parse("SELECT 1 as foo, svg(the_geom) from restaurants r").should ==
-      "SELECT 1 as foo, ST_AsSVG(ST_Transform(the_geom, 4326),6) from restaurants r"
+      "SELECT 1 as foo, ST_AsSVG(ST_Transform(the_geom,4326),6) from restaurants r"
   end  
   
   it "should parse queries containing wkt()" do
     CartoDB::SqlParser.parse("SELECT 1 as foo, wkt(the_geom) from restaurants r").should ==
-      "SELECT 1 as foo, ST_AsText(ST_Transform(the_geom, 4326),6) from restaurants r"
+      "SELECT 1 as foo, ST_AsText(ST_Transform(the_geom,4326),6) from restaurants r"
   end  
   
   it "should parse queries containing geohash()" do
     CartoDB::SqlParser.parse("SELECT 1 as foo, geohash(the_geom) from restaurants r").should ==
-      "SELECT 1 as foo, ST_GeoHash(ST_Transform(the_geom, 4326),6) from restaurants r"
+      "SELECT 1 as foo, ST_GeoHash(ST_Transform(the_geom,4326),6) from restaurants r"
   end  
   
   

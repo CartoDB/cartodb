@@ -1273,21 +1273,6 @@ describe Table do
     query_result[:rows][0][:st_npoints].should == 4
   end
   
-  it "should rollback properly when failing importing a table" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngoaidmap_projects.csv", "text/csv")
-    lambda {
-      table.save
-    }.should raise_error(Sequel::DatabaseError)
-    name = table.name
-    
-    user.in_database do |user_database|
-      user_database.tables.should_not include(name.to_sym)
-    end
-  end
-  
   it "should rename the pk sequence when renaming the table" do
     user = create_user
     table1 = new_table :name => 'table 1'

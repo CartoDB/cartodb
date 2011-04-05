@@ -54,6 +54,12 @@ class Table < Sequel::Model(:user_tables)
     end
     set_triggers
     super
+  rescue Sequel::DatabaseError => e
+    owner.in_database(:as => :superuser) do |user_database|
+      user_database.run("DROP TABLE IF EXISTS #{self.name}")
+      user_database.run("DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq")
+    end
+    raise e
   end
 
   def after_save

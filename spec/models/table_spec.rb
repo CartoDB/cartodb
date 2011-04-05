@@ -1260,4 +1260,20 @@ describe Table do
     query_result = user.run_query("SELECT ST_NPoints(the_geom) from #{table.name} where cartodb_id = #{pk}");
     query_result[:rows][0][:st_npoints].should == 4
   end
+  
+  it "should rollback properly when failing importing a table" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngoaidmap_projects.csv", "text/csv")
+    lambda {
+      table.save
+    }.should raise_error(Sequel::DatabaseError)
+    name = table.name
+    
+    user.in_database do |user_database|
+      user_database.tables.should_not include(name.to_sym)
+    end
+  end
+  
 end

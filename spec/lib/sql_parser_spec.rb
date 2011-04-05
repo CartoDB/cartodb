@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe CartoDB::SqlParser do
-
   it "should parse distance() function" do
     CartoDB::SqlParser.parse("SELECT *, distance(r.the_geom, 40.33, 22.10) as distance from restaurants r where type_of_food = 'indian' limit 10").should == 
       "SELECT *, st_distance_sphere(ST_Transform(r.the_geom,4326),ST_SetSRID(ST_Point(40.33,22.10),4326)) as distance from restaurants r where type_of_food = 'indian' limit 10"
@@ -51,7 +50,5 @@ describe CartoDB::SqlParser do
   it "should parse queries containing geohash()" do
     CartoDB::SqlParser.parse("SELECT 1 as foo, geohash(the_geom) from restaurants r").should ==
       "SELECT 1 as foo, ST_GeoHash(ST_Transform(the_geom,4326),6) from restaurants r"
-  end  
-  
-  
+  end      
 end

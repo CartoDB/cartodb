@@ -120,6 +120,7 @@ class Table < Sequel::Model(:user_tables)
     if !new? && !new_name.blank? && !name.blank? && new_name != name
       owner.in_database do |user_database|
         user_database.rename_table name, new_name
+        user_database.run("ALTER SEQUENCE #{name}_cartodb_id_seq RENAME TO #{new_name}_cartodb_id_seq")
       end
     end
     self[:name] = new_name unless new_name.blank?

@@ -22,7 +22,7 @@ class Api::Json::RecordsController < ApplicationController
     end
   rescue => e
     puts $!
-    render :json => { :errors => [e.error_message] }.to_json, :status => 400,
+    render :json => { :errors => [$!] }.to_json, :status => 400,
            :callback => params[:callback]
   end
 

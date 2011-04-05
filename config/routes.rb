@@ -24,6 +24,7 @@ CartoDB::Application.routes.draw do
   resources :users, :only => [:create]
   match '/thanks' => 'users#thanks', :as => :thanks
   match '/limits' => 'home#limits', :as => :limits
+  get '/status'   => 'home#status', :as => :status
 
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard
@@ -73,6 +74,7 @@ CartoDB::Application.routes.draw do
       put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
     end
   end
+
 
   # Subdomain "developers." is served by rack application ApiDocumentationServer
 end

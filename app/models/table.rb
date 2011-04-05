@@ -570,11 +570,12 @@ class Table < Sequel::Model(:user_tables)
       import_from_file.path
     end
 
-    filename = "#{Rails.root}/tmp/importing_csv_#{self.user_id}.csv"
-    system("awk 'NR>1{print $0}' #{path} > #{filename}")
-    owner.in_database(:as => :superuser) do |user_database|
-      user_database.run("copy #{self.name} from '#{filename}' WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote || '"'}'")
-    end
+    db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
+    host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
+    port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
+    @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
+    command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
+    system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{owner.database_name} -c"#{command}"}
     owner.in_database do |user_database|
       user_database.run("alter table #{self.name} add column cartodb_id integer")
       user_database.run("create sequence #{self.name}_cartodb_id_seq")
@@ -587,9 +588,6 @@ class Table < Sequel::Model(:user_tables)
       user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
       user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
     end
-  ensure
-    FileUtils.rm filename
-    # FileUtils.rm path
   end
 
   def guess_schema

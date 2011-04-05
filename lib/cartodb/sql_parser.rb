@@ -18,6 +18,31 @@ module CartoDB
           "ST_X(ST_Transform(#{$1},#{CartoDB::SRID}))"
         end        
       end
+      if query.include?('geojson')
+        query.gsub!(/geojson\(\s*([^\)]+)\s*\)/i) do |matches|
+          "ST_AsGeoJSON(ST_Transform(#{$1},#{CartoDB::SRID}))"
+        end        
+      end
+      if query.include?('kml')
+        query.gsub!(/kml\(\s*([^\)]+)\s*\)/i) do |matches|
+          "ST_AsKML(ST_Transform(#{$1},#{CartoDB::SRID}),6)"
+        end        
+      end
+      if query.include?('svg')
+        query.gsub!(/svg\(\s*([^\)]+)\s*\)/i) do |matches|
+          "ST_AsSVG(ST_Transform(#{$1},#{CartoDB::SRID}),6)"
+        end        
+      end
+      if query.include?('wkt')
+        query.gsub!(/wkt\(\s*([^\)]+)\s*\)/i) do |matches|
+          "ST_AsText(ST_Transform(#{$1},#{CartoDB::SRID}),6)"
+        end        
+      end      
+      if query.include?('geohash')
+        query.gsub!(/geohash\(\s*([^\)]+)\s*\)/i) do |matches|
+          "ST_GeoHash(ST_Transform(#{$1},#{CartoDB::SRID}),6)"
+        end        
+      end
       if query.include?('intersects')
         query.gsub!(/intersects\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^\)]+)\s*\)/i) do |matches|
           "ST_Intersects(ST_SetSRID(ST_Point(#{$1},#{$2}),#{CartoDB::SRID}),#{$3})"

@@ -4,6 +4,8 @@ class UploadController < ApplicationController
 
   skip_before_filter :verify_authenticity_token
   before_filter :login_required
+  
+  ssl_required :create, :progress
 
   def create
     render :nothing => true and return if params[:qqfile].blank? || request.body.blank?

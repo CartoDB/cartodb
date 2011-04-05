@@ -12,4 +12,15 @@ class HomeController < ApplicationController
     end
   end
 
+  def status
+
+    status = begin
+      Rails::Sequel.connection.select('OK').first.values.include?('OK') ? :success : :error
+    rescue Exception => e
+      :error
+    end
+
+    head :success
+  end
+
 end

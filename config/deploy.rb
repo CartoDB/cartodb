@@ -48,6 +48,7 @@ task :symlinks, :roles => [:app] do
     ln -s #{shared_path}/system #{release_path}/public/system;
     ln -s #{shared_path}/pdfs #{release_path}/public/;
     ln -s #{shared_path}/cache #{release_path}/public/;
+    ln -s #{shared_path}/uploads #{release_path}/public/;
     ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml;
     ln -nfs #{shared_path}/config/app_config.yml #{release_path}/config/app_config.yml;
   CMD

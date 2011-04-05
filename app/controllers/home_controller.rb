@@ -12,8 +12,7 @@ class HomeController < ApplicationController
     end
   end
 
-  def status
-
+  def app_status
     status = begin
       Rails::Sequel.connection.select('OK').first.values.include?('OK') ? 200 : 500
     rescue Exception => e

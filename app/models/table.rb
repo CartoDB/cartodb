@@ -574,6 +574,7 @@ class Table < Sequel::Model(:user_tables)
     host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
     port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
     @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
+    @quote = @quote == '`' ? '\`' : @quote
     command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
     system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{owner.database_name} -c"#{command}"}
     owner.in_database do |user_database|

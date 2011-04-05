@@ -1276,4 +1276,22 @@ describe Table do
     end
   end
   
+  it "should rename the pk sequence when renaming the table" do
+    user = create_user
+    table1 = new_table :name => 'table 1'
+    table1.user_id = user.id
+    table1.save
+    
+    table1.name = 'table 2'
+    table1.save
+    
+    table2 = new_table :name => 'table 1'
+    table2.user_id = user.id
+    table2.save
+
+    lambda {
+      table2.destroy
+    }.should_not raise_error
+  end
+  
 end

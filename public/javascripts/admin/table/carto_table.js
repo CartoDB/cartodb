@@ -2022,9 +2022,6 @@
         $('div.general_options div.sql_console').hide();
         $('div.general_options ul').removeClass('sql');
       });
-      // $(document).bind('sqlEnter',function(ev){
-      //   $('div.general_options a.try_query').trigger('click');
-      // });
       // General options
       $('div.general_options ul li a.sql').livequery('click',function(ev){
         stopPropagation(ev);

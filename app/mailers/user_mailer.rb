@@ -1,5 +1,5 @@
 class UserMailer < ActionMailer::Base
-  default :from => "wadus@cartodb.com"
+  default :from => "cartodb.com <wadus@cartodb.com>"
   layout 'mail'
 
   # Subject defined atconfig/locales/en.yml

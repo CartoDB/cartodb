@@ -57,11 +57,11 @@ describe Table do
   it "has a default schema" do
     table = create_table
     table.reload
-    table.stored_schema.should == ["cartodb_id,integer,number","name,text,string","description,text,string", "the_geom,geometry,geometry", "created_at,timestamp,date","updated_at,timestamp,date"]
+    table.stored_schema.should == ["cartodb_id,integer,number","name,text,string","description,text,string", "the_geom,geometry,geometry,point", "created_at,timestamp,date","updated_at,timestamp,date"]
     table.schema(:cartodb_types => false).should be_equal_to_default_db_schema
     table.schema.should be_equal_to_default_cartodb_schema
   end
-
+  
   it "can be associated to many tags" do
     user = create_user
     table = create_table :user_id => user.id, :tags => "tag 1, tag 2,tag 3, tag 3"
@@ -281,7 +281,7 @@ describe Table do
     table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:code, "character(5)"], [:title, "character varying(40)"], 
       [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], 
-      [:the_geom, "geometry", "geometry"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:the_geom, "geometry", "geometry", "point"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
   end
 
@@ -291,7 +291,7 @@ describe Table do
     table.save
     table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:code_wadus, "character(5)"], [:title, "character varying(40)"], 
-      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry"], 
+      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "point"], 
       [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
   end
@@ -369,7 +369,7 @@ describe Table do
     table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
       [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"], 
-      [:the_geom, "geometry", "geometry"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:the_geom, "geometry", "geometry", "point"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     row = table.records[:rows][0]
     row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
@@ -459,7 +459,7 @@ describe Table do
       [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"],
       [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"],
       [:city, "character varying"], [:state, "character varying"], [:zip_code, "integer"], [:donation_website, "character varying"], 
-      [:the_geom, "geometry", "geometry"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:the_geom, "geometry", "geometry", "point"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     table.rows_counted.should == 76
   end
@@ -484,7 +484,7 @@ describe Table do
       [:length, "character varying(255)"], [:area, "character varying(255)"], [:angle, "double precision"], [:name, "character varying(255)"], 
       [:pid, "double precision"], [:lot_navteq, "character varying(255)"], [:version_na, "character varying(255)"], [:vitesse_sp, "double precision"], 
       [:id, "double precision"], [:nombrerest, "character varying(255)"], [:tipocomida, "character varying(255)"], 
-      [:the_geom, "geometry", "geometry"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:the_geom, "geometry", "geometry", "point"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     table.rows_counted.should == 11
     table.name.should == "vizzuality_shp"
@@ -504,7 +504,7 @@ describe Table do
       [:idtrayecto, "integer"], [:idparada, "integer"], [:minutos, "integer"], [:distancia, "double precision"],
       [:idlinea, "integer"], [:matricula, "character varying"], [:modelo, "character varying"],
       [:ordenparada, "integer"], [:idsiguienteparada, "integer"], 
-      [:the_geom, "geometry", "geometry"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:the_geom, "geometry", "geometry", "point"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     row = table.records[:rows][0]
     row[:cartodb_id].should == 1
@@ -557,9 +557,7 @@ describe Table do
 
     the_geom = %Q{\{"type":"Polygon","coordinates":[[[-4.976720809936523,40.56963630849391],[-4.735021591186523,40.87977970146914],[-4.507055282592773,40.53624641730805]]]\}}
 
-
     pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => the_geom})
-    #query_result = user.run_query("select cartodb_id FROM #{table.name} WHERE ST_Intersects(ST_SetSRID(ST_Point(-4.7048, 40.6613), #{CartoDB::SRID}),ST_SetSRID(the_geom, #{CartoDB::SRID} )) = true")
     query_result = user.run_query("SELECT ST_NPoints(the_geom) from #{table.name} where cartodb_id = #{pk}");
     query_result[:rows][0][:st_npoints].should == 4
   end

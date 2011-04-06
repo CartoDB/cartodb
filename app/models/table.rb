@@ -13,7 +13,7 @@ class Table < Sequel::Model(:user_tables)
   set_allowed_columns(:name, :privacy, :tags)
 
   attr_accessor :force_schema, :import_from_file, :import_from_external_url,
-                :imported_table_name, :the_geom_type, :importing_SRID,
+                :imported_table_name, :importing_SRID,
                 :importing_encoding
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
@@ -27,12 +27,14 @@ class Table < Sequel::Model(:user_tables)
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
     errors.add(:name,    'can\'t be blank') if name.blank?
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
+    errors.add(:the_geom_type, 'has an invalid value') unless %W{ point polygon }.include?(the_geom_type)
     validates_unique [:name, :user_id], :message => 'is already taken'
   end
 
   def before_validation
     self.privacy ||= PRIVATE
     self.name = set_table_name if self.name.blank?
+    self.the_geom_type ||= "point"
     super
   end
 
@@ -99,7 +101,7 @@ class Table < Sequel::Model(:user_tables)
         user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
       end
     end
-    set_the_geom_column!(the_geom_type.try(:to_sym) || :point)
+    set_the_geom_column!(the_geom_type.try(:to_sym) || "point")
     set_triggers
   end
 
@@ -127,7 +129,7 @@ class Table < Sequel::Model(:user_tables)
     end
     self[:name] = new_name unless new_name.blank?
   end
-
+  
   def tags=(value)
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
@@ -244,7 +246,7 @@ class Table < Sequel::Model(:user_tables)
     return [] if stored_schema.blank?
     stored_schema.map do |column|
       c = column.split(',')
-      [c[0].to_sym, c[options[:cartodb_types] == false ? 1 : 2], c[0].to_sym == :the_geom ? "geometry" : nil].compact
+      [c[0].to_sym, c[options[:cartodb_types] == false ? 1 : 2], c[0].to_sym == :the_geom ? "geometry" : nil, c[0].to_sym == :the_geom ? the_geom_type : nil].compact
     end
   end
 
@@ -376,8 +378,12 @@ class Table < Sequel::Model(:user_tables)
 
   def update_stored_schema(user_database)
     temporal_schema = user_database.schema(self.name.to_sym, :reload => true).map do |column|
-      if !SKIP_SCHEMA_COLUMNS.include?(column.first.to_sym)
-        "#{column.first},#{column[1][:db_type].gsub(/,\d+/,"")},#{column[1][:db_type].convert_to_cartodb_type}"
+      unless SKIP_SCHEMA_COLUMNS.include?(column.first.to_sym)
+        col = "#{column.first},#{column[1][:db_type].gsub(/,\d+/,"")},#{column[1][:db_type].convert_to_cartodb_type}"
+        if column.first.to_sym == :the_geom
+          col += ",#{the_geom_type}"
+        end
+        col
       end
     end.compact
     self.stored_schema = ["cartodb_id,integer,#{"integer".convert_to_cartodb_type}"] +

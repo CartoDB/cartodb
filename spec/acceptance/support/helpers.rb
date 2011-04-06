@@ -51,8 +51,8 @@ module HelperMethods
 
   def default_schema
     [
-      ["cartodb_id", "number"], ["name", "string"], ["latitude", "number", "latitude"], ["longitude", "number", "longitude"],
-      ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
+      ["cartodb_id", "number"], ["name", "string"], ["description", "string"], 
+      ["the_geom", "geometry", "geometry", "point"], ["created_at", "date"], ["updated_at", "date"]
     ]
   end
 

@@ -93,5 +93,4 @@ feature "API 1.0 columns management" do
     end
   end
 
-
 end

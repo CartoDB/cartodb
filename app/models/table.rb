@@ -357,6 +357,7 @@ class Table < Sequel::Model(:user_tables)
       end
       row = user_database["SELECT #{select} FROM #{name} WHERE cartodb_id = #{identifier}"].first
     end
+    raise if row.nil?
     row
   end
 

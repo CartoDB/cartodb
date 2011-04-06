@@ -13,10 +13,8 @@ feature "API 1.0 records management" do
   end
 
   scenario "Get the records from a table" do
-    @user.in_database do |user_database|
-      10.times do
-        user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
-      end
+    10.times do
+      @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
     end
 
     content = @user.run_query("select * from \"#{@table.name}\"")[:rows]
@@ -79,11 +77,9 @@ feature "API 1.0 records management" do
   end
 
   scenario "Update a row" do
-    @user.in_database do |user_database|
-      user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
-    end
+    pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
-    put_json api_table_record_url(@table.name,1), {
+    put_json api_table_record_url(@table.name,pk), {
       :name => "Name updated",
       :description => "Description updated"
     }
@@ -103,22 +99,18 @@ feature "API 1.0 records management" do
   end
 
   scenario "Remove a row" do
-    @user.in_database do |user_database|
-      user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('#{String.random(10)}',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
-    end
+    pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
-    delete_json api_table_record_url(@table.name,1)
+    delete_json api_table_record_url(@table.name,pk)
     parse_json(response) do |r|
       r.status.should be_success
     end
   end
 
   scenario "Get the value from a column in a given record" do
-    @user.in_database do |user_database|
-      user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('Blat',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
-    end
+    pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
-    get_json api_table_record_column_url(@table.name,1,:name)
+    get_json api_table_record_column_url(@table.name,pk,:name)
     parse_json(response) do |r|
       r.status.should be_success
       r.body[:name].should == "Blat"
@@ -126,11 +118,9 @@ feature "API 1.0 records management" do
   end
 
   scenario "Update the value from a column in a given record" do
-    @user.in_database do |user_database|
-      user_database.run("INSERT INTO \"#{@table.name}\" (Name,Latitude,Longitude,Description) VALUES ('Blat',#{Float.random_latitude}, #{Float.random_longitude},'#{String.random(100)}')")
-    end
+    pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
-    put_json api_table_record_column_url(@table.name,1,:name), {:value => "Fernando Blat"}
+    put_json api_table_record_column_url(@table.name,pk,:name), {:value => "Fernando Blat"}
     parse_json(response) do |r|
       r.status.should be_success
       r.body[:name].should == "Fernando Blat"
@@ -181,8 +171,6 @@ feature "API 1.0 records management" do
   end
 
   scenario "Create a new row including the_geom field" do
-    @table.set_lat_lon_columns!(nil, nil)
-    
     lat = Float.random_latitude
     lon = Float.random_longitude
     
@@ -197,14 +185,12 @@ feature "API 1.0 records management" do
       pk = r.body[:id]
     end
     
-    query_result = @user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{@table.name} where cartodb_id = #{pk} limit 1")
+    query_result = @user.run_query(CartoDB::SqlParser.parse("select longitude(the_geom) as lon, latitude(the_geom) as lat from #{@table.name} where cartodb_id = #{pk} limit 1"))
     ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
   end
 
-  scenario "Update a row including the_geom field" do
-    @table.set_lat_lon_columns!(nil, nil)
-    
+  scenario "Update a row including the_geom field" do    
     lat = Float.random_latitude
     lon = Float.random_longitude
     
@@ -225,40 +211,9 @@ feature "API 1.0 records management" do
       r.status.should be_success
     end
     
-    query_result = @user.run_query("select ST_X(ST_Transform(the_geom, #{CartoDB::SRID})) as lon, ST_Y(ST_Transform(the_geom, #{CartoDB::SRID})) as lat from #{@table.name} where cartodb_id = #{pk} limit 1")
+    query_result = @user.run_query(CartoDB::SqlParser.parse("select longitude(the_geom) as lon, latitude(the_geom) as lat from #{@table.name} where cartodb_id = #{pk} limit 1"))
     ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
-  end
-  
-  scenario "Get the records where the addresses haven't been geolocated yet" do
-    table = new_table
-    table.user_id = @user.id
-    table.force_schema = "name varchar, address varchar, region varchar, country varchar"
-    table.save
-    
-    put_json api_table_url(table.name), {
-      :address_column => "address,region, country"
-    }
-
-    post_json api_table_records_url(table.name), {
-      :name => "Fernando Blat",
-      :address => "Calle de la Villa",
-      :region => 'Madrid',
-      :country => 'Spain',
-      :aggregated_address => "Calle de la Villa,Madrid,Spain"
-    }
-    
-    pk = nil
-    parse_json(response) do |r|
-      r.status.should be_success
-      pk = r.body[:id]
-    end
-    
-    get api_table_records_pending_addresses_url(table.name)
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body.should == [{"cartodb_id" => pk, "aggregated_address" => "Calle de la Villa,Madrid,Spain"}]
-    end
   end
   
 end

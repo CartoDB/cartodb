@@ -616,16 +616,15 @@ TRIGGER
   end
 
   def set_the_geom_column!(type)
+    type = type.to_s.upcase
+    raise InvalidArgument unless %W{ POINT POLYGON }.include?(type)
     owner.in_database do |user_database|
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
-        if type == :point
-          user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::SRID},'POINT',2)")
-          user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'POINT',2)")
-        elsif type == :polygon
-          user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::SRID},'POLYGON',2)")
-          user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'POLYGON',2)")
-        end
+        user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::SRID},'#{type}',2)")
         user_database.run("CREATE INDEX #{self.name}_the_geom_idx ON #{self.name} USING GIST(the_geom)")
+      end
+      unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
+        user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
         user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")        
       end
       update_stored_schema(user_database)
@@ -780,7 +779,7 @@ TRIGGER
   def update_the_geom!(attributes, primary_key)
     return unless attributes[:the_geom]
     owner.in_database do |user_database|
-      user_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID})  where cartodb_id = #{primary_key}")
+      user_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
     end
   end
 

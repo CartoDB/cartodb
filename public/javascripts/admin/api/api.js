@@ -2,7 +2,14 @@
   head(function(){
     $('div.error_content').delay(4000).fadeOut();
 
-    $('.end_key a.submit').click(function(e){
+    $('span.end_key a.open_confirm_renew').click(function(ev){
+      stopPropagation(ev);
+      $('div.mamufas div.renew_window').show();
+      $('div.mamufas').fadeIn();
+      bindESC();
+    });
+
+    $('a.confirm_renew').click(function(e){
       var csrf_token = $('meta[name=csrf-token]').attr('content'),
           csrf_param = $('meta[name=csrf-param]').attr('content');
       e.preventDefault();
@@ -15,23 +22,32 @@
       form.submit();
     });
     
+    
+    //OAuth
     $('a.remove_key').click(function(ev){
       stopPropagation(ev);
-      $('div.mamufas a.confirm_delete').attr('key',$(this).attr('key'));
-      var names = $(this).attr('domain').split('.');
-      var name = names[names.length-2] + '.' + names[names.length-1];
-      $('div.mamufas div.delete_window h3').text('You are about to remove '+ name);
+      $('div.mamufas div.delete_window a.confirm_delete').attr('key',$(this).attr('key'));
+      
+      var domain = $(this).attr('domain').replace('http://','');
+      $('div.mamufas div.delete_window h3').text('You are about to remove '+ domain);
+      $('div.mamufas div.delete_window').show();
       $('div.mamufas').fadeIn();
       bindESC();
     });
+    
     $('a.confirm_delete').click(function(ev){
       stopPropagation(ev);
       $('#remove_api_key_'+$(this).attr('key')).submit();
     });
+    
+    //Close mamufas
     $('a.close_delete,a.cancel').click(function(ev){
       stopPropagation(ev);
       unbindESC();
-      $('div.mamufas').fadeOut();
+      $('div.mamufas').fadeOut(function(){
+        $('div.delete_window').hide();
+        $('div.renew_window').hide();
+      });
     });
   });
 

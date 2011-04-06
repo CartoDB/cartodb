@@ -47,20 +47,28 @@ section#content div.left div.middle_white_medium ul li div.meta_info span.tags a
 
 section#content div.left div.bottom_white_medium {float:left; width:626px; height:10px; padding:0; background:url('/images/admin/backgrounds/bottom_white_medium.png') no-repeat 0 top;}
 section#content div.left div.paginate {display:block; float:left; padding:18px 0 0 0;}
-section#content div.left div.paginate a.previous {float:left; width:7px; height:9px; margin:2px 0 0 0; background:url('/images/admin/icons/pag_prev.png') no-repeat 0 0; text-indent:-9999px;}
-section#content div.left div.paginate a.previous:hover {background-position:0 -9px;}
-section#content div.left div.paginate a.next {float:left; width:7px; height:9px; margin:2px 0 0 0; background:url('/images/admin/icons/pag_next.png') no-repeat 0 0; text-indent:-9999px;}
-section#content div.left div.paginate a.next:hover {background-position:0 -9px;}
+section#content div.left div.paginate a.previous {float:left; width:12px; height:13px; margin:0; background:url('/images/admin/icons/pag_prev.png') no-repeat 0 0; text-indent:-9999px;}
+section#content div.left div.paginate a.previous:hover {background-position:0 -13px;}
+section#content div.left div.paginate a.next {float:left; width:12px; height:13px; margin:0; background:url('/images/admin/icons/pag_next.png') no-repeat 0 0; text-indent:-9999px;}
+section#content div.left div.paginate a.next:hover {background-position:0 -13px;}
 section#content div.left div.paginate ul {float:left; width:auto; margin:0 5px 0 7px;}
 section#content div.left div.paginate ul li {float:left; width:13px; height:13px; margin:0 2px 0 0;}
 section#content div.left div.paginate ul li a {float:left; width:13px; height:13px; background:url('/images/admin/icons/page_disc.png') no-repeat 0 0; text-indent:-9999px;}
 section#content div.left div.paginate ul li a:hover {background-position:0 -13px;}
 section#content div.left div.paginate ul li.selected a {background-position:0 -13px;}
 section#content div.left div.paginate ul li.selected a:hover {background-position:0 -13px; cursor:default;}
-section#content div.right {display:inline-block; vertical-align:top; width:250px; margin:10px 0 0 16px;}
-section#content div.right span.no_tags {display:block; width:216px; height:117px; padding:17px; background:url('/images/admin/dashboard/no_tags_bkg.png') no-repeat 0 0;}
+section#content div.right {display:inline-block; vertical-align:top; width:260px; margin:0 0 0 16px;}
+section#content div.right div.banner {width:260px;}
+section#content div.right div.banner div.top_white_short {float:left; width:100%; height:10px; background:url('/images/admin/backgrounds/top_white_short.png') no-repeat 0 0;}
+section#content div.right div.banner div.middle_white_short {float:left; width:204px; height:auto; padding:18px 28px 21px; background:url('/images/admin/backgrounds/middle_white_short.png') repeat-y 0 0;}
+section#content div.right div.banner div.middle_white_short h3 {float:left; font:bold 17px Arial; color:#333333; letter-spacing:-1px;}
+section#content div.right div.banner div.middle_white_short p {float:left; margin:5px 0 0 0; font:normal 13px Arial; color:#999999;}
+section#content div.right div.banner div.middle_white_short a {float:left; margin:14px 0 0 2px; width:197px; height:15px; padding:9px 0 11px; text-align:center; background:url('/images/admin/dashboard/create_new_2.png') no-repeat 0 0; font:bold 15px Arial; color:#305234; text-shadow:0 1px #9ED6A4; text-decoration:none;}
+section#content div.right div.banner div.middle_white_short a:hover {background-position:0 -35px;}
+section#content div.right div.banner div.bottom_white_short {float:left; width:100%; height:15px; background:url('/images/admin/backgrounds/bottom_white_short.png') no-repeat 0 0;}
+section#content div.right span.no_tags {display:block; width:223px; height:116px; padding:17px; margin:0 0 0 2px; background:url('/images/admin/dashboard/no_tags_bkg.png') no-repeat 0 0;}
 section#content div.right p {padding:0 0 10px 0; font:normal 13px "Helvetica",Arial; color:#6C868B; text-shadow:0 1px white;}
-section#content div.right h4 {font:bold 13px "Aller"; padding:0 0 10px 0; color:#83B0B6; text-shadow:0 1px white;}
+section#content div.right h4 {display:inline-block; margin:25px 0 0 0; font:bold 13px "Aller"; padding:0 0 10px 0; color:#83B0B6; text-shadow:0 1px white;}
 section#content div.right ul {margin:0; width:100%;}
 section#content div.right ul li {float:left; width:100%; padding:0 0 5px 0;}
 section#content div.right ul li a {float:left; width:100%; height:20px; padding:0 0 0 8px; background:url('/images/admin/dashboard/tag_left.png') no-repeat 0 0; text-decoration:none;}

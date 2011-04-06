@@ -1,8 +1,8 @@
   <% content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/tumblr", "admin/api/api" %>
+    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "admin/api/api" %>
   <% end %>
   <% content_for(:head) do %>
-    <%= stylesheet_link_tag('reset','admin/layout','admin/others/tokens') %>
+    <%= stylesheet_link_tag('reset', 'admin/layout','admin/others/tokens') %>
   <% end %>
 
   <%= render :partial => 'admin/tables/subheader' %>
@@ -12,7 +12,7 @@
       <div class="tables_list">
         <div class="left">
           <div class="top_blue_medium">
-            <h3>Your <strong>apps</strong></h3>
+            <h3>Your <strong>api keys</strong></h3>
             <p><a class="oauth selected" href="<%= oauth_credentials_path %>">OAuth</a><a class="jsonp" href="<%= jsonp_credentials_path %>">JSONP</a></p>
           </div>
           <div class="middle_white_medium">
@@ -28,8 +28,7 @@
                 <p></p>
               </span>
               <span class="end_key">
-                <a href="<%= oauth_credentials_path %>" class="submit orange"><span>Get new key and secret</span></a>
-                <p>(Be sure you assume <a href="#">the risks of that</a>)</p>
+                <a href="#open_confirm_renew" class="open_confirm_renew submit orange"><span>Get new key and secret</span></a>
               </span>
             </div>
           </div>
@@ -41,3 +40,24 @@
       </div>
     </div>
   </section>
+  
+  
+  <% content_for(:mamufas) do %>
+    <div class="mamufas">
+      <div class="renew_window">
+        <a href="#close_window" class="close_delete"></a>
+        <div class="inner_">
+          <span class="top">
+            <h3>You are about to refresh your api key and secret</h3>
+            <p>Doing that you will have to change all your api keys in these applications where you are using CartoDB, think about it!</p>
+          </span>
+          <span class="bottom">
+            <a href="#close_window" class="cancel">cancel</a>
+            <a href="#confirm_renew" class="confirm_renew" key="">Renew your keys</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  
+  

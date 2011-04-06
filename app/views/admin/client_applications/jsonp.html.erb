@@ -1,5 +1,5 @@
   <% content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/tumblr", "plugins/general_functions" ,"admin/api/api" %>
+    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions" ,"admin/api/api" %>
   <% end %>  
   <% content_for(:head) do %>
     <%= stylesheet_link_tag('reset','admin/layout','admin/others/tokens') %>
@@ -12,7 +12,7 @@
       <div class="tables_list">
         <div class="left">
           <div class="top_blue_medium">
-            <h3>Your <strong>apps</strong></h3>
+            <h3>Your <strong>api keys</strong></h3>
             <p><a class="oauth" href="<%= oauth_credentials_path %>">OAuth</a><a class="jsonp selected" href="<%= jsonp_credentials_path %>">JSONP</a></p>
           </div>
           <div class="middle_white_medium">
@@ -30,15 +30,22 @@
               </span>
               <a href="#submit" onclick="$('#new_api_key').submit();" class="green submit"><span>Get API key</span></a>
             <% end %>
+            <% if @api_keys.size>0 %>
+              <span class="form_block">
+                <label>APP</label>
+              </span>
+              <span class="form_block long">
+                <label>API KEY</label>
+              </span>
+            <%- end %>
+            
             <% @api_keys.each do |api_key| %>
               <%= form_tag(destroy_api_key_path(api_key.id), :method => :post, :id => "remove_api_key_#{api_key.id}") do %>
                 <%= fields_for api_key do |f| %>
                   <span class="form_block">
-                    <%= f.label :domain, "APP" %>
                     <%= f.text_field :domain, :readonly=>"readonly" %>
                   </span>
                   <span class="form_block long">
-                    <%= f.label :api_key, "API KEY" %>
                     <%= f.text_field :api_key, :readonly=>"readonly" %>
                   </span>
                   <a domain="<%= api_key.domain %>" href="#remove_api_key" class="orange submit remove_key" key="<%= api_key.id %>"><span>Remove key</span></a>

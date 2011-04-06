@@ -66,10 +66,10 @@ div.mamufas div.create_window div.inner_ span.top {float:left; width:394px; padd
 div.mamufas div.create_window div.inner_ span.top h4 {font:bold 15px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.create_window div.inner_ span.top p {padding:5px 0 5px 0; font:normal 13px "Helvetica",Arial; color:#999999; text-shadow:0 1px white;}
 div.mamufas div.create_window div.inner_ span.top ul {padding:10px 0 0 0;}
-div.mamufas div.create_window div.inner_ span.top ul li {float:left; width:auto!important; padding:10px;}
+div.mamufas div.create_window div.inner_ span.top ul li {float:left; width:auto; padding:10px;}
 div.mamufas div.create_window div.inner_ span.top ul li a {padding:0 0 0 18px; font:bold 13px Arial; color:#333333; text-decoration:none; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -28px;}
 div.mamufas div.create_window div.inner_ span.top ul li a:hover {color:#111111; background-position:0 -67px;}
-div.mamufas div.create_window div.inner_ span.top ul li.selected {width:auto; padding:10px; background:#2A3857; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected {width:373px!important; padding:10px; background:#2A3857; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected a {color:white; background-position:0 1px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected a:hover {color:white; cursor:default; background-position:0 1px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected ul.qq-upload-list {display:none;}

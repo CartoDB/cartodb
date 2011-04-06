@@ -12,6 +12,7 @@ feature "API 1.0 queries interface" do
     @table = new_table
     @table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
     @table.user_id = @user.id
+    @table.name = "antantaric_species"
     @table.save
   end
 
@@ -45,7 +46,7 @@ feature "API 1.0 queries interface" do
     end
   end
 
-  pending "Perform a query using JSONP and api key authorization" do
+  scenario "Perform a query using JSONP and api key authorization" do
     Capybara.current_driver = :selenium
 
     api_key  = @user.create_key "example.org"

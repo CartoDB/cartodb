@@ -26,7 +26,7 @@
       });
 
       //Close all modal windows
-      $('div.mamufas a.cancel, div.mamufas a.close_unlock').click(function(ev){
+      $('div.mamufas a.cancel, div.mamufas a.close_unlock, , div.mamufas a.close_delete').click(function(ev){
         ev.preventDefault();
         ev.stopPropagation();
         close_mamufas();
@@ -38,6 +38,15 @@
         ev.stopPropagation();
         ev.preventDefault();
         $('div.mamufas div.unlock_window').show();
+        $('div.mamufas').fadeIn('fast');
+        bindESC();
+      });
+
+      //Delete account
+      $('a.delete_account').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $('div.mamufas div.delete_window').show();
         $('div.mamufas').fadeIn('fast');
         bindESC();
       });

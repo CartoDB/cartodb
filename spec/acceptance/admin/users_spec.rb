@@ -37,4 +37,22 @@ feature "User updating" do
     current_path.should == dashboard_path
   end
 
+  scenario "Destroy logged in user" do
+    log_in_as @user
+
+    click_link 'settings'
+
+    click_link 'Delete your account'
+
+    page.should have_content('You are about to delete your account')
+    page.should have_content('You will not be able to recover your tables and their data.')
+
+    expect{ click_button 'Yes, I want to delete my account' }.to change{ User.count }.by(-1)
+
+    # page.should have_content("Your account was deleted successfully. We'll miss you!")
+
+    current_path.should == '/'
+
+  end
+
 end

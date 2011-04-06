@@ -37,12 +37,14 @@
               <%= f.password_field :password_confirmation, :disabled => true %>
             </span>
             <span class="submit_block">
-              <%= f.submit 'Save changes', :class => 'submit' %>
+              <button type="submit" class="submit">
+                <span>Save changes</span>
+              </button>
               <p>To edit this data you need to <a class="open_unlock" href="#unlock_account">unlock your chain</a></p>
             </span>
           <% end %>
           <div class="delete">
-            <a href="#delete_account"><span>Delete your account</span></a>
+            <a href="#delete_account" class="delete_account"><span>Delete your account</span></a>
             <p>All your user data and private tables will be erased of our systems</p>
           </div>
         </div>
@@ -86,4 +88,19 @@
       <% end %>
     </div>
   </div>
+
+  <div class="delete_window">
+    <a href="#close_window" class="close_delete"></a>
+    <div class="inner_">
+      <span class="top">
+        <h3>You are about to delete your account</h3>
+        <p>You will not be able to recover your tables and their data.</p>
+      </span>
+      <span class="bottom">
+        <a href="#close_window" class="cancel">cancel</a>
+        <%= button_to 'Yes, I want to delete my account', user_path(@user), :method => :delete, :class => 'confirm_delete' %>
+      </span>
+    </div>
+  </div>
+
 </div>

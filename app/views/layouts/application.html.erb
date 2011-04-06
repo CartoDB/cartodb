@@ -8,7 +8,7 @@
     <%= yield :js %>
     <%= yield :head %>
     <%= csrf_meta_tag %>
-    <noscript><meta http-equiv="refresh" content="0;url=/prototypes/javascript.html"></noscript>
+    <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
     <%= render 'shared/analytics' %>
   </head>
   <body>
@@ -19,7 +19,7 @@
         <li><%= link_to 'Superadmin', superadmin_users_path %></li>
         <% end %>
         <li><a href="<%= APP_CONFIG[:developers_host] %>">Developers</a></li>
-        <li><a href="http://blog.cartodb.com" target="_blank">Blog</a></li>        
+        <li><a href="http://blog.cartodb.com" target="_blank">Blog</a></li>
         <li class="last"><%= link_to current_user.email, '/prototypes/account.html', :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
       </ul>
     </header>

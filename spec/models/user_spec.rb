@@ -167,21 +167,21 @@ describe User do
     table.user_id = user.id
     table.force_schema = "name varchar, age integer"
     table.save
-    table.should be_public
-
-    user.in_database(:as => :public_user) do |user_database|
-      user_database.run("select * from #{table.name}")
-    end
-
-    table.privacy = "PRIVATE"
-    table.save
-    table.reload
+    table.should be_private
 
     lambda {
       user.in_database(:as => :public_user) do |user_database|
         user_database.run("select * from #{table.name}")
       end
     }.should raise_error(Sequel::DatabaseError)
+
+    table.privacy = "PUBLIC"
+    table.save
+    table.reload
+
+    user.in_database(:as => :public_user) do |user_database|
+      user_database.run("select * from #{table.name}")
+    end
   end
 
   it "should create a client_application for each user" do

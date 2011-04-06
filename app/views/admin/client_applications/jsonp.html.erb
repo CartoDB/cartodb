@@ -1,11 +1,11 @@
   <% content_for(:js) do %>
     <%= headjs_include_tag "plugins/jquery.min", "plugins/tumblr", "plugins/general_functions" ,"admin/api/api" %>
-  <% end %>  
+  <% end %>
   <% content_for(:head) do %>
     <%= stylesheet_link_tag('reset','admin/layout','admin/others/tokens') %>
   <% end %>
 
-  <%= render :partial => 'admin/tables/subheader' %>
+  <%= render :partial => 'admin/shared/subheader' %>
 
   <section id="content">
     <div class="inner_content">
@@ -54,7 +54,7 @@
       </div>
     </div>
   </section>
-  
+
   <% content_for(:mamufas) do %>
     <div class="mamufas">
       <div class="delete_window">

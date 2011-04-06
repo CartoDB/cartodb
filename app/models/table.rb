@@ -16,7 +16,10 @@ class Table < Sequel::Model(:user_tables)
                 :imported_table_name, :the_geom_type, :importing_SRID,
                 :importing_encoding
 
-  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom address_geolocated }
+  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
+  THE_GEOM_WEBMERCATOR = :the_geom_webmercator
+  THE_GEOM = :the_geom
+  SKIP_SCHEMA_COLUMNS = [THE_GEOM_WEBMERCATOR, :cartodb_id, :created_at, :updated_at]
 
   ## Callbacks
   def validate
@@ -28,7 +31,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def before_validation
-    self.privacy ||= PUBLIC
+    self.privacy ||= PRIVATE
     self.name = set_table_name if self.name.blank?
     super
   end
@@ -52,7 +55,6 @@ class Table < Sequel::Model(:user_tables)
     if !import_from_file.blank? && imported_table_name.blank?
       import_data_from_file!
     end
-    set_triggers
     super
   rescue Sequel::DatabaseError => e
     owner.in_database(:as => :superuser) do |user_database|
@@ -92,15 +94,13 @@ class Table < Sequel::Model(:user_tables)
   def after_create
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
-    set_lat_lon_columns!(:latitude, :longitude) if schema.flatten.include?(:latitude) && schema.flatten.include?(:longitude)
     unless private?
       owner.in_database do |user_database|
         user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
       end
     end
-    unless the_geom_type.blank?
-      set_the_geom_column!(the_geom_type.to_sym)
-    end
+    set_the_geom_column!(the_geom_type.try(:to_sym) || :point)
+    set_triggers
   end
 
   def after_destroy
@@ -121,6 +121,8 @@ class Table < Sequel::Model(:user_tables)
       owner.in_database do |user_database|
         user_database.rename_table name, new_name
         user_database.run("ALTER SEQUENCE #{name}_cartodb_id_seq RENAME TO #{new_name}_cartodb_id_seq")
+        user_database.run("ALTER INDEX #{name}_the_geom_idx RENAME TO #{new_name}_the_geom_idx")
+        user_database.run("ALTER INDEX #{name}_#{THE_GEOM_WEBMERCATOR}_idx RENAME TO #{new_name}_#{THE_GEOM_WEBMERCATOR}_idx")
       end
     end
     self[:name] = new_name unless new_name.blank?
@@ -170,7 +172,6 @@ class Table < Sequel::Model(:user_tables)
   def insert_row!(raw_attributes)
     primary_key = nil
     modified_schema = false
-    prepare_attributes!(raw_attributes)
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -193,8 +194,8 @@ class Table < Sequel::Model(:user_tables)
           raise e
         end
       end
-      geocode!(attributes, primary_key)
     end
+    update_the_geom!(raw_attributes, primary_key)
     if modified_schema
       update_stored_schema!
     end
@@ -204,7 +205,6 @@ class Table < Sequel::Model(:user_tables)
   def update_row!(row_id, raw_attributes)
     rows_updated = 0
     modified_schema = false
-    prepare_attributes!(raw_attributes)
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -227,14 +227,13 @@ class Table < Sequel::Model(:user_tables)
             raise e
           end
         end
-        geocode!(attributes, row_id)
       else
         if attributes.size == 1 && attributes.keys == [:the_geom]
           rows_updated = 1
-          geocode!(attributes, row_id)
         end
       end
     end
+    update_the_geom!(raw_attributes, row_id)
     if modified_schema
       update_stored_schema!
     end
@@ -245,7 +244,7 @@ class Table < Sequel::Model(:user_tables)
     return [] if stored_schema.blank?
     stored_schema.map do |column|
       c = column.split(',')
-      [c[0].to_sym, c[options[:cartodb_types] == false ? 1 : 2], schema_geometry_column(c[0].to_sym)].compact
+      [c[0].to_sym, c[options[:cartodb_types] == false ? 1 : 2], c[0].to_sym == :the_geom ? "geometry" : nil].compact
     end
   end
 
@@ -267,17 +266,8 @@ class Table < Sequel::Model(:user_tables)
 
   def drop_column!(options)
     raise if CARTODB_COLUMNS.include?(options[:name].to_s)
-    if options[:name].to_sym == address_column || options[:name].to_sym == lat_column || options[:name].to_sym == lon_column
-      old_address_column = address_column
-      self.geometry_columns = nil
-      save_changes
-    end
     owner.in_database do |user_database|
-      user_database.run("UPDATE #{self.name} SET the_geom = NULL") if geometry_columns.nil?
       user_database.drop_column name.to_sym, options[:name].to_s
-      if options[:name].to_sym == old_address_column
-        user_database.drop_column name.to_sym, "address_geolocated"
-      end
     end
     update_stored_schema!
   end
@@ -292,28 +282,10 @@ class Table < Sequel::Model(:user_tables)
         raise if CARTODB_COLUMNS.include?(options[:old_name].to_s)
         user_database.rename_column name.to_sym, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
         new_name = options[:new_name].sanitize
-        if options[:old_name].to_sym == address_column
-          self.geometry_columns = new_name
-          save_changes
-        elsif options[:old_name].to_sym == lat_column
-          self.geometry_columns = "#{new_name}|#{lon_column}"
-          save_changes
-        elsif options[:old_name].to_sym == lon_column
-          self.geometry_columns = "#{lat_column}|#{new_name}"
-          save_changes
-        end
       end
       if options[:type]
         column_name = (options[:new_name] || options[:name]).sanitize
         raise if CARTODB_COLUMNS.include?(column_name)
-        if column_name.to_sym == address_column && cartodb_type && cartodb_type != "string"
-          self.geometry_columns = nil
-          save_changes
-        end
-        if (column_name.to_sym == lat_column || column_name.to_sym == lon_column) && cartodb_type && cartodb_type != "number"
-          self.geometry_columns = nil
-          save_changes
-        end
         begin
           user_database.set_column_type name.to_sym, column_name.to_sym, new_type
         rescue => e
@@ -371,14 +343,6 @@ class Table < Sequel::Model(:user_tables)
     }
   end
 
-  def get_records_with_pending_addresses(options = {})
-    return [] if address_column.blank?
-    limit = (options[:rows_per_page] || 10).to_i
-    limit = 5000 if limit > 5000
-    offset = (options[:page] || 0).to_i*limit
-    owner.run_query("select cartodb_id,#{address_column} from #{self.name} where address_geolocated is null limit #{limit} offset #{offset}")[:rows]
-  end
-
   def record(identifier)
     owner.in_database do |user_database|
       row = user_database[name.to_sym].
@@ -395,86 +359,6 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def set_lat_lon_columns!(lat_column, lon_column)
-    self.geometry_columns = nil
-    set_the_geom_column!(:point)
-    if lat_column && lon_column
-      owner.in_database do |user_database|
-        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-        if user_database.schema(name.to_sym, :reload => true).map{|e| e[0]}.include?(:address_geolocated)
-          user_database.run("alter table #{self.name} drop column address_geolocated")
-          update_stored_schema(user_database)
-        end
-      end
-      self.geometry_columns = "#{lat_column}|#{lon_column}"
-    end
-    save_changes
-  end
-
-  def lat_column
-    if !geometry_columns.blank? && geometry_columns.include?('|')
-      geometry_columns.split('|')[0].to_sym
-    else
-      nil
-    end
-  end
-
-  def lon_column
-    if !geometry_columns.blank? && geometry_columns.include?('|')
-      geometry_columns.split('|')[1].to_sym
-    else
-      nil
-    end
-  end
-
-  def set_address_column!(address_column)
-    set_the_geom_column!(:point)
-    if address_column.is_a?(String) && address_column.include?(',')
-      aggregated_address_name = "aggregated_address"
-      owner.in_database do |user_database|
-        user_database.run("alter table #{self.name} add column #{aggregated_address_name} varchar")
-        user_database.run("update #{self.name} set #{aggregated_address_name}=#{address_column.split(',').map{ |c| c.strip }.join('||\',\'||')}")
-      end
-      address_column = aggregated_address_name
-    end
-    self.geometry_columns = address_column.try(:to_s)
-    owner.in_database do |user_database|
-      unless address_column.blank?
-        if user_database.schema(name.to_sym, :reload => true).map{|e| e[0]}.include?(:address_geolocated)
-          user_database.run("update #{self.name} set address_geolocated = null")
-        else
-          user_database.run("alter table #{self.name} add column address_geolocated boolean default null")
-        end
-      else
-        user_database.run("alter table #{self.name} drop column address_geolocated")
-      end
-      update_stored_schema(user_database)
-    end
-    save_changes
-    # geocode_all_address_columns! if rows_counted > 0
-  end
-
-  def address_column
-    unless geometry_columns.blank? || geometry_columns.include?('|')
-      geometry_columns.try(:to_sym)
-    else
-      nil
-    end
-  end
-
-  def update_geometry!(row_id, attributes)
-    if address_column
-      if attributes[:address]
-        update_row!(row_id, {address_column => attributes[:address]})
-      end
-      owner.in_database do |user_database|
-        user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{attributes[:lon]},#{ attributes[:lat]}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{row_id}")
-      end
-    else
-      update_row!(row_id, {lat_column => attributes[:lat], lon_column => attributes[:lon]})
-    end
-  end
-
   def run_query(query)
     owner.run_query(query)
   end
@@ -486,14 +370,13 @@ class Table < Sequel::Model(:user_tables)
         FROM information_schema.table_constraints
         WHERE table_name = ? AND constraint_name = ?
       SQL
-
       user_database.fetch(table_constraints_sql, name, 'enforce_srid_the_geom').all
     end
   end
 
   def update_stored_schema(user_database)
     temporal_schema = user_database.schema(self.name.to_sym, :reload => true).map do |column|
-      if !CARTODB_COLUMNS.include?(column.first.to_s) && column.first.to_s != "address_column"
+      if !SKIP_SCHEMA_COLUMNS.include?(column.first.to_sym)
         "#{column.first},#{column[1][:db_type].gsub(/,\d+/,"")},#{column[1][:db_type].convert_to_cartodb_type}"
       end
     end.compact
@@ -697,25 +580,21 @@ class Table < Sequel::Model(:user_tables)
         CREATE TRIGGER update_updated_at_trigger
         BEFORE UPDATE ON #{self.name}
             FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
+          
+        DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};  
+        CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
+          BEGIN
+               NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
+               RETURN NEW;
+          END;
+        $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
+        
+        CREATE TRIGGER update_the_geom_webmercator_trigger 
+        BEFORE INSERT OR UPDATE OF the_geom ON #{self.name} 
+          FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();    
 TRIGGER
       )
     end
-  end
-
-  def geocode_all_address_columns!
-    # owner.in_database do |user_database|
-    #   result = owner.run_query("select cartodb_id, #{address_column} as address_column FROM #{self.name} order by cartodb_id")
-    #   result[:rows].each do |row|
-    #     next if row[:address_column].blank?
-    #     url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(row[:address_column])}&sensor=false")
-    #     req = Net::HTTP::Get.new(url.request_uri)
-    #     res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-    #     json = JSON.parse(res.body)
-    #     if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
-    #       user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{row[:cartodb_id]}")
-    #     end
-    #   end
-    # end
   end
 
   def get_new_column_type(invalid_column, invalid_value)
@@ -736,59 +615,22 @@ TRIGGER
     end
   end
 
-  def geocode!(attributes, primary_key)
-    owner.in_database do |user_database|
-      if attributes.keys.include?(:address_geolocated) && attributes[:address_geolocated] == false
-        user_database.run("UPDATE #{self.name} SET the_geom = NULL")
-      else
-        if attributes[:the_geom]
-          user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})  where cartodb_id = #{primary_key}")
-          if !address_column.blank?
-            user_database.run("UPDATE #{self.name} SET address_geolocated = true")
-          end
-        else
-          # if !address_column.blank? && attributes.keys.include?(address_column) && !attributes[address_column].blank?
-          #   url = URI.parse("http://maps.google.com/maps/api/geocode/json?address=#{CGI.escape(attributes[address_column])}&sensor=false")
-          #   req = Net::HTTP::Get.new(url.request_uri)
-          #   res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-          #   json = JSON.parse(res.body)
-          #   if json['status'] == 'OK' && !json['results'][0]['geometry']['location']['lng'].blank? && !json['results'][0]['geometry']['location']['lat'].blank?
-          #     owner.in_database do |user_database|
-          #       user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSrID(PointFromText('POINT(' || #{json['results'][0]['geometry']['location']['lng']} || ' ' || #{json['results'][0]['geometry']['location']['lat']} || ')'),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID})")
-          #     end
-          #   end
-          # end
-          if !lat_column.blank? && !lon_column.blank?
-            user_database.run("UPDATE #{self.name} SET the_geom = ST_Transform(ST_SetSRID(ST_Makepoint(#{lon_column},#{lat_column}),#{CartoDB::SRID}),#{CartoDB::GOOGLE_SRID}) where cartodb_id = #{primary_key}")
-          end
-        end
-      end
-    end
-  end
-
   def set_the_geom_column!(type)
     owner.in_database do |user_database|
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
         if type == :point
-          user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::GOOGLE_SRID},'POINT',2)")
+          user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::SRID},'POINT',2)")
+          user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'POINT',2)")
         elsif type == :polygon
-          user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::GOOGLE_SRID},'POLYGON',2)")
+          user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::SRID},'POLYGON',2)")
+          user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'POLYGON',2)")
         end
+        user_database.run("CREATE INDEX #{self.name}_the_geom_idx ON #{self.name} USING GIST(the_geom)")
+        user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")        
       end
+      update_stored_schema(user_database)
     end
-  end
-
-  def prepare_attributes!(raw_attributes)
-    if raw_attributes[:address_column]
-      if address_column
-        raw_attributes[address_column] = raw_attributes.delete(:address_column)
-      else
-        raw_attributes.delete(:address_column)
-      end
-    end
-    if raw_attributes[:address_geolocated] && raw_attributes[:address_geolocated] == 'false'
-      raw_attributes[:address_geolocated] = false
-    end
+    save_changes
   end
 
   def set_table_schema!
@@ -798,8 +640,6 @@ TRIGGER
           user_database.create_table self.name.to_sym do
             column :cartodb_id, "SERIAL PRIMARY KEY"
             String :name
-            Float :latitude
-            Float :longitude
             String :description, :text => true
             DateTime :created_at, :default => "NOW()"
             DateTime :updated_at, :default => "NOW()"
@@ -844,31 +684,14 @@ TRIGGER
         user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
         user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
       end
-      update_stored_schema(user_database)
-    end
-  end
-
-  def schema_geometry_column(name)
-    case name
-    when lat_column
-      "latitude"
-    when lon_column
-      "longitude"
-    when address_column
-      "address"
-    else
-      nil
     end
   end
 
   def handle_import_file!
-
     if import_from_file.is_a?(String)
-
       open(import_from_file) do |res|
         file_name = File.basename(import_from_file)
         ext = File.extname(file_name)
-
         self.import_from_file = File.new("#{Rails.root}/tmp/uploading_#{user_id}.#{ext}", 'w+')
         self.import_from_file.write(res.read.force_encoding('utf-8'))
         self.import_from_file.close
@@ -921,9 +744,12 @@ TRIGGER
       system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
       owner.in_database do |user_database|
         imported_schema = user_database[random_name.to_sym].columns
-        user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as the_geom FROM #{random_name}")
+        user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},ST_TRANSFORM(the_geom,#{CartoDB::SRID}) as the_geom FROM #{random_name}")
         user_database.run("DROP TABLE #{random_name}")
         user_database.run("CREATE INDEX #{self.imported_table_name}_the_geom_idx ON #{self.imported_table_name} USING GIST(the_geom)")
+        geometry_type = user_database["select GeometryType(the_geom) FROM #{self.imported_table_name} limit 1"].first[:geometrytype]
+        user_database.run("SELECT AddGeometryColumn ('#{self.imported_table_name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
+        user_database.run("CREATE INDEX #{self.imported_table_name}_the_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.imported_table_name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
         user_database.run("VACUUM ANALYZE #{self.imported_table_name}")
       end
       if entries.any?
@@ -948,6 +774,13 @@ TRIGGER
       end
       s.to_csv("/tmp/#{csv_name}.csv")
       self.import_from_file = File.open("/tmp/#{csv_name}.csv",'r')
+    end
+  end
+  
+  def update_the_geom!(attributes, primary_key)
+    return unless attributes[:the_geom]
+    owner.in_database do |user_database|
+      user_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID})  where cartodb_id = #{primary_key}")
     end
   end
 

@@ -16,6 +16,7 @@ module CartoDB
     def create_table(attributes = {})
       table = new_table(attributes)
       table.save
+      table.reload
     end
   end
 end

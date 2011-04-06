@@ -1,0 +1,89 @@
+<%= content_for(:js) do %>
+  <%= headjs_include_tag "plugins/jquery.min", "admin/users/edit"  %>
+<% end %>
+<%= content_for(:head) do %>
+  <%= stylesheet_link_tag('reset.css','admin/layout','admin/users/edit') %>
+<% end %>
+
+<%= render 'admin/shared/subheader' %>
+
+<section id="content">
+  <div class="inner_content">
+
+    <% [:success, :error].each do |key| %>
+      <% if flash[key] %>
+        <div class="flash <%= key %>"><%= flash[key] %></div>
+      <% end %>
+    <% end %>
+
+    <div class="tables_list">
+      <div class="left">
+        <div class="top_blue_medium">
+          <h3>Your <strong>account settings</strong></h3>
+        </div>
+        <div class="middle_white_medium">
+          <p>This is your login data. You need it for login into CartoDB</p>
+          <%= form_for current_user do |f| %>
+            <span class="form_block">
+              <%= f.label :email, 'YOUR EMAIL' %>
+              <%= f.text_field :email, :disabled => true %>
+            </span>
+            <span class="form_block">
+              <%= f.label :password, 'YOUR PASSWORD' %>
+              <%= f.password_field :password, :disabled => true %>
+            </span>
+            <span class="form_block last">
+              <%= f.label :password_confirmation, 'CONFIRM YOUR PASSWORD' %>
+              <%= f.password_field :password_confirmation, :disabled => true %>
+            </span>
+            <span class="submit_block">
+              <%= f.submit 'Save changes', :class => 'submit' %>
+              <p>To edit this data you need to <a class="open_unlock" href="#unlock_account">unlock your chain</a></p>
+            </span>
+          <% end %>
+          <div class="delete">
+            <a href="#delete_account"><span>Delete your account</span></a>
+            <p>All your user data and private tables will be erased of our systems</p>
+          </div>
+        </div>
+        <div class="bottom_white_medium"></div>
+      </div>
+      <div class="right">
+        <div class="banner">
+          <div class="top_white_short"></div>
+          <div class="middle_white_short">
+            <h3>Are you creating your first app with CartoDB?</h3>
+            <p>Take a look at the documentation</p>
+            <ul>
+              <li><a href="/prototypes/oauth.html">OAuth authentication</a></li>
+              <li><a href="/prototypes/jsonp.html">JSONP Authentication</a></li>
+              <li><a href="/prototypes/api.html">Activating your apps</a></li>
+            </ul>
+          </div>
+          <div class="bottom_white_short"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="mamufas">
+  <div class="unlock_window">
+    <a href="#close_unlock" class="close_unlock">Close</a>
+    <div class="inner_">
+      <%= form_tag unlock_path, :method => :post do %>
+      <form action="#">
+        <span class="top">
+          <%= label_tag 'unlock_password', 'Insert your current password' %>
+          <%= password_field_tag 'unlock_password' %>
+          <a class="forget">did you forget it?</a>
+        </span>
+        <span class="bottom">
+          <a class="cancel">cancel</a>
+          <%= submit_tag 'Unlock' %>
+        </span>
+      </form>
+      <% end %>
+    </div>
+  </div>
+</div>

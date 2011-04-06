@@ -332,10 +332,12 @@ class Table < Sequel::Model(:user_tables)
       page = (options[:page] || 0).to_i*limit
     end
     owner.in_database do |user_database|
-      rows = user_database[name.to_sym].limit(limit,page).
-              order(:cartodb_id).
-              select(*schema.map{ |e| e[0]}).
-              all
+      select = if schema.flatten.include?(:the_geom)
+        schema.select{|c| c[0] != :the_geom }.map{|c| c[0] }.join(',') + ",ST_AsGeoJSON(the_geom,6) as the_geom"
+      else
+        schema.map{|c| c[0] }.join(',')
+      end
+      rows = user_database["SELECT #{select} FROM #{name} LIMIT #{limit} OFFSET #{page}"].all
     end
     {
       :id         => id,
@@ -346,19 +348,16 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def record(identifier)
+    row = nil
     owner.in_database do |user_database|
-      row = user_database[name.to_sym].
-        select(*schema.map{ |e| e[0]}).
-        where(:cartodb_id => identifier).
-        first
-      raise if row.empty?
-      row.each do |k,v|
-        if v.is_a?(Date) || v.is_a?(Time)
-          row[k] = v.strftime("%Y-%m-%d %H:%M:%S")
-        end
+      select = if schema.flatten.include?(:the_geom)
+        schema.select{|c| c[0] != :the_geom }.map{|c| c[0] }.join(',') + ",ST_AsGeoJSON(the_geom,6) as the_geom"
+      else
+        schema.map{|c| c[0] }.join(',')
       end
-      row
+      row = user_database["SELECT #{select} FROM #{name} WHERE cartodb_id = #{identifier}"].first
     end
+    row
   end
 
   def run_query(query)

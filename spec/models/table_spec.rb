@@ -599,4 +599,26 @@ describe Table do
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
   end
   
+  it "should return a geojson for the_geom if it is a point" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.save
+    table.reload
+
+    lat = Float.random_latitude
+    lon = Float.random_longitude
+    the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+    pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
+
+    records = table.records(:page => 0, :rows_per_page => 1)
+    records[:rows][0][:the_geom].should == the_geom
+    
+    record = table.record(pk)
+    record[:the_geom].should == the_geom    
+  end
+  
+  it "should return a kml for the_geom if it is a point" do
+    
+  end
 end

@@ -7,7 +7,7 @@ module HelperMethods
   def log_in_as(user)
     visit login_path
     fill_in 'e-mail', :with => user.email
-    fill_in 'password', :with => user.email.split('@').first
+    fill_in 'password', :with => user.password || user.email.split('@').first
     click_link_or_button 'Log in'
   end
 

@@ -1,7 +1,7 @@
 # coding: UTF-8
 
 class Admin::UsersController < ApplicationController
-  ssl_required :edit, :update, :unlock
+  ssl_required :edit, :update, :unlock, :destroy
 
   before_filter :login_required
 
@@ -22,6 +22,13 @@ class Admin::UsersController < ApplicationController
       render :action => :edit
     end
 
+  end
+
+  def destroy
+    if current_user.destroy
+      redirect_to logout_path and return
+    end
+    redirect_to root_path, :flash => {:error => "There's been an error deleting your account. Please, try it again a bit later."}
   end
 
   def unlock

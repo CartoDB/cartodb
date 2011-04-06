@@ -33,7 +33,7 @@ CartoDB::Application.routes.draw do
     match '/your_apps/oauth' => 'client_applications#oauth', :as => :oauth_credentials
     match '/your_apps/jsonp' => 'client_applications#jsonp', :as => :jsonp_credentials
     post  '/your_apps/jsonp/:id/destroy' => 'client_applications#remove_api_key', :as => :destroy_api_key
-    resources :users, :only => [:edit, :update]
+    resources :users, :only => [:edit, :update, :destroy]
     post '/unlock' => 'users#unlock', :as => :unlock
   end
 

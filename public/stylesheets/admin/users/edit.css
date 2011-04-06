@@ -9,14 +9,14 @@ section#content div.left div.middle_white_medium p {display:inline-block; margin
 section#content div.left div.middle_white_medium span.form_block {display:inline-block; width:277px; margin:15px 16px 0 22px;}
 section#content div.left div.middle_white_medium span.form_block.last {margin:0;}
 section#content div.left div.middle_white_medium span.form_block label {font:bold 10px "Helvetica",Arial; color:#999999;}
-section#content div.left div.middle_white_medium span.form_block input {width:257px; height:15px; padding:9px 10px!important; margin:5px 0 0 0; background:url('/images/admin/api/input_bkg.png') no-repeat 1px 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
+section#content div.left div.middle_white_medium span.form_block input {width:257px; height:17px; padding:7px 10px!important; margin:5px 0 0 0; background:url('/images/admin/api/input_bkg.png') no-repeat 1px 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
   font:normal 15px Arial; color:#333333; line-height:15px;}
 section#content div.left div.middle_white_medium span.submit_block {display:inline-block; width:598px; height:70px; margin:10px 0 0 0; padding:0 22px 0 0;}
 section#content div.left div.middle_white_medium span.submit_block p {float:right; margin:23px 20px 0 0; font-size:13px; color:#333333;}
 section#content div.left div.middle_white_medium span.submit_block p a {color:#FF9900;}
 section#content div.left div.middle_white_medium span.submit_block p a:hover {color:#FF6600;}
-section#content div.left div.middle_white_medium span.submit_block .submit {float:right; width:auto; height:35px; margin:15px 0 0 0; padding:0 0 0 5px; text-decoration:none; background:url('/images/admin/api/green_left.png') no-repeat 0 0;}
-section#content div.left div.middle_white_medium span.submit_block .submit span {float:right; width:auto; height:15px; padding:10px 19px 10px 14px; font:bold 15px Arial; line-height:15px; background:url('/images/admin/api/green_right.png') no-repeat right 0; color:#305233; text-shadow:0 1px #95C994;}
+section#content div.left div.middle_white_medium span.submit_block .submit {float:right; width:auto; height:35px; margin:15px 0 0 0; padding:0 0 0 2px; text-decoration:none; background:url('/images/admin/api/green_left.png') no-repeat 0 0; border: 0;}
+section#content div.left div.middle_white_medium span.submit_block .submit span {float:right; width:auto; height:15px; padding:10px 19px 10px 14px; margin-top: -2px; font:bold 15px Arial; line-height:15px; background:url('/images/admin/api/green_right.png') no-repeat right 0; color:#305233; text-shadow:0 1px #95C994;}
 section#content div.left div.middle_white_medium span.submit_block .submit:hover {background-position:0 -35px;}
 section#content div.left div.middle_white_medium span.submit_block .submit:hover span {background-position:right -35px;}
 section#content div.left div.middle_white_medium div.delete {border-top:1px solid #E0E0E0; padding:14px 0 22px;}
@@ -56,3 +56,20 @@ div.mamufas div.unlock_window div.inner_ span.bottom a.cancel:hover {color:#3333
 div.mamufas div.unlock_window div.inner_ span.bottom input[type="submit"] {float:right; height:26px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
 div.mamufas div.unlock_window div.inner_ span.bottom input[type="submit"]:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+
+
+div.mamufas div.delete_window {position:absolute; display:none; top:50%; left:50%; width:434px; height:125px; margin:-69px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;}
+div.mamufas div.delete_window a.close_delete {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0;}
+div.mamufas div.delete_window a.close_delete:hover {background-position:0 -24px;}
+div.mamufas div.delete_window div.inner_ {width:430px; height:120px; border:2px solid #FF6600; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+div.mamufas div.delete_window div.inner_ span.top {float:left; width:402px; padding:14px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.delete_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.delete_window div.inner_ span.top p {position:relative; float:left!important; height:auto; width:100%; padding:10px 0 0 0!important; margin:0!important; font:normal 13px Helvetica,Arial; color:#666666; text-shadow:0 1px white;}
+div.mamufas div.delete_window div.inner_ span.top p a {color:#444444;}
+div.mamufas div.delete_window div.inner_ span.top p a:hover {color:#222222;}
+div.mamufas div.delete_window div.inner_ span.bottom {float:left; width:430px; border-top:1px solid white;}
+div.mamufas div.delete_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}
+div.mamufas div.delete_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
+div.mamufas div.delete_window div.inner_ span.bottom .confirm_delete {float:right; height:28px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
+div.mamufas div.delete_window div.inner_ span.bottom .confirm_delete:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}

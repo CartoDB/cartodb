@@ -33,7 +33,7 @@ feature "Superadmin's users administration" do
     visit superadmin_path
     page.should have_css('ul.users li a', :count => 6)
 
-    click_link 'Admin'
+    click_link 'Superman'
 
     page.should have_content "Id: #{@admin_user.id}"
     page.should have_content 'Username: Admin'
@@ -128,10 +128,11 @@ feature "Superadmin's users administration" do
     visit superadmin_path
 
     click_link 'Add new user'
+
     fill_in 'Username', :with => 'Fulano'
     fill_in 'Email', :with => 'fulano@example.com'
     fill_in 'Password', :with => 'fulanito'
-    check 'Admin'
+    check 'Superman'
     click_button 'Create User'
 
     page.should have_content 'User created successfully'

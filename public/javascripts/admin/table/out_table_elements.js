@@ -121,7 +121,7 @@
     $('div.inner_subheader div.left').append(
       '<span class="privacy_window">'+
         '<ul>'+
-          '<li class="public '+((status=="public")?'selected':'')+'"><a href="#"><strong>Public</strong> (visible to others)</a></li>'+
+          '<li class="public disabled"><a href="#"><strong>Public</strong> (visible to others)</a></li>'+
           '<li class="private '+((status=="private")?'selected':'')+'"><a href="#"><strong>Private</strong> (visible to you)</a></li>'+
         '</ul>'+
       '</span>');
@@ -129,18 +129,21 @@
     $('span.privacy_window ul li a').livequery('click',function(ev){
       stopPropagation(ev);
       var parent_li = $(this).parent();
-      if (parent_li.hasClass('selected')) {
-        $('span.privacy_window').hide();
-      } else {
-        var old_value = $('span.privacy_window ul li.selected a strong').text().toLowerCase();
-        $('span.privacy_window ul li').removeClass('selected');
-        parent_li.addClass('selected');
-        var new_value = $('span.privacy_window ul li.selected a strong').text().toLowerCase();
-        $('span.privacy_window').hide();
-        $('p.status a').removeClass('public private').addClass(new_value).text(new_value);
-        changesRequest('privacy',new_value.toUpperCase(),old_value);
+      if (!parent_li.hasClass('disabled')) {
+        if (parent_li.hasClass('selected')) {
+          $('span.privacy_window').hide();
+        } else {
+          var old_value = $('span.privacy_window ul li.selected a strong').text().toLowerCase();
+          $('span.privacy_window ul li').removeClass('selected');
+          parent_li.addClass('selected');
+          var new_value = $('span.privacy_window ul li.selected a strong').text().toLowerCase();
+          $('span.privacy_window').hide();
+          $('p.status a').removeClass('public private').addClass(new_value).text(new_value);
+          changesRequest('privacy',new_value.toUpperCase(),old_value);
+        }
       }
     });
+    
     $('p.status a').livequery('click',function(ev){
       stopPropagation(ev);
       var privacy_window = $(this).parent().parent().children('span.privacy_window');
@@ -225,8 +228,9 @@
       '<span class="advanced_options">'+
         '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
         '<ul>'+
-          '<li><a href="#export_data" class="export_data">Export data...</a></li>'+
-          '<li><a href="#save_table" class="save_table">Save table as...</a></li>'+
+          '<li class="disabled"><a class="import_data">Import data...</a></li>'+
+          '<li class="disabled"><a class="export_data">Export data...</a></li>'+
+          '<li class="disabled"><a class="save_table">Save table as...</a></li>'+ //class="save_table"
         '</ul>'+
       '</span>');
     $('p.settings a.settings, span.advanced_options a.advanced').livequery('click',function(ev){
@@ -248,10 +252,10 @@
     });
     $('a.save_table').click(function(ev){
       stopPropagation(ev);
-      closeOutTableWindows();
-      $('div.mamufas div.save_window').show();
-      $('div.mamufas').fadeIn('fast');
-      bindESC();
+      //closeOutTableWindows();
+      // $('div.mamufas div.save_window').show();
+      // $('div.mamufas').fadeIn('fast');
+      // bindESC();
     });
     $('a.table_save').click(function(ev){
       stopPropagation(ev);
@@ -259,10 +263,10 @@
     });
     $('a.export_data').click(function(ev){
       stopPropagation(ev);
-      closeOutTableWindows();
-      $('div.mamufas div.export_window').show();
-      $('div.mamufas').fadeIn('fast');
-      bindESC();
+      // closeOutTableWindows();
+      // $('div.mamufas div.export_window').show();
+      // $('div.mamufas').fadeIn('fast');
+      // bindESC();
     });
 
     

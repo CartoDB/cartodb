@@ -1,6 +1,6 @@
   
   <% content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/jquery.mousewheel", "plugins/jscrollpane.min", "plugins/jquery.color", "plugins/jquery.scrollTo","plugins/jquery.livequery.min", "plugins/tag-it", "admin/table/loading_messages", "admin/table/loader_queue", "admin/table/carto_table", "admin/table/out_table_elements", "admin/table/geocoding", "admin/table/worker_geocoding", "admin/table/table", "admin/maps/maps", "plugins/jquery-ui.min.js", "plugins/polymaps.min.js", "plugins/codemirror/codemirror.js", "plugins/colorpicker/eye", "plugins/colorpicker/utils", "plugins/colorpicker/colorpicker" %>
+    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/jquery.mousewheel", "plugins/jscrollpane.min", "plugins/jquery.color", "plugins/jquery.scrollTo","plugins/jquery.livequery.min", "plugins/tag-it", "admin/table/loading_messages", "admin/table/loader_queue", "admin/table/carto_table", "admin/table/out_table_elements", "admin/table/geocoding", "admin/table/worker_geocoding", "admin/table/table", "admin/maps/maps", "plugins/jquery-ui.min.js", "plugins/polymaps.min.js", "admin/maps/mapElements.js", "plugins/codemirror/codemirror.js", "plugins/colorpicker/eye", "plugins/colorpicker/utils", "plugins/colorpicker/colorpicker" %>
     <script type="text/javascript">var table_id = <%= @table.id %>; var status = "<%= table_privacy_text(@table).downcase %>"; var table_name = "<%= @table.name %>";</script>
   <% end %>
 
@@ -29,10 +29,9 @@
               <% else %>
                 <p><%= tag_name %></p>
               <% end %>
-              
               <% end %>
             <% end %>
-            <a href="#" class="add">add tags</a>
+            <a href="#" class="add">edit tags</a>
           </span>
           <ul class="tab_menu">
             <li class="selected"><a href="#view_table">Table</a></li>

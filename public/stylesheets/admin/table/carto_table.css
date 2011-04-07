@@ -44,7 +44,7 @@ div.table_position table thead tr th div span.col_types ul li.selected a:hover {
 div.table_position table thead tr th span.col_ops_list {display:none; position:absolute; right:10px; top:25px; width:130px; height:auto; background:#282F46; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:110;}
 div.table_position table thead tr th span.col_ops_list ul {float:left; padding:0 0 10px; width:130px;}
 div.table_position table thead tr th span.col_ops_list li {float:left; width:112px; margin:0 3px 0 5px; padding:5px 6px 1px;}
-div.table_position table thead tr th span.col_ops_list li.disabled a {color:#999999;}
+div.table_position table thead tr th span.col_ops_list li.disabled a {color:#999999; opacity:0.3;}
 div.table_position table thead tr th span.col_ops_list li.disabled a:hover {color:#999999; cursor:default;}
 div.table_position table thead tr th span.col_ops_list li a {float:left; font:normal 11px "Helvetica",Arial; text-decoration:none; color:white; text-shadow:none; text-align:left!important;}
 div.table_position table thead tr th span.col_ops_list li a:hover {color:#6EBE6E;}

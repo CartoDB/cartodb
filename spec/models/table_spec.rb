@@ -210,8 +210,8 @@ describe Table do
     table.save
     table.reload
 
-    lat = Float.random_latitude
-    lon = Float.random_longitude
+    lat = -43.941
+    lon = 3.429
     the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
     pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
@@ -240,8 +240,8 @@ describe Table do
     table.save
     table.reload
 
-    lat = Float.random_latitude
-    lon = Float.random_longitude
+    lat = -43.941
+    lon = 3.429
     pk = table.insert_row!({:name => "First check_in"})
 
     the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
@@ -587,8 +587,8 @@ describe Table do
     table.save
     table.reload
 
-    lat = Float.random_latitude
-    lon = Float.random_longitude
+    lat = -43.941
+    lon = 3.429
     pk = table.insert_row!({:name => "First check_in"})
 
     the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
@@ -607,8 +607,8 @@ describe Table do
     table.save
     table.reload
 
-    lat = Float.random_latitude
-    lon = Float.random_longitude
+    lat = -43.941
+    lon = 3.429
     pk = table.insert_row!({:name => "First check_in"})
 
     the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
@@ -626,8 +626,8 @@ describe Table do
     table.save
     table.reload
 
-    lat = Float.random_latitude
-    lon = Float.random_longitude
+    lat = -43.941
+    lon = 3.429
     the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
     pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
@@ -645,8 +645,8 @@ describe Table do
     table.save
     table.reload
 
-    lat = Float.random_latitude
-    lon = Float.random_longitude
+    lat = -43.941
+    lon = 3.429
     the_geom = %Q{\{"type":""""Point","coordinates":[#{lon},#{lat}]\}}
     lambda {
       table.insert_row!({:name => "First check_in", :the_geom => the_geom})

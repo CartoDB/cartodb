@@ -13,4 +13,7 @@ module CartoDB
     "date"    => ["timestamp", "timestamp without time zone"],
     "boolean" => ["boolean"]
   }
+  
+  VALID_GEOMETRY_TYPES = %W{ point polygon multipolygon linestring multipoint multilinestring }
+  
 end

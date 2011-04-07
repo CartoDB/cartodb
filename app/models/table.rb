@@ -27,7 +27,7 @@ class Table < Sequel::Model(:user_tables)
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
     errors.add(:name,    'can\'t be blank') if name.blank?
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
-    errors.add(:the_geom_type, 'has an invalid value') unless %W{ point polygon multipolygon }.include?(the_geom_type)
+    errors.add(:the_geom_type, 'has an invalid value') unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type.downcase)
     validates_unique [:name, :user_id], :message => 'is already taken'
   end
 
@@ -645,9 +645,9 @@ TRIGGER
   end
 
   def set_the_geom_column!(type)
+    raise InvalidArgument unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
     type = type.to_s.upcase
     updates = false
-    raise InvalidArgument unless %W{ POINT POLYGON MULTIPOLYGON }.include?(type)
     owner.in_database do |user_database|
       return if !force_schema.blank? && !user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)

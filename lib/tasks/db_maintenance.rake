@@ -27,14 +27,14 @@ namespace :cartodb do
           has_the_geom = false
           user.in_database do |user_database|
             flatten_schema = user_database.schema(table.name.to_sym).flatten
+            has_the_geom = true if flatten_schema.include?(:the_geom)
             if flatten_schema.include?(:the_geom) && !flatten_schema.include?(Table::THE_GEOM_WEBMERCATOR.to_sym)
               puts "Updating table #{table.name}"
-              has_the_geom = true
               geometry_type = if col = user_database["select GeometryType(the_geom) FROM #{table.name} limit 1"].first
                 col[:geometrytype]
               end
               geometry_type ||= "POINT"
-              user_database.run("SELECT AddGeometryColumn ('#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
+              user_database.run("SELECT AddGeometryColumn('#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
               user_database.run("CREATE INDEX #{table.name}_#{Table::THE_GEOM_WEBMERCATOR}_idx ON #{table.name} USING GIST(#{Table::THE_GEOM_WEBMERCATOR})")                      
               user_database.run("VACUUM ANALYZE #{table.name}")
               table.update_stored_schema(user_database)
@@ -55,8 +55,13 @@ namespace :cartodb do
                 CREATE TRIGGER update_the_geom_webmercator_trigger 
                 BEFORE INSERT OR UPDATE OF the_geom ON #{table.name} 
                   FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();    
-        TRIGGER
+  TRIGGER
               )
+            end
+            user.in_database do |user_database|
+              user_database.run("ALTER TABLE #{table.name} DROP CONSTRAINT IF EXISTS enforce_srid_the_geom")
+              user_database.run("update #{table.name} set the_geom = ST_Transform(the_geom,#{CartoDB::SRID})")
+              user_database.run("ALTER TABLE #{table.name} ADD CONSTRAINT enforce_srid_the_geom CHECK (srid(the_geom) = #{CartoDB::SRID})")
             end
           end
         end

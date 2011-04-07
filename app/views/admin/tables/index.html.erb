@@ -9,16 +9,40 @@
 
   <section id="content">
     <div class="inner_content">
-      <!-- <div class="requests_info">
+      
+      <div class="notification section">
+        <div class="top_white"></div>
+        <div class="middle_white">
+          <a class="close" href="#close_notification">close</a>
+          <p>Your table has been removed</p>
+        </div>
+        <div class="bottom_white"></div>
+      </div>
+      
+      <div class="requests_info section">
         <div class="top_white"></div>
         <div class="middle_white">
           <a class="close" href="#close_stats">close</a>
-          <h2>Welcome back <%= current_user.username %></h2>
-          <p>You have done <strong>1,253 requests</strong> in the last 22 days</p>
-          <img src="https://chart.googleapis.com/chart?chxr=0,6.667,100&chxs=0,676767,0,0,_,676767|1,676767,0,0,_,676767&chxt=x,y&chbh=37,1,1&chs=849x60&cht=bvg&chco=D7E6E8|D7E6E8|D7E6E8|D7E6E8|D7E6E8|D7E6E8|D7E6E8|BFD6D9|BFD6D9|BFD6D9|BFD6D9|BFD6D9|BFD6D9|BFD6D9|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4|9CC0C4&chd=s1:ibYXZabeaaaglfiiklqpmn,fl9YMYS&chp=0.033" width="849" height="60" alt="Requests stats" />
+          <h2>Welcome to CartoDB!</h2>
+          <p>If you are here is because we like you, so don’t be very hard with us and enjoy cartodb.</p>
+          <span class="block">
+            <label>1</label>
+            <h3>Create your first table</h3>
+            <p>You can import data or start from scratch. <a href="#create_table" class="new_table">Just create a table</a></p>
+          </span>
+          <span class="block">
+            <label>2</label>
+            <h3>Read the documentation</h3>
+            <p>Take a look at the <a href="<%= APP_CONFIG[:developers_host] %>">developers area</a> and squeeze all the power of cartob</p>
+          </span>
+          <span class="block last">
+            <label>3</label>
+            <h3>Give us your feedback</h3>
+            <p>Don’t hesitate in <a href="mailto:wadus@cartodb.com">sending us</a> your doubts or requests!</p>
+          </span>
         </div>
         <div class="bottom_white"></div>
-      </div> -->
+      </div>
 
       <div class="tables_list">
         <div class="left">

@@ -1,14 +1,34 @@
 
 /*CONTENT*/
 section#content div.inner_content div.tables_list {width:906px; padding:0 0 40px 0;}
+
+section#content div.inner_content div.notification div.top_white {width:906px; height:7px; padding:0; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
+section#content div.inner_content div.notification div.middle_white {position:relative; width:846px; padding:12px 30px 12px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
+section#content div.inner_content div.notification div.middle_white h2 {width:100%; font:bold 21px Arial; color:#333333;}
+section#content div.inner_content div.notification div.middle_white p {display:inline-block; width:100%; padding:0 0 0 20px; font:normal 15px Arial; color:#80CA73; background:url('/images/admin/icons/done.png') no-repeat 0 1px;}
+section#content div.inner_content div.notification div.middle_white a.close {position:absolute; top:12px; right:13px; width:17px; height:17px; background:url('/images/admin/icons/close_button.png') no-repeat 0 0; text-indent:-9999px;}
+section#content div.inner_content div.notification div.middle_white a.close:hover {background-position:0 -17px;}
+section#content div.inner_content div.notification div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 10px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
+                                      
+
 section#content div.inner_content div.requests_info div.top_white {width:906px; height:7px; padding:0; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
 section#content div.inner_content div.requests_info div.middle_white {position:relative; width:846px; padding:25px 30px 24px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
 section#content div.inner_content div.requests_info div.middle_white h2 {width:100%; font:bold 21px Arial; color:#333333;}
 section#content div.inner_content div.requests_info div.middle_white p {width:100%; font:normal 15px Arial; color:#999999;}
-section#content div.inner_content div.requests_info div.middle_white a.close {position:absolute; top:5px; right:13px; width:17px; height:17px; background:url('/images/admin/icons/close_button.png') no-repeat 0 0; text-indent:-9999px;}
+section#content div.inner_content div.requests_info div.middle_white a.close {position:absolute; top:9px; right:13px; width:17px; height:17px; background:url('/images/admin/icons/close_button.png') no-repeat 0 0; text-indent:-9999px;}
 section#content div.inner_content div.requests_info div.middle_white a.close:hover {background-position:0 -17px;}
+section#content div.inner_content div.requests_info div.middle_white span.block {position:relative; display:inline-block; width:220px; margin:20px 45px 0 0; padding:5px 0 0 40px; vertical-align:top; }
+section#content div.inner_content div.requests_info div.middle_white span.block.last {width:170px; margin:20px 0 0 0;}
+section#content div.inner_content div.requests_info div.middle_white span.block h3 {font:bold 15px Arial; color:#333333;}
+section#content div.inner_content div.requests_info div.middle_white span.block label {position:absolute; left:0; top:0; width:29px; height:15px; border-radius:20px; -webkit-border-radius:20px; -moz-border-radius:20px; background:#DAE7E9;
+  font:bold 15px Arial; color:#333333; text-align:center; padding:7px 0; line-height:15px;}
+section#content div.inner_content div.requests_info div.middle_white span.block p {font:normal 13px Arial; color:#999999;}
+section#content div.inner_content div.requests_info div.middle_white span.block p a {color:#999999; text-decoration:underline;}
+section#content div.inner_content div.requests_info div.middle_white span.block p a:hover {color:#333333;}
 section#content div.inner_content div.requests_info div.middle_white img {margin:10px 0 0 0;}
 section#content div.inner_content div.requests_info div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
+
+
 section#content div.left {display:inline-block; width:626px; vertical-align:top;}
 section#content div.left div.top_blue_medium {float:left; width:626px; height:61px; background:url('/images/admin/backgrounds/top_blue_medium.png') no-repeat 0 0;}
 section#content div.left div.top_blue_medium h3 {float:left; margin:18px 0 0 25px; font:normal 23px "Aller",Arial; color:white; text-shadow:0 1px #718C92;}

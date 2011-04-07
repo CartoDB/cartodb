@@ -7,12 +7,15 @@
     <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="/stylesheets/admin/layout.css" media="screen" rel="stylesheet" type="text/css" />
     <% if env['PATH_INFO'] == '/' || env['PATH_INFO'].blank? %>
-    <link href="/stylesheets/admin/others/developers.css" media="screen" rel="stylesheet" type="text/css" />
+      <link href="/stylesheets/admin/others/developers.css" media="screen" rel="stylesheet" type="text/css" />
     <% else %>
-    <link href="/stylesheets/admin/others/developing.css" media="screen" rel="stylesheet" type="text/css" />
+      <link href="/stylesheets/admin/others/developing.css" media="screen" rel="stylesheet" type="text/css" />
     <% end %>
     <script src="/javascripts/plugins/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/javascripts/plugins/jquery-syntax/public/jquery.syntax.min.js" type="text/javascript" charset="utf-8"></script>
+    <% if env['PATH_INFO'] != '/' || !env['PATH_INFO'].blank? %>
+      <script src="/javascripts/admin/api/doc.js" type="text/javascript" charset="utf-8"></script>
+    <% end %>
     <% if Rails.env.production? %>
     <script type="text/javascript">
 

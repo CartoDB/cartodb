@@ -9,6 +9,7 @@
       $('a.new_table').click(function(ev){
          ev.preventDefault();
          ev.stopPropagation();
+         resetUploadFile();
          $('div.create_window').show();
          $('div.mamufas').fadeIn();
          bindESC();

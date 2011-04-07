@@ -15,6 +15,8 @@ section#content div.inner_content div.requests_info div.top_white {width:906px; 
 section#content div.inner_content div.requests_info div.middle_white {position:relative; width:846px; padding:25px 30px 24px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
 section#content div.inner_content div.requests_info div.middle_white h2 {width:100%; font:bold 21px Arial; color:#333333;}
 section#content div.inner_content div.requests_info div.middle_white p {width:100%; font:normal 15px Arial; color:#999999;}
+section#content div.inner_content div.requests_info div.middle_white p a {color:#666666;}
+section#content div.inner_content div.requests_info div.middle_white p a:hover {color:#333333;}
 section#content div.inner_content div.requests_info div.middle_white a.close {position:absolute; top:9px; right:13px; width:17px; height:17px; background:url('/images/admin/icons/close_button.png') no-repeat 0 0; text-indent:-9999px;}
 section#content div.inner_content div.requests_info div.middle_white a.close:hover {background-position:0 -17px;}
 section#content div.inner_content div.requests_info div.middle_white span.block {position:relative; display:inline-block; width:220px; margin:20px 45px 0 0; padding:5px 0 0 40px; vertical-align:top; }

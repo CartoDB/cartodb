@@ -467,7 +467,7 @@
             '<li><a class="sql" href="#open_sql"><span>SQL</span></a></li>'+
             '<li><a href="#add_row" class="add_row"><span>Add row</span></a></li>'+
             '<li><a href="#add_column" class="add_column"><span>Add column</span></a></li>'+
-            '<li><a><span class="dropdown">Views (2)</span></a></li>'+
+            //'<li><a><span class="dropdown">Views (2)</span></a></li>'+
             '<li class="other"><a href="#"><span class="dropdown">Other queries (2)</span></a></li>'+
           '</ul>'+
           //SQL Console

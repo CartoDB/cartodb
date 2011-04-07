@@ -41,6 +41,11 @@ section.subheader span.privacy_window ul li.selected a {color:white; background-
 section.subheader span.privacy_window ul li.public:hover {background:#6FBE6F;}
 section.subheader span.privacy_window ul li.private:hover {background:#FF2F1E;}
 section.subheader span.privacy_window ul li:hover a {color:white; background-position:0 2px;}
+section.subheader span.privacy_window ul li.disabled {background:none; opacity:0.3;}
+section.subheader span.privacy_window ul li.disabled:hover {background:none;}
+section.subheader span.privacy_window ul li.disabled:hover a {color:black; background-position:0 -28px; cursor:default;}
+
+
 section.subheader span.tags {float:left; width:100%;}
 section.subheader span.tags p {float:left; width:auto; padding:3px 7px; margin:4px 4px 0 0; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:normal 11px Arial; color:white; text-decoration:none; background:#121621;}
 section.subheader span.tags p.last {margin:4px 6px 0 0;}
@@ -68,7 +73,7 @@ section.subheader div.right span.advanced_options a.advanced {position:relative;
 text-decoration:none; color:#949BAA; z-index:100; border:1px solid black; border-bottom:0; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; 
 border-top-left-radius: 5px; border-top-right-radius: 5px; background:url('/images/admin/table/advanced_options_bkg.jpg') repeat-x 0 top;}
 section.subheader div.right span.advanced_options a.advanced span {position:absolute; right:9px; top:6px; height:16px; width:13px; background:url('/images/admin/icons/settings.png') no-repeat right -13px;}
-section.subheader div.right span.advanced_options ul {float:left; width:100px; height:auto; padding:5px 11px 5px 9px; margin:-1px 0 0 0; background:url('/images/admin/table/advanced_options_bkg.jpg') repeat-x 0 bottom; border:1px solid black; -webkit-border-radius: 5px;
+section.subheader div.right span.advanced_options ul {float:left; width:100px; height:auto; padding:5px 11px 5px 9px; margin:-1px 0 0 0; background-image:-moz-linear-gradient(100% 100% 90deg, #232B46, #233151); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#233151), to(#232B46)); border:1px solid black; -webkit-border-radius: 5px;
   -webkit-border-top-right-radius: 0; -moz-border-radius: 5px; -moz-border-radius-topright: 0; border-radius: 5px; border-top-right-radius: 0;}
 section.subheader div.right span.advanced_options ul li {background:none; margin: 0 0 4px 0;}
 section.subheader div.right span.advanced_options ul li a {background:none; font:normal 11px "Helvetica"; color:white; text-decoration:none;}

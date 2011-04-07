@@ -9,10 +9,9 @@ class Api::Json::TablesController < ApplicationController
   before_filter :load_table, :only => [:show, :update, :destroy]
 
   def index
-    @tables = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,stored_schema,
-                            array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+    @tables = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                           from user_tables
-                          where user_tables.user_id = ?", current_user.id).all
+                          where user_tables.user_id = ? order by id DESC", current_user.id).all
     render :json => @tables.map{ |table|
               {
                 :id => table.id,
@@ -46,6 +45,9 @@ class Api::Json::TablesController < ApplicationController
       render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400, :callback => params[:callback]
     end
   rescue => e
+    Rails.logger.info "============== exception on tables#create ====================="
+    Rails.logger.info $!
+    Rails.logger.info "==============================================================="
     render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
            :status => 400, :callback => params[:callback] and return
   end
@@ -74,8 +76,7 @@ class Api::Json::TablesController < ApplicationController
     end
     @table.tags = params[:tags] if params[:tags]
     if @table.save
-      @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,stored_schema,
-                              array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+      @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                             from user_tables
                             where id=?",@table.id).first
       render :json => {
@@ -108,8 +109,7 @@ class Api::Json::TablesController < ApplicationController
   protected
 
   def load_table
-    @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,stored_schema,
-                            array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
+    @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
                           from user_tables
                           where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
     raise RecordNotFound if @table.nil?

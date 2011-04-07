@@ -1,0 +1,254 @@
+GIT
+  remote: git://github.com/ferblape/sequel-rails.git
+  revision: a283527d53895d6189f879bd96d2500b609b82e7
+  specs:
+    sequel-rails (0.1.7)
+      actionpack (~> 3.0.0.rc)
+      activesupport (~> 3.0.0.rc)
+      railties (~> 3.0.0.rc)
+      sequel (~> 3.13)
+
+GIT
+  remote: https://github.com/plataformatec/capybara-zombie.git
+  revision: a94e87adc7bfe1dc537b457a1b3bb14ab90abe91
+  specs:
+    capybara-zombie (0.0.1)
+      capybara (~> 0.4.1)
+      childprocess (~> 0.1.7)
+      multi_json (~> 0.0.5)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    abstract (1.0.0)
+    actionmailer (3.0.6)
+      actionpack (= 3.0.6)
+      mail (~> 2.2.15)
+    actionpack (3.0.6)
+      activemodel (= 3.0.6)
+      activesupport (= 3.0.6)
+      builder (~> 2.1.2)
+      erubis (~> 2.6.6)
+      i18n (~> 0.5.0)
+      rack (~> 1.2.1)
+      rack-mount (~> 0.6.14)
+      rack-test (~> 0.5.7)
+      tzinfo (~> 0.3.23)
+    activemodel (3.0.6)
+      activesupport (= 3.0.6)
+      builder (~> 2.1.2)
+      i18n (~> 0.5.0)
+    activerecord (3.0.6)
+      activemodel (= 3.0.6)
+      activesupport (= 3.0.6)
+      arel (~> 2.0.2)
+      tzinfo (~> 0.3.23)
+    activeresource (3.0.6)
+      activemodel (= 3.0.6)
+      activesupport (= 3.0.6)
+    activesupport (3.0.6)
+    archive-tar-minitar (0.5.2)
+    arel (2.0.9)
+    aws-ses (0.4.1)
+      builder
+      builder
+      mail (~> 2.2.5)
+      mime-types
+      mime-types
+      xml-simple
+      xml-simple
+    builder (2.1.2)
+    capistrano (2.5.21)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.0.0)
+    capistrano-ext (1.2.1)
+      capistrano (>= 1.0.0)
+    capybara (0.4.1.2)
+      celerity (>= 0.7.9)
+      culerity (>= 0.2.4)
+      mime-types (>= 1.16)
+      nokogiri (>= 1.3.3)
+      rack (>= 1.0.0)
+      rack-test (>= 0.5.4)
+      selenium-webdriver (>= 0.0.27)
+      xpath (~> 0.1.3)
+    celerity (0.8.9)
+    childprocess (0.1.8)
+      ffi (~> 1.0.6)
+    colored (1.2)
+    columnize (0.3.2)
+    configuration (1.2.0)
+    culerity (0.2.15)
+    daemon_controller (0.2.6)
+    diff-lcs (1.1.2)
+    email_spec (1.1.1)
+      rspec (~> 2.0)
+    erubis (2.6.6)
+      abstract (>= 1.0.0)
+    fastthread (1.0.7)
+    ffi (1.0.7)
+      rake (>= 0.8.7)
+    git-up (0.5.0)
+      colored (>= 1.2)
+      grit
+    google-spreadsheet-ruby (0.1.2)
+      nokogiri (>= 1.4.3.1)
+      oauth (>= 0.3.6)
+    grit (2.4.1)
+      diff-lcs (~> 1.1)
+      mime-types (~> 1.15)
+    highline (1.6.1)
+    htmlentities (4.3.0)
+    i18n (0.5.0)
+    json_pure (1.5.1)
+    launchy (0.4.0)
+      configuration (>= 0.0.5)
+      rake (>= 0.8.1)
+    linecache19 (0.5.12)
+      ruby_core_source (>= 0.1.4)
+    mail (2.2.15)
+      activesupport (>= 2.3.6)
+      i18n (>= 0.4.0)
+      mime-types (~> 1.16)
+      treetop (~> 1.4.8)
+    mime-types (1.16)
+    mocha (0.9.12)
+    multi_json (0.0.5)
+    net-scp (1.0.4)
+      net-ssh (>= 1.99.1)
+    net-sftp (2.0.5)
+      net-ssh (>= 2.0.9)
+    net-ssh (2.1.4)
+    net-ssh-gateway (1.0.1)
+      net-ssh (>= 1.99.1)
+    nofxx-georuby (1.9.1)
+    nokogiri (1.4.4)
+    oauth (0.4.4)
+    oauth-plugin (0.4.0.pre4)
+      oauth (>= 0.4.4)
+    passenger (3.0.6)
+      daemon_controller (>= 0.2.5)
+      fastthread (>= 1.0.1)
+      rack
+      rake (>= 0.8.1)
+    pg (0.10.1)
+    polyglot (0.3.1)
+    rack (1.2.2)
+    rack-mount (0.6.14)
+      rack (>= 1.0.0)
+    rack-test (0.5.7)
+      rack (>= 1.0)
+    rails (3.0.6)
+      actionmailer (= 3.0.6)
+      actionpack (= 3.0.6)
+      activerecord (= 3.0.6)
+      activeresource (= 3.0.6)
+      activesupport (= 3.0.6)
+      bundler (~> 1.0)
+      railties (= 3.0.6)
+    rails_warden (0.5.2)
+      warden
+    railties (3.0.6)
+      actionpack (= 3.0.6)
+      activesupport (= 3.0.6)
+      rake (>= 0.8.7)
+      thor (~> 0.14.4)
+    rake (0.8.7)
+    rdoc (3.5.3)
+    rgeo (0.2.6)
+    rgeo-geojson (0.2.0)
+      rgeo (>= 0.2.0)
+    roo (1.9.3)
+    rspec (2.5.0)
+      rspec-core (~> 2.5.0)
+      rspec-expectations (~> 2.5.0)
+      rspec-mocks (~> 2.5.0)
+    rspec-core (2.5.1)
+    rspec-expectations (2.5.0)
+      diff-lcs (~> 1.1.2)
+    rspec-mocks (2.5.0)
+    rspec-rails (2.5.0)
+      actionpack (~> 3.0)
+      activesupport (~> 3.0)
+      railties (~> 3.0)
+      rspec (~> 2.5.0)
+    ruby-debug-base19 (0.11.25)
+      columnize (>= 0.3.1)
+      linecache19 (>= 0.5.11)
+      ruby_core_source (>= 0.1.4)
+    ruby-debug19 (0.11.6)
+      columnize (>= 0.3.1)
+      linecache19 (>= 0.5.11)
+      ruby-debug-base19 (>= 0.11.19)
+    ruby-ole (1.2.11.1)
+    ruby_core_source (0.1.5)
+      archive-tar-minitar (>= 0.5.2)
+    rubyzip (0.9.4)
+    selenium-webdriver (0.1.4)
+      childprocess (>= 0.1.7)
+      ffi (>= 1.0.7)
+      json_pure
+      rubyzip
+    sequel (3.22.0)
+    sequel_column_type_array (0.0.2)
+    spreadsheet (0.6.5.3)
+      ruby-ole (>= 1.0)
+    steak (1.1.0)
+      rspec (>= 1.3)
+    thor (0.14.6)
+    timecop (0.3.5)
+    treetop (1.4.9)
+      polyglot (>= 0.3.1)
+    tzinfo (0.3.26)
+    warden (1.0.3)
+      rack (>= 1.0.0)
+    webrat (0.7.3)
+      nokogiri (>= 1.2.0)
+      rack (>= 1.0)
+      rack-test (>= 0.5.3)
+    xml-simple (1.0.15)
+    xpath (0.1.3)
+      nokogiri (~> 1.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  aws-ses (= 0.4.1)
+  capistrano
+  capistrano-ext
+  capybara
+  capybara-zombie!
+  email_spec
+  git-up
+  google-spreadsheet-ruby
+  htmlentities
+  launchy
+  mocha
+  nofxx-georuby
+  oauth
+  oauth-plugin (>= 0.4.0.pre1)
+  passenger
+  pg (= 0.10.1)
+  polyglot
+  rails (= 3.0.6)
+  rails_warden
+  rdoc
+  rgeo
+  rgeo-geojson
+  roo
+  rspec
+  rspec-rails
+  ruby-debug19
+  rubyzip
+  sequel-rails!
+  sequel_column_type_array
+  spreadsheet
+  steak
+  timecop
+  treetop
+  warden
+  webrat

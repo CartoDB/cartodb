@@ -16,7 +16,7 @@
             <p><a class="oauth" href="<%= oauth_credentials_path %>">OAuth</a><a class="jsonp selected" href="<%= jsonp_credentials_path %>">JSONP</a></p>
           </div>
           <div class="middle_white_medium">
-            <p>Add an application to activate the access to you cartoDB tables by JSONP</p>
+            <p>Add an application URL to enable remote access to CartoDB through JSONP</p>
             <%= form_for(@api_key, :url => jsonp_credentials_path, :method => :post) do |f| %>
               <% if request.post? && !@api_key.valid? %>
                 <div class="error_content">

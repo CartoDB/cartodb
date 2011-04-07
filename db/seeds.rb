@@ -68,7 +68,7 @@ table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
 table.user_id = user.id
 table.force_schema = "name varchar, address varchar, latitude float, longitude float"
 table.save
-table.set_lat_lon_columns!(:latitude, :longitude)
+# table.set_lat_lon_columns!(:latitude, :longitude)
 
 table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
 table.insert_row!({:name => "El Estocolmo", :address => "Calle de la Palma 72, Madrid, Spain", :latitude => 40.426949, :longitude => -3.708969})

@@ -281,7 +281,7 @@ describe Table do
     table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:code, "character(5)"], [:title, "character varying(40)"], 
       [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], 
-      [:the_geom, "geometry", "geometry", "point"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
   end
 
@@ -291,7 +291,7 @@ describe Table do
     table.save
     table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:code_wadus, "character(5)"], [:title, "character varying(40)"], 
-      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "point"], 
+      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"],
       [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
   end
@@ -369,7 +369,7 @@ describe Table do
     table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
       [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"], 
-      [:the_geom, "geometry", "geometry", "point"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     row = table.records[:rows][0]
     row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
@@ -459,7 +459,7 @@ describe Table do
       [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"],
       [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"],
       [:city, "character varying"], [:state, "character varying"], [:zip_code, "integer"], [:donation_website, "character varying"], 
-      [:the_geom, "geometry", "geometry", "point"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     table.rows_counted.should == 76
   end
@@ -484,7 +484,7 @@ describe Table do
       [:length, "character varying(255)"], [:area, "character varying(255)"], [:angle, "double precision"], [:name, "character varying(255)"], 
       [:pid, "double precision"], [:lot_navteq, "character varying(255)"], [:version_na, "character varying(255)"], [:vitesse_sp, "double precision"], 
       [:id, "double precision"], [:nombrerest, "character varying(255)"], [:tipocomida, "character varying(255)"], 
-      [:the_geom, "geometry", "geometry", "point"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:the_geom, "geometry", "geometry", "multipolygon"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     table.rows_counted.should == 11
     table.name.should == "vizzuality_shp"
@@ -504,7 +504,7 @@ describe Table do
       [:idtrayecto, "integer"], [:idparada, "integer"], [:minutos, "integer"], [:distancia, "double precision"],
       [:idlinea, "integer"], [:matricula, "character varying"], [:modelo, "character varying"],
       [:ordenparada, "integer"], [:idsiguienteparada, "integer"], 
-      [:the_geom, "geometry", "geometry", "point"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
+      [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     row = table.records[:rows][0]
     row[:cartodb_id].should == 1
@@ -551,7 +551,7 @@ describe Table do
     user = create_user
     table = new_table
     table.user_id = user.id
-    table.force_schema = "address varchar"
+    table.force_schema = "address varchar, the_geom geometry"
     table.the_geom_type = "polygon"
     table.save
 
@@ -599,6 +599,26 @@ describe Table do
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
   end
   
+  it "should create a the_geom_webmercator column with the_geom projected to 3785 even when schema is forced" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, the_geom geometry"
+    table.save
+    table.reload
+
+    lat = Float.random_latitude
+    lon = Float.random_longitude
+    pk = table.insert_row!({:name => "First check_in"})
+
+    the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+    table.update_row!(pk, {:the_geom => the_geom})
+
+    query_result = user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+    ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
+    ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
+  end
+  
   it "should return a geojson for the_geom if it is a point" do
     user = create_user
     table = new_table
@@ -612,10 +632,10 @@ describe Table do
     pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
     records = table.records(:page => 0, :rows_per_page => 1)
-    records[:rows][0][:the_geom].should == the_geom
+    RGeo::GeoJSON.decode(records[:rows][0][:the_geom], :json_parser => :json).as_text.should == "Point(#{"%.3f" % lon} #{"%.3f" % lat})"
     
     record = table.record(pk)
-    record[:the_geom].should == the_geom    
+    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "Point(#{"%.3f" % lon} #{"%.3f" % lat})"
   end
   
   it "should return a kml for the_geom if it is a point" do

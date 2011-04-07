@@ -27,7 +27,7 @@ class Table < Sequel::Model(:user_tables)
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
     errors.add(:name,    'can\'t be blank') if name.blank?
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
-    errors.add(:the_geom_type, 'has an invalid value') unless %W{ point polygon }.include?(the_geom_type)
+    errors.add(:the_geom_type, 'has an invalid value') unless %W{ point polygon multipolygon }.include?(the_geom_type)
     validates_unique [:name, :user_id], :message => 'is already taken'
   end
 
@@ -102,7 +102,8 @@ class Table < Sequel::Model(:user_tables)
       end
     end
     set_the_geom_column!(the_geom_type.try(:to_sym) || "point")
-    set_triggers
+    set_trigger_update_updated_at
+    update_stored_schema!
   end
 
   def after_destroy
@@ -197,7 +198,7 @@ class Table < Sequel::Model(:user_tables)
         end
       end
     end
-    update_the_geom!(raw_attributes, primary_key)
+    update_the_geom!(raw_attributes, primary_key) 
     if modified_schema
       update_stored_schema!
     end
@@ -571,7 +572,7 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def set_triggers
+  def set_trigger_update_updated_at
     owner.in_database(:as => :superuser) do |user_database|
       user_database.run(<<-TRIGGER
         DROP TRIGGER IF EXISTS update_updated_at_trigger ON #{self.name};
@@ -586,7 +587,14 @@ class Table < Sequel::Model(:user_tables)
         CREATE TRIGGER update_updated_at_trigger
         BEFORE UPDATE ON #{self.name}
             FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
-          
+TRIGGER
+      )
+    end
+  end
+  
+  def set_trigger_the_geom_webmercator
+    owner.in_database(:as => :superuser) do |user_database|
+      user_database.run(<<-TRIGGER     
         DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};  
         CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
           BEGIN
@@ -623,19 +631,27 @@ TRIGGER
 
   def set_the_geom_column!(type)
     type = type.to_s.upcase
-    raise InvalidArgument unless %W{ POINT POLYGON }.include?(type)
+    updates = false
+    raise InvalidArgument unless %W{ POINT POLYGON MULTIPOLYGON }.include?(type)
     owner.in_database do |user_database|
+      return if !force_schema.blank? && !user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::SRID},'#{type}',2)")
         user_database.run("CREATE INDEX #{self.name}_the_geom_idx ON #{self.name} USING GIST(the_geom)")
+        updates = true
       end
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
         user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")        
+        updates = true
       end
-      update_stored_schema(user_database)
+      update_stored_schema(user_database) if updates
     end
+    self.the_geom_type = type.downcase
     save_changes
+    if updates
+      set_trigger_the_geom_webmercator
+    end
   end
 
   def set_table_schema!
@@ -756,6 +772,7 @@ TRIGGER
         user_database.run("SELECT AddGeometryColumn ('#{self.imported_table_name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
         user_database.run("CREATE INDEX #{self.imported_table_name}_the_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.imported_table_name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
         user_database.run("VACUUM ANALYZE #{self.imported_table_name}")
+        self.the_geom_type = geometry_type.downcase
       end
       if entries.any?
         entries.each{ |e| FileUtils.rm(e) }

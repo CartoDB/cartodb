@@ -6,7 +6,9 @@
       <li class="selected"><a href="/api/tables/post">Create a table</a></li>
     </ul>
     <h1>Create a table</h1>
-    <p>Creates a new table</p>
+    <p>Creates a new table. Tables can be created importing the schema and the data from a file or empty of data.</p>
+    <p>In the case of importing a file, it's necessary to provide a valid SRID in which the geometry is supposed to be.</p>
+    <p>You are able to indicate the type of geometry that your table is going to store. Allowed values are <a href="http://postgis.refractions.net/documentation/manual-1.5/ch04.html#Geography_Basics">the ones from PostGIS</a>.</p>
 
     <h2>URL</h2>
     <code>/v1/tables</code>
@@ -18,14 +20,16 @@
     <h3>Optional</h3>
     <ul>
       <li><code>name</code>: the name of the table</li>
-      <li><code>schema</code> the schema, in SQL, of the table</li>
+      <li><code>file</code>: a file which from import data. Accepted formats are: <code>CSV</code>, <code>SHP</code> in a zipfile and <code>XLS(X)</code>
+      <li><code>the_geom_type</code>: the geometry type of the_geom column.</li>
+      <li><code>srid</code>: the SRID in which the data from the <code>file</code> is supposed to be</li>
     </ul> 
 
     <h2>EXAMPLE</h2>
     <pre><code>
       POST
         /v1/tables
-          { "name": "species occurrences" }
+          { "name": "species occurrences", :the_geom_type => "Polygon" }
     </code></pre>
     <p class="tab">JSON</p>
     <pre class="syntax javascript">

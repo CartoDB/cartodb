@@ -23,7 +23,7 @@
     });
     $(document).ready(function() {
       $.ajax({
-        url: "http://api.localhost.lan/v1",
+        url: "http://api.testhost.lan:53716/v1",
         data: ({api_key: $.getUrlVar('api_key'), sql: "select * from antantaric_species where family='Polynoidae' limit 10"}),
         dataType: "jsonp",
         success: function( data ) {

@@ -1,10 +1,11 @@
 module CartoDB
+  module API
+    VERSION_1 = "v1"
+  end
 
   PUBLIC_DB_USER = 'publicuser'
-
-  GOOGLE_SRID = 3785
-
-  SRID = 4326
+  GOOGLE_SRID = 3857
+  SRID        = 4326
 
   TYPES = {
     "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "real", "double precision"],
@@ -12,11 +13,4 @@ module CartoDB
     "date"    => ["timestamp", "timestamp without time zone"],
     "boolean" => ["boolean"]
   }
-
-  module API
-
-    VERSION_1 = "v1"
-
-  end
-
 end

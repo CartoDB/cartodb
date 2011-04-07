@@ -1,67 +1,62 @@
-<ul>
+<ul id="api_sidebar">
+  <li><a rel="overview" href="/api/">Overview</a></li>
+  <li><a rel="authentication" href="/api/authentication">Authentication &amp; security</a></li>  
   
-  <li><a rel="overview">
-    <p>Overview</p>
+  <li>
+    <a rel="rest-api">REST API</a>
     <ul>
-      <li><a href="/api/">Overview</a></li>
+      <li rel="tables">
+        <a>Tables</a>
+        <ul>
+          <li><a tree="2" href="/api/tables/post">Create a table</a></li>
+          <li><a tree="2" href="/api/tables/get">Get user tables</a></li>
+          <li><a tree="2" href="/api/table/get">Get table information</a></li>
+          <li><a tree="2" href="/api/table/put">Update table meta info</a></li>
+          <li><a tree="2" href="/api/table/delete">Delete a table</a></li>
+        </ul>
+      </li>
+      <li rel="records">
+        <a>Rows</a>
+        <ul>
+          <li><a tree="2" href="/api/records/get">Get rows</a></li>
+          <li><a tree="2" href="/api/records/post">Create new row</a></li>
+          <li><a tree="2" href="/api/record/get">Get single row</a></li>
+          <li><a tree="2" href="/api/record/put">Update row</a></li>
+          <li><a tree="2" href="/api/record/delete">Delete row</a></li>
+        </ul>
+      </li>
+      <li rel="columns">
+        <a>Columns</a>
+        <ul>
+          <li><a tree="2" href="/api/columns/get">Get schema from table</a></li>
+          <li><a tree="2" href="/api/columns/post">Add new column</a></li>
+          <li><a tree="2" href="/api/column/get">Get type of column</a></li>
+          <li><a tree="2" href="/api/column/put">Update type/name of column</a></li>
+          <li><a tree="2" href="/api/column/delete">Delete column</a></li>
+        </ul>
+      </li>
+      <li rel="record">
+        <a>Cells</a>
+        <ul>
+          <li><a tree="2" href="/api/record/column/get">Get value from row&column</a></li>
+          <li><a tree="2" href="/api/record/column/put">Update value from row&column</a></li>
+        </ul>
+      </li>
     </ul>
   </li>
-  <li><a rel="authentication">
-    <p>Authentication &amp; security</p>
+  
+  <li>
+    <a rel="sqlapi">SQL API</a>
     <ul>
-      <li><a href="/api/authentication">Authentication</a></li>
-    </ul>
-  </li>  
-  <li><a rel="sqlapi">
-    <p>SQL API</p>
-    <ul>
-      <li><a href="/api/sql">Run SQL queries</a></li>
+      <li><a tree="1" href="/api/sql">Run SQL queries</a></li>
     </ul>
   </li> 
-  
-  <li><a rel="sqlapi">
-    <p>Visualization API</p>
+  <li><a rel="sqlapi">Visualization API</a>
     <ul>
-      <li><a href="/api/visualization/javascript">Javascript</a></li>
-      <li><a href="/api/visualization/flash">Flash/Flex</a></li>
+      <li><a tree="1" href="/api/visualization/javascript">Javascript</a></li>
+      <li><a tree="1" href="/api/visualization/flash">Flash/Flex</a></li>
     </ul>
   </li>
 
-  <li rel="tables">
-    <p>REST API - Tables</p>
-    <ul>
-      <li><a href="/api/tables/post">Create a table</a></li>
-      <li><a href="/api/tables/get">Get user tables</a></li>
-      <li><a href="/api/table/get">Get table information</a></li>
-      <li><a href="/api/table/put">Update a table meta information</a></li>
-      <li><a href="/api/table/delete">Delete a table</a></li>
-    </ul>
-  </li>
-  <li rel="records">
-    <p>REST API - Rows</p>
-    <ul>
-      <li><a href="/api/records/get">Get the rows</a></li>
-      <li><a href="/api/records/post">Create a new row</a></li>
-      <li><a href="/api/record/get">Get a single row</a></li>
-      <li><a href="/api/record/put">Update a row</a></li>
-      <li><a href="/api/record/delete">Delete a row</a></li>
-    </ul>
-  </li>
-  <li rel="columns">
-    <p>REST API - Columns</p>
-    <ul>
-      <li><a href="/api/columns/get">Get the schema from a table</a></li>
-      <li><a href="/api/columns/post">Add a new column</a></li>
-      <li><a href="/api/column/get">Get the type of a column</a></li>
-      <li><a href="/api/column/put">Update the type or the name of a column</a></li>
-      <li><a href="/api/column/delete">Delete a column</a></li>
-    </ul>
-  </li>
-  <li rel="record">
-    <p>REST API - Cells</p>
-    <ul>
-      <li><a href="/api/record/column/get">Get the value from a row and a column</a></li>
-      <li><a href="/api/record/column/put">Update the value from a row and a column</a></li>
-    </ul>
-  </li>
+  
 </ul>

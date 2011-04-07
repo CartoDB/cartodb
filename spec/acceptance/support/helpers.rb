@@ -7,7 +7,7 @@ module HelperMethods
   def log_in_as(user)
     visit login_path
     fill_in 'e-mail', :with => user.email
-    fill_in 'password', :with => user.email.split('@').first
+    fill_in 'password', :with => user.password || user.email.split('@').first
     click_link_or_button 'Log in'
   end
 
@@ -51,8 +51,8 @@ module HelperMethods
 
   def default_schema
     [
-      ["cartodb_id", "number"], ["name", "string"], ["latitude", "number", "latitude"], ["longitude", "number", "longitude"],
-      ["description", "string"], ["created_at", "date"], ["updated_at", "date"]
+      ["cartodb_id", "number"], ["name", "string"], ["description", "string"], 
+      ["the_geom", "geometry", "geometry", "point"], ["created_at", "date"], ["updated_at", "date"]
     ]
   end
 

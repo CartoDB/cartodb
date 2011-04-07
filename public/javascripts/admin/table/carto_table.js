@@ -25,7 +25,7 @@
   var first = true;
   var table;
   var loading = false;
-  var headers = [];
+  var headers = {};
   
   var minPage = 0;
   var maxPage = -1;
@@ -37,7 +37,10 @@
   var cell_size = 100;
   var last_cell_size = 100;
 
+  var query_mode = false;
+  var editor;
   var enabled = true;
+  
   var methods = {
 
 
@@ -87,33 +90,62 @@
      });
      
 
-     $.ajax({
-       method: "GET",
-       url: options.getDataUrl,
-			 headers: {"cartodbclient":"true"},
-       success: function(data) {
-         columns = data.schema;
-         $(document).trigger('arrived');
-       }
-     });
-     
-     $.ajax({
-        method: "GET",
-        url: options.getDataUrl+'/records',
-        data: {
-          rows_per_page: options.resultsPerPage,
-          page: petition_pages
-        },
- 			 headers: {"cartodbclient":"true"},
-       success: function(data) {
-         rows = data.rows;
-         total_rows = data.total_rows;
-         $(document).trigger('arrived');
-       }
-     });
+
+     if (!query_mode) {
+       $.ajax({
+         method: "GET",
+         url: options.getDataUrl,
+  			 headers: {"cartodbclient":"true"},
+         success: function(data) {
+           columns = data.schema;
+           $(document).trigger('arrived');
+         }
+       });
+
+       $.ajax({
+          method: "GET",
+          url: options.getDataUrl+'/records',
+          data: {
+            rows_per_page: options.resultsPerPage,
+            page: petition_pages
+          },
+   			 headers: {"cartodbclient":"true"},
+         success: function(data) {
+           rows = data.rows;
+           total_rows = data.total_rows;
+           $(document).trigger('arrived');
+         }
+       });
+     } else {
+       $.ajax({
+         method: "GET",
+         url: '/v1?sql='+escape(editor.getCode()),
+         data: {
+           rows_per_page: options.resultsPerPage,
+           page: petition_pages
+         },
+  			 headers: {"cartodbclient":"true"},
+         success: function(data) {
+           $('div.sql_console p.errors').fadeOut();
+           rows = data.rows;
+           total_rows = data.total_rows;
+           cell_size = 100;
+           last_cell_size = 100;
+           methods.drawQueryColumns(rows);
+           methods.drawQueryRows(rows,direction,actualPage);
+           $(document).unbind('arrived');
+         },
+         error: function() {
+           $('div.sql_console p.errors').stop().fadeIn().delay(10000).fadeOut();
+           methods.drawQueryColumns([{'':''}]);
+         }
+       });
+     }
+
      
      
       function startTable() {
+        
         if (total_rows==0) {
           //Start new table
           //Calculate width of th on header
@@ -122,7 +154,7 @@
             cell_size = ((window_width-150)/(columns.length-1))-27;
             last_cell_size = cell_size;
           }
-          
+
           maxPage = -1;
           if ($(table).children('thead').length==0) {methods.drawColumns(columns);}
           methods.startTable();
@@ -159,7 +191,7 @@
     drawColumns: function(data) {
       //Draw the columns headers
       var thead = '<thead><tr><th class="first"><div></div></th>';
-      headers = [];
+      headers = {};
       
       $.each(data,function(index,element){
         headers[element[0]] = element[1];
@@ -236,6 +268,35 @@
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  DRAW COLUMNS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    drawQueryColumns: function(data) {
+      //Draw the columns headers
+      var thead = '<thead><tr><th class="first"><div></div></th>';
+      headers = {};
+      
+      if (data.length>0) {
+        $.each(data[0],function(i,ele){
+          thead += '<th>'+
+                     '<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
+                       '<span class="long">'+
+                         '<h3 class="'+((i=="cartodb_id" || i=="created_at" || i=="updated_at")?'static':'')+'">'+i+'</h3>'+
+                       '</span>'+
+                     '</div>'+
+                   '</th>';
+
+        });
+      }  
+
+      
+      thead += "</thead></tr>";
+      $(table).append(thead);
+      methods.resizeTable();
+    },
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW ROWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawRows: function(options,data,direction,page) {
@@ -261,10 +322,10 @@
                                 '<li class="last"><a href="#add_row" class="add_row">Add new row</a></li>' +
                               '</ul>' +
                             '</span>';
-        tbody += '<tr r="'+element.cartodb_id+'"><td class="first" r="'+ element.cartodb_id +'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
-        $.each(element, function(j,elem){
-          tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element.cartodb_id +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((elem==null)?'':elem)+'</div></td>';
-        });
+        tbody += '<tr r="'+element['cartodb_id']+'"><td class="first" r="'+ element['cartodb_id'] +'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
+    		for(var j in element){
+    			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
+    		}
         
         var start = tbody.lastIndexOf('"width:');
         var end = tbody.lastIndexOf('px"');
@@ -287,6 +348,53 @@
       } else {
         $(window).scrollTo({top:previous_scroll+'px',left:'0'},300,{onAfter: function() {loading = false; enabled = true;}});
       }
+    },
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  DRAW QUERY ROWS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    drawQueryRows: function(data,direction,page) {
+
+      if ($(table).children('tbody').length==0) {
+        var tbody = '<tbody style="padding-top:53px;">';
+      } else {
+        var tbody = '';
+      }
+
+
+      //Loop all the data
+      $.each(data, function(i,element){
+
+        tbody += '<tr><td class="first"><div></div></td>';
+    		for(var j in element){
+    			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
+    		}
+        
+        var start = tbody.lastIndexOf('"width:');
+        var end = tbody.lastIndexOf('px"');
+        tbody = tbody.substring(0,start) + '"width:' + last_cell_size + tbody.substring(end);
+        
+        tbody += '</tr>';
+      });
+
+
+      if ($(table).children('tbody').length==0) {
+        tbody += '</tbody>';
+        $(table).append(tbody);
+        methods.resizeTable();
+      } else {
+        (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
+      }
+      
+      if (direction!='') {
+        methods.checkReuse(direction);
+      } else {
+        $(window).scrollTo({top:previous_scroll+'px',left:'0'},300,{onAfter: function() {loading = false; enabled = true;}});
+      }
+
+      
     },
 
 
@@ -368,10 +476,10 @@
               '<h3>Saved Query 2 / <strong>187 results</strong> <a class="get_api_call" href="#get_api_call">GET API CALL</a></h3>'+
               '<a href="#close_this_view" class="close">close this view</a>'+
             '</span>'+
-            '<textarea></textarea>'+
+            '<div class="outer_textarea"><textarea id="sql_textarea">SELECT * FROM '+table_name+'</textarea></div>'+
             '<span>'+
               '<a class="try_query">Try query</a>'+
-              '<a class="save_query">Save this query</a>'+
+              '<p class="errors">Your query is not correct, try again with another ;)</p>'+
             '</span>'+
           '</div>'+
         '</div>');
@@ -588,6 +696,16 @@
           '</div>'+
         '</div>'
         );
+        
+        
+        var textarea = $('#sql_textarea')[0];
+        editor = CodeMirror.fromTextArea('sql_textarea', {
+          height: "50px",
+          parserfile: "parsesql.js",
+          stylesheet: "/stylesheets/admin/table/sqlcolors.css",
+          path: "/javascripts/plugins/codemirror/"
+        });
+        //console.log(editor.getCode());
     },
 
 
@@ -767,11 +885,14 @@
           $(table).children('thead').css('top','99px');
           if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
             $('div.general_options').addClass('end');
+            $('div.sql_console').addClass('end');
           } else {
             $('div.general_options').removeClass('end');
+            $('div.sql_console').removeClass('end');
           }
         } else {
           $('div.general_options').removeClass('end');
+          $('div.sql_console').removeClass('end');
           $('section.subheader').css('top',58-$(document).scrollTop()+'px');
           $(table).children('thead').css('top',160-$(document).scrollTop()+'px');
         }
@@ -805,8 +926,10 @@
       $('div.table_position').scroll(function(ev){
         if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
           $('div.general_options').addClass('end');
+          $('div.sql_console').addClass('end');
         } else {
           $('div.general_options').removeClass('end');
+          $('div.sql_console').removeClass('end');
         }
         
         if ($('div.delete_row').is(':visible')) {
@@ -819,8 +942,9 @@
         $(table).children('tbody').children('tr').children('td.first').css('left',$('div.table_position').scrollLeft()+'px');
         $(table).children('thead').children('tr').children('th.first').css('left',$('div.table_position').scrollLeft()+'px');
         $(table).children('thead').css('left',-$('div.table_position').scrollLeft()+'px');
+        
+        methods.paginateControls();
       });
-
     },
 
 
@@ -871,6 +995,11 @@
       //  TABLE REFRESH OR ENABLED         //
       ///////////////////////////////////////
       $('body').livequery('enabled',function(event,status){
+        if (!status) {
+          $('span.paginate').fadeOut();
+        } else {
+          $('span.paginate').fadeIn();
+        }
         enabled = status;
       });
       $('body').livequery('refresh',function(event){
@@ -882,7 +1011,7 @@
       //  DOUBLE CLICK -> Open editor      //
       ///////////////////////////////////////
       $(document).dblclick(function(event){
-        if (enabled) {
+        if (enabled && !query_mode) {
           var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
@@ -1006,11 +1135,6 @@
           //Clicking in first column element + Key
           if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
             methods.closeTablePopups();
-            
-            // $('tbody tr').removeClass('selecting_first');
-            // $('tbody tr').removeClass('selecting');
-            // $('tbody tr').removeClass('selecting_last');
-            // $(target).parent().parent().removeClass('selecting_first').removeClass('border').addClass('selected');
 
             if (event.preventDefault) {
               event.preventDefault();
@@ -1025,11 +1149,6 @@
           if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
             if (!$(target).parent().parent().parent().hasClass('selecting_first')) {
               methods.closeTablePopups();
-              // $('tbody tr').removeClass('editing');
-              // $('tbody tr').removeClass('selecting_first');
-              // $('tbody tr').removeClass('selecting');
-              // $('tbody tr').removeClass('selecting_last');
-              //$('tbody tr').removeClass('selected');
               
               if (!$(target).parent().parent().parent().hasClass('selected')) {
                 $(target).parent().parent().parent().addClass('editing');
@@ -1064,127 +1183,6 @@
           }
         } 
       });
-
-
-
-      ///////////////////////////////////////
-      //  Editing selected rows            //
-      ///////////////////////////////////////
-      // $(document).mousedown(function(event){
-      //   if (enabled) {
-      //     var target = event.target || event.srcElement;
-      //     var targetElement = target.nodeName.toLowerCase();
-      // 
-      //     if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
-      //       $('table tbody tr td.first div span').hide();
-      //       $('table tbody tr td.first div a.options').removeClass('selected');
-      //       $('tbody tr').removeClass('editing');
-      //       $('tbody tr').removeClass('selecting_first').removeClass('border');
-      //       $('tbody tr').removeClass('selecting');
-      //       $('tbody tr').removeClass('selecting_last');
-      //       $('tbody tr').removeClass('selected');
-      //       var first_row = $(target).parent().parent();
-      //       first_row.addClass('selecting_first');
-      //       var initial_x = first_row.position().top;
-      // 
-      //       if (event.preventDefault) {
-      //         event.preventDefault();
-      //         event.stopPropagation();
-      //       } else {
-      //         event.stopPropagation();
-      //         event.returnValue = false;
-      //       }
-      //     }
-      // 
-      //     $(document).mousemove(function(event){
-      //       var target = event.target || event.srcElement;
-      //       var targetElement = target.nodeName.toLowerCase();
-      // 
-      //       if (targetElement == "div" && $(target).parent().is('td')) {
-      //         var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-      //         var current_row = $(target).parent().parent();
-      //         var current_x = current_row.position().top;
-      //         $(table).children('tbody').children('tr').removeClass('selecting');
-      //         current_row.addClass('selecting');
-      //         var find = false;
-      //         var cursor = first_row;
-      // 
-      //         while (!find) {
-      //           if (initial_x<current_x) {
-      //             first_row.removeClass('selecting_last').addClass('selecting_first');
-      //             if (cursor.attr('r')==current_row.attr('r')) {
-      //               cursor.addClass('selecting');
-      //               cursor.next().removeClass('selecting');
-      //               find=true;
-      //             } else {
-      //               cursor.next().removeClass('selecting');
-      //               cursor.addClass('selecting');
-      //               cursor = cursor.next();
-      //             }
-      //           } else if (initial_x>current_x) {
-      //             first_row.removeClass('selecting_first').addClass('selecting_last');
-      //             if (cursor.attr('r')==current_row.attr('r')) {
-      //               cursor.addClass('selecting');
-      //               cursor.prev().removeClass('selecting');
-      //               find=true;
-      //             } else {
-      //               cursor.prev().removeClass('selecting');
-      //               cursor.addClass('selecting');
-      //               cursor = cursor.prev();
-      //             }
-      //           } else {
-      //             find=true;
-      //             return false;
-      //           }
-      //         }
-      // 
-      //       } else {
-      //       }
-      //       if (event.preventDefault) {
-      //         event.preventDefault();
-      //         event.stopPropagation();
-      //       } else {
-      //         event.stopPropagation();
-      //         event.returnValue = false;
-      //       }
-      //     });
-      //   }
-      // });
-      // $(document).mouseup(function(event){
-      //   if (enabled) {
-      //     var target = event.target || event.srcElement;
-      //     var targetElement = target.nodeName.toLowerCase();
-      // 
-      //     if (targetElement == "div" && $(target).parent().is('td')) {
-      //       var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-      //       if ($('tbody tr').hasClass('selecting_last')) {
-      //         $('tbody tr[r="'+data.row+'"]').addClass('selecting_first');
-      //         $('tbody tr[r="'+data.row+'"]').addClass('border');
-      //         $('tbody tr.selecting_last').addClass('border');
-      //       } else {
-      //         $('tbody tr[r="'+data.row+'"]').addClass('selecting_last').addClass('border');
-      //         $('tbody tr.selecting_first').addClass('border');
-      //       }
-      // 
-      //       if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_last') && $('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('selecting_last');
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('border');
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('selecting');
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('editing');
-      //         $('tbody tr[r="'+data.row+'"]').removeClass('selected');
-      //       }
-      //       if (event.preventDefault) {
-      //         event.preventDefault();
-      //         event.stopPropagation();
-      //       } else {
-      //         event.stopPropagation();
-      //         event.returnValue = false;
-      //       }
-      //     }
-      //     $(document).unbind('mousemove');
-      //   }
-      // });
 
 
 
@@ -2028,9 +2026,13 @@
       $('div.general_options ul li a.sql').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-        
+
         $('div.general_options div.sql_console').show();
         $('div.general_options ul').addClass('sql');
+      });
+      $('div.general_options a.try_query').livequery('click',function(ev){
+        query_mode = true;
+        methods.refreshTable(0);
       });
 
 
@@ -2038,41 +2040,49 @@
       //  Move table -> left/right         //
       ///////////////////////////////////////
       $('span.paginate a.next').click(function(ev){
-
         stopPropagation(ev);
         methods.closeTablePopups();
                   
-        var scrollable = $('div.table_position').scrollLeft();
-        var window_width = $(window).width();
-        var second = $('table thead tr th:eq(2)').position().left;
-        var test_1 = $('table thead tr th:eq(3)').position().left;
-        var test_2 = $('table thead tr th:eq(4)').position().left;
-        var length = test_2 - test_1;
-
         try {
+          var scrollable = $('div.table_position').scrollLeft();
+          var window_width = $(window).width();
+          var second = $('table thead tr th:eq(2)').position().left;
+          var test_1 = $('table thead tr th:eq(3)').position().left;
+          var test_2 = $('table thead tr th:eq(4)').position().left;
+          var length = test_2 - test_1;
+          
           var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+3;
           var position = $('table thead tr th:eq('+column_position+')').offset().left;
           $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
         } catch (e) {
           $('div.table_position').scrollTo({top:'0',left:'100%'},200);
         }
+        methods.paginateControls();
       });
-      
+         
       $('span.paginate a.previous').click(function(ev){
-        
         stopPropagation(ev);
         methods.closeTablePopups();
       
-        var scrollable = $('div.table_position').scrollLeft();
-        var window_width = $(window).width();
-        var second = $('table thead tr th:eq(2)').position().left;
-        var test_1 = $('table thead tr th:eq(3)').position().left;
-        var test_2 = $('table thead tr th:eq(4)').position().left;
-        var length = test_2 - test_1;
+        try {
+          var scrollable = $('div.table_position').scrollLeft();
+          var window_width = $(window).width();
+          var second = $('table thead tr th:eq(2)').position().left;
+          var test_1 = $('table thead tr th:eq(3)').position().left;
+          var test_2 = $('table thead tr th:eq(4)').position().left;
+          var length = test_2 - test_1;
 
-        var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+1;
-        var position = $('table thead tr th:eq('+column_position+')').offset().left;
-        $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
+          var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+1;
+          if (column_position>$('thead tr th').size()) {
+            column_position = $('thead tr th').size()-1;
+          }
+          var position = $('table thead tr th:eq('+column_position+')').offset().left;
+          $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
+        } catch (e) {
+          $('div.table_position').scrollTo({top:'0',left:'0px'},200);
+        }
+
+        methods.paginateControls();
       });
     },
 
@@ -2094,6 +2104,33 @@
       });
     },
 
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  PAGINATE CONTROLS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    paginateControls: function(){
+      var scrollable = $('div.table_position').scrollLeft();
+      var window_width = $(window).width();
+      var table_width = $(table).width();
+
+      if (window_width==table_width) {
+        $('span.paginate a#previousButton').addClass('disabled');
+        $('span.paginate a#nextButton').addClass('disabled');
+      } else {
+        if (scrollable<1) {
+          $('span.paginate a#previousButton').addClass('disabled');
+          $('span.paginate a#nextButton').removeClass('disabled');
+        } else if ((window_width+scrollable)<=$(table).width()) {
+          $('span.paginate a#nextButton').addClass('disabled');
+          $('span.paginate a#previousButton').removeClass('disabled');
+        } else {
+          $('span.paginate a#previousButton').removeClass('disabled');
+          $('span.paginate a#nextButton').removeClass('disabled');
+        }
+      }
+    },
+    
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2121,6 +2158,8 @@
         $(table).parent().height(parent_height-162);
       }
       
+      //Control pagination
+      methods.paginateControls();
     },
 
 

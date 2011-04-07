@@ -3,16 +3,15 @@
 class Api::Json::TablesController < ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
 
-  skip_before_filter :verify_authenticity_token
+  skip_before_filter :app_host_required, :verify_authenticity_token
 
   before_filter :api_authorization_required
   before_filter :load_table, :only => [:show, :update, :destroy]
 
   def index
-    @tables = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,stored_schema,
-                            array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+    @tables = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                           from user_tables
-                          where user_tables.user_id = ?", current_user.id).all
+                          where user_tables.user_id = ? order by id DESC", current_user.id).all
     render :json => @tables.map{ |table|
               {
                 :id => table.id,
@@ -35,7 +34,9 @@ class Api::Json::TablesController < ApplicationController
         $progress[params["X-Progress-ID".to_sym]] = 0
       end
     end
-    @table.force_schema = params[:schema] if params[:schema]
+    @table.importing_SRID = params[:srid] || CartoDB::SRID
+    @table.force_schema   = params[:schema] if params[:schema]
+    @table.the_geom_type  = params[:the_geom_type].downcase if params[:the_geom_type]
     if @table.valid? && @table.save
       render :json => { :id => @table.id, :name => @table.name, :schema => @table.schema }.to_json,
              :status => 200,
@@ -45,6 +46,9 @@ class Api::Json::TablesController < ApplicationController
       render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400, :callback => params[:callback]
     end
   rescue => e
+    Rails.logger.info "============== exception on tables#create ====================="
+    Rails.logger.info $!
+    Rails.logger.info "==============================================================="
     render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
            :status => 400, :callback => params[:callback] and return
   end
@@ -66,15 +70,14 @@ class Api::Json::TablesController < ApplicationController
     if params.keys.include?("latitude_column") && params.keys.include?("longitude_column")
       latitude_column = params[:latitude_column] == "nil" ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == "nil" ? nil : params[:longitude_column].try(:to_sym)
-      @table.set_lat_lon_columns!(latitude_column, longitude_column)
-    elsif params.keys.include?("address_column")
-      address_column = params[:address_column] == "nil" ? nil : params[:address_column]
-      @table.set_address_column!(address_column)
+      @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
+    # elsif params.keys.include?("address_column")
+    #   address_column = params[:address_column] == "nil" ? nil : params[:address_column]
+    #   @table.set_address_column!(address_column)
     end
     @table.tags = params[:tags] if params[:tags]
     if @table.save
-      @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,stored_schema,
-                              array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+      @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                             from user_tables
                             where id=?",@table.id).first
       render :json => {
@@ -107,8 +110,7 @@ class Api::Json::TablesController < ApplicationController
   protected
 
   def load_table
-    @table = Table.fetch("select user_tables.id,user_tables.user_id,user_tables.name,user_tables.privacy,user_tables.geometry_columns,stored_schema,
-                            array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
+    @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
                           from user_tables
                           where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
     raise RecordNotFound if @table.nil?

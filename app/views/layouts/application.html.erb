@@ -8,7 +8,8 @@
     <%= yield :js %>
     <%= yield :head %>
     <%= csrf_meta_tag %>
-    <noscript><meta http-equiv="refresh" content="0;url=/prototypes/javascript.html"></noscript>
+    <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
+    <%= render 'shared/analytics' %>
   </head>
   <body>
     <header>
@@ -18,8 +19,8 @@
         <li><%= link_to 'Superadmin', superadmin_users_path %></li>
         <% end %>
         <li><a href="<%= APP_CONFIG[:developers_host] %>">Developers</a></li>
-        <li><a href="http://blog.cartodb.com" target="_blank">Blog</a></li>        
-        <li class="last"><%= link_to current_user.email, '/prototypes/account.html', :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
+        <li><a href="http://blog.cartodb.com" target="_blank">Blog</a></li>
+        <li class="last"><%= link_to current_user.email, edit_user_path(current_user), :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
       </ul>
     </header>
 
@@ -48,7 +49,7 @@
         <section class="footer">
           <a class="logo" href="/">CartoDB</a>
           <div class="long">
-            <p class="rights">All rights reserved 2011. <a href="#" target="_blank">Contact us</a> / <a href="#" target="_blank">Give us your feedback</a> / <a href="#" target="_blank">Read the TOS</a></p>
+            <p class="rights">All rights reserved 2011. <a href="mailto:wadus@cartodb.com">Contact us</a> / <a href="mailto:wadus@cartodb.com">Give us your feedback</a></p>
             <span class="poweredby">
             <p class="vizzuality">A product by </p><a href="http://www.vizzuality.com" target="_blank">Vizzuality</a>
             </span>
@@ -58,7 +59,5 @@
     </footer>
     <% end %>
     <%= yield :mamufas %>
-    <%= render 'shared/analytics' %>
-
   </body>
 </html>

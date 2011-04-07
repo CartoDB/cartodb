@@ -18,13 +18,13 @@ section.subheader div.left {position:relative; float:left; width:auto; padding:1
 section.subheader div.left ul.tables_list {float:left; width:auto; margin:0;}
 section.subheader div.left ul.tables_list li {float:left; width:auto; margin:0 10px 0 0;}
 section.subheader div.left ul.tables_list li a {float:left; height:31px; padding:0 0 0 4px; background:url('/images/admin/dashboard/nav_left.png') no-repeat 0 0; color:white; text-decoration:none;}
-section.subheader div.left ul.tables_list li a.oth {color:#FFCC00;}
+section.subheader div.left ul.tables_list li a.oth {color:#FFFFFF;}
 section.subheader div.left ul.tables_list li a span {float:left; padding:8px 10px 8px 5px; font:normal 13px Arial; text-shadow:0 1px black; background:url('/images/admin/dashboard/nav_right.png') no-repeat right 0; color:white;}
-section.subheader div.left ul.tables_list li a.oth span {color:#FFCC00;}
+section.subheader div.left ul.tables_list li a.oth span {color:#FFFFFF;}
 section.subheader div.left ul.tables_list li a:hover {background-position:0 -31px;}
 section.subheader div.left ul.tables_list li a:hover span {background-position:right -31px;}
 section.subheader div.left ul.tables_list li.selected a {background-position:0 -31px;}
-section.subheader div.left ul.tables_list li.selected a span {background-position:right -31px; color: white;}
+section.subheader div.left ul.tables_list li.selected a span {background-position:right -31px; color: #949BAB;}
 section.subheader div.left ul.tables_list li.selected a:hover {background-position:0 -31px; cursor:default;}
 section.subheader div.left ul.tables_list li.selected a:hover span {background-position:right -31px;}
 section.subheader div.right {position:relative; float:right; width:auto; padding:18px 0 0 0; color:white!important;}
@@ -61,27 +61,46 @@ div.mamufas div.create_window a.close_create.last:hover {background-position:0 -
 div.mamufas div.create_window div.inner_ span.loading {float:left; display:none; opacity:0; width:347px; height:40px; padding:0 0 0 47px; margin:10px; background:url('/images/admin/icons/loading.gif') no-repeat 0 7px;}
 div.mamufas div.create_window div.inner_ span.loading h5 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.create_window div.inner_ span.loading p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
+div.mamufas div.create_window div.inner_ span.loading p a {color:#666666; text-decoration:underline; cursor:pointer;}
+div.mamufas div.create_window div.inner_ span.loading p a:hover {color:#333333;}
+div.mamufas div.create_window div.inner_ span.loading.error {background:url('/images/admin/table/stop.png') no-repeat 0 0;}
 div.mamufas div.create_window div.inner_ {float:left; width:414px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
 div.mamufas div.create_window div.inner_ span.top {float:left; width:394px; padding:15px 10px 25px 10px; border-bottom:1px solid #CCCCCC;}
 div.mamufas div.create_window div.inner_ span.top h4 {font:bold 15px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.create_window div.inner_ span.top p {padding:5px 0 5px 0; font:normal 13px "Helvetica",Arial; color:#999999; text-shadow:0 1px white;}
 div.mamufas div.create_window div.inner_ span.top ul {padding:10px 0 0 0;}
-div.mamufas div.create_window div.inner_ span.top ul li {float:left; width:auto!important; padding:10px;}
+div.mamufas div.create_window div.inner_ span.top ul li {float:left; width:auto; padding:10px;}
+
+
+div.mamufas div.create_window div.inner_ span.top ul li div.geom_type {display:none;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type {display:block; margin:10px 0 0 0;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type span {display:inline-block; width:300px; padding:0 0 4px 15px; margin:0 0 0 15px; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -97px;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type span.selected {background-position:0 2px;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type span:hover {background-position:0 2px; cursor:pointer;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type span.selected:hover {background-position:0 2px;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type span a {background:none; padding:0;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type span a:hover {cursor:pointer;}
+
+
+
+div.mamufas div.create_window div.inner_ span.top ul li ul li.selected a {background-position:0 1px;}
 div.mamufas div.create_window div.inner_ span.top ul li a {padding:0 0 0 18px; font:bold 13px Arial; color:#333333; text-decoration:none; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -28px;}
 div.mamufas div.create_window div.inner_ span.top ul li a:hover {color:#111111; background-position:0 -67px;}
-div.mamufas div.create_window div.inner_ span.top ul li.selected {width:auto; padding:10px; background:#2A3857; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected {width:373px!important; padding:10px; background:#2A3857; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected a {color:white; background-position:0 1px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected a:hover {color:white; cursor:default; background-position:0 1px;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected ul.qq-upload-list {display:none;}
 div.mamufas div.create_window div.inner_ span.top ul li span.file {display:none;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file {position:relative; display:block; width:348px; height:28px; margin:10px 10px 0 15px; border:1px solid #000000; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file {display:block;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.progress {display:none;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file.uploading div.select_file {display:none;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file.uploading div.progress {display:block;}
-div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file a {float:left; height:12px; margin:3px 0 0 2px; padding:4px 7px; border:1px solid #999; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
+div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file div#uploader .qq-upload-button{float:left; height:12px; margin:3px 0 0 2px; padding:4px 7px; border:1px solid #999; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
   text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
-div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file a.hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
-div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file p {float:left; margin:1px 0 0 10px; font:normal 13px "Helvetica",Arial; color:#B3B3B3;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file div#uploader .qq-upload-button:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file p {float:left; margin:1px 0 0 5px; font:normal 13px "Helvetica",Arial; color:#B3B3B3;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file p.error {color:#FF6600;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file input {position:absolute; top:0; left:0; width:350px; height:30px; opacity:0;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file input:hover {cursor:pointer;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.progress span.progress {float:left; margin:1px; width:5px; max-width:346px; height:26px; background:yellow; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px;

@@ -15,7 +15,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def create
-    debugger
     if params[:user]
       attributes = params[:user]
       @user = User.new

@@ -22,7 +22,7 @@
           <h3>Your <strong>account settings</strong></h3>
         </div>
         <div class="middle_white_medium">
-          <p>This is your login data. You'll need it to use CartoDB</p>
+          <p>This is your login data. You'll need it to use CartoDB.</p>
           <%= form_for current_user do |f| %>
             <span class="form_block">
               <%= f.label :email, 'YOUR EMAIL' %>
@@ -33,7 +33,7 @@
               <%= f.password_field :password, :disabled => true %>
             </span>
             <span class="form_block last">
-              <%= f.label :password_confirmation, 'CONFIRM YOUR PASSWORD' %>
+              <%= f.label :password_confirmation, 'CONFIRM PASSWORD' %>
               <%= f.password_field :password_confirmation, :disabled => true %>
             </span>
             <span class="submit_block">

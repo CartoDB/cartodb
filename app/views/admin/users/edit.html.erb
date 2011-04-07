@@ -22,7 +22,7 @@
           <h3>Your <strong>account settings</strong></h3>
         </div>
         <div class="middle_white_medium">
-          <p>This is your login data. You need it for login into CartoDB</p>
+          <p>This is your login data. You'll need it to use CartoDB</p>
           <%= form_for current_user do |f| %>
             <span class="form_block">
               <%= f.label :email, 'YOUR EMAIL' %>
@@ -40,12 +40,12 @@
               <button type="submit" class="submit">
                 <span>Save changes</span>
               </button>
-              <p>To edit this data you need to <a class="open_unlock" href="#unlock_account">unlock your chain</a></p>
+              <p>To edit this data you need to <a class="open_unlock" href="#unlock_account">verify your identity</a></p>
             </span>
           <% end %>
           <div class="delete">
             <a href="#delete_account" class="delete_account"><span>Delete your account</span></a>
-            <p>All your user data and private tables will be erased of our systems</p>
+            <p><strong> All</strong> your user information and tables will be erased</p>
           </div>
         </div>
         <div class="bottom_white_medium"></div>

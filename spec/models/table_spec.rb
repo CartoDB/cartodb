@@ -638,6 +638,21 @@ describe Table do
     RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "Point(#{"%.3f" % lon} #{"%.3f" % lat})"
   end
   
+  it "should raise an error when the geojson provided is invalid" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.save
+    table.reload
+
+    lat = Float.random_latitude
+    lon = Float.random_longitude
+    the_geom = %Q{\{"type":""""Point","coordinates":[#{lon},#{lat}]\}}
+    lambda {
+      table.insert_row!({:name => "First check_in", :the_geom => the_geom})
+    }.should raise_error(CartoDB::InvalidGeoJSONFormat)
+  end
+  
   it "should be able to set a the_geom column from a latitude column and a longitude column" do
     user = create_user
     table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',

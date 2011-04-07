@@ -69,10 +69,10 @@ class Api::Json::TablesController < ApplicationController
     if params.keys.include?("latitude_column") && params.keys.include?("longitude_column")
       latitude_column = params[:latitude_column] == "nil" ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == "nil" ? nil : params[:longitude_column].try(:to_sym)
-      @table.set_lat_lon_columns!(latitude_column, longitude_column)
-    elsif params.keys.include?("address_column")
-      address_column = params[:address_column] == "nil" ? nil : params[:address_column]
-      @table.set_address_column!(address_column)
+      @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
+    # elsif params.keys.include?("address_column")
+    #   address_column = params[:address_column] == "nil" ? nil : params[:address_column]
+    #   @table.set_address_column!(address_column)
     end
     @table.tags = params[:tags] if params[:tags]
     if @table.save

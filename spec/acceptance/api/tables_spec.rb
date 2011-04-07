@@ -140,25 +140,25 @@ feature "API 1.0 tables management" do
     end
   end
 
-  pending "Update a table and set the lat and lot columns to nil" do
-    table = create_table :user_id => @user.id, :name => 'My table #1'
+  scenario "Update a table and set the lat and lot columns" do
+    table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
+                      :tags => 'movies, personal'
+    table.user_id = @user.id
+    table.force_schema = "name varchar, address varchar, latitude float, longitude float"
+    table.save
+    pk = table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
+    table.insert_row!({:name => "El Estocolmo", :address => "Calle de la Palma 72, Madrid, Spain", :latitude => 40.426949, :longitude => -3.708969})
+    table.insert_row!({:name => "El Rey del Tallarín", :address => "Plaza Conde de Toreno 2, Madrid, Spain", :latitude => 40.424654, :longitude => -3.709570})
+    table.insert_row!({:name => "El Lacón", :address => "Manuel Fernández y González 8, Madrid, Spain", :latitude => 40.415113, :longitude => -3.699871})
+    table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
 
     put_json api_table_url(table.name), {
-      :latitude_column => "nil",
-      :longitude_column => "nil"
+      :latitude_column => "latitude",
+      :longitude_column => "longitude"
     }
     parse_json(response) do |r|
       r.status.should be_success
-      r.body[:schema].should include(["latitude", "number"])
-      r.body[:schema].should include(["longitude", "number"])
-    end
-
-    put_json api_table_url(table.name), {
-      :address_column => "name"
-    }
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:schema].should include(["name", "string", "address"])
+      r.body[:schema].should include(["the_geom", "geometry", "geometry", "point"])
     end
   end
 

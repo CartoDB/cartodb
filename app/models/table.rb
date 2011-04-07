@@ -104,6 +104,7 @@ class Table < Sequel::Model(:user_tables)
     set_the_geom_column!(the_geom_type.try(:to_sym) || "point")
     set_trigger_update_updated_at
     update_stored_schema!
+    self.force_schema = nil
   end
 
   def after_destroy
@@ -334,7 +335,7 @@ class Table < Sequel::Model(:user_tables)
     end
     owner.in_database do |user_database|
       select = if schema.flatten.include?(:the_geom)
-        schema.select{|c| c[0] != :the_geom }.map{|c| c[0] }.join(',') + ",ST_AsGeoJSON(the_geom,6) as the_geom"
+        schema.map{ |c| c[0] == :the_geom ? "ST_AsGeoJSON(the_geom,6) as the_geom" : c[0]}.join(',')
       else
         schema.map{|c| c[0] }.join(',')
       end
@@ -397,6 +398,20 @@ class Table < Sequel::Model(:user_tables)
       update_stored_schema(user_database)
     end
     save_changes
+  end
+  
+  def georeference_from!(options = {})
+    if !options[:latitude_column].blank? && !options[:longitude_column].blank?
+      set_the_geom_column!("point")
+      owner.in_database do |user_database|
+        user_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')',#{CartoDB::SRID})")
+        user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{options[:longitude_column]}")
+        user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{options[:latitude_column]}")
+      end
+      update_stored_schema!
+    else
+      raise InvalidArgument
+    end
   end
 
   private

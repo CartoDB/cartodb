@@ -63,6 +63,30 @@ feature "API 1.0 tables management" do
        ]
     end
   end
+  
+  scenario "Create a new table specifying a geometry of type point" do
+    post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Point" }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:name].should == "my_new_imported_table"
+      r.body[:schema].should == [
+         ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
+         ["the_geom", "geometry", "geometry", "point"], ["created_at", "date"], ["updated_at", "date"]
+       ]
+    end
+  end
+
+  scenario "Create a new table specifying a geometry of type polygon" do
+    post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Polygon" }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:name].should == "my_new_imported_table"
+      r.body[:schema].should == [
+         ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
+         ["the_geom", "geometry", "geometry", "polygon"], ["created_at", "date"], ["updated_at", "date"]
+       ]
+    end
+  end
 
   scenario "Create a new table specifing an schema and a file from which import data" do
     post_json api_tables_url, {

@@ -10,8 +10,10 @@
       $('a.close').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-        $('div.requests_info').fadeOut();
+        $(this).closest('div.section').fadeOut();
       });
+      
+      $('div.notification').delay(5000).fadeOut();
 
       $('ul.your_tables li.last').hover(function(){
         $('div.tables_list div.left div.bottom_white_medium').css('background-position','0 -11px');
@@ -33,7 +35,6 @@
           $('div.mamufas div.settings_window').hide();
           $('div.mamufas div.delete_window').hide();
           $('div.mamufas div.create_window').hide();
-          resetUploadFile();
         });
         unbindESC();
       });

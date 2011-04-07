@@ -15,14 +15,16 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def create
+    debugger
     if params[:user]
       attributes = params[:user]
       @user = User.new
-      @user.username = attributes[:username]
-      @user.email    = attributes[:email]
-      @user.password = attributes[:password]
-      @user.admin    = attributes[:admin]
-      @user.enabled  = true
+      @user.username              = attributes[:username]
+      @user.email                 = attributes[:email]
+      @user.password              = attributes[:password]
+      @user.password_confirmation = attributes[:password]
+      @user.admin                 = attributes[:admin]
+      @user.enabled               = true
       if @user.save
         redirect_to superadmin_users_path, :flash => {:success => 'User created successfully'}
       else
@@ -39,7 +41,10 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       attributes = params[:user]
       @user.username = attributes[:username]
       @user.email    = attributes[:email]
-      @user.password = attributes[:password] if attributes[:password].present?
+      if attributes[:password].present?
+        @user.password = attributes[:password]
+        @user.password_confirmation = attributes[:password]
+      end
       @user.admin    = attributes[:admin]
       @user.enable attributes[:enabled]
       if @user.save

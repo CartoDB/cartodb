@@ -10,6 +10,9 @@ class User < Sequel::Model
   set_allowed_columns :email
   plugin :validation_helpers
 
+  attr_reader :password
+  attr_accessor :password_confirmation
+
   self.raise_on_save_failure = false
 
   ## Validations
@@ -18,14 +21,7 @@ class User < Sequel::Model
     validates_presence :email
     validates_unique :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
-  end
-
-  ## Validations
-  def validate
-    super
-    validates_presence :email
-    validates_unique :email, :message => 'is already taken'
-    validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
+    errors.add(:password, "doesn't match confirmation") if changed_columns.include?(:password) && ( password.blank? || password_confirmation.blank? || password != password_confirmation )
   end
 
   ## Callbacks
@@ -102,7 +98,8 @@ class User < Sequel::Model
   end
 
   def password=(value)
-    self.salt = self.class.make_token if new?
+    @password = value
+    self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
   end
 
@@ -145,16 +142,10 @@ class User < Sequel::Model
         'username' => database_username, 'password' => database_password
       )
     end
-    connection = ::Sequel.connect(configuration)
-    result = nil
-    begin
-      result = yield(connection)
-      connection.disconnect
-    rescue => e
-      connection.disconnect
-      raise e
+    connection = $pool.fetch(configuration) do
+      ::Sequel.connect(configuration)
     end
-    result
+    yield(connection)
   end
 
   def run_query(query)

@@ -1,214 +1,54 @@
+# coding: UTF-8
+
 require 'spec_helper'
 
-describe SqlParser do
-
-  before(:each) do
-    @parser = SqlParser.new
+describe CartoDB::SqlParser do
+  it "should parse distance() function" do
+    CartoDB::SqlParser.parse("SELECT *, distance(r.the_geom, 40.33, 22.10) as distance from restaurants r where type_of_food = 'indian' limit 10").should == 
+      "SELECT *, st_distance_sphere(r.the_geom,ST_SetSRID(ST_Point(40.33,22.10),4326)) as distance from restaurants r where type_of_food = 'indian' limit 10"
+    CartoDB::SqlParser.parse("SELECT *,distance(the_geom, -3, 21.10) from restaurants").should == 
+      "SELECT *,st_distance_sphere(the_geom,ST_SetSRID(ST_Point(-3,21.10),4326)) from restaurants"
   end
-
-  def parse(input)
-    unless result = @parser.parse(input)
-      nil
-    else
-      result
-    end
+  
+  it "should parse latitude() and longitude() functions" do
+    CartoDB::SqlParser.parse("SELECT latitude(r.the_geom) as latitude, longitude(r.the_geom) as longitude from restaurants where type_of_food = 'indian' limit 10").should == 
+      "SELECT ST_Y(r.the_geom) as latitude, ST_X(r.the_geom) as longitude from restaurants where type_of_food = 'indian' limit 10"
+    CartoDB::SqlParser.parse("SELECT latitude(the_geom) as latitude, longitude(the_geom) as longitude from restaurants where type_of_food = 'indian' limit 10").should == 
+      "SELECT ST_Y(the_geom) as latitude, ST_X(the_geom) as longitude from restaurants where type_of_food = 'indian' limit 10"
   end
-
-  describe "parsing" do
-    it "when conditions are not joined with an :and or :or, does not succeed" do
-      @parser.parse("select first_name from users where first_name='joe' last_name='bob'").should be_nil
-    end
+  
+  it "should parse intersect() functions" do
+    CartoDB::SqlParser.parse("select * from restaurants where intersects(40.33,22.10,the_geom) = true").should == 
+      "select * from restaurants where ST_Intersects(ST_SetSRID(ST_Point(40.33,22.10),4326),the_geom) = true"
   end
-
-  describe "#tree when parsing select statement" do
-    it "parses a multi field, table, and where clause statement" do
-      @parser.parse("select distinct *, first_name, last_name, middle_name from users, accounts, logins where first_name='joe' and last_name='bob' or age > 25 limit 10").tree.should == {
-        :operator => :select,
-        :set_quantifier => :distinct,
-        :fields => [:'*', :first_name, :last_name, :middle_name],
-        :tables => [:users, :accounts, :logins],
-        :conditions => [
-          {:operator => :'=', :field => :first_name, :value => 'joe'},
-          {:operator => :and},
-          {:operator => :'=', :field => :last_name, :value => 'bob'},
-          {:operator => :or},
-          {:operator => :'>', :field => :age, :value => 25}
-        ],
-        :limit => 10
-      }
-    end
+  
+  it "should parse queries that combine different functions" do
+    CartoDB::SqlParser.parse("SELECT latitude(the_geom), longitude(r.the_geom) from restaurantes r order by distance(the_geom, 40.5, 30.3)").should ==
+      "SELECT ST_Y(the_geom), ST_X(r.the_geom) from restaurantes r order by st_distance_sphere(the_geom,ST_SetSRID(ST_Point(40.5,30.3),4326))"
   end
-
-  describe "#operator when parsing select statement" do
-    it "returns :select" do
-      @parser.parse("select first_name").operator.should == :select
-    end
+  
+  it "should parse queries containing geojson()" do
+    CartoDB::SqlParser.parse("SELECT 1 as foo, geojson(the_geom) from restaurants r").should ==
+      "SELECT 1 as foo, ST_AsGeoJSON(the_geom) from restaurants r"
   end
-
-  describe "#set_quantifier when parsing select statement" do
-    it "when parsing distinct, returns :distinct" do
-      @parser.parse("select distinct first_name").set_quantifier.should == :distinct
-    end
-
-    it "when parsing all, returns :all" do
-      @parser.parse("select all first_name").set_quantifier.should == :all
-    end
-  end
-
-  describe "#fields when parsing select statement" do
-    it "returns the fields in the statement" do
-      @parser.parse("select first_name").fields.should == [:first_name]
-      @parser.parse("select first_name, last_name, middle_name").fields.should == [
-        :first_name, :last_name, :middle_name
-      ]
-    end
-
-    it "when receiving *, returns * in the fields list" do
-      @parser.parse("select *").fields.should == [:'*']
-    end
-  end
-
-  describe "#tables when parsing select statement" do
-    it "returns tables from the statement" do
-      @parser.parse("select first_name from users").tables.should == [:users]
-      @parser.parse("select first_name from users, accounts, logins").tables.should == [
-        :users, :accounts, :logins
-      ]
-    end
-    it "should recognize quotes" do
-      @parser.parse('select first_name from "users"').tables.should == [:users]
-    end
-  end
-
-  describe "#conditions when parsing select statement" do
-    it "when no where conditions, returns empty hash" do
-      @parser.parse("select first_name from users").conditions.should == []
-    end
-
-    it "returns equality conditions from the statement" do
-      @parser.parse("select first_name from users where id=3").conditions.should == [
-        { :operator => :'=', :field => :id, :value => 3 }
-      ]
-      @parser.parse("select first_name from users where first_name='joe'").conditions.should == [
-        { :operator => :'=', :field => :first_name, :value => 'joe' }
-      ]
-      @parser.parse("select first_name from users where first_name='joe' and last_name='bob'").conditions.should == [
-        {:operator => :'=', :field => :first_name, :value => 'joe'},
-        {:operator => :and},
-        {:operator => :'=', :field => :last_name, :value => 'bob'}
-      ]
-    end
-
-    it "returns greater than conditions from the statement" do
-      @parser.parse("select first_name from users where id>3").conditions.should == [
-        { :operator => :'>', :field => :id, :value => 3 }
-      ]
-
-      @parser.parse("select first_name from users where id>3 and age>25").conditions.should == [
-        {:operator => :'>', :field => :id, :value => 3},
-        {:operator => :and},
-        {:operator => :'>', :field => :age, :value => 25}
-      ]
-    end
-
-    it "returns less than conditions from the statement" do
-      @parser.parse("select first_name from users where id<3").conditions.should == [
-        { :operator => :'<', :field => :id, :value => 3 }
-      ]
-
-      @parser.parse("select first_name from users where id<3 and age<25").conditions.should == [
-        {:operator => :'<', :field => :id, :value => 3},
-        {:operator => :and},
-        {:operator => :'<', :field => :age, :value => 25}
-      ]
-    end
-
-    it "returns greater than or equal to conditions from the statement" do
-      @parser.parse("select first_name from users where id>=3").conditions.should == [
-        { :operator => :'>=', :field => :id, :value => 3 }
-      ]
-
-      @parser.parse("select first_name from users where id>=3 and age>=25").conditions.should == [
-        {:operator => :'>=', :field => :id, :value => 3},
-        {:operator => :and},
-        {:operator => :'>=', :field => :age, :value => 25}
-      ]
-    end
-
-    it "returns less than or equal to conditions from the statement" do
-      @parser.parse("select first_name from users where id<=3").conditions.should == [
-        { :operator => :'<=', :field => :id, :value => 3 }
-      ]
-
-      @parser.parse("select first_name from users where id<=3 and age<=25").conditions.should == [
-        {:operator => :'<=', :field => :id, :value => 3},
-        {:operator => :and},
-        {:operator => :'<=', :field => :age, :value => 25}
-      ]
-    end
-
-    it "returns not equal to conditions from the statement" do
-      @parser.parse("select first_name from users where id<>3").conditions.should == [
-        { :operator => :'<>', :field => :id, :value => 3 }
-      ]
-
-      @parser.parse("select first_name from users where id<>3 and age<>25").conditions.should == [
-        {:operator => :'<>', :field => :id, :value => 3},
-        {:operator => :and},
-        {:operator => :'<>', :field => :age, :value => 25}
-      ]
-    end
-  end
-
-  describe "#conditions when parsing select statement with :and operators" do
-    it "returns single level :and operation" do
-      @parser.parse("select first_name from users where first_name='joe' and last_name='bob'").conditions.should == [
-        {:operator => :'=', :field => :first_name, :value => 'joe'},
-        {:operator => :and},
-        {:operator => :'=', :field => :last_name, :value => 'bob'}
-      ]
-    end
-
-    it "returns nested :and operations from the statement" do
-      @parser.parse("select first_name from users where first_name='joe' and last_name='bob' and middle_name='pat'").conditions.should == [
-        {:operator => :'=', :field => :first_name, :value => 'joe'},
-        {:operator => :and},
-        {:operator => :'=', :field => :last_name, :value => 'bob'},
-        {:operator => :and},
-        {:operator => :'=', :field => :middle_name, :value => 'pat'}
-      ]
-    end
-  end
-
-  describe "#conditions when parsing select statement with :or operators" do
-    it "returns single level :and operation" do
-      @parser.parse("select first_name from users where first_name='joe' or last_name='bob'").conditions.should == [
-        {:operator => :'=', :field => :first_name, :value => 'joe'},
-        {:operator => :or},
-        {:operator => :'=', :field => :last_name, :value => 'bob'}
-      ]
-    end
-
-    it "returns nested :or operations from the statement" do
-      @parser.parse("select first_name from users where first_name='joe' or last_name='bob' or middle_name='pat'").conditions.should == [
-        {:operator => :'=', :field => :first_name, :value => 'joe'},
-        {:operator => :or},
-        {:operator => :'=', :field => :last_name, :value => 'bob'},
-        {:operator => :or},
-        {:operator => :'=', :field => :middle_name, :value => 'pat'}
-      ]
-    end
-  end
-
-  describe "#conditions when parsing select statement with :and and :or operators" do
-    it "returns :and having precedence over :or" do
-      @parser.parse("select first_name from users where age > 25 and first_name='joe' or last_name='bob'").conditions.should == [
-        {:operator => :'>', :field => :age, :value => 25},
-        {:operator => :and},
-        {:operator => :'=', :field => :first_name, :value => 'joe'},
-        {:operator => :or},
-        {:operator => :'=', :field => :last_name, :value => 'bob'}
-      ]
-    end
-  end
+  
+  it "should parse queries containing kml()" do
+    CartoDB::SqlParser.parse("SELECT 1 as foo, kml(the_geom) from restaurants r").should ==
+      "SELECT 1 as foo, ST_AsKML(the_geom,6) from restaurants r"
+  end  
+  
+  it "should parse queries containing svg()" do
+    CartoDB::SqlParser.parse("SELECT 1 as foo, svg(the_geom) from restaurants r").should ==
+      "SELECT 1 as foo, ST_AsSVG(the_geom,6) from restaurants r"
+  end  
+  
+  it "should parse queries containing wkt()" do
+    CartoDB::SqlParser.parse("SELECT 1 as foo, wkt(the_geom) from restaurants r").should ==
+      "SELECT 1 as foo, ST_AsText(the_geom,6) from restaurants r"
+  end  
+  
+  it "should parse queries containing geohash()" do
+    CartoDB::SqlParser.parse("SELECT 1 as foo, geohash(the_geom) from restaurants r").should ==
+      "SELECT 1 as foo, ST_GeoHash(the_geom,6) from restaurants r"
+  end      
 end

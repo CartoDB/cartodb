@@ -399,7 +399,7 @@
   function unbindESC() {
     $(document).unbind('keydown');
     $('body').unbind('click');
-  }  
+  } 
   
   
   
@@ -417,4 +417,11 @@
       $(document).unbind('keydown');
       $('body').unbind('click');
     });
+  }
+
+
+  function triggerSqlEvent(event) {
+    if (event==13) {
+      $(document).trigger("sqlEnter");
+    }
   }

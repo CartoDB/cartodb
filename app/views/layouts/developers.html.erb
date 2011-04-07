@@ -1,20 +1,38 @@
-<!DOCTYPE html> 
-<html lang="en"> 
-  <head> 
-    <meta charset=utf-8 /> 
-    <title>CartoDB - Documentation</title> 
-    <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" /> 
-    <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" /> 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset=utf-8 />
+    <title>CartoDB - Documentation</title>
+    <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
+    <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
     <link href="/stylesheets/admin/layout.css" media="screen" rel="stylesheet" type="text/css" />
     <% if env['PATH_INFO'] == '/' || env['PATH_INFO'].blank? %>
-    <link href="/stylesheets/admin/others/developers.css" media="screen" rel="stylesheet" type="text/css" /> 
+      <link href="/stylesheets/admin/others/developers.css" media="screen" rel="stylesheet" type="text/css" />
     <% else %>
-    <link href="/stylesheets/admin/others/developing.css" media="screen" rel="stylesheet" type="text/css" />     
+      <link href="/stylesheets/admin/others/developing.css" media="screen" rel="stylesheet" type="text/css" />
     <% end %>
     <script src="/javascripts/plugins/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/javascripts/plugins/jquery-syntax/public/jquery.syntax.min.js" type="text/javascript" charset="utf-8"></script>
-  </head> 
-  <body> 
+    <% if env['PATH_INFO'] != '/' || !env['PATH_INFO'].blank? %>
+      <script src="/javascripts/admin/api/doc.js" type="text/javascript" charset="utf-8"></script>
+    <% end %>
+    <% if Rails.env.production? %>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-20934186-3']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+<% end %>
+  </head>
+  <body>
     <header>
       <a class="logo" href="<%= APP_CONFIG[:app_host] %>">CartoDB</a>
       <ul>
@@ -31,56 +49,56 @@
       </ul>
     </header>
     <section class="outer_content">
-      <div class="mesh1"></div> 
-      <div class="mesh2"></div> 
+      <div class="mesh1"></div>
+      <div class="mesh2"></div>
       <div class="content">
         <% if env['PATH_INFO'] != '/' %>
-        <div class="top"> 
-          <ul class="tables_list"> 
-            <li class="selected"><a class="oth" href="/"><span>Documentation</span></a></li> 
-            <li><a class="oth" href="/galleries/"><span>Gallery</span></a></li> 
-          </ul> 
-          <a class="get_key" href="<%= APP_CONFIG[:app_host] %>/your_apps/oauth">GET YOUR API KEY</a> 
+        <div class="top">
+          <ul class="tables_list">
+            <li class="selected"><a class="oth" href="/"><span>Documentation</span></a></li>
+            <li><a class="oth" href="/galleries/"><span>Gallery</span></a></li>
+          </ul>
+          <a class="get_key" href="<%= APP_CONFIG[:app_host] %>/your_apps/oauth">GET YOUR API KEY</a>
         </div>
         <% end %>
         {{yield}}
       </div>
     </section>
 
-    <footer> 
-      <section class="prefooter"> 
-        <div class="block"> 
-          <h3>New tables published</h3> 
-          <h4><a href="#">World Database on Protected Areas data published</a></h4> 
-          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p> 
-        </div> 
-        <div class="block"> 
-          <h3></h3> 
-          <h4><a href="#">GROMS Migration data on CartoDB</a></h4> 
-          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p> 
-        </div> 
-        <div class="block last"> 
-          <h3>Latest from the blog</h3> 
-          <h4><a href="#">A new status update on status.cartodb.com</a></h4> 
-          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p> 
-        </div> 
-      </section> 
-      <div class="outer_footer"> 
-        <section class="footer"> 
-          <a class="logo" href="<%= APP_CONFIG[:app_host] %>">CartoDB</a> 
-          <div class="long"> 
-            <p class="rights">All rights reserved 2011. <a href="#" target="_blank">Contact us</a> / <a href="#" target="_blank">Give us your feedback</a> / <a href="#" target="_blank">Read the TOS</a></p> 
-            <span class="poweredby"> 
-            <p class="vizzuality">A product by </p><a href="http://www.vizzuality.com" target="_blank">Vizzuality</a> 
-            </span> 
-          </div> 
-        </section> 
-      </div> 
+    <footer>
+      <section class="prefooter">
+        <div class="block">
+          <h3>New tables published</h3>
+          <h4><a href="#">World Database on Protected Areas data published</a></h4>
+          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
+        </div>
+        <div class="block">
+          <h3></h3>
+          <h4><a href="#">GROMS Migration data on CartoDB</a></h4>
+          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
+        </div>
+        <div class="block last">
+          <h3>Latest from the blog</h3>
+          <h4><a href="#">A new status update on status.cartodb.com</a></h4>
+          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
+        </div>
+      </section>
+      <div class="outer_footer">
+        <section class="footer">
+          <a class="logo" href="<%= APP_CONFIG[:app_host] %>">CartoDB</a>
+          <div class="long">
+            <p class="rights">All rights reserved 2011. <a href="#" target="_blank">Contact us</a> / <a href="#" target="_blank">Give us your feedback</a> / <a href="#" target="_blank">Read the TOS</a></p>
+            <span class="poweredby">
+            <p class="vizzuality">A product by </p><a href="http://www.vizzuality.com" target="_blank">Vizzuality</a>
+            </span>
+          </div>
+        </section>
+      </div>
     </footer>
     <script type="text/javascript">
         jQuery(function($) {
             $.syntax();
         });
     </script>
-  </body> 
+  </body>
 </html>

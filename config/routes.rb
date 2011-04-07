@@ -15,6 +15,7 @@ CartoDB::Application.routes.draw do
   root :to => "home#index"
 
   get '/progress' => 'upload#progress', :format => :json
+  post '/upload' => 'upload#create', :format => :json
 
   get   '/login' => 'sessions#new', :as => :login
   get   '/logout' => 'sessions#destroy', :as => :logout
@@ -23,6 +24,7 @@ CartoDB::Application.routes.draw do
   resources :users, :only => [:create]
   match '/thanks' => 'users#thanks', :as => :thanks
   match '/limits' => 'home#limits', :as => :limits
+  match '/status' => 'home#app_status'
 
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard
@@ -31,7 +33,10 @@ CartoDB::Application.routes.draw do
     match '/your_apps/oauth' => 'client_applications#oauth', :as => :oauth_credentials
     match '/your_apps/jsonp' => 'client_applications#jsonp', :as => :jsonp_credentials
     post  '/your_apps/jsonp/:id/destroy' => 'client_applications#remove_api_key', :as => :destroy_api_key
+    resources :users, :only => [:edit, :update, :destroy]
+    post '/unlock' => 'users#unlock', :as => :unlock
   end
+
 
   namespace :superadmin do
     get '/' => 'users#index', :as => :users
@@ -50,8 +55,8 @@ CartoDB::Application.routes.draw do
     end
 
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
-      get    '/'             => 'queries#run'
-      get    '/column_types' => 'meta#column_types' 
+      match  '/'             => 'queries#run'
+      get    '/column_types' => 'meta#column_types'
       get    '/tables'       => 'tables#index'
       post   '/tables'       => 'tables#create'
       get    '/tables/:id'   => 'tables#show'
@@ -72,6 +77,7 @@ CartoDB::Application.routes.draw do
       put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
     end
   end
-  
+
+
   # Subdomain "developers." is served by rack application ApiDocumentationServer
 end

@@ -51,6 +51,7 @@ end
 
 include GeoRuby::SimpleFeatures
 require 'csv'
-require 'sql_parser'
 require 'cartodb/errors'
-require 'cartodb/query_parser'
+require 'cartodb/sql_parser'
+require 'cartodb/connection_pool'
+$pool = CartoDB::ConnectionPool.new

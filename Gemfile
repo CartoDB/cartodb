@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.5'
+gem 'rails', '3.0.6'
 gem 'ruby-debug19', :require => 'ruby-debug', :group => [:development, :test], :platforms => :mri_19
 
 gem 'pg', '0.10.1'

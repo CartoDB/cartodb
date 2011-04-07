@@ -26,13 +26,12 @@ feature "API 1.0 tables management" do
     get_json api_tables_url
     parse_json(response) do |r|
       r.status.should be_success
-      r.body.should include({
-        "id" => table1.id,
-        "name" => "my_table_1",
-        "privacy" => "PUBLIC",
-        "tags" => "tag 1,tag 2,tag 3",
-        "schema" => default_schema
-      })
+      r.body[1]['id'].should == table1.id
+      r.body[1]['name'].should == "my_table_1"
+      r.body[1]['tags'].split(',').should include('tag 3')
+      r.body[1]['tags'].split(',').should include('tag 2')
+      r.body[1]['tags'].split(',').should include('tag 1')
+      r.body[1]['schema'].should == default_schema
       r.body.map{ |t| t['name'] }.should_not include("another_table_3")
     end
   end
@@ -64,14 +63,29 @@ feature "API 1.0 tables management" do
        ]
     end
   end
+  
+  scenario "Create a new table specifying a geometry of type point" do
+    post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Point" }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:name].should == "my_new_imported_table"
+      r.body[:schema].should == [
+         ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
+         ["the_geom", "geometry", "geometry", "point"], ["created_at", "date"], ["updated_at", "date"]
+       ]
+    end
+  end
 
-  scenario "Import a file when the schema is wrong" do
-    post_json api_tables_url, {
-               :name => "Twitts",
-               :schema => "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer",
-               :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-             }
-    response.status.should == 400
+  scenario "Create a new table specifying a geometry of type polygon" do
+    post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Polygon" }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:name].should == "my_new_imported_table"
+      r.body[:schema].should == [
+         ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
+         ["the_geom", "geometry", "geometry", "polygon"], ["created_at", "date"], ["updated_at", "date"]
+       ]
+    end
   end
 
   scenario "Create a new table specifing an schema and a file from which import data" do
@@ -90,13 +104,13 @@ feature "API 1.0 tables management" do
     get_json api_table_url(table1.name)
     parse_json(response) do |r|
       r.status.should be_success
-      r.body.should == {
-        :id => table1.id,
-        :name => "my_table_1",
-        :privacy => "PUBLIC",
-        :tags => "tag 1,tag 2,tag 3",
-        :schema => default_schema
-      }
+      r.body[:id].should == table1.id
+      r.body[:name].should == "my_table_1"
+      r.body[:privacy].should == "PUBLIC"
+      r.body[:tags].should include("tag 1")
+      r.body[:tags].should include("tag 2")
+      r.body[:tags].should include("tag 3")
+      r.body[:schema].should == default_schema
     end
   end
 
@@ -106,13 +120,12 @@ feature "API 1.0 tables management" do
     put_json api_table_url(table1.name), {:name => "my_table_2", :tags => "bars,disco", :privacy => Table::PRIVATE}
     parse_json(response) do |r|
       r.status.should be_success
-      r.body.should == {
-        :id => table1.id,
-        :name => "my_table_2",
-        :privacy => "PRIVATE",
-        :tags => "bars,disco",
-        :schema => default_schema
-      }
+      r.body[:id].should == table1.id
+      r.body[:name].should == "my_table_2"
+      r.body[:privacy] == "PRIVATE"
+      r.body[:tags].split(',').should include("disco")
+      r.body[:tags].split(',').should include("bars")
+      r.body[:schema].should == default_schema
     end
   end
 
@@ -150,30 +163,30 @@ feature "API 1.0 tables management" do
       r.status.should == 404
     end
   end
-  
-  scenario "Update a table and set the lat and lot columns to nil" do
-    table = create_table :user_id => @user.id, :name => 'My table #1'
+
+  scenario "Update a table and set the lat and lot columns" do
+    table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
+                      :tags => 'movies, personal'
+    table.user_id = @user.id
+    table.force_schema = "name varchar, address varchar, latitude float, longitude float"
+    table.save
+    pk = table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
+    table.insert_row!({:name => "El Estocolmo", :address => "Calle de la Palma 72, Madrid, Spain", :latitude => 40.426949, :longitude => -3.708969})
+    table.insert_row!({:name => "El Rey del Tallarín", :address => "Plaza Conde de Toreno 2, Madrid, Spain", :latitude => 40.424654, :longitude => -3.709570})
+    table.insert_row!({:name => "El Lacón", :address => "Manuel Fernández y González 8, Madrid, Spain", :latitude => 40.415113, :longitude => -3.699871})
+    table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
 
     put_json api_table_url(table.name), {
-      :latitude_column => "nil",
-      :longitude_column => "nil"
+      :latitude_column => "latitude",
+      :longitude_column => "longitude"
     }
     parse_json(response) do |r|
       r.status.should be_success
-      r.body[:schema].should include(["latitude", "number"])
-      r.body[:schema].should include(["longitude", "number"])
-    end
-    
-    put_json api_table_url(table.name), {
-      :address_column => "name"
-    }
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:schema].should include(["name", "string", "address"])
+      r.body[:schema].should include(["the_geom", "geometry", "geometry", "point"])
     end
   end
 
-  scenario "Update a table and set the the address column" do
+  pending "Update a table and set the the address column" do
     table = create_table :user_id => @user.id, :name => 'My table #1'
 
     put_json api_table_url(table.name), {
@@ -183,7 +196,7 @@ feature "API 1.0 tables management" do
       r.status.should be_success
       r.body[:schema].should include(["name", "string", "address"])
     end
-    
+
     put_json api_table_url(table.name), {
       :address_column => "nil"
     }
@@ -192,13 +205,13 @@ feature "API 1.0 tables management" do
       r.body[:schema].should include(["name", "string"])
     end
   end
-  
-  scenario "Update a table and set the the address column to an aggregated of columns" do
+
+  pending "Update a table and set the the address column to an aggregated of columns" do
     table = new_table
     table.user_id = @user.id
     table.force_schema = "name varchar, address varchar, region varchar, country varchar"
     table.save
-    
+
     put_json api_table_url(table.name), {
       :address_column => "address,region, country"
     }
@@ -242,20 +255,37 @@ feature "API 1.0 tables management" do
       ]
     end
   end
-  
-  scenario "Create a new table importing file world_merc.zip" do
+  scenario "Create a new table importing file EjemploVizzuality.zip" do
     post_json api_tables_url, {
-      :name => "My new imported table", 
-      :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/world_merc.zip", "application/download")
+      :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download"),
+      :srid => CartoDB::SRID
     }
     parse_json(response) do |r|
       r.status.should be_success
-      r.body[:name].should == "my_new_imported_table"
+      r.body[:name].should == "vizzuality_shp"
       r.body[:schema].should == [
-        ["cartodb_id", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["un", "number"], ["name", "string"], 
-        ["area", "number"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["lon", "number"], ["lat", "number"], 
-        ["created_at", "date"], ["updated_at", "date"]
+        ["cartodb_id", "number"], ["gid", "number"], ["subclass", "string"], ["x", "number"], ["y", "number"], ["length", "string"], ["area", "string"], 
+        ["angle", "number"], ["name", "string"], ["pid", "number"], ["lot_navteq", "string"], ["version_na", "string"], ["vitesse_sp", "number"], 
+        ["id", "number"], ["nombrerest", "string"], ["tipocomida", "string"], 
+        ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
       ]
+    end    
+  end
+  
+  scenario "Create a table, remove a table, and recreate it with the same name" do
+    post_json api_tables_url, {:name => "wadus", :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")}
+    parse_json(response) do |r|
+      r.status.should be_success
+    end       
+    
+    delete_json api_table_url("wadus")
+    parse_json(response) do |r|
+      r.status.should be_success
+    end
+
+    post_json api_tables_url, {:name => "wadus", :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")}
+    parse_json(response) do |r|
+      r.status.should be_success
     end    
   end
   

@@ -24,6 +24,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+  
+  def app_host_required
+    (request.protocol + request.host_with_port == APP_CONFIG[:app_host]) || (render_404 and return false)
+  end
 
   def render_404
     respond_to do |format|
@@ -72,13 +76,16 @@ class ApplicationController < ActionController::Base
     render :file => "#{Rails.root}/public/HTML5.html", :status => 500, :layout => false
   end
 
-  private
-    def browser_is_html5_compliant?
-      return true if request.subdomain.eql?('api')
-      user_agent = request.user_agent.try(:downcase)
-      unless user_agent.blank? || user_agent.match(/firefox\/4|safari\/5|chrome\/7/)
-        raise NoHTML5Compliant
-      end
+  def api_request?
+    request.subdomain.eql?('api')
+  end
+  
+  def browser_is_html5_compliant?
+    return true if Rails.env.test? || api_request?
+    user_agent = request.user_agent.try(:downcase)
+    unless user_agent.blank? || user_agent.match(/firefox\/4|safari\/5|chrome\/7/)
+      raise NoHTML5Compliant
     end
-
+  end
+  
 end

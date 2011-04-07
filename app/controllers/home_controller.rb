@@ -2,6 +2,8 @@
 
 class HomeController < ApplicationController
 
+  skip_before_filter :browser_is_html5_compliant?, :only => :app_status
+
   layout 'front_layout'
 
   def index
@@ -10,6 +12,16 @@ class HomeController < ApplicationController
     else
       @user = User.new
     end
+  end
+
+  def app_status
+    status = begin
+      Rails::Sequel.connection.select('OK').first.values.include?('OK') ? 200 : 500
+    rescue Exception => e
+      500
+    end
+
+    head status
   end
 
 end

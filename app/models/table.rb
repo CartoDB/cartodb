@@ -751,6 +751,7 @@ TRIGGER
     if ext == '.zip'
       Rails.logger.info "Importing zip file: #{path}"
       Zip::ZipFile.foreach(path) do |entry|
+        next if entry.name =~ /^\./
         name = entry.name.split('/').last
         entries << "/tmp/#{name}"
         if File.extname(name) == '.shp'

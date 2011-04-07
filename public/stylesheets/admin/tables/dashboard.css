@@ -22,7 +22,7 @@ section#content div.inner_content div.requests_info div.middle_white span.block.
 section#content div.inner_content div.requests_info div.middle_white span.block h3 {font:bold 15px Arial; color:#333333;}
 section#content div.inner_content div.requests_info div.middle_white span.block label {position:absolute; left:0; top:0; width:29px; height:15px; border-radius:20px; -webkit-border-radius:20px; -moz-border-radius:20px; background:#DAE7E9;
   font:bold 15px Arial; color:#333333; text-align:center; padding:7px 0; line-height:15px;}
-section#content div.inner_content div.requests_info div.middle_white span.block p {font:normal 13px Arial; color:#999999;}
+section#content div.inner_content div.requests_info div.middle_white span.block p {padding:6px 0 0 0; font:normal 13px Arial; color:#999999;}
 section#content div.inner_content div.requests_info div.middle_white span.block p a {color:#999999; text-decoration:underline;}
 section#content div.inner_content div.requests_info div.middle_white span.block p a:hover {color:#333333;}
 section#content div.inner_content div.requests_info div.middle_white img {margin:10px 0 0 0;}

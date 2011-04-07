@@ -99,7 +99,8 @@
       $('div.create_window ul li:eq(0)').addClass('selected');
       $('div.create_window div.inner_ form').show();
       $('div.create_window div.inner_ form').css('opacity',1);
-      $('div.create_window div.inner_').css('border-color','#FFC209');
+      $('div.create_window div.inner_').css('border-color','#CCCCCC');
+      $('div.create_window a.close_create').removeClass('last');
       $('div.create_window div.inner_').css('height','auto');
       $('div.create_window div.inner_ span.loading').hide();
       $('div.create_window div.inner_ span.loading').css('opacity',0);

@@ -15,7 +15,7 @@ div.map_window div.map_header ul li a.open {position:absolute; right:7px; top:13
 div.map_window div.map_header ul li a.open:hover {background-position:0 -26px;}
 
 /*MARKERS CUSTOMIZATION*/
-div.map_window div.map_header ul li span.marker_customization {position:absolute; display:block; top:19px; right:13px; width:163px; height:auto; background:url('/images/admin/map/combo_bkg.png') no-repeat right 0;}
+div.map_window div.map_header ul li span.marker_customization {position:absolute; display:none; top:19px; right:13px; width:163px; height:auto; background:url('/images/admin/map/combo_bkg.png') no-repeat right 0;}
 div.map_window div.map_header ul li span.marker_customization ul {height:auto; width:100%; margin:20px 0 0 0; padding:10px 0 10px 0; border:none; -webkit-border-radius: 5px; -webkit-border-top-right-radius: 0; -moz-border-radius: 5px;
 -moz-border-radius-topright: 0; border-radius: 5px; border-top-right-radius: 0; background:blue; background-image:-moz-linear-gradient(100% 100% 90deg, #282F49, #283A5A); 
 background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#283A5A), to(#282F49));}
@@ -39,11 +39,6 @@ div.map_window div.map_header ul li span.marker_customization ul li.selected div
 div.map_window div.map_header ul li span.marker_customization ul li.selected div.options span.size a.less {position:absolute; bottom:0; right:0; width:14px!important; height:11px; padding:0; text-indent:-9999px!important; overflow:hidden; background:url('/images/admin/map/value_down.png') no-repeat 0 0;}
 div.map_window div.map_header ul li span.marker_customization ul li.disabled {opacity:0.3;}
 div.map_window div.map_header ul li span.marker_customization ul li.disabled a:hover {background-position:0 -188px; cursor:default; text-decoration:none;}
-
-
-
-
-
 
 
 div.map_window div.map_header ul li.query  {height:41px; padding:6px 55px 8px 6px;}

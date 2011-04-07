@@ -817,8 +817,10 @@ TRIGGER
   
   def update_the_geom!(attributes, primary_key)
     return unless attributes[:the_geom]
+    geo_json = RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).try(:as_text)
+    raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?
     owner.in_database do |user_database|
-      user_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).as_text}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
+      user_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
     end
   end
 

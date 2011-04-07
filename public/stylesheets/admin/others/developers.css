@@ -15,6 +15,9 @@ section.outer_content div.content div.small_blocks div.block.last {margin:0!impo
 section.outer_content div.content div.small_blocks div.block h2 {font:bold 21px Arial; color:#333333;}
 section.outer_content div.content div.small_blocks div.block p {margin:15px 0 0 0; font:normal 15px Arial; color:#666666;}
 section.outer_content div.content div.small_blocks div.block a {float:left; width:auto; height:35px; margin:15px 0 0 0; padding:0 0 0 5px; text-decoration:none;}
+section.outer_content div.content div.small_blocks div.block a.disabled {width:132px; height:15px; padding:10px 0; background:url('/images/admin/api/disabled_button.png') no-repeat 0 0; font:bold 15px Arial; line-height:15px; color:#666666; text-shadow:0 1px white;
+  text-align:center ;}
+section.outer_content div.content div.small_blocks div.block a.disabled:hover {background-position: 0 0;}
 section.outer_content div.content div.small_blocks div.block a span {float:left; width:auto; height:15px; padding:10px 19px 10px 14px; font:bold 15px Arial; line-height:15px;}
 section.outer_content div.content div.small_blocks div.block a.green {background:url('/images/admin/api/green_left.png') no-repeat 0 0;}
 section.outer_content div.content div.small_blocks div.block a.green span {background:url('/images/admin/api/green_right.png') no-repeat right 0; color:#305233; text-shadow:0 1px #95C994;}

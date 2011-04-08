@@ -12,9 +12,9 @@ Capybara.default_wait_time = 10
 Capybara.default_host      = APP_CONFIG[:app_host]
 Capybara.app_host          = APP_CONFIG[:app_host]
 Capybara.server_port       = 53716
-Capybara.register_driver :selenium do |app|
-  Capybara::Driver::Selenium.new(app, :browser => :chrome)
-end
+# Capybara.register_driver :selenium do |app|
+#   Capybara::Driver::Selenium.new(app, :browser => :chrome)
+# end
 
 RSpec.configure do |config|
   config.include Warden::Test::Helpers

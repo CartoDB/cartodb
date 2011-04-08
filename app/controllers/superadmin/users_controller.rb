@@ -21,7 +21,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.username              = attributes[:username]
       @user.email                 = attributes[:email]
       @user.password              = attributes[:password]
-      @user.password_confirmation = attributes[:password]
       @user.admin                 = attributes[:admin]
       @user.enabled               = true
       if @user.save
@@ -48,7 +47,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.enable attributes[:enabled]
       if @user.save
         @user.setup_user
-        UserMailer.invitation_sent(@user).deliver if @user.was_disabled? && @user.enabled?
+        UserMailer.invitation_sent(@user, request.protocol, request.host_with_port).deliver if @user.was_disabled? && @user.enabled?
         redirect_to superadmin_users_path, :flash => {:success => 'User updated successfully'}
       else
         render edit_superadmin_user_path(@user)

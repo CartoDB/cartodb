@@ -35,6 +35,7 @@ CartoDB::Application.routes.draw do
     post  '/your_apps/jsonp/:id/destroy' => 'client_applications#remove_api_key', :as => :destroy_api_key
     resources :users, :only => [:edit, :update, :destroy]
     post '/unlock' => 'users#unlock', :as => :unlock
+    get '/byebye' => 'users#byebye', :as => :farewel
   end
 
 

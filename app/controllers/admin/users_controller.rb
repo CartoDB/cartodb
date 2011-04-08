@@ -3,8 +3,8 @@
 class Admin::UsersController < ApplicationController
   ssl_required :edit, :update, :unlock, :destroy
 
-  before_filter :login_required
-  before_filter :valid_unlock_token?, :except => [:edit, :unlock]
+  before_filter :login_required, :except => :byebye
+  before_filter :valid_unlock_token?, :except => [:edit, :unlock, :byebye]
 
   def edit
     session[:unlock_token] = nil
@@ -27,9 +27,13 @@ class Admin::UsersController < ApplicationController
 
   def destroy
     if current_user.destroy
-      redirect_to logout_path and return
+      redirect_to farewel_path and return
     end
     redirect_to root_path, :flash => {:error => "There's been an error deleting your account. Please, try it again a bit later."}
+  end
+
+  def byebye
+    render :layout => 'front_layout'
   end
 
   def unlock

@@ -56,9 +56,10 @@ feature "User updating" do
 
     expect{ click_button 'Yes, I want to delete my account' }.to change{ User.count }.by(-1)
 
-    # page.should have_content("Your account was deleted successfully. We'll miss you!")
+    page.should have_content("Your account has been removed")
+    page.should have_content("It would be great to know a little bit about your reasons. If you feel comfortable with it, send us an email")
 
-    current_path.should == '/'
+    current_path.should == '/byebye'
 
   end
 

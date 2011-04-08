@@ -30,14 +30,16 @@
             </span>
             <span class="form_block">
               <%= f.label :password, 'YOUR PASSWORD' %>
-              <%= f.password_field :password, :disabled => true %>
-              <div class="error_content">
-                <p><span>Your passwords have to be the same</span></p>
-              </div>
+              <%= f.password_field :password, :disabled => true, :class => current_user.errors.on(:password) ? 'error' : nil %>
+              <% if current_user.errors.full_messages.any? %>
+                <div class="error_content">
+                  <p><span>Your passwords have to be the same</span></p>
+                </div>
+              <% end %>
             </span>
             <span class="form_block last">
               <%= f.label :password_confirmation, 'CONFIRM PASSWORD' %>
-              <%= f.password_field :password_confirmation, :disabled => true %>
+              <%= f.password_field :password_confirmation, :disabled => true, :class => current_user.errors.on(:password) ? 'error' : nil %>
             </span>
             <span class="submit_block">
               <button type="submit" class="submit">
@@ -47,7 +49,7 @@
             </span>
           <% end %>
           <div class="delete">
-            <a href="#delete_account" class="delete_account"><span>Delete your account</span></a>
+            <a href="#delete_account" class="delete_account disabled"><span>Delete your account</span></a>
             <p><strong> All</strong> your user information and tables will be erased</p>
           </div>
         </div>

@@ -16,14 +16,14 @@ feature "User updating" do
     find('#user_password')['disabled'].should be_true
     find('#user_password_confirmation')['disabled'].should be_true
 
-    click_link 'unlock your chain'
+    click_link 'verify your identity'
 
     fill_in 'Insert your current password', :with => @user.password
     click_button 'Unlock'
 
     fill_in 'YOUR EMAIL', :with => 'fuuuuuu@cartodb.com'
     fill_in 'YOUR PASSWORD', :with => 'fuuuuuuuu'
-    fill_in 'CONFIRM YOUR PASSWORD', :with => 'fuuuuuuuu'
+    fill_in 'CONFIRM PASSWORD', :with => 'fuuuuuuuu'
 
     click_button 'Save changes'
 
@@ -41,6 +41,13 @@ feature "User updating" do
     log_in_as @user
 
     click_link 'settings'
+
+    page.should have_css('a.delete_account.disabled')
+
+    click_link 'verify your identity'
+
+    fill_in 'Insert your current password', :with => @user.password
+    click_button 'Unlock'
 
     click_link 'Delete your account'
 

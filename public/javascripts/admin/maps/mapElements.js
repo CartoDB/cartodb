@@ -1,7 +1,7 @@
    
     var style = {'marker-fill':'#FF6600','marker-line-color':'#FFFFFF'};
     var default_style = {'marker-fill':'#FF6600','marker-line-color':'#FFFFFF'};
-    var sql = 'SELECT * FROM '+table_name;
+    var sql = '(SELECT * FROM '+table_name+') as t';
 
     function createMapElements() {
       ///////////////////////////////////////

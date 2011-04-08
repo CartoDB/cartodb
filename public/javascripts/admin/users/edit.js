@@ -18,6 +18,7 @@
         $.post($(this).attr('action'), $(this).serialize())
         .success(function(){
           $('#user_email, #user_password, #user_password_confirmation').attr('disabled', null);
+          $('a.delete_account').removeClass('disabled');
           close_mamufas();
         })
         .error(function(){
@@ -43,9 +44,14 @@
       });
 
       //Delete account
-      $('a.delete_account').click(function(ev){
+      $('a.delete_account.disabled').live('click', function(ev){
         ev.stopPropagation();
         ev.preventDefault();
+        $('div.mamufas div.unlock_window').show();
+        $('div.mamufas').fadeIn('fast');
+      });
+
+      $('a.delete_account:not(.disabled)').live('click', function(ev){
         $('div.mamufas div.delete_window').show();
         $('div.mamufas').fadeIn('fast');
         bindESC();

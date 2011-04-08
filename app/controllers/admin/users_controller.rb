@@ -4,9 +4,10 @@ class Admin::UsersController < ApplicationController
   ssl_required :edit, :update, :unlock, :destroy
 
   before_filter :login_required
+  before_filter :valid_unlock_token?, :except => [:edit, :unlock]
 
   def edit
-
+    session[:unlock_token] = nil
   end
 
   def update
@@ -34,9 +35,19 @@ class Admin::UsersController < ApplicationController
   def unlock
     status = 500
     if params[:unlock_password]
-      status = 200 if (user = User.authenticate(current_user.email, params[:unlock_password])) && user.enabled?
+      if (user = User.authenticate(current_user.email, params[:unlock_password])) && user.enabled?
+        status = 200
+        session[:unlock_token] = User.make_token
+      end
     end
     head status
   end
+
+  def valid_unlock_token?
+    return unless session[:unlock_token] == nil
+    env['warden'].set_user(nil)
+    redirect_to root_path
+  end
+  private :valid_unlock_token?
 
 end

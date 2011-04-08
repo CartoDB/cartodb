@@ -413,6 +413,25 @@ class Table < Sequel::Model(:user_tables)
       raise InvalidArgument
     end
   end
+  
+  def set_trigger_the_geom_webmercator
+    owner.in_database(:as => :superuser) do |user_database|
+      user_database.run(<<-TRIGGER     
+        DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};  
+        CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
+          BEGIN
+               NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
+               RETURN NEW;
+          END;
+        $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
+
+        CREATE TRIGGER update_the_geom_webmercator_trigger 
+        BEFORE INSERT OR UPDATE OF the_geom ON #{self.name} 
+          FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();    
+TRIGGER
+      )
+    end
+  end  
 
   private
 
@@ -606,25 +625,6 @@ TRIGGER
       )
     end
   end
-  
-  def set_trigger_the_geom_webmercator
-    owner.in_database(:as => :superuser) do |user_database|
-      user_database.run(<<-TRIGGER     
-        DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};  
-        CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
-          BEGIN
-               NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
-               RETURN NEW;
-          END;
-        $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
-        
-        CREATE TRIGGER update_the_geom_webmercator_trigger 
-        BEFORE INSERT OR UPDATE OF the_geom ON #{self.name} 
-          FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();    
-TRIGGER
-      )
-    end
-  end
 
   def get_new_column_type(invalid_column, invalid_value)
     flatten_cartodb_schema = schema.flatten
@@ -781,13 +781,13 @@ TRIGGER
       system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
       owner.in_database do |user_database|
         imported_schema = user_database[random_name.to_sym].columns
-        user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},ST_TRANSFORM(the_geom,#{CartoDB::SRID}) as the_geom FROM #{random_name}")
+        user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")
         user_database.run("DROP TABLE #{random_name}")
         user_database.run("CREATE INDEX #{self.imported_table_name}_the_geom_idx ON #{self.imported_table_name} USING GIST(the_geom)")
         geometry_type = user_database["select GeometryType(the_geom) FROM #{self.imported_table_name} limit 1"].first[:geometrytype]
-        user_database.run("SELECT AddGeometryColumn ('#{self.imported_table_name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
         user_database.run("CREATE INDEX #{self.imported_table_name}_the_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.imported_table_name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
         user_database.run("VACUUM ANALYZE #{self.imported_table_name}")
+        self.set_trigger_the_geom_webmercator
         self.the_geom_type = geometry_type.downcase
       end
       if entries.any?

@@ -16,7 +16,7 @@ section#content div.left div.middle_white_medium span.submit_block p {float:righ
 section#content div.left div.middle_white_medium span.submit_block p a {color:#FF9900;}
 section#content div.left div.middle_white_medium span.submit_block p a:hover {color:#FF6600;}
 section#content div.left div.middle_white_medium span.submit_block a.submit {float:right; width:auto; height:35px; margin:15px 0 0 0; padding:0 0 0 5px; text-decoration:none; background:url('/images/admin/api/green_left.png') no-repeat 0 0;} 
-section#content div.left div.middle_white_medium span.submit_block a.submit span {float:right; width:auto; height:15px; padding:10px 19px 10px 14px; font:bold 15px Arial; line-height:15px; background:url('/images/admin/api/green_right.png') no-repeat right 0; color:#305233; text-shadow:0 1px #95C994;}
+section#content div.left div.middle_white_medium span.submit_block a.submit span {float:right; width:auto; height:15px; margin:0; padding:10px 19px 10px 14px; font:bold 15px Arial; line-height:15px; background:url('/images/admin/api/green_right.png') no-repeat right 0; color:#305233; text-shadow:0 1px #95C994;}
 section#content div.left div.middle_white_medium span.submit_block a.submit:hover {background-position:0 -35px;}
 section#content div.left div.middle_white_medium span.submit_block a.submit:hover span {background-position:right -35px;}
 section#content div.left div.middle_white_medium div.delete {border-top:1px solid #E0E0E0; padding:14px 0 22px;}

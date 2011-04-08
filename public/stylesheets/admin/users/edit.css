@@ -6,19 +6,21 @@ section#content div.left div.top_blue_medium a.new_table {float:right; margin:14
 section#content div.left div.top_blue_medium a.new_table:hover {background-position:0 -35px;}
 section#content div.left div.middle_white_medium {float:left; width:620px; padding:0 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
 section#content div.left div.middle_white_medium p {display:inline-block; margin:20px 0 0 22px; font:normal 15px Arial; color:#333333;}
-section#content div.left div.middle_white_medium span.form_block {display:inline-block; width:277px; margin:15px 16px 0 22px;}
+section#content div.left div.middle_white_medium span.form_block {position:relative; display:inline-block; width:277px; margin:15px 16px 0 22px;}
 section#content div.left div.middle_white_medium span.form_block.last {margin:0;}
 section#content div.left div.middle_white_medium span.form_block label {font:bold 10px "Helvetica",Arial; color:#999999;}
 section#content div.left div.middle_white_medium span.form_block input {width:257px; height:17px; padding:7px 10px!important; margin:5px 0 0 0; background:url('/images/admin/api/input_bkg.png') no-repeat 1px 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
   font:normal 15px Arial; color:#333333; line-height:15px;}
+section#content div.left div.middle_white_medium span.form_block div.error_content {position:absolute; z-index:10; right:0px; top:-39px;}
+section#content div.left div.middle_white_medium span.form_block div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
+section#content div.left div.middle_white_medium span.form_block div.error_content p span {float:left; width:auto!important; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}
 section#content div.left div.middle_white_medium span.submit_block {display:inline-block; width:598px; height:70px; margin:10px 0 0 0; padding:0 22px 0 0;}
 section#content div.left div.middle_white_medium span.submit_block p {float:right; margin:23px 20px 0 0; font-size:13px; color:#333333;}
 section#content div.left div.middle_white_medium span.submit_block p a {color:#FF9900;}
 section#content div.left div.middle_white_medium span.submit_block p a:hover {color:#FF6600;}
-section#content div.left div.middle_white_medium span.submit_block .submit {float:right; width:auto; height:35px; margin:15px 0 0 0; padding:0 0 0 5px; text-decoration:none; background:url('/images/admin/api/green_left.png') no-repeat 0 0; border: 0;}
-section#content div.left div.middle_white_medium span.submit_block .submit span {float:right; width:auto; height:15px; padding:10px 19px 10px 14px; margin-top: 0; font:bold 15px Arial; line-height:15px; background:url('/images/admin/api/green_right.png') no-repeat right 0; color:#305233; text-shadow:0 1px #95C994;}
-section#content div.left div.middle_white_medium span.submit_block .submit:hover {background-position:0 -35px;}
-section#content div.left div.middle_white_medium span.submit_block .submit:hover span {background-position:right -35px;}
+section#content div.left div.middle_white_medium span.submit_block button.submit {float:right; width:150px; height:35px; margin:15px 0 0 0; padding:0!important; text-decoration:none; background:url('/images/admin/api/green_left.png') no-repeat 0 0; border:1px solid #4C7C4D; 
+  font:bold 15px Arial; line-height:15px; color:#305233; text-shadow:0 1px #95C994; background-image:-moz-linear-gradient(100% 100% 90deg, #67BB70, #8DD389); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#8DD389), to(#67BB70)); -moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;}
+section#content div.left div.middle_white_medium span.submit_block button.submit:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #8DD389, #67BB70); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#67BB70), to(#8DD389)); cursor:pointer;}
 section#content div.left div.middle_white_medium div.delete {border-top:1px solid #E0E0E0; padding:14px 0 22px;}
 section#content div.left div.middle_white_medium div.delete a {float:left; width:auto; height:35px; margin:8px 0 0 22px; padding:0 0 0 5px; text-decoration:none; background:url('/images/admin/api/orange_left.png') no-repeat 0 0;}
 section#content div.left div.middle_white_medium div.delete a span {float:left; width:auto; height:15px; padding:10px 19px 10px 14px; font:bold 15px Arial; line-height:15px; background:url('/images/admin/api/orange_right.png') no-repeat right 0; color:#895101; text-shadow:0 1px #FFC266;}

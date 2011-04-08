@@ -195,7 +195,7 @@ div.table_position div.general_options div.sql_console textarea:focus {outline:n
 /************************************EDIT FIELDS************************************/
 div.table_position div.edit_cell {position:absolute; display:none; top:200px; left:200px; min-width:262px; padding:7px 7px 42px; -moz-box-shadow:0px 0px 10px 2px #999; -webkit-box-shadow:0px 0px 10px 2px #999; box-shadow:0px 0px 10px 2px #999; border:1px solid #999999; background:#E6F2E4; 
   -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:10; -moz-user-select:text!important;}
-div.table_position div.edit_cell a.close {position:absolute; top:-7px; right:-8px; width:24px; height:24px; background:url('/images/admin/table/close.png') no-repeat 0 0; text-indent:-9999px;}
+div.table_position div.edit_cell a.close {position:absolute; top:-7px; right:-8px; width:24px; height:24px; background:url('/images/admin/table/close.png') no-repeat 0 0; text-indent:-9999px; z-index:10;}
 div.table_position div.edit_cell a.close:hover {background-position:0 -24px;}
 div.table_position div.edit_cell div.boolean {float:left; display:none; width:248px; height:30px; padding:7px; margin:0; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; background:white;}
 div.table_position div.edit_cell div.boolean ul {float:left; width:248px; margin:6px 0 0 0;}
@@ -207,6 +207,16 @@ div.table_position div.edit_cell div.boolean ul li.selected a {background-positi
 div.table_position div.edit_cell div.boolean ul li:hover a {color:#333333;}
 div.table_position div.edit_cell div.boolean ul li.selected a {color:#333333;}
 div.table_position div.edit_cell div.boolean ul li.selected a:hover {cursor:default;}
+
+div.table_position div.edit_cell div.point {position:relative; float:left; display:none; width:260px; height:30px; padding:0!important; margin:0!important;}
+div.table_position div.edit_cell div.point p {position:absolute!important; top:14px; left:128px; font:bold 15px "Helvetica",Arial; color:#666666;}
+div.table_position div.edit_cell div.point span.point_block {position:absolute; top:0px; width:122px; height:22px; margin:2px 0 0 0; padding:0;}
+div.table_position div.edit_cell div.point span.point_block.lon {left:0;}
+div.table_position div.edit_cell div.point span.point_block.lat {left:138px!important; z-index:0;}
+div.table_position div.edit_cell div.point span.point_block input {float:left; width:74px; height:15px; padding:4px 6px 5px 40px; margin:0; border:1px solid #CCCCCC; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; text-align:right; font:normal 13px "Helvetica"; color:#666666; line-height:13px;}
+div.table_position div.edit_cell div.point span.point_block input:focus {outline:none; border-color:#999999;}
+div.table_position div.edit_cell div.point span.point_block input.error {border-color:#C04E03; color:#C04E03;}
+div.table_position div.edit_cell div.point span.point_block p {position:absolute; left:5px; top:6px; font:italic 13px Arial; color:#CCCCCC; -moz-user-select:none; -webkit-user-select:none;}
 div.table_position div.edit_cell div.date {display:none; float:left; min-width:274px; min-height:30px; padding:7px; margin:0; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; background:white;}
 div.table_position div.edit_cell div.date div.day {float:left; width:44px;}
 div.table_position div.edit_cell div.date div.day label {float:left; width:40px; padding:0 0 0 3px; margin:0; font:bold 10px "Helvetica",Arial; color:#999999;}
@@ -407,4 +417,23 @@ div.mamufas div.stopgeo_window div.inner_ span.stop p a {color:#666666;}
 div.mamufas div.stopgeo_window div.inner_ span.stop p a:hover {color:#333333;}
 
 
-
+/*jScrollPane CSS*/
+.jspContainer{overflow:hidden;position:relative;}
+.jspPane{position:absolute; width:90px;}
+.jspVerticalBar{position:absolute;top:0px;right:3px;width:6px;height:100%; background:none;}
+.jspHorizontalBar{position:absolute;bottom:0;left:0;width:100%;height:16px;background:none;}
+.jspVerticalBar *,
+.jspHorizontalBar *{margin:0;padding:0;}
+.jspCap{display:none;}
+.jspHorizontalBar .jspCap{float:left;}
+.jspTrack{background:#28304A;position:relative; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
+.jspDrag{background:#DBDCDF;position:relative;top:0;left:0;cursor:pointer; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
+.jspDrag:hover {background:#fff;}
+.jspHorizontalBar .jspTrack,
+.jspHorizontalBar .jspDrag{float:left;height:100%;}
+.jspArrow{background:#50506d;text-indent:-20000px;display:block;cursor:pointer;}
+.jspArrow.jspDisabled{cursor:default;background:#80808d;}
+.jspVerticalBar .jspArrow{height:16px;}
+.jspHorizontalBar .jspArrow{width:16px;float:left;height:100%;}
+.jspVerticalBar .jspArrow:focus{outline:none;}
+.jspCorner{background:#eeeef4;float:left;height:100%;}

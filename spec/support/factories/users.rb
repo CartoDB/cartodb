@@ -3,11 +3,12 @@ module CartoDB
     def new_user(attributes = {})
       attributes = attributes.dup
       user = User.new
-      user.username = attributes[:username] || String.random(5)
-      user.email    = attributes[:email]    || String.random(5).downcase + '@' + String.random(5).downcase + '.com'
-      user.password = attributes[:password] || user.email.split('@').first
-      user.admin    = attributes[:admin]    || false
-      user.enabled  = attributes[:enabled] == false ? false : true
+      user.username              = attributes[:username] || String.random(5)
+      user.email                 = attributes[:email]    || String.random(5).downcase + '@' + String.random(5).downcase + '.com'
+      user.password              = attributes[:password] || user.email.split('@').first
+      user.password_confirmation = user.password
+      user.admin                 = attributes[:admin]    || false
+      user.enabled               = attributes[:enabled] == false ? false : true
       user
     end
 

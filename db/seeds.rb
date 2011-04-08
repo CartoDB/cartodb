@@ -20,25 +20,28 @@ end
 ## Create users
 
 admin = User.new
-admin.enabled  = true
-admin.email    = 'admin@example.com'
-admin.password = 'example'
-admin.username = 'admin'
-admin.admin    = true
+admin.enabled               = true
+admin.email                 = 'admin@example.com'
+admin.password              = 'example'
+admin.password_confirmation = 'example'
+admin.username              = 'admin'
+admin.admin                 = true
 admin.save
 
 user = User.new
-user.enabled  = true
-user.email    = 'user1@example.com'
-user.password = 'user1'
-user.username = 'user1'
+user.enabled               = true
+user.email                 = 'user1@example.com'
+user.password              = 'user1'
+user.password_confirmation = 'user1'
+user.username              = 'user1'
 user.save
 
 user = User.new
-user.enabled  = true
-user.email    = 'jmedina@vizzuality.com'
-user.password = 'jmedina'
-user.username = 'jmedina'
+user.enabled               = true
+user.email                 = 'jmedina@vizzuality.com'
+user.password              = 'jmedina'
+user.password_confirmation = 'jmedina'
+user.username              = 'jmedina'
 user.save
 
 ## Development demo data for admin@example.com

@@ -14,7 +14,8 @@ class UserMailer < ActionMailer::Base
   #
   #   en.user_mailer.invitation_sent.subject
   #
-  def invitation_sent(user)
+  def invitation_sent(user, protocol, host)
+    @setup_user_link = "#{protocol}#{host}#{edit_invitation_path(user, :invite_token => user.invite_token)}"
     mail :to => user.email
   end
 end

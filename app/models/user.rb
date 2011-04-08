@@ -21,7 +21,7 @@ class User < Sequel::Model
     validates_presence :email
     validates_unique :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
-    errors.add(:password, "doesn't match confirmation") if changed_columns.include?(:password) && ( password.blank? || password_confirmation.blank? || password != password_confirmation )
+    errors.add(:password, "doesn't match confirmation") if password.present? && ( password_confirmation.blank? || password != password_confirmation )
   end
 
   ## Callbacks
@@ -110,6 +110,7 @@ class User < Sequel::Model
       nil
     end
   end
+
   #### End of Authentication methods
 
   def database_username
@@ -203,6 +204,10 @@ class User < Sequel::Model
   def enable(enabled_flag)
     @was_disabled = self.disabled?
     self.enabled = enabled_flag
+    if self.enabled
+      self.invite_token = self.class.make_token
+      self.invite_token_date = Time.now
+    end
   end
 
   def enabled?
@@ -220,11 +225,20 @@ class User < Sequel::Model
   def self.new_from_email(email)
     user = self.new
     if email.present?
-      user.username = email
-      user.email    = email
-      user.password = email
+      user.username              = email.split('@').first
+      user.email                 = email
+      user.password              = email
+      user.password_confirmation = email
     end
     user
+  end
+
+  def activate
+    return false unless valid?
+    self.invite_token = nil
+    self.invite_token_date = nil
+    self.enabled = true
+    save
   end
 
   def database_exists?

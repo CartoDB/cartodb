@@ -5,7 +5,7 @@ require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
 feature "Invitations", %q{
   In order to let users use CartoDB
   As a prudent developer
-  I want to let users to acess to CartoDB in batches
+  I want to let users to access to CartoDB in batches
 } do
 
   scenario "Get an invitation" do
@@ -56,6 +56,62 @@ feature "Invitations", %q{
     page.should have_css("input[@type=text].error")
     page.should have_css("input[@type=password].error")
     page.should have_content("Your account or your password is not ok")
+  end
+
+  scenario "A user activates his account" do
+    user = create_user
+    user.enable(true)
+    user.save
+
+    visit edit_invitation_path(user, :invite_token => user.invite_token)
+
+    page.should have_content 'Welcome to CartoDB'
+    page.should have_content 'Complete the following information before start using CartoDB'
+    fill_in 'your e-mail', :with => user.email
+    fill_in 'your password', :with => 'fuuuuuuuuuu'
+    fill_in 'retype your password', :with => 'uffffffff'
+
+    click 'Create your account'
+
+    page.should have_content "Password doesn't match confirmation"
+    fill_in 'your e-mail', :with => user.email
+    fill_in 'your password', :with => 'fuuuuuuuuuu'
+    fill_in 'retype your password', :with => 'fuuuuuuuuuu'
+
+    click 'Create your account'
+
+    user = User[:id => user.id]
+    user.invite_token.should be_nil
+    user.invite_token_date.should be_nil
+
+    current_path.should be == dashboard_path
+
+  end
+
+  scenario "A user cannot activate an account with an invalid invite token" do
+
+    user = create_user
+
+    # User activation with an empty invite token
+    visit edit_invitation_path(user, :invite_token => user.invite_token)
+
+    current_path.should be == homepage
+
+    # User activation with an expired token
+    Timecop.travel(31.days.since)
+
+    current_path.should be == homepage
+
+  end
+
+  scenario "A user cannot activate his account with the invite token of another user" do
+    good_user = create_user
+    good_user.enable(true)
+    evil_user = create_user
+
+    visit edit_invitation_path(evil_user, :invite_token => good_user.invite_token)
+
+    current_path.should be == homepage
 
   end
 end

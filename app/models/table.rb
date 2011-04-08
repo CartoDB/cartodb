@@ -502,6 +502,12 @@ TRIGGER
     command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
     system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{owner.database_name} -c"#{command}"}
     owner.in_database do |user_database|
+      
+      #Check if the file had data, if not rise an error because probably something went wrong
+      if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank? 
+        raise "The file was empty or there was a problem importing it that made it create an empty table"
+      end
+      
       user_database.run("alter table #{self.name} add column cartodb_id integer")
       user_database.run("create sequence #{self.name}_cartodb_id_seq")
       user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")
@@ -512,6 +518,7 @@ TRIGGER
       user_database.run("alter table #{self.name} add primary key (cartodb_id)")
       user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
       user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
+      set_the_geom_column!("point")
     end
   end
 

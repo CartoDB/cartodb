@@ -11,7 +11,7 @@
 
   <p>CartoDB is a new geospatial database in the cloud that allows you to develop location aware applications quickly and easily</p>
 
-  <%= form_for @user do |f| %>
+  <%= form_for @user, :url => invitations_path(@user) do |f| %>
     <span>
       <p>Join the beta</p>
       <%= link_to "already registered?", login_path %>

@@ -1,0 +1,32 @@
+<% content_for :js do %>
+  <%= headjs_include_tag "plugins/jquery.min" %>
+<% end %>
+
+<% content_for :head do %>
+  <%= stylesheet_link_tag('reset', 'front/password') %>
+<% end %>
+
+<section>
+  <h1>Welcome to Carto<strong>DB</strong></h1>
+  <p>Complete the following information before start using CartoDB</p>
+  <%= form_for @user, :url =>  invitation_path(@user) do |f| %>
+    <%= f.hidden_field :invite_token %>
+    <p>Complete your account data</p>
+    <%= f.label :email, 'your e-mail' %>
+    <%= f.email_field  :email, :disabled => true %>
+    <%= f.label :password, 'your password' %>
+    <%= f.password_field  :password, :class => @user.errors.on(:password) ? 'error' : nil %>
+    <%= f.label :password_confirmation, 'retype your password' %>
+    <%= f.password_field  :password_confirmation, :class => @user.errors.on(:password) ? 'error' : nil %>
+    <%= f.submit 'Create your account', :class => 'create' %>
+    <% if @user.errors.full_messages.any? %>
+      <div class="error_content">
+        <p><span><%= @user.errors.full_messages.join(', ').capitalize %></span></p>
+      </div>
+    <% end %>
+  <% end %>
+</section>
+
+<footer>
+  <%= render :partial => 'home/footer' %>
+</footer>

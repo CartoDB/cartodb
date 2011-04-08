@@ -12,9 +12,9 @@ feature "User updating" do
 
     click_link 'settings'
 
-    find('#user_email')['disabled'].should be == true
-    find('#user_password')['disabled'].should be == true
-    find('#user_password_confirmation')['disabled'].should be == true
+    find('#user_email')['disabled'].should be_true
+    find('#user_password')['disabled'].should be_true
+    find('#user_password_confirmation')['disabled'].should be_true
 
     click_link 'unlock your chain'
 

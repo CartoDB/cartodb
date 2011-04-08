@@ -24,7 +24,6 @@ class InvitationsController < ApplicationController
     render :action => :edit and return unless params[:user]
 
     @user = User[:id => params[:id]]
-    @user.email = params[:user][:email]
     @user.password = params[:user][:password]
     @user.password_confirmation = params[:user][:password_confirmation]
 

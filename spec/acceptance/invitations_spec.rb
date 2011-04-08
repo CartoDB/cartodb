@@ -67,14 +67,13 @@ feature "Invitations", %q{
 
     page.should have_content 'Welcome to CartoDB'
     page.should have_content 'Complete the following information before start using CartoDB'
-    fill_in 'your e-mail', :with => user.email
+    find('#user_email')['disabled'].should be_true
     fill_in 'your password', :with => 'fuuuuuuuuuu'
     fill_in 'retype your password', :with => 'uffffffff'
 
     click 'Create your account'
 
     page.should have_content "Password doesn't match confirmation"
-    fill_in 'your e-mail', :with => user.email
     fill_in 'your password', :with => 'fuuuuuuuuuu'
     fill_in 'retype your password', :with => 'fuuuuuuuuuu'
 

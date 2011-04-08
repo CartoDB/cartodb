@@ -348,6 +348,11 @@
       } else {
         $(window).scrollTo({top:previous_scroll+'px',left:'0'},300,{onAfter: function() {loading = false; enabled = true;}});
       }
+      
+      
+      function parseDate(point) {
+        
+      }
     },
     
     

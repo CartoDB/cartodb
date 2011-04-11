@@ -48,6 +48,11 @@ module CartoDB
           "ST_Intersects(ST_SetSRID(ST_Point(#{$1},#{$2}),#{CartoDB::SRID}),#{$3})"
         end        
       end
+      if query.include?('the_geom')
+        query.gsub!(/^select([^\(]+\s*)(the_geom)(\s*[^\(]+)from/i) do |matches|
+          "select #{$1.strip}ST_AsGeoJSON(the_geom)#{$3.strip} from"
+        end        
+      end
       query
     end
   end

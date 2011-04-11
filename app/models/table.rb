@@ -792,7 +792,7 @@ TRIGGER
         user_database.run("DROP TABLE #{random_name}")
         user_database.run("CREATE INDEX #{self.imported_table_name}_the_geom_idx ON #{self.imported_table_name} USING GIST(the_geom)")
         geometry_type = user_database["select GeometryType(the_geom) FROM #{self.imported_table_name} limit 1"].first[:geometrytype]
-        user_database.run("CREATE INDEX #{self.imported_table_name}_the_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.imported_table_name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
+        user_database.run("CREATE INDEX #{self.imported_table_name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.imported_table_name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
         user_database.run("VACUUM ANALYZE #{self.imported_table_name}")
         self.set_trigger_the_geom_webmercator
         self.the_geom_type = geometry_type.downcase

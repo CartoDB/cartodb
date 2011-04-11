@@ -219,6 +219,21 @@ describe Table do
     ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
   end
+  
+  it "should update null value to nil when inserting and updating" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "valid boolean"
+    table.save
+    table.reload
+    pk = table.insert_row!({:valid => "null"})
+    table.record(pk)[:valid].should be_nil
+    
+    pk = table.insert_row!({:valid => true})
+    table.update_row!(pk, {:valid => "null"})
+    table.record(pk)[:valid].should be_nil    
+  end
 
   it "should be able to update a row" do
     table = create_table

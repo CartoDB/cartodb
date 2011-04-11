@@ -183,7 +183,7 @@ class Table < Sequel::Model(:user_tables)
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
       begin
-        primary_key = user_database[name.to_sym].insert(attributes.except(:the_geom))
+        primary_key = user_database[name.to_sym].insert(attributes.except(:the_geom).convert_nulls)
       rescue Sequel::DatabaseError => e
         # If the type don't match the schema of the table is modified for the next valid type
         message = e.message.split("\n")[0]
@@ -217,7 +217,7 @@ class Table < Sequel::Model(:user_tables)
       end
       if !attributes.except(:the_geom).empty?
         begin
-          rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes.except(:the_geom))
+          rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes.except(:the_geom).convert_nulls)
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
           message = e.message.split("\n")[0]

@@ -15,6 +15,8 @@ class Api::Json::QueriesController < Api::ApplicationController
   #       "rows" => [{:id=>1, :name=>"name 1", :location=>"...", :description=>"description 1"}]
   #     }
   def run
+    render :json => { :errors => ["You must indicate a sql query"] }.to_json, :status => 400,
+           :callback => params[:callback] and return
     respond_to do |format|
       format.json do
         render :json => current_user.run_query(params[:sql]).to_json, :callback => params[:callback]

@@ -16,7 +16,7 @@ class Api::Json::QueriesController < Api::ApplicationController
   #     }
   def run
     render :json => { :errors => ["You must indicate a sql query"] }.to_json, :status => 400,
-           :callback => params[:callback] and return
+           :callback => params[:callback] and return if params[:sql].blank?
     respond_to do |format|
       format.json do
         render :json => current_user.run_query(params[:sql]).to_json, :callback => params[:callback]

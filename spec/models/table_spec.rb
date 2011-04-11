@@ -5,9 +5,14 @@ require 'spec_helper'
 describe Table do
 
   it "should have a name and a user_id" do
+    user = create_user
     table = Table.new
     table.should_not be_valid
     table.errors.on(:user_id).should_not be_nil
+    table.user_id = user.id
+    table.save
+    table.reload
+    
     table.name.should == "untitle_table"
   end
 
@@ -312,12 +317,14 @@ describe Table do
   end
 
   it "should import a CSV if the schema is given and is valid" do
-    table = new_table
+    table = new_table :name => nil
     table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
     table.save
-
+    table.reload
+    
     table.rows_counted.should == 7
+    table.name.should == 'twitters'
     row0 = table.records[:rows][0]
     row0[:cartodb_id].should == 1
     row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
@@ -488,7 +495,7 @@ describe Table do
   end
   
   it "should import EjemploVizzuality.zip" do
-    table = new_table
+    table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download")
     table.importing_SRID = CartoDB::SRID
     table.importing_encoding = 'LATIN1'
@@ -502,7 +509,7 @@ describe Table do
       [:the_geom, "geometry", "geometry", "multipolygon"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     table.rows_counted.should == 11
-    table.name.should == "vizzuality_shp"
+    table.name.should == "ejemplovizzuality"
   end
   
   it "should import TM_WORLD_BORDERS_SIMPL-0.3.zip" do

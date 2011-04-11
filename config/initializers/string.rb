@@ -97,5 +97,8 @@ class String
     self.gsub(/\\/, '\&\&').gsub(/'/, "''")
   end
 
+  def host
+    self.split('/')[2]
+  end
 
 end

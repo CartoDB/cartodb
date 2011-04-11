@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   protected
   
   def app_host_required
-    (request.protocol + request.host_with_port == APP_CONFIG[:app_host]) || (render_api_endpoint and return false)
+    (request.host_with_port == APP_CONFIG[:app_host].host) || (render_api_endpoint and return false)
   end
 
   def render_404

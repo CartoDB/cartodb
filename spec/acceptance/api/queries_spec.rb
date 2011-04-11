@@ -60,5 +60,12 @@ feature "API 1.0 queries interface" do
 
     FileUtils.rm("#{Rails.root}/public/test_jsonp.html")
   end
+  
+  scenario "Perform an empty query should raise an error" do
+    get_json api_query_url
+    parse_json(response) do |r|
+      r.status.should == 400
+    end
+  end
 
 end

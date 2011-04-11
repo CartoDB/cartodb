@@ -1,11 +1,8 @@
 # coding: UTF-8
 
-class Api::Json::QueriesController < ApplicationController
+class Api::Json::QueriesController < Api::ApplicationController
   ssl_required :run
   
-  skip_before_filter :app_host_required
-
-  before_filter :api_authorization_required
   # Run a query against your database
   # * Request Method: +GET+
   # * URI: +/v1+

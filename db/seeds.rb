@@ -28,27 +28,11 @@ admin.username              = 'admin'
 admin.admin                 = true
 admin.save
 
-user = User.new
-user.enabled               = true
-user.email                 = 'user1@example.com'
-user.password              = 'user1'
-user.password_confirmation = 'user1'
-user.username              = 'user1'
-user.save
-
-user = User.new
-user.enabled               = true
-user.email                 = 'jmedina@vizzuality.com'
-user.password              = 'jmedina'
-user.password_confirmation = 'jmedina'
-user.username              = 'jmedina'
-user.save
-
 ## Development demo data for admin@example.com
 
 user = admin
 
-20.times do
+2.times do
   t = Table.new :name => "Table #{rand(1000)}"
   t.user_id = user.id
   t.save
@@ -79,26 +63,3 @@ table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madr
 table.reload
 table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
 
-table = Table.new :privacy => Table::PUBLIC, :name => 'My favourite bars',
-                  :tags => 'bars, personal'
-table.user_id = user.id
-table.save
-
-## Development demo data for user1@example.com
-
-user = User[2]
-
-table = Table.new :privacy => Table::PUBLIC, :name => 'Twitter followers',
-                  :tags => 'twitter, followers, api'
-table.user_id = user.id
-table.save
-table = Table.new :privacy => Table::PRIVATE, :name => 'Recipes',
-                  :tags => 'recipes'
-table.user_id = user.id
-table.save
-
-20.times do
-  t = Table.new :name => "Table #{rand(1000)}", :privacy => Table::PUBLIC
-  t.user_id = user.id
-  t.save
-end

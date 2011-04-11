@@ -11,6 +11,7 @@ section#content div.left div.middle_white_medium span.form_block.last {margin:0;
 section#content div.left div.middle_white_medium span.form_block label {font:bold 10px "Helvetica",Arial; color:#999999;}
 section#content div.left div.middle_white_medium span.form_block input {width:257px; height:17px; padding:7px 10px!important; margin:5px 0 0 0; background:url('/images/admin/api/input_bkg.png') no-repeat 1px 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
   font:normal 15px Arial; color:#333333; line-height:15px;}
+section#content div.left div.middle_white_medium span.form_block input.error {background-position:1px -31px;}
 section#content div.left div.middle_white_medium span.form_block div.error_content {position:absolute; z-index:10; right:0px; top:-39px;}
 section#content div.left div.middle_white_medium span.form_block div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
 section#content div.left div.middle_white_medium span.form_block div.error_content p span {float:left; width:auto!important; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}

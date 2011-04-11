@@ -758,8 +758,8 @@ TRIGGER
     if ext == '.zip'
       Rails.logger.info "Importing zip file: #{path}"
       Zip::ZipFile.foreach(path) do |entry|
-        next if entry.name =~ /^\./
         name = entry.name.split('/').last
+        next if name =~ /^\./
         entries << "/tmp/#{name}"
         if File.extname(name) == '.shp'
           ext = '.shp'
@@ -781,14 +781,16 @@ TRIGGER
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
       host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
       port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-      self.name = self.imported_table_name = File.basename(path).tr('.','_').downcase
+      self.name = self.imported_table_name = File.basename(path).tr('.','_').downcase.sanitize
       random_name = "importing_table_#{self.imported_table_name}"
       Rails.logger.info "Table name to import: #{random_name}"
       Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
       system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
       owner.in_database do |user_database|
         imported_schema = user_database[random_name.to_sym].columns
-        user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")
+        # TODO: fix ST_Transform
+        # user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")
+        user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom FROM #{random_name}")
         user_database.run("DROP TABLE #{random_name}")
         user_database.run("CREATE INDEX #{self.imported_table_name}_the_geom_idx ON #{self.imported_table_name} USING GIST(the_geom)")
         geometry_type = user_database["select GeometryType(the_geom) FROM #{self.imported_table_name} limit 1"].first[:geometrytype]

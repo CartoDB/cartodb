@@ -8,27 +8,6 @@ feature "Dashboard", %q{
   I want to be able to visit my databases and manage them
 } do
 
-  scenario "Login and visit public tables wit no tables" do
-    user = create_user :username => 'fulano'
-    log_in_as user
-
-    within(:css, "header") do
-      page.should have_link("CartoDB")
-      page.should have_content(user.email)
-    end
-
-    page.should have_content("Welcome back fulano")
-
-    page.should have_content("You have not added any tags yet.")
-
-    page.should have_no_selector("div.paginate")
-
-    click_link_or_button('Public tables')
-
-    page.should have_content("0 Public tables in CartoDB")
-    page.should have_content("Ouch! There are not tables for your search")
-  end
-
   scenario "Login and visit my dashboard and the public tables" do
     user = create_user
     the_other = create_user
@@ -67,7 +46,6 @@ feature "Dashboard", %q{
     page.should have_css("footer")
 
     page.should have_css("ul.tables_list li.selected a", :text => "Your tables")
-    page.should have_css("ul.tables_list li a", :text => "Public tables")
 
     page.should have_content("22 tables in your account")
 
@@ -179,61 +157,7 @@ feature "Dashboard", %q{
     end
 
     page.should have_no_selector("footer")
-
-    visit '/dashboard'
-    click_link_or_button('Public tables')
-
-    page.should have_content("21 Public tables in CartoDB")
-
-    page.should have_content("BROWSE BY TAGS")
-    page.should have_css("ul li:eq(1) a span", :text => "vodka")
-    page.should have_css("ul li a span", :text => "restaurants")
-    page.should have_no_css("ul li a span", :text => "drinking")
-
-    within("ul.your_tables li:eq(1)") do
-      page.should have_link("favourite_restaurants")
-      page.should have_content("PUBLIC")
-      within(:css, "span.tags") do
-        page.should have_content("restaurants")
-      end
-    end
-
-    page.should have_no_selector("div.paginate a.previous")
-    page.should have_selector("div.paginate a.next")
-    within(:css, "div.paginate ul") do
-      page.should have_css("li.selected a", :text => "1")
-      page.should have_css("li a", :text => "2")
-      page.should have_css("li a", :text => "3")
-    end
-
-    click_link_or_button('Next')
-
-    within("ul.your_tables li:eq(1)") do
-      page.should have_link("other_table_10")
-      page.should have_content("PUBLIC")
-      within(:css, "span.tags") do
-        page.should have_content("vodka")
-      end
-    end
-
-    page.should have_selector("div.paginate a.previous")
-    page.should have_selector("div.paginate a.next")
-    within(:css, "div.paginate ul") do
-      page.should have_css("li a", :text => "1")
-      page.should have_css("li.selected a", :text => "2")
-      page.should have_css("li a", :text => "3")
-    end
-
-    click_link_or_button('Previous')
-
-    click_link_or_button('favourite_restaurants')
-
-    page.should have_css("h2", :text => 'favourite_restaurants')
-    page.should have_css("p.status", :text => 'PUBLIC')
-    within(:css, "span.tags") do
-      page.should have_content("restaurants")
-    end
-
+    
     visit '/dashboard'
     click_link_or_button('close session')
     page.current_path.should == homepage
@@ -260,7 +184,7 @@ feature "Dashboard", %q{
   #   page.find("ul.your_tables li:eq(1) a.confirm_delete").click
   # end
 
-  scenario "Create a new table" do
+  scenario "Create a new table with default attributes" do
     user = create_user
 
     log_in_as user
@@ -278,8 +202,8 @@ feature "Dashboard", %q{
 
     log_in_as user
 
-    click "Your apps"
-    page.should have_content("Using the key and the secret you can use CartoDB from external applications developed by you.")
+    click "Your api keys"
+    page.should have_content("Using the key and secret you can access CartoDB from external applications.")
 
     within("span.form_block") do
       page.should have_content("YOUR KEY")
@@ -311,7 +235,7 @@ feature "Dashboard", %q{
 
     log_in_as user
 
-    click "Your apps"
+    click "Your api keys"
 
     click "JSONP"
 

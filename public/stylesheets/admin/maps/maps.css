@@ -42,7 +42,7 @@ div.map_window div.map_header ul li span.marker_customization ul li.disabled a:h
 
 
 div.map_window div.map_header ul li.query  {height:41px; padding:6px 55px 8px 6px;}
-div.map_window div.map_header ul li input[type="text"] {width:240px; height:19px; padding:3px 5px; border:1px solid #CCCCCC; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:italic 13px Arial; color:#bbbbbb; line-height:13px;}
+div.map_window div.map_header ul li input[type="text"] {width:320px; height:19px; padding:3px 5px; border:1px solid #CCCCCC; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:italic 13px Arial; color:#bbbbbb; line-height:13px;}
 div.map_window div.map_header ul li input[type="submit"] {width:auto; height:25px; padding:0 5px; border:1px solid #666666; background:#666666; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; text-align:center; text-transform:uppercase; font:bold 13px Arial;
   color:white;}
 div.map_window div.map_header ul li input[type="submit"]:hover {background:#333333; cursor:pointer;}

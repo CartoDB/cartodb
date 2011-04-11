@@ -9,8 +9,8 @@
   var map;
   var radius = 10, tips = {};
   var layer;
-  var tile_url = 'http://ec2-50-16-103-51.compute-1.amazonaws.com/tiles/{X}/{Y}/{Z}';
-
+  var tile_url = 'http://ec2-50-16-103-51.compute-1.amazonaws.com/tiles/{X}/{Y}/{Z}/1/';
+  var map_type;
 
   function initMap() {
     // Map html and events -> mapElements.js
@@ -40,11 +40,11 @@
               + "/998/256/{Z}/{X}/{Y}.png")
               .hosts(["a.", "b.", "c.", ""])));
 
-          layer = po.image().url(po.url(tile_url + '/1/'+table_name+'/'+(($.isEmptyObject(style))?'point':encodeURIComponent(JSON.stringify(style)))));
+          layer = po.image().url(po.url(tile_url + table_name + '/'+map_type+'/?sql='+sql+'&style=' + encodeURIComponent(JSON.stringify(style))));
           map.add(layer);
     } else {
       closeMapElements();
-      layer.url(po.url(tile_url + '/1/'+table_name+'/'+(($.isEmptyObject(style))?'point':encodeURIComponent(JSON.stringify(style)))));
+      layer.url(po.url(tile_url + table_name + '/'+ map_type +'/?sql='+sql+'&style=' + encodeURIComponent(JSON.stringify(style))));
     }
   }
 
@@ -56,7 +56,7 @@
 
   
   
-  function refreshLayer() {
-    layer.url(tile_url + '/1/'+table_name+'/'+encodeURIComponent(JSON.stringify(style)));
+  function refreshLayer(_style) {
+    layer.url(po.url(tile_url + table_name + '/'+ map_type +'/?sql='+sql+'&style=' + encodeURIComponent(JSON.stringify(_style))));
     layer.reload();
   }

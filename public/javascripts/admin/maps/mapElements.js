@@ -1,6 +1,7 @@
    
     var style = {'marker-fill':'#FF6600','marker-line-color':'#FFFFFF'};
-    var default_style = {'marker-fill':'#FF6600','marker-line-color':'#FFFFFF'}; 
+    var default_style = {'marker-fill':'#FF6600','marker-line-color':'#FFFFFF'};
+    var sql = '(SELECT * FROM '+table_name+') as t';
 
     function createMapElements() {
       ///////////////////////////////////////
@@ -26,9 +27,9 @@
               '<p>Customized dots</p>'+
               '<a class="open" href="#open_map_type">open</a>'+
               '<span class="marker_customization">'+
-                '<ul>'+
-                  '<li><a>Default</a></li>'+
-                  '<li class="selected"><a>Custom dots</a>'+
+                '<ul id="marker_customization_list">'+
+                  '<li class="selected"><a>Default</a></li>'+
+                  '<li><a>Custom dots</a>'+
                     '<div class="options">'+
                       '<label>Fill</label>'+
                       '<span class="color_block">'+
@@ -61,10 +62,10 @@
               '<h4>Infowindow customization</h4>'+
               '<p>Default</p>'+
             '</li>'+
-            // '<li class="query">'+
-            //   '<h4>Map query</h4>'+
-            //   '<p><form id="query_form"><input type="text" value="SELECT * FROM '+table_name+'"/><input type="submit" value="SEND"/></form></p>'+
-            // '</li>'+
+            '<li class="query">'+
+              '<h4>Map query</h4>'+
+              '<p><form id="query_form"><input type="text" value="SELECT * FROM '+table_name+'"/><input type="submit" value="SEND"/></form></p>'+
+            '</li>'+
           '</ul>'+
         '</div>'+
         '<p class="georeferencing"></p>'+
@@ -73,9 +74,19 @@
 
       
       //Navigate columns
-      // $('li').click(function(){
-      //   
-      // });
+      $('ul#marker_customization_list li').click(function(){
+        if ($(this).hasClass('selected')) {
+          return false;
+        } else {
+          $('ul#marker_customization_list li').removeClass('selected');
+          $(this).addClass('selected');
+          if ($(this).children('a').text()=="Default") {
+            refreshLayer(default_style);
+          } else {
+            refreshLayer(style);
+          }
+        }
+      });
 
 
       //Show colorpicker
@@ -112,7 +123,7 @@
         $(this).parent().children('input').val(parseInt(value)+1);
         var param = $(this).parent().children('input').attr('param');
         style[param] = value;
-        refreshLayer();
+        refreshLayer(style);
       });
       
       //Less
@@ -123,7 +134,7 @@
           var param = $(this).parent().children('input').attr('param');
           style[param] = value;
           $(this).parent().children('input').val(value-1);
-          refreshLayer();
+          refreshLayer(style);
         }
       });
       
@@ -173,39 +184,35 @@
 
 
       //Query 
-      // $('#query_form input[type="text"]').livequery('focusin',function(ev){
-      //   ev.stopPropagation();
-      //   ev.preventDefault();
-      //   var value = $(this).val();
-      //   if (value=='SELECT * FROM '+table_name+'') {
-      //     $(this).val('');
-      //     $(this).css('font-style','normal');
-      //     $(this).css('color','#333333');
-      //   }
-      // });
-      // 
-      // $('#query_form input[type="text"]').livequery('focusout',function(ev){
-      //   ev.stopPropagation();
-      //   ev.preventDefault();
-      //   var value = $(this).val();
-      //   if (value=='SELECT * FROM '+table_name+'' || value=='') {
-      //     $(this).val('SELECT * FROM '+table_name+'');
-      //     $(this).css('font-style','italic');
-      //     $(this).css('color','#bbbbbb');
-      //   }
-      // });
-      // 
-      // 
-      // $('#query_form').livequery('submit',function(ev){
-      //   ev.stopPropagation();
-      //   ev.preventDefault();
-      //   var sql = '('+$('#query_form input[type="text"]').val()+') as t';
-      //   if (sql!='') {
-      //     layer.url(po.url(tile_url + '/1/' + escape(sql) + '/point')).reload();
-      //   } else {
-      //     layer.url(po.url(tile_url + '/1/'+table_name+'/point'));
-      //   }
-      // });
+      $('#query_form input[type="text"]').livequery('focusin',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        var value = $(this).val();
+        if (value=='SELECT * FROM '+table_name+'') {
+          $(this).val('');
+          $(this).css('font-style','normal');
+          $(this).css('color','#333333');
+        }
+      });
+      
+      $('#query_form input[type="text"]').livequery('focusout',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        var value = $(this).val();
+        if (value=='SELECT * FROM '+table_name+'' || value=='') {
+          $(this).val('SELECT * FROM '+table_name+'');
+          $(this).css('font-style','italic');
+          $(this).css('color','#bbbbbb');
+        }
+      });
+      
+      
+      $('#query_form').livequery('submit',function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        sql = '('+$('#query_form input[type="text"]').val()+') as t';
+        refreshLayer(style);
+      });
     }
     
     

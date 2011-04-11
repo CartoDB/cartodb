@@ -194,6 +194,11 @@
       headers = {};
       
       $.each(data,function(index,element){
+        //Get type of table -> Point or Polygon
+        if (element[3]!=undefined) {
+          map_type = element[3];
+        }
+        
         headers[element[0]] = (element[3]==undefined)?element[1]:element[3];
         var column_types = '<span class="col_types">' +
                         '<p>'+element[1]+'</p>' +
@@ -506,6 +511,17 @@
                 '<li><a href="#False">False</a></li>'+
                 '<li><a class="null" href="#Null">Null</a></li>'+
               '</ul>'+
+            '</div>'+
+            '<div class="point">'+
+              '<span class="point_block lon">'+
+                '<p>Lon</p>'+
+                '<input type="text" value="0" id="longitude_value" />'+
+              '</span>'+
+              '<p>,</p>'+
+              '<span class="point_block lat">'+
+                '<p>Lat</p>'+
+                '<input type="text" value="0" id="latitude_value" />'+
+              '</span>'+
             '</div>'+
             '<div class="date">'+
               '<div class="day">'+
@@ -1011,7 +1027,7 @@
         enabled = status;
       });
       $('body').livequery('refresh',function(event){
-        methods.refreshTable('next');
+        methods.refreshTable('');
       });
       
 
@@ -1061,11 +1077,12 @@
                 $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
               }
 
-
+              
               var type = headers[data.column];
               $('div.edit_cell div.free').hide();
               $('div.edit_cell div.boolean').hide();
               $('div.edit_cell div.date').hide();
+              $('div.edit_cell div.point').hide();
               $('div.table_position div.edit_cell div.boolean ul li').removeClass('selected');
 
 
@@ -1086,9 +1103,17 @@
                 }
                 $('div.edit_cell div.boolean').show();
               } else if (type=="point") {
-                
-              
-              
+                if (data.value=="") {
+                  $('div.table_position div.edit_cell div.point span input#latitude_value').val('0');
+                  $('div.table_position div.edit_cell div.point span input#longitude_value').val('0');
+                } else {
+                  var point_values = data.value.replace(' ','').split(',');
+                  $('div.table_position div.edit_cell div.point span input#latitude_value').val(point_values[1]);
+                  $('div.table_position div.edit_cell div.point span input#longitude_value').val(point_values[0]);
+                }
+                $('div.edit_cell div.point').show();
+                var len = $('div.table_position div.edit_cell div.point span input#longitude_value').text().length;
+                $('div.table_position div.edit_cell div.point span input#longitude_value').selectRange(0,len);
               } else {
                 if (type=="number"){
                   $('div.edit_cell textarea').css({'min-height' : '16px','height' : '16px' });
@@ -1105,10 +1130,10 @@
               $('div.edit_cell').show();
 
               if (type!='date' && type!='boolean') {
-                $('div.edit_cell div.free textarea').focus();
                 var len = $('div.edit_cell div.free textarea').text().length;
                 $('div.edit_cell div.free textarea').selectRange(0,len);
               }
+              
 
 
               $('body').bind('click',function(ev){
@@ -1126,9 +1151,6 @@
                 event.returnValue = false;
               }
             }
-            
-            
-            
           }
         }
 
@@ -1249,6 +1271,41 @@
               $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
             } else {
               $('div.edit_cell textarea').addClass('error');
+              $("div.edit_cell p.error").html('<span>Write a correct number</span>').fadeIn().delay(2000).fadeOut();
+              return false;
+            }
+          } else {
+            methods.closeTablePopups();
+            return false;
+          }
+        } else if (type=="point") {
+          var new_value = $('input#longitude_value').val() + ', ' + $('input#latitude_value').val();
+          if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=new_value) {
+            var errors = '';
+            //TODO - Check pattern numbers!
+            var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
+            if (!pattern.test($('input#longitude_value').val())) {
+              $('input#longitude_value').addClass('error');
+              errors = 'lon';
+            } else {
+              $('input#longitude_value').removeClass('error');
+            }
+            if (!pattern.test($('input#latitude_value').val())) {
+              $('input#latitude_value').addClass('error');
+              (errors=="")?errors='lat':null;
+            } else {
+              $('input#latitude_value').removeClass('error');
+            }
+            
+            if (errors=='') {
+              var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
+              $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
+              var point_values = new_value.replace(' ','').split(',');
+              new_value = {"type":"Point","coordinates":[point_values[0], point_values[1]]};
+              $('input#longitude_value').removeClass('error');
+              $('input#latitude_value').removeClass('error');
+            } else {
+              $("div.edit_cell p.error").css('left',((errors=="lon")?'-5':'120')+'px');
               $("div.edit_cell p.error").html('<span>Write a correct number</span>').fadeIn().delay(2000).fadeOut();
               return false;
             }
@@ -2219,26 +2276,30 @@
                                 headers[new_value] = type;
                                 $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
                                 break;
-        case "column_type":     headers[params.name] = params.type;
-                                break;
-        case "update_geometry": $('p.geo').remove();
-                                if (params.address_column != undefined && params.address_column != '') {
-                                  var address_cols = params.address_column.split(',');
-                                  if (address_cols.length==1) {
-                                    $('thead tr th[c='+address_cols[0]+'] h3').parent().append('<p class="geo address loading">geo</p>');
-                                  } else {
-                                    methods.refreshTable('');
-                                    setTimeout(function(){
-                                      geolocating = true;
-                                      var place = $('p.geo').offset();
-                                      $('div.table_position').scrollTo({top:'0',left:place.left},300);
-                                    },1000);
-                                  }
-                                  var geo_address = new Geocoding(params.address_column,table_id);
-                                } else {
-                                  $('thead tr th h3:contains('+params.latitude_column+')').parent().append('<p class="geo latitude">geo</p>');
-                                  $('thead tr th h3:contains('+params.longitude_column+')').parent().append('<p class="geo longitude">geo</p>');
+        case "column_type":     if (params.type!="string") {
+                                  $('tbody tr td[c="'+params.name+'"] div').text('');
                                 }
+                                headers[params.name] = params.type;
+                                break;
+        case "update_geometry": methods.refreshTable('');
+                                // $('p.geo').remove();
+                                // if (params.address_column != undefined && params.address_column != '') {
+                                //   var address_cols = params.address_column.split(',');
+                                //   if (address_cols.length==1) {
+                                //     $('thead tr th[c='+address_cols[0]+'] h3').parent().append('<p class="geo address loading">geo</p>');
+                                //   } else {
+                                //     methods.refreshTable('');
+                                //     setTimeout(function(){
+                                //       geolocating = true;
+                                //       var place = $('p.geo').offset();
+                                //       $('div.table_position').scrollTo({top:'0',left:place.left},300);
+                                //     },1000);
+                                //   }
+                                //   var geo_address = new Geocoding(params.address_column,table_id);
+                                // } else {
+                                //   $('thead tr th h3:contains('+params.latitude_column+')').parent().append('<p class="geo latitude">geo</p>');
+                                //   $('thead tr th h3:contains('+params.longitude_column+')').parent().append('<p class="geo longitude">geo</p>');
+                                // }
                                 methods.closeTablePopups();
                                 break;
         case "new_column":      methods.closeTablePopups();

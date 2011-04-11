@@ -504,6 +504,16 @@ describe Table do
     table.rows_counted.should == 11
     table.name.should == "vizzuality_shp"
   end
+  
+  it "should import TM_WORLD_BORDERS_SIMPL-0.3.zip" do
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/TM_WORLD_BORDERS_SIMPL-0.3.zip", "application/download")
+    table.importing_SRID = CartoDB::SRID
+    table.importing_encoding = 'LATIN1'
+    table.save
+
+    table.name.should == "tm_world_borders_simpl"
+  end
 
   it "should import data from an external url returning JSON data" do
     json = JSON.parse(File.read("#{Rails.root}/spec/support/bus_gijon.json"))

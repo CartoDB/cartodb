@@ -274,7 +274,7 @@ feature "API 1.0 tables management" do
     }
     parse_json(response) do |r|
       r.status.should be_success
-      r.body[:name].should == "vizzuality_shp"
+      r.body[:name].should == "ejemplovizzuality"
       r.body[:schema].should == [
         ["cartodb_id", "number"], ["gid", "number"], ["subclass", "string"], ["x", "number"], ["y", "number"], ["length", "string"], ["area", "string"], 
         ["angle", "number"], ["name", "string"], ["pid", "number"], ["lot_navteq", "string"], ["version_na", "string"], ["vitesse_sp", "number"], 

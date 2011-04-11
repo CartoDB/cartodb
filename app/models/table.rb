@@ -25,7 +25,6 @@ class Table < Sequel::Model(:user_tables)
   def validate
     super
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
-    errors.add(:name,    'can\'t be blank') if name.blank?
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
     errors.add(:the_geom_type, 'has an invalid value') unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type.downcase)
     validates_unique [:name, :user_id], :message => 'is already taken'
@@ -33,11 +32,10 @@ class Table < Sequel::Model(:user_tables)
 
   def before_validation
     self.privacy ||= PRIVATE
-    self.name = set_table_name if self.name.blank?
     self.the_geom_type ||= "point"
     super
   end
-
+  
   # Before creating a user table a table should be created in the database.
   # A serie of steps should be done:
   #  - set the new updated_at value
@@ -53,6 +51,7 @@ class Table < Sequel::Model(:user_tables)
       handle_import_file!
       guess_schema if force_schema.blank? && imported_table_name.blank?
     end
+    self.name = set_table_name if self.name.blank?
     set_table_schema!
     if !import_from_file.blank? && imported_table_name.blank?
       import_data_from_file!
@@ -501,8 +500,7 @@ TRIGGER
     @quote = @quote == '`' ? '\`' : @quote
     command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
     system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{owner.database_name} -c"#{command}"}
-    owner.in_database do |user_database|
-      
+    owner.in_database do |user_database|      
       #Check if the file had data, if not rise an error because probably something went wrong
       if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank? 
         raise "The file was empty or there was a problem importing it that made it create an empty table"
@@ -752,6 +750,8 @@ TRIGGER
     else
       import_from_file.path
     end
+    
+    self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
 
     # If it is a zip file we should find a shp file
     entries = []
@@ -781,21 +781,20 @@ TRIGGER
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
       host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
       port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-      self.name = self.imported_table_name = File.basename(path).tr('.','_').downcase.sanitize
-      random_name = "importing_table_#{self.imported_table_name}"
+      self.imported_table_name = File.basename(path).tr('.','_').downcase.sanitize
+      self.name = self.imported_table_name.dup if self.name.blank?
+      random_name = "importing_table_#{self.name}"
       Rails.logger.info "Table name to import: #{random_name}"
       Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
       system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
       owner.in_database do |user_database|
         imported_schema = user_database[random_name.to_sym].columns
-        # TODO: fix ST_Transform
-        # user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")
-        user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom FROM #{random_name}")
+        user_database.run("CREATE TABLE #{self.name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")
         user_database.run("DROP TABLE #{random_name}")
-        user_database.run("CREATE INDEX #{self.imported_table_name}_the_geom_idx ON #{self.imported_table_name} USING GIST(the_geom)")
-        geometry_type = user_database["select GeometryType(the_geom) FROM #{self.imported_table_name} limit 1"].first[:geometrytype]
-        user_database.run("CREATE INDEX #{self.imported_table_name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.imported_table_name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
-        user_database.run("VACUUM ANALYZE #{self.imported_table_name}")
+        user_database.run("CREATE INDEX #{self.name}_the_geom_idx ON #{self.name} USING GIST(the_geom)")
+        geometry_type = user_database["select GeometryType(the_geom) FROM #{self.name} limit 1"].first[:geometrytype]
+        user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
+        user_database.run("VACUUM ANALYZE #{self.name}")
         self.set_trigger_the_geom_webmercator
         self.the_geom_type = geometry_type.downcase
       end

@@ -44,6 +44,9 @@ class Api::Json::TablesController < Api::ApplicationController
              :location => table_path(@table),
              :callback => params[:callback]
     else
+      Rails.logger.info "============== Errors on table ====================="
+      Rails.logger.info @table.errors.full_messages
+      Rails.logger.info "===================================================="
       render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400, :callback => params[:callback]
     end
   rescue => e

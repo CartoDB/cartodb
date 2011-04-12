@@ -512,7 +512,7 @@ describe Table do
     table.name.should == "ejemplovizzuality"
   end
   
-  it "should import TM_WORLD_BORDERS_SIMPL-0.3.zip" do
+  pending "should import TM_WORLD_BORDERS_SIMPL-0.3.zip" do
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/TM_WORLD_BORDERS_SIMPL-0.3.zip", "application/download")
     table.importing_SRID = CartoDB::SRID

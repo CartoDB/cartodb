@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file, :import_from_external_url,
+  attr_accessor :force_schema, :import_from_file, 
                 :imported_table_name, :importing_SRID,
                 :importing_encoding
 
@@ -45,8 +45,8 @@ class Table < Sequel::Model(:user_tables)
   #  - set the cartodb schema, adding cartodb primary key, etc..
   #  - import the data if necessary
   def before_create
+    self.database_name = owner.database_name
     update_updated_at
-    import_data_from_external_url! unless import_from_external_url.blank?
     unless import_from_file.blank?
       handle_import_file!
       guess_schema if force_schema.blank? && imported_table_name.blank?
@@ -104,8 +104,13 @@ class Table < Sequel::Model(:user_tables)
     set_trigger_update_updated_at
     update_stored_schema!
     self.force_schema = nil
+    $tables_metadata.hset key, "user_id", user_id
   end
-
+  
+  def before_destroy
+    $tables_metadata.del key
+  end
+  
   def after_destroy
     super
     Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -128,6 +133,7 @@ class Table < Sequel::Model(:user_tables)
         user_database.run("ALTER INDEX #{name}_#{THE_GEOM_WEBMERCATOR}_idx RENAME TO #{new_name}_#{THE_GEOM_WEBMERCATOR}_idx")
       end
     end
+    $tables_metadata.rename key, key(new_name) if !new?
     self[:name] = new_name unless new_name.blank?
   end
   
@@ -163,6 +169,10 @@ class Table < Sequel::Model(:user_tables)
 
   def pending_to_save?
     self.name =~ /^untitle_table/
+  end
+  
+  def key(new_name = nil)
+    'rails:' + database_name + ':' + (new_name || name)
   end
 
   # TODO: use the database field
@@ -244,6 +254,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema(options = {})
+    stored_schema = $tables_metadata.hget(key,"schema")
+    return [] if stored_schema.blank?
+    stored_schema = JSON.parse(stored_schema)
     return [] if stored_schema.blank?
     stored_schema.map do |column|
       c = column.split(',')
@@ -387,16 +400,17 @@ class Table < Sequel::Model(:user_tables)
         col
       end
     end.compact
-    self.stored_schema = ["cartodb_id,integer,#{"integer".convert_to_cartodb_type}"] +
+    stored_schema = ["cartodb_id,integer,#{"integer".convert_to_cartodb_type}"] +
       temporal_schema +
-      ["created_at,timestamp,#{"timestamp".convert_to_cartodb_type}","updated_at,timestamp,#{"timestamp".convert_to_cartodb_type}"]
+      ["created_at,timestamp,#{"timestamp".convert_to_cartodb_type}", "updated_at,timestamp,#{"timestamp".convert_to_cartodb_type}"]
+    $tables_metadata.hset(key,"columns", stored_schema.map{|c| c.split(',').first }.to_json)
+    $tables_metadata.hset(key,"schema", stored_schema)
   end
 
   def update_stored_schema!
     owner.in_database do |user_database|
       update_stored_schema(user_database)
     end
-    save_changes
   end
   
   def georeference_from!(options = {})
@@ -457,33 +471,6 @@ TRIGGER
     base_name
   end
 
-  def import_data_from_external_url!
-    return if self.import_from_external_url.blank?
-    url = URI.parse(self.import_from_external_url)
-    req = Net::HTTP::Get.new(url.path)
-    res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-    json = JSON.parse(res.body)
-    columns = []
-    filepath = "#{Rails.root}/tmp/importing_#{user_id}.csv"
-    if json.is_a?(Array)
-      raise "Invalid JSON format" unless json.first.is_a?(Hash)
-      CSV.open(filepath, "wb") do |csv|
-        csv << json.first.keys
-        json.each do |row|
-          csv << row.values
-        end
-      end
-    elsif json.is_a?(Hash)
-      CSV.open(filepath, "wb") do |csv|
-        csv << json.keys
-        csv << json.values
-      end
-    else
-      raise "Invalid JSON format"
-    end
-    self.import_from_file = File.open(filepath,'r')
-  end
-
   def import_data_from_file!
     return if self.import_from_file.blank?
 
@@ -499,7 +486,7 @@ TRIGGER
     @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
     @quote = @quote == '`' ? '\`' : @quote
     command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
-    system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{owner.database_name} -c"#{command}"}
+    system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
     owner.in_database do |user_database|      
       #Check if the file had data, if not rise an error because probably something went wrong
       if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank? 
@@ -785,8 +772,8 @@ TRIGGER
       self.name = self.imported_table_name.dup if self.name.blank?
       random_name = "importing_table_#{self.name}"
       Rails.logger.info "Table name to import: #{random_name}"
-      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
-      system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
+      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{database_name}"
+      system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{database_name}")
       owner.in_database do |user_database|
         imported_schema = user_database[random_name.to_sym].columns
         user_database.run("CREATE TABLE #{self.name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")

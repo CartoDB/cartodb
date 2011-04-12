@@ -25,7 +25,7 @@ if %(development test).include?(Rails.env)
   end
 end
 
-task :default => ["test:prepare", "spec:models", "spec:cartodb_lib", "spec:cartodb_acceptance"]
+task :default => ["spec:models", "spec:cartodb_lib", "spec:cartodb_acceptance"]
 
 namespace :cartodb do
   namespace :api do

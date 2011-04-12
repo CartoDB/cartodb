@@ -62,7 +62,7 @@ describe Table do
   it "should have a unique key to be identified in Redis" do
     table = create_table
     user = User[table.user_id]
-    table.key.should == "rails:#{user.database_name}:#{table.name}"
+    table.key.should == "rails:#{table.database_name}:#{table.name}"
   end
   
   it "should rename the entries in Redis when the table has been renamed" do
@@ -71,7 +71,7 @@ describe Table do
     table.name = "brand_new_name"
     table.save_changes
     table.reload
-    table.key.should == "rails:#{user.database_name}:brand_new_name"
+    table.key.should == "rails:#{table.database_name}:brand_new_name"
     $tables_metadata.exists(table.key).should be_true
   end
   
@@ -722,6 +722,12 @@ describe Table do
     ]    
     record = table.record(pk)
     RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "Point(#{"%.6f" % -3.699732} #{"%.6f" % 40.423012})"
+  end
+  
+  it "should store the name of its database" do
+    table = create_table
+    user = User[table.user_id]
+    table.database_name.should == user.database_name
   end
 
 end

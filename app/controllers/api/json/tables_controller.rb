@@ -103,8 +103,7 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def destroy
-    @table = Table.fetch("select id, user_id, name
-                          from user_tables
+    @table = Table.fetch("select * from user_tables
                           where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
     raise RecordNotFound if @table.nil?
     @table.destroy

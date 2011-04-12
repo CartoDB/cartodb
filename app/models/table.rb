@@ -45,6 +45,7 @@ class Table < Sequel::Model(:user_tables)
   #  - set the cartodb schema, adding cartodb primary key, etc..
   #  - import the data if necessary
   def before_create
+    self.database_name = owner.database_name
     update_updated_at
     unless import_from_file.blank?
       handle_import_file!
@@ -105,7 +106,11 @@ class Table < Sequel::Model(:user_tables)
     self.force_schema = nil
     $tables_metadata.hset key, "user_id", user_id
   end
-
+  
+  def before_destroy
+    $tables_metadata.del key
+  end
+  
   def after_destroy
     super
     Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -114,7 +119,6 @@ class Table < Sequel::Model(:user_tables)
       user_database.drop_table(name.to_sym)
       user_database.run("DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq")
     end
-    $tables_metadata.del key
   end
   ## End of Callbacks
 
@@ -168,7 +172,7 @@ class Table < Sequel::Model(:user_tables)
   end
   
   def key(new_name = nil)
-    'rails:' + owner.database_name + ':' + (new_name || name)
+    'rails:' + database_name + ':' + (new_name || name)
   end
 
   # TODO: use the database field
@@ -482,7 +486,7 @@ TRIGGER
     @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
     @quote = @quote == '`' ? '\`' : @quote
     command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
-    system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{owner.database_name} -c"#{command}"}
+    system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
     owner.in_database do |user_database|      
       #Check if the file had data, if not rise an error because probably something went wrong
       if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank? 
@@ -768,8 +772,8 @@ TRIGGER
       self.name = self.imported_table_name.dup if self.name.blank?
       random_name = "importing_table_#{self.name}"
       Rails.logger.info "Table name to import: #{random_name}"
-      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
-      system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
+      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{database_name}"
+      system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{database_name}")
       owner.in_database do |user_database|
         imported_schema = user_database[random_name.to_sym].columns
         user_database.run("CREATE TABLE #{self.name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")

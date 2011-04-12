@@ -15,13 +15,13 @@ class HomeController < ApplicationController
   end
 
   def app_status
-    status = begin
-      Rails::Sequel.connection.select('OK').first.values.include?('OK') ? 200 : 500
-    rescue Exception => e
-      500
-    end
-
-    head status
+    db_ok    = Rails::Sequel.connection.select('OK').first.values.include?('OK')
+    redis_ok = $tables_metadata.dbsize
+    api_ok   = true
+    head (db_ok && redis_ok && api_ok) ? 200 : 500
+  rescue
+    Rails.logger.info "======== status method failed: #{$!}"
+    head 500
   end
 
 end

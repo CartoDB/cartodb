@@ -58,6 +58,45 @@ describe Table do
       user_database.table_exists?('wadus_table_2'.to_sym).should be_true
     end
   end
+  
+  it "should have a unique key to be identified in Redis" do
+    table = create_table
+    user = User[table.user_id]
+    table.key.should == "#{user.database_name}/#{table.name}"
+  end
+  
+  it "should rename the entries in Redis when the table has been renamed" do
+    table = create_table
+    user = User[table.user_id]
+    table.name = "brand_new_name"
+    table.save_changes
+    table.reload
+    table.key.should == "#{user.database_name}/brand_new_name"
+    $tables_metadata.exists(table.key).should be_true
+  end
+  
+  it "should store the identifier of its owner when created" do
+    table = create_table
+    $tables_metadata.hget(table.key,"user_id").should == table.user_id.to_s
+  end
+  
+  it "should store a list of columns in Redis" do
+    table = create_table
+    $tables_metadata.hget(table.key,"columns").should == [:cartodb_id, :name, :description, :the_geom, :created_at, :updated_at].to_json
+  end
+
+  it "should store a schema in Redis" do
+    table = create_table
+    $tables_metadata.hget(table.key,"schema").should == 
+      "[\"cartodb_id,integer, number\", \"name,text,string\", \"description,text,string\", \"the_geom,geometry,geometry,point\", \"created_at,timestamp,date\", \"updated_at,timestamp,date\"]"
+  end
+  
+  it "should remove the table from Redis when removing the table" do
+    table = create_table
+    $tables_metadata.exists(table.key).should be_true
+    table.destroy
+    $tables_metadata.exists(table.key).should be_false
+  end
 
   it "has a default schema" do
     table = create_table

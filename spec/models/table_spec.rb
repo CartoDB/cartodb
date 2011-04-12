@@ -58,11 +58,49 @@ describe Table do
       user_database.table_exists?('wadus_table_2'.to_sym).should be_true
     end
   end
+  
+  it "should have a unique key to be identified in Redis" do
+    table = create_table
+    user = User[table.user_id]
+    table.key.should == "rails:#{table.database_name}:#{table.name}"
+  end
+  
+  it "should rename the entries in Redis when the table has been renamed" do
+    table = create_table
+    user = User[table.user_id]
+    table.name = "brand_new_name"
+    table.save_changes
+    table.reload
+    table.key.should == "rails:#{table.database_name}:brand_new_name"
+    $tables_metadata.exists(table.key).should be_true
+  end
+  
+  it "should store the identifier of its owner when created" do
+    table = create_table
+    $tables_metadata.hget(table.key,"user_id").should == table.user_id.to_s
+  end
+  
+  it "should store a list of columns in Redis" do
+    table = create_table
+    $tables_metadata.hget(table.key,"columns").should == [:cartodb_id, :name, :description, :the_geom, :created_at, :updated_at].to_json
+  end
+
+  it "should store a schema in Redis" do
+    table = create_table
+    $tables_metadata.hget(table.key,"schema").should == 
+      "[\"cartodb_id,integer,number\", \"name,text,string\", \"description,text,string\", \"the_geom,geometry,geometry,point\", \"created_at,timestamp,date\", \"updated_at,timestamp,date\"]"
+  end
+  
+  it "should remove the table from Redis when removing the table" do
+    table = create_table
+    $tables_metadata.exists(table.key).should be_true
+    table.destroy
+    $tables_metadata.exists(table.key).should be_false
+  end
 
   it "has a default schema" do
     table = create_table
     table.reload
-    table.stored_schema.should == ["cartodb_id,integer,number","name,text,string","description,text,string", "the_geom,geometry,geometry,point", "created_at,timestamp,date","updated_at,timestamp,date"]
     table.schema(:cartodb_types => false).should be_equal_to_default_db_schema
     table.schema.should be_equal_to_default_cartodb_schema
   end
@@ -522,29 +560,6 @@ describe Table do
     table.name.should == "tm_world_borders_simpl"
   end
 
-  it "should import data from an external url returning JSON data" do
-    json = JSON.parse(File.read("#{Rails.root}/spec/support/bus_gijon.json"))
-    JSON.stubs(:parse).returns(json)
-    table = new_table
-    table.import_from_external_url = "http://externaldata.com/bus_gijon.json"
-    table.save
-
-    table.rows_counted.should == 7
-    table.schema(:cartodb_types => false).should == [
-      [:cartodb_id, "integer"], [:idautobus, "integer"], [:utmx, "integer"],
-      [:utmy, "integer"], [:horaactualizacion, "character varying"], [:fechaactualizacion, "character varying"],
-      [:idtrayecto, "integer"], [:idparada, "integer"], [:minutos, "integer"], [:distancia, "double precision"],
-      [:idlinea, "integer"], [:matricula, "character varying"], [:modelo, "character varying"],
-      [:ordenparada, "integer"], [:idsiguienteparada, "integer"], 
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
-    row = table.records[:rows][0]
-    row[:cartodb_id].should == 1
-    row[:idautobus].should == 330
-    row[:horaactualizacion].should == "14:23:10"
-    row[:idparada] == 34
-  end
-
   it "should alter the schema automatically to a a wide range of numbers when inserting" do
     user = create_user
     table = new_table
@@ -707,6 +722,12 @@ describe Table do
     ]    
     record = table.record(pk)
     RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "Point(#{"%.6f" % -3.699732} #{"%.6f" % 40.423012})"
+  end
+  
+  it "should store the name of its database" do
+    table = create_table
+    user = User[table.user_id]
+    table.database_name.should == user.database_name
   end
 
 end

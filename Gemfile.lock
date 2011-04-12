@@ -124,7 +124,7 @@ GEM
     net-ssh (2.1.4)
     net-ssh-gateway (1.0.1)
       net-ssh (>= 1.99.1)
-    nofxx-georuby (1.9.1)
+    nofxx-georuby (1.9.2)
     nokogiri (1.4.4)
     oauth (0.4.4)
     oauth-plugin (0.4.0.pre4)
@@ -158,7 +158,8 @@ GEM
       thor (~> 0.14.4)
     rake (0.8.7)
     rdoc (3.5.3)
-    rgeo (0.2.6)
+    redis (2.2.0)
+    rgeo (0.2.7)
     rgeo-geojson (0.2.0)
       rgeo (>= 0.2.0)
     roo (1.9.3)
@@ -237,6 +238,7 @@ DEPENDENCIES
   rails (= 3.0.6)
   rails_warden
   rdoc
+  redis
   rgeo
   rgeo-geojson
   roo

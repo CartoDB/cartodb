@@ -104,6 +104,7 @@ class Table < Sequel::Model(:user_tables)
     set_trigger_update_updated_at
     update_stored_schema!
     self.force_schema = nil
+    $tables_metadata.hset key, "user_id", user_id
   end
 
   def after_destroy
@@ -114,6 +115,7 @@ class Table < Sequel::Model(:user_tables)
       user_database.drop_table(name.to_sym)
       user_database.run("DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq")
     end
+    $tables_metadata.del key
   end
   ## End of Callbacks
 
@@ -128,6 +130,7 @@ class Table < Sequel::Model(:user_tables)
         user_database.run("ALTER INDEX #{name}_#{THE_GEOM_WEBMERCATOR}_idx RENAME TO #{new_name}_#{THE_GEOM_WEBMERCATOR}_idx")
       end
     end
+    $tables_metadata.rename key, key(new_name) if !new?
     self[:name] = new_name unless new_name.blank?
   end
   
@@ -163,6 +166,10 @@ class Table < Sequel::Model(:user_tables)
 
   def pending_to_save?
     self.name =~ /^untitle_table/
+  end
+  
+  def key(new_name = nil)
+    owner.database_name + '/' + (new_name || name)
   end
 
   # TODO: use the database field
@@ -387,16 +394,17 @@ class Table < Sequel::Model(:user_tables)
         col
       end
     end.compact
-    self.stored_schema = ["cartodb_id,integer,#{"integer".convert_to_cartodb_type}"] +
+    stored_schema = ["cartodb_id,integer, #{"integer".convert_to_cartodb_type}"] +
       temporal_schema +
-      ["created_at,timestamp,#{"timestamp".convert_to_cartodb_type}","updated_at,timestamp,#{"timestamp".convert_to_cartodb_type}"]
+      ["created_at,timestamp,#{"timestamp".convert_to_cartodb_type}", "updated_at,timestamp,#{"timestamp".convert_to_cartodb_type}"]
+    $tables_metadata.hset(key,"columns", stored_schema.map{|c| c.split(',').first }.to_json)
+    $tables_metadata.hset(key,"schema", stored_schema)
   end
 
   def update_stored_schema!
     owner.in_database do |user_database|
       update_stored_schema(user_database)
     end
-    save_changes
   end
   
   def georeference_from!(options = {})

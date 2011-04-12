@@ -21,6 +21,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.username              = attributes[:username]
       @user.email                 = attributes[:email]
       @user.password              = attributes[:password]
+      @user.password_confirmation = attributes[:password]
       @user.admin                 = attributes[:admin]
       @user.enabled               = true
       if @user.save

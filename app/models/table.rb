@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file, :import_from_external_url,
+  attr_accessor :force_schema, :import_from_file, 
                 :imported_table_name, :importing_SRID,
                 :importing_encoding
 
@@ -46,7 +46,6 @@ class Table < Sequel::Model(:user_tables)
   #  - import the data if necessary
   def before_create
     update_updated_at
-    import_data_from_external_url! unless import_from_external_url.blank?
     unless import_from_file.blank?
       handle_import_file!
       guess_schema if force_schema.blank? && imported_table_name.blank?
@@ -169,7 +168,7 @@ class Table < Sequel::Model(:user_tables)
   end
   
   def key(new_name = nil)
-    owner.database_name + '/' + (new_name || name)
+    'rails:' + owner.database_name + ':' + (new_name || name)
   end
 
   # TODO: use the database field
@@ -251,6 +250,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema(options = {})
+    stored_schema = $tables_metadata.hget(key,"schema")
+    return [] if stored_schema.blank?
+    stored_schema = JSON.parse(stored_schema)
     return [] if stored_schema.blank?
     stored_schema.map do |column|
       c = column.split(',')
@@ -394,7 +396,7 @@ class Table < Sequel::Model(:user_tables)
         col
       end
     end.compact
-    stored_schema = ["cartodb_id,integer, #{"integer".convert_to_cartodb_type}"] +
+    stored_schema = ["cartodb_id,integer,#{"integer".convert_to_cartodb_type}"] +
       temporal_schema +
       ["created_at,timestamp,#{"timestamp".convert_to_cartodb_type}", "updated_at,timestamp,#{"timestamp".convert_to_cartodb_type}"]
     $tables_metadata.hset(key,"columns", stored_schema.map{|c| c.split(',').first }.to_json)
@@ -463,33 +465,6 @@ TRIGGER
       base_name = "Untitle table #{i}".sanitize
     end
     base_name
-  end
-
-  def import_data_from_external_url!
-    return if self.import_from_external_url.blank?
-    url = URI.parse(self.import_from_external_url)
-    req = Net::HTTP::Get.new(url.path)
-    res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-    json = JSON.parse(res.body)
-    columns = []
-    filepath = "#{Rails.root}/tmp/importing_#{user_id}.csv"
-    if json.is_a?(Array)
-      raise "Invalid JSON format" unless json.first.is_a?(Hash)
-      CSV.open(filepath, "wb") do |csv|
-        csv << json.first.keys
-        json.each do |row|
-          csv << row.values
-        end
-      end
-    elsif json.is_a?(Hash)
-      CSV.open(filepath, "wb") do |csv|
-        csv << json.keys
-        csv << json.values
-      end
-    else
-      raise "Invalid JSON format"
-    end
-    self.import_from_file = File.open(filepath,'r')
   end
 
   def import_data_from_file!

@@ -58,7 +58,9 @@ module CartoDB
           query.gsub!(/^\s*select\s*(\*)\s*from\s*(\w+)\s*(.*)/i) do |matches|
             schema = JSON.parse($tables_metadata.hget "rails:#{database_name}:#{$2}", "columns")
             raise "Blank columns in table #{database_name}:#{$2}" if schema.blank?
-            schema[schema.index("the_geom")] = "ST_AsGeoJSON(the_geom) as the_geom"
+            if schema.include?("the_geom")
+              schema[schema.index("the_geom")] = "ST_AsGeoJSON(the_geom) as the_geom"
+            end
             "select #{schema.join(',')} from #{$2} #{$3}".strip
           end
         else

@@ -51,11 +51,14 @@ class Table < Sequel::Model(:user_tables)
       handle_import_file!
       guess_schema if force_schema.blank? && imported_table_name.blank?
     end
+    # Before assign the name, the method #key can not be used,
+    # because depends on the name of the table
     self.name = set_table_name if self.name.blank?
     set_table_schema!
     if !import_from_file.blank? && imported_table_name.blank?
       import_data_from_file!
     end
+    $tables_metadata.hset key, "privacy", self.privacy || PRIVATE
     super
   rescue Sequel::DatabaseError => e
     owner.in_database(:as => :superuser) do |user_database|
@@ -105,6 +108,7 @@ class Table < Sequel::Model(:user_tables)
     update_stored_schema!
     self.force_schema = nil
     $tables_metadata.hset key, "user_id", user_id
+    $tables_metadata.hset key, "privacy", self.privacy
   end
   
   def before_destroy
@@ -145,12 +149,17 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def private?
-    privacy == PRIVATE
+    $tables_metadata.hget(key, "privacy").to_i == PRIVATE
+  end
+  
+  def public?
+    !private?
   end
 
   def privacy=(value)
     if value == "PRIVATE" || value == PRIVATE || value == PRIVATE.to_s
       self[:privacy] = PRIVATE
+      $tables_metadata.hset key, "privacy", PRIVATE unless new?
       if !new?
         owner.in_database do |user_database|
           user_database.run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
@@ -158,16 +167,13 @@ class Table < Sequel::Model(:user_tables)
       end
     elsif value == "PUBLIC" || value == PUBLIC || value == PUBLIC.to_s
       self[:privacy] = PUBLIC
+      $tables_metadata.hset key, "privacy", PUBLIC unless new?
       if !new?
         owner.in_database do |user_database|
           user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
         end
       end
     end
-  end
-
-  def public?
-    !private?
   end
 
   def pending_to_save?

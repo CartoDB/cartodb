@@ -31,7 +31,6 @@ describe Table do
 
   it "should have a privacy associated and it should be private by default" do
     table = create_table
-    table.privacy.should_not be_nil
     table.should be_private
   end
 

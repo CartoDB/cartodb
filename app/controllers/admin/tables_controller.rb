@@ -33,7 +33,12 @@ class Admin::TablesController < ApplicationController
 
       end
       format.kml
-      format.shp
+      format.shp do
+        send_data @table.to_shp,
+          :type => 'application/octet-stream; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
+
+      end
     end
   end
 

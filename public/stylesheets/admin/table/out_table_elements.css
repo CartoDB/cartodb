@@ -70,7 +70,7 @@ section.subheader div.right p.settings a.settings {padding:0 20px 0 3px; color:w
 section.subheader div.right p.settings a.settings:hover {color:white;}
 section.subheader div.right span.advanced_options {position:absolute; display:none; right:-10px; top:9px; width:122px; z-index:100;}
 section.subheader div.right span.advanced_options a.advanced {position:relative; float:right; padding:7px 29px 7px 9px; font:normal 13px Arial; text-shadow:0 1px black;
-text-decoration:none; color:#949BAA; z-index:100; border:1px solid black; border-bottom:0; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; 
+text-decoration:none; color:#949BAA; z-index:100; border:1px solid black; border-bottom:0; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px;
 border-top-left-radius: 5px; border-top-right-radius: 5px; background:url('/images/admin/table/advanced_options_bkg.jpg') repeat-x 0 top;}
 section.subheader div.right span.advanced_options a.advanced span {position:absolute; right:9px; top:6px; height:16px; width:13px; background:url('/images/admin/icons/settings.png') no-repeat right -13px;}
 section.subheader div.right span.advanced_options ul {float:left; width:100px; height:auto; padding:5px 11px 5px 9px; margin:-1px 0 0 0; background-image:-moz-linear-gradient(100% 100% 90deg, #232B46, #233151); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#233151), to(#232B46)); border:1px solid black; -webkit-border-radius: 5px;
@@ -157,7 +157,7 @@ div.mamufas div.save_window a.close_save:hover {background-position:0 -24px;}
 div.mamufas div.save_window div.inner_ {float:left; width:387px; border:2px solid #FFC209; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
 div.mamufas div.save_window div.inner_ span.top {float:left; width:357px; padding:14px; border-bottom:1px solid #CCCCCC;}
 div.mamufas div.save_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
-div.mamufas div.save_window div.inner_ span.top input {width:341px; height:13px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat 1px 0; border:1px solid #999999; webkit-border-radius:4px; 
+div.mamufas div.save_window div.inner_ span.top input {width:341px; height:13px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat 1px 0; border:1px solid #999999; webkit-border-radius:4px;
 border-radius:4px; -moz-border-radius:4px; font:normal 13px Arial; color:#333333; line-height:13px;}
 div.mamufas div.save_window div.inner_ span.top input:focus {outline:none;}
 div.mamufas div.save_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; padding:0 0 18px 0; font:normal 13px "Helvetica",Arial; color:#666666;}
@@ -186,6 +186,6 @@ div.mamufas div.export_window div.inner_ span.top ul li.selected a {width:315px;
 div.mamufas div.export_window div.inner_ span.top ul li a:hover {background-position:0 -28px; color:#333333;}
 div.mamufas div.export_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; padding:0 0 18px 0; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.export_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
-div.mamufas div.export_window div.inner_ span.bottom a.download {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+div.mamufas div.export_window div.inner_ span.bottom input.download {float:right; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
-div.mamufas div.export_window div.inner_ span.bottom a.download:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+div.mamufas div.export_window div.inner_ span.bottom input.download:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}

@@ -68,9 +68,9 @@ describe CartoDB::SqlParser do
     table.name = 'table1'
     table.save
     
-    CartoDB::SqlParser.parse("select * from table1", user.database_name).should == "select cartodb_id,name,description,ST_AsGeoJSON(the_geom),created_at,updated_at from table1"
+    CartoDB::SqlParser.parse("select * from table1", user.database_name).should == "select cartodb_id,name,description,ST_AsGeoJSON(the_geom) as the_geom,created_at,updated_at from table1"
     CartoDB::SqlParser.parse("select * from table1 where intersects(40.33,22.10,the_geom) = true", user.database_name).should == 
-      "select cartodb_id,name,description,ST_AsGeoJSON(the_geom),created_at,updated_at from table1 where ST_Intersects(ST_SetSRID(ST_Point(40.33,22.10),4326),the_geom) = true"
+      "select cartodb_id,name,description,ST_AsGeoJSON(the_geom) as the_geom,created_at,updated_at from table1 where ST_Intersects(ST_SetSRID(ST_Point(40.33,22.10),4326),the_geom) = true"
   end
   
   it "should expand table_name.* to a list of columns" do
@@ -86,7 +86,7 @@ describe CartoDB::SqlParser do
     table2.save
     
     CartoDB::SqlParser.parse("select table2.*,table1.cartodb_id from table1,table2", user.database_name).should == 
-      "select table2.cartodb_id,table2.name,table2.description,ST_AsGeoJSON(table2.the_geom),table2.created_at,table2.updated_at,table1.cartodb_id from table1,table2"
+      "select table2.cartodb_id,table2.name,table2.description,ST_AsGeoJSON(table2.the_geom) as the_geom,table2.created_at,table2.updated_at,table1.cartodb_id from table1,table2"
   end
 
   it "should expand table1.*,table2.* to a list of columns" do
@@ -102,7 +102,7 @@ describe CartoDB::SqlParser do
     table2.save
     
     CartoDB::SqlParser.parse("select table1.*,table2.* from table1,table2", user.database_name).should == 
-      "select table1.cartodb_id,table1.name,table1.description,ST_AsGeoJSON(table1.the_geom),table1.created_at,table1.updated_at,table2.cartodb_id,table2.name,table2.description,ST_AsGeoJSON(table2.the_geom),table2.created_at,table2.updated_at from table1,table2"
+      "select table1.cartodb_id,table1.name,table1.description,ST_AsGeoJSON(table1.the_geom) as the_geom,table1.created_at,table1.updated_at,table2.cartodb_id,table2.name,table2.description,ST_AsGeoJSON(table2.the_geom) as the_geom,table2.created_at,table2.updated_at from table1,table2"
   end
   
 end

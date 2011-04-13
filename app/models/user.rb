@@ -154,7 +154,7 @@ class User < Sequel::Model
     time = nil
     in_database do |user_database|
       time = Benchmark.measure {
-        rows = user_database[CartoDB::SqlParser.parse(query)].all
+        rows = user_database[CartoDB::SqlParser.parse(query, database_name)].all
       }
     end
     #TODO: This part of the code should be using memcache.

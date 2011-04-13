@@ -547,7 +547,7 @@ describe Table do
       [:the_geom, "geometry", "geometry", "multipolygon"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
     ]
     table.rows_counted.should == 11
-    table.name.should == "ejemplovizzuality"
+    table.name.should == "vizzuality_shp"
   end
   
   pending "should import TM_WORLD_BORDERS_SIMPL-0.3.zip" do
@@ -567,7 +567,7 @@ describe Table do
     table.importing_encoding = 'LATIN1'
     table.save
 
-    table.name.should == "shp1"
+    table.name.should == "esp_adm1_shp"
   end
 
   it "should alter the schema automatically to a a wide range of numbers when inserting" do

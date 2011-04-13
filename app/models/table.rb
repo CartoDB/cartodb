@@ -481,15 +481,16 @@ TRIGGER
       user_database.run("CREATE TABLE #{table_name} AS SELECT #{(self.schema.map{|c| c.first} - [:the_geom]).join(',')}, ST_AsGeoJSON(the_geom, 6) as the_geom FROM #{self.name}")
 
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
-      host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
-      port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-      @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
-      @quote = @quote == '`' ? '\`' : @quote
-      command = "COPY (SELECT * FROM csv_export_temp_#{self.name}) TO '#{csv_file_path}' WITH DELIMITER ',' CSV QUOTE AS '#{@quote}' HEADER"
+      host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
+      port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
+      username = db_configuration['username']
+      @quote   = (@quote == '"' || @quote.blank?) ? '\"' : @quote
+      @quote   = @quote == '`' ? '\`' : @quote
+      command  = "COPY (SELECT * FROM csv_export_temp_#{self.name}) TO '#{csv_file_path}' WITH DELIMITER ',' CSV QUOTE AS '#{@quote}' HEADER"
 
       system <<-CMD
         rm -f #{csv_file_path} #{zip_file_path};
-        `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}";
+        `which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}";
         cd #{Rails.root.join('tmp')};
         zip #{table_name}.zip #{table_name}.csv
       CMD
@@ -501,6 +502,31 @@ TRIGGER
       end
       csv_data
     end
+  end
+
+  def to_shp
+    shp_files_name = "shp_export_temp_#{self.name}"
+    all_files_path = Rails.root.join('tmp', "#{shp_files_name}.*")
+    shp_file_path  = Rails.root.join('tmp', "#{shp_files_name}.shp")
+    zip_file_path  = Rails.root.join('tmp', "#{shp_files_name}.zip")
+
+    db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
+    host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
+    port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
+    username = db_configuration['username']
+
+    system <<-CMD
+      rm -rf #{all_files_path};
+      `which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{owner.database_name} #{self.name};
+      cd #{Rails.root.join('tmp')};
+      zip #{shp_files_name}.zip #{shp_files_name}.*;
+    CMD
+
+    shp_data = ''
+    File.open(zip_file_path, 'r') do |file|
+      shp_data = file.read
+    end
+    shp_data
   end
 
   private

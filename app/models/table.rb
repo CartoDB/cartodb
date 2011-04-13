@@ -746,7 +746,7 @@ TRIGGER
       Rails.logger.info "Importing zip file: #{path}"
       Zip::ZipFile.foreach(path) do |entry|
         name = entry.name.split('/').last
-        next if name =~ /^\./
+        next if name =~ /^(\.|\_{2})/
         entries << "/tmp/#{name}"
         if File.extname(name) == '.shp'
           ext = '.shp'

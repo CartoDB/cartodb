@@ -551,13 +551,23 @@ describe Table do
   end
   
   pending "should import TM_WORLD_BORDERS_SIMPL-0.3.zip" do
-    table = new_table
+    table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/TM_WORLD_BORDERS_SIMPL-0.3.zip", "application/download")
     table.importing_SRID = CartoDB::SRID
     table.importing_encoding = 'LATIN1'
     table.save
 
     table.name.should == "tm_world_borders_simpl"
+  end
+  
+  it "should import SHP1.zip" do
+    table = new_table :name => nil
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/SHP1.zip", "application/download")
+    table.importing_SRID = CartoDB::SRID
+    table.importing_encoding = 'LATIN1'
+    table.save
+
+    table.name.should == "shp1"
   end
 
   it "should alter the schema automatically to a a wide range of numbers when inserting" do

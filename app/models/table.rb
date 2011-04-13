@@ -129,8 +129,11 @@ class Table < Sequel::Model(:user_tables)
       owner.in_database do |user_database|
         user_database.rename_table name, new_name
         user_database.run("ALTER SEQUENCE #{name}_cartodb_id_seq RENAME TO #{new_name}_cartodb_id_seq")
-        user_database.run("ALTER INDEX #{name}_the_geom_idx RENAME TO #{new_name}_the_geom_idx")
-        user_database.run("ALTER INDEX #{name}_#{THE_GEOM_WEBMERCATOR}_idx RENAME TO #{new_name}_#{THE_GEOM_WEBMERCATOR}_idx")
+        begin
+          user_database.run("ALTER INDEX #{name}_the_geom_idx RENAME TO #{new_name}_the_geom_idx")
+          user_database.run("ALTER INDEX #{name}_#{THE_GEOM_WEBMERCATOR}_idx RENAME TO #{new_name}_#{THE_GEOM_WEBMERCATOR}_idx")
+        rescue
+        end
       end
     end
     $tables_metadata.rename key, key(new_name) if !new?

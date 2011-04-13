@@ -2,6 +2,39 @@
 
 module CartoDB
   class SqlParser
+    def self.update_schema
+      @@update_schema
+    end
+    
+    def self.pre_parsing(query, user_id)
+      @@update_schema = nil
+      query.split(';').map do |raw_query|
+        next if raw_query.blank?
+        q = raw_query.downcase.strip
+        raise CartoDB::QueryNotAllowed if q =~ /^create/i
+        if q.include?('drop') && q =~ /^\s*drop\s*table\s*[if\s*exists]?([\w_]+)/i
+          if t = Table[:user_id => user_id, :name => $1]
+            t.destroy
+          else
+            raise CartoDB::TableNotExists
+          end
+          nil
+        elsif q.include?('rename to') && q =~ /^alter\s*table\s*([\w_]+)\s*rename\s*to\s*([\w_]+)/i
+          if t = Table[:user_id => user_id, :name => $1]
+            t.name = $2
+            t.save_changes
+          else
+            raise CartoDB::TableNotExists
+          end
+          nil
+        elsif q.include?('rename') && q =~ /^\s*alter\s*table\s*([\w_]+)\s*/i
+          @@update_schema = $1
+          raw_query
+        else
+          raw_query
+        end
+      end.compact.join(';')
+    end
     def self.parse(query, database_name = nil)
       if query.include?('distance')
         query.gsub!(/distance\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^\)]+)\s*\)/i) do |matches|

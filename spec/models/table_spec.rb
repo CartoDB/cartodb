@@ -502,6 +502,17 @@ describe Table do
     row[:lon].should == 2.8
     row[:views].should == 540
   end
+  
+  it "should import file flights-bad-encoding.csv" do
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/flights-bad-encoding.csv", "text/csv")
+    table.save
+    
+    table.rows_counted.should == 791
+    row = table.records[:rows][0]
+    row[:cartodb_id].should == 1
+    row[:vuelo].should == "A31762"
+  end
 
   it "should import file ngos.xlsx" do
     table = new_table

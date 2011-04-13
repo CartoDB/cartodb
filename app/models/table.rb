@@ -715,6 +715,7 @@ TRIGGER
     end
   end
 
+  # FIXME: handle exceptions and don't create tables
   def handle_import_file!
     if import_from_file.is_a?(String)
       open(import_from_file) do |res|
@@ -738,8 +739,6 @@ TRIGGER
       import_from_file.path
     end
     
-    self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
-
     # If it is a zip file we should find a shp file
     entries = []
     if ext == '.zip'
@@ -759,6 +758,9 @@ TRIGGER
         end
         entry.extract("/tmp/#{name}")
       end
+    end
+    if ext == '.csv'
+      self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
     end
     return unless %W{ .ods .xls .xlsx .shp }.include?(ext)
 
@@ -786,7 +788,7 @@ TRIGGER
         self.the_geom_type = geometry_type.downcase
       end
       if entries.any?
-        entries.each{ |e| FileUtils.rm(e) }
+        entries.each{ |e| FileUtils.rm_rf(e) }
       end
       return
     else

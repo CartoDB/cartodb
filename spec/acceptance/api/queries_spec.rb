@@ -67,5 +67,13 @@ feature "API 1.0 queries interface" do
       r.status.should == 400
     end
   end
+  
+  scenario "Should register the request in Redis" do
+    get_json api_query_url, :sql => "select * from #{@table.name} where family='Polynoidae' limit 10"
+    
+    $threshold.get("rails:users:#{@user.id}:requests:total").to_i.should == 1
+    $threshold.get("rails:users:#{@user.id}:requests:table:#{@table.name}:total").to_i.should == 1
+    $threshold.get("rails:users:#{@user.id}:requests:table:#{@table.name}:#{Date.today.strftime("%Y-%m-%d")}").to_i.should == 1
+  end
 
 end

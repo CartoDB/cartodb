@@ -83,7 +83,7 @@ feature "API 1.0 tables management" do
       r.body[:name].should == "my_new_imported_table"
       r.body[:schema].should == [
          ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
-         ["the_geom", "geometry", "geometry", "polygon"], ["created_at", "date"], ["updated_at", "date"]
+         ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
        ]
     end
   end
@@ -95,7 +95,7 @@ feature "API 1.0 tables management" do
       r.body[:name].should == "my_new_imported_table"
       r.body[:schema].should == [
          ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
-         ["the_geom", "geometry", "geometry", "linestring"], ["created_at", "date"], ["updated_at", "date"]
+         ["the_geom", "geometry", "geometry", "multilinestring"], ["created_at", "date"], ["updated_at", "date"]
        ]
     end
   end

@@ -455,7 +455,21 @@ class Table < Sequel::Model(:user_tables)
 TRIGGER
       )
     end
-  end  
+  end
+  
+  def the_geom_type=(value)
+    self[:the_geom_type] = if value == "point"
+      value
+    elsif value == "line"
+      "multilinestring"
+    else
+      unless value =~ /^multi/
+        "multi#{value}"
+      else
+        value
+      end
+    end
+  end
 
   private
 

@@ -33,11 +33,7 @@ class Api::Json::TablesController < Api::ApplicationController
     end
     @table.importing_SRID = params[:srid] || CartoDB::SRID
     @table.force_schema   = params[:schema] if params[:schema]
-    if params[:the_geom_type]
-      the_geom_type = params[:the_geom_type].downcase!
-      the_geom_type = "linestring" if the_geom_type == "line"
-      @table.the_geom_type = the_geom_type
-    end
+    @table.the_geom_type  = params[:the_geom_type].downcase if params[:the_geom_type]
     if @table.valid? && @table.save
       render :json => { :id => @table.id, :name => @table.name, :schema => @table.schema }.to_json,
              :status => 200,

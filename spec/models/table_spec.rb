@@ -508,8 +508,7 @@ describe Table do
     table.save
     
     table.rows_counted.should == 791
-    row = table.records[:rows][0]
-    row[:cartodb_id].should == 1
+    row = table.record(1)
     row[:vuelo].should == "A31762"
   end
   

@@ -60,10 +60,12 @@ class Table < Sequel::Model(:user_tables)
     end
     $tables_metadata.hset key, "privacy", self.privacy || PRIVATE
     super
-  rescue Sequel::DatabaseError => e
-    owner.in_database(:as => :superuser) do |user_database|
-      user_database.run("DROP TABLE IF EXISTS #{self.name}")
-      user_database.run("DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq")
+  rescue => e
+    unless self.name.blank?
+      owner.in_database(:as => :superuser) do |user_database|
+        user_database.run("DROP TABLE IF EXISTS #{self.name}")
+        user_database.run("DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq")
+      end
     end
     raise e
   end
@@ -497,7 +499,7 @@ TRIGGER
     command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
     system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
     owner.in_database do |user_database|      
-      #Check if the file had data, if not rise an error because probably something went wrong
+      # Check if the file had data, if not rise an error because probably something went wrong
       if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank? 
         raise "The file was empty or there was a problem importing it that made it create an empty table"
       end
@@ -730,7 +732,8 @@ TRIGGER
       open(import_from_file) do |res|
         file_name = File.basename(import_from_file)
         ext = File.extname(file_name)
-        self.import_from_file = File.new("#{Rails.root}/tmp/uploading_#{user_id}.#{ext}", 'w+')
+        self.name ||= File.basename(import_from_file, ext).downcase.sanitize
+        self.import_from_file = File.new("#{Rails.root}/tmp/uploading_#{file_name}", 'w+')
         self.import_from_file.write(res.read.force_encoding('utf-8'))
         self.import_from_file.close
       end

@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
   ssl_required :new, :create, :destroy, :show, :unauthenticated
 
   before_filter :api_authorization_required, :only => :show
-  skip_before_filter :app_host_required, :only => :show
+  skip_before_filter :app_host_required, :only => [:show, :unauthenticated]
 
   layout 'front_layout'
 

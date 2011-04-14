@@ -53,7 +53,7 @@ module CartoDB
       end
       if query.include?('geojson')
         query.gsub!(/geojson\(\s*([^\)]+)\s*\)/i) do |matches|
-          "ST_AsGeoJSON(#{$1})"
+          "ST_AsGeoJSON(#{$1},6)"
         end        
       end
       if query.include?('kml')
@@ -63,12 +63,12 @@ module CartoDB
       end
       if query.include?('svg')
         query.gsub!(/svg\(\s*([^\)]+)\s*\)/i) do |matches|
-          "ST_AsSVG(#{$1},6)"
+          "ST_AsSVG(#{$1},0,6)"
         end        
       end
       if query.include?('wkt')
         query.gsub!(/wkt\(\s*([^\)]+)\s*\)/i) do |matches|
-          "ST_AsText(#{$1},6)"
+          "ST_AsText(#{$1})"
         end        
       end      
       if query.include?('geohash')

@@ -2,7 +2,11 @@ module CartoDB
   module Factories
     def new_table(attributes = {})
       attributes = attributes.dup
-      attributes[:name] ||= String.random(10)
+      if attributes.keys.include?(:name) && attributes[:name] == nil
+        attributes.delete(:name)
+      else
+        attributes[:name] ||= String.random(10)
+      end
       user_id = if attributes[:user_id].nil?
         create_user.id
       else

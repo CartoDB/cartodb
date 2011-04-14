@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file, :import_from_external_url,
+  attr_accessor :force_schema, :import_from_file, 
                 :imported_table_name, :importing_SRID,
                 :importing_encoding
 
@@ -25,7 +25,6 @@ class Table < Sequel::Model(:user_tables)
   def validate
     super
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
-    errors.add(:name,    'can\'t be blank') if name.blank?
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
     errors.add(:the_geom_type, 'has an invalid value') unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type.downcase)
     validates_unique [:name, :user_id], :message => 'is already taken'
@@ -33,11 +32,10 @@ class Table < Sequel::Model(:user_tables)
 
   def before_validation
     self.privacy ||= PRIVATE
-    self.name = set_table_name if self.name.blank?
     self.the_geom_type ||= "point"
     super
   end
-
+  
   # Before creating a user table a table should be created in the database.
   # A serie of steps should be done:
   #  - set the new updated_at value
@@ -47,16 +45,20 @@ class Table < Sequel::Model(:user_tables)
   #  - set the cartodb schema, adding cartodb primary key, etc..
   #  - import the data if necessary
   def before_create
+    self.database_name = owner.database_name
     update_updated_at
-    import_data_from_external_url! unless import_from_external_url.blank?
     unless import_from_file.blank?
       handle_import_file!
       guess_schema if force_schema.blank? && imported_table_name.blank?
     end
+    # Before assign the name, the method #key can not be used,
+    # because depends on the name of the table
+    self.name = set_table_name if self.name.blank?
     set_table_schema!
     if !import_from_file.blank? && imported_table_name.blank?
       import_data_from_file!
     end
+    $tables_metadata.hset key, "privacy", self.privacy || PRIVATE
     super
   rescue Sequel::DatabaseError => e
     owner.in_database(:as => :superuser) do |user_database|
@@ -105,8 +107,14 @@ class Table < Sequel::Model(:user_tables)
     set_trigger_update_updated_at
     update_stored_schema!
     self.force_schema = nil
+    $tables_metadata.hset key, "user_id", user_id
+    $tables_metadata.hset key, "privacy", self.privacy
   end
-
+  
+  def before_destroy
+    $tables_metadata.del key
+  end
+  
   def after_destroy
     super
     Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -125,10 +133,14 @@ class Table < Sequel::Model(:user_tables)
       owner.in_database do |user_database|
         user_database.rename_table name, new_name
         user_database.run("ALTER SEQUENCE #{name}_cartodb_id_seq RENAME TO #{new_name}_cartodb_id_seq")
-        user_database.run("ALTER INDEX #{name}_the_geom_idx RENAME TO #{new_name}_the_geom_idx")
-        user_database.run("ALTER INDEX #{name}_#{THE_GEOM_WEBMERCATOR}_idx RENAME TO #{new_name}_#{THE_GEOM_WEBMERCATOR}_idx")
+        begin
+          user_database.run("ALTER INDEX #{name}_the_geom_idx RENAME TO #{new_name}_the_geom_idx")
+          user_database.run("ALTER INDEX #{name}_#{THE_GEOM_WEBMERCATOR}_idx RENAME TO #{new_name}_#{THE_GEOM_WEBMERCATOR}_idx")
+        rescue
+        end
       end
     end
+    $tables_metadata.rename key, key(new_name) if !new?
     self[:name] = new_name unless new_name.blank?
   end
   
@@ -137,12 +149,17 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def private?
-    privacy == PRIVATE
+    $tables_metadata.hget(key, "privacy").to_i == PRIVATE
+  end
+  
+  def public?
+    !private?
   end
 
   def privacy=(value)
     if value == "PRIVATE" || value == PRIVATE || value == PRIVATE.to_s
       self[:privacy] = PRIVATE
+      $tables_metadata.hset key, "privacy", PRIVATE unless new?
       if !new?
         owner.in_database do |user_database|
           user_database.run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
@@ -150,6 +167,7 @@ class Table < Sequel::Model(:user_tables)
       end
     elsif value == "PUBLIC" || value == PUBLIC || value == PUBLIC.to_s
       self[:privacy] = PUBLIC
+      $tables_metadata.hset key, "privacy", PUBLIC unless new?
       if !new?
         owner.in_database do |user_database|
           user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
@@ -158,12 +176,12 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def public?
-    !private?
-  end
-
   def pending_to_save?
     self.name =~ /^untitle_table/
+  end
+  
+  def key(new_name = nil)
+    'rails:' + database_name + ':' + (new_name || name)
   end
 
   # TODO: use the database field
@@ -245,6 +263,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema(options = {})
+    stored_schema = $tables_metadata.hget(key,"schema")
+    return [] if stored_schema.blank?
+    stored_schema = JSON.parse(stored_schema)
     return [] if stored_schema.blank?
     stored_schema.map do |column|
       c = column.split(',')
@@ -388,16 +409,17 @@ class Table < Sequel::Model(:user_tables)
         col
       end
     end.compact
-    self.stored_schema = ["cartodb_id,integer,#{"integer".convert_to_cartodb_type}"] +
+    stored_schema = ["cartodb_id,integer,#{"integer".convert_to_cartodb_type}"] +
       temporal_schema +
-      ["created_at,timestamp,#{"timestamp".convert_to_cartodb_type}","updated_at,timestamp,#{"timestamp".convert_to_cartodb_type}"]
+      ["created_at,timestamp,#{"timestamp".convert_to_cartodb_type}", "updated_at,timestamp,#{"timestamp".convert_to_cartodb_type}"]
+    $tables_metadata.hset(key,"columns", stored_schema.map{|c| c.split(',').first }.to_json)
+    $tables_metadata.hset(key,"schema", stored_schema)
   end
 
   def update_stored_schema!
     owner.in_database do |user_database|
       update_stored_schema(user_database)
     end
-    save_changes
   end
   
   def georeference_from!(options = {})
@@ -458,33 +480,6 @@ TRIGGER
     base_name
   end
 
-  def import_data_from_external_url!
-    return if self.import_from_external_url.blank?
-    url = URI.parse(self.import_from_external_url)
-    req = Net::HTTP::Get.new(url.path)
-    res = Net::HTTP.start(url.host, url.port){ |http| http.request(req) }
-    json = JSON.parse(res.body)
-    columns = []
-    filepath = "#{Rails.root}/tmp/importing_#{user_id}.csv"
-    if json.is_a?(Array)
-      raise "Invalid JSON format" unless json.first.is_a?(Hash)
-      CSV.open(filepath, "wb") do |csv|
-        csv << json.first.keys
-        json.each do |row|
-          csv << row.values
-        end
-      end
-    elsif json.is_a?(Hash)
-      CSV.open(filepath, "wb") do |csv|
-        csv << json.keys
-        csv << json.values
-      end
-    else
-      raise "Invalid JSON format"
-    end
-    self.import_from_file = File.open(filepath,'r')
-  end
-
   def import_data_from_file!
     return if self.import_from_file.blank?
 
@@ -500,9 +495,8 @@ TRIGGER
     @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
     @quote = @quote == '`' ? '\`' : @quote
     command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
-    system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{owner.database_name} -c"#{command}"}
-    owner.in_database do |user_database|
-      
+    system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
+    owner.in_database do |user_database|      
       #Check if the file had data, if not rise an error because probably something went wrong
       if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank? 
         raise "The file was empty or there was a problem importing it that made it create an empty table"
@@ -730,6 +724,7 @@ TRIGGER
     end
   end
 
+  # FIXME: handle exceptions and don't create tables
   def handle_import_file!
     if import_from_file.is_a?(String)
       open(import_from_file) do |res|
@@ -752,14 +747,14 @@ TRIGGER
     else
       import_from_file.path
     end
-
+    
     # If it is a zip file we should find a shp file
     entries = []
     if ext == '.zip'
       Rails.logger.info "Importing zip file: #{path}"
       Zip::ZipFile.foreach(path) do |entry|
-        next if entry.name =~ /^\./
         name = entry.name.split('/').last
+        next if name =~ /^(\.|\_{2})/
         entries << "/tmp/#{name}"
         if File.extname(name) == '.shp'
           ext = '.shp'
@@ -773,6 +768,9 @@ TRIGGER
         entry.extract("/tmp/#{name}")
       end
     end
+    if ext == '.csv'
+      self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
+    end
     return unless %W{ .ods .xls .xlsx .shp }.include?(ext)
 
     if ext == '.shp'
@@ -781,24 +779,25 @@ TRIGGER
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
       host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
       port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-      self.name = self.imported_table_name = File.basename(path).tr('.','_').downcase
-      random_name = "importing_table_#{self.imported_table_name}"
+      self.imported_table_name = File.basename(path).tr('.','_').downcase.sanitize
+      self.name = self.imported_table_name.dup if self.name.blank?
+      random_name = "importing_table_#{self.name}"
       Rails.logger.info "Table name to import: #{random_name}"
-      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}"
-      system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name}| `which psql` #{host} #{port} -U#{owner.database_username} -w #{owner.database_name}")
+      Rails.logger.info "Running shp2pgsql: `which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{database_name}"
+      system("`which shp2pgsql` -W#{importing_encoding} -s #{self.importing_SRID} #{path} #{random_name} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{database_name}")
       owner.in_database do |user_database|
         imported_schema = user_database[random_name.to_sym].columns
-        user_database.run("CREATE TABLE #{self.imported_table_name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")
+        user_database.run("CREATE TABLE #{self.name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")
         user_database.run("DROP TABLE #{random_name}")
-        user_database.run("CREATE INDEX #{self.imported_table_name}_the_geom_idx ON #{self.imported_table_name} USING GIST(the_geom)")
-        geometry_type = user_database["select GeometryType(the_geom) FROM #{self.imported_table_name} limit 1"].first[:geometrytype]
-        user_database.run("CREATE INDEX #{self.imported_table_name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.imported_table_name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
-        user_database.run("VACUUM ANALYZE #{self.imported_table_name}")
+        user_database.run("CREATE INDEX #{self.name}_the_geom_idx ON #{self.name} USING GIST(the_geom)")
+        geometry_type = user_database["select GeometryType(the_geom) FROM #{self.name} limit 1"].first[:geometrytype]
+        user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
+        user_database.run("VACUUM ANALYZE #{self.name}")
         self.set_trigger_the_geom_webmercator
         self.the_geom_type = geometry_type.downcase
       end
       if entries.any?
-        entries.each{ |e| FileUtils.rm(e) }
+        entries.each{ |e| FileUtils.rm_rf(e) }
       end
       return
     else

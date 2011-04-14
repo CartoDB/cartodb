@@ -1,11 +1,8 @@
 # coding: UTF-8
 
-class Api::Json::QueriesController < ApplicationController
+class Api::Json::QueriesController < Api::ApplicationController
   ssl_required :run
   
-  skip_before_filter :app_host_required
-
-  before_filter :api_authorization_required
   # Run a query against your database
   # * Request Method: +GET+
   # * URI: +/v1+
@@ -18,6 +15,8 @@ class Api::Json::QueriesController < ApplicationController
   #       "rows" => [{:id=>1, :name=>"name 1", :location=>"...", :description=>"description 1"}]
   #     }
   def run
+    render :json => { :errors => ["You must indicate a sql query"] }.to_json, :status => 400,
+           :callback => params[:callback] and return if params[:sql].blank?
     respond_to do |format|
       format.json do
         render :json => current_user.run_query(params[:sql]).to_json, :callback => params[:callback]

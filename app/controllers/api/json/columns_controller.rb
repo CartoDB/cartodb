@@ -1,10 +1,9 @@
 # coding: UTF-8
 
-class Api::Json::ColumnsController < ApplicationController
+class Api::Json::ColumnsController < Api::ApplicationController
   ssl_required :index, :create, :show, :update, :delete
 
-  skip_before_filter :app_host_required, :verify_authenticity_token
-  before_filter :api_authorization_required, :load_table
+  before_filter :load_table
 
   def index
     render :json => @table.schema(:cartodb_types => true).to_json,

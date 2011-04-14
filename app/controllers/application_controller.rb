@@ -3,7 +3,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
-  before_filter :browser_is_html5_compliant?
+  before_filter :browser_is_html5_compliant?, :app_host_required
 
   class NoHTML5Compliant < Exception; end;
 
@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   protected
   
   def app_host_required
-    (request.protocol + request.host_with_port == APP_CONFIG[:app_host]) || (render_404 and return false)
+    (request.host_with_port == APP_CONFIG[:app_host].host) || (render_api_endpoint and return false)
   end
 
   def render_404
@@ -40,6 +40,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def render_api_endpoint
+    respond_to do |format|
+      format.html do
+        render :file => "public/api.html.erb", :status => 404, :layout => false
+      end
+      format.json do
+        render :nothing => true, :status => 404
+      end
+    end
+  end
   def login_required
     authenticated? || not_authorized
   end

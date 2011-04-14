@@ -1,12 +1,11 @@
 # coding: UTF-8
 
-class Api::Json::RecordsController < ApplicationController
+class Api::Json::RecordsController < Api::ApplicationController
   ssl_required :index, :create, :show, :update, :destroy, :show_column, :update_column, :pending_addresses
 
   REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key table_id oauth_token oauth_token_secret }
 
-  skip_before_filter :app_host_required, :verify_authenticity_token
-  before_filter :api_authorization_required, :load_table
+  before_filter :load_table
 
   def index
     render :json => @table.records(params.slice(:page, :rows_per_page)).to_json,

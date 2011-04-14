@@ -3,6 +3,8 @@
 require 'oauth/controllers/provider_controller'
 
 class OauthController < ApplicationController
+  skip_before_filter :app_host_required
+  
   ssl_required :authorize, :request_token, :access_token, :token, :test_request
 
   include OAuth::Controllers::ProviderController

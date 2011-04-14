@@ -6,10 +6,10 @@ class String
   end
 
   def normalize
-   str = self.downcase
-   return '' if str.blank?
-   n = str
-   n.gsub!(/[àáâãäåāă]/,    'a')
+    str = self.downcase
+    return '' if str.blank?
+    n = str.force_encoding("UTF-8")
+    n.gsub!(/[àáâãäåāă]/,   'a')
    n.gsub!(/æ/,            'ae')
    n.gsub!(/[ďđ]/,          'd')
    n.gsub!(/[çćčĉċ]/,       'c')
@@ -97,5 +97,8 @@ class String
     self.gsub(/\\/, '\&\&').gsub(/'/, "''")
   end
 
+  def host
+    self.split('/')[2]
+  end
 
 end

@@ -64,7 +64,7 @@ feature "Superadmin's users administration" do
   #
   # end
 
-  scenario "Admins can activate a disabled user" do
+  pending "Admins can activate a disabled user" do
     user = create_user :username => 'invitation@example.com',
                        :email => 'invitation@example.com',
                        :password => 'invitation@example.com',

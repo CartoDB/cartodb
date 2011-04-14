@@ -512,6 +512,20 @@ describe Table do
     row[:cartodb_id].should == 1
     row[:vuelo].should == "A31762"
   end
+  
+  it "should handle an empty file empty_file.csv" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.name = "empty_table"
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/empty_file.csv", "text/csv")
+    lambda {
+      table.save
+    }.should raise_error
+    
+    tables = user.run_query("select relname from pg_stat_user_tables WHERE schemaname='public'")
+    tables[:rows].should_not include({:relname => "empty_table"})
+  end
 
   it "should import file ngos.xlsx" do
     table = new_table

@@ -115,6 +115,8 @@ class Table < Sequel::Model(:user_tables)
 
   def before_destroy
     $tables_metadata.del key
+    $threshold.del "rails:users:#{self.user_id}:requests:table:#{self.name}:total"
+    # TODO: remove all the history of requests per day
   end
 
   def after_destroy
@@ -142,7 +144,12 @@ class Table < Sequel::Model(:user_tables)
         end
       end
     end
-    $tables_metadata.rename key, key(new_name) if !new?
+    if !new?
+      $tables_metadata.rename key, key(new_name)
+      $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:total","rails:users:#{self.user_id}:requests:table:#{new_name}:total" 
+      $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:#{Date.today.strftime("%Y-%m-%d")}",
+                        "rails:users:#{self.user_id}:requests:table:#{new_name}:#{Date.today.strftime("%Y-%m-%d")}"
+    end
     self[:name] = new_name unless new_name.blank?
   end
 

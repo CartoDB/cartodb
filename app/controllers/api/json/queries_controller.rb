@@ -3,6 +3,7 @@
 class Api::Json::QueriesController < Api::ApplicationController
   ssl_required :run
   
+  
   # Run a query against your database
   # * Request Method: +GET+
   # * URI: +/v1+
@@ -19,6 +20,7 @@ class Api::Json::QueriesController < Api::ApplicationController
            :callback => params[:callback] and return if params[:sql].blank?
     respond_to do |format|
       format.json do
+        @to_log = params[:sql]
         render :json => current_user.run_query(params[:sql]).to_json, :callback => params[:callback]
       end
     end

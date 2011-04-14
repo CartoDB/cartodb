@@ -6,6 +6,8 @@ module CartoDB
   PUBLIC_DB_USER = 'publicuser'
   GOOGLE_SRID = 3857
   SRID        = 4326
+  
+  USER_REQUESTS_PER_DAY = 10000
 
   TYPES = {
     "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "real", "double precision"],

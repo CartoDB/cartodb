@@ -511,7 +511,9 @@ TRIGGER
     @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
     @quote = @quote == '`' ? '\`' : @quote
     command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
-    system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
+    import_csv_command = %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
+    Rails.logger.info "Importing CSV. Execute: " + import_csv_command
+    system import_csv_command
     owner.in_database do |user_database|      
       # Check if the file had data, if not rise an error because probably something went wrong
       if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank? 

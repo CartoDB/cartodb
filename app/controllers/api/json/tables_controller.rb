@@ -1,11 +1,8 @@
 # coding: UTF-8
 
-class Api::Json::TablesController < ApplicationController
+class Api::Json::TablesController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
 
-  skip_before_filter :app_host_required, :verify_authenticity_token
-
-  before_filter :api_authorization_required
   before_filter :load_table, :only => [:show, :update, :destroy]
 
   def index
@@ -47,6 +44,9 @@ class Api::Json::TablesController < ApplicationController
              :location => table_path(@table),
              :callback => params[:callback]
     else
+      Rails.logger.info "============== Errors on table ====================="
+      Rails.logger.info @table.errors.full_messages
+      Rails.logger.info "===================================================="
       render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400, :callback => params[:callback]
     end
   rescue => e
@@ -103,8 +103,7 @@ class Api::Json::TablesController < ApplicationController
   end
 
   def destroy
-    @table = Table.fetch("select id, user_id, name
-                          from user_tables
+    @table = Table.fetch("select * from user_tables
                           where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
     raise RecordNotFound if @table.nil?
     @table.destroy

@@ -150,23 +150,20 @@ class User < Sequel::Model
   end
 
   def run_query(query)
-    # TODO: activate query parser
-    # query, columns = CartoDB::QueryParser.parse_select(raw_query, self)
-    # query = if match = raw_query.match(/^\s*(select[^;]+);?/i)
-    #   match.captures[0]
-    # end
-    # raise CartoDB::InvalidQuery if query.blank?
+    query = CartoDB::SqlParser.pre_parsing(query,self.id)
     rows = []
     time = nil
     in_database do |user_database|
       time = Benchmark.measure {
-        rows = user_database[query].all
+        rows = user_database[CartoDB::SqlParser.parse(query, database_name)].all
       }
     end
-
+    if !CartoDB::SqlParser.update_schema.blank?
+      if table = Table[:user_id => self.id, :name => CartoDB::SqlParser.update_schema]
+        table.update_stored_schema!
+      end
+    end
     #TODO: This part of the code should be using memcache.
-
-
     {
       :time => time.real,
       :total_rows => rows.size,

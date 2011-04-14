@@ -146,9 +146,13 @@ class Table < Sequel::Model(:user_tables)
     end
     if !new?
       $tables_metadata.rename key, key(new_name)
-      $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:total","rails:users:#{self.user_id}:requests:table:#{new_name}:total" 
-      $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:#{Date.today.strftime("%Y-%m-%d")}",
-                        "rails:users:#{self.user_id}:requests:table:#{new_name}:#{Date.today.strftime("%Y-%m-%d")}"
+      if $threshold.exists "rails:users:#{self.user_id}:requests:table:#{self.name}:total"
+        $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:total","rails:users:#{self.user_id}:requests:table:#{new_name}:total" 
+      end
+      if $threshold.exists "rails:users:#{self.user_id}:requests:table:#{self.name}:#{Date.today.strftime("%Y-%m-%d")}"
+        $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:#{Date.today.strftime("%Y-%m-%d")}",
+                          "rails:users:#{self.user_id}:requests:table:#{new_name}:#{Date.today.strftime("%Y-%m-%d")}"
+      end
     end
     self[:name] = new_name unless new_name.blank?
   end

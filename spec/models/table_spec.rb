@@ -563,13 +563,6 @@ describe Table do
     table.importing_encoding = 'LATIN1'
     table.save
 
-    table.schema(:cartodb_types => false).should == [
-      [:cartodb_id, "integer"], [:gid, "integer"], [:subclass, "character varying(255)"], [:x, "double precision"], [:y, "double precision"], 
-      [:length, "character varying(255)"], [:area, "character varying(255)"], [:angle, "double precision"], [:name, "character varying(255)"], 
-      [:pid, "double precision"], [:lot_navteq, "character varying(255)"], [:version_na, "character varying(255)"], [:vitesse_sp, "double precision"], 
-      [:id, "double precision"], [:nombrerest, "character varying(255)"], [:tipocomida, "character varying(255)"], 
-      [:the_geom, "geometry", "geometry", "multipolygon"], [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
     table.rows_counted.should == 11
     table.name.should == "vizzuality_shp"
   end

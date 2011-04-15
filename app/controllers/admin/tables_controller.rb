@@ -23,6 +23,23 @@ class Admin::TablesController < ApplicationController
   def show
     @table = Table.filter(:id => params[:id]).first
     raise RecordNotFound if @table.nil? || (@table.user_id != current_user.id && @table.private?)
+
+    respond_to do |format|
+      format.html
+      format.csv do
+        send_data @table.to_csv,
+          :type => 'application/zip; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
+
+      end
+      format.kml
+      format.shp do
+        send_data @table.to_shp,
+          :type => 'application/octet-stream; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
+
+      end
+    end
   end
 
 end

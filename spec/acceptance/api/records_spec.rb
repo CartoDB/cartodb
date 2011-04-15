@@ -216,4 +216,13 @@ feature "API 1.0 records management" do
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
   end
   
+  scenario "Should register the request in Redis" do
+    pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+
+    get_json api_table_record_column_url(@table.name,pk,:name)    
+    $threshold.get("rails:users:#{@user.id}:requests:total").to_i.should == 1
+    $threshold.get("rails:users:#{@user.id}:requests:table:#{@table.name}:total").to_i.should == 1
+    $threshold.get("rails:users:#{@user.id}:requests:table:#{@table.name}:#{Date.today.strftime("%Y-%m-%d")}").to_i.should == 1
+  end  
+  
 end

@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:name, :privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file, 
+  attr_accessor :force_schema, :import_from_file,
                 :imported_table_name, :importing_SRID,
                 :importing_encoding
 
@@ -35,7 +35,7 @@ class Table < Sequel::Model(:user_tables)
     self.the_geom_type ||= "point"
     super
   end
-  
+
   # Before creating a user table a table should be created in the database.
   # A serie of steps should be done:
   #  - set the new updated_at value
@@ -112,11 +112,13 @@ class Table < Sequel::Model(:user_tables)
     $tables_metadata.hset key, "user_id", user_id
     $tables_metadata.hset key, "privacy", self.privacy
   end
-  
+
   def before_destroy
     $tables_metadata.del key
+    $threshold.del "rails:users:#{self.user_id}:requests:table:#{self.name}:total"
+    # TODO: remove all the history of requests per day
   end
-  
+
   def after_destroy
     super
     Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -142,10 +144,19 @@ class Table < Sequel::Model(:user_tables)
         end
       end
     end
-    $tables_metadata.rename key, key(new_name) if !new?
+    if !new?
+      $tables_metadata.rename key, key(new_name)
+      if $threshold.exists "rails:users:#{self.user_id}:requests:table:#{self.name}:total"
+        $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:total","rails:users:#{self.user_id}:requests:table:#{new_name}:total" 
+      end
+      if $threshold.exists "rails:users:#{self.user_id}:requests:table:#{self.name}:#{Date.today.strftime("%Y-%m-%d")}"
+        $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:#{Date.today.strftime("%Y-%m-%d")}",
+                          "rails:users:#{self.user_id}:requests:table:#{new_name}:#{Date.today.strftime("%Y-%m-%d")}"
+      end
+    end
     self[:name] = new_name unless new_name.blank?
   end
-  
+
   def tags=(value)
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
@@ -181,7 +192,7 @@ class Table < Sequel::Model(:user_tables)
   def pending_to_save?
     self.name =~ /^untitle_table/
   end
-  
+
   def key(new_name = nil)
     'rails:' + database_name + ':' + (new_name || name)
   end
@@ -219,7 +230,7 @@ class Table < Sequel::Model(:user_tables)
         end
       end
     end
-    update_the_geom!(raw_attributes, primary_key) 
+    update_the_geom!(raw_attributes, primary_key)
     if modified_schema
       update_stored_schema!
     end
@@ -423,7 +434,7 @@ class Table < Sequel::Model(:user_tables)
       update_stored_schema(user_database)
     end
   end
-  
+
   def georeference_from!(options = {})
     if !options[:latitude_column].blank? && !options[:longitude_column].blank?
       set_the_geom_column!("point")
@@ -437,11 +448,11 @@ class Table < Sequel::Model(:user_tables)
       raise InvalidArgument
     end
   end
-  
+
   def set_trigger_the_geom_webmercator
     owner.in_database(:as => :superuser) do |user_database|
-      user_database.run(<<-TRIGGER     
-        DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};  
+      user_database.run(<<-TRIGGER
+        DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
         CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
           BEGIN
                NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
@@ -449,13 +460,85 @@ class Table < Sequel::Model(:user_tables)
           END;
         $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
 
-        CREATE TRIGGER update_the_geom_webmercator_trigger 
-        BEFORE INSERT OR UPDATE OF the_geom ON #{self.name} 
-          FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();    
+        CREATE TRIGGER update_the_geom_webmercator_trigger
+        BEFORE INSERT OR UPDATE OF the_geom ON #{self.name}
+          FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
 TRIGGER
       )
     end
-  end  
+  end
+  
+  def the_geom_type=(value)
+    self[:the_geom_type] = if value == "point"
+      value
+    elsif value == "line"
+      "multilinestring"
+    else
+      unless value =~ /^multi/
+        "multi#{value}"
+      else
+        value
+      end
+    end
+  end
+
+  def to_csv
+    owner.in_database do |user_database|
+      table_name = "csv_export_temp_#{self.name}"
+      csv_file_path = Rails.root.join('tmp', "#{table_name}.csv")
+      zip_file_path = Rails.root.join('tmp', "#{table_name}.zip")
+
+      user_database.run("DROP TABLE IF EXISTS csv_export_temp_#{self.name}")
+      user_database.run("CREATE TABLE #{table_name} AS SELECT #{(self.schema.map{|c| c.first} - [:the_geom]).join(',')}, ST_AsGeoJSON(the_geom, 6) as the_geom FROM #{self.name}")
+
+      db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
+      host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
+      port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
+      username = db_configuration['username']
+      @quote   = (@quote == '"' || @quote.blank?) ? '\"' : @quote
+      @quote   = @quote == '`' ? '\`' : @quote
+      command  = "COPY (SELECT * FROM csv_export_temp_#{self.name}) TO '#{csv_file_path}' WITH DELIMITER ',' CSV QUOTE AS '#{@quote}' HEADER"
+
+      system <<-CMD
+        rm -f #{csv_file_path} #{zip_file_path};
+        `which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}";
+        cd #{Rails.root.join('tmp')};
+        zip #{table_name}.zip #{table_name}.csv
+      CMD
+      user_database.run("DROP TABLE csv_export_temp_#{self.name}")
+
+      csv_data = ''
+      File.open(zip_file_path, 'r') do |file|
+        csv_data = file.read
+      end
+      csv_data
+    end
+  end
+
+  def to_shp
+    shp_files_name = "shp_export_temp_#{self.name}"
+    all_files_path = Rails.root.join('tmp', "#{shp_files_name}.*")
+    shp_file_path  = Rails.root.join('tmp', "#{shp_files_name}.shp")
+    zip_file_path  = Rails.root.join('tmp', "#{shp_files_name}.zip")
+
+    db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
+    host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
+    port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
+    username = db_configuration['username']
+
+    system <<-CMD
+      rm -rf #{all_files_path};
+      `which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{owner.database_name} #{self.name};
+      cd #{Rails.root.join('tmp')};
+      zip #{shp_files_name}.zip #{shp_files_name}.*;
+    CMD
+
+    shp_data = ''
+    File.open(zip_file_path, 'r') do |file|
+      shp_data = file.read
+    end
+    shp_data
+  end
 
   private
 
@@ -497,13 +580,15 @@ TRIGGER
     @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
     @quote = @quote == '`' ? '\`' : @quote
     command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
-    system %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
-    owner.in_database do |user_database|      
+    import_csv_command = %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
+    Rails.logger.info "Importing CSV. Execute: " + import_csv_command
+    system import_csv_command
+    owner.in_database do |user_database|
       # Check if the file had data, if not rise an error because probably something went wrong
-      if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank? 
+      if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank?
         raise "The file was empty or there was a problem importing it that made it create an empty table"
       end
-      
+
       user_database.run("alter table #{self.name} add column cartodb_id integer")
       user_database.run("create sequence #{self.name}_cartodb_id_seq")
       user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")
@@ -660,7 +745,7 @@ TRIGGER
       end
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
-        user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")        
+        user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
         updates = true
       end
       update_stored_schema(user_database) if updates
@@ -823,7 +908,7 @@ TRIGGER
       self.import_from_file = File.open("/tmp/#{csv_name}.csv",'r')
     end
   end
-  
+
   def update_the_geom!(attributes, primary_key)
     return unless attributes[:the_geom]
     geo_json = RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).try(:as_text)

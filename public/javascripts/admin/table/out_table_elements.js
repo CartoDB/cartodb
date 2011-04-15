@@ -1,9 +1,9 @@
-  
+
   //SUBHEADER EVENTS AND FLOATING WINDOWS+//
-  
+
 
   head(function(){
-    
+
     ///////////////////////////////////////
     //  Mamufas addition                 //
     ///////////////////////////////////////
@@ -24,19 +24,21 @@
       '<div class="export_window">'+
         '<a href="#close_window" class="close_delete"></a>'+
         '<div class="inner_">'+
-          '<span class="top">'+
-            '<h3>Export your data</h3>'+
-            '<p>Select your desired format for downloading the data</p>'+
-            '<ul>'+
-              '<li class="selected"><a class="option" href="#CSV">CSV (Comma separated values)</a></li>'+
-              '<li><a href="#KML">KML</a></li>'+
-              '<li><a href="#SHP">SHP</a></li>'+
-            '</ul>'+
-          '</span>'+
-          '<span class="bottom">'+
-            '<a href="#close_window" class="cancel">cancel</a>'+
-            '<a href="#download" class="download" type="CSV">Download</a>'+
-          '</span>'+
+          '<form action="/tables/'+ table_id +'" method="get">'+
+            '<input id="export_format" type="hidden" name="format" />'+
+            '<span class="top">'+
+              '<h3>Export your data</h3>'+
+              '<p>Select your desired format for downloading the data</p>'+
+              '<ul>'+
+                '<li class="selected"><a class="option" href="#CSV" rel="csv">CSV (Comma separated values)</a></li>'+
+                '<li><a class="option" href="#KML" rel="kml">KML</a></li>'+
+                '<li><a class="option" href="#SHP"rel="shp">SHP</a></li>'+
+              '</ul>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#close_window" class="cancel">cancel</a>'+
+              '<input type="submit" class="download" value="Download" />'+
+            '</span>'+
         '</div>'+
       '</div>'+
       '<div class="save_window">'+
@@ -53,8 +55,8 @@
         '</div>'+
       '</div>'
       );
-    
-    
+
+
 
     ///////////////////////////////////////
     //  Change title name window         //
@@ -125,7 +127,7 @@
           '<li class="private '+((status=="private")?'selected':'')+'"><a href="#"><strong>Private</strong> (visible to you)</a></li>'+
         '</ul>'+
       '</span>');
-  
+
     $('span.privacy_window ul li a').livequery('click',function(ev){
       stopPropagation(ev);
       var parent_li = $(this).parent();
@@ -143,7 +145,7 @@
         }
       }
     });
-    
+
     $('p.status a').livequery('click',function(ev){
       stopPropagation(ev);
       var privacy_window = $(this).parent().parent().children('span.privacy_window');
@@ -167,8 +169,8 @@
     });
 
 
-    
-    
+
+
     ///////////////////////////////////////
     //  Change table tags                //
     ///////////////////////////////////////
@@ -177,7 +179,7 @@
         '<ul id="tags_list"></ul>'+
         '<a id="save_all_tags" href="#save_tags">Save</a>'+
       '</span>');
-      
+
     $('span.tags a.add').click(function(ev){
       stopPropagation(ev);
       closeOutTableWindows();
@@ -206,18 +208,18 @@
       });
       var new_values = '';
       $("span.tags p").remove();
-      $("span.tags span").remove();  
+      $("span.tags span").remove();
       $("li.tagit-choice").each(function(index,element){
         var value = (($.trim($(element).text())).slice(0, -2));
         $('<p>'+value+'</p>').insertBefore('a.add');
         new_values+=value+',';
       });
-      
+
       $("span.tags p:last").last().addClass('last');
       $('span.tags_window').hide();
       changesRequest('tags',new_values,old_values);
     });
-    
+
 
 
 
@@ -229,7 +231,7 @@
         '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
         '<ul>'+
           '<li class="disabled"><a class="import_data">Import data...</a></li>'+
-          '<li class="disabled"><a class="export_data">Export data...</a></li>'+
+          '<li><a class="export_data">Export data...</a></li>'+
           '<li class="disabled"><a class="save_table">Save table as...</a></li>'+ //class="save_table"
         '</ul>'+
       '</span>');
@@ -263,15 +265,15 @@
     });
     $('a.export_data').click(function(ev){
       stopPropagation(ev);
-      // closeOutTableWindows();
-      // $('div.mamufas div.export_window').show();
-      // $('div.mamufas').fadeIn('fast');
-      // bindESC();
+      closeOutTableWindows();
+      $('div.mamufas div.export_window').show();
+      $('div.mamufas').fadeIn('fast');
+      bindESC();
     });
 
-    
-    
-    
+
+
+
     ///////////////////////////////////////
     //  Delete table                     //
     ///////////////////////////////////////
@@ -306,9 +308,19 @@
         }
       });
     });
-    
 
-    
+    ///////////////////////////////////////
+    //  Export table                     //
+    ///////////////////////////////////////
+    $('div.mamufas div.export_window form a.option').click(function(ev){
+      stopPropagation(ev);
+      var format = $(this).attr('rel');
+      $('div.mamufas div.export_window form ul li').removeClass('selected');
+      $(this).parent().addClass('selected');
+      $('#export_format').val(format);
+    });
+    $('#export_format').val($('div.mamufas div.export_window form ul li.selected a.option').attr('rel'));
+
     ///////////////////////////////////////
     //  Application tabs menu            //
     ///////////////////////////////////////
@@ -336,7 +348,7 @@
             showMap();
           }
         }
-      } 
+      }
     });
   });
 
@@ -345,11 +357,11 @@
   function changesRequest(param,value,old_value) {
     var params = {};
     params[param] = value;
-    
+
     var requestId = createUniqueId();
-    params.requestId = requestId; 
+    params.requestId = requestId;
     requests_queue.newRequest(requestId,param);
-    
+
     $.ajax({
       dataType: 'json',
       type: "PUT",
@@ -369,7 +381,7 @@
     });
   }
 
-  
+
   function errorActionPerforming(param, old_value,error_text) {
     switch (param) {
       case 'privacy': $('span.privacy_window ul li.'+old_value).addClass('selected');
@@ -403,16 +415,16 @@
   function unbindESC() {
     $(document).unbind('keydown');
     $('body').unbind('click');
-  } 
-  
-  
-  
+  }
+
+
+
   function closeOutTableWindows() {
     $('span.privacy_window').hide();
     $('span.title_window').hide();
     $('span.advanced_options').hide();
     $('span.tags_window').hide();
-    
+
     //popup windows
     $('div.mamufas').fadeOut('fast',function(){
       $('div.mamufas div.delete_window').hide();

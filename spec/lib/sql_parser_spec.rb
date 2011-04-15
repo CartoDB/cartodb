@@ -29,7 +29,7 @@ describe CartoDB::SqlParser do
   
   it "should parse queries containing geojson()" do
     CartoDB::SqlParser.parse("SELECT 1 as foo, geojson(the_geom) from restaurants r").should ==
-      "SELECT 1 as foo, ST_AsGeoJSON(the_geom) from restaurants r"
+      "SELECT 1 as foo, ST_AsGeoJSON(the_geom,6) from restaurants r"
   end
   
   it "should parse queries containing kml()" do
@@ -39,12 +39,12 @@ describe CartoDB::SqlParser do
   
   it "should parse queries containing svg()" do
     CartoDB::SqlParser.parse("SELECT 1 as foo, svg(the_geom) from restaurants r").should ==
-      "SELECT 1 as foo, ST_AsSVG(the_geom,6) from restaurants r"
+      "SELECT 1 as foo, ST_AsSVG(the_geom,0,6) from restaurants r"
   end  
   
   it "should parse queries containing wkt()" do
     CartoDB::SqlParser.parse("SELECT 1 as foo, wkt(the_geom) from restaurants r").should ==
-      "SELECT 1 as foo, ST_AsText(the_geom,6) from restaurants r"
+      "SELECT 1 as foo, ST_AsText(the_geom) from restaurants r"
   end  
   
   it "should parse queries containing geohash()" do

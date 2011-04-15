@@ -525,6 +525,15 @@ describe Table do
     tables = user.run_query("select relname from pg_stat_user_tables WHERE schemaname='public'")
     tables[:rows].should_not include({:relname => "empty_table"})
   end
+  
+  # It has strange line breaks
+  pending "should import file arrivals_BCN.csv" do
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/arrivals_BCN.csv", "text/csv")
+    table.save
+    
+    table.rows_counted.should == 791
+  end
 
   it "should import file ngos.xlsx" do
     table = new_table
@@ -619,22 +628,33 @@ describe Table do
     table.schema(:cartodb_types => false).should include([:age, "real"])
     table.schema.should include([:age, "number"])
   end
-
-  it "should be able to store a polygon" do
+  
+  it "should set valid geometry types" do
     user = create_user
     table = new_table
     table.user_id = user.id
     table.force_schema = "address varchar, the_geom geometry"
+    table.the_geom_type = "line"
+    table.save
+    table.reload
+    table.the_geom_type.should == "multilinestring"
+
+    table.the_geom_type = "point"
+    table.save
+    table.reload
+    table.the_geom_type.should == "point"
+
+    table.the_geom_type = "multipoint"
+    table.save
+    table.reload
+    table.the_geom_type.should == "multipoint"
+
     table.the_geom_type = "polygon"
     table.save
-
-    the_geom = %Q{\{"type":"Polygon","coordinates":[[[-4.976720809936523,40.56963630849391],[-4.735021591186523,40.87977970146914],[-4.507055282592773,40.53624641730805]]]\}}
-
-    pk = table.insert_row!({:address => "C/ Pilar Martí nº 16 pta 13, Burjassot, Valencia", :the_geom => the_geom})
-    query_result = user.run_query("SELECT ST_NPoints(the_geom) from #{table.name} where cartodb_id = #{pk}");
-    query_result[:rows][0][:st_npoints].should == 4
+    table.reload
+    table.the_geom_type.should == "multipolygon"
   end
-  
+
   it "should rename the pk sequence when renaming the table" do
     user = create_user
     table1 = new_table :name => 'table 1'

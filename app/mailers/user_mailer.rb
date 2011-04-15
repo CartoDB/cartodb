@@ -7,6 +7,8 @@ class UserMailer < ActionMailer::Base
   #   en.user_mailer.ask_for_invitation.subject
   #
   def ask_for_invitation(user)
+    user = OpenStruct.new(user['values'])
+
     mail :to => user.email
   end
 
@@ -15,7 +17,9 @@ class UserMailer < ActionMailer::Base
   #   en.user_mailer.invitation_sent.subject
   #
   def invitation_sent(user, protocol, host)
-    @setup_user_link = "#{protocol}#{host}#{edit_invitation_path(user, :invite_token => user.invite_token)}"
+    user = OpenStruct.new(user['values'])
+
+    @setup_user_link = "#{protocol}#{host}#{edit_invitation_path(user.id, :invite_token => user.invite_token)}"
     mail :to => user.email
   end
 end

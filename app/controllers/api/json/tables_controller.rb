@@ -81,14 +81,28 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def show
-    render :json => {
-              :id => @table.id,
-              :name => @table.name,
-              :privacy => table_privacy_text(@table),
-              :tags => @table[:tags_names],
-              :schema => @table.schema
-            }.to_json,
-           :callback => params[:callback]
+    respond_to do |format|
+      format.csv do
+        send_data @table.to_csv,
+          :type => 'application/zip; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
+      end
+      format.shp do
+        send_data @table.to_shp,
+          :type => 'application/octet-stream; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
+      end
+      format.json do
+        render :json => {
+                  :id => @table.id,
+                  :name => @table.name,
+                  :privacy => table_privacy_text(@table),
+                  :tags => @table[:tags_names],
+                  :schema => @table.schema
+                }.to_json,
+               :callback => params[:callback]
+      end
+    end
   end
 
   def update

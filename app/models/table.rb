@@ -130,7 +130,7 @@ class Table < Sequel::Model(:user_tables)
       end
       $tables_metadata.rename key, key(new_name)
       if $threshold.exists "rails:users:#{self.user_id}:requests:table:#{self.name}:total"
-        $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:total","rails:users:#{self.user_id}:requests:table:#{new_name}:total" 
+        $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:total","rails:users:#{self.user_id}:requests:table:#{new_name}:total"
       end
       if $threshold.exists "rails:users:#{self.user_id}:requests:table:#{self.name}:#{Date.today.strftime("%Y-%m-%d")}"
         $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:#{Date.today.strftime("%Y-%m-%d")}",
@@ -147,7 +147,7 @@ class Table < Sequel::Model(:user_tables)
   def private?
     $tables_metadata.hget(key, "privacy").to_i == PRIVATE
   end
-  
+
   def public?
     !private?
   end
@@ -851,7 +851,7 @@ TRIGGER
     else
       import_from_file.path
     end
-    
+
     # If it is a zip file we should find a shp file
     entries = []
     if ext == '.zip'

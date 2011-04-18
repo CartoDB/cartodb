@@ -394,5 +394,19 @@ feature "API 1.0 tables management" do
       r.status.should be_success
     end    
   end
+
+  scenario "Download a table in shp format" do
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+
+    visit "#{api_table_url(table1.name)}.shp"
+    current_path.should be == '/v1/tables/my_table_1.shp'
+  end
+
+  scenario "Download a table in csv format" do
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+
+    visit "#{api_table_url(table1.name)}.csv"
+    current_path.should be == '/v1/tables/my_table_1.csv'
+  end
   
 end

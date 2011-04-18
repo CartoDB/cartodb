@@ -5,7 +5,7 @@ module CartoDB
     def self.update_schema
       @@update_schema
     end
-    
+
     def self.pre_parsing(query, user_id)
       @@update_schema = nil
       query.split(';').map do |raw_query|
@@ -44,47 +44,47 @@ module CartoDB
       if query.include?('latitude')
         query.gsub!(/latitude\(\s*([^\)]+)\s*\)/i) do |matches|
           "ST_Y(#{$1})"
-        end        
+        end
       end
       if query.include?('longitude')
         query.gsub!(/longitude\(\s*([^\)]+)\s*\)/i) do |matches|
           "ST_X(#{$1})"
-        end        
+        end
       end
       if query.include?('geojson')
         query.gsub!(/geojson\((.*)\s*\)\s+/i) do |matches|
           "ST_AsGeoJSON(#{$1},6) "
-        end        
+        end
       end
       if query.include?('kml')
         query.gsub!(/kml\(\s*([^\)]+)\s*\)/i) do |matches|
           "ST_AsKML(#{$1},6)"
-        end        
+        end
       end
       if query.include?('svg')
         query.gsub!(/svg\(\s*([^\)]+)\s*\)/i) do |matches|
           "ST_AsSVG(#{$1},0,6)"
-        end        
+        end
       end
       if query.include?('wkt')
         query.gsub!(/wkt\(\s*([^\)]+)\s*\)/i) do |matches|
           "ST_AsText(#{$1})"
-        end        
-      end      
+        end
+      end
       if query.include?('geohash')
         query.gsub!(/geohash\(\s*([^\)]+)\s*\)/i) do |matches|
           "ST_GeoHash(#{$1},6)"
-        end        
+        end
       end
       if query.include?('intersects')
         query.gsub!(/intersects\(\s*([^,]+)\s*,\s*([^,]+)\s*,\s*([^\)]+)\s*\)/i) do |matches|
           "ST_Intersects(ST_SetSRID(ST_Point(#{$1},#{$2}),#{CartoDB::SRID}),#{$3})"
-        end        
+        end
       end
       if query.include?('the_geom')
         query.gsub!(/^select([^\(]+\s*)(the_geom)(\s*[^\(]+)from/i) do |matches|
           "select #{$1.strip}ST_AsGeoJSON(the_geom) as the_geom#{$3.strip} from"
-        end        
+        end
       end
       if query.include?('*') && !database_name.blank?
         if query =~ /^\s*select\s*(\*)\s*from\s*(\w+)\s*(.*)/i
@@ -116,7 +116,7 @@ module CartoDB
                 end
               end.join(',')
             end
-          end          
+          end
         end
       end
       query

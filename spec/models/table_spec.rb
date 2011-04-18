@@ -391,24 +391,6 @@ describe Table do
     table.force_schema.should == "id integer, name_of_species varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
   end
 
-  it "should guess the schema from import file import_csv_2.csv" do
-    Table.send(:public, *Table.private_instance_methods)
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
-    table.force_schema.should be_blank
-    table.guess_schema
-    table.force_schema.should == "id integer, name_of_specie varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
-  end
-
-  it "should guess the schema from import file import_csv_3.csv" do
-    Table.send(:public, *Table.private_instance_methods)
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_3.csv", "text/csv")
-    table.force_schema.should be_blank
-    table.guess_schema
-    table.force_schema.should == "id integer, name_of_specie varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
-  end
-
   it "should guess the schema from import file twitters.csv" do
     Table.send(:public, *Table.private_instance_methods)
     table = new_table
@@ -454,54 +436,6 @@ describe Table do
     row[:views].should == 540
   end
 
-  it "should import file import_csv_2.csv" do
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
-    table.save
-
-    table.rows_counted.should == 100
-    row = table.records[:rows][6]
-    row[:id].should == 6
-    row[:name_of_specie].should == "Laetmonice producta 6"
-    row[:kingdom].should == "Animalia"
-    row[:family].should == "Aphroditidae"
-    row[:lat].should == 0.2
-    row[:lon].should == 2.8
-    row[:views].should == 540
-  end
-
-  it "should import file import_csv_3.csv" do
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_3.csv", "text/csv")
-    table.save
-
-    table.rows_counted.should == 100
-    row = table.records[:rows][6]
-    row[:id].should == 6
-    row[:name_of_specie].should == "Laetmonice producta 6"
-    row[:kingdom].should == "Animalia"
-    row[:family].should == "Aphroditidae"
-    row[:lat].should == 0.2
-    row[:lon].should == 2.8
-    row[:views].should == 540
-  end
-
-  it "should import file import_csv_4.csv" do
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_4.csv", "text/csv")
-    table.save
-
-    table.rows_counted.should == 100
-    row = table.records[:rows][6]
-    row[:id].should == 6
-    row[:name_of_specie].should == "Laetmonice producta 6"
-    row[:kingdom].should == "Animalia"
-    row[:family].should == "Aphroditidae"
-    row[:lat].should == 0.2
-    row[:lon].should == 2.8
-    row[:views].should == 540
-  end
-  
   it "should import file flights-bad-encoding.csv" do
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/flights-bad-encoding.csv", "text/csv")

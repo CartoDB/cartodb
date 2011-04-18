@@ -709,5 +709,16 @@ describe Table do
     user = User[table.user_id]
     table.database_name.should == user.database_name
   end
+  
+  it "should import CSV file csv_no_quotes.csv" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.name = "no_quotes"
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/csv_no_quotes.csv", "text/csv")
+    table.save
+
+    table.rows_counted.should == 8406    
+  end
 
 end

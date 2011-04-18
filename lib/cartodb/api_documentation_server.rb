@@ -17,12 +17,12 @@ module CartoDB
           html = File.read(layout_path).gsub(/\{\{yield\}\}/,File.open(file_path).read).
                                         gsub(/\{\{sidebar\}\}/,File.open("#{Rails.root}/app/views/developers/api/_sidebar.html").read)
           unless File.file?(layout_path) and File.file?(file_path)
-            [ 404, {'Content-Type' => 'text/html'}, File.read("#{Rails.root}/public/404.html") ]
+            [ 404, {'Content-Type' => 'text/html'}, File.read("#{Rails.root}/public/404.html.erb") ]
           else
             [ 200, {'Content-Type' => 'text/html'}, ERB.new(html).result(binding) ]
           end
         rescue
-          [ 404, {'Content-Type' => 'text/html'}, File.read("#{Rails.root}/public/404.html") ]
+          [ 404, {'Content-Type' => 'text/html'}, File.read("#{Rails.root}/public/404.html.erb") ]
         end
       else
         @app.call(env)

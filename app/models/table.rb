@@ -579,8 +579,8 @@ TRIGGER
     port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
     @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
     @quote = @quote == '`' ? '\`' : @quote
-    command = "copy #{self.name} from STDIN WITH DELIMITER '#{@col_separator || ','}' CSV QUOTE AS '#{@quote}'"
-    import_csv_command = %Q{awk 'NR>1{print $0}' #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
+    command = "copy #{self.name} from STDIN WITH (HEADER true, FORMAT 'csv', QUOTE '#{@quote}')"
+    import_csv_command = %Q{cat #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
     Rails.logger.info "Importing CSV. Execute: " + import_csv_command
     system import_csv_command
     owner.in_database do |user_database|

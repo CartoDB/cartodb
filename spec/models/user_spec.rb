@@ -277,5 +277,12 @@ describe User do
     table.reload
     table.schema.should include([:families,"string"])
   end  
+  
+  it "should fail with error if table doesn't exist" do
+    user = create_user
+    lambda {
+      user.run_query("select * from wadus")
+    }.should raise_error(CartoDB::TableNotExists)
+  end
 
 end

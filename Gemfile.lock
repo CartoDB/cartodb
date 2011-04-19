@@ -94,6 +94,7 @@ GEM
       nokogiri (>= 1.4.3.1)
       oauth (>= 0.3.6)
     highline (1.6.1)
+    htmlentities (4.3.0)
     i18n (0.5.0)
     json (1.4.6)
     json_pure (1.5.1)
@@ -230,6 +231,7 @@ DEPENDENCIES
   capybara-zombie!
   email_spec
   google-spreadsheet-ruby
+  htmlentities
   launchy
   mocha
   nofxx-georuby

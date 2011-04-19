@@ -20,6 +20,7 @@ class Table < Sequel::Model(:user_tables)
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   SKIP_SCHEMA_COLUMNS = [THE_GEOM_WEBMERCATOR, :cartodb_id, :created_at, :updated_at]
+  RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
 
   ## Callbacks
   def validate
@@ -266,6 +267,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def add_column!(options)
+    raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9_]/
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
     owner.in_database do |user_database|
@@ -295,7 +297,7 @@ class Table < Sequel::Model(:user_tables)
     cartodb_type = new_type.try(:convert_to_cartodb_type)
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
-        raise CartoDB::InvalidColumnName if options[:new_name] =~ /^[^a-zA-Z]+$/
+        raise CartoDB::InvalidColumnName if options[:new_name] =~ /^[0-9_]/ || RESERVED_COLUMN_NAMES.include?(options[:new_name])
         raise if CARTODB_COLUMNS.include?(options[:old_name].to_s)
         user_database.rename_column name.to_sym, options[:old_name].to_sym, options[:new_name].sanitize.to_sym
         new_name = options[:new_name].sanitize
@@ -663,6 +665,9 @@ TRIGGER
 
     result = []
     column_names.each_with_index do |column_name, i|
+      if RESERVED_COLUMN_NAMES.include?(column_name.to_s)
+        column_name = "_#{column_name}"
+      end
       result << "#{column_name} #{schemas[i] || "varchar"}"
     end
 

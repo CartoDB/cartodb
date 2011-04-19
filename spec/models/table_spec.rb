@@ -780,5 +780,28 @@ describe Table do
     
     table.name.should == "table_table_name"
   end
+  
+  it "should escape a reserved column name when importing a file with a column with an invalid name" do
+    user = create_user
+    table = new_table :user_id => user.id
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/reserved_columns.csv", "text/csv")
+    table.save.reload
+    
+    table.schema.should include([:_xmin, "number"])
+  end
 
+  it "should raise an error when creating a column with reserved name" do
+    table = create_table
+    lambda {
+      table.add_column!(:name => "xmin", :type => "number")
+    }.should raise_error(CartoDB::InvalidColumnName)
+  end
+
+  it "should raise an error when renaming a column with reserved name" do
+    table = create_table
+    lambda {
+      table.modify_column!(:old_name => "name", :new_name => "xmin")
+    }.should raise_error(CartoDB::InvalidColumnName)
+  end
+  
 end

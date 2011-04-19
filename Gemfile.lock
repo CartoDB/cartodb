@@ -102,7 +102,6 @@ GEM
       diff-lcs (~> 1.1)
       mime-types (~> 1.15)
     highline (1.6.1)
-    htmlentities (4.3.0)
     i18n (0.5.0)
     json (1.4.6)
     json_pure (1.5.1)
@@ -241,7 +240,6 @@ DEPENDENCIES
   email_spec
   git-up
   google-spreadsheet-ruby
-  htmlentities
   launchy
   mocha
   nofxx-georuby
@@ -249,7 +247,6 @@ DEPENDENCIES
   oauth-plugin (>= 0.4.0.pre1)
   passenger
   pg (= 0.10.1)
-  polyglot
   rails (= 3.0.6)
   rails_warden
   rdoc
@@ -267,6 +264,5 @@ DEPENDENCIES
   spreadsheet
   steak
   timecop
-  treetop
   warden
   webrat

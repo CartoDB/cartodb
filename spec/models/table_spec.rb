@@ -709,7 +709,7 @@ describe Table do
     table.rows_counted.should == 8406        
   end
   
-  it "should not drop a table that exists" do
+  it "should not drop a table that exists when upload fails" do
     user = create_user
     table = new_table :name => 'empty_file', :user_id => user.id
     table.save.reload
@@ -725,6 +725,23 @@ describe Table do
       user_database.table_exists?(table.name.to_sym).should be_true
     end
   end
+
+  it "should not drop a table that exists when upload does not fail" do
+    user = create_user
+    table = new_table :name => 'empty_file', :user_id => user.id
+    table.save.reload
+    table.name.should == 'empty_file'
+    
+    table2 = new_table :name => 'empty_file', :user_id => user.id
+    table2.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/csv_no_quotes.csv", "text/csv")
+    table2.save.reload
+    table2.name.should == 'empty_file_2'
+    
+    user.in_database do |user_database|
+      user_database.table_exists?(table.name.to_sym).should be_true
+      user_database.table_exists?(table2.name.to_sym).should be_true
+    end
+  end
   
   it "rename a table to a name that exists should add a _2 to the new name" do
     user = create_user
@@ -735,6 +752,20 @@ describe Table do
     table2 = new_table :name => 'empty_file', :user_id => user.id
     table2.save.reload
     table2.name.should == 'empty_file_2'
+  end
+  
+  it "should remove the user_table even when phisical table does not exist" do
+    user = create_user
+    table = new_table :name => 'empty_file', :user_id => user.id
+    table.save.reload
+    table.name.should == 'empty_file'
+
+    user.in_database do |user_database|
+      user_database.drop_table(table.name.to_sym)
+    end
+    
+    table.destroy
+    Table[table.id].should be_nil
   end
 
 end

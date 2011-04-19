@@ -27,6 +27,9 @@ class Api::Json::QueriesController < Api::ApplicationController
   rescue CartoDB::ErrorRunningQuery => e
     render :json => { :errors => [e.db_message, e.syntax_message] }.to_json, :status => 400,
            :callback => params[:callback]
+  rescue
+    render :json => { :errors => [$!] }.to_json, :status => 400,
+          :callback => params[:callback]  
   end
 
 end

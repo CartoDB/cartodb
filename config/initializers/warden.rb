@@ -47,19 +47,28 @@ Warden::Strategies.add(:api_authentication) do
         end
       else
         if request.headers['Authorization'].present?
-          if ClientApplication.verify_request(request) do |request_proxy|
-              unless oauth_token = ClientApplication.find_token(request_proxy.token)
-                throw(:warden)
-              else
-                success!(User.find_with_custom_fields(oauth_token.user_id))
+          token = request.headers['Authorization'].split(',').select{ |p| p.include?('oauth_token') }.first.split('=').last.tr('\"','')
+          if token and user_id = $api_credentials.hget(token, "user_id")
+            success!(User.find_with_custom_fields(user_id))
+          else
+            if ClientApplication.verify_request(request) do |request_proxy|
+                unless oauth_token = ClientApplication.find_token(request_proxy.token)
+                  throw(:warden)
+                else
+                  success!(User.find_with_custom_fields(oauth_token.user_id))
+                end
               end
             end
           end
         elsif params[:oauth_token].present?
-          unless oauth_token = ClientApplication.find_token(params[:oauth_token])
-            throw(:warden)
+          if user_id = $api_credentials.hget(params[:oauth_token], "user_id")
+            success!(User.find_with_custom_fields(user_id))
           else
-            success!(User.find_with_custom_fields(oauth_token.user_id))
+            unless oauth_token = ClientApplication.find_token(params[:oauth_token])
+              throw(:warden)
+            else
+              success!(User.find_with_custom_fields(oauth_token.user_id))
+            end
           end
         end
       end

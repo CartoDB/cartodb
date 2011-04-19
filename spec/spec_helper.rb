@@ -17,6 +17,10 @@ RSpec.configure do |config|
   
   config.before(:suite) do
     CartoDB::RedisTest.up
+    $tables_metadata.flushdb
+    $queries_log.flushdb
+    $threshold.flushdb
+    $api_credentials.flushdb
   end  
 
   config.before(:each) do

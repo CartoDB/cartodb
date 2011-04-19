@@ -10,7 +10,7 @@ class Table < Sequel::Model(:user_tables)
   self.strict_param_setting = false
 
   # Allowed columns
-  set_allowed_columns(:name, :privacy, :tags)
+  set_allowed_columns(:privacy, :tags)
 
   attr_accessor :force_schema, :import_from_file,
                 :imported_table_name, :importing_SRID,
@@ -53,7 +53,7 @@ class Table < Sequel::Model(:user_tables)
     end
     # Before assign the name, the method #key can not be used,
     # because depends on the name of the table
-    self.name = set_table_name if self.name.blank?
+    self.name = get_valid_name if self.name.blank?
     set_table_schema!
     if !import_from_file.blank? && imported_table_name.blank?
       import_data_from_file!
@@ -72,29 +72,7 @@ class Table < Sequel::Model(:user_tables)
 
   def after_save
     super
-    if self[:tags].blank?
-      Tag.filter(:user_id => user_id, :table_id => id).delete
-    else
-      tag_names = tags.split(',')
-      table_tags = Tag.filter(:user_id => user_id, :table_id => id).all
-      unless table_tags.empty?
-        # Remove tags that are not in the new names list
-        table_tags.each do |tag|
-          unless tag_names.include?(tag.name)
-            tag.destroy
-          else
-            tag_names.delete(tag.name)
-          end
-        end
-      end
-      # Create the new tags in the this table
-      tag_names.each do |new_tag_name|
-        new_tag = Tag.new :name => new_tag_name
-        new_tag.user_id = user_id
-        new_tag.table_id = id
-        new_tag.save
-      end
-    end
+    manage_tags
   end
 
   def after_create
@@ -108,7 +86,7 @@ class Table < Sequel::Model(:user_tables)
     set_the_geom_column!(the_geom_type.try(:to_sym) || "point")
     set_trigger_update_updated_at
     update_stored_schema!
-    self.force_schema = nil
+    @force_schema = nil
     $tables_metadata.hset key, "user_id", user_id
     $tables_metadata.hset key, "privacy", self.privacy
   end
@@ -129,22 +107,23 @@ class Table < Sequel::Model(:user_tables)
     end
   end
   ## End of Callbacks
-
-  def name=(new_name)
-    new_name = set_table_name if new_name.blank?
-    new_name = new_name.sanitize
-    if !new? && !new_name.blank? && !name.blank? && new_name != name
+  
+  def name=(value)
+    # to validate the name of the table, the user_id
+    # **must** be associated to the table
+    raise CartoDB::InvalidUser if user_id.blank?
+    return if value == self[:name]
+    new_name = get_valid_name(value)
+    unless new?
       owner.in_database do |user_database|
         user_database.rename_table name, new_name
-        user_database.run("ALTER SEQUENCE #{name}_cartodb_id_seq RENAME TO #{new_name}_cartodb_id_seq")
+        user_database.run("ALTER SEQUENCE #{self.name}_cartodb_id_seq RENAME TO #{new_name}_cartodb_id_seq")
         begin
-          user_database.run("ALTER INDEX #{name}_the_geom_idx RENAME TO #{new_name}_the_geom_idx")
-          user_database.run("ALTER INDEX #{name}_#{THE_GEOM_WEBMERCATOR}_idx RENAME TO #{new_name}_#{THE_GEOM_WEBMERCATOR}_idx")
+          user_database.run("ALTER INDEX #{self.name}_the_geom_idx RENAME TO #{new_name}_the_geom_idx")
+          user_database.run("ALTER INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx RENAME TO #{new_name}_#{THE_GEOM_WEBMERCATOR}_idx")
         rescue
         end
       end
-    end
-    if !new?
       $tables_metadata.rename key, key(new_name)
       if $threshold.exists "rails:users:#{self.user_id}:requests:table:#{self.name}:total"
         $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:total","rails:users:#{self.user_id}:requests:table:#{new_name}:total" 
@@ -154,7 +133,7 @@ class Table < Sequel::Model(:user_tables)
                           "rails:users:#{self.user_id}:requests:table:#{new_name}:#{Date.today.strftime("%Y-%m-%d")}"
       end
     end
-    self[:name] = new_name unless new_name.blank?
+    self[:name] = new_name
   end
 
   def tags=(value)
@@ -554,13 +533,17 @@ TRIGGER
     User.select(:id,:database_name,:crypted_password).filter(:id => self.user_id).first
   end
 
-  def set_table_name
-    base_name = "Untitle table".sanitize
-    return base_name if user_id.nil?
+  def get_valid_name(raw_new_name = nil)
+    raw_new_name ||= "Untitle table"
+    get_next_valid_name(raw_new_name.sanitize)
+  end
+  
+  def get_next_valid_name(raw_new_name)
+    base_name = "#{raw_new_name}"
     i = 1
     while Table.filter(:user_id => user_id, :name => base_name).count != 0
       i += 1
-      base_name = "Untitle table #{i}".sanitize
+      base_name = "#{raw_new_name}_#{i}".sanitize
     end
     base_name
   end
@@ -858,7 +841,7 @@ TRIGGER
         entry.extract("/tmp/#{name}")
       end
     end
-    if ext == '.csv'
+    if ext != '.shp'
       self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
     end
     return unless %W{ .ods .xls .xlsx .shp }.include?(ext)
@@ -919,5 +902,31 @@ TRIGGER
       user_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
     end
   end
-
+  
+  def manage_tags
+    if self[:tags].blank?
+      Tag.filter(:user_id => user_id, :table_id => id).delete
+    else
+      tag_names = tags.split(',')
+      table_tags = Tag.filter(:user_id => user_id, :table_id => id).all
+      unless table_tags.empty?
+        # Remove tags that are not in the new names list
+        table_tags.each do |tag|
+          unless tag_names.include?(tag.name)
+            tag.destroy
+          else
+            tag_names.delete(tag.name)
+          end
+        end
+      end
+      # Create the new tags in the this table
+      tag_names.each do |new_tag_name|
+        new_tag = Tag.new :name => new_tag_name
+        new_tag.user_id = user_id
+        new_tag.table_id = id
+        new_tag.save
+      end
+    end
+  end
+  
 end

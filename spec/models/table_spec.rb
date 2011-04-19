@@ -4,23 +4,11 @@ require 'spec_helper'
 
 describe Table do
 
-  it "should have a name and a user_id" do
-    user = create_user
-    table = Table.new
-    table.should_not be_valid
-    table.errors.on(:user_id).should_not be_nil
-    table.user_id = user.id
-    table.save
-    table.reload
-    
-    table.name.should == "untitle_table"
-  end
-
   it "should set a default name different than the previous" do
     user = create_user
     table = Table.new
     table.user_id = user.id
-    table.save
+    table.save.reload
     table.name.should == "untitle_table"
 
     table2 = Table.new
@@ -50,11 +38,13 @@ describe Table do
     user.in_database do |user_database|
       user_database.table_exists?(table.name.to_sym).should be_true
     end
-    table.name = 'Wadus table #2'
+    table.name = 'Wadus table #23'
     table.save
+    table.reload
+    table.name.should == "Wadus table #23".sanitize
     user.in_database do |user_database|
       user_database.table_exists?('wadus_table'.to_sym).should be_false
-      user_database.table_exists?('wadus_table_2'.to_sym).should be_true
+      user_database.table_exists?('wadus_table_23'.to_sym).should be_true
     end
   end
   
@@ -247,10 +237,8 @@ describe Table do
 
   it "should be able to insert a row with a geometry value" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.save
-    table.reload
+    table = new_table :user_id => user.id
+    table.save.reload
 
     lat = -43.941
     lon = 3.429
@@ -264,11 +252,9 @@ describe Table do
   
   it "should update null value to nil when inserting and updating" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
+    table = new_table :user_id => user.id
     table.force_schema = "valid boolean"
-    table.save
-    table.reload
+    table.save.reload
     pk = table.insert_row!({:valid => "null"})
     table.record(pk)[:valid].should be_nil
     
@@ -292,10 +278,8 @@ describe Table do
 
   it "should be able to update a row with a geometry value" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.save
-    table.reload
+    table = new_table :user_id => user.id
+    table.save.reload
 
     lat = -43.941
     lon = 3.429
@@ -357,8 +341,7 @@ describe Table do
     table = new_table :name => nil
     table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-    table.save
-    table.reload
+    table.save.reload
     
     table.rows_counted.should == 7
     table.name.should == 'twitters'
@@ -371,7 +354,7 @@ describe Table do
   end
 
   it "should be able to insert rows in a table imported from a CSV file" do
-    table = new_table
+    table = new_table :name => nil
     table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
     table.save
@@ -401,10 +384,10 @@ describe Table do
   end
 
   it "should import file twitters.csv" do
-    table = new_table
+    table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-    table.save
-    table.reload
+    table.save.reload
+    table.name.should == 'twitters'
 
     table.rows_counted.should == 7
     table.schema(:cartodb_types => false).should == [
@@ -420,9 +403,11 @@ describe Table do
   end
 
   it "should import file import_csv_1.csv" do
-    table = new_table
+    table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
     table.save
+    table.reload
+    table.name.should == 'import_csv_1'
 
     table.rows_counted.should == 100
     row = table.records[:rows][6]
@@ -462,17 +447,23 @@ describe Table do
   
   # It has strange line breaks
   pending "should import file arrivals_BCN.csv" do
-    table = new_table
+    table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/arrivals_BCN.csv", "text/csv")
     table.save
+    table.reload
+    table.name.should == 'arrivals_BCN'
     
     table.rows_counted.should == 791
   end
 
   it "should import file ngos.xlsx" do
-    table = new_table
+    user = create_user
+    table = new_table :name => nil
+    table.user_id = user.id
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos.xlsx", "application/download")
     table.save
+    table.reload
+    table.name.should == 'ngos'
 
     table.schema(:cartodb_types => false).should == [
       [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"],
@@ -565,42 +556,38 @@ describe Table do
   
   it "should set valid geometry types" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
+    table = new_table :user_id => user.id
     table.force_schema = "address varchar, the_geom geometry"
     table.the_geom_type = "line"
-    table.save
-    table.reload
+    table.save.reload
     table.the_geom_type.should == "multilinestring"
 
     table.the_geom_type = "point"
-    table.save
-    table.reload
+    table.save.reload
     table.the_geom_type.should == "point"
 
     table.the_geom_type = "multipoint"
-    table.save
-    table.reload
+    table.save.reload
     table.the_geom_type.should == "multipoint"
 
     table.the_geom_type = "polygon"
-    table.save
-    table.reload
+    table.save.reload
     table.the_geom_type.should == "multipolygon"
   end
 
   it "should rename the pk sequence when renaming the table" do
     user = create_user
-    table1 = new_table :name => 'table 1'
-    table1.user_id = user.id
-    table1.save
+    table1 = new_table :name => 'table 1', :user_id => user.id
+    table1.save.reload
+    table1.name.should == 'table_1'
     
     table1.name = 'table 2'
-    table1.save
+    table1.save.reload
+    table1.name.should == 'table_2'
     
-    table2 = new_table :name => 'table 1'
-    table2.user_id = user.id
-    table2.save
+    table2 = new_table :name => 'table 1', :user_id => user.id
+    table2.save.reload
+    table2.name.should == 'table_1'
 
     lambda {
       table2.destroy
@@ -609,10 +596,8 @@ describe Table do
   
   it "should create a the_geom_webmercator column with the_geom projected to 3785" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.save
-    table.reload
+    table = new_table :user_id => user.id
+    table.save.reload
 
     lat = -43.941
     lon = 3.429
@@ -628,11 +613,9 @@ describe Table do
   
   it "should create a the_geom_webmercator column with the_geom projected to 3785 even when schema is forced" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
+    table = new_table :user_id => user.id
     table.force_schema = "name varchar, the_geom geometry"
-    table.save
-    table.reload
+    table.save.reload
 
     lat = -43.941
     lon = 3.429
@@ -648,10 +631,8 @@ describe Table do
   
   it "should return a geojson for the_geom if it is a point" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.save
-    table.reload
+    table = new_table :user_id => user.id
+    table.save.reload
 
     lat = -43.941
     lon = 3.429
@@ -667,10 +648,8 @@ describe Table do
   
   it "should raise an error when the geojson provided is invalid" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.save
-    table.reload
+    table = new_table :user_id => user.id
+    table.save.reload
 
     lat = -43.941
     lon = 3.429
@@ -682,9 +661,9 @@ describe Table do
   
   it "should be able to set a the_geom column from a latitude column and a longitude column" do
     user = create_user
-    table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
-                      :tags => 'movies, personal'
+    table = Table.new :privacy => Table::PRIVATE, :tags => 'movies, personal'
     table.user_id = user.id
+    table.name = 'Madrid Bars'
     table.force_schema = "name varchar, address varchar, latitude float, longitude float"
     table.save
     pk = table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
@@ -712,13 +691,50 @@ describe Table do
   
   it "should import CSV file csv_no_quotes.csv" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.name = "no_quotes"
+    table = new_table :name => nil, :user_id => user.id
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/csv_no_quotes.csv", "text/csv")
-    table.save
-
+    table.save.reload
+    
+    table.name.should == 'csv_no_quotes'
     table.rows_counted.should == 8406    
+  end
+  
+  it "should overwrite given name over name of the file when importing " do
+    user = create_user
+    table = new_table :user_id => user.id, :name => 'wadus'
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/csv_no_quotes.csv", "text/csv")
+    table.save.reload
+    
+    table.name.should == 'wadus'
+    table.rows_counted.should == 8406        
+  end
+  
+  it "should not drop a table that exists" do
+    user = create_user
+    table = new_table :name => 'empty_file', :user_id => user.id
+    table.save.reload
+    table.name.should == 'empty_file'
+    
+    table2 = new_table :name => nil, :user_id => user.id
+    table2.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/empty_file.csv", "text/csv")
+    lambda {
+      table2.save
+    }.should raise_error
+    
+    user.in_database do |user_database|
+      user_database.table_exists?(table.name.to_sym).should be_true
+    end
+  end
+  
+  it "rename a table to a name that exists should add a _2 to the new name" do
+    user = create_user
+    table = new_table :name => 'empty_file', :user_id => user.id
+    table.save.reload
+    table.name.should == 'empty_file'
+    
+    table2 = new_table :name => 'empty_file', :user_id => user.id
+    table2.save.reload
+    table2.name.should == 'empty_file_2'
   end
 
 end

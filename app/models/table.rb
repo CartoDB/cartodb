@@ -584,6 +584,7 @@ TRIGGER
       user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
       set_the_geom_column!("point")
     end
+    FileUtils.rm_rf(path)
   end
 
   def guess_schema

@@ -534,11 +534,9 @@ TRIGGER
   end
 
   def get_valid_name(raw_new_name = nil)
-    raw_new_name ||= "Untitle table"
-    get_next_valid_name(raw_new_name.sanitize)
-  end
-  
-  def get_next_valid_name(raw_new_name)
+    raw_new_name = (raw_new_name || "Untitle table").sanitize
+    raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
+    raw_new_name = "table#{raw_new_name}" if raw_new_name =~ /^_/
     base_name = "#{raw_new_name}"
     i = 1
     while Table.filter(:user_id => user_id, :name => base_name).count != 0

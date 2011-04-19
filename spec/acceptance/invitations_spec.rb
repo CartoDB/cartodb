@@ -25,10 +25,12 @@ feature "Invitations", %q{
 
     expect {
       click "Sign up"
-    }.to change{ActionMailer::Base.deliveries.size}.from(0).to(1)
-
+    }.to change{Resque.size("mailer")}.from(0).to(1)  
+    
     page.should have_content("Thank you!")
-
+    
+    CartoDB::Resque.perform_jobs_from_queue("mailer")
+    
     ask_for_invitation_email = ActionMailer::Base.deliveries.first
 
     ask_for_invitation_email.subject.should be == 'Thanks for signing up for cartodb beta'

@@ -152,8 +152,11 @@ feature "API 1.0 tables management" do
 
     put_json api_table_url(table1.name), {:name => ""}
     parse_json(response) do |r|
+      r.status.should == 400
+    end
+    get_json api_table_url(table1.name)
+    parse_json(response) do |r|
       r.status.should be_success
-      r.body[:name].should == "untitle_table"
     end
   end
 

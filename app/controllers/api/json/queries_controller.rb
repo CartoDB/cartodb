@@ -21,7 +21,7 @@ class Api::Json::QueriesController < Api::ApplicationController
     respond_to do |format|
       format.json do
         @to_log = params[:sql]
-        render :json => current_user.run_query(params[:sql]).to_json, :callback => params[:callback]
+        render :json => Yajl::Encoder.encode(current_user.run_query(params[:sql])), :callback => params[:callback]
       end
     end
   rescue CartoDB::ErrorRunningQuery => e

@@ -1,7 +1,7 @@
   
   <% content_for(:js) do %>
     <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/jquery.mousewheel", "plugins/jscrollpane.min", "plugins/jquery.color", "plugins/jquery.scrollTo","plugins/jquery.livequery.min", "plugins/tag-it", "admin/table/loading_messages", "admin/table/loader_queue", "admin/table/carto_table", "admin/table/out_table_elements", "admin/table/geocoding", "admin/table/worker_geocoding", "admin/table/table", "admin/maps/maps", "plugins/jquery-ui.min.js", "plugins/polymaps.min.js", "admin/maps/mapElements.js", "plugins/codemirror/codemirror.js", "plugins/colorpicker/eye", "plugins/colorpicker/utils", "plugins/colorpicker/colorpicker" %>
-    <script type="text/javascript">var table_id = <%= @table.id %>; var status = "<%= table_privacy_text(@table).downcase %>"; var table_name = "<%= @table.name %>";</script>
+    <script type="text/javascript">var table_id = <%= @table.id %>; var status = "<%= table_privacy_text(@table).downcase %>"; var table_name = "<%= @table.name %>"; var user_id = "<%= @table.user_id %>";</script>
   <% end %>
 
   <% content_for(:head) do %>

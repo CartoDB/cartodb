@@ -767,5 +767,18 @@ describe Table do
     table.destroy
     Table[table.id].should be_nil
   end
+  
+  it "should escape table names starting with numbers" do
+    user = create_user
+    table = new_table :user_id => user.id, :name => '123_table_name'
+    table.save.reload
+    
+    table.name.should == "table_123_table_name"
+
+    table = new_table :user_id => user.id, :name => '_table_name'
+    table.save.reload
+    
+    table.name.should == "table_table_name"
+  end
 
 end

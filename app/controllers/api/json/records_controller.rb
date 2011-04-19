@@ -8,7 +8,7 @@ class Api::Json::RecordsController < Api::ApplicationController
   before_filter :load_table
 
   def index
-    render :json => @table.records(params.slice(:page, :rows_per_page)).to_json,
+    render :json =>  Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page))),
            :callback => params[:callback]
   end
 

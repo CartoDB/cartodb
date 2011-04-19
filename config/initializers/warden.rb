@@ -48,7 +48,7 @@ Warden::Strategies.add(:api_authentication) do
       else
         if request.headers['Authorization'].present?
           token = request.headers['Authorization'].split(',').select{ |p| p.include?('oauth_token') }.first.split('=').last.tr('\"','')
-          if token and user_id = $api_credentials.hget(token, "user_id")
+          if token and user_id = $api_credentials.hget("rails:oauth_tokens:#{token}", "user_id")
             success!(User.find_with_custom_fields(user_id))
           else
             if ClientApplication.verify_request(request) do |request_proxy|
@@ -61,7 +61,7 @@ Warden::Strategies.add(:api_authentication) do
             end
           end
         elsif params[:oauth_token].present?
-          if user_id = $api_credentials.hget(params[:oauth_token], "user_id")
+          if user_id = $api_credentials.hget("rails:oauth_tokens:#{params[:oauth_token]}", "user_id")
             success!(User.find_with_custom_fields(user_id))
           else
             unless oauth_token = ClientApplication.find_token(params[:oauth_token])

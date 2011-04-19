@@ -63,6 +63,7 @@ class Table < Sequel::Model(:user_tables)
     super
   rescue => e
     unless self.name.blank?
+      $tables_metadata.del key
       owner.in_database(:as => :superuser) do |user_database|
         user_database.run("DROP TABLE IF EXISTS #{self.name}")
         user_database.run("DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq")

@@ -3,13 +3,13 @@
 require 'oauth/controllers/provider_controller'
 
 class OauthController < ApplicationController
-  skip_before_filter :app_host_required
+  include OAuth::Controllers::ProviderController
   
   ssl_required :authorize, :request_token, :access_token, :token, :test_request
-
-  include OAuth::Controllers::ProviderController
-
+  
+  skip_before_filter :app_host_required
   skip_before_filter :login_required, :only => :authorize
+  after_filter :store_token_in_redis, :only => :access_token
 
   def authorize
     unless params[:oauth_token]
@@ -36,6 +36,13 @@ class OauthController < ApplicationController
     else
       render :action => "authorize_success"
     end
+  end
+  
+  protected
+  
+  def store_token_in_redis
+    $api_credentials.hset @token.token, "user_id", @token.user_id
+    $api_credentials.hset @token.token, "time", Time.now
   end
 
 end

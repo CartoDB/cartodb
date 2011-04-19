@@ -41,8 +41,8 @@ class OauthController < ApplicationController
   protected
   
   def store_token_in_redis
-    $api_credentials.hset @token.token, "user_id", @token.user_id
-    $api_credentials.hset @token.token, "time", Time.now
+    $api_credentials.hset "rails:oauth_tokens:#{@token.token}", "user_id", @token.user_id
+    $api_credentials.hset "rails:oauth_tokens:#{@token.token}", "time", Time.now
   end
 
 end

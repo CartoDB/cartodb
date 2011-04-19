@@ -9,7 +9,7 @@
   var map;
   var radius = 10, tips = {};
   var layer;
-  var tile_url = 'http://ec2-50-16-103-51.compute-1.amazonaws.com/tiles/{X}/{Y}/{Z}/'++'/';
+  var tile_url = 'http://ec2-50-16-103-51.compute-1.amazonaws.com/tiles/{X}/{Y}/{Z}/'+user_id+'/';
   var map_type;
 
   function initMap() {

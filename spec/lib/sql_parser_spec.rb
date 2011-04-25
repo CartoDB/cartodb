@@ -53,12 +53,13 @@ describe CartoDB::SqlParser do
   end
   
   it "should convert any the_geom reference, including a * into a ST_AsGeoJSON(the_geom)" do
-    CartoDB::SqlParser.parse("select the_geom from table").should == "select ST_AsGeoJSON(the_geom) from table"
-    CartoDB::SqlParser.parse("select a,b,the_geom from table").should == "select a,b,ST_AsGeoJSON(the_geom) from table"
+    CartoDB::SqlParser.parse("select the_geom from table").should == "select ST_AsGeoJSON(the_geom) as the_geom from table"
+    CartoDB::SqlParser.parse("select cartodb_id, the_geom from wadus").should == "select cartodb_id,ST_AsGeoJSON(the_geom) as the_geom from wadus"
+    CartoDB::SqlParser.parse("select a,b,the_geom from table").should == "select a,b,ST_AsGeoJSON(the_geom) as the_geom from table"
     CartoDB::SqlParser.parse("select ST_X(the_geom) from table").should == "select ST_X(the_geom) from table"
     CartoDB::SqlParser.parse("select ST_X(   the_geom  ) from table").should == "select ST_X(   the_geom  ) from table"
-    CartoDB::SqlParser.parse("select the_geom, other_column from table").should == "select ST_AsGeoJSON(the_geom), other_column from table"
-    CartoDB::SqlParser.parse("select other_column, the_geom from table").should == "select other_column,ST_AsGeoJSON(the_geom) from table"
+    CartoDB::SqlParser.parse("select the_geom, other_column from table").should == "select ST_AsGeoJSON(the_geom) as the_geom, other_column from table"
+    CartoDB::SqlParser.parse("select other_column, the_geom from table").should == "select other_column,ST_AsGeoJSON(the_geom) as the_geom from table"
   end
   
   it "should expand * to a list of columns" do

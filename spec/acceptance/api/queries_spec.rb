@@ -62,7 +62,7 @@ feature "API 1.0 queries interface" do
   end
   
   scenario "Perform an empty query should raise an error" do
-    get_json api_query_url
+    get_json api_query_url, :sql => nil
     parse_json(response) do |r|
       r.status.should == 400
     end

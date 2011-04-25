@@ -383,6 +383,15 @@ describe Table do
     table.force_schema.should == "id integer, name_of_species varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
   end
 
+  it "should guess the schema from import file import_csv_2.csv" do
+    Table.send(:public, *Table.private_instance_methods)
+    table = new_table
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
+    table.force_schema.should be_blank
+    table.guess_schema
+    table.force_schema.should == "id integer, name_of_species varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
+  end
+
   it "should guess the schema from import file twitters.csv" do
     Table.send(:public, *Table.private_instance_methods)
     table = new_table

@@ -439,6 +439,25 @@ describe Table do
     row[:views].should == 540
   end
 
+  it "should import file import_csv_2.csv" do
+    table = new_table :name => nil
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
+    table.save
+    table.reload
+    table.name.should == 'import_csv_2'
+
+    table.rows_counted.should == 100
+    row = table.records[:rows][6]
+    row[:cartodb_id] == 6
+    row[:id].should == 6
+    row[:name_of_species].should == "Laetmonice producta 6"
+    row[:kingdom].should == "Animalia"
+    row[:family].should == "Aphroditidae"
+    row[:lat].should == 0.2
+    row[:lon].should == 2.8
+    row[:views].should == 540
+  end
+  
   it "should import file flights-bad-encoding.csv" do
     table = new_table
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/flights-bad-encoding.csv", "text/csv")

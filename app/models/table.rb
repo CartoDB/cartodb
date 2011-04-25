@@ -14,7 +14,7 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file,
                 :imported_table_name, :importing_SRID,
-                :importing_encoding
+                :importing_encoding, :temporal_the_geom_type
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
@@ -27,13 +27,11 @@ class Table < Sequel::Model(:user_tables)
     super
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
-    errors.add(:the_geom_type, 'has an invalid value') unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type.downcase)
     validates_unique [:name, :user_id], :message => 'is already taken'
   end
 
   def before_validation
     self.privacy ||= PRIVATE
-    self.the_geom_type ||= "point"
     super
   end
 
@@ -60,6 +58,10 @@ class Table < Sequel::Model(:user_tables)
       import_data_from_file!
     end
     $tables_metadata.hset key, "privacy", self.privacy || PRIVATE
+    if !self.temporal_the_geom_type.blank?
+      self.the_geom_type = self.temporal_the_geom_type
+      self.temporal_the_geom_type = nil
+    end
     super
   rescue => e
     unless self.name.blank?
@@ -176,6 +178,8 @@ class Table < Sequel::Model(:user_tables)
 
   def key(new_name = nil)
     'rails:' + database_name + ':' + (new_name || name)
+  rescue
+    nil
   end
 
   # TODO: use the database field
@@ -450,8 +454,12 @@ TRIGGER
     end
   end
   
+  def the_geom_type
+    $tables_metadata.hget(key,"the_geom_type") || "point"
+  end
+  
   def the_geom_type=(value)
-    self[:the_geom_type] = if value == "point"
+    the_geom_type_value = if value == "point"
       value
     elsif value == "line"
       "multilinestring"
@@ -461,6 +469,12 @@ TRIGGER
       else
         value
       end
+    end
+    raise CartoDB::InvalidGeomType unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type_value.downcase)
+    if key.blank?
+      self.temporal_the_geom_type = the_geom_type_value
+    else
+      $tables_metadata.hset(key,"the_geom_type",the_geom_type_value)
     end
   end
 

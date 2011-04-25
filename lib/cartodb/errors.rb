@@ -3,6 +3,7 @@ class RecordNotFound < StandardError; end
 class CartoDB::InvalidUser < StandardError; end
 class CartoDB::InvalidTableName < StandardError; end
 class CartoDB::InvalidColumnName < StandardError; end
+class CartoDB::InvalidGeomType < StandardError; end
 class CartoDB::InvalidSRID < StandardError; end
 class CartoDB::InvalidGeoJSONFormat < StandardError; end
 class CartoDB::QueryNotAllowed < StandardError; end

@@ -4,7 +4,6 @@
 require File.expand_path('../config/application', __FILE__)
 require 'rake'
 require 'resque/tasks'
-require 'rspec/core/rake_task'
 
 CartoDB::Application.load_tasks
 

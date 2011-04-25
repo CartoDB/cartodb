@@ -11,7 +11,7 @@ for line in file(filename, 'rb'):
     if detector.done: break
 detector.close()
 
-src = ds.CSVDataSource(filename, read_header = True, encoding=detector.result["encoding"], detect_headers=True)
+src = ds.CSVDataSource(filename, read_header = True, encoding=detector.result["encoding"])
 src.initialize()
 
 out = ds.CSVDataTarget(sys.stdout)

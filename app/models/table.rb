@@ -27,13 +27,11 @@ class Table < Sequel::Model(:user_tables)
     super
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
-    errors.add(:the_geom_type, 'has an invalid value') unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type.downcase)
     validates_unique [:name, :user_id], :message => 'is already taken'
   end
 
   def before_validation
     self.privacy ||= PRIVATE
-    self.the_geom_type ||= "point"
     super
   end
 
@@ -450,8 +448,12 @@ TRIGGER
     end
   end
   
+  def the_geom_type
+    $tables_metadata.hget(key,"the_geom_type") || "point"
+  end
+  
   def the_geom_type=(value)
-    self[:the_geom_type] = if value == "point"
+    the_geom_type_value = if value == "point"
       value
     elsif value == "line"
       "multilinestring"
@@ -462,6 +464,8 @@ TRIGGER
         value
       end
     end
+    raise CartoDB::InvalidGeomType unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type_value.downcase)
+    $tables_metadata.hset(key,"the_geom_type",the_geom_type_value)
   end
 
   def to_csv

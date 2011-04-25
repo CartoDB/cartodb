@@ -578,8 +578,8 @@ TRIGGER
     @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
     @quote = @quote == '`' ? '\`' : @quote
     command = "copy #{self.name} from STDIN WITH (HEADER true, FORMAT 'csv')"
-    import_csv_command = %Q{cat #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
-    Rails.logger.info "Importing CSV. Execute: " + import_csv_command
+    import_csv_command = %Q{`which python` #{Rails.root}/misc/csv_normalizer.py #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
+    Rails.logger.info "Importing CSV. Executing command: " + import_csv_command
     system import_csv_command
     owner.in_database do |user_database|
       # Check if the file had data, if not rise an error because probably something went wrong

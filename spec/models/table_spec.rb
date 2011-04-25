@@ -455,14 +455,22 @@ describe Table do
   end
   
   # It has strange line breaks
-  pending "should import file arrivals_BCN.csv" do
+  it "should import file arrivals_BCN.csv" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/arrivals_BCN.csv", "text/csv")
     table.save
     table.reload
-    table.name.should == 'arrivals_BCN'
-    
-    table.rows_counted.should == 791
+    table.name.should == 'arrivals_bcn'
+    table.rows_counted.should == 3855
+  end
+  
+  it "should import ngos_aidmaps.csv" do
+    table = new_table :name => nil
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos_aidmaps.csv", "text/csv")
+    table.save
+    table.reload
+    table.name.should == 'ngos_aidmaps'
+    table.rows_counted.should == 85
   end
 
   it "should import file ngos.xlsx" do

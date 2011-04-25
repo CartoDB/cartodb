@@ -83,7 +83,7 @@ module CartoDB
       end
       if query.include?('the_geom')
         query.gsub!(/^select([^\(]+\s*)(the_geom)(\s*[^\(]+)from/i) do |matches|
-          "select #{$1.strip}ST_AsGeoJSON(the_geom)#{$3.strip} from"
+          "select #{$1.strip}ST_AsGeoJSON(the_geom) as the_geom#{$3.strip} from"
         end        
       end
       if query.include?('*') && !database_name.blank?

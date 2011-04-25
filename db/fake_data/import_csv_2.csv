@@ -1,0 +1,101 @@
+id;name of species;kingdom;family;lat;lon;views
+0;nutrix;"";"";0.0;0.4;406
+1;laevis;"";"";0.0;3.6;79
+2;gigantea;"";"";0.0;2.0;774
+3;cristata;"";"";2.1;0.0;866
+4;trissophyllus;"";"";1.8;1.6;912
+5;cincinnatus;"";"";2.4;1.0;258
+6;Laetmonice producta 6;Animalia;Aphroditidae;0.2;2.8;540
+7;Laetmonice producta 7;Animalia;Aphroditidae;2.0;1.6;192
+8;nutrix;"";"";0.0;0.0;152
+9;laevis;"";"";1.2;0.7;704
+10;gigantea;"";"";2.1;1.6;66
+11;cristata;"";"";1.6;0.0;996
+12;trissophyllus;"";"";1.6;0.0;296
+13;cincinnatus;"";"";2.0;1.2;4
+14;Laetmonice producta 8;Animalia;Aphroditidae;2.1;0.3;568
+15;Laetmonice producta 9;Animalia;Aphroditidae;1.8;0.4;572
+16;nutrix;"";"";0.2;2.8;272
+17;laevis;"";"";1.0;0.8;11
+18;gigantea;"";"";2.0;2.8;402
+19;cristata;"";"";0.5;2.1;365
+20;trissophyllus;"";"";0.0;1.2;859
+21;cincinnatus;"";"";1.2;0.0;976
+22;Barrukia cristata;Animalia;Polynoidae;0.0;0.0;978
+23;Eulagisca gigantea;Animalia;Polynoidae;0.4;1.8;58
+24;Laetmonice producta 1;Animalia;Aphroditidae;2.4;0.0;53
+25;Laetmonice producta 2;Animalia;Aphroditidae;0.0;0.0;123
+26;Laetmonice producta 3;Animalia;Aphroditidae;0.0;0.0;413
+27;Laetmonice producta 4;Animalia;Aphroditidae;0.8;0.6;626
+28;Laetmonice producta 5;Animalia;Aphroditidae;1.4;0.0;275
+29;Laetmonice producta 10;Animalia;Aphroditidae;0.9;1.2;866
+30;Laetmonice producta 11;Animalia;Aphroditidae;1.5;1.2;249
+31;Laetmonice producta 12;Animalia;Aphroditidae;1.2;0.0;478
+32;Laetmonice producta 13;Animalia;Aphroditidae;0.8;1.5;313
+33;Laetmonice producta 14;Animalia;Aphroditidae;0.6;0.8;5
+34;Laetmonice producta 15;Animalia;Aphroditidae;0.4;2.4;118
+35;Laetmonice producta 16;Animalia;Aphroditidae;1.8;0.9;819
+36;Laetmonice producta 17;Animalia;Aphroditidae;0.6;0.6;543
+37;Laetmonice producta 18;Animalia;Aphroditidae;2.4;2.8;547
+38;Laetmonice producta 19;Animalia;Aphroditidae;0.0;2.4;697
+39;Laetmonice producta 20;Animalia;Aphroditidae;1.5;3.2;787
+40;Laetmonice producta 21;Animalia;Aphroditidae;0.8;0.8;987
+41;Laetmonice producta 22;Animalia;Aphroditidae;0.6;1.8;432
+42;Laetmonice producta 23;Animalia;Aphroditidae;0.9;0.4;846
+43;Laetmonice producta 24;Animalia;Aphroditidae;0.0;0.3;587
+44;Laetmonice producta 25;Animalia;Aphroditidae;0.6;0.2;694
+45;Laetmonice producta 26;Animalia;Aphroditidae;0.2;1.8;339
+46;Laetmonice producta 27;Animalia;Aphroditidae;0.0;0.6;568
+47;Laetmonice producta 28;Animalia;Aphroditidae;0.0;0.4;906
+48;Laetmonice producta 29;Animalia;Aphroditidae;2.4;0.4;609
+49;Laetmonice producta 30;Animalia;Aphroditidae;2.1;0.0;828
+50;Laetmonice producta 31;Animalia;Aphroditidae;0.0;0.0;519
+51;Laetmonice producta 32;Animalia;Aphroditidae;0.8;0.9;837
+52;Laetmonice producta 33;Animalia;Aphroditidae;1.2;2.4;763
+53;Laetmonice producta 34;Animalia;Aphroditidae;0.3;0.0;491
+54;Laetmonice producta 35;Animalia;Aphroditidae;0.0;1.8;379
+55;Laetmonice producta 36;Animalia;Aphroditidae;0.6;0.3;493
+56;Laetmonice producta 37;Animalia;Aphroditidae;3.6;0.8;208
+57;Laetmonice producta 38;Animalia;Aphroditidae;0.9;3.2;290
+58;Laetmonice producta 39;Animalia;Aphroditidae;0.0;2.8;688
+59;Laetmonice producta 40;Animalia;Aphroditidae;0.8;0.0;797
+60;Laetmonice producta 41;Animalia;Aphroditidae;0.0;1.4;463
+61;Laetmonice producta 42;Animalia;Aphroditidae;3.6;0.7;912
+62;Laetmonice producta 43;Animalia;Aphroditidae;3.2;3.2;578
+63;Laetmonice producta 44;Animalia;Aphroditidae;0.6;1.2;309
+64;Laetmonice producta 45;Animalia;Aphroditidae;0.3;0.0;233
+65;Laetmonice producta 46;Animalia;Aphroditidae;0.0;0.0;192
+66;Laetmonice producta 47;Animalia;Aphroditidae;0.4;0.8;172
+67;Laetmonice producta 48;Animalia;Aphroditidae;0.4;0.0;530
+68;Laetmonice producta 49;Animalia;Aphroditidae;0.6;0.4;733
+69;Laetmonice producta 50;Animalia;Aphroditidae;0.6;0.3;320
+70;Laetmonice producta 51;Animalia;Aphroditidae;0.0;0.6;938
+71;Laetmonice producta 52;Animalia;Aphroditidae;0.0;0.3;466
+72;Laetmonice producta 53;Animalia;Aphroditidae;1.5;1.0;691
+73;Laetmonice producta 54;Animalia;Aphroditidae;0.6;0.0;861
+74;Laetmonice producta 55;Animalia;Aphroditidae;2.7;1.6;913
+75;Laetmonice producta 56;Animalia;Aphroditidae;0.0;1.0;807
+76;Laetmonice producta 57;Animalia;Aphroditidae;0.0;0.4;630
+77;Laetmonice producta 58;Animalia;Aphroditidae;1.8;0.9;42
+78;Laetmonice producta 59;Animalia;Aphroditidae;0.6;0.0;811
+79;Laetmonice producta 60;Animalia;Aphroditidae;0.6;0.2;697
+80;Laetmonice producta 61;Animalia;Aphroditidae;0.0;0.3;838
+81;Laetmonice producta 62;Animalia;Aphroditidae;1.2;0.4;569
+82;Laetmonice producta 63;Animalia;Aphroditidae;0.0;0.4;530
+83;Laetmonice producta 64;Animalia;Aphroditidae;1.0;0.0;496
+84;Laetmonice producta 65;Animalia;Aphroditidae;0.7;2.4;878
+85;Laetmonice producta 66;Animalia;Aphroditidae;0.0;0.0;47
+86;Laetmonice producta 67;Animalia;Aphroditidae;0.0;0.0;770
+87;Laetmonice producta 68;Animalia;Aphroditidae;0.0;0.9;744
+88;Laetmonice producta 69;Animalia;Aphroditidae;1.6;0.0;449
+89;Laetmonice producta 70;Animalia;Aphroditidae;0.0;0.0;377
+90;Laetmonice producta 71;Animalia;Aphroditidae;1.8;0.0;772
+91;Laetmonice producta 72;Animalia;Aphroditidae;1.6;1.4;403
+92;Laetmonice producta 73;Animalia;Aphroditidae;0.0;0.7;887
+93;Laetmonice producta 74;Animalia;Aphroditidae;0.0;0.6;522
+94;Laetmonice producta 75;Animalia;Aphroditidae;0.0;1.6;370
+95;Laetmonice producta 76;Animalia;Aphroditidae;0.8;0.0;4
+96;Laetmonice producta 77;Animalia;Aphroditidae;3.2;1.2;281
+97;Laetmonice producta 78;Animalia;Aphroditidae;1.5;2.1;479
+98;Laetmonice producta 79;Animalia;Aphroditidae;0.8;0.0;257
+99;Laetmonice producta 80;Animalia;Aphroditidae;0.0;0.6;143

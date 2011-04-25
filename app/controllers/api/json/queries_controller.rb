@@ -2,8 +2,7 @@
 
 class Api::Json::QueriesController < Api::ApplicationController
   ssl_required :run
-  
-  
+    
   # Run a query against your database
   # * Request Method: +GET+
   # * URI: +/v1+

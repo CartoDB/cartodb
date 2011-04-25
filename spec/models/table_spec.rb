@@ -74,6 +74,15 @@ describe Table do
     $tables_metadata.hget(table.key,"columns").should == [:cartodb_id, :name, :description, :the_geom, :created_at, :updated_at].to_json
   end
 
+  it "should store the_geom_type in Redis" do
+    table = create_table
+    table.the_geom_type.should == "point"
+    $tables_metadata.hget(table.key,"the_geom_type").should == "point"
+    
+    table.the_geom_type = "multipolygon"
+    $tables_metadata.hget(table.key,"the_geom_type").should == "multipolygon"
+  end
+
   it "should store a schema in Redis" do
     table = create_table
     $tables_metadata.hget(table.key,"schema").should == 

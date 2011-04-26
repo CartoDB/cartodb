@@ -578,7 +578,7 @@ TRIGGER
     @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
     @quote = @quote == '`' ? '\`' : @quote
     command = "copy #{self.name} from STDIN WITH (HEADER true, FORMAT 'csv')"
-    import_csv_command = %Q{`which python` misc/csv_normalizer.py #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
+    import_csv_command = %Q{cat #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
     Rails.logger.info "Importing CSV. Executing command: " + import_csv_command
     system import_csv_command
     owner.in_database do |user_database|
@@ -633,15 +633,16 @@ TRIGGER
     end
 
     column_names = column_names.map do |c|
-      results = c.scan(/^(["`\'])[^"`\']+(["`\'])$/).flatten
-      if results.size == 2 && results[0] == results[1]
-        @quote = $1
-      end
       if c.blank?
         uk_column_counter += 1
         "unknow_name_#{uk_column_counter}"
       else
-        c.sanitize
+        c = c.force_encoding('utf-8').encode
+        results = c.scan(/^(["`\'])[^"`\']+(["`\'])$/).flatten
+        if results.size == 2 && results[0] == results[1]
+          @quote = $1
+        end
+        c.sanitize_column_name
       end
     end
 
@@ -859,7 +860,15 @@ TRIGGER
         end
         entry.extract("/tmp/#{name}")
       end
-    end
+    elsif ext == '.csv'
+      file_name = File.basename(import_from_file, File.extname(import_from_file))
+      new_path = "#{Rails.root}/tmp/uploading_#{file_name}"
+      self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
+      self.import_from_file = File.new(new_path, 'w+')
+      self.import_from_file.close
+      Rails.logger.info "Normalizing CSV file: #{path}"
+      system %Q{`which python` misc/csv_normalizer.py #{path} > #{new_path}}
+    end    
     if ext != '.shp'
       self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
     end

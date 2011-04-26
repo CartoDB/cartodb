@@ -22,6 +22,6 @@ out = ds.CSVDataTarget(sys.stdout, encoding='utf-8')
 out.fields = ds.fieldlist(src.field_names)
 out.initialize()
 for record in src.records():
-    out.append(record)
+  out.append(record)
 src.finalize()
 out.finalize()

@@ -106,4 +106,9 @@ describe CartoDB::SqlParser do
       "select table1.cartodb_id,table1.name,table1.description,ST_AsGeoJSON(table1.the_geom) as the_geom,table1.created_at,table1.updated_at,table2.cartodb_id,table2.name,table2.description,ST_AsGeoJSON(table2.the_geom) as the_geom,table2.created_at,table2.updated_at from table1,table2"
   end
   
+  it "should parse the_geom when included in a function" do
+    CartoDB::SqlParser.parse("select geojson(ST_Union(the_geom)) as the_geom from cp_vizzuality WHERE cod_postal in ('01001','01002')").should == 
+      "select ST_AsGeoJSON(ST_Union(the_geom),6) as the_geom from cp_vizzuality WHERE cod_postal in ('01001','01002')"
+  end
+  
 end

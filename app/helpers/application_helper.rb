@@ -38,6 +38,7 @@ module ApplicationHelper
   end
   
   def headjs_include_tag(*sources)
+    sources.unshift("environments/#{Rails.env}.js")
     keys = []
     coder = HTMLEntities.new
     content_tag :script, { :type => Mime::JS }, false do

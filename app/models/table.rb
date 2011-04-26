@@ -823,7 +823,7 @@ TRIGGER
         file_name = File.basename(import_from_file)
         ext = File.extname(file_name)
         self.name ||= File.basename(import_from_file, ext).downcase.sanitize
-        self.import_from_file = File.new("#{Rails.root}/tmp/uploading_#{file_name}", 'w+')
+        self.import_from_file = File.new(Rails.root.join('tmp', "uploading_#{file_name}"), 'w+')
         self.import_from_file.write(res.read.force_encoding('utf-8'))
         self.import_from_file.close
       end
@@ -862,7 +862,7 @@ TRIGGER
       end
     elsif ext == '.csv'
       file_name = File.basename(import_from_file, File.extname(import_from_file))
-      new_path = "#{Rails.root}/tmp/uploading_#{file_name}"
+      new_path = Rails.root.join('tmp', "uploading_#{file_name}")
       self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
       self.import_from_file = File.new(new_path, 'w+')
       self.import_from_file.close

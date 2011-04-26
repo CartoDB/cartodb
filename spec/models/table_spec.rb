@@ -764,6 +764,16 @@ describe Table do
     table.rows_counted.should == 8406    
   end
   
+  it "should import reserved_names.csv" do
+    user = create_user
+    table = new_table :name => nil
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/reserved_names.csv", "text/csv")
+    table.save.reload
+    
+    table.name.should == 'reserved_names'
+    table.rows_counted.should == 2
+  end
+  
   it "should overwrite given name over name of the file when importing " do
     user = create_user
     table = new_table :user_id => user.id, :name => 'wadus'

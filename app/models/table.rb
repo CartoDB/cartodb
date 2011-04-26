@@ -861,7 +861,11 @@ TRIGGER
         entry.extract("/tmp/#{name}")
       end
     elsif ext == '.csv'
-      file_name = File.basename(import_from_file, File.extname(import_from_file))
+      file_name = if import_from_file.is_a?(ActionDispatch::Http::UploadedFile)
+        File.basename(import_from_file.original_filename, File.extname(import_from_file.original_filename))
+      else
+        File.basename(import_from_file, File.extname(import_from_file))
+      end
       new_path = Rails.root.join('tmp', "uploading_#{file_name}")
       self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
       self.import_from_file = File.new(new_path, 'w+')

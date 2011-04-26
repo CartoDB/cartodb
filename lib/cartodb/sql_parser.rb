@@ -52,8 +52,8 @@ module CartoDB
         end        
       end
       if query.include?('geojson')
-        query.gsub!(/geojson\(\s*([^\)]+)\s*\)/i) do |matches|
-          "ST_AsGeoJSON(#{$1},6)"
+        query.gsub!(/geojson\((.*)\s*\)\s+/i) do |matches|
+          "ST_AsGeoJSON(#{$1},6) "
         end        
       end
       if query.include?('kml')

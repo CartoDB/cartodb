@@ -501,6 +501,26 @@ describe Table do
     table.rows_counted.should == 85
   end
 
+  # File in format different than UTF-8
+  it "should import estaciones.csv" do
+    table = new_table :name => nil
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/estaciones.csv", "text/csv")
+    table.save
+    table.reload
+    table.name.should == 'estaciones'
+    table.rows_counted.should == 29
+  end
+  
+  # File in format UTF-8
+  it "should import estaciones2.csv" do
+    table = new_table :name => nil
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/estaciones2.csv", "text/csv")
+    table.save
+    table.reload
+    table.name.should == 'estaciones2'
+    table.rows_counted.should == 29
+  end
+
   it "should import file ngos.xlsx" do
     user = create_user
     table = new_table :name => nil

@@ -1,0 +1,1 @@
+var TILESERVER = "http://localhost:8080"

@@ -4,6 +4,8 @@ class Api::Json::TablesController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
 
   before_filter :load_table, :only => [:show, :update, :destroy]
+  before_filter :set_start_time
+  after_filter :record_query_threshold
 
   def index
     @tables = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
@@ -113,6 +115,17 @@ class Api::Json::TablesController < Api::ApplicationController
                           from user_tables
                           where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
     raise RecordNotFound if @table.nil?
+  end
+  
+  def record_query_threshold
+    if response.ok?
+      case action_name
+        when "create"
+          CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
+        when "destroy"
+          CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
+      end
+    end
   end
 
 end

@@ -37,6 +37,7 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table without schema" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     post_json api_tables_url
 
     parse_json(response) do |r|
@@ -48,6 +49,8 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifing a name and a schema" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     post_json api_tables_url, {:name => "My new imported table", :schema => "bla bla blat"}
     parse_json(response) do |r|
       r.status.should == 400
@@ -65,6 +68,8 @@ feature "API 1.0 tables management" do
   end
   
   scenario "Create a new table specifying a geometry of type point" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Point" }
     parse_json(response) do |r|
       r.status.should be_success
@@ -77,6 +82,8 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifying a geometry of type polygon" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Polygon" }
     parse_json(response) do |r|
       r.status.should be_success
@@ -89,6 +96,8 @@ feature "API 1.0 tables management" do
   end
   
   scenario "Create a new table specifying a geometry of type line" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Line" }
     parse_json(response) do |r|
       r.status.should be_success
@@ -101,6 +110,8 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifing an schema and a file from which import data" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     post_json api_tables_url, {
                :name => "Twitts",
                :schema => "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)",
@@ -161,6 +172,8 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Delete a table of mine" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     delete_json api_table_url(table1.name)
@@ -170,6 +183,8 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Delete a table of another user" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
+    
     another_user = create_user
     table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
 
@@ -237,6 +252,8 @@ feature "API 1.0 tables management" do
   end
   
   scenario "Create a new table importing file twitters.csv" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     post_json api_tables_url, {
       :name => "My new imported table", 
       :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
@@ -252,6 +269,8 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table importing file ngos.xlsx" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     post_json api_tables_url, {
       :name => "My new imported table", 
       :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos.xlsx", "application/download")
@@ -271,6 +290,8 @@ feature "API 1.0 tables management" do
     end
   end
   scenario "Create a new table importing file EjemploVizzuality.zip" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     post_json api_tables_url, {
       :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download"),
       :srid => CartoDB::SRID
@@ -288,6 +309,8 @@ feature "API 1.0 tables management" do
   end
   
   scenario "Create a table, remove a table, and recreate it with the same name" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).times(3)
+    
     post_json api_tables_url, {:name => "wadus", :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")}
     parse_json(response) do |r|
       r.status.should be_success

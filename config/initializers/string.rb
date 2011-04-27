@@ -92,7 +92,7 @@ class String
     end
   end
 
-  def sanitize_sql!
+  def sanitize_sql
     self.gsub(/\\/, '\&\&').gsub(/'/, "''")
   end
 

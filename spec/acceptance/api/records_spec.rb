@@ -13,6 +13,8 @@ feature "API 1.0 records management" do
   end
 
   scenario "Get the records from a table" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "select", any_parameters).times(3)
+    
     10.times do
       @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
     end
@@ -51,6 +53,9 @@ feature "API 1.0 records management" do
   end
 
   scenario "Insert a new row and get the record" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "insert", any_parameters).once
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "select", any_parameters).once
+    
     post_json api_table_records_url(@table.name), {
         :name => "Name 123",
         :description => "The description"
@@ -70,6 +75,8 @@ feature "API 1.0 records management" do
   end
 
   scenario "Get a record that doesn't exist" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "select", any_parameters).never
+    
     get_json api_table_record_url(@table.name,1)
     parse_json(response) do |r|
       r.status.should == 404
@@ -77,6 +84,8 @@ feature "API 1.0 records management" do
   end
 
   scenario "Update a row" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "update", any_parameters).once
+    
     pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
     put_json api_table_record_url(@table.name,pk), {
@@ -89,6 +98,8 @@ feature "API 1.0 records management" do
   end
 
   scenario "Update a row that doesn't exist" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "update", any_parameters).never
+    
     put_json api_table_record_url(@table.name,1), {
       :name => "Name updated",
       :description => "Description updated"
@@ -99,6 +110,8 @@ feature "API 1.0 records management" do
   end
 
   scenario "Remove a row" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "delete", any_parameters).once
+    
     pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
     delete_json api_table_record_url(@table.name,pk)
@@ -108,6 +121,8 @@ feature "API 1.0 records management" do
   end
 
   scenario "Get the value from a column in a given record" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "select", any_parameters).once
+    
     pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
     get_json api_table_record_column_url(@table.name,pk,:name)
@@ -118,6 +133,8 @@ feature "API 1.0 records management" do
   end
 
   scenario "Update the value from a column in a given record" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "update", any_parameters).once
+    
     pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
     put_json api_table_record_column_url(@table.name,pk,:name), {:value => "Fernando Blat"}
@@ -215,14 +232,5 @@ feature "API 1.0 records management" do
     ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
     ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
   end
-  
-  scenario "Should register the request in Redis" do
-    pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
-
-    get_json api_table_record_column_url(@table.name,pk,:name)    
-    $threshold.get("rails:users:#{@user.id}:requests:total").to_i.should == 1
-    $threshold.get("rails:users:#{@user.id}:requests:table:#{@table.name}:total").to_i.should == 1
-    $threshold.get("rails:users:#{@user.id}:requests:table:#{@table.name}:#{Date.today.strftime("%Y-%m-%d")}").to_i.should == 1
-  end  
   
 end

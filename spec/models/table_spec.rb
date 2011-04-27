@@ -879,4 +879,11 @@ describe Table do
     }.should raise_error(CartoDB::InvalidColumnName)
   end
   
+  it "should return the content of the table in CSV format" do
+    table = create_table
+    table.insert_row!({:name => "name #1", :description => "description #1"})
+    csv = table.to_csv
+    CSV.new(csv).first.should == ["cartodb_id", "name", "description", "created_at", "updated_at", "the_geom"]
+  end
+  
 end

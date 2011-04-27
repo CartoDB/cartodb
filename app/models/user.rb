@@ -249,5 +249,26 @@ class User < Sequel::Model
       end
     end
   end
+  
+  def stats(date = Date.today)
+    puts "==========================================="
+    puts "Stats for user #{self.email} - #{self.id}"
+    puts "==========================================="
+    puts "day #{date.strftime("%Y-%m-%d")}:"
+    puts "    - queries: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m-%d"))}"
+    puts "    - time: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m-%d"), "time")}"
+    puts
+    puts "month #{date.strftime("%Y-%m")}"
+    puts "   - queries: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"))}"
+    puts "   - time: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "time")}"
+    puts "   - select: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "select")}"
+    puts "   - insert: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "insert")}"
+    puts "   - update: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "update")}"
+    puts "   - delete: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "delete")}"
+    puts "   - other: #{CartoDB::QueriesThreshold.get(self.id, date.strftime("%Y-%m"), "other")}"
+    puts
+    puts "total queries: #{CartoDB::QueriesThreshold.get(self.id, "total")}"
+    puts "==========================================="
+  end
 
 end

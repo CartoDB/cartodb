@@ -26,7 +26,7 @@
                   <li class="<%= (@users.size-1==i)?"last":""%>">
                     <h4><%= link_to "#{user.username}", superadmin_user_path(user) %></h4>
                     <p class="status <%= (user.enabled)?'public':'private' %>"><%= user.enabled ? 'Enabled' : 'Disabled' %> user</p>
-                    <p class="info"><%= user.email %></p>
+                    <p class="info"><%= user.email %> · <%= pluralize(user.tables_count, 'table', 'tables') %> · <%= database_time_usage(user.id) %></p>
                   </li>
                 <% end %>
               </ul>

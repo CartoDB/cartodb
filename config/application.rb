@@ -54,4 +54,5 @@ require 'csv'
 require 'cartodb/errors'
 require 'cartodb/sql_parser'
 require 'cartodb/connection_pool'
+require 'cartodb/queries_threshold'
 $pool = CartoDB::ConnectionPool.new

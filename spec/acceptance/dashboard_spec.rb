@@ -37,7 +37,7 @@ feature "Dashboard", %q{
     Timecop.travel(t + 6.minutes)
 
     log_in_as user
-
+    
     within(:css, "header") do
       page.should have_link("CartoDB")
       page.should have_content(user.email)
@@ -189,8 +189,7 @@ feature "Dashboard", %q{
 
     log_in_as user
 
-    click_link_or_button('Create a new table')
-    page.find('div.create_window ul li:eq(1) a').click
+    page.find('a.new_table').click
     page.find('div.create_window span.bottom input#create_table').click
 
     page.should have_css("h2 a", :text => 'untitle_table')

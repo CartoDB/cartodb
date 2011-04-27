@@ -5,8 +5,9 @@ class Api::Json::RecordsController < Api::ApplicationController
 
   REJECT_PARAMS = %W{ format controller action id row_id requestId column_id api_key table_id oauth_token oauth_token_secret }
 
-  before_filter :load_table
-
+  before_filter :load_table, :set_start_time
+  after_filter :record_query_threshold
+  
   def index
     render :json =>  Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page))),
            :callback => params[:callback]
@@ -56,7 +57,7 @@ class Api::Json::RecordsController < Api::ApplicationController
   def destroy
     if params[:id]
       current_user.in_database do |user_database|
-        user_database.run("delete from #{@table.name} where cartodb_id = #{params[:id].sanitize_sql!}")
+        user_database.run("delete from #{@table.name} where cartodb_id = #{params[:id].sanitize_sql}")
       end
       render :nothing => true,
              :callback => params[:callback], :status => 200
@@ -67,7 +68,7 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def show_column
-    render :json => current_user.run_query("select #{params[:id].sanitize_sql!} from #{@table.name} where cartodb_id = #{params[:record_id].sanitize_sql!}")[:rows].first.to_json,
+    render :json => current_user.run_query("select #{params[:id].sanitize_sql} from #{@table.name} where cartodb_id = #{params[:record_id].sanitize_sql}")[:rows].first.to_json,
            :status => 200
   end
 
@@ -90,4 +91,18 @@ class Api::Json::RecordsController < Api::ApplicationController
     raise RecordNotFound if @table.nil?
   end
 
+  def record_query_threshold
+    if response.ok?
+      case action_name
+        when "index", "show", "show_column"
+          CartoDB::QueriesThreshold.incr(current_user.id, "select", Time.now - @time_start)
+        when "create"
+          CartoDB::QueriesThreshold.incr(current_user.id, "insert", Time.now - @time_start)
+        when "update", "update_column"
+          CartoDB::QueriesThreshold.incr(current_user.id, "update", Time.now - @time_start)
+        when "destroy"
+          CartoDB::QueriesThreshold.incr(current_user.id, "delete", Time.now - @time_start)
+      end
+    end
+  end
 end

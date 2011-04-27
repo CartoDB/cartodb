@@ -22,6 +22,8 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Add a new column to a table" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     post_json api_table_columns_url(@table.name), { :type => "Number", :name => "postal code" }
     parse_json(response) do |r|
       r.status.should be_success
@@ -34,6 +36,8 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Try to add a new column of an invalid type" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
+    
     post_json api_table_columns_url(@table.name), { :type => "integerrr", :name => "postal code" }
     parse_json(response) do |r|
       r.status.should == 400
@@ -56,6 +60,8 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Update the type of a given column" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     put_json api_table_column_url(@table.name, "name"), {:type => "number"}
     parse_json(response) do |r|
       r.status.should be_success
@@ -68,6 +74,8 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Update the type of a given column with an invalid type" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
+    
     put_json api_table_column_url(@table.name, "name"), {:type => "integerr"}
     parse_json(response) do |r|
       r.status.should == 400
@@ -75,6 +83,8 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Rename a column" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     put_json api_table_column_url(@table.name, "name"), {:new_name => "nombresito"}
     parse_json(response) do |r|
       r.status.should be_success
@@ -87,6 +97,8 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Drop a column" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
     delete_json api_table_column_url(@table.name, "name")
     parse_json(response) do |r|
       r.status.should be_success

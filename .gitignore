@@ -7,7 +7,6 @@ tmp/**/*
 public/system
 public/uploads
 db/schema.rb
-doc/
 config/app_config.yml
 config/database.yml
 misc/dbfUtils.pyc

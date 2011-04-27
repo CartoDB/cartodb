@@ -53,5 +53,16 @@ module ApplicationHelper
       }.join(', ')} );".html_safe
     end
   end
+  
+  def database_time_usage(user_id)
+    time = CartoDB::QueriesThreshold.get(user_id, Date.today.strftime("%Y-%m-%d"), "time").to_f
+    if time < 120
+      number_with_precision(time, :precision => 3)  + ' secs this month'
+    elsif time > 120 && time < 60*60
+      number_with_precision(time / 60.0, :precision => 3)  + ' minutes this month'
+    else
+      number_with_precision(time / 3600.0, :precision => 3)  + ' hours this month'
+    end
+  end
    
 end

@@ -17,13 +17,13 @@ RSpec.configure do |config|
   
   config.before(:suite) do
     CartoDB::RedisTest.up
-    $tables_metadata.flushdb
-    $queries_log.flushdb
-    $threshold.flushdb
-    $api_credentials.flushdb
   end  
 
   config.before(:each) do
+    $threshold.flushdb
+    $queries_log.flushdb
+    $tables_metadata.flushdb
+    $api_credentials.flushdb
     Rails::Sequel.connection.tables.each{ |t| next if t == :schema_migrations; Rails::Sequel.connection[t].truncate }
   end
 

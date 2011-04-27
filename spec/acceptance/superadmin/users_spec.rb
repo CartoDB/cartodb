@@ -48,7 +48,7 @@ feature "Superadmin's users administration" do
     fill_in 'Email', :with => 'fulano@example.com'
     fill_in 'Password', :with => 'fulanito'
     click_button 'Update User'
-
+    
     page.should have_content 'User updated successfully'
     page.should have_css('ul.users li a', :count => 6)
 

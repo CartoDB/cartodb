@@ -2,6 +2,7 @@
 
 class ApplicationController < ActionController::Base
   protect_from_forgery
+  helper :all
 
   before_filter :browser_is_html5_compliant?, :app_host_required
 

@@ -1,7 +1,7 @@
    
-    var style = {'marker-fill':'#FF6600','marker-line-color':'#FFFFFF'};
-    var default_style = {'marker-fill':'#FF6600','marker-line-color':'#FFFFFF'};
-    var sql = '(SELECT * FROM '+table_name+') as t';
+    var style = {};//{'marker-fill':'#FF6600','marker-line-color':'#FFFFFF'};
+    var default_style = {};//{'marker-fill':'#FF6600','marker-line-color':'#FFFFFF'};
+    var sql = null;//'(SELECT * FROM '+table_name+') as t';
 
     function createMapElements() {
       ///////////////////////////////////////
@@ -23,7 +23,7 @@
               '<p>Features visualization</p>'+
             '</li>'+
             '<li>'+
-              '<h4>Markers customization</h4>'+
+              '<h4>Markers customization <a href="#" style="text-decoration:underline;" id="carto_css">css</a></h4>'+
               '<p>Customized dots</p>'+
               '<a class="open" href="#open_map_type">open</a>'+
               '<span class="marker_customization">'+

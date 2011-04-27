@@ -27,7 +27,7 @@ class User < Sequel::Model
   ## Callbacks
   def after_create
     super
-    setup_user
+    setup_user if enabled?
   end
   #### End of Callbacks
   

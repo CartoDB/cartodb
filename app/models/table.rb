@@ -481,8 +481,7 @@ TRIGGER
   def to_csv
     owner.in_database do |user_database|
       table_name = "csv_export_temp_#{self.name}"
-      csv_file_path = Rails.root.join('tmp', "#{table_name}.csv")
-      zip_file_path = Rails.root.join('tmp', "#{table_name}.zip")
+      csv_file_path = "/tmp/#{table_name}.csv"
 
       user_database.run("DROP TABLE IF EXISTS csv_export_temp_#{self.name}")
       user_database.run("CREATE TABLE #{table_name} AS SELECT #{(self.schema.map{|c| c.first} - [:the_geom]).join(',')}, ST_AsGeoJSON(the_geom, 6) as the_geom FROM #{self.name}")
@@ -496,18 +495,11 @@ TRIGGER
       command  = "COPY (SELECT * FROM csv_export_temp_#{self.name}) TO '#{csv_file_path}' WITH DELIMITER ',' CSV QUOTE AS '#{@quote}' HEADER"
 
       system <<-CMD
-        rm -f #{csv_file_path} #{zip_file_path};
+        rm -f #{csv_file_path};
         `which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}";
-        cd #{Rails.root.join('tmp')};
-        zip #{table_name}.zip #{table_name}.csv
       CMD
       user_database.run("DROP TABLE csv_export_temp_#{self.name}")
-
-      csv_data = ''
-      File.open(zip_file_path, 'r') do |file|
-        csv_data = file.read
-      end
-      csv_data
+      File.read(csv_file_path)
     end
   end
 

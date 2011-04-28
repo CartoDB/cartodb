@@ -1,0 +1,17 @@
+cartodb_errors:
+  unknown_error:
+    code: 0
+    message: Some error we don't recognize has happen
+    hint: "We would really apreciate if you send us a detailed e-mail with all the information you can, in order we can fix it as soon as possible"
+  empty_file:
+    code: 1
+    message: The file you have tried to upload has no data
+    hint: "In order to create a table from importing a file, the file must have data"
+  unrecognized_format:
+    code: 2
+    message: The file you are trying to upload has an invalid format
+    hint: "Supported formats are: CSV, XLS, SHP, ZIP"
+  geometries_error:
+    code: 3
+    message: An error has happened when trying to import the geometry
+    hint: ""

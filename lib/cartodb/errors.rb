@@ -1,5 +1,6 @@
 class RecordNotFound < StandardError; end
 
+class CartoDB::EmtpyFile < StandardError; end
 class CartoDB::InvalidUser < StandardError; end
 class CartoDB::InvalidTableName < StandardError; end
 class CartoDB::InvalidColumnName < StandardError; end

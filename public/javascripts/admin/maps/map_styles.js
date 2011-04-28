@@ -2,8 +2,8 @@ $('#carto_css').live('click', function(){
   
   // there is a whole REST interface for getting and setting styles per user (like, for example, if you wanted to list all the styles a user has, or all the layers that share a style). Ask me about it for more. 
   // In the meantime, this is just a shortcut URL for creating and setting a new style for a map.
-  var set_style_url = "http://localhost:8080/tiles/users/" + user_id + "/layers/" + table_name + "/set_style";
-  var get_style_url = "http://localhost:8080/tiles/users/" + user_id + "/layers/" + table_name + "/get_style?callback=?";
+  var set_style_url = TILESERVER + "/tiles/users/" + user_id + "/layers/" + table_name + "/set_style";
+  var get_style_url = TILESERVER +  "/tiles/users/" + user_id + "/layers/" + table_name + "/get_style?callback=?";
   var default_point_style = "#" + table_name + "{marker-fill: #FF6600;\nmarker-opacity: 1;\nmarker-width: 8;\nmarker-line-color: white;\nmarker-line-width: 3;\nmarker-line-opacity: 0.9;\nmarker-placement: point;\nmarker-type: ellipse;\nmarker-allow-overlap: true;\n}"
 
   var style = $.getJSON(get_style_url, function(data){

@@ -588,7 +588,7 @@ TRIGGER
     owner.in_database do |user_database|
       # Check if the file had data, if not rise an error because probably something went wrong
       if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank?
-        raise "The file was empty or there was a problem importing it that made it create an empty table"
+        raise CartoDB::EmtpyFile
       end
       if force_schema.blank? || !force_schema.include?("cartodb_id")
         user_database.run("alter table #{self.name} add column cartodb_id integer")

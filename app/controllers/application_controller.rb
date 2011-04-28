@@ -75,12 +75,22 @@ class ApplicationController < ActionController::Base
   end
   helper_method :table_privacy_text
 
-  def translate_error(error_message)
-    if error_message =~ /^PGError:\s+ERROR:\s+relation\s+\"([^\\\"]+)\" already exists$/
-      return "A table with name \"#{$1}\" already exists"
-    else
-      return error_message
+  def translate_error(exception)
+    if exception.is_a?(String)
+      return exception
     end
+    case exception
+      when CartoDB::EmtpyFile
+        ERROR_CODES[:empty_file]
+      when Sequel::DatabaseError
+        if exception.message.include?("transform: couldn't project")
+          ERROR_CODES[:geometries_error].merge(:raw_error => exception.message)
+        else
+          ERROR_CODES[:unknown_error].merge(:raw_error => exception.message)
+        end
+      else
+        ERROR_CODES[:unknown_error].merge(:raw_error => exception.message)
+    end.to_json
   end
 
   def no_html5_compliant

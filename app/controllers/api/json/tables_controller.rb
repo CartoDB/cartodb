@@ -49,9 +49,9 @@ class Api::Json::TablesController < Api::ApplicationController
     end
   rescue => e
     Rails.logger.info "============== exception on tables#create ====================="
-    Rails.logger.info $!
+    Rails.logger.info "#{translate_error(e).to_json.inspect}"
     Rails.logger.info "==============================================================="
-    render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
+    render :json => translate_error(e).to_json,
            :status => 400, :callback => params[:callback] and return
   end
 

@@ -13,16 +13,18 @@
     <p>The reason to implement the second method is to allow JSONP requests in a easy way.</p>
 
     <h2>OAuth</h2>
-    <p>This is the authentication method we recommend. To start using it you need to <a href="https://cartodb.com/your_apps/oauth">get a token and a secret</a>. Negotiation URLs are the following:</p>
+    <p>CartoDB implements <a href="http://tools.ietf.org/html/rfc5849">OAuth v1.0 protocol</a>. To start using it you need to <a href="https://cartodb.com/your_apps/oauth">get a token and a secret</a>. Negotiation URLs are the following:</p>
     <ul>
       <li><code>https://api.cartodb.com/oauth/request_token</code></li>
       <li><code>https://api.cartodb.com/oauth/authorize</code></li>
       <li><code>https://api.cartodb.com/oauth/access_token</code></li>
     </ul>
-    <p>For the moment, access tokens don't expire, but we may change this politic in the next weeks.</p>
+    <p>Once obtained a valid access token you can keep it and use many times. For the moment, access tokens don't expire, but we may change this politic in the next weeks.</p>
+    <p>There are lots of libraries that helps you to get authenticated via OAuth, take a look at <a href="http://oauth.net/code/">this list</a>.</p>
 
     <h2>API key</h2>
     <p>API key method consists in signing every request with a parameter named <code>api_key</code> which is associated with the referrer domain of the request. If you share this <code>api_key</code> anybody can make requests as if were you, so be careful with your code.</p>
+    <p>This method of authentication is very useful if you plan to perfom JSONP requests to the API.</p>
   </div>
 
   <div class="right">

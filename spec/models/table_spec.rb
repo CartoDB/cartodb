@@ -883,7 +883,7 @@ describe Table do
     table = create_table
     table.insert_row!({:name => "name #1", :description => "description #1"})
     csv = table.to_csv
-    CSV.new(csv).first.should == ["cartodb_id", "name", "description", "created_at", "updated_at", "the_geom"]
+    CSV.new(csv).first.should == ["cartodb_id", "name", "description", "created_at", "updated_at"]
   end
 
   it "should return the content of the table in SHP format" do

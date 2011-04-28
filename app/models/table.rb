@@ -524,17 +524,20 @@ TRIGGER
     host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
     port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
     username = db_configuration['username']
-
+    Rails.logger.info "Executing command: #{%Q{`which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{owner.database_name} #{self.name}}}"
     system <<-CMD
       rm -rf #{all_files_path};
-      `which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{owner.database_name} #{self.name};
+      `which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{owner.database_name} #{self.name}
     CMD
     Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
       Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|
         zipfile.add(File.basename(f), f)
       end
     end
-    File.read(zip_file_path)
+    response = File.read(zip_file_path)
+    FileUtils.rm_rf(shp_file_path)
+    FileUtils.rm_rf(zip_file_path)
+    response
   end
 
   private
@@ -587,8 +590,9 @@ TRIGGER
       if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank?
         raise "The file was empty or there was a problem importing it that made it create an empty table"
       end
-
-      user_database.run("alter table #{self.name} add column cartodb_id integer")
+      if force_schema.blank? || !force_schema.include?("cartodb_id")
+        user_database.run("alter table #{self.name} add column cartodb_id integer")
+      end
       user_database.run("create sequence #{self.name}_cartodb_id_seq")
       user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")
       user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('#{self.name}_cartodb_id_seq')")
@@ -596,8 +600,12 @@ TRIGGER
       user_database.run("alter table #{self.name} add unique (cartodb_id)")
       user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
       user_database.run("alter table #{self.name} add primary key (cartodb_id)")
-      user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
-      user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
+      if force_schema.blank? || !force_schema.include?("created_at")
+        user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
+      end
+      if force_schema.blank? || !force_schema.include?("updated_at")
+        user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
+      end
       set_the_geom_column!("point")
     end
     FileUtils.rm_rf(path)

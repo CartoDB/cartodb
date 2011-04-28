@@ -481,7 +481,7 @@ TRIGGER
   def to_csv
     csv_zipped = nil
     owner.in_database do |user_database|
-      table_name = "csv_export_temp_#{self.name}"
+      table_name = "#{self.name}_export"
       csv_file_path = Rails.root.join('tmp', "#{table_name}.csv")
       zip_file_path  = Rails.root.join('tmp', "#{table_name}.zip")
 

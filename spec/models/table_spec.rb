@@ -880,10 +880,17 @@ describe Table do
   end
   
   it "should return the content of the table in CSV format" do
-    table = create_table
+    table = create_table :name => 'table1'
     table.insert_row!({:name => "name #1", :description => "description #1"})
-    csv = table.to_csv
-    CSV.new(csv).first.should == ["cartodb_id", "name", "description", "created_at", "updated_at"]
+    zip = table.to_csv
+    path = "/tmp/temp_csv.zip"
+    fd = File.open(path,'w+')
+    fd.write(zip)
+    fd.close
+    Zip::ZipFile.foreach(path) do |entry|
+      entry.name.should == "table1_export.csv"
+    end
+    FileUtils.rm_rf(path)
   end
 
   it "should return the content of the table in SHP format" do

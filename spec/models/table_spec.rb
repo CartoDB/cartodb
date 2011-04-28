@@ -907,4 +907,13 @@ describe Table do
     FileUtils.rm_rf(path)
   end
   
+  it "should import a CSV file with a column named cartodb_id" do
+    user = create_user
+    table = new_table :user_id => user.id
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/gadm4_export.csv", "text/csv")
+    table.save.reload
+    
+    table.schema.should == [[:cartodb_id, "number"], [:gid, "number"], [:id_0, "number"], [:iso, "string"], [:name_0, "string"], [:id_1, "number"], [:name_1, "string"], [:id_2, "number"], [:name_2, "string"], [:id_3, "number"], [:name_3, "string"], [:id_4, "number"], [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "number"], [:shape_area, "number"], [:latitude, "number"], [:longitude, "string"], [:center_latitude, "number"], [:center_longitude, "number"], [:created_at, "date"], [:updated_at, "date"]]
+  end
+  
 end

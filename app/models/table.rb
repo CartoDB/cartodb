@@ -481,11 +481,14 @@ TRIGGER
   def to_csv
     csv_zipped = nil
     owner.in_database do |user_database|
-      table_name = "#{self.name}_export"
-      csv_file_path = Rails.root.join('tmp', "#{table_name}.csv")
-      zip_file_path  = Rails.root.join('tmp', "#{table_name}.zip")
+      table_name = "csv_export_temp_#{self.name}"
+      file_name = "#{self.name}_export"
+      csv_file_path = Rails.root.join('tmp', "#{file_name}.csv")
+      zip_file_path  = Rails.root.join('tmp', "#{file_name}.zip")
+      FileUtils.rm_rf(zip_file_path)
+      FileUtils.rm_rf(csv_file_path)
 
-      user_database.run("DROP TABLE IF EXISTS csv_export_temp_#{self.name}")
+      user_database.run("DROP TABLE IF EXISTS #{table_name}")
       export_schema = self.schema.map{|c| c.first} - [:the_geom]
       export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.columns.include?(:the_geom)
       user_database.run("CREATE TABLE #{table_name} AS SELECT #{export_schema.join(',')} FROM #{self.name}")
@@ -494,16 +497,12 @@ TRIGGER
       host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
       port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
       username = db_configuration['username']
-      @quote   = (@quote == '"' || @quote.blank?) ? '\"' : @quote
-      @quote   = @quote == '`' ? '\`' : @quote
-      command  = "COPY (SELECT * FROM csv_export_temp_#{self.name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '#{@quote}' HEADER"
+      command  = "COPY (SELECT * FROM #{table_name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '\\\"' HEADER"
       Rails.logger.info "Executing command: #{%Q{`which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}" > #{csv_file_path};}}"
       system <<-CMD
-        rm -f #{csv_file_path};
-        `which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}" > #{csv_file_path};
+        `which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}" > #{csv_file_path}
       CMD
-      user_database.run("DROP TABLE csv_export_temp_#{self.name}")
-      
+      user_database.run("DROP TABLE #{table_name}")
       
       Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
         zipfile.add(File.basename(csv_file_path), csv_file_path)

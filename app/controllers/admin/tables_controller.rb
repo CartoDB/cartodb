@@ -30,7 +30,6 @@ class Admin::TablesController < ApplicationController
         send_data @table.to_csv,
           :type => 'application/zip; charset=binary; header=present',
           :disposition => "attachment; filename=#{@table.name}.zip"
-
       end
       format.kml
       format.shp do

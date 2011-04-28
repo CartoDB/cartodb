@@ -484,7 +484,9 @@ TRIGGER
       csv_file_path = "/tmp/#{table_name}.csv"
 
       user_database.run("DROP TABLE IF EXISTS csv_export_temp_#{self.name}")
-      user_database.run("CREATE TABLE #{table_name} AS SELECT #{(self.schema.map{|c| c.first} - [:the_geom]).join(',')}, ST_AsGeoJSON(the_geom, 6) as the_geom FROM #{self.name}")
+      export_schema = self.schema.map{|c| c.first} - [:the_geom]
+      export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.columns.include?(:the_geom)
+      user_database.run("CREATE TABLE #{table_name} AS SELECT #{export_schema.join(',')} FROM #{self.name}")
 
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
       host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
@@ -504,7 +506,7 @@ TRIGGER
   end
 
   def to_shp
-    shp_files_name = "shp_export_temp_#{self.name}"
+    shp_files_name = "#{self.name}_export"
     all_files_path = Rails.root.join('tmp', "#{shp_files_name}.*")
     shp_file_path  = Rails.root.join('tmp', "#{shp_files_name}.shp")
     zip_file_path  = Rails.root.join('tmp', "#{shp_files_name}.zip")
@@ -517,15 +519,13 @@ TRIGGER
     system <<-CMD
       rm -rf #{all_files_path};
       `which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{owner.database_name} #{self.name};
-      cd #{Rails.root.join('tmp')};
-      zip #{shp_files_name}.zip #{shp_files_name}.*;
     CMD
-
-    shp_data = ''
-    File.open(zip_file_path, 'r') do |file|
-      shp_data = file.read
+    Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+      Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|
+        zipfile.add(File.basename(f), f)
+      end
     end
-    shp_data
+    File.read(zip_file_path)
   end
 
   private

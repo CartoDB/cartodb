@@ -885,5 +885,19 @@ describe Table do
     csv = table.to_csv
     CSV.new(csv).first.should == ["cartodb_id", "name", "description", "created_at", "updated_at", "the_geom"]
   end
+
+  it "should return the content of the table in SHP format" do
+    table = create_table :name => 'table1'
+    table.insert_row!({:name => "name #1", :description => "description #1"})
+    zip = table.to_shp
+    path = "/tmp/temp_shp.zip"
+    fd = File.open(path,'w+')
+    fd.write(zip)
+    fd.close
+    Zip::ZipFile.foreach(path) do |entry|
+      %W{ table1_export.shp table1_export.dbf table1_export.prj }.should include(entry.name)
+    end
+    FileUtils.rm_rf(path)
+  end
   
 end

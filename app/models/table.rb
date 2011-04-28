@@ -479,9 +479,11 @@ TRIGGER
   end
 
   def to_csv
+    csv_zipped = nil
     owner.in_database do |user_database|
       table_name = "csv_export_temp_#{self.name}"
-      csv_file_path = "/tmp/#{table_name}.csv"
+      csv_file_path = Rails.root.join('tmp', "#{table_name}.csv")
+      zip_file_path  = Rails.root.join('tmp', "#{table_name}.zip")
 
       user_database.run("DROP TABLE IF EXISTS csv_export_temp_#{self.name}")
       export_schema = self.schema.map{|c| c.first} - [:the_geom]
@@ -494,15 +496,23 @@ TRIGGER
       username = db_configuration['username']
       @quote   = (@quote == '"' || @quote.blank?) ? '\"' : @quote
       @quote   = @quote == '`' ? '\`' : @quote
-      command  = "COPY (SELECT * FROM csv_export_temp_#{self.name}) TO '#{csv_file_path}' WITH DELIMITER ',' CSV QUOTE AS '#{@quote}' HEADER"
-
+      command  = "COPY (SELECT * FROM csv_export_temp_#{self.name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '#{@quote}' HEADER"
+      Rails.logger.info "Executing command: #{%Q{`which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}" > #{csv_file_path};}}"
       system <<-CMD
         rm -f #{csv_file_path};
-        `which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}";
+        `which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}" > #{csv_file_path};
       CMD
       user_database.run("DROP TABLE csv_export_temp_#{self.name}")
-      File.read(csv_file_path)
+      
+      
+      Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+        zipfile.add(File.basename(csv_file_path), csv_file_path)
+      end
+      csv_zipped = File.read(zip_file_path)
+      FileUtils.rm_rf(csv_file_path)
+      FileUtils.rm_rf(zip_file_path)
     end
+    csv_zipped
   end
 
   def to_shp

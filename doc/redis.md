@@ -8,7 +8,8 @@ The databases used by CartoDB are:
   - **queries_log**: stores an entry per request performed, storing the IP of the request and some information of the request
   - **threshold**: stores the number of queries run per user and per table, and the kind of those queries (selects, inserts....)
   - **api_credentials**: stores the credentials to access to CartoDB via API. This credentials are OAuth validated tokens and API keys
-  
+  - **0**: base DB used for nodejs tiler. Will change in future
+
 ### tables_metadata database ###
 
 `tables_metadata` database stores metadata from the user tables. This metadata can be the privacy of the table, the owner identifier, the schema, and so on. 
@@ -66,4 +67,14 @@ The values of the hash are:
 
   - `user_id`: the identifier of the user which is associated to the token
   - `time`: the time which the token was created
+
+### 0 ###
+
+`0` database holds information relating to the correct running of the cartoDB tileserver. In addition to storing primary key indeces and user specified map styles, it may eventually be used as a tile cache. The following keys are used:
+
+	node:pkey - pk store
+  node:style:<style_id> - style data store
+  node:user:<user_id>:styles - set of style keys belonging to user
+  node:style:<style_id>:users" - set of user keys belonging to a style
+  node:user:<user_id>:layer:<layer_id>:style - Default style key per user/layer combo. used if user specifies a style.
 

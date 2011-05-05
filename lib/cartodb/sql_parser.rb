@@ -100,16 +100,22 @@ module CartoDB
           end
         else
           query.gsub!(/(\w+\.\*)/i) do |match|
-            table,columsn = match.split('.')
-            schema = JSON.parse($tables_metadata.hget "rails:#{database_name}:#{table}", "columns")
-            raise "Blank columns in table #{database_name}:#{table}" if schema.blank?
-            schema.map do |c|
-              if c != "the_geom"
-                "#{table}.#{c}"
-              else
-                "ST_AsGeoJSON(#{table}.the_geom) as the_geom"
-              end
-            end.join(',')
+            table,columns = match.split('.')
+            schema = $tables_metadata.hget("rails:#{database_name}:#{table}", "columns")
+            unless schema.blank?
+              schema = JSON.parse(schema) 
+            end
+            if schema.blank?
+              "#{$1}"
+            else
+              schema.map do |c|
+                if c != "the_geom"
+                  "#{table}.#{c}"
+                else
+                  "ST_AsGeoJSON(#{table}.the_geom) as the_geom"
+                end
+              end.join(',')
+            end
           end          
         end
       end

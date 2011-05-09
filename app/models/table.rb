@@ -830,7 +830,7 @@ TRIGGER
   # FIXME: handle exceptions and don't create tables
   def handle_import_file!
     if import_from_file.is_a?(String)
-      open(import_from_file) do |res|
+      open(URI.escape(import_from_file)) do |res|
         file_name = File.basename(import_from_file)
         ext = File.extname(file_name)
         self.name ||= File.basename(import_from_file, ext).downcase.sanitize

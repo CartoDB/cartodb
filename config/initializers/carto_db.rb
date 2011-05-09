@@ -10,10 +10,15 @@ module CartoDB
   USER_REQUESTS_PER_DAY = 10000
 
   TYPES = {
-    "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "real", "double precision"],
-    "string"  => ["varchar", "character varying", "text", /character\svarying\(\d+\)/],
+    "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "bigint", "decimal", "numeric", "double precision", "serial", "big serial"],
+    "string"  => ["varchar", "character varying", "text", /character\svarying\(\d+\)/, /char\s*\(\d+\)/, /character\s*\(\d+\)/],
     "date"    => ["timestamp", "timestamp without time zone"],
     "boolean" => ["boolean"]
+  }
+  
+  NEXT_TYPE = {
+    "number" => "double precision",
+    "string" => "text"
   }
   
   VALID_GEOMETRY_TYPES = %W{ multipolygon point multilinestring multipoint}

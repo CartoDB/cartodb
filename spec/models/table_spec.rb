@@ -134,15 +134,15 @@ describe Table do
     table.schema(:cartodb_types => false).should be_equal_to_default_db_schema
 
     resp = table.add_column!(:name => "my new column", :type => "number")
-    resp.should == {:name => "my_new_column", :type => "smallint", :cartodb_type => "number"}
+    resp.should == {:name => "my_new_column", :type => "double precision", :cartodb_type => "number"}
     table.reload
-    table.schema(:cartodb_types => false).should include([:my_new_column, "smallint"])
+    table.schema(:cartodb_types => false).should include([:my_new_column, "double precision"])
   end
 
   it "can modify a column using a CartoDB::TYPE type" do
     table = create_table
     resp = table.modify_column!(:name => "name", :type => "number")
-    resp.should == {:name => "name", :type => "smallint", :cartodb_type => "number"}
+    resp.should == {:name => "name", :type => "double precision", :cartodb_type => "number"}
   end
   
   it "should not modify the name of a column to a number" do
@@ -598,7 +598,24 @@ describe Table do
     pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.4")
     table.rows_counted.should == 2
 
-    table.schema(:cartodb_types => false).should include([:age, "real"])
+    table.schema(:cartodb_types => false).should include([:age, "double precision"])
+    table.schema.should include([:age, "number"])
+  end
+
+  it "should alter the schema automatically to a a wide range of numbers when inserting a number with 0" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar, age integer"
+    table.save
+
+    pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+    table.rows_counted.should == 1
+
+    pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.0")
+    table.rows_counted.should == 2
+
+    table.schema(:cartodb_types => false).should include([:age, "double precision"])
     table.schema.should include([:age, "number"])
   end
 
@@ -615,8 +632,24 @@ describe Table do
     pk_row2 = table.update_row!(pk_row1, :name => 'Javi Jam', :age => "25.4")
     table.rows_counted.should == 1
 
-    table.schema(:cartodb_types => false).should include([:age, "real"])
+    table.schema(:cartodb_types => false).should include([:age, "double precision"])
     table.schema.should include([:age, "number"])
+  end
+  
+  it "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.force_schema = "name varchar(40)"
+    table.save    
+    
+    table.schema(:cartodb_types => false).should_not include([:name, "text"])
+
+    pk_row1 = table.insert_row!(:name => 'f'*201)
+    table.rows_counted.should == 1
+    
+    table.reload
+    table.schema(:cartodb_types => false).should include([:name, "text"])
   end
   
   it "should set valid geometry types" do

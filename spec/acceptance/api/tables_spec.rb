@@ -289,6 +289,7 @@ feature "API 1.0 tables management" do
       ]
     end
   end
+  
   scenario "Create a new table importing file EjemploVizzuality.zip" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
@@ -307,6 +308,26 @@ feature "API 1.0 tables management" do
       ]
     end    
   end
+  
+  scenario "Create a new table importing file shp not working.zip" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    
+    post_json api_tables_url, {
+      :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/shp not working.zip", "application/download"),
+      :srid => CartoDB::SRID
+    }
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:name].should == "constru_shp"
+      r.body[:schema].should == [
+        ["cartodb_id", "number"], ["gid", "number"], ["mapa", "number"], ["delegacio", "number"], ["municipio", "number"], 
+        ["masa", "string"], ["tipo", "string"], ["parcela", "string"], ["constru", "string"], ["coorx", "number"], ["coory", "number"], 
+        ["numsymbol", "number"], ["area", "number"], ["fechaalta", "number"], ["fechabaja", "number"], ["ninterno", "number"], ["hoja", "string"], 
+        ["refcat", "string"], ["the_geom", "geometry"], ["created_at", "date"], ["updated_at", "date"]
+      ]
+    end    
+  end
+  
   
   scenario "Create a table, remove a table, and recreate it with the same name" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).times(3)

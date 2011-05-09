@@ -203,9 +203,21 @@ class Table < Sequel::Model(:user_tables)
       rescue Sequel::DatabaseError => e
         # If the type don't match the schema of the table is modified for the next valid type
         message = e.message.split("\n")[0]
-        invalid_value = message.match(/"([^"]+)"$/)[1]
-        invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
-        if new_column_type = get_new_column_type(invalid_column, invalid_value)
+        invalid_value = if m = message.match(/"([^"]+)"$/)
+          m[1]
+        else
+          nil
+        end
+        invalid_column = if invalid_value
+          attributes.invert[invalid_value] # which is the column of the name that raises error
+        else
+          if m = message.match(/PGError: ERROR:  value too long for type (.+)$/)
+            if candidate = schema(:cartodb_types => false).select{ |c| c[1] == m[1] }.first
+              candidate[0]
+            end
+          end
+        end
+        if new_column_type = get_new_column_type(invalid_column)
           modified_schema = true
           user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
           update_stored_schema!
@@ -239,7 +251,7 @@ class Table < Sequel::Model(:user_tables)
           message = e.message.split("\n")[0]
           invalid_value = message.match(/"([^"]+)"$/)[1]
           invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
-          if new_column_type = get_new_column_type(invalid_column, invalid_value)
+          if new_column_type = get_new_column_type(invalid_column)
             modified_schema = true
             user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
             retry
@@ -728,22 +740,12 @@ TRIGGER
     end
   end
 
-  def get_new_column_type(invalid_column, invalid_value)
+  def get_new_column_type(invalid_column)
     flatten_cartodb_schema = schema.flatten
     cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]
     flatten_schema = schema(:cartodb_types => false).flatten
     column_type = flatten_schema[flatten_schema.index(invalid_column.to_sym) + 1]
-    if cartodb_column_type == "number" && invalid_value =~ /^\-?[0-9]+[\.|\,][0-9]+$/
-      i = CartoDB::TYPES[cartodb_column_type].index(column_type) + 1
-      t = CartoDB::TYPES[cartodb_column_type][i]
-      while !t.is_a?(String)
-        i+=1
-        t = CartoDB::TYPES[cartodb_column_type][i]
-      end
-      t
-    else
-      nil
-    end
+    CartoDB::NEXT_TYPE[cartodb_column_type]
   end
 
   def set_the_geom_column!(type)

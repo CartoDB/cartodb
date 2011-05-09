@@ -29,7 +29,7 @@ feature "API 1.0 columns management" do
       r.status.should be_success
       r.body.should == {
         :name => "postal_code",
-        :type => "smallint",
+        :type => "double precision",
         :cartodb_type => "number"
       }
     end
@@ -67,7 +67,7 @@ feature "API 1.0 columns management" do
       r.status.should be_success
       r.body.should == {
         :name => "name",
-        :type => "smallint",
+        :type => "double precision",
         :cartodb_type => "number"
       }
     end

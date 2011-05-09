@@ -320,10 +320,10 @@ feature "API 1.0 tables management" do
       r.status.should be_success
       r.body[:name].should == "constru_shp"
       r.body[:schema].should == [
-        ["cartodb_id", "number"], ["gid", "number"], ["mapa", "number"], ["delegacio", "number"], ["municipio", "number"], 
-        ["masa", "string"], ["tipo", "string"], ["parcela", "string"], ["constru", "string"], ["coorx", "number"], ["coory", "number"], 
-        ["numsymbol", "number"], ["area", "number"], ["fechaalta", "number"], ["fechabaja", "number"], ["ninterno", "number"], ["hoja", "string"], 
-        ["refcat", "string"], ["the_geom", "geometry"], ["created_at", "date"], ["updated_at", "date"]
+        ["cartodb_id", "number"], ["gid", "number"], ["mapa", "number"], ["delegacio", "number"], ["municipio", "number"], ["masa", "string"], 
+        ["tipo", "string"], ["parcela", "string"], ["constru", "string"], ["coorx", "number"], ["coory", "number"], ["numsymbol", "number"], 
+        ["area", "number"], ["fechaalta", "number"], ["fechabaja", "number"], ["ninterno", "number"], ["hoja", "string"], ["refcat", "string"], 
+        ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
       ]
     end    
   end

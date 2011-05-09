@@ -46,7 +46,7 @@ describe String do
   end
   describe "Convert from CartoDB types to the first SQL type" do
     it "should convert number to smallint" do
-      "number".convert_to_db_type.should == "smallint"
+      "number".convert_to_db_type.should == "double precision"
     end
     it "should convert string to varchar" do
       "string".convert_to_db_type.should == "varchar"

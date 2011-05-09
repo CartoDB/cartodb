@@ -10,7 +10,7 @@ module CartoDB
   USER_REQUESTS_PER_DAY = 10000
 
   TYPES = {
-    "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "bigint", "decimal", "numeric", "double precision", "serial", "big serial"],
+    "number"  => ["smallint", /numeric\(\d+,\d+\)/, "integer", "bigint", "decimal", "numeric", "double precision", "serial", "big serial", "real"],
     "string"  => ["varchar", "character varying", "text", /character\svarying\(\d+\)/, /char\s*\(\d+\)/, /character\s*\(\d+\)/],
     "date"    => ["timestamp", "timestamp without time zone"],
     "boolean" => ["boolean"]

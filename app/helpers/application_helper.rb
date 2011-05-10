@@ -97,5 +97,12 @@ module ApplicationHelper
     end
     result.join('|')
   end
+  
+  def last_blog_posts    
+    # Data generated from Rake task in lib/tasks/blog.rake
+    if File.file?(CartoDB::LAST_BLOG_POSTS_FILE_PATH)    
+      File.read(CartoDB::LAST_BLOG_POSTS_FILE_PATH).html_safe
+    end
+  end
    
 end

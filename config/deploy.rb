@@ -76,7 +76,7 @@ task :get_last_blog_posts, :roles => [:app] do
     export RAILS_ENV=#{stage} &&
     cd #{release_path} &&
     rake cartodb:blog:get_last_posts
-  CMD 
+  CMD
 end
 
 

@@ -7,7 +7,7 @@ gem "sequel-rails", :git => "git://github.com/ferblape/sequel-rails.git"
 gem "nofxx-georuby", :require => "geo_ruby"
 
 gem "warden"
-gem "rails_warden"
+gem "rails_warden", "0.5.2"
 gem "oauth"
 gem "oauth-plugin", ">=0.4.0.pre1"
 gem "sequel_column_type_array"

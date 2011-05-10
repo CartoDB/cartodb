@@ -27,7 +27,7 @@ set(:deploy_to){
   "/home/ubuntu/www/#{stage}.#{application}.com"
 }
 
-after  "deploy:update_code", :symlinks, :run_migrations, :set_staging_flag
+after  "deploy:update_code", :symlinks, :run_migrations, :set_staging_flag, :get_last_blog_posts
 
 desc "Restart Application"
 deploy.task :restart, :roles => [:app] do
@@ -70,8 +70,17 @@ task :upload_yml_files, :roles => :app do
   upload("config/app_config.yml", "#{deploy_to}/shared/config/app_config.yml")
 end
 
-namespace :db do
+desc "Run last blog posts"
+task :get_last_blog_posts, :roles => [:app] do
+  run <<-CMD
+    export RAILS_ENV=#{stage} &&
+    cd #{release_path} &&
+    rake cartodb:blog:get_last_posts
+  CMD 
+end
 
+
+namespace :db do
   desc "Run rake:seed on remote app server"
   task :seed, :roles => :app do
     run "cd #{current_release} && RAILS_ENV=#{stage} rake db:seed"

@@ -143,8 +143,8 @@ GEM
       activesupport (= 3.0.7)
       bundler (~> 1.0)
       railties (= 3.0.7)
-    rails_warden (0.5.5)
-      warden (>= 1.0.0)
+    rails_warden (0.5.2)
+      warden
     railties (3.0.7)
       actionpack (= 3.0.7)
       activesupport (= 3.0.7)
@@ -197,7 +197,7 @@ GEM
     sequel_column_type_array (0.0.2)
     sinatra (1.2.6)
       rack (~> 1.1)
-      tilt (>= 1.2.2, < 2.0)
+      tilt (< 2.0, >= 1.2.2)
     spreadsheet (0.6.5.4)
       ruby-ole (>= 1.0)
     steak (1.1.0)
@@ -241,7 +241,7 @@ DEPENDENCIES
   passenger
   pg (= 0.10.1)
   rails (= 3.0.7)
-  rails_warden
+  rails_warden (= 0.5.2)
   redis
   resque
   rgeo

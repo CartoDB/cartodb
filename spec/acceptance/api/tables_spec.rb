@@ -34,6 +34,13 @@ feature "API 1.0 tables management" do
       r.body[1]['schema'].should == default_schema
       r.body.map{ |t| t['name'] }.should_not include("another_table_3")
     end
+
+    get_json api_tables_url(:page => 1, :per_page => 2)
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body.size.should == 2
+    end
+
   end
 
   scenario "Create a new table without schema" do

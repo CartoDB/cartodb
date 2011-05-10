@@ -23,6 +23,32 @@ class ApplicationController < ActionController::Base
       true
     end
   end
+  
+  def access_token
+    return nil unless logged_in?
+    access_token = nil
+    consumer = OAuth::Consumer.new(current_user.client_application.key, current_user.client_application.secret, :site => APP_CONFIG[:api_host])
+    if !session[:access_token].blank? && !session[:access_token_secret].blank?
+      access_token = OAuth::AccessToken.new(consumer, session[:access_token], session[:access_token_secret])
+    end
+    unless access_token
+      request_token = consumer.get_request_token
+      uri = URI.parse(request_token.authorize_url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      if Rails.env.production?
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
+      request = Net::HTTP::Post.new(uri.request_uri, {'authorize' => '1', 'oauth_token' => request_token.token})
+      res = http.request(request)
+      url = URI.parse(res.header['location'])
+      verifier = url.query.split('&').select{ |q| q =~ /^oauth_verifier/}.first.split('=')[1]
+      access_token = request_token.get_access_token(:oauth_verifier => verifier)
+      session[:access_token] = access_token.token
+      session[:access_token_secret] = access_token.secret
+    end
+    access_token
+  end
 
   protected
   
@@ -37,6 +63,14 @@ class ApplicationController < ActionController::Base
       end
       format.json do
         render :nothing => true, :status => 404
+      end
+    end
+  end
+  
+  def render_500
+    respond_to do |format|
+      format.html do
+        render :file => "public/500.html", :status => 500, :layout => false
       end
     end
   end
@@ -71,7 +105,11 @@ class ApplicationController < ActionController::Base
   end
 
   def table_privacy_text(table)
-    table.private? ? 'PRIVATE' : 'PUBLIC'
+    if table.is_a?(Table)
+      table.private? ? 'PRIVATE' : 'PUBLIC'
+    elsif table.is_a?(Hash)
+      table["privacy"]
+    end
   end
   helper_method :table_privacy_text
 

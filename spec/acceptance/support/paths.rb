@@ -23,8 +23,8 @@ module NavigationHelpers
     "#{api_url_prefix}/"
   end
 
-  def api_tables_url
-    "#{api_url_prefix}/tables"
+  def api_tables_url(params = {})
+    "#{api_url_prefix}/tables#{params.empty? ? '' : '?' }#{params.to_query}"
   end
 
   def api_table_url(table_identifier)

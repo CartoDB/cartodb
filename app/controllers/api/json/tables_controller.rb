@@ -8,16 +8,20 @@ class Api::Json::TablesController < Api::ApplicationController
   after_filter :record_query_threshold
 
   def index
+    limit  = params[:per_page].nil? || params[:per_page].to_i > 100 ? 100 : params[:per_page].to_i
+    offset = params[:page].nil? || params[:page].to_i < 0 ? 0 : limit*(params[:page].to_i - 1)
     @tables = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                           from user_tables
-                          where user_tables.user_id = ? order by id DESC", current_user.id).all
+                          where user_tables.user_id = ? order by id DESC
+                          limit ? offset ?", current_user.id, limit, offset).all
     render :json => @tables.map{ |table|
               {
                 :id => table.id,
                 :name => table.name,
                 :privacy => table_privacy_text(table),
                 :tags => table[:tags_names],
-                :schema => table.schema
+                :schema => table.schema,
+                :updated_at => table.updated_at
               }
             }.to_json,
            :callback => params[:callback]

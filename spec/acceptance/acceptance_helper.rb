@@ -22,15 +22,10 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Rails.cache.clear
+    Capybara.reset_sessions! 
   end
 
   config.after(:each) do
-    case page.driver.class
-    when Capybara::Driver::RackTest
-      page.driver.rack_mock_session.clear_cookies
-    when Capybara::Driver::Selenium
-      page.driver.cleanup!
-    end
     Capybara.use_default_driver
   end
 end

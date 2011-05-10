@@ -26,10 +26,10 @@ gem "yajl-ruby", :require => "yajl"
 group :development do
   gem "capistrano"
   gem "capistrano-ext"
-  gem "passenger"
 end
 
 group :test, :development do
+  gem "passenger"
   gem "ruby-debug19", :require => "ruby-debug", :platforms => :mri_19
   gem "mocha"
   gem "steak"

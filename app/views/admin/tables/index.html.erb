@@ -57,7 +57,7 @@
             <h3><strong><%= pluralize(current_user.tables_count, 'table', 'tables') %></strong> in your account</h3>
           </div>
           <div class="middle_white_medium">
-            <% if @tables.current_page_record_count == 0 %>
+            <% if @tables.empty? %>
               <div class="no_tables">
                 <h5>Hey! You don't have any tables</h5>
                 <p>Why don't you start by <a href="#create_table" class="new_table">creating a new table</a>?</p>
@@ -65,21 +65,21 @@
             <% else %>
               <ul class="your_tables">
                 <% @tables.each_with_index do |table, i| %>
-                <li<%= ' class="last"'.html_safe if i == @tables.current_page_record_count - 1%>>
+                <li<%= ' class="last"'.html_safe if i == @tables.size - 1%>>
                   <div class="meta_info">
                     <span class="info">
-                      <h4><%= link_to(table.name, table, :class=>'tableTitle')  %> </h4>
+                      <h4><%= link_to(table["name"], table_path(table["id"]), :class=>'tableTitle')  %> </h4>
                       <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
-                      <p class="delete"> | <a table-name="<%= table.name %>" href="#" class="delete">delete table</a></p>
-                      <p class="columns"><strong><%= pluralize(table.rows_counted,'row','rows') rescue '' %> / <%= table.schema.size rescue '' %> columns:</strong>
-                      <%= table.schema.map{ |e| e.first }[1...4].join(', ') %>...</p>
+                      <p class="delete"> | <a table-name="<%= table["name"] %>" href="#" class="delete">delete table</a></p>
+                      <p class="columns"><strong><%= pluralize(table["rows_counted"].to_i,'row','rows') rescue '' %> / <%= table["schema"].size rescue '' %> columns:</strong>
+                      <%= table["schema"].map{ |e| e.first }[1...4].join(', ') %>...</p>
                     </span>
                     <span class="tags">
-                      <% unless table.updated_at.blank? %>
-                      <p class="last_op"><%= time_ago_in_words(table.updated_at) %> ago</p>
+                      <% unless table["updated_at"].blank? %>
+                      <p class="last_op"><%= time_ago_in_words(table["updated_at"]) %> ago</p>
                       <% end %>
-                      <% unless table.tags.blank? %>
-                        <% table.tags.split(',').each do |tag_name| %>
+                      <% unless table["tags"].blank? %>
+                        <% table["tags"].split(',').each do |tag_name| %>
                         <a href="#"><%= tag_name %></a>
                         <% end %>
                       <% end %>
@@ -91,7 +91,7 @@
             <% end %>
           </div>
           <div class="bottom_white_medium"></div>
-          <%= paginate(@tables) %>
+          <%= paginate(@pagination ) %>
         </div>
         <div class="right">
 

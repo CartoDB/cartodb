@@ -738,10 +738,10 @@ describe Table do
     pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
 
     records = table.records(:page => 0, :rows_per_page => 1)
-    RGeo::GeoJSON.decode(records[:rows][0][:the_geom], :json_parser => :json).as_text.should == "Point(#{"%.3f" % lon} #{"%.3f" % lat})"
+    RGeo::GeoJSON.decode(records[:rows][0][:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
     
     record = table.record(pk)
-    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "Point(#{"%.3f" % lon} #{"%.3f" % lat})"
+    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
   end
   
   it "should raise an error when the geojson provided is invalid" do
@@ -778,7 +778,7 @@ describe Table do
       [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"]
     ]    
     record = table.record(pk)
-    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "Point(#{"%.6f" % -3.699732} #{"%.6f" % 40.423012})"
+    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.6f" % -3.699732} #{"%.6f" % 40.423012})"
   end
   
   it "should store the name of its database" do

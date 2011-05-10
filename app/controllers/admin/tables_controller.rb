@@ -9,7 +9,12 @@ class Admin::TablesController < ApplicationController
     current_page = params[:page].nil? ? 1 : params[:page].to_i
     per_page = 10
     unless params[:public]
-      @tags = Tag.load_user_tags(current_user.id, :limit => 5)
+      resp = access_token.get("/v1/tables/tags.json?limit=5")
+      if resp.code.to_i == 200
+        @tags = JSON.parse(resp.body).map{|h| h["values"]}
+      else
+        render_500 and return
+      end      
       resp = access_token.get("/v1/tables.json?page=#{current_page}&per_page=#{per_page}")
       if resp.code.to_i == 200
         @tables = JSON.parse(resp.body)

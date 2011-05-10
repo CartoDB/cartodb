@@ -60,6 +60,7 @@ CartoDB::Application.routes.draw do
       get    '/column_types' => 'meta#column_types'
       get    '/tables'       => 'tables#index'
       post   '/tables'       => 'tables#create'
+      get    '/tables/tags'  => 'tags#index'
       get    '/tables/:id'   => 'tables#show'
       put    '/tables/:id'   => 'tables#update'
       delete '/tables/:id'   => 'tables#destroy'
@@ -78,7 +79,6 @@ CartoDB::Application.routes.draw do
       put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
     end
   end
-
 
   # Subdomain "developers." is served by rack application ApiDocumentationServer
 end

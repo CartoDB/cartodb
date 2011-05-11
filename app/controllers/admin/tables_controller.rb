@@ -11,21 +11,41 @@ class Admin::TablesController < ApplicationController
     unless params[:public]
       resp = access_token.get("/v1/tables/tags?limit=5")
       if resp.code.to_i == 200
-        @tags = JSON.parse(resp.body).map{|h| h["values"]}
+        @tags = JSON.parse(resp.body)
       else
         render_500 and return
-      end      
-      resp = access_token.get("/v1/tables?page=#{current_page}&per_page=#{per_page}")
+      end
+      if params[:tag_name]
+        @tag_name = params[:tag_name].sanitize.tr('_',' ')
+        resp = access_token.get("/v1/tables/tags/#{@tag_name}?page=#{current_page}&per_page=#{per_page}")
+      else
+        resp = access_token.get("/v1/tables?page=#{current_page}&per_page=#{per_page}")
+      end
       if resp.code.to_i == 200
-        @tables = JSON.parse(resp.body)
-        @pagination = { 
-          :current_page => current_page, 
-          :per_page => per_page, 
-          :page_count => (current_user.tables_count.to_f / per_page).ceil, 
-          :next_page => current_page < (current_user.tables_count.to_f / per_page).ceil ? current_page + 1 : nil,
-          :previous_page => current_page == 1 ? nil : current_page - 1,
-          :page_range => (1..(current_user.tables_count.to_f / per_page).ceil)
-        }
+        response = JSON.parse(resp.body)
+        @tables = response["tables"]
+        if params[:tag_name]
+          count = @tables.empty? ? 0 : response["total_entries"]
+          @pagination = { 
+            :current_page => current_page, 
+            :per_page => per_page, 
+            :page_count => (count.to_f / per_page).ceil, 
+            :next_page => current_page < (count.to_f / per_page).ceil ? current_page + 1 : nil,
+            :previous_page => current_page == 1 ? nil : current_page - 1,
+            :page_range => (1..(count.to_f / per_page).ceil),
+            :total_entries => count
+          }
+        else
+          @pagination = { 
+            :current_page => current_page, 
+            :per_page => per_page, 
+            :page_count => (current_user.tables_count.to_f / per_page).ceil, 
+            :next_page => current_page < (current_user.tables_count.to_f / per_page).ceil ? current_page + 1 : nil,
+            :previous_page => current_page == 1 ? nil : current_page - 1,
+            :page_range => (1..(current_user.tables_count.to_f / per_page).ceil),
+            :total_entries => current_user.tables_count
+          }
+        end        
       else
         render_500 and return
       end

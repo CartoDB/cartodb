@@ -10,21 +10,41 @@ class Api::Json::TablesController < Api::ApplicationController
   def index
     limit  = params[:per_page].nil? || params[:per_page].to_i > 100 ? 100 : params[:per_page].to_i
     offset = params[:page].nil? || params[:page].to_i < 0 ? 0 : limit*(params[:page].to_i - 1)
-    @tables = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+    @tables = if !params[:tag_name].blank?
+      tag_name = params[:tag_name].sanitize.tr('_',' ')
+      tables_count = Table.fetch("select count(user_tables.id) as count
+                          from user_tables, tags
+                          where user_tables.user_id = ? 
+                            and user_tables.id = tags.table_id
+                            and tags.name = ?", current_user.id, tag_name).first[:count]
+      Table.fetch("select user_tables.*, 
+                      array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+                          from user_tables, tags
+                          where user_tables.user_id = ? 
+                            and user_tables.id = tags.table_id
+                            and tags.name = ?
+                          order by user_tables.id DESC 
+                          limit ? offset ?", current_user.id, tag_name, limit, offset).all      
+    else
+      Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                           from user_tables
                           where user_tables.user_id = ? order by id DESC
                           limit ? offset ?", current_user.id, limit, offset).all
-    render :json => @tables.map{ |table|
+    end
+    render :json => {
+      :total_entries => params[:tag_name] ? tables_count : current_user.tables_count,
+      :tables => @tables.map{ |table|
               {
                 :id => table.id,
                 :name => table.name,
                 :privacy => table_privacy_text(table),
                 :tags => table[:tags_names],
                 :schema => table.schema,
-                :updated_at => table.updated_at
+                :updated_at => table.updated_at,
               }
-            }.to_json,
-           :callback => params[:callback]
+            }
+      }.to_json,
+      :callback => params[:callback]
   end
 
   def create

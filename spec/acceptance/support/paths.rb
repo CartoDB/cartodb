@@ -30,6 +30,14 @@ module NavigationHelpers
   def api_table_url(table_identifier)
     "#{api_url_prefix}/tables/#{table_identifier}"
   end
+  
+  def api_tags_url(params = {})
+    "#{api_url_prefix}/tables/tags"
+  end
+  
+  def api_tables_tag_url(tag_name, params = {})
+    URI.encode "#{api_url_prefix}/tables/tags/#{tag_name}#{params.empty? ? '' : '?' }#{params.to_query}"
+  end
 
   def api_table_records_url(table_identifier)
     "#{api_url_prefix}/tables/#{table_identifier}/records"

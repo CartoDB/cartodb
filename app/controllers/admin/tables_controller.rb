@@ -24,28 +24,16 @@ class Admin::TablesController < ApplicationController
       if resp.code.to_i == 200
         response = JSON.parse(resp.body)
         @tables = response["tables"]
-        if params[:tag_name]
-          count = @tables.empty? ? 0 : response["total_entries"]
-          @pagination = { 
-            :current_page => current_page, 
-            :per_page => per_page, 
-            :page_count => (count.to_f / per_page).ceil, 
-            :next_page => current_page < (count.to_f / per_page).ceil ? current_page + 1 : nil,
-            :previous_page => current_page == 1 ? nil : current_page - 1,
-            :page_range => (1..(count.to_f / per_page).ceil),
-            :total_entries => count
-          }
-        else
-          @pagination = { 
-            :current_page => current_page, 
-            :per_page => per_page, 
-            :page_count => (current_user.tables_count.to_f / per_page).ceil, 
-            :next_page => current_page < (current_user.tables_count.to_f / per_page).ceil ? current_page + 1 : nil,
-            :previous_page => current_page == 1 ? nil : current_page - 1,
-            :page_range => (1..(current_user.tables_count.to_f / per_page).ceil),
-            :total_entries => current_user.tables_count
-          }
-        end        
+        count = @tables.empty? ? 0 : response["total_entries"]
+        @pagination = { 
+          :current_page => current_page, 
+          :per_page => per_page, 
+          :page_count => (count.to_f / per_page).ceil, 
+          :next_page => current_page < (count.to_f / per_page).ceil ? current_page + 1 : nil,
+          :previous_page => current_page == 1 ? nil : current_page - 1,
+          :page_range => (1..(count.to_f / per_page).ceil),
+          :total_entries => count
+        }
       else
         render_500 and return
       end
@@ -60,11 +48,16 @@ class Admin::TablesController < ApplicationController
   end
 
   def show
-    @table = Table.filter(:id => params[:id]).first
-    raise RecordNotFound if @table.nil? || (@table.user_id != current_user.id && @table.private?)
-
+    id = params[:id].sanitize.tr('_',' ')
+    resp = access_token.get("/v1/tables/#{id}")
+    if resp.code.to_i == 200
+      @table = JSON.parse(resp.body)
+    else
+      render_404 and return
+    end
     respond_to do |format|
       format.html
+      # TODO: return CSV or SHP files from API
       format.csv do
         send_data @table.to_csv,
           :type => 'application/zip; charset=binary; header=present',

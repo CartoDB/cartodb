@@ -17,7 +17,7 @@ class Admin::TablesController < ApplicationController
       end
       if params[:tag_name]
         @tag_name = params[:tag_name].sanitize.tr('_',' ')
-        resp = access_token.get("/v1/tables/tags/#{@tag_name}?page=#{current_page}&per_page=#{per_page}")
+        resp = access_token.get(URI.encode("/v1/tables/tags/#{@tag_name}?page=#{current_page}&per_page=#{per_page}"))
       else
         resp = access_token.get("/v1/tables?page=#{current_page}&per_page=#{per_page}")
       end

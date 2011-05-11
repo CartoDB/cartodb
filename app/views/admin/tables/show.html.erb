@@ -1,7 +1,6 @@
-  
-  <% content_for(:js) do %>
+    <% content_for(:js) do %>
     <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/jquery.mousewheel", "plugins/jscrollpane.min", "plugins/jquery.color", "plugins/jquery.scrollTo","plugins/jquery.livequery.min", "plugins/tag-it", "admin/table/loading_messages", "admin/table/loader_queue", "admin/table/carto_table", "admin/table/out_table_elements", "admin/table/geocoding", "admin/table/worker_geocoding", "admin/table/table", "admin/maps/maps","admin/maps/map_styles", "plugins/jquery-ui.min.js", "plugins/polymaps.min.js", "admin/maps/mapElements.js", "plugins/codemirror/codemirror.js", "plugins/colorpicker/eye", "plugins/colorpicker/utils", "plugins/colorpicker/colorpicker" %>
-    <script type="text/javascript">var table_id = <%= @table.id %>; var status = "<%= table_privacy_text(@table).downcase %>"; var table_name = "<%= @table.name %>"; var user_id = "<%= @table.user_id %>";</script>
+    <script type="text/javascript">var table_id = <%= @table["id"] %>; var status = "<%= table_privacy_text(@table).downcase %>"; var table_name = "<%= @table["name"] %>"; var user_id = "<%= @table["user_id"] %>";</script>
   <% end %>
 
   <% content_for(:head) do %>
@@ -12,18 +11,14 @@
     <div class="outer">
       <div class="inner_subheader">
         <div class="left">
-          <h2><a href="#change_title"><%= @table.name %></a></h2>
+          <h2><a href="#change_title"><%= @table["name"] %></a></h2>
           <p class="status">
-            <% if @table.pending_to_save? %>
-              <a class="save" href="#change_privacy">SAVE</a>
-            <% else %>
-              <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
-            <% end %>
+            <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
             </p>
           <span class="tags">
-            <% unless @table.tags.blank? %>
-              <% tagsSize=@table.tags.split(',').size %>
-              <% @table.tags.split(',').each_with_index do |tag_name,index| %>
+            <% unless @table["tags"].blank? %>
+              <% tagsSize=@table["tags"].split(',').size %>
+              <% @table["tags"].split(',').each_with_index do |tag_name,index| %>
               <% if index==tagsSize-1 %>
                 <p class="last"><%= tag_name %></p>
               <% else %>
@@ -40,7 +35,7 @@
         </div>
         <div class="right">
           <p class="settings">
-            <a class="delete" table-id="<%= @table.id %>" href="#delete_table">delete table</a> | <a class="settings selected" href="#show_advanced_options">advanced</a>
+            <a class="delete" table-id="<%= @table["id"] %>" href="#delete_table">delete table</a> | <a class="settings selected" href="#show_advanced_options">advanced</a>
           </p>
           <span class="paginate">
             <a id="nextButton"class="next" href="#next_column">Next column</a>

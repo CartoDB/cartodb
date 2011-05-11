@@ -14,22 +14,12 @@ feature "Tables" do
     click_link_or_button("twitter_followers")
   end
 
-  pending "Toggle the privacy of a table" do
+  scenario "Toggle the privacy of a table" do
     # Toggle to private
     click_link_or_button("PUBLIC")
     page.find("span.privacy_window ul li.private a").click
-
-    page.should have_css("p.status", :text => 'private')
-    page.find("div.performing_op p").text.should == 'Loading...'
     sleep 1
-    page.find("div.performing_op p").text.should == 'Your table privacy has been changed'
-
-    # Toggle to public
-    page.find("p.status a").click
-    page.find("span.privacy_window ul li.public a").click
-
-    page.should have_css("p.status", :text => 'public')
-    page.find("div.performing_op p").text.should == 'Your table privacy has been changed'
+    page.should have_css("p.status", :text => 'private')
   end
 
   pending "Change the name from a table" do

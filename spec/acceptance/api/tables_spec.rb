@@ -14,7 +14,7 @@ feature "API 1.0 tables management" do
     get_json api_tables_url
     parse_json(response) do |r|
       r.status.should be_success
-      r.body.should == []
+      r.body.should == {:total_entries=>0, :tables=>[]}
     end
 
     another_user = create_user
@@ -26,21 +26,61 @@ feature "API 1.0 tables management" do
     get_json api_tables_url
     parse_json(response) do |r|
       r.status.should be_success
-      r.body[1]['id'].should == table1.id
-      r.body[1]['name'].should == "my_table_1"
-      r.body[1]['tags'].split(',').should include('tag 3')
-      r.body[1]['tags'].split(',').should include('tag 2')
-      r.body[1]['tags'].split(',').should include('tag 1')
-      r.body[1]['schema'].should == default_schema
-      r.body.map{ |t| t['name'] }.should_not include("another_table_3")
+      r.body[:total_entries].should == 2
+      r.body[:tables][1]['id'].should == table1.id
+      r.body[:tables][1]['name'].should == "my_table_1"
+      r.body[:tables][1]['tags'].split(',').should include('tag 3')
+      r.body[:tables][1]['tags'].split(',').should include('tag 2')
+      r.body[:tables][1]['tags'].split(',').should include('tag 1')
+      r.body[:tables][1]['schema'].should == default_schema
+      r.body[:tables].map{ |t| t['name'] }.should_not include("another_table_3")
     end
 
     get_json api_tables_url(:page => 1, :per_page => 2)
     parse_json(response) do |r|
       r.status.should be_success
-      r.body.size.should == 2
+      r.body[:tables].size.should == 2
+    end
+  end
+  
+  scenario "Get tables from a tag" do
+    another_user = create_user
+
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table2 = create_table :user_id => @user.id, :name => 'My table #2', :privacy => Table::PRIVATE
+    table3 = create_table :user_id => another_user.id, :name => 'Another table #3', :privacy => Table::PRIVATE
+    table4 = create_table :user_id => @user.id, :name => 'My table #3', :privacy => Table::PUBLIC, :tags => "tag 1"
+
+    get_json api_tables_tag_url("tag 1", :page => 1, :per_page => 10)
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:total_entries].should == 2
+      r.body[:tables].map{ |t| t['name'] }.should == ["my_table_3", "my_table_1"]
     end
 
+    get_json api_tables_tag_url("tag 1", :page => 1, :per_page => 1)
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:tables].map{ |t| t['name'] }.should == ["my_table_3"]
+    end
+
+    get_json api_tables_tag_url("tag 1", :page => 2, :per_page => 1)
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:tables].map{ |t| t['name'] }.should == ["my_table_1"]
+    end
+    
+    get_json api_tables_tag_url("tag 2", :page => 1, :per_page => 10)
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:tables].map{ |t| t['name'] }.should == ["my_table_1"]
+    end
+    
+    get_json api_tables_tag_url("tag 4")
+    parse_json(response) do |r|
+      r.status.should be_success
+      r.body[:tables].map{ |t| t['name'] }.should be_empty
+    end
   end
 
   scenario "Create a new table without schema" do

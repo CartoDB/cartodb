@@ -54,7 +54,12 @@
       <div class="tables_list">
         <div class="left">
           <div class="top_blue_medium">
-            <h3><strong><%= pluralize(current_user.tables_count, 'table', 'tables') %></strong> in your account</h3>
+            <h3><strong>
+              <%= pluralize(@pagination[:total_entries], 'table', 'tables') %>
+              <% if @tag_name %>
+              with the tag <%= @tag_name %>
+              <% end %>
+              </strong> in your account</h3>
           </div>
           <div class="middle_white_medium">
             <% if @tables.empty? %>
@@ -80,7 +85,7 @@
                       <% end %>
                       <% unless table["tags"].blank? %>
                         <% table["tags"].split(',').each do |tag_name| %>
-                        <a href="#"><%= tag_name %></a>
+                        <a href="<%= dashboard_path(:tag_name => tag_name) %>"><%= tag_name %></a>
                         <% end %>
                       <% end %>
                     </span>
@@ -114,7 +119,7 @@
           <% else %>
             <ul>
               <% @tags.each do |tag| %>
-                <li><a href="#"><span style="background-position:<%= tag_width(tag["count"], @tags.last["count"], @tags.first["count"]) %>px 0"><%= tag["name"] %></span></a></li>
+                <li><a href="<%= dashboard_path(:tag_name => tag["name"]) %>"><span style="background-position:<%= tag_width(tag["count"], @tags.last["count"], @tags.first["count"]) %>px 0"><%= tag["name"] %></span></a></li>
               <% end %>
             </ul>
           <% end %>

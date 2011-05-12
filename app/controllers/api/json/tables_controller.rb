@@ -41,6 +41,7 @@ class Api::Json::TablesController < Api::ApplicationController
                 :tags => table[:tags_names],
                 :schema => table.schema,
                 :updated_at => table.updated_at,
+                :rows_counted => table.rows_counted
               }
             }
       }.to_json,

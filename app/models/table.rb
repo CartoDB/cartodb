@@ -910,10 +910,13 @@ TRIGGER
         user_database.run("CREATE TABLE #{self.name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")
         user_database.run("DROP TABLE #{random_name}")
         user_database.run("CREATE INDEX #{self.name}_the_geom_idx ON #{self.name} USING GIST(the_geom)")
-        geometry_type = user_database["select GeometryType(the_geom) FROM #{self.name} limit 1"].first[:geometrytype]
+        geometry_type = user_database["select GeometryType(the_geom) FROM #{self.name} where the_geom is not null limit 1"].first[:geometrytype]
         user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
         user_database.run("VACUUM ANALYZE #{self.name}")
         self.set_trigger_the_geom_webmercator
+        # TODO
+        # geometry_type can be null: so handle this case
+        # and show the proper error message
         self.the_geom_type = geometry_type.downcase
       end
       if entries.any?

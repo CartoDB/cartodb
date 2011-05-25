@@ -142,7 +142,8 @@ class ApplicationController < ActionController::Base
   def browser_is_html5_compliant?
     return true if Rails.env.test? || api_request?
     user_agent = request.user_agent.try(:downcase)
-    unless user_agent.blank? || user_agent.match(/firefox\/4|safari\/5|chrome\/7/)
+    puts user_agent
+    if user_agent.match(/msie/) && !user_agent.match(/9\.0/)
       raise NoHTML5Compliant
     end
   end

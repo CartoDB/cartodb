@@ -67,21 +67,7 @@
 
     <footer>
       <section class="prefooter">
-        <div class="block">
-          <h3>New tables published</h3>
-          <h4><a href="#">World Database on Protected Areas data published</a></h4>
-          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
-        </div>
-        <div class="block">
-          <h3></h3>
-          <h4><a href="#">GROMS Migration data on CartoDB</a></h4>
-          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
-        </div>
-        <div class="block last">
-          <h3>Latest from the blog</h3>
-          <h4><a href="#">A new status update on status.cartodb.com</a></h4>
-          <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
-        </div>
+        <%=  File.read(CartoDB::LAST_BLOG_POSTS_FILE_PATH) if File.file?(CartoDB::LAST_BLOG_POSTS_FILE_PATH) %>
       </section>
       <div class="outer_footer">
         <section class="footer">

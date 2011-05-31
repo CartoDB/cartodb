@@ -33,11 +33,9 @@ feature "Sessions" do
     access_token = create_access_token :client_application => client_application, :user => user
 
     req = oauth_consumer.create_signed_request(:get, "#{APP_CONFIG[:api_host]}/oauth/identity.json", access_token)
-    get req.path
-
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body.should == { :uid => user.id, :email => 'fernando.blat@vizzuality.com', :username => 'blat' }
+    get_json req.path do |response|
+      response.status.should be_success
+      response.body.should == { :uid => user.id, :email => 'fernando.blat@vizzuality.com', :username => 'blat' }
     end
   end
 end

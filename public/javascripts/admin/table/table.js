@@ -2,7 +2,7 @@
     var geolocating = false;
 
 
-    head(function(){
+    function startTable(){
       initMap();
       
       $("table#carto_table").cDBtable(
@@ -14,4 +14,4 @@
           query: "SELECT * FROM "+ table_name
         }
       );
-    });
+    }

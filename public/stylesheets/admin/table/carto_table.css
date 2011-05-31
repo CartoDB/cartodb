@@ -186,11 +186,11 @@ div.table_position div.general_options div.sql_console span a.try_query {float:r
   color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cacecb)); text-decoration:none;}
 div.table_position div.general_options div.sql_console span a.try_query:hover {background:-moz-linear-gradient(100% 100% 90deg, #ffffff, #cacecb); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cacecb), to(#ffffff)); cursor:pointer;}
 div.table_position div.general_options div.sql_console span p.errors {display:none; float:left; width:auto; padding:5px 10px; margin:10px 0 0 0; background:red; color:white; border:1px solid red; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial;}
-div.table_position div.general_options div.sql_console textarea {float:left; min-width:98.7%; max-width:98.7%; min-height:63px; max-height:350px; margin:7px 0 0 0; padding:7px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927;
+/*div.table_position div.general_options div.sql_console textarea {float:left; min-width:98.7%; max-width:98.7%; min-height:63px; max-height:350px; margin:7px 0 0 0; padding:7px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927;
   font:normal 13px Arial; color:#333333;}
-div.table_position div.general_options div.sql_console textarea:focus {outline:none; border:1px solid black;}
-.outer_textarea{float:left;width:100%;min-height:73px; margin:10px 0 0 0; padding:5px 0 0 0; background:white;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;}
-
+div.table_position div.general_options div.sql_console textarea:focus {outline:none; border:1px solid black;}*/
+/*.outer_textarea{float:left;width:100%;min-height:73px; margin:10px 0 0 0; padding:5px 0 0 0; background:white;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;}*/
+.outer_textarea{display:inline-block; width:100%;height:73px; margin:10px 0 0 0; padding:5px 0 0 0; background:white;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;}
 
 /************************************EDIT FIELDS************************************/
 div.table_position div.edit_cell {position:absolute; display:none; top:200px; left:200px; min-width:262px; padding:7px 7px 42px; -moz-box-shadow:0px 0px 10px 2px #999; -webkit-box-shadow:0px 0px 10px 2px #999; box-shadow:0px 0px 10px 2px #999; border:1px solid #999999; background:#E6F2E4; 
@@ -437,3 +437,29 @@ div.mamufas div.stopgeo_window div.inner_ span.stop p a:hover {color:#333333;}
 .jspHorizontalBar .jspArrow{width:16px;float:left;height:100%;}
 .jspVerticalBar .jspArrow:focus{outline:none;}
 .jspCorner{background:#eeeef4;float:left;height:100%;}
+
+/*Codemirror CSS*/
+.CodeMirror{overflow:auto;height:100%;line-height:1em;font-family:monospace;}
+.CodeMirror-gutter{position:absolute;left:0;top:0;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
+.CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;}
+.CodeMirror-lines{padding:.4em;}
+.CodeMirror pre{-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;font-family:inherit;}
+.CodeMirror textarea{font-family:monospace !important;}
+.CodeMirror-cursor{z-index:10;position:absolute;visibility:hidden;border-left:1px solid black !important;}
+.CodeMirror-focused .CodeMirror-cursor{visibility:visible;}
+span.CodeMirror-selected{background:#ccc !important;color:HighlightText !important;}
+.CodeMirror-focused span.CodeMirror-selected{background:Highlight !important;}
+.CodeMirror-matchingbracket{color:#0f0 !important;}
+.CodeMirror-nonmatchingbracket{color:#f22 !important;}
+pre span {float:none!important; width:auto!important;}
+span.plsql-keyword{color:blue;}
+span.plsql-var{color:red;}
+span.plsql-comment{color:#AA7700;}
+span.plsql-string{color:green;}
+span.plsql-operator{color:blue;}
+span.plsql-word{color:black;}
+span.plsql-function{color:darkorange;}
+span.plsql-sqlplus{color:darkorange;}
+span.plsql-type{color:purple;}
+span.plsql-separator{color:#666666;}
+span.plsql-number{color:darkcyan;}

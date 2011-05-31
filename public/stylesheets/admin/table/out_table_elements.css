@@ -77,7 +77,7 @@ section.subheader div.right span.advanced_options ul {float:left; width:100px; h
   -webkit-border-top-right-radius: 0; -moz-border-radius: 5px; -moz-border-radius-topright: 0; border-radius: 5px; border-top-right-radius: 0;}
 section.subheader div.right span.advanced_options ul li {background:none; margin: 0 0 4px 0;}
 section.subheader div.right span.advanced_options ul li a {background:none; font:normal 11px "Helvetica"; color:white; text-decoration:none;}
-section.subheader div.right span.advanced_options ul li a:hover {text-decoration:underline;}
+section.subheader div.right span.advanced_options ul li a:hover {text-decoration:underline; cursor:pointer;}
 section.subheader div.right span.advanced_options ul li.disabled a {color:#999;}
 section.subheader div.right span.advanced_options ul li.disabled a:hover {color:#999; cursor:default; text-decoration:none;}
 section.subheader div.right span.paginate {position:absolute; right:0; bottom:5px;  width:100%;}

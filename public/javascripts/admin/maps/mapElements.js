@@ -16,7 +16,7 @@
           '<ul>'+
             '<li class="first">'+
               '<h4>Map type</h4>'+
-              '<p>CloudMade</p>'+
+              '<p>ROADMAP</p>'+
             '</li>'+
             '<li>'+
               '<h4>Visualization type</h4>'+
@@ -69,8 +69,29 @@
           '</ul>'+
         '</div>'+
         '<p class="georeferencing"></p>'+
-        '<div id="map"></div>'
+        '<div id="map"></div>'+
+        '<div class="css_editor">'+
+          '<a class="close" href="#close">close</a>'+
+          '<div class="inner_">'+
+            '<span class="top">'+
+              '<h3>Edit your tiles</h3>'+
+              '<textarea id="css_editor">#'+ table_name +'{\n marker-fill: #FF6600;\n marker-opacity: 1;\n marker-width: 8;\n marker-line-color: white;\n marker-line-width: 3;\n marker-line-opacity: 0.9;\n marker-placement: point;\n marker-type: ellipse;\n marker-allow-overlap: true;\n}</textarea>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#try" class="try_css">Try CSS</a>'+
+              '<a href="#cancel" class="cancel">Cancel</a>'+
+            '</span>'+
+          '</div>'+
+        '</div>'
       );
+      
+      
+      /*CSS EDITOR*/
+      css_editor = CodeMirror.fromTextArea(document.getElementById("css_editor"), {
+        lineNumbers: false,
+        mode: "css"
+      });
+      $('div.css_editor').draggable();
 
       
       //Navigate columns
@@ -173,12 +194,12 @@
       $('a.zoom_in').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-        map.zoom(map.zoom()+1);
+        map.setZoom(map.getZoom()+1);
       });
       $('a.zoom_out').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-        map.zoom(map.zoom()-1);
+        map.setZoom(map.getZoom()-1);
       });
 
 

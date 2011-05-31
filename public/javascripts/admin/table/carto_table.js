@@ -119,7 +119,7 @@
      } else {
        $.ajax({
          method: "GET",
-         url: '/v1?sql='+escape(editor.getCode()),
+         url: '/v1?sql='+escape(editor.getValue()),
          data: {
            rows_per_page: options.resultsPerPage,
            page: petition_pages
@@ -135,8 +135,8 @@
            methods.drawQueryRows(rows,direction,actualPage);
            $(document).unbind('arrived');
          },
-         error: function() {
-           $('div.sql_console p.errors').stop().fadeIn().delay(10000).fadeOut();
+         error: function(e) {
+           $('div.sql_console p.errors').text(e.responseText).stop().fadeIn().delay(10000).fadeOut();
            methods.drawQueryColumns([{'':''}]);
          }
        });
@@ -722,14 +722,13 @@
         );
         
         
-        var textarea = $('#sql_textarea')[0];
-        editor = CodeMirror.fromTextArea('sql_textarea', {
-          height: "50px",
-          parserfile: "parsesql.js",
-          stylesheet: "/stylesheets/admin/table/sqlcolors.css",
-          path: "/javascripts/plugins/codemirror/"
-        });
-        //console.log(editor.getCode());
+      editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
+        lineNumbers: false,
+        value: "SELECT * FROM "+table_name,
+        mode: "text/x-plsql"
+      });
+
+
     },
 
 
@@ -2098,6 +2097,7 @@
 
         $('div.general_options div.sql_console').show();
         $('div.general_options ul').addClass('sql');
+        editor.focus();
       });
       $('div.general_options a.try_query').livequery('click',function(ev){
         query_mode = true;
@@ -2182,7 +2182,7 @@
       var scrollable = $('div.table_position').scrollLeft();
       var window_width = $(window).width();
       var table_width = $(table).width();
-
+      
       if (window_width==table_width) {
         $('span.paginate a#previousButton').addClass('disabled');
         $('span.paginate a#nextButton').addClass('disabled');
@@ -2190,7 +2190,7 @@
         if (scrollable<1) {
           $('span.paginate a#previousButton').addClass('disabled');
           $('span.paginate a#nextButton').removeClass('disabled');
-        } else if ((window_width+scrollable)<=$(table).width()) {
+        } else if ((window_width+scrollable)==$(table).width() || ($(table).width()-window_width-scrollable)<(last_cell_size+28)) {
           $('span.paginate a#nextButton').addClass('disabled');
           $('span.paginate a#previousButton').removeClass('disabled');
         } else {

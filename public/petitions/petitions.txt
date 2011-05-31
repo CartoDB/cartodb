@@ -1,7 +1,0 @@
-
-  GEOREFERENCIAR
-    - BLAT -> Enlazar la web de developers con el index de la documentación.
-    - BLAT -> Enlazar sesión de usuario con la documentación / Mostrar solo el tab de la galería si estas logado    
-    - BLAT -> No puedo guardar las nuevas lat&lon del worker geocoder a la base datos, peta :S.
-    - BLAT -> Update geometry para mapas no funca.
-    

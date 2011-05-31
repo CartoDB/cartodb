@@ -273,7 +273,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema(options = {})
-    stored_schema = Yajl::Parser.new.parse($tables_metadata.hget(key,"schema"))
+    stored_schema = $tables_metadata.hget(key,"schema")
+    return [] if stored_schema.blank?
+    stored_schema = Yajl::Parser.new.parse(stored_schema)    
     return [] if stored_schema.blank?
     stored_schema.map do |column|
       c = column.split(',')

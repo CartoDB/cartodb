@@ -21,34 +21,31 @@ feature "API 1.0 records management" do
 
     content = @user.run_query("select * from \"#{@table.name}\"")[:rows]
 
-    get_json "#{api_table_records_url(@table.name)}?rows_per_page=2"
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:id].should == @table.id
-      r.body[:name].should == @table.name
-      r.body[:total_rows].should == 10
-      r.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
+    get_json "#{api_table_records_url(@table.name)}?rows_per_page=2" do |response|
+      response.status.should be_success
+      response.body[:id].should == @table.id
+      response.body[:name].should == @table.name
+      response.body[:total_rows].should == 10
+      response.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
         should == content[0].slice(:cartodb_id, :name, :location, :description)
-      r.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
+      response.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
         should == content[1].slice(:cartodb_id, :name, :location, :description)
     end
 
-    get_json "#{api_table_records_url(@table.name)}?rows_per_page=2&page=1"
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
-      r.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
+    get_json "#{api_table_records_url(@table.name)}?rows_per_page=2&page=1" do |response|
+      response.status.should be_success
+      response.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
     end
 
-    get_json "#{api_table_records_url(@table.name)}?rows_per_page=2&page=1..3"
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
-      r.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
-      r.body[:rows][2].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[4].slice(:cartodb_id, :name, :location, :description)
-      r.body[:rows][3].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[5].slice(:cartodb_id, :name, :location, :description)
-      r.body[:rows][4].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[6].slice(:cartodb_id, :name, :location, :description)
-      r.body[:rows][5].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[7].slice(:cartodb_id, :name, :location, :description)
+    get_json "#{api_table_records_url(@table.name)}?rows_per_page=2&page=1..3" do |response|
+      response.status.should be_success
+      response.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][2].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[4].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][3].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[5].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][4].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[6].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][5].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[7].slice(:cartodb_id, :name, :location, :description)
     end
   end
 
@@ -59,27 +56,24 @@ feature "API 1.0 records management" do
     post_json api_table_records_url(@table.name), {
         :name => "Name 123",
         :description => "The description"
-    }
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:id].should == 1
+    } do |response|
+      response.status.should be_success
+      response.body[:id].should == 1
     end
 
-    get_json api_table_record_url(@table.name,1)
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:cartodb_id].should == 1
-      r.body[:name].should == "Name 123"
-      r.body[:description].should == "The description"
+    get_json api_table_record_url(@table.name,1) do |response|
+      response.status.should be_success
+      response.body[:cartodb_id].should == 1
+      response.body[:name].should == "Name 123"
+      response.body[:description].should == "The description"
     end
   end
 
   scenario "Get a record that doesn't exist" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "select", any_parameters).never
     
-    get_json api_table_record_url(@table.name,1)
-    parse_json(response) do |r|
-      r.status.should == 404
+    get_json api_table_record_url(@table.name,1) do |response|
+      response.status.should == 404
     end
   end
 
@@ -91,9 +85,8 @@ feature "API 1.0 records management" do
     put_json api_table_record_url(@table.name,pk), {
       :name => "Name updated",
       :description => "Description updated"
-    }
-    parse_json(response) do |r|
-      r.status.should == 200
+    } do |response|
+      response.status.should == 200
     end
   end
 
@@ -103,9 +96,8 @@ feature "API 1.0 records management" do
     put_json api_table_record_url(@table.name,1), {
       :name => "Name updated",
       :description => "Description updated"
-    }
-    parse_json(response) do |r|
-      r.status.should == 404
+    } do |response|
+      response.status.should == 404
     end
   end
 
@@ -114,9 +106,8 @@ feature "API 1.0 records management" do
     
     pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
-    delete_json api_table_record_url(@table.name,pk)
-    parse_json(response) do |r|
-      r.status.should be_success
+    delete_json api_table_record_url(@table.name,pk) do |response|
+      response.status.should be_success
     end
   end
 
@@ -125,10 +116,9 @@ feature "API 1.0 records management" do
     
     pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
-    get_json api_table_record_column_url(@table.name,pk,:name)
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:name].should == "Blat"
+    get_json api_table_record_column_url(@table.name,pk,:name) do |response|
+      response.status.should be_success
+      response.body[:name].should == "Blat"
     end
   end
 
@@ -137,69 +127,62 @@ feature "API 1.0 records management" do
     
     pk = @table.insert_row!({:name => "Blat", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
-    put_json api_table_record_column_url(@table.name,pk,:name), {:value => "Fernando Blat"}
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:name].should == "Fernando Blat"
+    put_json api_table_record_column_url(@table.name,pk,:name), {:value => "Fernando Blat"} do |response|
+      response.status.should be_success
+      response.body[:name].should == "Fernando Blat"
     end
   end
   
   scenario "Create a new row of type number and insert float values" do
+    table_id = nil
+
     post_json api_tables_url, {
       :name => "My new imported table",
       :schema => "name varchar, age integer"
-    }
-
-    table_id = nil
-    parse_json(response) do |r|
-      r.status.should be_success
-      table_id = r.body[:name]
+    } do |response|
+      response.status.should be_success
+      table_id = response.body[:name]
     end
 
     post_json api_table_records_url(table_id), {
         :name => "Fernando Blat",
         :age => "29"
-    }
-    parse_json(response) do |r|
-      r.status.should be_success
+    } do |response|
+      response.status.should be_success
     end
 
+    row_id = nil
     post_json api_table_records_url(table_id), {
         :name => "Beatriz",
         :age => "30.2"
-    }
-    row_id = nil
-    parse_json(response) do |r|
-      r.status.should be_success
-      row_id = r.body[:id]
+    } do |response|
+      response.status.should be_success
+      row_id = response.body[:id]
     end
     
-    get_json api_table_columns_url(table_id)
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body.should include(["age", "number"])
+    get_json api_table_columns_url(table_id) do |response|
+      response.status.should be_success
+      response.body.should include(["age", "number"])
     end
     
-    get_json api_table_record_column_url(table_id,row_id,:age)
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body.should == {:age => 30.2}
+    get_json api_table_record_column_url(table_id,row_id,:age) do |response|
+      response.status.should be_success
+      response.body.should == {:age => 30.2}
     end    
   end
 
   scenario "Create a new row including the_geom field" do
     lat = Float.random_latitude
     lon = Float.random_longitude
+    pk = nil
     
     post_json api_table_records_url(@table.name), {
         :name => "Fernando Blat",
         :description => "Geolocated programmer",
         :the_geom => %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
-    }
-    pk = nil
-    parse_json(response) do |r|
-      r.status.should be_success
-      pk = r.body[:id]
+    } do |response|
+      response.status.should be_success
+      pk = response.body[:id]
     end
     
     query_result = @user.run_query(CartoDB::SqlParser.parse("select longitude(the_geom) as lon, latitude(the_geom) as lat from #{@table.name} where cartodb_id = #{pk} limit 1"))
@@ -210,22 +193,20 @@ feature "API 1.0 records management" do
   scenario "Update a row including the_geom field" do    
     lat = Float.random_latitude
     lon = Float.random_longitude
+    pk = nil
     
     post_json api_table_records_url(@table.name), {
         :name => "Fernando Blat",
         :description => "Geolocated programmer"
-    }
-    pk = nil
-    parse_json(response) do |r|
-      r.status.should be_success
-      pk = r.body[:id]
+    } do |response|
+      response.status.should be_success
+      pk = response.body[:id]
     end
     
     put_json api_table_record_url(@table.name,1), {
       :the_geom => %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
-    }
-    parse_json(response) do |r|
-      r.status.should be_success
+    } do |response|
+      response.status.should be_success
     end
     
     query_result = @user.run_query(CartoDB::SqlParser.parse("select longitude(the_geom) as lon, latitude(the_geom) as lat from #{@table.name} where cartodb_id = #{pk} limit 1"))

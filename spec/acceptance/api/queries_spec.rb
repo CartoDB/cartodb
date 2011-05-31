@@ -17,32 +17,27 @@ feature "API 1.0 queries interface" do
   end
 
   scenario "Perform a SELECT query" do
-    get_json api_query_url, :sql => "select * from #{@table.name} where family='Polynoidae' limit 10"
-
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:total_rows].should == 2
-      r.body[:rows][0].symbolize_keys[:name_of_species].should == "Barrukia cristata"
-      r.body[:rows][1].symbolize_keys[:name_of_species].should == "Eulagisca gigantea"
+    get_json api_query_url, :sql => "select * from #{@table.name} where family='Polynoidae' limit 10" do |response|
+      response.status.should be_success
+      response.body[:total_rows].should == 2
+      response.body[:rows][0].symbolize_keys[:name_of_species].should == "Barrukia cristata"
+      response.body[:rows][1].symbolize_keys[:name_of_species].should == "Eulagisca gigantea"
     end
   end
 
   scenario "Perform an UPDATE query" do
-    get_json api_query_url, :sql => "update #{@table.name} set family='polynoidae' where family='Polynoidae'"
-    parse_json(response) do |r|
-      r.status.should be_success
+    get_json api_query_url, :sql => "update #{@table.name} set family='polynoidae' where family='Polynoidae'"  do |response|
+      response.status.should be_success
     end
 
-    get_json api_query_url, :sql => "select * from #{@table.name} where family='Polynoidae' limit 10"
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:total_rows].should == 0
+    get_json api_query_url, :sql => "select * from #{@table.name} where family='Polynoidae' limit 10" do |response|
+      response.status.should be_success
+      response.body[:total_rows].should == 0
     end
 
-    get_json api_query_url, :sql => "select * from #{@table.name} where family='polynoidae' limit 10"
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:total_rows].should == 2
+    get_json api_query_url, :sql => "select * from #{@table.name} where family='polynoidae' limit 10" do |response|
+      response.status.should be_success
+      response.body[:total_rows].should == 2
     end
   end
 
@@ -62,9 +57,8 @@ feature "API 1.0 queries interface" do
   end
   
   scenario "Perform an empty query should raise an error" do
-    get_json api_query_url, :sql => nil
-    parse_json(response) do |r|
-      r.status.should_not be_success
+    get_json api_query_url, :sql => nil do |response|
+      response.status.should_not be_success
     end
   end
   

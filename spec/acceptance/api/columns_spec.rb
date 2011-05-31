@@ -13,21 +13,18 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Get the columns from a table" do
-    get_json api_table_columns_url(@table.name)
-
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body.should == default_schema
+    get_json api_table_columns_url(@table.name) do |response|
+      response.status.should be_success
+      response.body.should == default_schema
     end
   end
 
   scenario "Add a new column to a table" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
-    post_json api_table_columns_url(@table.name), { :type => "Number", :name => "postal code" }
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body.should == {
+    post_json api_table_columns_url(@table.name), { :type => "Number", :name => "postal code" } do |response|
+      response.status.should be_success
+      response.body.should == {
         :name => "postal_code",
         :type => "double precision",
         :cartodb_type => "number"
@@ -38,34 +35,30 @@ feature "API 1.0 columns management" do
   scenario "Try to add a new column of an invalid type" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
     
-    post_json api_table_columns_url(@table.name), { :type => "integerrr", :name => "postal code" }
-    parse_json(response) do |r|
-      r.status.should == 400
+    post_json api_table_columns_url(@table.name), { :type => "integerrr", :name => "postal code" } do |response|
+      response.status.should == 400
     end
   end
 
   scenario "Get the type of a column" do
-    get_json api_table_column_url(@table.name, "name")
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body[:type].should == "string"
+    get_json api_table_column_url(@table.name, "name") do |response|
+      response.status.should be_success
+      response.body[:type].should == "string"
     end
   end
 
   scenario "Get the type of a column that doesn't exist" do
-    get_json api_table_column_url(@table.name, "namiz")
-    parse_json(response) do |r|
-      r.status.should == 404
+    get_json api_table_column_url(@table.name, "namiz") do |response|
+      response.status.should == 404
     end
   end
 
   scenario "Update the type of a given column" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
-    put_json api_table_column_url(@table.name, "name"), {:type => "number"}
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body.should == {
+    put_json api_table_column_url(@table.name, "name"), {:type => "number"} do |response|
+      response.status.should be_success
+      response.body.should == {
         :name => "name",
         :type => "double precision",
         :cartodb_type => "number"
@@ -76,19 +69,17 @@ feature "API 1.0 columns management" do
   scenario "Update the type of a given column with an invalid type" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
     
-    put_json api_table_column_url(@table.name, "name"), {:type => "integerr"}
-    parse_json(response) do |r|
-      r.status.should == 400
+    put_json api_table_column_url(@table.name, "name"), {:type => "integerr"} do |response|
+      response.status.should == 400
     end
   end
 
   scenario "Rename a column" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
-    put_json api_table_column_url(@table.name, "name"), {:new_name => "nombresito"}
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body.should == {
+    put_json api_table_column_url(@table.name, "name"), {:new_name => "nombresito"} do |response|
+      response.status.should be_success
+      response.body.should == {
         :name => "nombresito",
         :type => "text",
         :cartodb_type => "string"
@@ -99,9 +90,8 @@ feature "API 1.0 columns management" do
   scenario "Drop a column" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
-    delete_json api_table_column_url(@table.name, "name")
-    parse_json(response) do |r|
-      r.status.should be_success
+    delete_json api_table_column_url(@table.name, "name") do |response|
+      response.status.should be_success
     end
   end
 

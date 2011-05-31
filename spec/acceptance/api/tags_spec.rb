@@ -17,10 +17,9 @@ feature "API 1.0 tags management" do
     table2 = create_table :user_id => @user.id, :name => 'My table #2', :privacy => Table::PRIVATE
     table3 = create_table :user_id => another_user.id, :name => 'Another table #3', :privacy => Table::PRIVATE
 
-    get_json api_tags_url
-    parse_json(response) do |r|
-      r.status.should be_success
-      r.body.should == [{"name"=>"tag 3", "count"=>1}, {"name"=>"tag 1", "count"=>1}, {"name"=>"tag 2", "count"=>1}]
+    get_json api_tags_url do |response|
+      response.status.should be_success
+      response.body.should == [{"name"=>"tag 3", "count"=>1}, {"name"=>"tag 1", "count"=>1}, {"name"=>"tag 2", "count"=>1}]
     end
   end
 

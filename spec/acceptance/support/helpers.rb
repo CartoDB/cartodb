@@ -15,20 +15,28 @@ module HelperMethods
     post '/sessions/create', {:email => user.email, :password => user.email.split('@').first}
   end
 
-  def get_json(path, params = {})
-    get path, params
+  def get_json(path, params = {}, &block)
+    response = get path, params
+    response_parsed = response.body.blank? ? {} : Yajl::Parser.new.parse(response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
   end
 
-  def put_json(path, params = {})
-    put path, params
+  def put_json(path, params = {}, &block)
+    response = put path, params
+    response_parsed = response.body.blank? ? {} : Yajl::Parser.new.parse(response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
   end
 
-  def post_json(path, params = {})
-    post path, params
+  def post_json(path, params = {}, &block)
+    response = post path, params
+    response_parsed = response.body.blank? ? {} : Yajl::Parser.new.parse(response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
   end
 
-  def delete_json(path)
-    delete path
+  def delete_json(path, &block)
+    response = delete path
+    response_parsed = response.body.blank? ? {} : Yajl::Parser.new.parse(response.body)
+    yield OpenStruct.new(:body => (response_parsed.is_a?(Hash) ? response_parsed.symbolize_keys : response_parsed), :status => response.status, :headers => response.headers) if block_given?
   end
 
   def click(*args)

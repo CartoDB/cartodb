@@ -11,7 +11,7 @@ class Admin::TablesController < ApplicationController
     unless params[:public]
       resp = access_token.get("/v1/tables/tags?limit=5")
       if resp.code.to_i == 200
-        @tags = JSON.parse(resp.body)
+        @tags = Yajl::Parser.new.parse(resp.body)
       else
         render_500 and return
       end
@@ -22,7 +22,7 @@ class Admin::TablesController < ApplicationController
         resp = access_token.get("/v1/tables?page=#{current_page}&per_page=#{per_page}")
       end
       if resp.code.to_i == 200
-        response = JSON.parse(resp.body)
+        response = Yajl::Parser.new.parse(resp.body)
         @tables = response["tables"]
         count = @tables.empty? ? 0 : response["total_entries"]
         @pagination = { 
@@ -51,7 +51,7 @@ class Admin::TablesController < ApplicationController
     id = params[:id].sanitize.tr('_',' ')
     resp = access_token.get("/v1/tables/#{id}")
     if resp.code.to_i == 200
-      @table = JSON.parse(resp.body)
+      @table = Yajl::Parser.new.parse(resp.body)
     else
       render_404 and return
     end

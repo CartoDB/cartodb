@@ -21,7 +21,7 @@ RSpec.configure do |config|
 
   config.before(:each) do
     $threshold.flushdb
-    $queries_log.flushdb
+    # $queries_log.flushdb
     $tables_metadata.flushdb
     $api_credentials.flushdb
     Rails::Sequel.connection.tables.each{ |t| next if t == :schema_migrations; Rails::Sequel.connection[t].truncate }

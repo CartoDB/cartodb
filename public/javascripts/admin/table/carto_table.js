@@ -84,8 +84,8 @@
      $(document).bind('arrived',function(){
        count++;
        if (count==2) {
-         startTable();
          $(document).unbind('arrived');
+         startTable();
        }
      });
      
@@ -127,6 +127,7 @@
   			 headers: {"cartodbclient":"true"},
          success: function(data) {
            $('div.sql_console p.errors').fadeOut();
+           $('div.sql_console span h3').html('<strong>'+data.total_rows+' results</strong>');
            rows = data.rows;
            total_rows = data.total_rows;
            cell_size = 100;
@@ -136,8 +137,16 @@
            $(document).unbind('arrived');
          },
          error: function(e) {
-           $('div.sql_console p.errors').text(e.responseText).stop().fadeIn().delay(10000).fadeOut();
+           var json = $.parseJSON(e.responseText);
+           var msg = '';
+
+           _.each(json.errors,function(text,pos){
+             msg += text + ', ';
+           });
+           msg = msg.substr(0,msg.length-2);
+           $('div.sql_console p.errors').text(msg).stop().fadeIn().delay(10000).fadeOut();
            methods.drawQueryColumns([{'':''}]);
+           $(document).unbind('arrived');
          }
        });
      }
@@ -145,7 +154,6 @@
      
      
       function startTable() {
-        
         if (total_rows==0) {
           //Start new table
           //Calculate width of th on header
@@ -373,12 +381,10 @@
       } else {
         $(window).scrollTo({top:previous_scroll+'px',left:'0'},300,{onAfter: function() {loading = false; enabled = true;}});
       }
-
-      
     },
 
 
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  GET COLUMN TYPES AND PRINT THEM
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
@@ -397,6 +403,7 @@
          }
       });
     },
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -453,10 +460,10 @@
           //SQL Console
           '<div class="sql_console">'+
             '<span>'+
-              '<h3>Saved Query 2 / <strong>187 results</strong> <a class="get_api_call" href="#get_api_call">GET API CALL</a></h3>'+
+              '<h3> </h3>'+ //<a class="get_api_call" href="#get_api_call">GET API CALL</a>
               '<a href="#close_this_view" class="close">close this view</a>'+
             '</span>'+
-            '<div class="outer_textarea"><textarea id="sql_textarea">SELECT * FROM '+table_name+'</textarea></div>'+
+            '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
             '<span>'+
               '<a class="try_query">Try query</a>'+
               '<p class="errors">Your query is not correct, try again with another ;)</p>'+
@@ -691,7 +698,6 @@
         
       editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
         lineNumbers: false,
-        value: "SELECT * FROM "+table_name,
         mode: "text/x-plsql"
       });
 
@@ -1123,7 +1129,6 @@
       });
 
 
-
       ///////////////////////////////////////
       //  SIMPLE CLICK -> Open editor      //
       ///////////////////////////////////////
@@ -1183,7 +1188,6 @@
           }
         } 
       });
-
 
 
       ///////////////////////////////////////
@@ -2053,7 +2057,10 @@
       $('div.general_options div.sql_console span a.close').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-        
+        if (query_mode) {
+          query_mode = false;
+          methods.refreshTable('');
+        }
         $('div.general_options div.sql_console').hide();
         $('div.general_options ul').removeClass('sql');
       });
@@ -2094,8 +2101,7 @@
           $('div.table_position').scrollTo({top:'0',left:'100%'},200);
         }
         methods.paginateControls();
-      });
-         
+      }); 
       $('span.paginate a.previous').click(function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
@@ -2191,8 +2197,11 @@
       
       // HEIGTH
       var parent_height = $(window).height();
-      if ((parent_height-162)>($(table).parent().height())) {
-        $(table).parent().height(parent_height-162);
+      // Reset before height
+      $('div.table_position').css('height','auto');
+      
+      if ((parent_height-162)>($('div.table_position').height())) {
+        $('div.table_position').height(parent_height-162);
       }
       
       //Control pagination

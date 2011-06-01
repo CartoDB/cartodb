@@ -56,15 +56,17 @@ CartoDB::Application.routes.draw do
     end
 
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
-      match  '/'             => 'queries#run'
-      get    '/column_types' => 'meta#column_types'
-      get    '/tables'       => 'tables#index'
-      post   '/tables'       => 'tables#create'
-      get    '/tables/tags/:tag_name' => 'tables#index'
-      get    '/tables/tags'  => 'tags#index'
-      get    '/tables/:id'   => 'tables#show'
-      put    '/tables/:id'   => 'tables#update'
-      delete '/tables/:id'   => 'tables#destroy'
+      match  '/'                                     => 'queries#run'
+      get    '/column_types'                         => 'meta#column_types'
+      get    '/tables'                               => 'tables#index'
+      post   '/tables'                               => 'tables#create'
+      get    '/tables/tags/:tag_name'                => 'tables#index'
+      get    '/tables/tags'                          => 'tags#index'
+      get    '/tables/:id'                           => 'tables#show'
+      put    '/tables/:id'                           => 'tables#update'
+      delete '/tables/:id'                           => 'tables#destroy'
+      get    '/tables/:table_id/export/csv'          => 'export_tables#show', :format => :csv
+      get    '/tables/:table_id/export/shp'          => 'export_tables#show', :format => :shp
       get    '/tables/:table_id/records'             => 'records#index'
       post   '/tables/:table_id/records'             => 'records#create'
       get    '/tables/:table_id/records/pending_addresses' => 'records#pending_addresses'

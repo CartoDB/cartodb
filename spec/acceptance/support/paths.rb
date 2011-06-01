@@ -62,6 +62,14 @@ module NavigationHelpers
   def api_table_records_pending_addresses_url(table_identifier)
     "#{api_url_prefix}/tables/#{table_identifier}/records/pending_addresses"
   end
+  
+  def api_table_export_to_csv_url(table_identifier)
+    "#{api_url_prefix}/tables/#{table_identifier}/export/csv"
+  end
+
+  def api_table_export_to_shp_url(table_identifier)
+    "#{api_url_prefix}/tables/#{table_identifier}/export/shp"
+  end
 
   private
 

@@ -551,6 +551,19 @@ TRIGGER
     FileUtils.rm_rf(zip_file_path)
     response
   end
+  
+  def self.find_by_identifier(user_id, identifier)
+    table = if identifier =~ /\A\d+\Z/ || identifier.is_a?(Fixnum)
+      Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
+                          from user_tables
+                          where user_tables.user_id = ? and user_tables.id = ?", user_id, identifier).all.first
+    else
+      Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
+                          from user_tables
+                          where user_tables.user_id = ? and user_tables.name = ?", user_id, identifier).all.first    end
+    raise RecordNotFound if table.nil?
+    table
+  end
 
   private
 

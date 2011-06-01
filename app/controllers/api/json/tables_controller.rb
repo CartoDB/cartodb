@@ -150,16 +150,7 @@ class Api::Json::TablesController < Api::ApplicationController
   protected
 
   def load_table
-    @table = if params[:id] =~ /\A\d+\Z/
-      Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
-                          from user_tables
-                          where user_tables.user_id = ? and user_tables.id = ?", current_user.id, params[:id]).all.first
-    else
-      Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
-                          from user_tables
-                          where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
-    end
-    raise RecordNotFound if @table.nil?
+    @table = Table.find_by_identifier(current_user.id, params[:id])
   end
   
   def record_query_threshold

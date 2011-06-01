@@ -949,4 +949,20 @@ describe Table do
     table.schema.should == [[:cartodb_id, "number"], [:gid, "number"], [:id_0, "number"], [:iso, "string"], [:name_0, "string"], [:id_1, "number"], [:name_1, "string"], [:id_2, "number"], [:name_2, "string"], [:id_3, "number"], [:name_3, "string"], [:id_4, "number"], [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "number"], [:shape_area, "number"], [:latitude, "number"], [:longitude, "string"], [:center_latitude, "number"], [:center_longitude, "number"], [:created_at, "date"], [:updated_at, "date"]]
   end
   
+  it "should be able to find a table by name or by identifier" do
+    user = create_user
+    table = new_table :user_id => user.id
+    table.name = 'Fucking awesome name'
+    table.save.reload
+    
+    Table.find_by_identifier(user.id, table.id).id.should == table.id
+    Table.find_by_identifier(user.id, table.name).id.should == table.id
+    lambda {
+      Table.find_by_identifier(666, table.name)
+    }.should raise_error
+    lambda {
+      Table.find_by_identifier(666, table.id)
+    }.should raise_error
+  end
+  
 end

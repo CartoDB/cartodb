@@ -7,8 +7,8 @@ section#content div.right div.banner div.middle_white_short h3 {width:100%; font
 section#content div.right div.banner div.middle_white_short p {width:100%; margin:5px 0 0 0; font:normal 13px Arial; color:#999999;}
 section#content div.right div.banner div.middle_white_short ul {float:none; width:100%; margin:7px 0 0 0;}
 section#content div.right div.banner div.middle_white_short ul li {float:none; width:100%; padding:2px 0 2px 0;}
-section#content div.right div.banner div.middle_white_short ul li a {float:none; width:auto; padding:0 0 0 10px; background:url('/images/admin/icons/orange_rect.png') no-repeat 0 8px; color:#FF9900; font:normal 13px Arial;}
-section#content div.right div.banner div.middle_white_short ul li a:hover {color:#FF6600;}
+section#content div.right div.banner div.middle_white_short ul li a {float:none; width:auto; padding:0 0 0 10px; background:url('/images/admin/icons/orange_rect.png') no-repeat 0 8px; color:#FF9900; font:normal 13px Arial; text-shadow:none;}
+section#content div.right div.banner div.middle_white_short ul li a:hover {color:#FF6600; background-position:0 8px;}
 section#content div.right div.banner div.bottom_white_short {float:left; width:100%; height:15px; background:url('/images/admin/backgrounds/bottom_white_short.png') no-repeat 0 0;}
 section#content p.info {float:none; display:inline-block; width:100%; padding:5px 0 0 0; font:normal 14px Arial; color:#999999;}
 section#content div.left div.middle_white_medium span {float:left; width:500px; margin:15px 0 0 23px; font:normal 15px Arial; color:#777777;}

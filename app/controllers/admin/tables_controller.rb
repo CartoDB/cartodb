@@ -56,23 +56,28 @@ class Admin::TablesController < ApplicationController
       render_404 and return
     end
 
-    resp = access_token.get("/v1/tables/#{id}/export/#{params[:format]}")
-    if resp.code.to_i == 200
-      respond_to do |format|
-        format.html
-        format.csv do
+    respond_to do |format|
+      format.html
+      format.csv do
+        resp = access_token.get("/v1/tables/#{id}/export/#{params[:format]}") 
+        if resp.code.to_i == 200
           send_data resp.body,
             :type => 'application/octet-stream; charset=binary; header=present',
             :disposition => "attachment; filename=#{@table["name"]}.zip"
-        end
-        format.shp do
-          send_data resp.body,
-            :type => 'application/octet-stream; charset=binary; header=present',
-            :disposition => "attachment; filename=#{@table["name"]}.zip"
+        else
+          render_404 and return
         end
       end
-    else
-      render_404 and return
+      format.shp do
+        resp = access_token.get("/v1/tables/#{id}/export/#{params[:format]}") 
+        if resp.code.to_i == 200
+          send_data resp.body,
+            :type => 'application/octet-stream; charset=binary; header=present',
+            :disposition => "attachment; filename=#{@table["name"]}.zip"
+        else
+          render_404 and return
+        end
+      end
     end
   end
 

@@ -40,6 +40,7 @@ class ApplicationController < ActionController::Base
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
       request = Net::HTTP::Post.new(uri.request_uri, {'authorize' => '1', 'oauth_token' => request_token.token})
+      request.set_form_data({'foo' => 'bar'}, ';') # Hack to avoid 401 LengthRequired
       res = http.request(request)
       url = URI.parse(res.header['location'])
       verifier = url.query.split('&').select{ |q| q =~ /^oauth_verifier/}.first.split('=')[1]

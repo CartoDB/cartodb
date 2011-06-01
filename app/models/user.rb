@@ -193,14 +193,14 @@ class User < Sequel::Model
 
   def database_exists?
     database_exist = false
-    connection     = nil
 
     in_database(:as => :superuser) do |user_database|
-      results = user_database[:pg_database].filter(:datname => database_name).all
-      database_exist = results.any?? true : false
+      database_exist = user_database.test_connection
     end
 
     database_exist
+  rescue Sequel::DatabaseConnectionError
+    return false
   end
   private :database_exists?
   

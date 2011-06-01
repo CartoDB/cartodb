@@ -355,23 +355,14 @@ class Table < Sequel::Model(:user_tables)
 
   def records(options = {})
     rows  = []
-    limit = (options[:rows_per_page] || 10).to_i
-    limit = 5000 if limit > 5000
-    # Allow to set the page number as a range between two pages
-    if options[:page] && options[:page].is_a?(String) && options[:page].include?('..')
-      first_page, last_page = options[:page].split('..')
-      page = first_page.to_i*limit
-      limit = (last_page.to_i - first_page.to_i + 1) *limit
-    else
-      page = (options[:page] || 0).to_i*limit
-    end
+    page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
     owner.in_database do |user_database|
       select = if schema.flatten.include?(:the_geom)
         schema.map{ |c| c[0] == :the_geom ? "ST_AsGeoJSON(the_geom,6) as the_geom" : c[0]}.join(',')
       else
         schema.map{|c| c[0] }.join(',')
       end
-      rows = user_database["SELECT #{select} FROM #{name} LIMIT #{limit} OFFSET #{page}"].all
+      rows = user_database["SELECT #{select} FROM #{name} LIMIT #{per_page} OFFSET #{page}"].all
     end
     {
       :id         => id,

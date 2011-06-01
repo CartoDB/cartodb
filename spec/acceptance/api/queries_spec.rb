@@ -16,6 +16,21 @@ feature "API 1.0 queries interface" do
     @table.save
   end
 
+  scenario "Perform a SELECT query paginating the results" do
+    get_json api_query_url, :sql => "select * from #{@table.name} limit 10", :rows_per_page => 5, :page => 0 do |response|
+      response.status.should be_success
+      response.body[:total_rows].should == 10
+      response.body[:rows][0].symbolize_keys[:name_of_species].should == "nutrix"
+      response.body[:rows][1].symbolize_keys[:name_of_species].should == "laevis"
+    end
+    get_json api_query_url, :sql => "select * from #{@table.name} limit 10", :rows_per_page => 5, :page => 1 do |response|
+      response.status.should be_success
+      response.body[:total_rows].should == 10
+      response.body[:rows][0].symbolize_keys[:name_of_species].should == "cincinnatus"
+      response.body[:rows][1].symbolize_keys[:name_of_species].should == "Laetmonice producta 6"
+    end
+  end
+  
   scenario "Perform a SELECT query" do
     get_json api_query_url, :sql => "select * from #{@table.name} where family='Polynoidae' limit 10" do |response|
       response.status.should be_success

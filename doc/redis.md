@@ -4,11 +4,11 @@
 
 The databases used by CartoDB are:
 
-  - **tables_metadata**: stores metadata from user tables
-  - **queries_log**: stores an entry per request performed, storing the IP of the request and some information of the request
-  - **threshold**: stores the number of queries run per user and per table, and the kind of those queries (selects, inserts....)
-  - **api_credentials**: stores the credentials to access to CartoDB via API. This credentials are OAuth validated tokens and API keys
-  - **0**: base DB used for nodejs tiler. Will change in future
+  - **0 - tables_metadata**: stores metadata from user tables
+  - **1 - queries_log**: stores an entry per request performed, storing the IP of the request and some information of the request (deactivated)
+  - **2 - threshold**: stores the number of queries run per user and per table, and the kind of those queries (selects, inserts....)
+  - **3 - api_credentials**: stores the credentials to access to CartoDB via API. This credentials are OAuth validated tokens and API keys
+  - **4**: base DB used for nodejs tiler. Will change in future
 
 ### tables_metadata database ###
 
@@ -27,6 +27,8 @@ The values of the hash are:
   - `user_id`: the identifier of the owner
   
 ### queries_log database ###
+
+_deactivated_
 
 `queries_log` database stores in a list each request performed to the API. Each list is identified by this key:
 

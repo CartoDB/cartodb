@@ -80,6 +80,18 @@ module ApplicationHelper
     result.join(',')
   end
   
+  def max_request_in_a_day
+    max = 0
+    20.downto(0) do |days|
+      date = (Date.today - days.days).strftime("%Y-%m-%d")
+      day_request = CartoDB::QueriesThreshold.get(current_user.id, date)
+      if day_request>max
+        max = day_request
+      end
+    end
+    max
+  end
+  
   def colors_series_in_the_last_20_days
     result = []
     20.downto(0) do |days|

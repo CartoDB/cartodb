@@ -4,10 +4,10 @@
 //   - Resize columns -- KO
 //   - Pagination with ajax --- OK
 //   - Custom style --- OK
-//   - jScrollPane
+//   - jScrollPane --- OK
 //   - Update table (remove columns and rows, add columns and rows, move columns, sort columns) - OK
-//   - Validate fields
-//   - Rows selection for multiple edition
+//   - Validate fields --- OK
+//   - Rows selection for multiple edition --- DONE BUT PENDING
 //   - Floating tHead  --- OK
 //   - Floating first column --- OK
 
@@ -189,70 +189,33 @@
     //  DRAW COLUMNS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawColumns: function(data) {
-      //Draw the columns headers
-      var thead = '<thead><tr><th class="first"><div></div></th>';
       headers = {};
       
-      $.each(data,function(index,element){
+      //Draw the columns headers
+      var thead = '<thead><tr><th class="first"><div></div></th>';
+      
+      _.each(data,function(element,index){
         //Get type of table -> Point or Polygon
         if (element[3]!=undefined) {
           map_type = element[3];
         }
         
-        headers[element[0]] = (element[3]==undefined)?element[1]:element[3];
-        var column_types = '<span class="col_types">' +
-                        '<p>'+element[1]+'</p>' +
-                        '<ul>' +
-                          '<li><a href="#String">String</a></li>' +
-                          '<li><a href="#Number">Number</a></li>' +
-                          '<li><a href="#Date">Date</a></li>' +
-                          '<li><a href="#Boolean">Boolean</a></li>' +
-                        '</ul>' +
-                      '</span>';
-
-        var col_ops_list = '<span class="col_ops_list">' +
-                        '<h5>ORDER</h5>' +
-                        '<ul>' +
-                          '<li class="disabled"><a>Order by ASC</a></li>' +
-                          '<li class="disabled"><a>Order by DESC</a></li>' +
-                        '</ul>' +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?'<div class="line"></div>':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?'<h5>EDIT</h5>':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?'<ul>':'') +
-                          ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?'<li><a class="rename_column" href="#rename_column">Rename column</a></li>':'') +
-                          ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?'<li><a class="change_data_type" href="#change_data_type">Change data type</a></li>':'') +
-                          ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?'<li><a class="delete_column" href="#delete_column">Delete column</a></li>':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?'</ul>':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<div class="line geo_line"></div>':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<h5>GEOREFERENCE</h5>':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<ul class="geo_list">':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'<li><a href="#" class="open_georeference">Georeference with...</a></li>':'') +
-                        ((element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at")?'</ul>':'') +
-                        '<div class="line"></div>'+
-                        '<h5>CREATE</h5>' +
-                        '<ul>' +
-                          '<li class="last"><a href="#add_column" class="add_column">Add new column</a></li>' +
-                        '</ul>' +
-                      '</span>';
-        thead += '<th c="'+element[0]+'" type="'+element[1]+'">'+
-                    '<div '+((element[0]=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
-                      '<span class="long">'+
-                        '<h3 class="'+((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at" || element[3]!=undefined)?'static':'')+'">'+element[0]+'</h3>'+
-                        ((element[2]!=undefined)?'<p class="geo '+element[2]+' '+((geolocating)?'loading':'')+'">geo</p>':'') +
-                        ((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at" || element[3]!=undefined)?'':'<input type="text" value="'+element[0]+'"/>') +
-                      '</span>'+
-                      '<p class="long">'+
-                        ((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at" || element[3]!=undefined)?'<a class="static">'+element[1]+'</a>':'<a href="#" class="column_type">'+element[1]+'</a>') +
-                      '</p>'+
-                      '<a class="options" href="#options">options</a>'+
-                      col_ops_list+
-                      ((element[0]=="cartodb_id" || element[0]=="created_at" || element[0]=="updated_at" || element[3]!=undefined)?'':column_types) +
-                    '</div>'+
-                  '</th>';
+        // Save column headers
+        headers[element[0]] = element[3] || element[1];
+        
+        // Playing with templates (table_templates.js - Mustache.js)
+        thead += Mustache.to_html(th,{
+          allowed:(element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?true:false,
+          type:element[1],
+          name:element[0],
+          cartodb_id: (element[0]!="cartodb_id")?false:true,
+          cellsize: cell_size
+        });
       });
+      
       thead += "</thead></tr>";
       $(table).append(thead);
-      
+            
       if (first) {
         first = false;
         //Print correct column types
@@ -311,27 +274,36 @@
         var tbody = '';
       }
 
-
       //Loop all the data
-      $.each(data, function(i,element){
-        var options_list =  '<span>' +
-                              '<h5>EDIT</h5>' +
-                              '<ul>' +
-                                '<li class="disabled"><a>Duplicate row</a></li>' +
-                                '<li><a class="delete_row" href="#delete_row">Delete row</a></li>' +
-                              '</ul>' +
-                              '<div class="line"></div>'+
-                              '<h5>CREATE</h5>' +
-                              '<ul>' +
-                                '<li class="last"><a href="#add_row" class="add_row">Add new row</a></li>' +
-                              '</ul>' +
-                            '</span>';
-        tbody += '<tr r="'+element['cartodb_id']+'"><td class="first" r="'+ element['cartodb_id'] +'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
-    		for(var j in element){
-    			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':((j=="the_geom")?parsePoint(element[j]):element[j]))+'</div></td>';
-    		}
-    		
+      _.each(data, function(element,i){
+        // Get first td
+        tbody += Mustache.to_html(first_td,{
+          cartodb_id: element['cartodb_id'],
+        });
         
+        // Get rest generic td
+        _.each(element,function(data,j){
+          tbody += Mustache.to_html(generic_td,{
+            value: function(){
+              if (data==null) {
+                return '';
+              } else if (j=="the_geom") {
+                var json = $.parseJSON(data);
+                if (json.type=="Point") {
+                  return json.coordinates[0] +', ' + json.coordinates[1];
+                }
+              } else {
+                return data;
+              }
+            },
+            cartodb_id: element['cartodb_id'],
+            is_cartodb_id:(j=="cartodb_id")?true:false,
+            allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
+            cellsize: cell_size,
+            column: j
+          });
+        });
+
         var start = tbody.lastIndexOf('"width:');
         var end = tbody.lastIndexOf('px"');
         tbody = tbody.substring(0,start) + '"width:' + last_cell_size + tbody.substring(end);
@@ -340,6 +312,7 @@
       });
 
 
+      // If the table is empty or not
       if ($(table).children('tbody').length==0) {
         tbody += '</tbody>';
         $(table).append(tbody);
@@ -348,19 +321,13 @@
         (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
       }
       
+      // If there was a previous action
       if (direction!='') {
         methods.checkReuse(direction);
       } else {
         $(window).scrollTo({top:previous_scroll+'px',left:'0'},300,{onAfter: function() {loading = false; enabled = true;}});
       }
-      
-      
-      function parsePoint(point) {
-        var json = $.parseJSON(point);
-        if (json.type=="Point") {
-          return json.coordinates[0] +', ' + json.coordinates[1];
-        }
-      }
+
     },
     
     
@@ -2183,7 +2150,8 @@
       var window_width = $(window).width();
       var table_width = $(table).width();
       
-      if (window_width==table_width) {
+      
+      if (window_width==table_width || $('table tbody').length==0) {
         $('span.paginate a#previousButton').addClass('disabled');
         $('span.paginate a#nextButton').addClass('disabled');
       } else {

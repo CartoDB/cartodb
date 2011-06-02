@@ -600,7 +600,8 @@ TRIGGER
     command = "copy #{self.name} from STDIN WITH (HEADER true, FORMAT 'csv')"
     import_csv_command = %Q{cat #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
     Rails.logger.info "Importing CSV. Executing command: " + import_csv_command
-    system import_csv_command
+    output = %x[import_csv_command]
+    Rails.logger.info ">> #{output}"
     owner.in_database do |user_database|
       # Check if the file had data, if not rise an error because probably something went wrong
       if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank?

@@ -492,6 +492,24 @@ describe Table do
     table.rows_counted.should == 3855
   end
   
+  it "should import file clubbing.csv" do
+    table = new_table :name => nil
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/clubbing.csv", "text/csv")
+    table.save
+    table.reload
+    table.name.should == 'clubbing'
+    table.rows_counted.should == 2003
+  end
+
+  it "should import file short_clubbing.csv" do
+    table = new_table :name => nil
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/short_clubbing.csv", "text/csv")
+    table.save
+    table.reload
+    table.name.should == 'short_clubbing'
+    table.rows_counted.should == 78
+  end
+  
   it "should import ngos_aidmaps.csv" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos_aidmaps.csv", "text/csv")
@@ -584,7 +602,27 @@ describe Table do
 
     table.name.should == "esp_adm1_shp"
   end
-
+  
+  # FIXME
+  it "should import whs_features_gr.csv" do
+    table = new_table :name => nil
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/whs_features_gr.csv", "text/csv")
+    table.save
+    table.reload
+    table.name.should == 'whs_features_gr'
+    table.rows_counted.should == 29
+  end
+  
+  # FIXME
+  it "should import ngoaidmap_projects.csv" do
+    table = new_table :name => nil
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngoaidmap_projects.csv", "text/csv")
+    table.save
+    table.reload
+    table.name.should == 'ngoaidmap_projects'
+    table.rows_counted.should == 1864
+  end
+  
   it "should alter the schema automatically to a a wide range of numbers when inserting" do
     user = create_user
     table = new_table

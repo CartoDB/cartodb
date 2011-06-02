@@ -17,14 +17,15 @@ class Tag < Sequel::Model
                         order by count desc limit ?", user_id, options[:limit]).all.map{|t| t.values }
   end
 
-  def self.load_public_tags(user_id, options = {})
-    options[:limit] ||= 5
-    fetch("select tags.name, count(*) as count
-                        from tags
-                        inner join user_tables on user_tables.id = tags.table_id and user_tables.privacy = #{Table::PUBLIC}
-                        where tags.user_id != ?
-                        group by tags.name
-                        order by count desc limit ?", user_id, options[:limit]).all.map{|t| t.values }
-  end
+  # TODO: V2
+  # def self.load_public_tags(user_id, options = {})
+  #   options[:limit] ||= 5
+  #   fetch("select tags.name, count(*) as count
+  #                       from tags
+  #                       inner join user_tables on user_tables.id = tags.table_id and user_tables.privacy = #{Table::PUBLIC}
+  #                       where tags.user_id != ?
+  #                       group by tags.name
+  #                       order by count desc limit ?", user_id, options[:limit]).all.map{|t| t.values }
+  # end
 
 end

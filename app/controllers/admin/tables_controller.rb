@@ -8,7 +8,8 @@ class Admin::TablesController < ApplicationController
   def index
     current_page = params[:page].nil? ? 1 : params[:page].to_i
     per_page = 10
-    unless params[:public]
+    # TODO: V2
+    # unless params[:public]
       resp = access_token.get("/v1/tables/tags?limit=5")
       if resp.code.to_i == 200
         @tags = Yajl::Parser.new.parse(resp.body)
@@ -37,14 +38,14 @@ class Admin::TablesController < ApplicationController
       else
         render_500 and return
       end
-    else
-      render_404 and return
-      # TODO:
-      # @tags = Tag.load_public_tags(current_user.id, :limit => 5)
-      # @tables = Table.filter(~{:user_id => current_user.id} & {:privacy => Table::PUBLIC}).order(:id).reverse.
-      #                   paginate(current_page, per_page)
-      # render :template => 'admin/tables/index_public' and return
-    end
+    # TODO: V2
+    # else
+    #   render_404 and return
+    #   @tags = Tag.load_public_tags(current_user.id, :limit => 5)
+    #   @tables = Table.filter(~{:user_id => current_user.id} & {:privacy => Table::PUBLIC}).order(:id).reverse.
+    #                     paginate(current_page, per_page)
+    #   render :template => 'admin/tables/index_public' and return
+    # end
   end
 
   def show

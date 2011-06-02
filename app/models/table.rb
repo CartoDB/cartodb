@@ -492,8 +492,9 @@ TRIGGER
       FileUtils.rm_rf(csv_file_path)
 
       user_database.run("DROP TABLE IF EXISTS #{table_name}")
+      
       export_schema = self.schema.map{|c| c.first} - [:the_geom]
-      export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.columns.include?(:the_geom)
+      export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(:the_geom)
       user_database.run("CREATE TABLE #{table_name} AS SELECT #{export_schema.join(',')} FROM #{self.name}")
 
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)

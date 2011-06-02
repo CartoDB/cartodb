@@ -8,7 +8,13 @@ class CartoDB::InvalidGeomType < StandardError; end
 class CartoDB::InvalidSRID < StandardError; end
 class CartoDB::InvalidGeoJSONFormat < StandardError; end
 class CartoDB::QueryNotAllowed < StandardError; end
-class CartoDB::TableNotExists < StandardError; end
+
+class CartoDB::TableNotExists < StandardError
+  attr_accessor :message
+  def initialize(table_name)
+    @message = "Table #{table_name} doesn't exist"
+  end
+end
 
 
 class CartoDB::ErrorRunningQuery < StandardError

@@ -16,7 +16,7 @@ module CartoDB
           if t = Table[:user_id => user_id, :name => $1]
             t.destroy
           else
-            raise CartoDB::TableNotExists
+            raise CartoDB::TableNotExists.new($1)
           end
           nil
         elsif q.include?('rename to') && q =~ /^alter\s*table\s*([\w_]+)\s*rename\s*to\s*([\w_]+)/i
@@ -24,7 +24,7 @@ module CartoDB
             t.name = $2
             t.save_changes
           else
-            raise CartoDB::TableNotExists
+            raise CartoDB::TableNotExists.new($1)
           end
           nil
         elsif q.include?('rename') && q =~ /^\s*alter\s*table\s*([\w_]+)\s*/i
@@ -90,7 +90,7 @@ module CartoDB
         if query =~ /^\s*select\s*(\*)\s*from\s*(\w+)\s*(.*)/i
           query.gsub!(/^\s*select\s*(\*)\s*from\s*(\w+)\s*(.*)/i) do |matches|
             stored_schema = $tables_metadata.hget "rails:#{database_name}:#{$2}", "columns"
-            raise CartoDB::TableNotExists if stored_schema.blank?
+            raise CartoDB::TableNotExists.new($2) if stored_schema.blank?
             schema = Yajl::Parser.new.parse(stored_schema)
             raise "Blank columns in table #{database_name}:#{$2}" if schema.blank?
             if schema.include?("the_geom")

@@ -31,7 +31,13 @@ class Api::Json::QueriesController < Api::ApplicationController
     Rails.logger.info "============================================================="
     render :json => { :errors => [e.db_message, e.syntax_message] }.to_json, :status => 400,
            :callback => params[:callback]
-  rescue
+  rescue CartoDB::TableNotExists => e
+    Rails.logger.info "============== exception on queries#run ====================="
+    Rails.logger.info e.message
+    Rails.logger.info "============================================================="
+    render :json => { :errors => [e.message] }.to_json, :status => 400,
+          :callback => params[:callback]  
+  rescue 
     Rails.logger.info "============== exception on queries#run ====================="
     Rails.logger.info $!
     Rails.logger.info "============================================================="

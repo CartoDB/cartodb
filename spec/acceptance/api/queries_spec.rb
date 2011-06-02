@@ -82,5 +82,14 @@ feature "API 1.0 queries interface" do
       get_json api_query_url, :sql => "select * from #{@table.name} where family='Polynoidae' limit 10"
     }.to change{Resque.size("queries_threshold")}.from(0).to(1)  
   end
+  
+  scenario "Perform a query against a table that doesn't exist" do
+    get_json api_query_url, :sql => "select * from wadus limit 10" do |response|
+      response.status.should == 400
+      response.body.should == {
+        :errors => ["Table wadus doesn't exist"]
+      }
+    end
+  end
 
 end

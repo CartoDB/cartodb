@@ -13,6 +13,9 @@ class Admin::TablesController < ApplicationController
       resp = access_token.get("/v1/tables/tags?limit=5")
       if resp.code.to_i == 200
         @tags = Yajl::Parser.new.parse(resp.body)
+      elsif resp.code.to_i == 401
+        logout
+        redirect_to root_path and return
       else
         render_500 and return
       end
@@ -35,6 +38,9 @@ class Admin::TablesController < ApplicationController
           :page_range => (1..(count.to_f / per_page).ceil),
           :total_entries => count
         }
+      elsif response.code.to_i == 401
+        logout
+        redirect_to root_path and return
       else
         render_500 and return
       end
@@ -65,6 +71,9 @@ class Admin::TablesController < ApplicationController
           send_data resp.body,
             :type => 'application/octet-stream; charset=binary; header=present',
             :disposition => "attachment; filename=#{@table["name"]}.zip"
+        elsif resp.code.to_i == 401
+          logout
+          redirect_to root_path and return
         else
           render_404 and return
         end
@@ -75,6 +84,9 @@ class Admin::TablesController < ApplicationController
           send_data resp.body,
             :type => 'application/octet-stream; charset=binary; header=present',
             :disposition => "attachment; filename=#{@table["name"]}.zip"
+        elsif resp.code.to_i == 401
+          logout
+          redirect_to root_path and return
         else
           render_404 and return
         end

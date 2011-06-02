@@ -53,7 +53,7 @@ class Table < Sequel::Model(:user_tables)
     # Before assign the name, the method #key can not be used,
     # because depends on the name of the table
     self.name = get_valid_name if self.name.blank?
-    set_table_schema!
+    create_table_in_database!
     if !import_from_file.blank? && imported_table_name.blank?
       import_data_from_file!
     end
@@ -777,7 +777,7 @@ TRIGGER
     end
   end
 
-  def set_table_schema!
+  def create_table_in_database!
     owner.in_database do |user_database|
       if imported_table_name.blank?
         if force_schema.blank?

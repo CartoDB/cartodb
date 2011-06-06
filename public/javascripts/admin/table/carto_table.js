@@ -1152,15 +1152,24 @@
           if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
             methods.closeTablePopups();
             
-            $(target).closest('tr').addClass('selecting selecting_first selecting_last border');
+            if ($(target).closest('tr').hasClass('selecting')) {
+              $(target).closest('tr').removeClass('selecting selecting_first selecting_last border');
+            } else {
+              $(target).closest('tr').addClass('selecting selecting_first selecting_last border');
+            }
             
             // Check rows where
             $('table tbody tr.selecting').each(function(i,ele){
               if ($(ele).prev().hasClass('selecting')) {
                 $(ele).removeClass('selecting_first');
+              } else {
+                $(ele).addClass('selecting_first border');
               }
+              
               if ($(ele).next().hasClass('selecting')) {
                 $(ele).removeClass('selecting_last');
+              } else {
+                $(ele).addClass('selecting_last border');
               }
             });
             

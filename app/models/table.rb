@@ -362,7 +362,7 @@ class Table < Sequel::Model(:user_tables)
       else
         schema.map{|c| c[0] }.join(',')
       end
-      rows = user_database["SELECT #{select} FROM #{name} LIMIT #{per_page} OFFSET #{page}"].all
+      rows = user_database["SELECT #{select} FROM #{name} ORDER BY cartodb_id LIMIT #{per_page} OFFSET #{page}"].all
     end
     {
       :id         => id,

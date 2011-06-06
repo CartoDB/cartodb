@@ -109,6 +109,21 @@ feature "API 1.0 records management" do
     delete_json api_table_record_url(@table.name,pk) do |response|
       response.status.should be_success
     end
+    @table.rows_counted.should == 0
+  end
+
+  scenario "Remove multiple rows" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "delete", any_parameters).once
+    
+    pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+    pk2 = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+    pk3 = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+    pk4 = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+
+    delete_json api_table_record_url(@table.name,"#{pk},#{pk2},#{pk3}") do |response|
+      response.status.should be_success
+    end
+    @table.rows_counted.should == 1
   end
 
   scenario "Get the value from a column in a given record" do

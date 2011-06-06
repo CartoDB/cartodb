@@ -57,7 +57,13 @@ class Api::Json::RecordsController < Api::ApplicationController
   def destroy
     if params[:id]
       current_user.in_database do |user_database|
-        user_database.run("delete from #{@table.name} where cartodb_id = #{params[:id].sanitize_sql}")
+        if params[:id] =~ /^\d+$/
+          user_database.run("delete from #{@table.name} where cartodb_id = #{params[:id].sanitize_sql}")
+        else
+          params[:id].split(',').each do |raw_id|
+            user_database.run("delete from #{@table.name} where cartodb_id = #{raw_id.sanitize_sql}")
+          end
+        end
       end
       render :nothing => true,
              :callback => params[:callback], :status => 200

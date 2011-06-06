@@ -48,6 +48,36 @@ feature "API 1.0 records management" do
       response.body[:rows][5].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[7].slice(:cartodb_id, :name, :location, :description)
     end
   end
+  
+  scenario "Get the records from a table sorted by some column, ascending or descending" do
+    10.times do |i|
+      @table.insert_row!({:name => "Name ##{i}", :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+    end
+
+    content = @user.run_query("select * from \"#{@table.name}\"")[:rows]
+    
+    get_json "#{api_table_records_url(@table.name)}?order_by=name&mode=asc" do |response|
+      response.status.should be_success
+      response.body[:id].should == @table.id
+      response.body[:name].should == @table.name
+      response.body[:total_rows].should == 10
+      response.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
+        should == content[0].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
+        should == content[1].slice(:cartodb_id, :name, :location, :description)
+    end
+    
+    get_json "#{api_table_records_url(@table.name)}?order_by=name&mode=desc" do |response|
+      response.status.should be_success
+      response.body[:id].should == @table.id
+      response.body[:name].should == @table.name
+      response.body[:total_rows].should == 10
+      response.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
+        should == content[9].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
+        should == content[8].slice(:cartodb_id, :name, :location, :description)
+    end
+  end
 
   scenario "Insert a new row and get the record" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "insert", any_parameters).once

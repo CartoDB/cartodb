@@ -26,7 +26,8 @@
     /* Convert Date string to Date object  */
     /*============================================================================*/
     function parseDate(str) {
-      date = {};
+      var date = {};
+      
       if (str=='') {
         date.day = 1;
         date.month = 1;
@@ -35,13 +36,13 @@
         date.time = '00:00:00';
       } else {
         try {
-          var split_date_hour = str.split(' ');
+          var split_date_hour = str.split('T');
           if (split_date_hour.length>1) {
             var split_date = split_date_hour[0].split('-');
-            date.time = split_date_hour[1];
+            date.time = split_date_hour[1].split('+')[0];
             date.day = split_date[2];
             date.month = split_date[1];
-            date.month_text = getMonthString(date.month);
+            date.month_text = getMonthString(date.month-0);
             date.year = split_date[0];
           } else {
             date.day = 1;
@@ -84,6 +85,7 @@
     }
     
     
+    
     /*============================================================================*/
     /* Convert month number to month string  */
     /*============================================================================*/
@@ -115,20 +117,35 @@
     }
 
 
+
+    /*============================================================================*/
+    /* Zero padding for numbers */
+    /*============================================================================*/
+    function zeroPad(num,count) {
+      var numZeropad = num + '';
+      while(numZeropad.length < count) {
+        numZeropad = "0" + numZeropad;
+      }
+      return numZeropad;
+    }
+
+
     /*============================================================================*/
     /* Select a text range into within a textArea  */
     /*============================================================================*/
     $.fn.selectRange = function(start, end) {
-            return this.each(function() {
-                    if(this.setSelectionRange) {
-                            this.focus();
-                            this.setSelectionRange(start, end);
-                    } else if(this.createTextRange) {
-                            var range = this.createTextRange();
-                            range.collapse(true);
-                            range.moveEnd('character', end);
-                            range.moveStart('character', start);
-                            range.select();
-                    }
-            });
+      return this.each(function() {
+        if(this.setSelectionRange) {
+          this.focus();
+          this.setSelectionRange(start, end);
+        } else if(this.createTextRange) {
+          var range = this.createTextRange();
+          range.collapse(true);
+          range.moveEnd('character', end);
+          range.moveStart('character', start);
+          range.select();
+        }
+      });
     };
+    
+    

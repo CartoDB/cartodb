@@ -568,6 +568,15 @@
           '<a class="cancel_delete" href="#cancel_delete">cancel</a>'+
           '<a class="button" href="#delete_column">Yes, delete it</a>'+
         '</div>');
+       
+        
+      //Change column type tooltip
+      $(table).parent().append(
+        '<div class="change_type_column">'+
+          '<p>Likely you will lose all this column data. Are you sure?</p>'+
+          '<a class="cancel_change" href="#cancel_delete">cancel</a>'+
+          '<a class="button" href="#change_type">Yes, do it</a>'+
+        '</div>');
       
       
       //Mamufas elements belong to the carto table
@@ -755,7 +764,7 @@
   
         $.ajax({
           method: "GET",
-          url: defaults.getDataUrl+'/records',
+          url: '/v1/tables/'+table_name+'/records',
           headers: {"cartodbclient": true},
           data: {
             rows_per_page: defaults.resultsPerPage,
@@ -779,10 +788,11 @@
            url: '/v1/tables/'+table_name+'/records',
            headers: {"cartodbclient": true},
            success: function(data) {
+             
              row_id = data.id;
              $.ajax({
                 method: "GET",
-                url: defaults.getDataUrl,
+                url: '/v1/tables/'+table_name,
                 headers: {"cartodbclient": true},
                 success: function(data) {
                   data = data.schema;
@@ -804,7 +814,10 @@
                       text = row_id;
                     } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
                       var date = new Date();
-                      text = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+' '+date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+                      var test = new Date();
+                      var offset = -test.getTimezoneOffset()/60;
+                      
+                      text = date.getFullYear()+'-'+(zeroPad(date.getMonth()+1,2))+'-'+zeroPad(date.getDate(),2)+'T'+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+'+'+zeroPad(offset,2)+':00';
                     } else {
                       text = '';
                     }
@@ -892,11 +905,10 @@
           $('section.subheader').css('top',58-$(document).scrollTop()+'px');
           $(table).children('thead').css('top',160-$(document).scrollTop()+'px');
         }
+
         
-        
-        if ($('div.delete_column').is(':visible')) {
-          $('div.delete_column').fadeOut();
-        }
+        $('div.delete_column').fadeOut();
+        $('div.change_type_column').fadeOut();
 
 
         //For paginating data
@@ -1004,7 +1016,7 @@
       
 
       ///////////////////////////////////////
-      //  DOUBLE CLICK -> Open editor      //
+      //  DOUBLE CLICK -> Open cell editor //
       ///////////////////////////////////////
       $(document).dblclick(function(event){
         if (enabled && !query_mode) {
@@ -1019,6 +1031,7 @@
             
             var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
             var geo_column = $('p.geo').closest('th').attr('c');
+            
             
             if (geolocating && data.column==geo_column) {
               $('p.geo').trigger('click');
@@ -1093,7 +1106,7 @@
                   $('div.edit_cell textarea').css({'min-height' : '30px','height' : '30px'});
                 }
                 $('div.edit_cell div.free').show();
-                $('div.edit_cell div.free textarea').text(data.value);
+                $('div.edit_cell div.free textarea').val(data.value);
               }
 
               $('div.edit_cell a.save').attr('r',data.row);
@@ -1102,10 +1115,9 @@
               $('div.edit_cell').show();
 
               if (type!='date' && type!='boolean') {
-                var len = $('div.edit_cell div.free textarea').text().length;
+                var len = $('div.edit_cell div.free textarea').val().length;
                 $('div.edit_cell div.free textarea').selectRange(0,len);
               }
-              
 
 
               $('body').bind('click',function(ev){
@@ -1178,6 +1190,7 @@
                 };
               });
             }
+            
             if (event.preventDefault) {
               event.preventDefault();
               event.stopPropagation();
@@ -1226,7 +1239,7 @@
             var day = $('div.edit_cell div.date div.day input').val();
             var year = $('div.edit_cell div.date div.year input').val();
             var hour = $('div.edit_cell div.date div.hour input').val();
-            var new_value = year+'-'+month+'-'+day+ ' '+hour;
+            var new_value = year+'-'+zeroPad(month,2)+'-'+zeroPad(day,2)+ 'T'+hour+'+00:00';
             var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
             $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
           }
@@ -1465,6 +1478,7 @@
       });
       $('span.col_types ul li a').livequery('click',function(ev){
         stopPropagation(ev);
+        methods.closeTablePopups();
         
         var parent_element = $(this).closest('span.col_types').parent().children('p.long').children('a');
 
@@ -1472,6 +1486,40 @@
           var old_value = parent_element.text();
           var new_value = $(this).text().toLowerCase();
           var column = $(this).closest('th').attr('c');
+          
+          if (new_value!='string') {
+            methods.bindESCkey();
+            
+            $('div.change_type_column a.button').unbind('click');
+            $('div.change_type_column a.button').click(function(ev){
+              stopPropagation(ev);
+              methods.closeTablePopups();
+              changeColumnType(old_value,new_value,column,parent_element);
+            });
+
+            //Positionate warning tooltip
+            var left_position = $(table).find('th[c="'+column+'"]').position().left;
+            if ($(document).scrollTop()>58) {
+              $('div.change_type_column').css('top',$(document).scrollTop()-20+'px');
+            } else {
+              $('div.change_type_column').css('top','37px');
+            }
+            $('div.change_type_column').css('left',left_position-75+'px');
+            $('div.change_type_column').show();
+
+
+            $('body').click(function(event) {
+             if (!$(event.target).closest('div.change_type_column').length) {
+               methods.closeTablePopups();
+             };
+            });
+          } else {
+            changeColumnType(old_value,new_value,column,parent_element);
+          }
+          
+        }
+        
+        function changeColumnType(old_value,new_value,column,parent_element) {
           parent_element.text(new_value);
           var params = {};
           params['name'] = column;
@@ -1479,7 +1527,6 @@
 
           methods.updateTable('/columns/'+column,params,new_value,old_value,"column_type","PUT");
         }
-        methods.closeTablePopups();
       });
       $('thead tr th div h3,thead tr th div input,thead tr span.col_types,thead tr span.col_ops_list').livequery('click',function(ev){
         stopPropagation(ev);
@@ -1583,7 +1630,7 @@
         }
 
       });
-      $('div.delete_column a.cancel_delete, div.delete_row a.cancel_delete').livequery('click',function(ev){
+      $('div.delete_column a.cancel_delete, div.delete_row a.cancel_delete, div.change_type_column a.cancel_change').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
       });
@@ -1665,7 +1712,7 @@
         function getColumns() {
           $.ajax({
              method: "GET",
-             url: defaults.getDataUrl,
+             url: '/v1/tables/'+table_name,
       			 headers: {"cartodbclient":"true"},
              success: function(data) {
                data = data.schema;
@@ -2328,6 +2375,7 @@
     },
   
   
+  
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  REFRESH TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2348,6 +2396,7 @@
     },
     
     
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  CLOSE ALL POPUPS WINDOWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2360,6 +2409,8 @@
       $('div.delete_row').hide();
       //Column delete popup
       $('div.delete_column').hide();
+      //Change column type warning
+      $('div.change_type_column').hide();
       //Edit window
       $('div.edit_cell').hide();
       //Remove row editing class
@@ -2395,6 +2446,7 @@
         }
       });
     },
+    
     
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

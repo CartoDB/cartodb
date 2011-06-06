@@ -53,6 +53,19 @@
             '<a href="#save_table" class="table_save" >Save table</a>'+
           '</span>'+
         '</div>'+
+      '</div>'+
+      '<div class="warning_window">'+
+        '<a href="#close_window" class="close_warning"></a>'+
+        '<div class="inner_">'+
+          '<span class="top">'+
+            '<h3>This change will affect your API calls</h3>'+
+            '<p>If you are accesing to this table via API don’t forget to update the name in the API calls after changing the name.</p>'+
+          '</span>'+
+          '<span class="bottom">'+
+            '<a href="#close_window" class="cancel">cancel</a>'+
+            '<a href="#confirm_delete" class="continue">Ok, continue</a>'+
+          '</span>'+
+        '</div>'+
       '</div>'
       );
 
@@ -104,13 +117,36 @@
           $('span.title_window span').fadeOut();
         },1500);
       } else {
-        if ($('p.status a').hasClass('save')) {
-          old_value.status = 'save';
-          $('p.status a').removeClass('save').addClass('public').text('public');
+        // If the name of the table is Untitle_table... - not show warning
+        if ((old_value.name).search('untitle_table')==-1) {
+          closeOutTableWindows();
+          $('div.mamufas div.warning_window a.continue').unbind('click');
+          $('div.mamufas div.warning_window a.continue').click(function(ev){
+            ev.stopPropagation();
+            ev.preventDefault();
+            changeTableName(new_value,old_value);
+          });
+          
+          $('div.mamufas div.warning_window').show();
+          $('div.mamufas').fadeIn('fast');
+          bindESC();
+
+        } else {
+          changeTableName(new_value,old_value);
         }
-        $('section.subheader h2 a').text(new_value);
-        $('span.title_window').hide();
-        changesRequest('name',new_value,old_value);
+        
+        // Function to change the table name final steps
+        function changeTableName(new_value,old_value) {
+          if ($('p.status a').hasClass('save')) {
+            old_value.status = 'save';
+            $('p.status a').removeClass('save').addClass('public').text('public');
+          }
+          $('section.subheader h2 a').text(new_value);
+          $('span.title_window').hide();
+          changesRequest('name',new_value,old_value);
+          closeOutTableWindows();
+        }
+        
       }
     });
 
@@ -188,10 +224,7 @@
       $('span.tags p').each(function(index,element){
         values.push($(element).text());
       });
-      $("#tags_list").tagit(
-        //{availableTags: ["c++", "java", "php", "coldfusion", "javascript", "asp", "ruby", "python", "c", "scala", "groovy", "haskell", "perl"]}
-        {values: values}
-      );
+      $("#tags_list").tagit({values: values});
       $('span.tags_window').show();
       $('body').click(function(event) {
         if (!$(event.target).closest('span.tags_window').length) {
@@ -265,10 +298,15 @@
     });
     $('a.export_data').click(function(ev){
       stopPropagation(ev);
-      closeOutTableWindows();
-      $('div.mamufas div.export_window').show();
-      $('div.mamufas').fadeIn('fast');
-      bindESC();
+      if ($('div.mamufas').is(':visible') && $('div.delete_window').is(':visible')) {
+        $('div.mamufas div.delete_window').hide();
+        $('div.mamufas div.export_window').show();
+      } else {
+        closeOutTableWindows();
+        $('div.mamufas div.export_window').show();
+        $('div.mamufas').fadeIn('fast');
+        bindESC();
+      }
     });
 
 
@@ -286,7 +324,7 @@
       $('div.mamufas').fadeIn('fast');
       bindESC();
     });
-    $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_save').click(function(ev){
+    $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_save, div.mamufas a.close_warning').click(function(ev){
       stopPropagation(ev);
       $('div.mamufas').fadeOut('fast',function(){
         $('div.mamufas div.delete_window').hide();
@@ -412,11 +450,12 @@
       }
     });
   }
+  
+  
   function unbindESC() {
     $(document).unbind('keydown');
     $('body').unbind('click');
   }
-
 
 
   function closeOutTableWindows() {
@@ -430,6 +469,7 @@
       $('div.mamufas div.delete_window').hide();
       $('div.mamufas div.export_window').hide();
       $('div.mamufas div.save_window').hide();
+      $('div.mamufas div.warning_window').hide();
       $(document).unbind('keydown');
       $('body').unbind('click');
     });

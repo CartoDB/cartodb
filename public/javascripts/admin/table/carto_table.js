@@ -1240,7 +1240,7 @@
             $('tbody tr').removeClass('selecting');
             $('tbody tr').removeClass('selecting_last');
             $('tbody tr').removeClass('selected');
-            var first_row = $(target).parent().parent();
+            var first_row = $(target).closest('tr');
             first_row.addClass('selecting_first');
             var initial_x = first_row.position().top;
       
@@ -1259,7 +1259,7 @@
       
             if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {              
               var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-              var current_row = $(target).parent().parent();
+              var current_row = $(target).closest('tr');
               var current_x = current_row.position().top;
               $(table).children('tbody').children('tr').removeClass('selecting');
               current_row.addClass('selecting');
@@ -1603,13 +1603,14 @@
           $('p.geo').trigger('click');
         } else {
           var position = $(this).position();
-          $(this).parent().parent().children('span.col_types').find('li').removeClass('selected');
-          var column_type = $(this).parent().parent().children('p.long').children('a').text();
+          var parent_div = $(this).closest('div');
+          parent_div.children('span.col_types').find('li').removeClass('selected');
+          var column_type = parent_div.children('p.long').children('a').text();
           column_type = column_type.charAt(0).toUpperCase() + column_type.slice(1);
-          $(this).parent().parent().children('span.col_types').children('p').text(column_type);
-          $(this).parent().parent().children('span.col_types').children('ul').children('li').children('a:contains("'+column_type+'")').parent().addClass('selected');
-          $(this).parent().parent().children('span.col_types').css('top',position.top-5+'px');
-          $(this).parent().parent().children('span.col_types').show();
+          parent_div.children('span.col_types').children('p').text(column_type);
+          parent_div.children('span.col_types').children('ul').children('li').children('a:contains("'+column_type+'")').parent().addClass('selected');
+          parent_div.children('span.col_types').css('top',position.top-5+'px');
+          parent_div.children('span.col_types').show();
           $('body').click(function(event) {
            if (!$(event.target).closest('thead tr span.col_types').length) {
              methods.closeTablePopups();
@@ -1690,7 +1691,7 @@
             if (old_value!=new_value && new_value.length>0) {
               var params = {};
               params["new_name"] = new_value;
-              params["index"] = title.parent().parent().parent().index();
+              params["index"] = title.closest('th').index();
               methods.updateTable("/columns/"+old_value,params,new_value,old_value,'rename_column',"PUT");
               input.parent().children('h3').text(new_value);
               input.closest('th').attr('c',new_value);

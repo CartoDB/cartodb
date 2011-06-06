@@ -454,7 +454,6 @@
             '<li><a class="sql" href="#open_sql"><span>SQL</span></a></li>'+
             '<li><a href="#add_row" class="add_row"><span>Add row</span></a></li>'+
             '<li><a href="#add_column" class="add_column"><span>Add column</span></a></li>'+
-            //'<li><a><span class="dropdown">Views (2)</span></a></li>'+
             '<li class="other"><a href="#"><span class="dropdown">Other queries (2)</span></a></li>'+
           '</ul>'+
           //SQL Console
@@ -797,14 +796,14 @@
                 success: function(data) {
                   data = data.schema;
                   requests_queue.responseRequest(requestId,'ok','');
-                  var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row</a></li><li><a href="#delete_row" class="delete_row">Delete row</a></li></ul>' +
+                  var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row(s)</a></li><li><a href="#delete_row" class="delete_row">Delete row(s)</a></li></ul>' +
                                       '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#add_row" class="add_row">Add new row</a></li>' +
                                       '</ul></span>';
                                   
                   if (type==0) {
-                    var row = '<tbody style="padding-top:52px"><tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
+                    var row = '<tbody style="padding-top:52px"><tr class="editing" r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
                   } else {
-                    var row = '<tr r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
+                    var row = '<tr class="editing" r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
                   }
                                
     
@@ -1152,6 +1151,19 @@
           //Clicking in first column element + Key
           if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
             methods.closeTablePopups();
+            
+            $(target).closest('tr').addClass('selecting selecting_first selecting_last border');
+            
+            // Check rows where
+            $('table tbody tr.selecting').each(function(i,ele){
+              if ($(ele).prev().hasClass('selecting')) {
+                $(ele).removeClass('selecting_first');
+              }
+              if ($(ele).next().hasClass('selecting')) {
+                $(ele).removeClass('selecting_last');
+              }
+            });
+            
 
             if (event.preventDefault) {
               event.preventDefault();
@@ -1163,12 +1175,12 @@
           }
 
           //Clicking in first column element
-          if (targetElement == "a" && $(target).parent().parent().hasClass('first')) {
-            if (!$(target).parent().parent().parent().hasClass('selecting_first')) {
+          if (targetElement == "a" && $(target).closest('td').hasClass('first')) {
+            if (!$(target).closest('tr').hasClass('selecting_first')) {
               methods.closeTablePopups();
               
-              if (!$(target).parent().parent().parent().hasClass('selected')) {
-                $(target).parent().parent().parent().addClass('editing');
+              if (!$(target).closest('tr').hasClass('selected')) {
+                $(target).closest('tr').addClass('editing');
               }
               $('body').click(function(event) {
                 if (!$(event.target).closest('tbody tr td div span').length) {
@@ -1200,6 +1212,126 @@
             }
           }
         } 
+      });
+
+
+      ///////////////////////////////////////
+      //  Editing selected rows            //
+      ///////////////////////////////////////
+      $(document).mousedown(function(event){
+        if (enabled) {
+          var target = event.target || event.srcElement;
+          var targetElement = target.nodeName.toLowerCase();
+      
+          if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
+            $('table tbody tr td.first div span').hide();
+            $('table tbody tr td.first div a.options').removeClass('selected');
+            $('tbody tr').removeClass('editing');
+            $('tbody tr').removeClass('selecting_first').removeClass('border');
+            $('tbody tr').removeClass('selecting');
+            $('tbody tr').removeClass('selecting_last');
+            $('tbody tr').removeClass('selected');
+            var first_row = $(target).parent().parent();
+            first_row.addClass('selecting_first');
+            var initial_x = first_row.position().top;
+      
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
+            }
+          }
+      
+          $(document).mousemove(function(event){
+            var target = event.target || event.srcElement;
+            var targetElement = target.nodeName.toLowerCase();
+      
+            if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {              
+              var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+              var current_row = $(target).parent().parent();
+              var current_x = current_row.position().top;
+              $(table).children('tbody').children('tr').removeClass('selecting');
+              current_row.addClass('selecting');
+              var find = false;
+              var cursor = first_row;
+      
+              while (!find) {
+                if (initial_x<current_x) {
+                  first_row.removeClass('selecting_last').addClass('selecting_first');
+                  if (cursor.attr('r')==current_row.attr('r')) {
+                    cursor.addClass('selecting');
+                    cursor.next().removeClass('selecting');
+                    find=true;
+                  } else {
+                    cursor.next().removeClass('selecting');
+                    cursor.addClass('selecting');
+                    cursor = cursor.next();
+                  }
+                } else if (initial_x>current_x) {
+                  first_row.removeClass('selecting_first').addClass('selecting_last');
+                  if (cursor.attr('r')==current_row.attr('r')) {
+                    cursor.addClass('selecting');
+                    cursor.prev().removeClass('selecting');
+                    find=true;
+                  } else {
+                    cursor.prev().removeClass('selecting');
+                    cursor.addClass('selecting');
+                    cursor = cursor.prev();
+                  }
+                } else {
+                  find=true;
+                  return false;
+                }
+              }
+      
+            } else {
+            }
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
+            }
+          });
+        }
+      });
+      $(document).mouseup(function(event){
+        if (enabled) {
+          var target = event.target || event.srcElement;
+          var targetElement = target.nodeName.toLowerCase();
+      
+          if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
+            var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+            if ($('tbody tr').hasClass('selecting_last')) {
+              $('tbody tr[r="'+data.row+'"]').addClass('selecting_first');
+              $('tbody tr[r="'+data.row+'"]').addClass('border');
+              $('tbody tr.selecting_last').addClass('border');
+            } else {
+              $('tbody tr[r="'+data.row+'"]').addClass('selecting_last').addClass('border');
+              $('tbody tr.selecting_first').addClass('border');
+            }
+      
+            if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_last') && $('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
+              $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
+              $('tbody tr[r="'+data.row+'"]').removeClass('selecting_last');
+              $('tbody tr[r="'+data.row+'"]').removeClass('border');
+              $('tbody tr[r="'+data.row+'"]').removeClass('selecting');
+              $('tbody tr[r="'+data.row+'"]').removeClass('editing');
+              $('tbody tr[r="'+data.row+'"]').removeClass('selected');
+            }
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
+            }
+          }
+          $(document).unbind('mousemove');
+        }
       });
 
 
@@ -1641,7 +1773,6 @@
         $('body').trigger('click');
         methods.updateTable('/columns/'+column,params,null,null,"delete_column","DELETE");
       });
-      //TODO change data type list values
       $('thead tr th').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
@@ -1944,7 +2075,7 @@
       
       
       ///////////////////////////////////////
-      //  Add row events                   //
+      //  Add - remove row events          //
       ///////////////////////////////////////
       $('a.add_row').livequery('click',function(ev){
         stopPropagation(ev);
@@ -1961,10 +2092,25 @@
           $('p.geo').trigger('click');
         } else {
           var cartodb_id = $(this).closest('tr').attr('r');
-
           var top_position = $(table).find('tr[r="'+cartodb_id+'"]').position().top;
+          var rows_involved = $('table tbody tr.selecting').size();
+          
+          // Several rows involved or only one?
+          if (rows_involved>1) {
+            $('div.delete_row p').text('You are about to delete these rows. Are you sure?');
+            $('div.delete_row a.button').text('Yes, delete them');
+            var rows_involved_ids = '';
+            $('table tbody tr.selecting').each(function(i,ele){
+              rows_involved_ids += $(ele).attr('r') + ',';
+            });
+            rows_involved_ids = rows_involved_ids.substr(0,rows_involved_ids.length-1);
+            $('div.delete_row a.button').attr('r',rows_involved_ids);
+          } else {
+            $('div.delete_row p').text('You are about to delete this row. Are you sure?');
+            $('div.delete_row a.button').text('Yes, delete it');
+            $('div.delete_row a.button').attr('r',cartodb_id);
+          }
 
-          $('div.delete_row a.button').attr('r',cartodb_id);
           $('div.delete_row').css('top',top_position-7+'px');
           $('div.delete_row').css('left',$('div.table_position').scrollLeft()+10+'px');
           $('div.delete_row').show();
@@ -1989,7 +2135,7 @@
       
       
       ///////////////////////////////////////
-      //  Add column events                //
+      //  Add - remove column events       //
       ///////////////////////////////////////
       $('a.add_column').livequery('click',function(ev){
         stopPropagation(ev);

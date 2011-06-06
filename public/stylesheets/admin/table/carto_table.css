@@ -70,7 +70,7 @@ div.table_position table tbody tr td.first div a.options {float:left; height:14p
 div.table_position table tbody tr td.first div a.options:hover {background-position:0 -14px;}
 div.table_position table tbody tr td.first div a.options.selected {height:20px; background-image:url('/images/admin/table/selected_option.png')}
 div.table_position table tbody tr td.first div a.options.selected:hover {background-position:0 0;}
-div.table_position table tbody tr td.first div span {display:none; position:absolute; left:13px; top:28px; width:88px; height:auto!important; background:#282F46; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:10;}
+div.table_position table tbody tr td.first div span {display:none; position:absolute; left:13px; top:28px; width:100px; height:auto!important; background:#282F46; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:10;}
 div.table_position table tbody tr td.first div span ul {float:left; padding:0 0 10px; width:88px;}
 div.table_position table tbody tr td.first div span li {float:left; width:66px; margin:0 3px 0 3px; padding:7px 8px 0;}
 div.table_position table tbody tr td.first div span li.disabled a {color:#999999;}
@@ -92,14 +92,15 @@ div.table_position table tbody tr.selected td div {padding:11px 13px 10px 13px;}
 div.table_position table tbody tr.selected td.first {height:35px!important;}
 
 /*last row selected*/
-div.table_position table tbody tr.selecting_last.border td {border-bottom:4px solid #666666;}
-div.table_position table tbody tr.selecting_last.border td div {padding:13px 13px 9px 13px;}
-div.table_position table tbody tr.selecting_last.border td.first {height:36px; border-bottom:4px solid #666666!important}
+div.table_position table tbody tr.selecting_last.border td {background-position:0 -157px;}
+div.table_position table tbody tr.selecting_last.border td div {padding:11px 13px 9px 13px;}
 /*first row selected*/
 div.table_position table tbody tr.selecting_first.border td {border-top:2px solid #666666;}
 div.table_position table tbody tr.selecting_first.border td div {padding:11px 13px 13px 13px;}
 div.table_position table tbody tr.selecting_first.border td.first div a.options {margin:12px 0 0 13px!important;}
-
+/*first&&last row selected*/
+div.table_position table tbody tr.selecting_first.selecting_last.border td {border-top:2px solid #666666; background-position:0 -158px;}
+div.table_position table tbody tr.selecting_first.selecting_last.border td div {padding-top:10px;}
 /*td first*/
 div.table_position table tbody tr.selecting td.first div a.options {display:none;}
 div.table_position table tbody tr.selecting_last td.first div a.options {display:none;}
@@ -109,6 +110,7 @@ div.table_position table tbody tr.selecting_first.border td.first div span {top:
 div.table_position table tbody tr.selecting_first.border td.first div a.options.selected {height:20px; background-position:0 0;}
 div.table_position table tbody tr.selecting_first.border td.first div a.options.selected:hover {background-position:0 0;}
 /*END SELECTED ROWS*/
+
 div.table_position table tbody tr.editing td {background-position:0 -40px!important;}
 div.table_position table tbody tr.editing td.first div a.options {background-position:0 -28px;}
 div.table_position table tbody tr.editing td.first div a.options:hover {background-position:0 -42px;}
@@ -122,7 +124,6 @@ div.table_position div.empty_table h5 {width:100%; text-align:center; font:bold 
 div.table_position div.empty_table p {width:100%; padding:9px 0 0 0; text-align:center; font:normal 15px Arial; color:#999999; text-shadow:0 1px white;}
 div.table_position div.empty_table p a {color:#999999;}
 div.table_position div.empty_table p a:hover {color:#333333;}
-
 
 /*LOADINGS*/
 /*pagination*/

@@ -62,8 +62,8 @@
                             '<span>' +
                               '<h5>EDIT</h5>' +
                               '<ul>' +
-                                '<li class="disabled"><a>Duplicate row</a></li>' +
-                                '<li><a class="delete_row" href="#delete_row">Delete row</a></li>' +
+                                '<li class="disabled"><a>Duplicate row(s)</a></li>' +
+                                '<li><a class="delete_row" href="#delete_row">Delete row(s)</a></li>' +
                               '</ul>' +
                               '<div class="line"></div>'+
                               '<h5>CREATE</h5>' +

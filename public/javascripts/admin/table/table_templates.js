@@ -74,5 +74,5 @@
                           '</div>'
                         '</td>';
       var generic_td =  '<td {{#allowed}}class="special"{{/allowed}} r="{{cartodb_id}}" c="{{column}}">'+
-                          '<div {{^is_cartodb_id}}style="width:{{cellsize}}px"{{/is_cartodb_id}}>{{value}}</div>'+
+                          '<div title="{{value}}" {{^is_cartodb_id}}style="width:{{cellsize}}px"{{/is_cartodb_id}}>{{value}}</div>'+
                         '</td>';

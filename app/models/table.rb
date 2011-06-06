@@ -362,7 +362,9 @@ class Table < Sequel::Model(:user_tables)
       else
         schema.map{|c| c[0] }.join(',')
       end
-      rows = user_database["SELECT #{select} FROM #{name} ORDER BY cartodb_id LIMIT #{per_page} OFFSET #{page}"].all
+      # If we force to get the name from an schema, we avoid the problem of having as
+      # table name a reserved word, such 'as'
+      rows = user_database["SELECT #{select} FROM public.#{name} ORDER BY cartodb_id LIMIT #{per_page} OFFSET #{page}"].all
     end
     {
       :id         => id,
@@ -380,7 +382,9 @@ class Table < Sequel::Model(:user_tables)
       else
         schema.map{|c| c[0] }.join(',')
       end
-      row = user_database["SELECT #{select} FROM #{name} WHERE cartodb_id = #{identifier}"].first
+      # If we force to get the name from an schema, we avoid the problem of having as
+      # table name a reserved word, such 'as'
+      row = user_database["SELECT #{select} FROM public.#{name} WHERE cartodb_id = #{identifier}"].first
     end
     raise if row.nil?
     row

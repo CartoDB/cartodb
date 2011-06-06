@@ -25,6 +25,8 @@
   var first = true;
   var table;
   var loading = false;
+  var first_double_click = true;
+  
   var headers = {};
   
   var minPage = 0;
@@ -576,7 +578,14 @@
           '<a class="cancel_change" href="#cancel_delete">cancel</a>'+
           '<a class="button" href="#change_type">Yes, do it</a>'+
         '</div>');
+        
       
+      $(table).parent().append(
+        '<div class="explain_tooltip">'+
+          '<p>Double-click for editing any cell</p>'+
+          '<span class="arrow"></span>'+
+        '</div>'); 
+    
       
       //Mamufas elements belong to the carto table
       $('div.mamufas').append(
@@ -1025,6 +1034,11 @@
           if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" &&
             $(target).parent().attr('c')!="updated_at" && $(target).parent().attr('c')!="created_at") {
 
+            if (first_double_click) {
+              $('div.explain_tooltip').stop(true).hide();
+              first_double_click = false;
+            }
+
             methods.closeTablePopups();
             methods.bindESCkey();
             
@@ -1233,6 +1247,7 @@
           var targetElement = target.nodeName.toLowerCase();
       
           if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
+            
             $('table tbody tr td.first div span').hide();
             $('table tbody tr td.first div a.options').removeClass('selected');
             $('tbody tr').removeClass('editing');
@@ -1240,10 +1255,20 @@
             $('tbody tr').removeClass('selecting');
             $('tbody tr').removeClass('selecting_last');
             $('tbody tr').removeClass('selected');
+
             var first_row = $(target).closest('tr');
             first_row.addClass('selecting_first');
             var initial_x = first_row.position().top;
-      
+            
+            //Show tooltip about editing cell
+            if (first_double_click) {
+              var initial_left = $(target).closest('td').position().left;
+              var cell_width = $(target).closest('td').width();
+              $('div.explain_tooltip').css({top:initial_x-45+'px',left:initial_left+(cell_width/2)-55+'px'});
+              $('div.explain_tooltip').stop(true).delay(100).fadeIn().delay(4000).fadeOut();
+            }
+            
+            
             if (event.preventDefault) {
               event.preventDefault();
               event.stopPropagation();
@@ -1256,8 +1281,9 @@
           $(document).mousemove(function(event){
             var target = event.target || event.srcElement;
             var targetElement = target.nodeName.toLowerCase();
-      
-            if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {              
+        
+            if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {  
+              $('div.explain_tooltip').hide();
               var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
               var current_row = $(target).closest('tr');
               var current_x = current_row.position().top;

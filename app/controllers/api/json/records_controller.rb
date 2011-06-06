@@ -9,7 +9,11 @@ class Api::Json::RecordsController < Api::ApplicationController
   after_filter :record_query_threshold
   
   def index
-    render :json =>  Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page))),
+    render :json =>  Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode))),
+           :callback => params[:callback]
+  rescue => e
+    puts $!
+    render :json => { :errors => [$!] }.to_json, :status => 400,
            :callback => params[:callback]
   end
 

@@ -356,6 +356,8 @@ class Table < Sequel::Model(:user_tables)
   def records(options = {})
     rows  = []
     page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
+    order_by_column = options[:order_by] || "cartodb_id"
+    mode = (options[:mode] || 'asc').downcase == 'asc' ? 'asc' : 'desc'
     owner.in_database do |user_database|
       select = if schema.flatten.include?(:the_geom)
         schema.map{ |c| c[0] == :the_geom ? "ST_AsGeoJSON(the_geom,6) as the_geom" : c[0]}.join(',')
@@ -364,7 +366,7 @@ class Table < Sequel::Model(:user_tables)
       end
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      rows = user_database["SELECT #{select} FROM public.#{name} ORDER BY cartodb_id LIMIT #{per_page} OFFSET #{page}"].all
+      rows = user_database["SELECT #{select} FROM public.#{name} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
     end
     {
       :id         => id,

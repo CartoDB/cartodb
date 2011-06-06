@@ -166,6 +166,14 @@ div.table_position div.delete_column a.button {float:right; height:14px; margin:
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
 div.table_position div.delete_column a.button:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
 
+div.table_position div.change_type_column {position:absolute; display:none; top:39px; left:310px; width:166px; height:73px; padding:34px 20px 22px 20px; background:url('/images/admin/table/delete_column_bkg.png') no-repeat 0 0; z-index:50;}
+div.table_position div.change_type_column p {font:normal 13px Arial; color:#333333; text-shadow:0 1px white;}
+div.table_position div.change_type_column a {float:left; margin:23px 0 0 0; font:normal 13px Arial; color:#666666; text-shadow:none;}
+div.table_position div.change_type_column a:hover {color:#333333;}
+div.table_position div.change_type_column a.button {float:right; height:14px; margin:18px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
+div.table_position div.change_type_column a.button:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+
 
 
 /*SQL CONSOLE*/

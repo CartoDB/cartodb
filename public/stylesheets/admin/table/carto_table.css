@@ -176,6 +176,12 @@ div.table_position div.change_type_column a.button {float:right; height:14px; ma
 div.table_position div.change_type_column a.button:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
 
 
+/*TABLE TOOLTIP*/
+div.table_position div.explain_tooltip {position:absolute; display:none; top:60px; left:15px; }
+div.table_position div.explain_tooltip p {width:90px; padding:8px 10px; background:rgba(0,0,0,0.7); z-index:20; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 12px Arial; color:white; text-align:center;
+  line-height:14px;}
+div.table_position div.explain_tooltip span.arrow {position:absolute; bottom:-10px; left:46px; width:0; height:0; margin:20px 0 0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:10px solid rgba(0,0,0,0.7);}
+
 
 /*SQL CONSOLE*/
 div.table_position div.general_options div.sql_console {position:fixed; display:none; bottom:0; left:0; right:0; min-height:158px; padding:36px; border-bottom:3px solid black; z-index:0; background:#282F49; 

@@ -219,32 +219,43 @@ class User < Sequel::Model
       end
       save
 
-      Thread.new do
+      Thread.new do 
+        conn = Rails::Sequel.connection
         begin
-          Rails::Sequel.connection.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
+          conn.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
         rescue
-          puts "USER #{database_username} already exists"
+          puts "USER #{database_username} already exists: #{$!}"
         end
         begin
-          Rails::Sequel.connection.run("CREATE DATABASE #{self.database_name}
-            WITH TEMPLATE = template_postgis
-            OWNER = postgres
-            ENCODING = 'UTF8'
-            CONNECTION LIMIT=-1")
+          conn.run("CREATE DATABASE #{self.database_name}
+          WITH TEMPLATE = template_postgis
+          OWNER = postgres
+          ENCODING = 'UTF8'
+          CONNECTION LIMIT=-1")
         rescue
-          puts "DATABASE #{self.database_name} already exists"
+          puts "DATABASE #{self.database_name} already exists: #{$!}"
         end
       end.join
+
       in_database(:as => :superuser) do |user_database|
-        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")
-        user_database.run("REVOKE ALL ON SCHEMA public FROM public")
-        user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
-        user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
-        user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        #user_database.transaction do 
+          user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")
+          user_database.run("REVOKE ALL ON SCHEMA public FROM public")
+          user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
+          user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
+          user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
+          user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+          #sql = "SELECT column_name,data_type, n.nspname as \"Schema\", c.relname as \"Name\", CASE c.relkind WHEN 'r' THEN 'table' 
+          #       WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' END as \"Type\", 
+          #       u.usename as \"Owner\" FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner LEFT JOIN pg_catalog.pg_namespace n 
+          #       ON n.oid = c.relnamespace,INFORMATION_SCHEMA.COLUMNS as cols WHERE c.relkind IN ('r','')  AND 
+          #       n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid) and cols.table_name = c.relname and cols.table_name = '$1' 
+          #       ORDER BY 4;" 
+          #user_database.run("PREPARE metadata(text) AS \n#{sql}")
+        #end  
       end
     end
   end

@@ -1,6 +1,6 @@
 class RecordNotFound < StandardError; end
 
-class CartoDB::EmtpyFile < StandardError; end
+class CartoDB::EmptyFile < StandardError; end
 class CartoDB::InvalidUser < StandardError; end
 class CartoDB::InvalidTableName < StandardError; end
 class CartoDB::InvalidColumnName < StandardError; end
@@ -48,11 +48,11 @@ class CartoDB::InvalidType < StandardError
   end
 end
 
-class CartoDB::EmtpyAttributes < StandardError
+class CartoDB::EmptyAttributes < StandardError
   attr_accessor :error_message
   def initialize(message)
     @error_message = message
-    Rails.logger.info "========== CartoDB::EmtpyAttributes ==========="
+    Rails.logger.info "========== CartoDB::EmptyAttributes ==========="
     Rails.logger.info message
     Rails.logger.info "==============================================="
   end

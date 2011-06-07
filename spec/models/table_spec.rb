@@ -237,7 +237,7 @@ describe Table do
 
     lambda {
       table.insert_row!({})
-    }.should_not raise_error(CartoDB::EmtpyAttributes)
+    }.should_not raise_error(CartoDB::EmptyAttributes)
 
     lambda {
       table.insert_row!({:non_existing => "bad value"})
@@ -328,22 +328,22 @@ describe Table do
     table = new_table
     table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    table.schema(:cartodb_types => false).should == [
-      [:cartodb_id, "integer"], [:code, "character(5)"], [:title, "character varying(40)"], 
-      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], 
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
+    (table.schema(:cartodb_types => false) - [
+      [:cartodb_id, "integer"], [:code, "character"], [:title, "character varying"], 
+      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying"], 
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
+    ]).should be_empty
   end
 
   it "should sanitize columns from a given schema" do
     table = new_table
     table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    table.schema(:cartodb_types => false).should == [
-      [:cartodb_id, "integer"], [:code_wadus, "character(5)"], [:title, "character varying(40)"], 
-      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"],
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
+    (table.schema(:cartodb_types => false) - [
+      [:cartodb_id, "integer"], [:code_wadus, "character"], [:title, "character varying"], 
+      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying"],
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
+    ]).should be_empty
   end
 
   it "should import a CSV if the schema is given and is valid" do
@@ -408,11 +408,11 @@ describe Table do
     table.name.should == 'twitters'
 
     table.rows_counted.should == 7
-    table.schema(:cartodb_types => false).should == [
+    (table.schema(:cartodb_types => false) - [
       [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
       [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"], 
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
+    ]).should be_empty
     row = table.records[:rows][0]
     row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
     row[:login].should == "vzlaturistica "
@@ -548,7 +548,7 @@ describe Table do
     table.reload
     table.name.should == 'ngos'
 
-    table.schema(:cartodb_types => false).should == [
+    (table.schema(:cartodb_types => false) - [
       [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"],
       [:organization_s_work_in_haiti, "character varying"], [:calculation_of_number_of_people_reached, "character varying"],
       [:private_funding, "double precision"], [:relief, "character varying"], [:reconstruction, "character varying"],
@@ -559,8 +559,8 @@ describe Table do
       [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"],
       [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"],
       [:city, "character varying"], [:state, "character varying"], [:zip_code, "integer"], [:donation_website, "character varying"], 
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
+    ]).should be_empty
     table.rows_counted.should == 76
   end
   
@@ -811,10 +811,10 @@ describe Table do
     table.reload
     table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
     table.reload
-    table.schema.should == [
+    (table.schema - [
       [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
       [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"]
-    ]    
+    ]).should be_empty
     record = table.record(pk)
     RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.6f" % -3.699732} #{"%.6f" % 40.423012})"
   end
@@ -983,8 +983,15 @@ describe Table do
     table = new_table :user_id => user.id
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/gadm4_export.csv", "text/csv")
     table.save.reload
-    
-    table.schema.should == [[:cartodb_id, "number"], [:gid, "number"], [:id_0, "number"], [:iso, "string"], [:name_0, "string"], [:id_1, "number"], [:name_1, "string"], [:id_2, "number"], [:name_2, "string"], [:id_3, "number"], [:name_3, "string"], [:id_4, "number"], [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "number"], [:shape_area, "number"], [:latitude, "number"], [:longitude, "string"], [:center_latitude, "number"], [:center_longitude, "number"], [:created_at, "date"], [:updated_at, "date"]]
+    (table.schema -  [
+      [:cartodb_id, "number"], [:gid, "number"], [:id_0, "number"], [:iso, "string"], 
+      [:name_0, "string"], [:id_1, "number"], [:name_1, "string"], [:id_2, "number"], 
+      [:name_2, "string"], [:id_3, "number"], [:name_3, "string"], [:id_4, "number"], 
+      [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], 
+      [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "number"], 
+      [:shape_area, "number"], [:latitude, "number"], [:longitude, "string"], [:center_latitude, "number"], 
+      [:center_longitude, "number"], [:created_at, "date"], [:updated_at, "date"]
+    ]).should be_empty
   end
   
   it "should be able to find a table by name or by identifier" do

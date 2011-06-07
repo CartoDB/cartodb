@@ -1,0 +1,28 @@
+# COMMENT OF SCRIPT HERE
+# you can make as many tabs as you wish...
+# tab names are actually arbitrary at this point too.
+
+setup 'echo "setup"'
+
+tab "redis-server" do
+  run "echo 'Running redis-server'"
+  run "cd /tmp"
+  run "redis-server"
+end
+
+tab "cartodb app server" do
+  run "echo 'Hello developer, this is cartodb app server'"
+  run "cd $CARTODB_PATH"
+  run "git pull"
+  run "bundle install"
+  run "bundle exec rake db:reset"
+  run "rails s"
+end
+
+tab "cartodb api server" do
+  run "echo 'Hello developer, this is cartodb api server'"
+  run "cd $CARTODB_PATH"
+  run "sleep 30"
+  run "rails s -p 3001"
+end
+

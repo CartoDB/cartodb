@@ -66,8 +66,96 @@
             '<a href="#confirm_delete" class="continue">Ok, continue</a>'+
           '</span>'+
         '</div>'+
+      '</div>'+
+      '<div class="import_window">'+
+        '<a href="#close_window" class="close_create"></a>'+
+        '<div class="inner_">'+
+          '<span class="loading">'+
+            '<h5>We are importing your data...</h5>'+
+            "<p>It shouldn't take long, just a few more seconds ok?</p>"+
+          '</span>'+
+          '<form action="#import_file" id="import_file" enctype="multipart/form-data" method="post">'+
+            '<span class="top">'+
+              '<h4>Do you want to import some data to this table now?</h4>'+
+              '<p> </p>'+
+              '<ul>'+
+                '<li class="disabled">'+
+                  '<a href="#">I want to create an empty table</a>'+
+                '</li>'+
+                '<li class="selected">'+
+                  '<a href="#">I want to start with some imported data</a>'+
+                  '<span class="file">'+
+                    '<div class="select_file">'+
+                      '<div id="uploader"></div>'+
+                      '<p>You can import .csv, .xls or .zip files</p>'+
+                    '</div>'+
+                    '<div class="progress">'+
+                      '<p>Uploading your file...</p>'+
+                      '<span class="progress"></span>'+
+                    '</div>'+
+                  '</span>'+
+                '</li>'+
+              '</ul>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#" class="cancel">cancel</a>'+
+            '</span>'+
+          '</form>'+
+        '</div>'+
       '</div>'
       );
+
+
+
+    ///////////////////////////////////////
+    //  Import data window               //
+    ///////////////////////////////////////
+    $('span.file input').hover(function(ev){
+      $('span.file a').addClass('hover');
+      $(document).css('cursor','pointer');
+    },function(ev){
+      $('span.file a').removeClass('hover');
+      $(document).css('cursor','default');
+    });
+  
+    var uploader = new qq.FileUploader({
+      element: document.getElementById('uploader'),
+      action: '/upload',
+      params: {},
+      allowedExtensions: ['csv', 'xls', 'xlsx', 'zip'],
+      sizeLimit: 0, // max size
+      minSizeLimit: 0, // min size
+      debug: false,
+  
+      onSubmit: function(id, fileName){
+        $('div.create_window ul li:eq(0)').addClass('disabled');
+        $('form input[type="submit"]').addClass('disabled');
+        $('span.file').addClass('uploading');
+      },
+      onProgress: function(id, fileName, loaded, total){
+        var percentage = loaded / total;
+        $('span.progress').width((346*percentage)/1);
+      },
+      onComplete: function(id, fileName, responseJSON){
+        createNewToFinish('',responseJSON.file_uri);
+      },
+      onCancel: function(id, fileName){},
+      showMessage: function(message){
+        $('div.select_file p').text(message);
+        $('div.select_file p').addClass('error');
+      }
+    });
+    
+    $('a.import_data').livequery('click',function(ev){
+      stopPropagation(ev);
+      closeOutTableWindows();
+      
+      $('div.mamufas div.import_window').show();
+      $('div.mamufas').fadeIn('fast');
+      bindESC();
+    });
+
+
 
 
 
@@ -122,8 +210,7 @@
           closeOutTableWindows();
           $('div.mamufas div.warning_window a.continue').unbind('click');
           $('div.mamufas div.warning_window a.continue').click(function(ev){
-            ev.stopPropagation();
-            ev.preventDefault();
+            stopPropagation(ev);
             changeTableName(new_value,old_value);
           });
           
@@ -263,7 +350,7 @@
       '<span class="advanced_options">'+
         '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
         '<ul>'+
-          '<li class="disabled"><a class="import_data">Import data...</a></li>'+
+          '<li><a class="import_data">Import data...</a></li>'+
           '<li><a class="export_data">Export data...</a></li>'+
           '<li class="disabled"><a class="save_table">Save table as...</a></li>'+ //class="save_table"
         '</ul>'+
@@ -324,7 +411,7 @@
       $('div.mamufas').fadeIn('fast');
       bindESC();
     });
-    $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_save, div.mamufas a.close_warning').click(function(ev){
+    $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_save, div.mamufas a.close_warning, div.mamufas a.close_create').click(function(ev){
       stopPropagation(ev);
       $('div.mamufas').fadeOut('fast',function(){
         $('div.mamufas div.delete_window').hide();
@@ -356,6 +443,9 @@
       $('div.mamufas div.export_window form ul li').removeClass('selected');
       $(this).parent().addClass('selected');
       $('#export_format').val(format);
+    });
+    $('div.mamufas div.export_window form').submit(function(ev){
+      closeOutTableWindows();
     });
     $('#export_format').val($('div.mamufas div.export_window form ul li.selected a.option').attr('rel'));
 
@@ -470,6 +560,7 @@
       $('div.mamufas div.export_window').hide();
       $('div.mamufas div.save_window').hide();
       $('div.mamufas div.warning_window').hide();
+      $('div.mamufas div.import_window').hide();
       $(document).unbind('keydown');
       $('body').unbind('click');
     });
@@ -481,3 +572,92 @@
       $(document).trigger("sqlEnter");
     }
   }
+  
+
+
+  function resetUploadFile() {
+    $('div.import_window ul li:eq(0)').removeClass('disabled');
+    $('div.import_window ul li').removeClass('selected');
+    $('div.import_window ul li:eq(0)').addClass('selected');
+    $('div.import_window div.inner_ span.top').show();
+    $('div.import_window div.inner_ span.bottom').show();
+    $('div.import_window div.inner_ span.top').css('opacity',1);
+    $('div.import_window div.inner_ span.bottom').css('opacity',1);
+    $('div.import_window div.inner_').css('border-color','#CCCCCC');
+    $('div.import_window a.close_import').removeClass('last');
+    $('div.import_window div.inner_').css('height','auto');
+    $('div.import_window div.inner_ span.loading').hide();
+    $('div.import_window div.inner_ span.loading').css('opacity',0);
+    $('form input[type="submit"]').removeClass('disabled');
+    $('span.file').removeClass('uploading');
+    $('span.file input[type="file"]').attr('value','');
+    $('div.select_file p').text('You can import .csv, .xls and .zip files');
+    $('div.select_file p').removeClass('error');
+    $('span.progress').width(5);
+    $('div.import_window ul li:eq(1)').removeClass('finished');
+    $('div.import_window').removeClass('georeferencing');
+    $('div.import_window div.inner_ span.loading p').html('It\'s not gonna be a lot of time. Just a few seconds, ok?');
+    $('div.import_window div.inner_ span.loading h5').html('We are creating your table...');
+  }
+
+
+
+  function createNewToFinish (type,url) {
+    $('div.import_window div.inner_').animate({borderColor:'#FFC209', height:'68px'},500);
+    
+    $('div.import_window div.inner_ span.bottom').animate({opacity:0});
+    $('div.import_window div.inner_ span.top').animate({opacity:0},300,function(){
+      $('div.import_window div.inner_ span.top').hide();
+      $('div.import_window div.inner_ span.loading').show();
+      $('div.import_window div.inner_ span.loading').animate({opacity:1},200, function(){
+        var params = {}
+        if (url!='') {
+          params = {file:'http://'+window.location.host + url};
+        } else {
+          params = {the_geom_type:type}
+        }
+        // $.ajax({
+        //   type: "POST",
+        //   url: '/v1/tables/',
+        //   data: params,
+        //   headers: {'cartodbclient':true},
+        //   success: function(data, textStatus, XMLHttpRequest) {
+        //     window.location.href = "/tables/"+data.id;
+        //   },
+        //   error: function(e) {
+            $('div.import_window div.inner_ span.loading').addClass('error');
+            $('div.import_window div.inner_ span.loading p').html('Something weird has occurred when creating your table. Do you want to <a onclick="retryImportTable()">retry</a>?');
+            $('div.import_window div.inner_ span.loading h5').text('Ops! There has been an error');
+            $('div.import_window div.inner_').height(78);
+        //   }
+        // });
+      });
+    });
+    setTimeout(function(){$('div.import_window a.close_create').addClass('last');},250);
+  }
+
+
+  function retryImportTable() {
+    $('div.import_window a.close_create').removeClass('last');
+    $('div.import_window div.inner_').animate({borderColor:'#CCCCCC', height:'254px'},500,function(){
+      $('div.import_window div.inner_').css('height','auto');
+    });
+    $('div.import_window ul li:eq(0)').removeClass('disabled');
+    $('form input[type="submit"]').removeClass('disabled');
+    $('span.file').removeClass('uploading');
+    $('div.import_window div.inner_ span.loading').animate({opacity:0},300,function(){
+      $('div.import_window div.inner_ span.loading').hide();
+      $('div.import_window div.inner_ span.loading').removeClass('error');
+      $('div.import_window div.inner_ span.loading p').html('It\'s not gonna be a lot of time. Just a few seconds, ok?');
+      $('div.import_window div.inner_ span.loading h5').html('We are creating your table...');
+      $('div.import_window div.inner_ form').show();
+      $('div.import_window div.inner_ form').animate({opacity:1},200);
+    });
+  }
+  
+  
+  
+  
+  
+  
+  

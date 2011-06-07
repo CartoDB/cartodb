@@ -132,7 +132,7 @@ div.table_position div.empty_table p a:hover {color:#333333;}
 div.table_position div.loading {position:relative!important; display:none; float:left; width:100%; height:45px; padding:45px 0 0; margin:1px 0 0 0; border:none; background:url('/images/admin/table/loading_bkg.jpg') repeat-x 0 top white;}
 div.table_position div.loading.loading_previous {margin:59px 0 0 0; border-bottom:none;}
 div.table_position div.loading p {width:100%; text-align:center; font:bold 13px "Helvetica"; color:#666666;}
-div.table_position div.loading p.count {width:100%; padding:5px 0 0 0; text-align:center; font:normal 11px "Helvetica"; color:#B3B3B3;}
+div.table_position div.loading p.count {width:100%; padding:2px 0 0 0; text-align:center; font:normal 11px "Helvetica"; color:#B3B3B3;}
 div.table_position div.loading img {position:absolute; width:25; height:25px ; margin:0 0 0 -13px; top:12px; left:50%;}
 
 

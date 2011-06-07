@@ -192,8 +192,7 @@
 
       //Zooms
       $('a.zoom_in').click(function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
+        stopPropagation(ev);
         map.setZoom(map.getZoom()+1);
       });
       $('a.zoom_out').click(function(ev){
@@ -206,8 +205,7 @@
 
       //Query 
       $('#query_form input[type="text"]').livequery('focusin',function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
+        stopPropagation(ev);
         var value = $(this).val();
         if (value=='SELECT * FROM '+table_name+'') {
           $(this).val('');
@@ -217,8 +215,7 @@
       });
       
       $('#query_form input[type="text"]').livequery('focusout',function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
+        stopPropagation(ev);
         var value = $(this).val();
         if (value=='SELECT * FROM '+table_name+'' || value=='') {
           $(this).val('SELECT * FROM '+table_name+'');
@@ -229,8 +226,7 @@
       
       
       $('#query_form').livequery('submit',function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
+        stopPropagation(ev);
         sql = '('+$('#query_form input[type="text"]').val()+') as t';
         refreshLayer(style);
       });

@@ -1,5 +1,6 @@
-body {background:url('/images/front/home/carto_bkg_2.jpg') repeat-x center 0;}
+body {background:url('/images/front/home/carto_bkg_2.jpg') repeat-x center 0 #2D3452;}
 section {position:absolute; top:50%; left:50%; width:345px; height:250px; margin:-175px 0 0 -173px; z-index:10;}
+section.endpoint {width:390px; margin:-125px 0 0 -185px;}
 section h1 {width:100%; padding:0; margin:0; font:normal 31px "Aller"; color:white; text-align:center; text-shadow:0 2px #222222;}
 section p {width:100%; padding:0; margin:25px 0 0 0; text-shadow:0 -1px black; font:normal 17px "Helvetica",Arial; color:#6C7690; text-align:center;}
 section p a {text-shadow:0 -1px black; font:normal 17px "Helvetica",Arial; color:#6C7690;}

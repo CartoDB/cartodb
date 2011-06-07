@@ -1,13 +1,13 @@
 
 // FUNCIONALITIES
-//   - Editing table data with events - O
+//   - Editing table data with events - OK
 //   - Resize columns -- KO
 //   - Pagination with ajax --- OK
 //   - Custom style --- OK
 //   - jScrollPane --- OK
 //   - Update table (remove columns and rows, add columns and rows, move columns, sort columns) - OK
 //   - Validate fields --- OK
-//   - Rows selection for multiple edition --- DONE BUT PENDING
+//   - Rows selection for multiple edition --- OK
 //   - Floating tHead  --- OK
 //   - Floating first column --- OK
 
@@ -96,7 +96,7 @@
      if (!query_mode) {
        $.ajax({
          method: "GET",
-         url: options.getDataUrl,
+         url: options.getDataUrl + table_name,
   			 headers: {"cartodbclient":"true"},
          success: function(data) {
            columns = data.schema;
@@ -106,7 +106,7 @@
 
        $.ajax({
           method: "GET",
-          url: options.getDataUrl+'/records',
+          url: options.getDataUrl + table_name +'/records',
           data: {
             rows_per_page: options.resultsPerPage,
             page: petition_pages,
@@ -735,7 +735,7 @@
       $(table).parent().append(
         '<div class="empty_table">'+
           '<h5>Add some rows to your table</h5>'+
-          '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a href="#">import a file</a></p>'+
+          '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a class="import_data" href="#import_data">import data</a></p>'+
         '</div>'
       );
       
@@ -774,7 +774,7 @@
   
         $.ajax({
           method: "GET",
-          url: '/v1/tables/'+table_name+'/records',
+          url: defaults.getDataUrl+table_name+'/records',
           headers: {"cartodbclient": true},
           data: {
             rows_per_page: defaults.resultsPerPage,
@@ -795,14 +795,14 @@
                 
         $.ajax({
            type: "POST",
-           url: '/v1/tables/'+table_name+'/records',
+           url: defaults.getDataUrl+table_name+'/records',
            headers: {"cartodbclient": true},
            success: function(data) {
              
              row_id = data.id;
              $.ajax({
                 method: "GET",
-                url: '/v1/tables/'+table_name,
+                url: defaults.getDataUrl+table_name,
                 headers: {"cartodbclient": true},
                 success: function(data) {
                   data = data.schema;
@@ -929,12 +929,12 @@
           if ($(window).scrollTop()==difference && !end && maxPage!=-1) {
             loading = true;
             methods.showLoader('next');
-            setTimeout(function(){methods.getData(defaults,'next')},500);
+            setTimeout(function(){methods.getData(defaults,'next')},300);
           } else if ($(window).scrollTop()==0 && minPage!=0) {
             loading = true;
             $('div.table_position').removeClass('end');
             methods.showLoader('previous');
-            setTimeout(function(){methods.getData(defaults,'previous')},500);
+            setTimeout(function(){methods.getData(defaults,'previous')},300);
           } else if (end && actualPage!=0) {
             $('div.table_position').addClass('end');
           }
@@ -1888,7 +1888,7 @@
         function getColumns() {
           $.ajax({
              method: "GET",
-             url: '/v1/tables/'+table_name,
+             url: defaults.getDataUrl+table_name,
       			 headers: {"cartodbclient":"true"},
              success: function(data) {
                data = data.schema;
@@ -2462,7 +2462,7 @@
         type: request_type,
         dataType: "text",
         headers: {"cartodbclient": true},
-        url: '/v1/tables/'+table_name+url_change,
+        url: defaults.getDataUrl+table_name+url_change,
         data: params,
         success: function(data) {
           requests_queue.responseRequest(requestId,'ok','');

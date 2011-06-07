@@ -16,7 +16,8 @@
       "plugins/colorpicker/colorpicker",
       "plugins/underscore",
       "plugins/mustache",
-      "plugins/tag-it", 
+      "plugins/tag-it",
+      "plugins/file_uploader",
       # OWN MADE
       "admin/table/loading_messages",
       "admin/table/loader_queue",
@@ -31,8 +32,8 @@
       "admin/maps/mapElements",
       "admin/table/table_templates",
       # GMAPS
-      "http://maps.google.com/maps/api/js?v=3.4&sensor=true&callback=startTable")
-    %>
+      "http://maps.google.com/maps/api/js?v=3.4&sensor=true&callback=startTable"  
+    )%>
       
     <script type="text/javascript">
       var table_id = <%= @table["id"] %>;
@@ -54,7 +55,7 @@
           <h2><a href="#change_title"><%= @table["name"] %></a></h2>
           <p class="status">
             <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
-            </p>
+          </p>
           <span class="tags">
             <% unless @table["tags"].blank? %>
               <% tagsSize=@table["tags"].split(',').size %>

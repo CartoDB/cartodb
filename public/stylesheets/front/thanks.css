@@ -1,4 +1,4 @@
-body {background:url('/images/front/home/carto_bkg.jpg') repeat-x center 0;}
+body {background:url('/images/front/home/carto_bkg.jpg') repeat-x center 0 #2D3452;}
 section {position:absolute; top:50%; left:50%; width:540px; height:220px; margin:-110px 0 0 -270px; z-index:10;}
 section h1 {width:100%; padding:0; margin:0; font:normal 41px "Aller"; color:white; text-align:center; text-shadow:0 2px #222222;}
 section h1 span {position:absolute; right:100px; top:42px; font:normal 13px "Helvetica",Arial;}

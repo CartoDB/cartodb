@@ -16,8 +16,8 @@
                     '<span class="col_ops_list">' +
                       '<h5>ORDER</h5>' +
                       '<ul>' +
-                        '<li class="disabled"><a>Order by ASC</a></li>' +
-                        '<li class="disabled"><a>Order by DESC</a></li>' +
+                        '<li><a class="order_asc">Order by ASC</a></li>' +
+                        '<li><a class="order_desc">Order by DESC</a></li>' +
                       '</ul>' +
                       '{{#allowed}}' +
                         '<div class="line"></div>'+

@@ -11,7 +11,9 @@
           resultsPerPage: 20,
           reuseResults: 600,
           total: 5000,
-          query: "SELECT * FROM "+ table_name
+          query: "SELECT * FROM "+ table_name,
+          order_by: 'cartodb_id',
+          mode: 'asc'
         }
       );
     }

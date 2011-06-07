@@ -213,7 +213,7 @@ class Table < Sequel::Model(:user_tables)
           attributes.invert[invalid_value] # which is the column of the name that raises error
         else
           if m = message.match(/PGError: ERROR:  value too long for type (.+)$/)
-            if candidate = schema(:cartodb_types => false).select{ |c| c[1] == m[1] }.first
+            if candidate = schema(:cartodb_types => false).select{ |c| c[1].to_s == m[1].to_s }.first
               candidate[0]
             end
           end
@@ -274,16 +274,26 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema(options = {})
-    stored_schema = $tables_metadata.hget(key,"schema")
-    return [] if stored_schema.blank?
-    stored_schema = Yajl::Parser.new.parse(stored_schema)    
-    return [] if stored_schema.blank?
-    stored_schema.map do |column|
-      c = column.split(',')
-      [c[0].to_sym, c[options[:cartodb_types] == false ? 1 : 2], c[0].to_sym == :the_geom ? "geometry" : nil, c[0].to_sym == :the_geom ? the_geom_type : nil].compact
+    sql = "SELECT column_name,data_type, n.nspname as \"Schema\", c.relname as \"Name\", CASE c.relkind WHEN 'r' THEN 'table' 
+           WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' END as \"Type\", 
+           u.usename as \"Owner\" FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner LEFT JOIN pg_catalog.pg_namespace n 
+           ON n.oid = c.relnamespace,INFORMATION_SCHEMA.COLUMNS as cols WHERE c.relkind IN ('r','')  AND 
+           n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid) and cols.table_name = c.relname and cols.table_name = '#{self.name}' 
+           ORDER BY 4;" 
+    schema = nil
+    owner.in_database do |user_database|
+      schema = user_database[sql].all
     end
+    schema.map do |h| 
+      next if h[:column_name].to_sym == THE_GEOM_WEBMERCATOR
+      [ h[:column_name].to_sym, 
+        h[:column_name].to_sym == :the_geom ? "geometry" : (options[:cartodb_types] == false) ? h[:data_type] : h[:data_type].convert_to_cartodb_type, 
+        h[:column_name].to_sym == :the_geom ? "geometry" : nil, 
+        h[:column_name].to_sym == :the_geom ? the_geom_type : nil
+      ].compact
+    end.compact
   end
-
+ 
   def add_column!(options)
     raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9_]/
     type = options[:type].convert_to_db_type

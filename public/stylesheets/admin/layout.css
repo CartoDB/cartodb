@@ -71,7 +71,6 @@ div.mamufas div.create_window div.inner_ span.top p {padding:5px 0 5px 0; font:n
 div.mamufas div.create_window div.inner_ span.top ul {padding:10px 0 0 0;}
 div.mamufas div.create_window div.inner_ span.top ul li {float:left; width:auto; padding:10px;}
 
-
 div.mamufas div.create_window div.inner_ span.top ul li div.geom_type {display:none;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type {display:block; margin:10px 0 0 0;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type span {display:inline-block; width:300px; padding:0 0 4px 15px; margin:0 0 0 15px; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -97px;}
@@ -80,8 +79,6 @@ div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type s
 div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type span.selected:hover {background-position:0 2px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type span a {background:none; padding:0;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type span a:hover {cursor:pointer;}
-
-
 
 div.mamufas div.create_window div.inner_ span.top ul li ul li.selected a {background-position:0 1px;}
 div.mamufas div.create_window div.inner_ span.top ul li a {padding:0 0 0 18px; font:bold 13px Arial; color:#333333; text-decoration:none; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -28px;}

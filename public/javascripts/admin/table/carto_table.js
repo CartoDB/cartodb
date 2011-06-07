@@ -109,7 +109,9 @@
           url: options.getDataUrl+'/records',
           data: {
             rows_per_page: options.resultsPerPage,
-            page: petition_pages
+            page: petition_pages,
+            mode: defaults.mode,
+            order_by: defaults.order_by
           },
    			 headers: {"cartodbclient":"true"},
          success: function(data) {
@@ -1474,6 +1476,7 @@
           }
         }
         
+        $('tbody tr td[r="'+row+'"][c="'+column+'"] div').attr('title',new_value);
         params[column] = new_value;
         methods.updateTable("/records/"+row,params,new_value,old_value,'update_cell',"PUT");
         
@@ -1814,7 +1817,13 @@
         methods.closeTablePopups();
         $(this).find('a.options').trigger('click');
       });
-      
+      $('a.order_asc,a.order_desc').livequery('click',function(ev){
+        stopPropagation(ev);
+        var class_mode = $(this).attr('class');
+        defaults.mode = (class_mode=="order_asc")?'asc':'desc';
+        defaults.order_by = $(this).closest('th').attr('c');
+        methods.refreshTable(0);
+      })
       
       ///////////////////////////////////////
       //  Georeference window events       //
@@ -2484,6 +2493,7 @@
                                 break;
         case "column_type":     if (params.type!="string") {
                                   $('tbody tr td[c="'+params.name+'"] div').text('');
+                                  $('tbody tr td[c="'+params.name+'"] div').attr('title','');
                                 }
                                 headers[params.name] = params.type;
                                 break;
@@ -2530,6 +2540,7 @@
       switch (type) {
         case "update_cell":   var element = $('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div');
                               element.text(old_value);
+                              element.attr('title',old_value);
                               element.animate({color:'#FF3300'},300,function(){
                                 setTimeout(function(){element.animate({color:'#666666'},300);},1000);
                               });

@@ -47,7 +47,7 @@ div.table_position table thead tr th span.col_ops_list li {float:left; width:112
 div.table_position table thead tr th span.col_ops_list li.disabled a {color:#999999; opacity:0.3;}
 div.table_position table thead tr th span.col_ops_list li.disabled a:hover {color:#999999; cursor:default;}
 div.table_position table thead tr th span.col_ops_list li a {float:left; font:normal 11px "Helvetica",Arial; text-decoration:none; color:white; text-shadow:none; text-align:left!important;}
-div.table_position table thead tr th span.col_ops_list li a:hover {color:#6EBE6E;}
+div.table_position table thead tr th span.col_ops_list li a:hover {color:#6EBE6E; cursor:pointer;}
 div.table_position table thead tr th span.col_ops_list li.last a {color:#FFCC00; text-shadow:0 1px black;}
 div.table_position table thead tr th span.col_ops_list li.last a:hover {color:#FFFE5E;}
 div.table_position table thead tr th span.col_ops_list h5 {padding:8px 0 0 7px; font:bold 10px Helvetica; color:#53596B; text-shadow:0 -1px #1E2A40; text-align:left;}
@@ -62,8 +62,10 @@ div.table_position table tbody tr:hover td {background-position:0 -40px;}
 
 div.table_position table tbody tr td.error {color:#FF9900; text-decoration:underline;}
 div.table_position table tbody tr td.error:hover {background-position:0 -78px;}
+
 div.table_position table tbody tr td div {float:left; width:75px; height:14px; padding:11px 13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:normal 13px "Helvetica"; line-height:13px; color:#666666;
 text-shadow:0 1px white; line-height:13px;}
+
 div.table_position table tbody tr td.first {position:absolute; left:0; width:40px; height:37px!important; padding:0; margin:0; overflow:visible;}
 div.table_position table tbody tr td.first div {position:relative; width:40px; height:auto; padding:0!important; margin:0!important; overflow:visible;}
 div.table_position table tbody tr td.first div a.options {float:left; height:14px; width:14px; margin:12px 0 0 13px; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px;}
@@ -119,7 +121,7 @@ div.table_position table tbody tr.editing td.first div a.options.selected:hover 
 
 /*new table*/
 div.table_position table.new {height:100%; width:100%;}
-div.table_position div.empty_table {position:fixed; top:62%; left:50%; width:300px; height:230px; margin:-115px 0 0 -150px; padding:170px 0 0 0; background:url('/images/admin/table/new_table.png') no-repeat center 0;}
+div.table_position div.empty_table {position:fixed; top:62%; left:50%; width:300px; height:230px; margin:-115px 0 0 -150px; padding:170px 0 0 0; background:url('/images/admin/table/new_table.png') no-repeat 47px 0;}
 div.table_position div.empty_table h5 {width:100%; text-align:center; font:bold 21px Arial; color:#666666; letter-spacing:-1px; word-spacing:2px; text-shadow:0 1px white;}
 div.table_position div.empty_table p {width:100%; padding:9px 0 0 0; text-align:center; font:normal 15px Arial; color:#999999; text-shadow:0 1px white;}
 div.table_position div.empty_table p a {color:#999999;}

@@ -22,6 +22,7 @@ end
 tab "cartodb api server" do
   run "echo 'Hello developer, this is cartodb api server'"
   run "cd $CARTODB_PATH"
+  run "echo 'Waiting 30 secs, you can wank meanwhile'"
   run "sleep 30"
   run "rails s -p 3001"
 end

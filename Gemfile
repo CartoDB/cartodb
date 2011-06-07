@@ -26,6 +26,7 @@ gem "yajl-ruby", :require => "yajl"
 group :development do
   gem "capistrano"
   gem "capistrano-ext"
+  gem "terminitor"
 end
 
 group :test, :development do

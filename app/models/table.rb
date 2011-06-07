@@ -77,6 +77,7 @@ class Table < Sequel::Model(:user_tables)
   def after_save
     super
     manage_tags
+    # ADD Redis stuff here
   end
 
   def after_create
@@ -766,6 +767,7 @@ TRIGGER
     updates = false
     owner.in_database do |user_database|
       return if !force_schema.blank? && !user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
+      # REVIEW
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::SRID},'#{type}',2)")
         user_database.run("CREATE INDEX #{self.name}_the_geom_idx ON #{self.name} USING GIST(the_geom)")

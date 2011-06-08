@@ -66,9 +66,7 @@ class Table < Sequel::Model(:user_tables)
   rescue => e
     unless self.name.blank?
       $tables_metadata.del key
-      owner.in_database(:as => :superuser) do |user_database|
-        user_database.run("DROP TABLE IF EXISTS #{self.name}")
-      end
+      owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
     end
     raise e
   end
@@ -83,9 +81,7 @@ class Table < Sequel::Model(:user_tables)
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     unless private?
-      owner.in_database do |user_database|
-        user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
-      end
+      owner.in_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
     end
     set_the_geom_column!(the_geom_type.try(:to_sym) || "point")
     set_trigger_update_updated_at
@@ -117,9 +113,7 @@ class Table < Sequel::Model(:user_tables)
     return if value == self[:name]
     new_name = get_valid_name(value)
     unless new?
-      owner.in_database do |user_database|
-        user_database.rename_table name, new_name
-      end
+      owner.in_database.rename_table name, new_name
     end
     self[:name] = new_name
   end
@@ -141,17 +135,13 @@ class Table < Sequel::Model(:user_tables)
       self[:privacy] = PRIVATE
       $tables_metadata.hset key, "privacy", PRIVATE unless new?
       if !new?
-        owner.in_database do |user_database|
-          user_database.run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
-        end
+        owner.in_database.run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
       end
     elsif value == "PUBLIC" || value == PUBLIC || value == PUBLIC.to_s
       self[:privacy] = PUBLIC
       $tables_metadata.hset key, "privacy", PUBLIC unless new?
       if !new?
-        owner.in_database do |user_database|
-          user_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
-        end
+        owner.in_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
       end
     end
   end
@@ -164,9 +154,7 @@ class Table < Sequel::Model(:user_tables)
 
   # TODO: use the database field
   def rows_counted
-    owner.in_database do |user_database|
-      user_database[name.to_sym].count
-    end
+    owner.in_database[name.to_sym].count
   end
   
   def insert_row!(raw_attributes)
@@ -242,11 +230,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema(options = {})
-    schema = nil
-    owner.in_database do |user_database|
-      schema = user_database.schema(self.name, options.slice(:reload))
-    end
-    schema.map do |column| 
+    owner.in_database.schema(self.name, options.slice(:reload)).map do |column| 
       next if column[0] == THE_GEOM_WEBMERCATOR
       [ column[0], 
         column[0] == THE_GEOM ? "geometry" : (options[:cartodb_types] == false) ? column[1][:db_type] : column[1][:db_type].convert_to_cartodb_type, 
@@ -260,9 +244,7 @@ class Table < Sequel::Model(:user_tables)
     raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9_]/
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
-    owner.in_database do |user_database|
-      user_database.add_column name.to_sym, options[:name].to_s.sanitize, type
-    end
+    owner.in_database.add_column name.to_sym, options[:name].to_s.sanitize, type
     return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^PGError/
@@ -274,9 +256,7 @@ class Table < Sequel::Model(:user_tables)
 
   def drop_column!(options)
     raise if CARTODB_COLUMNS.include?(options[:name].to_s)
-    owner.in_database do |user_database|
-      user_database.drop_column name.to_sym, options[:name].to_s
-    end
+    owner.in_database.drop_column name.to_sym, options[:name].to_s
   end
 
   def modify_column!(options)
@@ -391,22 +371,20 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_trigger_the_geom_webmercator
-    owner.in_database(:as => :superuser) do |user_database|
-      user_database.run(<<-TRIGGER
-        DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
-        CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
-          BEGIN
-               NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
-               RETURN NEW;
-          END;
-        $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+      DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
+      CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
+        BEGIN
+              NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
+              RETURN NEW;
+        END;
+      $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
 
-        CREATE TRIGGER update_the_geom_webmercator_trigger
-        BEFORE INSERT OR UPDATE OF the_geom ON #{self.name}
-          FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
+      CREATE TRIGGER update_the_geom_webmercator_trigger
+      BEFORE INSERT OR UPDATE OF the_geom ON #{self.name}
+         FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
 TRIGGER
-      )
-    end
+    )
   end
   
   def the_geom_type
@@ -510,12 +488,7 @@ TRIGGER
   end
 
   def oid
-    unless @oid 
-      owner.in_database do |user_database|
-        @oid = user_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]
-      end
-    end
-    @oid
+    @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]
   end
 
   private
@@ -680,31 +653,27 @@ TRIGGER
   end
 
   def delete_constraints
-    owner.in_database do |user_database|
-      user_database.alter_table(self.name.to_sym) do
-        drop_constraint(:enforce_srid_the_geom)
-      end
+    owner.in_database.alter_table(self.name.to_sym) do
+      drop_constraint(:enforce_srid_the_geom)
     end
   end
 
   def set_trigger_update_updated_at
-    owner.in_database(:as => :superuser) do |user_database|
-      user_database.run(<<-TRIGGER
-        DROP TRIGGER IF EXISTS update_updated_at_trigger ON #{self.name};
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+      DROP TRIGGER IF EXISTS update_updated_at_trigger ON #{self.name};
 
-        CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at_trigger$
-          BEGIN
+      CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at_trigger$
+        BEGIN
                NEW.updated_at := now();
                RETURN NEW;
-          END;
-        $update_updated_at_trigger$ LANGUAGE plpgsql;
+        END;
+      $update_updated_at_trigger$ LANGUAGE plpgsql;
 
-        CREATE TRIGGER update_updated_at_trigger
-        BEFORE UPDATE ON #{self.name}
-            FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
+      CREATE TRIGGER update_updated_at_trigger
+      BEFORE UPDATE ON #{self.name}
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
 TRIGGER
-      )
-    end
+    )
   end
 
   def get_new_column_type(invalid_column)
@@ -915,9 +884,7 @@ TRIGGER
     return unless attributes[:the_geom]
     geo_json = RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).try(:as_text)
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?
-    owner.in_database do |user_database|
-      user_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
-    end
+    owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
   end
   
   def manage_tags

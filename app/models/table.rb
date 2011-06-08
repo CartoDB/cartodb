@@ -274,22 +274,16 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema(options = {})
-    sql = "SELECT column_name,data_type, n.nspname as \"Schema\", c.relname as \"Name\", CASE c.relkind WHEN 'r' THEN 'table' 
-           WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' END as \"Type\", 
-           u.usename as \"Owner\" FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner LEFT JOIN pg_catalog.pg_namespace n 
-           ON n.oid = c.relnamespace,INFORMATION_SCHEMA.COLUMNS as cols WHERE c.relkind IN ('r','')  AND 
-           n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid) and cols.table_name = c.relname and cols.table_name = '#{self.name}' 
-           ORDER BY 4;" 
     schema = nil
     owner.in_database do |user_database|
-      schema = user_database[sql].all
+      schema = user_database.schema(self.name)
     end
-    schema.map do |h| 
-      next if h[:column_name].to_sym == THE_GEOM_WEBMERCATOR
-      [ h[:column_name].to_sym, 
-        h[:column_name].to_sym == :the_geom ? "geometry" : (options[:cartodb_types] == false) ? h[:data_type] : h[:data_type].convert_to_cartodb_type, 
-        h[:column_name].to_sym == :the_geom ? "geometry" : nil, 
-        h[:column_name].to_sym == :the_geom ? the_geom_type : nil
+    schema.map do |column| 
+      next if column[0] == THE_GEOM_WEBMERCATOR
+      [ column[0], 
+        column[0] == THE_GEOM ? "geometry" : (options[:cartodb_types] == false) ? column[1][:db_type] : column[1][:db_type].convert_to_cartodb_type, 
+        column[0] == THE_GEOM ? "geometry" : nil, 
+        column[0] == THE_GEOM ? the_geom_type : nil
       ].compact
     end.compact
   end

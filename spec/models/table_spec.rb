@@ -329,9 +329,9 @@ describe Table do
     table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
     (table.schema(:cartodb_types => false) - [
-      [:cartodb_id, "integer"], [:code, "character"], [:title, "character varying"], 
-      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying"], 
-      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
+      [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
+      [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
+      [:kind, "character varying(10)"]
     ]).should be_empty
   end
 
@@ -340,9 +340,9 @@ describe Table do
     table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
     (table.schema(:cartodb_types => false) - [
-      [:cartodb_id, "integer"], [:code_wadus, "character"], [:title, "character varying"], 
-      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying"],
-      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
+      [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
+      [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
+      [:kind, "character varying(10)"]
     ]).should be_empty
   end
 
@@ -990,7 +990,7 @@ describe Table do
       [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], 
       [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "number"], 
       [:shape_area, "number"], [:latitude, "number"], [:longitude, "string"], [:center_latitude, "number"], 
-      [:center_longitude, "number"], [:created_at, "date"], [:updated_at, "date"]
+      [:center_longitude, "number"], [:created_at, "string"], [:updated_at, "string"]
     ]).should be_empty
   end
   

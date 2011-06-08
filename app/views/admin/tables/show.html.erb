@@ -2,6 +2,7 @@
     <%= headjs_include_tag(
       # PLUGINS
       "plugins/jquery.min",
+      "plugins/jquery-ui.min",
       "plugins/general_functions",
       "plugins/jquery.mousewheel",
       "plugins/jscrollpane.min",
@@ -11,9 +12,6 @@
       "plugins/codemirror/codemirror.js",
       "plugins/codemirror/plsql.js",
       "plugins/codemirror/css.js",
-      "plugins/colorpicker/eye",
-      "plugins/colorpicker/utils",
-      "plugins/colorpicker/colorpicker",
       "plugins/underscore",
       "plugins/mustache",
       "plugins/tag-it",
@@ -26,13 +24,19 @@
       "admin/table/geocoding",
       "admin/table/worker_geocoding",
       "admin/table/table",
-      "admin/maps/maps",
-      "admin/maps/map_styles",
-      "plugins/jquery-ui.min",
-      "admin/maps/mapElements",
       "admin/table/table_templates",
+      # MAPS
+      "admin/maps/map",
+      "admin/maps/map_elements",
+      "admin/maps/header_elements",
+      "admin/maps/map_functions",
+      "admin/maps/style_functions",
+      "admin/maps/map_functions",
+      "admin/maps/CartoMarker",
+      "admin/maps/CartoInfowindow",
+
       # GMAPS
-      "http://maps.google.com/maps/api/js?v=3.4&sensor=true&callback=startTable"  
+      "http://maps.google.com/maps/api/js?v=3.4&sensor=true&callback=startTable"
     )%>
       
     <script type="text/javascript">

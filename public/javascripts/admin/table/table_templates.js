@@ -6,6 +6,8 @@
                   '<div {{#cartodb_id}}style="width:75px"{{/cartodb_id}}  {{^cartodb_id}}style="width:{{cellsize}}px"{{/cartodb_id}}>'+
                     '<span class="long">'+
                       '<h3 {{^allowed}}class="static"{{/allowed}}>{{name}}</h3>'+
+                      
+                      '{{#geo}}<p class="geo {{value}} {{#loading}}loading{{/loading}}">geo</p>{{/geo}}'+
                       '{{#allowed}}<input type="text" value="{{name}}"/>{{/allowed}}'+
                     '</span>'+
                     '<p class="long">'+

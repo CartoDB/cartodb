@@ -1,10 +1,43 @@
 div.map_window {position:absolute; top:161px; left:0; right:0; bottom:0; width:100%; background:white;}
 div.map_window div.map_curtain {position:absolute; left:0; right:0; top:0; bottom:0; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5; z-index:12;}
 div.map_window div#map {position:absolute; left:0; right:0; bottom:0; top:51px; width:100%; z-index:5; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;}
-div.map_window a.zoom_in {position:absolute; top:70px; left:10px; width:26px; height:26px; background:url('/images/admin/map/zoomin.png') no-repeat 0 0; z-index:10;}
-div.map_window a.zoom_in:hover {background-position:0 -26px; cursor:pointer;}
-div.map_window a.zoom_out {position:absolute; top:100px; left:10px; width:26px; height:26px; background:url('/images/admin/map/zoomout.png') no-repeat 0 0; z-index:10;}
-div.map_window a.zoom_out:hover {background-position:0 -26px; cursor:pointer;}
+
+/*Zoom controls*/
+div.map_window div#zoom_control {position:absolute; top:72px; left:10px; width:28px; height:227px; z-index:10; -webkit-border-radius:4px; -moz-border-radius:4px; border-radius:4px; background-image:-moz-linear-gradient(100% 100% 90deg, rgba(38,44,69,0.9), rgba(23,27,43,0.9)); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(38,44,69,0.9)), to(rgba(23,27,43,0.9)));}
+div.map_window div#zoom_control span.slider {position:absolute; top:34px; left:9px; height:160px; width:10px; background:url('/images/admin/map/zoom_slider_bkg.png') center center;}
+div.map_window a.zoom_in {position:absolute; top:7px; left:7px; width:14px; height:15px; background:url('/images/admin/map/zoom_buttons.png') no-repeat 0 0; z-index:10;}
+div.map_window a.zoom_in:hover {background-position:0 -15px; cursor:pointer;}
+div.map_window a.zoom_out {position:absolute; bottom:7px; left:7px; width:14px; height:15px; background:url('/images/admin/map/zoom_buttons.png') no-repeat -14px 0; z-index:10;}
+div.map_window a.zoom_out:hover {background-position:-14px -15px; cursor:pointer;}
+div.map_window div#zoom_control .ui-slider { position: relative; text-align: left; }
+div.map_window div#zoom_control .ui-slider .ui-slider-handle { position: absolute; z-index:2; width:12px; height:12px; cursor: default; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #C3C3C3);
+   background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#C3C3C3)); border:1px solid #212635;}
+div.map_window div#zoom_control .ui-slider-vertical .ui-slider-handle { left:-2px; margin-left:0; margin-bottom:-.6em; }
+div.map_window div#zoom_control .ui-slider .ui-state-hover {cursor:pointer; background-image:-moz-linear-gradient(100% 100% 90deg, #C3C3C3, #ffffff); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#C3C3C3), to(#ffffff));}
+/*map tools*/
+div.terms {position:absolute; bottom:3px!important; right:110px!important;}
+div.map_window div#map_tools {position:absolute; bottom:0; right:0; left:0; height:2px; width:100%; background:#282F49; z-index:10;}
+div.map_window div#map_tools ul {position:absolute; bottom:2px; right:0; width:auto; height:38px; padding:0 0 0 7px; overflow:hidden; -webkit-border-top-left-radius: 5px; -moz-border-radius-topleft: 5px; border-top-left-radius: 5px; background:#282F49;}
+div.map_window div#map_tools ul li {display:inline-block; width:25px; height:25px; margin:8px 5px 0 0;}
+div.map_window div#map_tools ul li a {display:inline-block; width:23px; height:23px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #161A29; text-indent:-9999px;
+  background:url('/images/admin/map/icons.png') no-repeat 8px 4px, -moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background:url('/images/admin/map/icons.png') no-repeat 8px 4px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));} 
+div.map_window div#map_tools ul li a:hover {background:url('/images/admin/map/icons.png') no-repeat 8px 4px, -moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); 
+                                                background:url('/images/admin/map/icons.png') no-repeat 8px 4px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+div.map_window div#map_tools ul li a.add {background:url('/images/admin/map/icons.png') no-repeat -21px 4px, -moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); 
+                                          background:url('/images/admin/map/icons.png') no-repeat -21px 4px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE)); cursor:pointer;}
+div.map_window div#map_tools ul li a.add:hover {background:url('/images/admin/map/icons.png') no-repeat -21px 4px, -moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); 
+                                                background:url('/images/admin/map/icons.png') no-repeat -21px 4px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+div.map_window div#map_tools ul li a.select_area {background:url('/images/admin/map/icons.png') no-repeat -50 4px, -moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); 
+                                                  background:url('/images/admin/map/icons.png') no-repeat -50px 4px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE)); cursor:pointer;}
+div.map_window div#map_tools ul li a.select_area:hover {background:url('/images/admin/map/icons.png') no-repeat -50px 4px, -moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); 
+                                                        background:url('/images/admin/map/icons.png') no-repeat -50px 4px, -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+div.map_window div#map_tools div.tooltip {position:absolute; display:none; right:48px; bottom:36px;}
+div.map_window div#map_tools div.tooltip p {padding:4px 13px; background:rgba(0,0,0,0.7); z-index:20; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:bold 11px 'Helvetica',Arial; color:white; text-align:center; line-height:14px; text-shadow:0 1px black;}
+div.map_window div#map_tools div.tooltip span.arrow {position:absolute; bottom:-5px; left:50%; width:0; height:0; margin:20px 0 0 -5px; border-left:5px solid transparent; border-right:5px solid transparent; border-top:5px solid rgba(0,0,0,0.7);}
+/**/       
+
+
+                                                
 div.map_window div.map_header {position:relative; float:left; width:100%; height:60px; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white; border-bottom:1px solid rgba(00,00,00,0.25); z-index:10;}
 div.map_window div.map_header ul {float:left; height:50px; margin:5px 0 0 40px; border-left:1px solid #E6E7EB;}
 div.map_window div.map_header ul li {position:relative; float:left; width:auto; height:34px; padding:13px 55px 8px 9px; border-left:1px solid white; border-right:1px solid #E6E7EB;}
@@ -13,6 +46,8 @@ div.map_window div.map_header ul li h4 a {font:normal 11px "Helvetica",Arial; co
 div.map_window div.map_header ul li p {padding:3px 0 0 0; font:bold 11px "Helvetica",Arial; color:#666666; text-shadow:0 1px white; text-transform:capitalize;}
 div.map_window div.map_header ul li a.open {position:absolute; right:7px; top:13px; height:26px; width:26px; background:url('/images/admin/map/open_bkg.png') no-repeat 0 0; text-indent:-9999px;}
 div.map_window div.map_header ul li a.open:hover {background-position:0 -26px;}
+
+
 
 /*MARKERS CUSTOMIZATION*/
 div.map_window div.map_header ul li span.marker_customization {position:absolute; display:none; top:19px; right:13px; width:163px; height:auto; background:url('/images/admin/map/combo_bkg.png') no-repeat right 0;}
@@ -53,6 +88,7 @@ div.map_window p.loading {position:absolute; display:none; top:70px; left:50%; m
  -wekit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; font:normal 15px Arial; color:white; z-index:10;}
 
 
+/* CSS EDITOR */
 div.map_window div.css_editor {position:absolute; display:none; top:50%; left:50%; width:500px; height:400px; margin:-200px 0 0 -250px; padding:8px; background:#e7f2e4; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 10px 3px #666666;
  -moz-box-shadow:0 0 10px 3px #666666; z-index:10;}
 div.map_window div.css_editor a.close {position:absolute; right:-9px; top:-7px; width:24px; height:24px; background:url('/images/admin/table/close.png') no-repeat 0 0; text-indent:-9999px;}
@@ -68,9 +104,7 @@ div.map_window div.css_editor div.inner_ span.bottom a.cancel:hover {color:#3333
 div.map_window div.css_editor div.inner_ span.bottom a.try_css {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
 div.map_window div.css_editor div.inner_ span.bottom a.try_css:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
-
-
-/*Codemirror CSS*/
+  /*codemirror CSS*/
 div.map_window .CodeMirror{overflow:auto; width:100%; height:300px;line-height:1em;font-family:monospace; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; min-width:454px; max-width:454px; max-height:265px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #999999; webkit-border-radius:4px;
 border-radius:4px; -moz-border-radius:4px; font:normal 13px Arial; color:#333333; line-height:13px;}
 div.map_window .CodeMirror-gutter{position:absolute;left:0;top:0;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
@@ -111,7 +145,7 @@ span.css-string {color: #A22;}
 
 
 /*ColorPicker*/
-.colorpicker{width:356px;height:176px;overflow:hidden;position:absolute;background:url('/images/admin/colorpicker/colorpicker_background.png');font-family:Arial,Helvetica,sans-serif;display:block;z-index:100;}
+/*.colorpicker{width:356px;height:176px;overflow:hidden;position:absolute;background:url('/images/admin/colorpicker/colorpicker_background.png');font-family:Arial,Helvetica,sans-serif;display:block;z-index:100;}
 .colorpicker_color{width:150px;height:150px;left:14px;top:13px;position:absolute;background:#f00;overflow:hidden;cursor:crosshair;}
 .colorpicker_color div{position:absolute;top:0;left:0;width:150px;height:150px;background:url('/images/admin/colorpicker/colorpicker_overlay.png');}
 .colorpicker_color div div{position:absolute;top:0;left:0;width:11px;height:11px;overflow:hidden;background:url('/images/admin/colorpicker/colorpicker_select.gif');margin:-5px 0 0 -5px;}
@@ -135,4 +169,4 @@ width:auto!important;height:auto!important;padding:0!important;border:none!impor
 .colorpicker_focus{background-position:center;}
 .colorpicker_hex.colorpicker_focus{background-position:bottom;}
 .colorpicker_submit.colorpicker_focus{background-position:bottom;}
-.colorpicker_slider{background-position:bottom;}
+.colorpicker_slider{background-position:bottom;}*/

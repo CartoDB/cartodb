@@ -69,11 +69,6 @@ describe Table do
     $tables_metadata.hget(table.key,"user_id").should == table.user_id.to_s
   end
   
-  it "should store a list of columns in Redis" do
-    table = create_table
-    $tables_metadata.hget(table.key,"columns").should == [:cartodb_id, :name, :description, :the_geom, :created_at, :updated_at].to_json
-  end
-
   it "should store the_geom_type in Redis" do
     table = create_table
     table.the_geom_type.should == "point"
@@ -81,12 +76,6 @@ describe Table do
     
     table.the_geom_type = "multipolygon"
     $tables_metadata.hget(table.key,"the_geom_type").should == "multipolygon"
-  end
-
-  it "should store a schema in Redis" do
-    table = create_table
-    $tables_metadata.hget(table.key,"schema").should == 
-      "[\"cartodb_id,integer,number\", \"name,text,string\", \"description,text,string\", \"the_geom,geometry,geometry,point\", \"created_at,timestamp,date\", \"updated_at,timestamp,date\"]"
   end
   
   it "should remove the table from Redis when removing the table" do
@@ -811,7 +800,7 @@ describe Table do
     table.reload
     table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
     table.reload
-    (table.schema - [
+    (table.schema(:reload => true) - [
       [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
       [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"]
     ]).should be_empty

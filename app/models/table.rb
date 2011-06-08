@@ -68,7 +68,6 @@ class Table < Sequel::Model(:user_tables)
       $tables_metadata.del key
       owner.in_database(:as => :superuser) do |user_database|
         user_database.run("DROP TABLE IF EXISTS #{self.name}")
-        user_database.run("DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq")
       end
     end
     raise e
@@ -97,8 +96,6 @@ class Table < Sequel::Model(:user_tables)
 
   def before_destroy
     $tables_metadata.del key
-    $threshold.del "rails:users:#{self.user_id}:requests:table:#{self.name}:total"
-    # TODO: remove all the history of requests per day
   end
 
   def after_destroy
@@ -106,35 +103,22 @@ class Table < Sequel::Model(:user_tables)
     Tag.filter(:user_id => user_id, :table_id => id).delete
     User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
     owner.in_database(:as => :superuser) do |user_database|
+      begin
+        user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
+      rescue
+        Rails.logger.info "after_destroy: maybe table doesn't exist"
+      end
       user_database.run("DROP TABLE IF EXISTS #{self.name}")
-      user_database.run("DROP SEQUENCE IF EXISTS #{self.name}_cartodb_id_seq")
     end
   end
   ## End of Callbacks
   
   def name=(value)
-    # to validate the name of the table, the user_id
-    # **must** be associated to the table
-    raise CartoDB::InvalidUser if user_id.blank?
     return if value == self[:name]
     new_name = get_valid_name(value)
     unless new?
       owner.in_database do |user_database|
         user_database.rename_table name, new_name
-        user_database.run("ALTER SEQUENCE #{self.name}_cartodb_id_seq RENAME TO #{new_name}_cartodb_id_seq")
-        begin
-          user_database.run("ALTER INDEX #{self.name}_the_geom_idx RENAME TO #{new_name}_the_geom_idx")
-          user_database.run("ALTER INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx RENAME TO #{new_name}_#{THE_GEOM_WEBMERCATOR}_idx")
-        rescue
-        end
-      end
-      $tables_metadata.rename key, key(new_name)
-      if $threshold.exists "rails:users:#{self.user_id}:requests:table:#{self.name}:total"
-        $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:total","rails:users:#{self.user_id}:requests:table:#{new_name}:total"
-      end
-      if $threshold.exists "rails:users:#{self.user_id}:requests:table:#{self.name}:#{Date.today.strftime("%Y-%m-%d")}"
-        $threshold.rename "rails:users:#{self.user_id}:requests:table:#{self.name}:#{Date.today.strftime("%Y-%m-%d")}",
-                          "rails:users:#{self.user_id}:requests:table:#{new_name}:#{Date.today.strftime("%Y-%m-%d")}"
       end
     end
     self[:name] = new_name
@@ -172,8 +156,8 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def key(new_name = nil)
-    'rails:' + database_name + ':' + (new_name || name)
+  def key
+    "rails:#{database_name}:#{oid}"
   rescue
     nil
   end
@@ -184,7 +168,7 @@ class Table < Sequel::Model(:user_tables)
       user_database[name.to_sym].count
     end
   end
-
+  
   def insert_row!(raw_attributes)
     primary_key = nil
     owner.in_database do |user_database|
@@ -525,6 +509,15 @@ TRIGGER
     table
   end
 
+  def oid
+    unless @oid 
+      owner.in_database do |user_database|
+        @oid = user_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]
+      end
+    end
+    @oid
+  end
+
   private
 
   def update_updated_at
@@ -579,9 +572,9 @@ TRIGGER
       if force_schema.blank? || !force_schema.include?("cartodb_id")
         user_database.run("alter table #{self.name} add column cartodb_id integer")
       end
-      user_database.run("create sequence #{self.name}_cartodb_id_seq")
-      user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")
-      user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('#{self.name}_cartodb_id_seq')")
+      user_database.run("create sequence cartodb_id_#{oid}_seq")
+      user_database.run("update #{self.name} set cartodb_id = nextval('cartodb_id_#{oid}_seq')")
+      user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('cartodb_id_#{oid}_seq')")
       user_database.run("alter table #{self.name} alter column cartodb_id set not null")
       user_database.run("alter table #{self.name} add unique (cartodb_id)")
       user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
@@ -732,12 +725,12 @@ TRIGGER
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::SRID},'#{type}',2)")
-        user_database.run("CREATE INDEX #{self.name}_the_geom_idx ON #{self.name} USING GIST(the_geom)")
+        user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")
       end
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
-        user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
+        user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
       end
     end
     self.the_geom_type = type.downcase
@@ -787,9 +780,9 @@ TRIGGER
           user_database.rename_column name.to_sym, pk, :cartodb_id
         else
           user_database.run("alter table #{self.name} add column cartodb_id integer")
-          user_database.run("create sequence #{self.name}_cartodb_id_seq")
-          user_database.run("update #{self.name} set cartodb_id = nextval('#{self.name}_cartodb_id_seq')")
-          user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('#{self.name}_cartodb_id_seq')")
+          user_database.run("create sequence cartodb_id_#{oid}_seq")
+          user_database.run("update #{self.name} set cartodb_id = nextval('cartodb_id_#{oid}_seq')")
+          user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('cartodb_id_#{oid}_seq')")
           user_database.run("alter table #{self.name} alter column cartodb_id set not null")
           user_database.run("alter table #{self.name} add unique (cartodb_id)")
           user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
@@ -883,9 +876,9 @@ TRIGGER
         imported_schema = user_database[random_name.to_sym].columns
         user_database.run("CREATE TABLE #{self.name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")
         user_database.run("DROP TABLE #{random_name}")
-        user_database.run("CREATE INDEX #{self.name}_the_geom_idx ON #{self.name} USING GIST(the_geom)")
+        user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")
         geometry_type = user_database["select GeometryType(the_geom) FROM #{self.name} where the_geom is not null limit 1"].first[:geometrytype]
-        user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
+        user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
         user_database.run("VACUUM ANALYZE #{self.name}")
         self.set_trigger_the_geom_webmercator
         # TODO

@@ -89,10 +89,6 @@ module CartoDB
       if query.include?('*') && !database_name.blank?
         if query =~ /^\s*select\s*(\*)\s*from\s*(\w+)\s*(.*)/i
           query.gsub!(/^\s*select\s*(\*)\s*from\s*(\w+)\s*(.*)/i) do |matches|
-            stored_schema = $tables_metadata.hget "rails:#{database_name}:#{$2}", "columns"
-            raise CartoDB::TableNotExists.new($2) if stored_schema.blank?
-            schema = Yajl::Parser.new.parse(stored_schema)
-            raise "Blank columns in table #{database_name}:#{$2}" if schema.blank?
             if schema.include?("the_geom")
               schema[schema.index("the_geom")] = "ST_AsGeoJSON(the_geom) as the_geom"
             end

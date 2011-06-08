@@ -8,19 +8,15 @@ describe User do
     user.should_not be_new
 
     lambda {
-      user.in_database do |user_database|
-        user_database.test_connection.should == false
-      end    
+      user.in_database.test_connection.should == false
     }.should raise_error
-    
+
     user.database_name.should be_nil
     user.enable(true)
     user.save
     user.setup_user
     user.reload
-    user.in_database do |user_database|
-      user_database.test_connection.should == true
-    end    
+    user.in_database.test_connection.should == true
     user.database_name.should_not be_nil
   end
 
@@ -52,9 +48,7 @@ describe User do
     user = create_user
     user.database_name.should == "cartodb_test_user_#{user.id}_db"
     user.database_username.should == "test_cartodb_user_#{user.id}"
-    user.in_database do |user_database|
-      user_database.test_connection.should == true
-    end
+    user.in_database.test_connection.should == true
   end
 
   it "should create a dabase user that only can read it's own database" do
@@ -192,18 +186,14 @@ describe User do
     table.should be_private
 
     lambda {
-      user.in_database(:as => :public_user) do |user_database|
-        user_database.run("select * from #{table.name}")
-      end
+      user.in_database(:as => :public_user).run("select * from #{table.name}")
     }.should raise_error(Sequel::DatabaseError)
 
     table.privacy = "PUBLIC"
     table.save
     table.reload
 
-    user.in_database(:as => :public_user) do |user_database|
-      user_database.run("select * from #{table.name}")
-    end
+    user.in_database(:as => :public_user).run("select * from #{table.name}")
   end
 
   it "should create a client_application for each user" do
@@ -256,5 +246,4 @@ describe User do
       user.run_query("select * from wadus")
     }.should raise_error(CartoDB::TableNotExists)
   end
-
 end

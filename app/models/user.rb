@@ -103,7 +103,6 @@ class User < Sequel::Model
   end
 
   def run_query(query)
-    query = CartoDB::SqlParser.pre_parsing(query,self.id)
     rows = []
     time = nil
     in_database do |user_database|

@@ -249,56 +249,6 @@ describe User do
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
     query_result[:rows][2][:name_of_species].should == "cristata barrukia"
   end
-
-  it "should raise an error if detects a create table statment in a query" do
-    user = create_user
-
-    lambda {
-      user.run_query("create table antantaric_species cartodb_id")
-    }.should raise_error(CartoDB::QueryNotAllowed)
-    
-    lambda {
-      user.run_query("create table antantaric_species cartodb_id; insert into antantaric_species (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from antantaric_species where family='Polynoidae' limit 10")
-    }.should raise_error(CartoDB::QueryNotAllowed)
-  end
-  
-  it "should detect a drop table statement and drop the table" do
-    user = create_user
-    table = new_table :name => 'antantaric species'
-    table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-    table.save
-    
-    user.run_query("drop table antantaric_species")
-    Table[table.id].should be_nil
-
-    lambda {
-      user.run_query("drop table antantaric_species")
-    }.should raise_error(CartoDB::TableNotExists)
-  end
-  
-  it "should detect a alter table statement that renames the table to update the user table" do
-    user = create_user
-    table = new_table :name => 'antantaric species'
-    table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-    table.save
-    
-    user.run_query("alter table antantaric_species rename to antantaric_species_dev")
-    Table[table.id].name.should == "antantaric_species_dev"
-  end
-  
-  it "should detect a alter table statement to update the stored schema" do
-    user = create_user
-    table = new_table :name => 'antantaric species'
-    table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-    table.save
-    
-    user.run_query("alter table antantaric_species rename column family to families")
-    table.reload
-    table.schema(:reload => true).should include([:families,"string"])
-  end  
   
   it "should fail with error if table doesn't exist" do
     user = create_user

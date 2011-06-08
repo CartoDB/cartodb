@@ -221,7 +221,9 @@
           type:element[1],
           name:element[0],
           cartodb_id: (element[0]!="cartodb_id")?false:true,
-          cellsize: cell_size
+          cellsize: cell_size,
+          geo: (element[3]==undefined)?false:true
+          //loading: (loading)?true:false
         });
       });
       

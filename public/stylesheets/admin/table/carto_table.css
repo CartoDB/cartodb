@@ -357,7 +357,7 @@ div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content ul li a {float:left; width:90px; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
   text-shadow:none;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content ul li a:hover {color:#6DBE6D;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option a.remove_column {position:absolute; display:block; bottom:16px; right:145px; width:17px; height:17px; padding:0; background:url('/images/admin/table/remove_column_bkg.png') no-repeat 0 0;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option a.remove_column {position:absolute; display:block; bottom:16px; left:165px; width:17px; height:17px; padding:0; background:url('/images/admin/table/remove_column_bkg.png') no-repeat 0 0;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option a.remove_column:hover {background-position:0 -17px;}
 div.mamufas div.georeference_window div.inner_ span.top p.error {display:none; width:auto; margin:15px 0 0 0!important; padding:5px 7px!important; border:1px solid #E06C6C; color:red; background:#FFC9CF; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
 div.mamufas div.georeference_window div.inner_ span.bottom {float:left; width:385px; padding:0 0 10px; border-top:1px solid white;}

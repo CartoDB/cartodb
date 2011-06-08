@@ -9,7 +9,7 @@
     ///////////////////////////////////////
     $('div.mamufas').append(
       '<div class="delete_window">'+
-        '<a href="#close_window" class="close_delete"></a>'+
+        '<a href="#close_window" class="close"></a>'+
         '<div class="inner_">'+
           '<span class="top">'+
             '<h3>You are about to delete this table</h3>'+
@@ -22,7 +22,7 @@
         '</div>'+
       '</div>'+
       '<div class="export_window">'+
-        '<a href="#close_window" class="close_delete"></a>'+
+        '<a href="#close_window" class="close"></a>'+
         '<div class="inner_">'+
           '<form action="/tables/'+ table_id +'" method="get">'+
             '<input id="export_format" type="hidden" name="format" />'+
@@ -42,7 +42,7 @@
         '</div>'+
       '</div>'+
       '<div class="save_window">'+
-        '<a href="#close_window" class="close_save"></a>'+
+        '<a href="#close_window" class="close"></a>'+
         '<div class="inner_">'+
           '<span class="top">'+
             '<h3>Insert a name for your copy of this table</h3>'+
@@ -55,7 +55,7 @@
         '</div>'+
       '</div>'+
       '<div class="warning_window">'+
-        '<a href="#close_window" class="close_warning"></a>'+
+        '<a href="#close_window" class="close"></a>'+
         '<div class="inner_">'+
           '<span class="top">'+
             '<h3>This change will affect your API calls</h3>'+
@@ -68,7 +68,7 @@
         '</div>'+
       '</div>'+
       '<div class="import_window">'+
-        '<a href="#close_window" class="close_create"></a>'+
+        '<a href="#close_window" class="close"></a>'+
         '<div class="inner_">'+
           '<span class="loading">'+
             '<h5>We are importing your data...</h5>'+
@@ -411,7 +411,7 @@
       $('div.mamufas').fadeIn('fast');
       bindESC();
     });
-    $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_save, div.mamufas a.close_warning, div.mamufas a.close_create').click(function(ev){
+    $('div.mamufas a.cancel, div.mamufas a.close').click(function(ev){
       stopPropagation(ev);
       $('div.mamufas').fadeOut('fast',function(){
         $('div.mamufas div.delete_window').hide();
@@ -434,6 +434,7 @@
       });
     });
 
+
     ///////////////////////////////////////
     //  Export table                     //
     ///////////////////////////////////////
@@ -448,6 +449,7 @@
       closeOutTableWindows();
     });
     $('#export_format').val($('div.mamufas div.export_window form ul li.selected a.option').attr('rel'));
+
 
     ///////////////////////////////////////
     //  Application tabs menu            //
@@ -478,6 +480,14 @@
         }
       }
     });
+    
+    
+    
+    ///////////////////////////////////////////////
+    // REMOVE WHEN FINISH WITH MAP CUSTOMIZATION //
+    ///////////////////////////////////////////////
+    //setTimeout(function(){$("section.subheader ul.tab_menu li a:contains('Map')").trigger('click');},500);
+    
   });
 
 
@@ -576,15 +586,12 @@
 
 
   function resetUploadFile() {
-    $('div.import_window ul li:eq(0)').removeClass('disabled');
-    $('div.import_window ul li').removeClass('selected');
-    $('div.import_window ul li:eq(0)').addClass('selected');
     $('div.import_window div.inner_ span.top').show();
     $('div.import_window div.inner_ span.bottom').show();
     $('div.import_window div.inner_ span.top').css('opacity',1);
     $('div.import_window div.inner_ span.bottom').css('opacity',1);
     $('div.import_window div.inner_').css('border-color','#CCCCCC');
-    $('div.import_window a.close_import').removeClass('last');
+    $('div.import_window a.close').removeClass('last');
     $('div.import_window div.inner_').css('height','auto');
     $('div.import_window div.inner_ span.loading').hide();
     $('div.import_window div.inner_ span.loading').css('opacity',0);
@@ -608,6 +615,7 @@
     $('div.import_window div.inner_ span.bottom').animate({opacity:0});
     $('div.import_window div.inner_ span.top').animate({opacity:0},300,function(){
       $('div.import_window div.inner_ span.top').hide();
+      $('div.import_window div.inner_ span.bottom').hide();
       $('div.import_window div.inner_ span.loading').show();
       $('div.import_window div.inner_ span.loading').animate({opacity:1},200, function(){
         var params = {}
@@ -633,25 +641,25 @@
         // });
       });
     });
-    setTimeout(function(){$('div.import_window a.close_create').addClass('last');},250);
+    setTimeout(function(){$('div.import_window a.close').addClass('last');},250);
   }
 
 
   function retryImportTable() {
-    $('div.import_window a.close_create').removeClass('last');
+    $('div.import_window a.close').removeClass('last');
     $('div.import_window div.inner_').animate({borderColor:'#CCCCCC', height:'254px'},500,function(){
       $('div.import_window div.inner_').css('height','auto');
     });
-    $('div.import_window ul li:eq(0)').removeClass('disabled');
-    $('form input[type="submit"]').removeClass('disabled');
     $('span.file').removeClass('uploading');
     $('div.import_window div.inner_ span.loading').animate({opacity:0},300,function(){
       $('div.import_window div.inner_ span.loading').hide();
       $('div.import_window div.inner_ span.loading').removeClass('error');
       $('div.import_window div.inner_ span.loading p').html('It\'s not gonna be a lot of time. Just a few seconds, ok?');
       $('div.import_window div.inner_ span.loading h5').html('We are creating your table...');
-      $('div.import_window div.inner_ form').show();
-      $('div.import_window div.inner_ form').animate({opacity:1},200);
+      $('div.import_window div.inner_ span.top').show();
+      $('div.import_window div.inner_ span.top').animate({opacity:1},200);
+      $('div.import_window div.inner_ span.bottom').show();
+      $('div.import_window div.inner_ span.bottom').animate({opacity:1},200);
     });
   }
   

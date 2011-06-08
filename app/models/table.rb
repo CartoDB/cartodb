@@ -230,14 +230,26 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def schema(options = {})
-    owner.in_database.schema(self.name, options.slice(:reload)).map do |column| 
+    temporal_schema = []
+    owner.in_database.schema(self.name, options.slice(:reload)).each do |column| 
       next if column[0] == THE_GEOM_WEBMERCATOR
-      [ column[0], 
+      col = [ column[0], 
         column[0] == THE_GEOM ? "geometry" : (options[:cartodb_types] == false) ? column[1][:db_type] : column[1][:db_type].convert_to_cartodb_type, 
         column[0] == THE_GEOM ? "geometry" : nil, 
         column[0] == THE_GEOM ? the_geom_type : nil
       ].compact
-    end.compact
+      
+      # Make sensible sorting for jamon 
+      case column[0]
+        when :cartodb_id
+          temporal_schema.insert(0,col)
+        when :created_at, :updated_at
+          temporal_schema.insert(-1,col)
+        else
+          temporal_schema.insert(1,col)
+      end
+    end
+    temporal_schema.compact
   end
  
   def add_column!(options)

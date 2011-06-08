@@ -90,7 +90,6 @@ class Table < Sequel::Model(:user_tables)
     end
     set_the_geom_column!(the_geom_type.try(:to_sym) || "point")
     set_trigger_update_updated_at
-    update_stored_schema!
     @force_schema = nil
     $tables_metadata.hset key, "user_id", user_id
     $tables_metadata.hset key, "privacy", self.privacy
@@ -173,10 +172,6 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def pending_to_save?
-    self.name =~ /^untitle_table/
-  end
-
   def key(new_name = nil)
     'rails:' + database_name + ':' + (new_name || name)
   rescue
@@ -192,7 +187,6 @@ class Table < Sequel::Model(:user_tables)
 
   def insert_row!(raw_attributes)
     primary_key = nil
-    modified_schema = false
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -219,9 +213,7 @@ class Table < Sequel::Model(:user_tables)
           end
         end
         if new_column_type = get_new_column_type(invalid_column)
-          modified_schema = true
           user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
-          update_stored_schema!
           retry
         else
           raise e
@@ -229,15 +221,11 @@ class Table < Sequel::Model(:user_tables)
       end
     end
     update_the_geom!(raw_attributes, primary_key)
-    if modified_schema
-      update_stored_schema!
-    end
     return primary_key
   end
 
   def update_row!(row_id, raw_attributes)
     rows_updated = 0
-    modified_schema = false
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -253,7 +241,6 @@ class Table < Sequel::Model(:user_tables)
           invalid_value = message.match(/"([^"]+)"$/)[1]
           invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
           if new_column_type = get_new_column_type(invalid_column)
-            modified_schema = true
             user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
             retry
           else
@@ -267,16 +254,13 @@ class Table < Sequel::Model(:user_tables)
       end
     end
     update_the_geom!(raw_attributes, row_id)
-    if modified_schema
-      update_stored_schema!
-    end
     rows_updated
   end
 
   def schema(options = {})
     schema = nil
     owner.in_database do |user_database|
-      schema = user_database.schema(self.name)
+      schema = user_database.schema(self.name, options.slice(:reload))
     end
     schema.map do |column| 
       next if column[0] == THE_GEOM_WEBMERCATOR
@@ -295,7 +279,6 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       user_database.add_column name.to_sym, options[:name].to_s.sanitize, type
     end
-    update_stored_schema!
     return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^PGError/
@@ -310,7 +293,6 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database do |user_database|
       user_database.drop_column name.to_sym, options[:name].to_s
     end
-    update_stored_schema!
   end
 
   def modify_column!(options)
@@ -354,7 +336,6 @@ class Table < Sequel::Model(:user_tables)
         end
       end
     end
-    update_stored_schema!
     return {:name => new_name, :type => new_type, :cartodb_type => cartodb_type}
   end
 
@@ -412,29 +393,6 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def update_stored_schema(user_database)
-    temporal_schema = user_database.schema(self.name.to_sym, :reload => true).map do |column|
-      unless SKIP_SCHEMA_COLUMNS.include?(column.first.to_sym)
-        col = "#{column.first},#{column[1][:db_type].gsub(/,\d+/,"")},#{column[1][:db_type].convert_to_cartodb_type}"
-        if column.first.to_sym == :the_geom
-          col += ",#{the_geom_type}"
-        end
-        col
-      end
-    end.compact
-    stored_schema = ["cartodb_id,integer,#{"integer".convert_to_cartodb_type}"] +
-      temporal_schema +
-      ["created_at,timestamp,#{"timestamp".convert_to_cartodb_type}", "updated_at,timestamp,#{"timestamp".convert_to_cartodb_type}"]
-    $tables_metadata.hset(key,"columns", stored_schema.map{|c| c.split(',').first }.to_json)
-    $tables_metadata.hset(key,"schema", stored_schema)
-  end
-
-  def update_stored_schema!
-    owner.in_database do |user_database|
-      update_stored_schema(user_database)
-    end
-  end
-
   def georeference_from!(options = {})
     if !options[:latitude_column].blank? && !options[:longitude_column].blank?
       set_the_geom_column!("point")
@@ -443,7 +401,6 @@ class Table < Sequel::Model(:user_tables)
         user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{options[:longitude_column]}")
         user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{options[:latitude_column]}")
       end
-      update_stored_schema!
     else
       raise InvalidArgument
     end
@@ -767,22 +724,21 @@ TRIGGER
 
   def set_the_geom_column!(type)
     raise InvalidArgument unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
-    type = type.to_s.upcase
     updates = false
+    type = type.to_s.upcase
     owner.in_database do |user_database|
       return if !force_schema.blank? && !user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
       # REVIEW
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
+        updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::SRID},'#{type}',2)")
         user_database.run("CREATE INDEX #{self.name}_the_geom_idx ON #{self.name} USING GIST(the_geom)")
-        updates = true
       end
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
+        updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
         user_database.run("CREATE INDEX #{self.name}_#{THE_GEOM_WEBMERCATOR}_idx ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
-        updates = true
       end
-      update_stored_schema(user_database) if updates
     end
     self.the_geom_type = type.downcase
     save_changes

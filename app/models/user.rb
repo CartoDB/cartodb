@@ -108,13 +108,8 @@ class User < Sequel::Model
     time = nil
     in_database do |user_database|
       time = Benchmark.measure {
-        rows = user_database[CartoDB::SqlParser.parse(query, database_name)].all
+        rows = user_database[query].all
       }
-    end
-    if !CartoDB::SqlParser.update_schema.blank?
-      if table = Table[:user_id => self.id, :name => CartoDB::SqlParser.update_schema]
-        table.update_stored_schema!
-      end
     end
     #TODO: This part of the code should be using memcache.
     {
@@ -124,7 +119,11 @@ class User < Sequel::Model
     }
   rescue => e
     if e.message =~ /^PGError/
-      raise CartoDB::ErrorRunningQuery.new(e.message)
+      if e.message.include?("does not exist")
+        raise CartoDB::TableNotExists.new(e.message.match(/"([^"]+)"/)[1])
+      else
+        raise CartoDB::ErrorRunningQuery.new(e.message)
+      end
     else
       raise e
     end

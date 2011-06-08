@@ -297,7 +297,7 @@ describe User do
     
     user.run_query("alter table antantaric_species rename column family to families")
     table.reload
-    table.schema.should include([:families,"string"])
+    table.schema(:reload => true).should include([:families,"string"])
   end  
   
   it "should fail with error if table doesn't exist" do

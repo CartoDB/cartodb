@@ -6,16 +6,37 @@ section.outer_content div.content {position:relative; z-index:2;}
 section.outer_content div.content div.top {width:900px; margin:0 auto; padding:20px 0 30px;}
 section.outer_content div.content div.top ul.tables_list {float:left; width:auto; margin:0;}
 section.outer_content div.content div.top ul.tables_list li {float:left; width:auto; margin:0 10px 0 0;}
-section.outer_content div.content div.top ul.tables_list li a {float:left; height:31px; padding:0 0 0 4px; background:url('/images/admin/dashboard/nav_left.png') no-repeat 0 0; color:white; text-decoration:none;}
-section.outer_content div.content div.top ul.tables_list li a.oth {color:#FFFFFF;}
-section.outer_content div.content div.top ul.tables_list li a span {float:left; padding:8px 10px 8px 5px; font:normal 13px Arial; text-shadow:0 1px black; background:url('/images/admin/dashboard/nav_right.png') no-repeat right 0; color:white;}
-section.outer_content div.content div.top ul.tables_list li a.oth span {color:#FFFFFF;}
-section.outer_content div.content div.top ul.tables_list li a:hover {background-position:0 -31px;}
-section.outer_content div.content div.top ul.tables_list li a:hover span {background-position:right -31px;}
-section.outer_content div.content div.top ul.tables_list li.selected a {background-position:0 -31px;}
-section.outer_content div.content div.top ul.tables_list li.selected a span {background-position:right -31px; color: #949BAB;;}
-section.outer_content div.content div.top ul.tables_list li.selected a:hover {background-position:0 -31px; cursor:default;}
-section.outer_content div.content div.top ul.tables_list li.selected a:hover span {background-position:right -31px;}
+section.outer_content div.content div.top ul.tables_list li a {float:left; height:13px; padding:8px 10px 9px 10px; font:normal 13px Arial; text-shadow:0 1px black; color:white; text-decoration:none;
+  -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #000000;
+  -moz-box-shadow:0 1px 0 0 #484E64; -webkit-box-shadow:0 1px 0 0 #484E64; box-shadow:0 1px 0 0 #484E64;
+  background:linear-gradient(-90deg, #1D283F, #0C101A); 
+  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#1D283F), to(#0C101A));
+  background:-moz-linear-gradient(-90deg, #1D283F, #0C101A);
+  background: -o-linear-gradient(#1D283F,#0C101A);
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1D283F', endColorstr='#0C101A');
+}
+section.outer_content div.content div.top ul.tables_list li a:hover {
+  background:linear-gradient(-90deg, #0C101A, #1D283F); 
+  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#0C101A), to(#1D283F));
+  background:-moz-linear-gradient(-90deg, #0C101A, #1D283F);
+  background: -o-linear-gradient(#0C101A,#1D283F); 
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#0C101A', endColorstr='#1D283F');
+}
+section.outer_content div.content div.top ul.tables_list li.selected a {color:#949BAB;
+  background:linear-gradient(-90deg, #0C101A, #1D283F); 
+  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#0C101A), to(#1D283F));
+  background:-moz-linear-gradient(-90deg, #0C101A, #1D283F);
+  background: -o-linear-gradient(#0C101A,#1D283F); 
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#0C101A', endColorstr='#1D283F');
+}
+section.outer_content div.content div.top ul.tables_list li.selected a:hover {cursor:default;
+  background:linear-gradient(-90deg, #0C101A, #1D283F); 
+  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#0C101A), to(#1D283F));
+  background:-moz-linear-gradient(-90deg, #0C101A, #1D283F);
+  background: -o-linear-gradient(#0C101A,#1D283F); 
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#0C101A', endColorstr='#1D283F');
+}
+
 section.outer_content div.content div.top a.get_key {float:right; width:auto; margin:7px 0 0 0; padding:3px 7px; background:black; color:white; text-transform:uppercase; font:bold 11px Arial; text-decoration:none; 
   -webkit-border-radius:8px; -moz-border-radius:8px; border-radius:8px;}
 section.outer_content div.content div.top a.get_key:hover {background:white; color:black;}

@@ -14,17 +14,55 @@ section.outer_content div.content div.small_blocks div.block.gallery {background
 section.outer_content div.content div.small_blocks div.block.last {margin:0!important;}
 section.outer_content div.content div.small_blocks div.block h2 {font:bold 21px Arial; color:#333333;}
 section.outer_content div.content div.small_blocks div.block p {margin:15px 0 0 0; font:normal 15px Arial; color:#666666;}
-section.outer_content div.content div.small_blocks div.block a {float:left; width:auto; height:35px; margin:15px 0 0 0; padding:0 0 0 5px; text-decoration:none;}
-section.outer_content div.content div.small_blocks div.block a.disabled {width:132px; height:15px; padding:10px 0; background:url('/images/admin/api/disabled_button.png') no-repeat 0 0; font:bold 15px Arial; line-height:15px; color:#666666; text-shadow:0 1px white;
-  text-align:center ;}
-section.outer_content div.content div.small_blocks div.block a.disabled:hover {background-position: 0 0;}
-section.outer_content div.content div.small_blocks div.block a span {float:left; width:auto; height:15px; padding:10px 19px 10px 14px; font:bold 15px Arial; line-height:15px;}
-section.outer_content div.content div.small_blocks div.block a.green {background:url('/images/admin/api/green_left.png') no-repeat 0 0;}
-section.outer_content div.content div.small_blocks div.block a.green span {background:url('/images/admin/api/green_right.png') no-repeat right 0; color:#305233; text-shadow:0 1px #95C994;}
-section.outer_content div.content div.small_blocks div.block a.orange {background:url('/images/admin/api/orange_left.png') no-repeat 0 0;}
-section.outer_content div.content div.small_blocks div.block a.orange span {background:url('/images/admin/api/orange_right.png') no-repeat right 0; color:#895101; text-shadow:0 1px #FFC266;}
-section.outer_content div.content div.small_blocks div.block a:hover {background-position:0 -35px;}
-section.outer_content div.content div.small_blocks div.block a:hover span {background-position:right -35px;}
+section.outer_content div.content div.small_blocks div.block a {float:left; width:auto; height:15px; margin:15px 0 0 0; padding:10px 15px; font:bold 15px Arial; line-height:15px; text-decoration:none;}
+section.outer_content div.content div.small_blocks div.block a.disabled {color:#666666; text-shadow:0 1px white; text-align:center;
+  -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #aaaaaa;
+  -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #cccccc, #eeeeee); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#cccccc), to(#eeeeee));
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #cccccc, #eeeeee);
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#cccccc,#eeeeee); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px\10;
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#cccccc', endColorstr='#eeeeee');
+}
+section.outer_content div.content div.small_blocks div.block a.disabled:hover {cursor:default;}
+section.outer_content div.content div.small_blocks div.block a.green {color:#305233; text-shadow:0 1px #95C994;
+  -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #538C55;
+  -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #8FD484, #67BA6A); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#8FD484), to(#67BA6A));
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #8FD484, #67BA6A);
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#8FD484,#67BA6A); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px\10;
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#8FD484', endColorstr='#67BA6A');
+}
+section.outer_content div.content div.small_blocks div.block a.green:hover {
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #67BA6A, #8FD484); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#67BA6A), to(#8FD484));
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #67BA6A, #8FD484);
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#67BA6A,#8FD484); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px\10;
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#67BA6A', endColorstr='#8FD484');
+}
+section.outer_content div.content div.small_blocks div.block a.orange {color:#895101; text-shadow:0 1px #FFC266;
+  -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #A26001;
+  -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #FF9900, #BF7201); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FF9900), to(#BF7201));
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #FF9900, #BF7201);
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#FF9900,#BF7201); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px\10;
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FF9900', endColorstr='#BF7201');
+}
+section.outer_content div.content div.small_blocks div.block a.orange:hover {
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #BF7201, #FF9900); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#BF7201), to(#FF9900));
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #BF7201, #FF9900);
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#BF7201,#FF9900); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px\10;
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#BF7201', endColorstr='#FF9900');
+}
+
 section.outer_content div.content div.tutorial {width:100%; padding:0; margin:0;}
 section.outer_content div.content div.tutorial div.top {width:906px; height:7px; padding:0!important; margin:0!important; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
 section.outer_content div.content div.tutorial div.middle {position:relative; width:840px; margin:0; padding:27px 33px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}

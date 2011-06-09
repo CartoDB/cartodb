@@ -52,7 +52,7 @@ section#content div.inner_content {width:906px; margin:0 auto; padding:40px 0 0 
 div.mamufas {position:fixed; display:none; top:0; left:0; height:100%; width:100%; background:rgba(0,0,0,0.65);}
 
 div.mamufas div.create_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-107px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
-  -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111;}
+  -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.create_window.georeferencing {margin:-295px 0 0 -207px;}
 div.mamufas div.create_window a.close_create {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
 div.mamufas div.create_window a.close_create:hover {background-position:0 -23px;}

@@ -290,7 +290,7 @@ div.table_position div.edit_cell a.save:hover {background-position:0 -24px; colo
 
 /*Windows belong to mamufas object*/
 /*Geo window mamufas*/
-div.mamufas div.georeference_window {position:absolute; display:none; top:50%; left:50%; width:389px; margin:-250px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
+div.mamufas div.georeference_window {position:absolute; display:none; top:50%; left:50%; width:389px; margin:-250px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;
   -moz-box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.georeference_window a.close_geo {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_georeference.png') no-repeat 0 0;}
 div.mamufas div.georeference_window a.close_geo:hover {background-position:0 -24px;}
@@ -370,7 +370,7 @@ div.mamufas div.georeference_window div.inner_ span.bottom a.confirm_georeferenc
 div.mamufas div.georeference_window div.inner_ span.bottom a.confirm_georeference.disabled:hover {cursor:default; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
 
 /*Add column mamufas*/
-div.mamufas div.column_window {position:absolute; display:none; top:50%; left:50%; width:240px; margin:-150px 0 0 -128px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
+div.mamufas div.column_window {position:absolute; display:none; top:50%; left:50%; width:240px; margin:-150px 0 0 -128px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;
   -moz-box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.column_window a.close_create {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/table/export_close.png') no-repeat 0 0;}
 div.mamufas div.column_window a.close_create:hover {background-position:0 -23px;}
@@ -416,14 +416,14 @@ div.mamufas div.column_window div.inner_ span.bottom a.column_add:hover {backgro
 
 
 div.mamufas div.lastpage_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-107px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
-  -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111;}
+  -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.lastpage_window div.inner_ {float:left; width:413px; padding:0 0 5px; border:1px solid #FFC209; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
 div.mamufas div.lastpage_window div.inner_ span.loading {float:left; display:block; opacity:1; width:347px; height:40px; padding:0 0 0 47px; margin:10px; background:url('/images/admin/icons/loading.gif') no-repeat 0 7px;}
 div.mamufas div.lastpage_window div.inner_ span.loading h5 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.lastpage_window div.inner_ span.loading p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
 
 div.mamufas div.stopgeo_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-107px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
-  -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111;}
+  -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.stopgeo_window a.close {position:absolute; right:-8px; top:-7px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0px 0;}
 div.mamufas div.stopgeo_window a.close:hover {background-position:0 -24px;}
 div.mamufas div.stopgeo_window div.inner_ {float:left; width:411px; padding:0 0 5px; border:2px solid #FF6600; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}

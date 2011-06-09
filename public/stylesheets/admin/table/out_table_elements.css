@@ -133,7 +133,7 @@ section.subheader span.tags_window a:hover {background-image:-moz-linear-gradien
 div.mamufas {position:fixed; display:none; top:0; left:0; height:100%; width:100%; background:rgba(0,0,0,0.65); z-index:1000;}
 
 div.mamufas div.delete_window {position:absolute; display:none; top:50%; left:50%; width:434px; height:139px; margin:-120px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
-  -moz-box-shadow:0 0 50px 3px #111111;}
+  -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.delete_window a.close {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0;}
 div.mamufas div.delete_window a.close:hover {background-position:0 -24px;}
 div.mamufas div.delete_window div.inner_ {width:430px; height:135px; border:2px solid #FF6600; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
@@ -151,7 +151,7 @@ div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete:hover {bac
 
 
 div.mamufas div.save_window {position:absolute; display:none; top:50%; left:50%; width:389px; margin:-120px 0 0 -203px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
-  -moz-box-shadow:0 0 50px 3px #111111;}
+  -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.save_window a.close {position:absolute; right:-9px; top:-7px; width:24px; height:24px; background:url('/images/admin/table/close_georeference.png') no-repeat 0 0;}
 div.mamufas div.save_window a.close:hover {background-position:0 -24px;}
 div.mamufas div.save_window div.inner_ {float:left; width:387px; border:2px solid #FFC209; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
@@ -168,7 +168,7 @@ div.mamufas div.save_window div.inner_ span.bottom a.table_save:hover {backgroun
 
 
 div.mamufas div.export_window {position:absolute; display:none; top:50%; left:50%; width:389px; margin:-150px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
-  -moz-box-shadow:0 0 50px 3px #111111;}
+  -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.export_window a.close {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/table/export_close.png') no-repeat 0 0;}
 div.mamufas div.export_window a.close:hover {background-position:0 -23px;}
 div.mamufas div.export_window div.inner_ {float:left; width:387px; border:1px solid #ccc; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
@@ -191,7 +191,7 @@ div.mamufas div.export_window div.inner_ span.bottom input.download:hover {backg
 
 
 div.mamufas div.warning_window {position:absolute; display:none; top:50%; left:50%; width:434px; height:139px; margin:-120px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
-  -moz-box-shadow:0 0 50px 3px #111111;}
+  -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.warning_window a.close {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0;}
 div.mamufas div.warning_window a.close:hover {background-position:0 -24px;}
 div.mamufas div.warning_window div.inner_ {width:430px; height:135px; border:2px solid #FF6600; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
@@ -210,7 +210,7 @@ div.mamufas div.warning_window div.inner_ span.bottom a.continue:hover {backgrou
 
 
 div.mamufas div.import_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-107px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
-  -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111;}
+  -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.import_window.georeferencing {margin:-295px 0 0 -207px;}
 div.mamufas div.import_window a.close {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
 div.mamufas div.import_window a.close:hover {background-position:0 -23px;}

@@ -89,8 +89,8 @@ div.map_window p.loading {position:absolute; display:none; top:70px; left:50%; m
 
 
 /* CSS EDITOR */
-div.map_window div.css_editor {position:absolute; display:none; top:50%; left:50%; width:500px; height:400px; margin:-200px 0 0 -250px; padding:8px; background:#e7f2e4; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 10px 3px #666666;
- -moz-box-shadow:0 0 10px 3px #666666; z-index:10;}
+div.map_window div.css_editor {position:absolute; display:none; top:50%; left:50%; width:500px; height:400px; margin:-200px 0 0 -250px; padding:8px; background:#e7f2e4; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 10px 3px #666666; box-shadow:0 0 10px 3px #666666;
+ -moz-box-shadow:0 0 10px 3px #666666;  z-index:10;}
 div.map_window div.css_editor a.close {position:absolute; right:-9px; top:-7px; width:24px; height:24px; background:url('/images/admin/table/close.png') no-repeat 0 0; text-indent:-9999px;}
 div.map_window div.css_editor a.close:hover {background-position:0 -24px;}
 div.map_window div.css_editor div.inner_ {float:left; width:498px; height:398px; border:1px solid #CDCDCD; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#FFFFFF;}

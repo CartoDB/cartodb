@@ -2,9 +2,8 @@
   <div class="inner_subheader">
     <div class="left">
       <ul class="tables_list">
-        <li class="<%= selected_if(current_path == dashboard_path) %>"><a class="oth <%= selected_if(current_path == dashboard_path) %>" href="<%= dashboard_path %>"><span>Your tables</span></a></li>
-        <!-- <li class="<%= selected_if(current_path == dashboard_public_path) %>"><a href="<%= dashboard_public_path %>" class="oth <%= selected_if(current_path == dashboard_public_path) %>"><span>Public tables</span></a></li> -->
-        <li class="<%= selected_if(controller_name == "client_applications") %>"><a class="oth <%= selected_if(controller_name == "client_applications") %>" href="<%= oauth_credentials_path %>"><span>Your api keys</span></a></li>
+        <li class="<%= selected_if(current_path == dashboard_path) %>"><a class="oth <%= selected_if(current_path == dashboard_path) %>" href="<%= dashboard_path %>">Your tables</a></li>
+        <li class="<%= selected_if(controller_name == "client_applications") %>"><a class="oth <%= selected_if(controller_name == "client_applications") %>" href="<%= oauth_credentials_path %>">Your api keys</a></li>
       </ul>
     </div>
     <div class="right">

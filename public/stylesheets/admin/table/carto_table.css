@@ -24,7 +24,7 @@ div.table_position table thead tr th div input:focus {outline:none; cursor:point
 div.table_position table thead tr th p.geo {float:left; width:22px; height:12px; padding:0!important; margin:3px 0 0 5px; background:url('/images/admin/icons/geo.png') no-repeat 0 0; text-indent:-9999px;}
 div.table_position table thead tr th p.geo:hover {background-position:0 -12px; cursor:pointer;}
 div.table_position table thead tr th p.geo.loading {height:16px; width:16px; background:url('/images/admin/table/ajax-loader.gif') no-repeat 0 0;}
-div.table_position table thead tr th a.options {position:absolute; right:10px; top:12px; height:14px; width:14px; margin:0; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10;}
+div.table_position table thead tr th a.options {position:absolute; right:10px; top:12px; height:14px; width:14px; margin:0; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10; overflow:hidden;}
 div.table_position table thead tr th a.options:hover {background-position:0 -14px;}
 div.table_position table thead tr th a.options.selected {height:20px; background-image:url('/images/admin/table/selected_option.png')}
 div.table_position table thead tr th a.options.selected:hover {background-position:0 0;}
@@ -63,7 +63,7 @@ div.table_position table tbody tr:hover td {background-position:0 -40px;}
 div.table_position table tbody tr td.error {color:#FF9900; text-decoration:underline;}
 div.table_position table tbody tr td.error:hover {background-position:0 -78px;}
 
-div.table_position table tbody tr td div {float:left; width:75px; height:14px; padding:11px 13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:normal 13px "Helvetica"; line-height:13px; color:#666666;
+div.table_position table tbody tr td div {display:inline-block; width:75px; height:14px; padding:11px 13px 11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:normal 13px "Helvetica"; line-height:13px; color:#666666;
 text-shadow:0 1px white; line-height:13px;}
 
 div.table_position table tbody tr td.first {position:absolute; left:0; width:40px; height:37px!important; padding:0; margin:0; overflow:visible;}

@@ -41,7 +41,8 @@ section form input[type="submit"]:hover { cursor:pointer;
   background:url('/images/front/home/button_border.png') no-repeat 0px -1px,-moz-linear-gradient(-90deg, #67BA6A, #8FD484);
   background:url('/images/front/home/button_border.png') no-repeat 0px -1px, -o-linear-gradient(#67BA6A,#8FD484); 
   background:url('/images/front/home/button_border.png') no-repeat 0px -1px\10;
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#67BA6A', endColorstr='#8FD484');}
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#67BA6A', endColorstr='#8FD484');
+}
 section form div.error_content {position:absolute; z-index:10; right:92px; top:19px;}
 section form div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
 section form div.error_content p span {float:left; width:auto; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}

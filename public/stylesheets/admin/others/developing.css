@@ -19,7 +19,7 @@ section.outer_content div.content div.top ul.tables_list li.selected a:hover spa
 section.outer_content div.content div.top a.get_key {float:right; width:auto; margin:7px 0 0 0; padding:3px 7px; background:black; color:white; text-transform:uppercase; font:bold 11px Arial; text-decoration:none; 
   -webkit-border-radius:8px; -moz-border-radius:8px; border-radius:8px;}
 section.outer_content div.content div.top a.get_key:hover {background:white; color:black;}
-section.outer_content div.content div.middle {width:900px; margin:20px auto 0; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; background:url('/images/admin/api/right_bkg.jpg') repeat-y right 0 white; -webkit-box-shadow:0 0 2px 2px rgba(0,0,0,0.2);}
+section.outer_content div.content div.middle {width:900px; margin:20px auto 0; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; background:url('/images/admin/api/right_bkg.jpg') repeat-y right 0 white; -webkit-box-shadow:0 0 2px 2px rgba(0,0,0,0.2); box-shadow:0 0 2px 2px rgba(0,0,0,0.2); -moz-box-shadow:0 0 2px 2px rgba(0,0,0,0.2);}
 section.outer_content div.content div.middle div.left {display:inline-block; width:575px; padding:30px; vertical-align:top;}
 
 section.outer_content div.content div.middle div.left ul.breadcrumb {width:100%; margin:0;}

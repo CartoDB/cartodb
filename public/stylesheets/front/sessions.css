@@ -9,11 +9,11 @@ section form {position:relative; margin:35px 0 0 74px; width:300px; height:224px
   background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#F9FAFE), to(#D9DBE4));
   background-image:-moz-linear-gradient(-90deg, #F9FAFE, #D9DBE4);
   background-image: -o-linear-gradient(#F9FAFE,#D9DBE4); 
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#F9FAFE', endColorstr='#D9DBE4');
+  background: #e7e7e7\9;
 }
 section form p {width:100%; padding:0 0 10px; margin:0; text-align:left; font:bold 17px "Aller"; color:#26324C; text-shadow:none;}
 section form label {float:left; width:100%; padding:12px 0 0 0; font:normal 13px "Helvetica",Arial; color:#999999;}
-section form input {width:300px; height:36px; margin:6px 0 0 0; padding:6px; font:normal 15px "Helvetica",Arial; color:#333333;
+section form input {width:300px; width:286px\9; height:36px; height:34px\9; margin:6px 0 0 0; padding:6px; padding:0 6px\9; font:normal 15px "Helvetica",Arial; color:#333333;
   -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius:5px; border:1px solid #666666;
   -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
   background-image:linear-gradient(-90deg, #eeeeee, #ffffff);
@@ -30,9 +30,9 @@ section form input[type="submit"] {float:right; width:173px; height:36px; paddin
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #8FD484, #67BA6A); 
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#8FD484), to(#67BA6A));
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #8FD484, #67BA6A);
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#8FD484,#67BA6A); 
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px\10;
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#8FD484', endColorstr='#67BA6A');
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#8FD484,#67BA6A);
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px #8FD484\9;
+  filter:none;
 }
 section form input[type="submit"].login {width:82px;}
 section form input[type="submit"]:hover {cursor:pointer;
@@ -40,10 +40,11 @@ section form input[type="submit"]:hover {cursor:pointer;
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#67BA6A), to(#8FD484));
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #67BA6A, #8FD484);
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#67BA6A,#8FD484); 
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px\10;
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#67BA6A', endColorstr='#8FD484');
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px #67BA6A\9;
+  filter:none;
 }
-section form input:-webkit-autofill {border:1px solid #666666; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
+section form input:-webkit-autofill {border:1px solid #666666;}
+section form input.error:-webkit-autofill {border:1px solid #C04E03;}
 section form div.error_content {position:absolute; z-index:10; right:22px; top:112px;}
 section form div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
 section form div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}

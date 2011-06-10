@@ -16,7 +16,7 @@ section#content div.left div.top_blue_medium p a.selected {color:#5F6C70; text-s
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#A4BCC1), to(#B5CFD4));
   background:-moz-linear-gradient(-90deg, #A4BCC1, #B5CFD4);
   background: -o-linear-gradient(#A4BCC1,#B5CFD4);
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#8FD484', endColorstr='#B5CFD4'); 
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#A4BCC1', endColorstr='#B5CFD4'); 
 }
 section#content div.left div.top_blue_medium p a:hover {cursor:pointer;}
 section#content div.left div.top_blue_medium p a.oauth { -webkit-border-top-left-radius: 5px; -webkit-border-bottom-left-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-bottomleft: 5px; border-top-left-radius: 5px; border-bottom-left-radius: 5px;}
@@ -29,7 +29,7 @@ section#content div.left div.middle_white_medium span.form_block {display:inline
 section#content div.left div.middle_white_medium span.form_block.long {width:225px; margin:0 0 0 11px;}
 section#content div.left div.middle_white_medium span.form_block label {display:inline-block; margin:20px 0 0 0; font:bold 10px "Helvetica",Arial; color:#999999;}
 section#content div.left div.middle_white_medium form {display:inline-block; width:100%; height:auto!important; margin:0 0 10px 0; padding:0;}
-section#content div.left div.middle_white_medium span.form_block input {width:175px; height:15px; padding:9px 10px!important; margin:5px 0 0 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
+section#content div.left div.middle_white_medium span.form_block input {width:175px; height:17px; padding:9px 10px!important; margin:5px 0 0 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
   font:normal 15px Arial; color:#333333; line-height:15px;
   background-image:linear-gradient(-90deg, #eeeeee, #ffffff);
   background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#eeeeee), to(#ffffff));

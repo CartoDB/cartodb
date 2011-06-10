@@ -118,6 +118,7 @@
             </span>
           <% else %>
             <ul>
+              <li><a href="/dashboard"><span>all tags</span></a></li>
               <% @tags.each do |tag| %>
                 <li><a href="<%= dashboard_path(:tag_name => tag["name"]) %>"><span style="background-position:<%= tag_width(tag["count"], @tags.last["count"], @tags.first["count"]) %>px 0"><%= tag["name"] %></span></a></li>
               <% end %>

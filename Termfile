@@ -27,8 +27,8 @@ tab "cartodb api server" do
   run "rails s -p 3001"
 end
 
-tab "cartodb api server" do
+tab "cartodb resque server" do
   run "cd $CARTODB_PATH"
+  run "sleep 30"
   run "script/resque"
 end
-

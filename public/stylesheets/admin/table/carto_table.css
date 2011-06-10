@@ -35,7 +35,8 @@ div.table_position table thead tr th div span.col_types {position:absolute; disp
 div.table_position table thead tr th div span.col_types p {position:absolute; max-width:60px; height:15px; left:0; top:0; margin:0; padding:4px 14px 0 4px; border:1px solid #A7A7A7; border-bottom:none; z-index:10; background:url('/images/admin/icons/grey_up_arrow.png') no-repeat right 9px #F7f8f8; 
   font:normal 11px "Helvetica",Arial; color:#666666; text-transform:capitalize; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; line-height:11px;}
 div.table_position table thead tr th div span.col_types ul {float:left; width:82px; margin:0; padding:5px 0 3px; border:1px solid #A7A7A7; -webkit-border-radius: 3px; -webkit-border-top-left-radius: 0; -moz-border-radius: 3px; -moz-border-radius-topleft: 0; border-radius: 3px; border-top-left-radius: 0;
-  background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #F7f8f8); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#F7f8f8), to(#CACBCE));}
+  background-image:linear-gradient(-90deg, #F7f8f8, #CACBCE); background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#F7f8f8), to(#CACBCE)); background-image:-moz-linear-gradient(-90deg, #F7f8f8, #CACBCE);
+  background-image: -o-linear-gradient(#F7f8f8,#CACBCE); background: #F7f8f8\9;}
 div.table_position table thead tr th div span.col_types ul li {float:left; width:74px; margin:0; padding:2px 0 2px 4px;}
 div.table_position table thead tr th div span.col_types ul li a {float:left; text-align:left!important; font:normal 11px "Helvetica"; color:#666666; text-decoration:none; text-transform:capitalize;}
 div.table_position table thead tr th div span.col_types ul li a:hover {color:#333333; text-decoration:underline;}
@@ -54,20 +55,16 @@ div.table_position table thead tr th span.col_ops_list h5 {padding:8px 0 0 7px; 
 div.table_position table thead tr th span.col_ops_list div.line {float:left; width:124px; min-height:1px; height:1px!important; padding:0; margin:0 0 8px 3px; background:#393F55;}
 
 div.table_position table tbody {float:left; margin:5px 0 0 0;}
-div.table_position table tbody tr {position:relative; float:left; height:38px; padding:0 0 0 41px;}
-div.table_position table tbody tr td {height:38px!important; padding:0; margin:0; background:url('/images/admin/table/item_bkg.jpg') repeat-x 0 -1px; border:1px solid #E4E5E9; font:normal 13px "Helvetica"; line-height:13px; color:#666666; overflow-y:hidden;
+div.table_position table tbody tr {position:relative; float:left; height:38px!important; padding:0 0 0 41px;}
+div.table_position table tbody tr td {height:37px!important; padding:0; margin:0; background:url('/images/admin/table/item_bkg.jpg') repeat-x 0 -1px; border:1px solid #E4E5E9; font:normal 13px "Helvetica"; line-height:13px; color:#666666; overflow-y:hidden;
 text-shadow:0 1px white;}
 div.table_position table tbody tr td:hover {cursor:pointer;}
 div.table_position table tbody tr:hover td {background-position:0 -40px;}
-
 div.table_position table tbody tr td.error {color:#FF9900; text-decoration:underline;}
 div.table_position table tbody tr td.error:hover {background-position:0 -78px;}
-
-div.table_position table tbody tr td div {display:inline-block; width:75px; height:14px; padding:11px 13px 11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:normal 13px "Helvetica"; line-height:13px; color:#666666;
-text-shadow:0 1px white; line-height:13px;}
-
-div.table_position table tbody tr td.first {position:absolute; left:0; width:40px; height:37px!important; padding:0; margin:0; overflow:visible;}
-div.table_position table tbody tr td.first div {position:relative; width:40px; height:auto; padding:0!important; margin:0!important; overflow:visible;}
+div.table_position table tbody tr td div {display:inline-block; width:75px; height:15px!important; margin:0!important; padding:11px 13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:normal 13px "Helvetica"; line-height:13px; color:#666666; text-shadow:0 1px white; vertical-align:middle;}
+div.table_position table tbody tr td.first {position:absolute; left:0; width:40px; height:37px!important; padding:0; margin:0; overflow:visible!important;}
+div.table_position table tbody tr td.first div {position:relative; float:left; width:40px; height:37px; padding:0!important; margin:0!important; overflow:visible;}
 div.table_position table tbody tr td.first div a.options {float:left; height:14px; width:14px; margin:12px 0 0 13px; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px;}
 div.table_position table tbody tr td.first div a.options:hover {background-position:0 -14px;}
 div.table_position table tbody tr td.first div a.options.selected {height:20px; background-image:url('/images/admin/table/selected_option.png')}
@@ -158,24 +155,30 @@ div.table_position div.delete_row p {font:normal 13px Arial; color:#333333; text
 div.table_position div.delete_row a {float:left; margin:20px 0 0 0; font:normal 13px Arial; color:#666666; text-shadow:none;}
 div.table_position div.delete_row a:hover {color:#333333;}
 div.table_position div.delete_row a.button {float:right; height:14px; margin:15px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
-  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
-div.table_position div.delete_row a.button:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.table_position div.delete_row a.button:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+        background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 
 div.table_position div.delete_column {position:absolute; display:none; top:17px; left:305px; width:166px; height:73px; padding:34px 20px 22px 20px; background:url('/images/admin/table/delete_column_bkg.png') no-repeat 0 0; z-index:50;}
 div.table_position div.delete_column p {font:normal 13px Arial; color:#333333; text-shadow:0 1px white;}
 div.table_position div.delete_column a {float:left; margin:23px 0 0 0; font:normal 13px Arial; color:#666666; text-shadow:none;}
 div.table_position div.delete_column a:hover {color:#333333;}
 div.table_position div.delete_column a.button {float:right; height:14px; margin:18px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
-  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
-div.table_position div.delete_column a.button:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.table_position div.delete_column a.button:hover { background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+        background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 
 div.table_position div.change_type_column {position:absolute; display:none; top:39px; left:310px; width:166px; height:73px; padding:34px 20px 22px 20px; background:url('/images/admin/table/delete_column_bkg.png') no-repeat 0 0; z-index:50;}
 div.table_position div.change_type_column p {font:normal 13px Arial; color:#333333; text-shadow:0 1px white;}
 div.table_position div.change_type_column a {float:left; margin:23px 0 0 0; font:normal 13px Arial; color:#666666; text-shadow:none;}
 div.table_position div.change_type_column a:hover {color:#333333;}
 div.table_position div.change_type_column a.button {float:right; height:14px; margin:18px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
-  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
-div.table_position div.change_type_column a.button:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.table_position div.change_type_column a.button:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+        background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 
 
 /*TABLE TOOLTIP*/
@@ -186,8 +189,7 @@ div.table_position div.explain_tooltip span.arrow {position:absolute; bottom:-10
 
 
 /*SQL CONSOLE*/
-div.table_position div.general_options div.sql_console {position:fixed; display:none; bottom:0; left:0; right:0; min-height:158px; padding:36px; border-bottom:3px solid black; z-index:0; background:#282F49; 
-  background-image: url('/images/admin/table/console_bkg.jpg'); background-image: url('/images/admin/table/console_bkg.jpg'), -moz-linear-gradient(100% 100% 90deg, #2D3451, #1B1F33); background-image: url('/images/admin/table/console_bkg.jpg'), -webkit-gradient(linear, 0% 0%, 0% 100%, from(#2D3451), to(#1B1F33));}
+div.table_position div.general_options div.sql_console {position:fixed; display:none; bottom:0; left:0; right:0; min-height:158px; padding:36px; border-bottom:3px solid black; z-index:0; background:url('/images/admin/table/console_bkg.jpg') #282F49}
 div.table_position div.general_options div.sql_console.end {bottom:15px;}
 div.table_position div.general_options div.sql_console span {float:left; width:100%;}
 div.table_position div.general_options div.sql_console span h3 {float:left; width:auto; padding:5px 0; font:normal 13px Arial; color:white; text-shadow:0 1px black;}
@@ -200,8 +202,10 @@ div.table_position div.general_options div.sql_console span a.close:hover {}
 div.table_position div.general_options div.sql_console span a.save_query {float:right; margin:20px 0 0 0; font:bold 12px Arial; color:#6FBE6F; text-decoration:underline;}
 div.table_position div.general_options div.sql_console span a.save_query:hover {color:#93FF93;}
 div.table_position div.general_options div.sql_console span a.try_query {float:right; margin:10px 0 0 10px; padding:8px 9px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927; font:bold 12px Arial; text-shadow:0 1px white; 
-  color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#cacecb)); text-decoration:none;}
-div.table_position div.general_options div.sql_console span a.try_query:hover {background:-moz-linear-gradient(100% 100% 90deg, #ffffff, #cacecb); background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cacecb), to(#ffffff)); cursor:pointer;}
+  color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#DEDEDE\9}
+div.table_position div.general_options div.sql_console span a.try_query:hover { background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+          background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); background:#CACBCE\9; cursor:pointer;}
 div.table_position div.general_options div.sql_console span p.errors {display:none; float:left; width:auto; padding:5px 10px; margin:10px 0 0 0; background:red; color:white; border:1px solid red; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial;}
 /*div.table_position div.general_options div.sql_console textarea {float:left; min-width:98.7%; max-width:98.7%; min-height:63px; max-height:350px; margin:7px 0 0 0; padding:7px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927;
   font:normal 13px Arial; color:#333333;}
@@ -272,7 +276,7 @@ div.table_position div.edit_cell div.date div.hour span.bounds input {float:left
 div.table_position div.edit_cell div.date div.hour span.bounds input:focus {outline:none;}
 div.table_position div.edit_cell div.date div.hour span.bounds input.error {border-color:#C04E03; color:#C04E03;}
 div.table_position div.edit_cell div.free {display:none;}
-div.table_position div.edit_cell textarea {float:left; display:block; min-width:248px; min-height:30px; padding:7px; font:normal 13px "Helvetica",Arial; color:#666666; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px;}
+div.table_position div.edit_cell textarea {float:left; display:block; min-width:248px; min-height:30px; padding:7px; font:normal 13px "Helvetica",Arial; color:#666666; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; overflow:hidden\9;}
 div.table_position div.edit_cell textarea:focus {outline:none; border-color:#666;}
 div.table_position div.edit_cell textarea.error {border-color:#C04E03; color:#C04E03;}
 div.table_position div.edit_cell textarea.error:focus {border-color:#C04E03; color:#C04E03;}
@@ -285,7 +289,6 @@ div.table_position div.edit_cell a.cancel {position:relative; float:left; margin
 div.table_position div.edit_cell a.cancel:hover {color:black;}
 div.table_position div.edit_cell a.save {position:relative; float:right; width:91px; height:11px!important; padding:6px 0 7px; text-align:center; background:url('/images/admin/table/save_button.png') no-repeat 0 0; text-decoration:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white; line-height:11px;}
 div.table_position div.edit_cell a.save:hover {background-position:0 -24px; color:black;}
-
 
 
 /*Windows belong to mamufas object*/
@@ -322,7 +325,8 @@ div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.selec
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select.last {margin:10px 0 0 10px;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select label {float:left; width:100%; text-transform:uppercase; font:normal 10px "Helvetica",Arial; color:#999999;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select {position:relative; float:left; width:137px; height:11px; margin:5px 0 0 0; padding:8px 7px; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999;
-  background-image:-moz-linear-gradient(100% 100% 90deg, #DBDCDF, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#DBDCDF));}
+  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#e7e7e7\9;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select div.select_content {display:none;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select a {width:127px!important; margin:0!important; padding:0 10px 0 0!important; background:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;
   text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:url('/images/admin/icons/select_arrows.png') no-repeat 130px 5px;}
@@ -343,7 +347,8 @@ div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option div.block {position:relative; float:left; width:100%; padding:0 0 10px!important;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option label {float:left; margin:0 0 0 13px; width:340px; font:bold 10px "Helvetica",Arial; color:#999999;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select {position:relative; float:left; width:137px; height:11px; margin:5px 0 0 10px; padding:8px 7px; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999;
-  background-image:-moz-linear-gradient(100% 100% 90deg, #DBDCDF, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#DBDCDF));}
+  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#e7e7e7\9;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select div.select_content {display:none;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select a {width:127px!important; margin:0!important; padding:0 10px 0 0!important; background:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;
   text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:url('/images/admin/icons/select_arrows.png') no-repeat 130px 5px;}
@@ -364,8 +369,10 @@ div.mamufas div.georeference_window div.inner_ span.bottom {float:left; width:38
 div.mamufas div.georeference_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.georeference_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
 div.mamufas div.georeference_window div.inner_ span.bottom a.confirm_georeference {float:right; height:12px; margin:10px 10px 0 0; padding:7px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
-  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE)); line-height:12px;}
-div.mamufas div.georeference_window div.inner_ span.bottom a.confirm_georeference:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;  line-height:12px;  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.mamufas div.georeference_window div.inner_ span.bottom a.confirm_georeference:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+          background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 div.mamufas div.georeference_window div.inner_ span.bottom a.confirm_georeference.disabled {color:#999999;}
 div.mamufas div.georeference_window div.inner_ span.bottom a.confirm_georeference.disabled:hover {cursor:default; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
 
@@ -386,7 +393,8 @@ div.mamufas div.column_window div.inner_ span.top div.options input {float:left;
 div.mamufas div.column_window div.inner_ span.top div.options input.error {border-color:#C04E03;}
 div.mamufas div.column_window div.inner_ span.top label {float:left; width:100%; margin:10px 0 0 0; text-transform:uppercase; font:normal 10px "Helvetica",Arial; color:#999999;}
 div.mamufas div.column_window div.inner_ span.top span.select {position:relative; float:left; width:195px; height:11px; margin:5px 0 0 0; padding:8px 7px; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999;
-  background-image:-moz-linear-gradient(100% 100% 90deg, #DBDCDF, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#DBDCDF));}
+  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#e7e7e7\9;}
 div.mamufas div.column_window div.inner_ span.top span.select div.select_content {display:none;}
 div.mamufas div.column_window div.inner_ span.top span.select a {float:left; width:185px!important; margin:0!important; padding:0 10px 0 0!important; background:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;
   text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:url('/images/admin/icons/select_arrows.png') no-repeat 188px 5px; text-decoration:none;}
@@ -411,9 +419,10 @@ div.mamufas div.column_window div.inner_ span.bottom {float:left; width:238px; p
 div.mamufas div.column_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.column_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
 div.mamufas div.column_window div.inner_ span.bottom a.column_add {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
-  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background-image:-moz-linear-gradient(100% 100% 90deg, #CACBCE, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#CACBCE));}
-div.mamufas div.column_window div.inner_ span.bottom a.column_add:hover {background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #CACBCE); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#CACBCE), to(#FFFFFF)); cursor:pointer;}
-
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.mamufas div.column_window div.inner_ span.bottom a.column_add:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+            background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 
 div.mamufas div.lastpage_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-107px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
   -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}

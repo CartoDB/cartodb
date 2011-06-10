@@ -19,16 +19,14 @@ section#content div.left div.middle_white_medium a.remove {display:inline-block;
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FF897A), to(#FF0000));
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg, #FF897A, #FF0000);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#FF897A,#FF0000); 
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px\10;
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#8FD484', endColorstr='#FF0000');
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px #FF897A\9;
 } 
 section#content div.left div.middle_white_medium a.remove:hover {
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #FF0000, #FF897A); 
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FF0000), to(#FF897A));
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg, #FF0000, #FF897A);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#FF0000,#FF897A); 
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px\10;
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FF0000', endColorstr='#FF897A');
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px #FF0000\9;
 }
 section#content div.left div.middle_white_medium ul.user_form {margin:10px 0 0 0;}
 section#content div.left div.middle_white_medium ul.user_form li {border:none; padding:10px 23px;}
@@ -40,7 +38,7 @@ section#content div.left div.middle_white_medium input[type="text"],section#cont
   background-image:linear-gradient(-90deg, #eeeeee, #ffffff);
   background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#eeeeee), to(#ffffff));
   background-image:-moz-linear-gradient(-90deg, #eeeeee, #ffffff);
-  background-image: -o-linear-gradient(#eeeeee,#ffffff); 
+  background-image: -o-linear-gradient(#eeeeee,#ffffff);
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#eeeeee', endColorstr='#ffffff');
 }
 section#content div.left div.middle_white_medium input[type="submit"] {margin:14px 18px 15px 0; width:auto; height:35px; padding:9px 14px 10px; text-align:center; font:bold 15px Arial; color:#305234; text-shadow:0 1px #9ED6A4; text-decoration:none; border:none;
@@ -49,16 +47,14 @@ section#content div.left div.middle_white_medium input[type="submit"] {margin:14
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#8FD484), to(#67BA6A));
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg, #8FD484, #67BA6A);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#8FD484,#67BA6A); 
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px\10;
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#8FD484', endColorstr='#67BA6A');
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px #8FD484\9;
 }
 section#content div.left div.middle_white_medium input[type="submit"]:hover {cursor:pointer;
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #67BA6A, #8FD484); 
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#67BA6A), to(#8FD484));
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg, #67BA6A, #8FD484);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#67BA6A,#8FD484); 
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px\10;
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#67BA6A', endColorstr='#8FD484');
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px #67BA6A\9;
 }
 section#content div.flash {display:inline-block; width:auto!important; margin:0 0 20px; padding:10px; font:normal 14px Arial; color:green; border-radius:4px; -webkit-border-radius:4px; -moz-border-radius:4px; 
   border:1px solid green; background:#bbe5ba;}

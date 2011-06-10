@@ -9,9 +9,12 @@
       		this.count = 0;
       		this.pendingOperations = [];
       		this.checking = false;
+      		var me = this;
+      		var interval;
+      		var count_interval = 0;
       		
       		//Create the loader element
-          $('section.subheader').append('<div class="performing_op"><p class="loading">Loading...</p></div>');
+      		$('section.subheader').append('<div class="performing_op"><p class="loading">Loading...</p></div>');
           this.loader = $('section.subheader div.performing_op');
       	}
 

@@ -9,9 +9,8 @@
     }
 
     var el = this;
-
-    const ENTER      = 13;
-    const COMMA      = 44;
+    var ENTER      = 13;
+    var COMMA      = 44;
 
     // add the tagit CSS class.
     el.addClass("tagit");

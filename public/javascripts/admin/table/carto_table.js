@@ -1051,7 +1051,7 @@
             
             
             if (geolocating && data.column==geo_column) {
-              $('p.geo').trigger('click');
+              $('p.geo').click();
             } else {
               $('div.edit_cell p.error').hide();
               $('div.edit_cell div.months_list').hide();
@@ -1115,7 +1115,6 @@
                 }
                 $('div.edit_cell div.point').show();
                 var len = $('div.table_position div.edit_cell div.point span input#longitude_value').text().length;
-                $('div.table_position div.edit_cell div.point span input#longitude_value').selectRange(0,len);
               } else {
                 if (type=="number"){
                   $('div.edit_cell textarea').css({'min-height' : '16px','height' : '16px' });
@@ -1131,11 +1130,10 @@
               $('div.edit_cell a.save').attr('type',type);
               $('div.edit_cell').show();
 
-              if (type!='date' && type!='boolean') {
+              if (type!='date' && type!='boolean' && type!='point') {
                 var len = $('div.edit_cell div.free textarea').val().length;
                 $('div.edit_cell div.free textarea').selectRange(0,len);
               }
-
 
               $('body').bind('click',function(ev){
                 if (!$(ev.target).closest('div.edit_cell').length) {
@@ -1631,7 +1629,7 @@
         methods.bindESCkey();
         
         if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
-          $('p.geo').trigger('click');
+          $('p.geo').click();
         } else {
           var position = $(this).position();
           var parent_div = $(this).closest('div');
@@ -1709,7 +1707,7 @@
         methods.closeTablePopups();
         
         if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
-          $('p.geo').trigger('click');
+          $('p.geo').click();
         } else {
           var title = $(this);
           var input = $(this).parent().children('input');
@@ -1754,7 +1752,7 @@
         stopPropagation(ev);
         methods.closeTablePopups();
         if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
-          $('p.geo').trigger('click');
+          $('p.geo').click();
         } else {
           $(this).closest('div').find('a.options').removeClass('selected');
           $(this).closest('div').find('span.col_ops_list').hide();
@@ -1842,10 +1840,10 @@
           $('div.mamufas').fadeIn();
           return false;
         }
+                
         
         resetProperties();
         getColumns();
-        
         
         
         function resetProperties() {
@@ -1879,14 +1877,13 @@
           $('.scrollPane').each(function(){
        		  custom_scrolls.push($(this).jScrollPane().data().jsp);
        		});
-     		  $.each(custom_scrolls,function(i) {
-            this.destroy();
+       		
+          _.each(custom_scrolls,function(ele,i) {
+            ele.destroy();
           });
           $('div.georeference_window span.select ul li').remove();
         }
-        
-        
-        
+                    
         function getColumns() {
           $.ajax({
              method: "GET",

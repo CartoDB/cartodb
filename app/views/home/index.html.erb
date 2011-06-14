@@ -6,7 +6,7 @@
   <%= stylesheet_link_tag('reset', 'front/home') %>
 <% end %>
 
-<section>
+<div class="section">
   <h1>We love <strong>open-data*</strong><span>*Within reasonable <%= link_to 'limits', limits_path %></span></h1>
 
   <p>CartoDB is a new geospatial database in the cloud that allows you to develop location aware applications quickly and easily</p>
@@ -30,8 +30,8 @@
   <% end %>
 
   <p class="follow">and <%= link_to "follow us on twitter", "http://www.twitter.com/cartodb", :class => 'twitter', :target => "_blank"%></p>
-</section>
+</div>
 
-<footer>
+<div class="footer">
   <%= render :partial => 'home/footer' %>
-</footer>
+</div>

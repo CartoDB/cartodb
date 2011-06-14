@@ -154,7 +154,7 @@ class ApplicationController < ActionController::Base
     puts controller_name
     
     # login or developer ie ready
-    if controller_name == "home" || controller_name == "invitations" || controller_name == "sessions"
+    if controller_name == "home" || controller_name == "invitations" || controller_name == "sessions" && !user_agent.match(/msie [0-6]/)
       return true
     end
     

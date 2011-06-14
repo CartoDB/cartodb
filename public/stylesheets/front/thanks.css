@@ -1,11 +1,11 @@
 body {background:url('/images/front/home/carto_bkg.jpg') repeat-x center 0 #2D3452;}
-section {position:absolute; top:50%; left:50%; width:540px; height:220px; margin:-110px 0 0 -270px; z-index:10;}
-section h1 {width:100%; padding:0; margin:0; font:normal 41px "Aller"; color:white; text-align:center; text-shadow:0 2px #222222;}
-section h1 span {position:absolute; right:100px; top:42px; font:normal 13px "Helvetica",Arial;}
-section h1 span a {color:white;}
-section p {width:100%; padding:0; margin:25px 0 0 0; text-shadow:0 -1px black; font:normal 17px "Helvetica",Arial; color:#6C7690; text-align:center;}
-section p.follow {font:normal 13px "Helvetica", Arial; color:white; text-shadow:0 2px 3px #222222;}
-section p.follow a.twitter {padding:5px 36px 5px 0; color:white; background:url('/images/front/home/twitter.png') no-repeat right 2px;}
-footer {position:absolute; left:50%; bottom:15px; width:300px!important; padding:0; margin:0 0 0 -150px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}
-footer a {color:white;}
-footer a:hover {color:white;}
+div.section {position:absolute; top:50%; left:50%; width:540px; height:220px; margin:-110px 0 0 -270px; z-index:10;}
+div.section h1 {width:100%; padding:0; margin:0; font:normal 41px "Aller"; color:white; text-align:center; text-shadow:0 2px #222222;}
+div.section h1 span {position:absolute; right:100px; top:42px; font:normal 13px "Helvetica",Arial;}
+div.section h1 span a {color:white;}
+div.section p {width:100%; padding:0; margin:25px 0 0 0; text-shadow:0 -1px black; font:normal 17px "Helvetica",Arial; color:#6C7690; text-align:center;}
+div.section p.follow {font:normal 13px "Helvetica", Arial; color:white; text-shadow:0 2px 3px #222222;}
+div.section p.follow a.twitter {padding:5px 36px 5px 0; color:white; background:url('/images/front/home/twitter.png') no-repeat right 2px;}
+div.footer {position:absolute; left:50%; bottom:15px; width:300px!important; padding:0; margin:0 0 0 -150px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}
+div.footer a {color:white;}
+div.footer a:hover {color:white;}

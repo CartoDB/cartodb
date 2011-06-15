@@ -49,27 +49,26 @@ class Table < Sequel::Model(:user_tables)
       self[:name] = importer_result.name
       schema = self.schema(:reload => true)
       
-      if importer_result.import_type == '.csv'
-        owner.in_database do |user_database|
-          if schema.nil? || !schema.flatten.include?(:cartodb_id)
-            user_database.run("alter table #{self.name} add column cartodb_id integer")
-          end
-          user_database.run("create sequence cartodb_id_#{oid}_seq")
-          user_database.run("update #{self.name} set cartodb_id = nextval('cartodb_id_#{oid}_seq')")
-          user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('cartodb_id_#{oid}_seq')")
-          user_database.run("alter table #{self.name} alter column cartodb_id set not null")
-          user_database.run("alter table #{self.name} add unique (cartodb_id)")
-          user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
-          user_database.run("alter table #{self.name} add primary key (cartodb_id)")
-          if schema.nil? || !schema.flatten.include?(:created_at)
-            user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
-          end
-          if schema.nil? || !schema.flatten.include?(:updated_at)
-            user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
-          end
+      owner.in_database do |user_database|
+        if schema.nil? || !schema.flatten.include?(:cartodb_id)
+          user_database.run("alter table #{self.name} add column cartodb_id integer")
         end
-        # 
-      elsif importer_result.import_type == '.shp'
+        user_database.run("create sequence cartodb_id_#{oid}_seq")
+        user_database.run("update #{self.name} set cartodb_id = nextval('cartodb_id_#{oid}_seq')")
+        user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('cartodb_id_#{oid}_seq')")
+        user_database.run("alter table #{self.name} alter column cartodb_id set not null")
+        user_database.run("alter table #{self.name} add unique (cartodb_id)")
+        user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
+        user_database.run("alter table #{self.name} add primary key (cartodb_id)")
+        if schema.nil? || !schema.flatten.include?(:created_at)
+          user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
+        end
+        if schema.nil? || !schema.flatten.include?(:updated_at)
+          user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
+        end
+      end
+      # Prepare the geometry is necessary for SHP files
+      if importer_result.import_type == '.shp'
         geometry_type = owner.in_database["select GeometryType(the_geom) FROM #{self.name} where the_geom is not null limit 1"].first[:geometrytype]
         set_the_geom_column!(geometry_type)
       end
@@ -86,6 +85,7 @@ class Table < Sequel::Model(:user_tables)
   rescue => e
     unless self.name.blank?
       $tables_metadata.del key
+      # TODO: make it more transactional
       owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
     end
     raise e

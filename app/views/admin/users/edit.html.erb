@@ -61,18 +61,16 @@
   <div class="unlock_window">
     <a href="#close_unlock" class="close_unlock">Close</a>
     <div class="inner_">
-      
       <div class="email_sent">
         <h3>We have sent an email to you</h3>
         <p>Follow the instructions there to generate a new password</p>
       </div>
-      
       <%= form_tag unlock_path, :method => :post do %>
       <form action="#">
         <span class="top">
           <%= label_tag 'unlock_password', 'Insert your current password' %>
           <%= password_field_tag 'unlock_password' %>
-          <a class="forget">did you forget it?</a>
+          <a href="#forget?" class="forget">did you forget it?</a>
           <div class="error_content">
             <p><span>This password is not correct</span></p>
           </div>

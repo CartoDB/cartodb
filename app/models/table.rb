@@ -182,7 +182,7 @@ class Table < Sequel::Model(:user_tables)
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
       begin
-        primary_key = user_database[name.to_sym].insert(attributes.except(:the_geom).convert_nulls)
+        primary_key = user_database[name.to_sym].insert(attributes.except(THE_GEOM).convert_nulls)
       rescue Sequel::DatabaseError => e
         # If the type don't match the schema of the table is modified for the next valid type
         message = e.message.split("\n")[0]
@@ -220,9 +220,9 @@ class Table < Sequel::Model(:user_tables)
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
       end
-      if !attributes.except(:the_geom).empty?
+      if !attributes.except(THE_GEOM).empty?
         begin
-          rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes.except(:the_geom).convert_nulls)
+          rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes.except(THE_GEOM).convert_nulls)
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
           message = e.message.split("\n")[0]
@@ -236,7 +236,7 @@ class Table < Sequel::Model(:user_tables)
           end
         end
       else
-        if attributes.size == 1 && attributes.keys == [:the_geom]
+        if attributes.size == 1 && attributes.keys == [THE_GEOM]
           rows_updated = 1
         end
       end
@@ -337,8 +337,8 @@ class Table < Sequel::Model(:user_tables)
     order_by_column = options[:order_by] || "cartodb_id"
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'asc' : 'desc'
     owner.in_database do |user_database|
-      select = if schema.flatten.include?(:the_geom)
-        schema.map{ |c| c[0] == :the_geom ? "ST_AsGeoJSON(the_geom,6) as the_geom" : c[0]}.join(',')
+      select = if schema.flatten.include?(THE_GEOM)
+        schema.map{ |c| c[0] == THE_GEOM ? "ST_AsGeoJSON(the_geom,6) as the_geom" : c[0]}.join(',')
       else
         schema.map{|c| c[0] }.join(',')
       end
@@ -357,8 +357,8 @@ class Table < Sequel::Model(:user_tables)
   def record(identifier)
     row = nil
     owner.in_database do |user_database|
-      select = if schema.flatten.include?(:the_geom)
-        schema.select{|c| c[0] != :the_geom }.map{|c| c[0] }.join(',') + ",ST_AsGeoJSON(the_geom,6) as the_geom"
+      select = if schema.flatten.include?(THE_GEOM)
+        schema.select{|c| c[0] != THE_GEOM }.map{|c| c[0] }.join(',') + ",ST_AsGeoJSON(the_geom,6) as the_geom"
       else
         schema.map{|c| c[0] }.join(',')
       end
@@ -451,8 +451,8 @@ TRIGGER
 
       user_database.run("DROP TABLE IF EXISTS #{table_name}")
       
-      export_schema = self.schema.map{|c| c.first} - [:the_geom]
-      export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(:the_geom)
+      export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
+      export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
       user_database.run("CREATE TABLE #{table_name} AS SELECT #{export_schema.join(',')} FROM #{self.name}")
 
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
@@ -584,7 +584,7 @@ TRIGGER
 
   def set_the_geom_column!(type = nil)
     if type.nil?
-      if self.schema(:reload => true).flatten.include?(:the_geom)
+      if self.schema(:reload => true).flatten.include?(THE_GEOM)
         type = owner.in_database["select GeometryType(the_geom) FROM #{self.name} where the_geom is not null limit 1"].first[:geometrytype]
       end
     end
@@ -593,11 +593,11 @@ TRIGGER
     updates = false
     type = type.to_s.upcase
     owner.in_database do |user_database|
-      return if !force_schema.blank? && !user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
+      return if !force_schema.blank? && !user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM)
       # REVIEW
-      unless user_database.schema(name.to_sym, :reload => true).flatten.include?(:the_geom)
+      unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM)
         updates = true
-        user_database.run("SELECT AddGeometryColumn ('#{self.name}','the_geom',#{CartoDB::SRID},'#{type}',2)")
+        user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM}',#{CartoDB::SRID},'#{type}',2)")
         user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")
       end
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
@@ -648,8 +648,8 @@ SQL
   end
 
   def update_the_geom!(attributes, primary_key)
-    return unless attributes[:the_geom]
-    geo_json = RGeo::GeoJSON.decode(attributes[:the_geom], :json_parser => :json).try(:as_text)
+    return unless attributes[THE_GEOM]
+    geo_json = RGeo::GeoJSON.decode(attributes[THE_GEOM], :json_parser => :json).try(:as_text)
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?
     owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
   end

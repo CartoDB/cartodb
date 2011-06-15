@@ -1,12 +1,12 @@
 /*SUBHEADER+CONTENT*/
-section.outer_content {position:relative; width:100%; padding:0 0 50px; background:url('/images/admin/dashboard/content_bkg.png') repeat 0 0;}
-section.outer_content div.mesh1 {position:absolute; display:block; width:100%; min-width:880px; height:120px; background:url('/images/admin/common/header_bkg_2.jpg') repeat-x center -58px; z-index:0;}
-section.outer_content div.mesh2 {position:absolute; display:block; width:100%; min-width:880px; height:121px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0; z-index:0;}
-section.outer_content div.content {position:relative; z-index:2;}
-section.outer_content div.content div.top {width:900px; margin:0 auto; padding:20px 0 30px;}
-section.outer_content div.content div.top ul.tables_list {float:left; width:auto; margin:0;}
-section.outer_content div.content div.top ul.tables_list li {float:left; width:auto; margin:0 10px 0 0;}
-section.outer_content div.content div.top ul.tables_list li a {float:left; height:13px; padding:8px 10px 9px 10px; font:normal 13px Arial; text-shadow:0 1px black; color:white; text-decoration:none;
+div.section.outer_content {position:relative; width:100%; padding:0 0 50px; background:url('/images/admin/dashboard/content_bkg.png') repeat 0 0;}
+div.section.outer_content div.mesh1 {position:absolute; display:block; width:100%; min-width:880px; height:120px; background:url('/images/admin/common/header_bkg_2.jpg') repeat-x center -58px; z-index:0;}
+div.section.outer_content div.mesh2 {position:absolute; display:block; width:100%; min-width:880px; height:121px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0; z-index:0;}
+div.section.outer_content div.content {position:relative; z-index:2;}
+div.section.outer_content div.content div.top {width:900px; margin:0 auto; padding:20px 0 30px;}
+div.section.outer_content div.content div.top ul.tables_list {float:left; width:auto; margin:0;}
+div.section.outer_content div.content div.top ul.tables_list li {float:left; width:auto; margin:0 10px 0 0;}
+div.section.outer_content div.content div.top ul.tables_list li a {float:left; height:13px; padding:8px 10px 9px 10px; font:normal 13px Arial; text-shadow:0 1px black; color:white; text-decoration:none;
   -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #000000;
   -moz-box-shadow:0 1px 0 0 #484E64; -webkit-box-shadow:0 1px 0 0 #484E64; box-shadow:0 1px 0 0 #484E64;
   background:linear-gradient(-90deg, #1D283F, #0C101A); 
@@ -15,21 +15,21 @@ section.outer_content div.content div.top ul.tables_list li a {float:left; heigh
   background: -o-linear-gradient(#1D283F,#0C101A);
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1D283F', endColorstr='#0C101A');
 }
-section.outer_content div.content div.top ul.tables_list li a:hover {
+div.section.outer_content div.content div.top ul.tables_list li a:hover {
   background:linear-gradient(-90deg, #0C101A, #1D283F); 
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#0C101A), to(#1D283F));
   background:-moz-linear-gradient(-90deg, #0C101A, #1D283F);
   background: -o-linear-gradient(#0C101A,#1D283F); 
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#0C101A', endColorstr='#1D283F');
 }
-section.outer_content div.content div.top ul.tables_list li.selected a {color:#949BAB;
+div.section.outer_content div.content div.top ul.tables_list li.selected a {color:#949BAB;
   background:linear-gradient(-90deg, #0C101A, #1D283F); 
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#0C101A), to(#1D283F));
   background:-moz-linear-gradient(-90deg, #0C101A, #1D283F);
   background: -o-linear-gradient(#0C101A,#1D283F); 
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#0C101A', endColorstr='#1D283F');
 }
-section.outer_content div.content div.top ul.tables_list li.selected a:hover {cursor:default;
+div.section.outer_content div.content div.top ul.tables_list li.selected a:hover {cursor:default;
   background:linear-gradient(-90deg, #0C101A, #1D283F); 
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#0C101A), to(#1D283F));
   background:-moz-linear-gradient(-90deg, #0C101A, #1D283F);
@@ -37,57 +37,57 @@ section.outer_content div.content div.top ul.tables_list li.selected a:hover {cu
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#0C101A', endColorstr='#1D283F');
 }
 
-section.outer_content div.content div.top a.get_key {float:right; width:auto; margin:7px 0 0 0; padding:3px 7px; background:black; color:white; text-transform:uppercase; font:bold 11px Arial; text-decoration:none; 
+div.section.outer_content div.content div.top a.get_key {float:right; width:auto; margin:7px 0 0 0; padding:3px 7px; background:black; color:white; text-transform:uppercase; font:bold 11px Arial; text-decoration:none; 
   -webkit-border-radius:8px; -moz-border-radius:8px; border-radius:8px;}
-section.outer_content div.content div.top a.get_key:hover {background:white; color:black;}
-section.outer_content div.content div.middle {width:900px; margin:20px auto 0; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; background:url('/images/admin/api/right_bkg.jpg') repeat-y right 0 white; -webkit-box-shadow:0 0 2px 2px rgba(0,0,0,0.2); box-shadow:0 0 2px 2px rgba(0,0,0,0.2); -moz-box-shadow:0 0 2px 2px rgba(0,0,0,0.2);}
-section.outer_content div.content div.middle div.left {display:inline-block; width:575px; padding:30px; vertical-align:top;}
+div.section.outer_content div.content div.top a.get_key:hover {background:white; color:black;}
+div.section.outer_content div.content div.middle {width:900px; margin:20px auto 0; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; background:url('/images/admin/api/right_bkg.jpg') repeat-y right 0 white; -webkit-box-shadow:0 0 2px 2px rgba(0,0,0,0.2); box-shadow:0 0 2px 2px rgba(0,0,0,0.2); -moz-box-shadow:0 0 2px 2px rgba(0,0,0,0.2);}
+div.section.outer_content div.content div.middle div.left {display:inline-block; width:575px; padding:30px; vertical-align:top; zoom: 1; *display:inline;}
 
-section.outer_content div.content div.middle div.left ul.breadcrumb {width:100%; margin:0;}
-section.outer_content div.content div.middle div.left ul.breadcrumb li {float:left; width:auto; padding:0 12px 0 6px; background:url('/images/admin/api/li_separator.png') no-repeat right -1px; font:normal 13px Arial; color:#CCC;}
-section.outer_content div.content div.middle div.left ul.breadcrumb li.first {padding:0 12px 0 0;}
-section.outer_content div.content div.middle div.left ul.breadcrumb li a {font:normal 13px Arial; color:#CCC; text-decoration:none;}
-section.outer_content div.content div.middle div.left ul.breadcrumb li a:hover {text-decoration:underline;}
-section.outer_content div.content div.middle div.left ul.breadcrumb li.selected {background:none;}
-section.outer_content div.content div.middle div.left ul.breadcrumb li.selected a {color:#999999;}
-section.outer_content div.content div.middle div.left ul.breadcrumb li.selected a:hover {text-decoration:none; cursor:default;}
+div.section.outer_content div.content div.middle div.left ul.breadcrumb {width:100%; margin:0;}
+div.section.outer_content div.content div.middle div.left ul.breadcrumb li {float:left; width:auto; padding:0 12px 0 6px; background:url('/images/admin/api/li_separator.png') no-repeat right -1px; font:normal 13px Arial; color:#CCC;}
+div.section.outer_content div.content div.middle div.left ul.breadcrumb li.first {padding:0 12px 0 0;}
+div.section.outer_content div.content div.middle div.left ul.breadcrumb li a {font:normal 13px Arial; color:#CCC; text-decoration:none;}
+div.section.outer_content div.content div.middle div.left ul.breadcrumb li a:hover {text-decoration:underline;}
+div.section.outer_content div.content div.middle div.left ul.breadcrumb li.selected {background:none;}
+div.section.outer_content div.content div.middle div.left ul.breadcrumb li.selected a {color:#999999;}
+div.section.outer_content div.content div.middle div.left ul.breadcrumb li.selected a:hover {text-decoration:none; cursor:default;}
 
 
-section.outer_content div.content div.middle div.left h1 {display:inline-block; width:100%; padding:6px 0 20px 0; font:bold 21px Arial; color:#333333; text-align:left;}
-section.outer_content div.content div.middle div.left p {font:normal 15px Arial; color:#666666}
-section.outer_content div.content div.middle div.left p a {color:#666666;}
-section.outer_content div.content div.middle div.left p a:hover {color:#333333;}
-section.outer_content div.content div.middle div.left h2 {width:100%; padding:0 0 2px; margin:25px 0 10px 0; border-bottom:1px solid #E9EBEE; font:bold 13px Arial; color:#FF6600; text-transform:uppercase;}
-section.outer_content div.content div.middle div.left h3 {padding:0 0 0 12px; font:bold 15px Arial; color:#333333;}
-section.outer_content div.content div.middle div.left ul {margin:15px 0 0 12px; padding:0 0 15px 0;}
-section.outer_content div.content div.middle div.left ul li {padding:0 0 0 12px; color:#9397A4; background:url('/images/admin/api/list_style.png') no-repeat 0 -12px; font:normal 13px Arial; color:#999999;}
-section.outer_content div.content div.middle div.left ul li code {color:#333333; font:bold 13px Arial;}
-section.outer_content div.content div.middle div.left ul li h4 {font:normal 15px Arial; color:#666666;}
-section.outer_content div.content div.middle div.left ul li p {padding:4px 0 0 0; font:normal 13px Arial; color:#999999;}
-section.outer_content div.content div.middle div.left ul li a {color:#666666; font:normal 13px Arial;}
-section.outer_content div.content div.middle div.left ul li a:hover {color:#333333;}
-section.outer_content div.content div.middle div.left p.tab {display:inline-block; width:auto!important; padding:8px 10px 5px; margin:20px 0 0 0; background:#aaaaaa; color:white; font:normal 12px Arial; text-transform:uppercase;
+div.section.outer_content div.content div.middle div.left h1 {display:inline-block; width:100%; padding:6px 0 20px 0; font:bold 21px Arial; color:#333333; text-align:left;}
+div.section.outer_content div.content div.middle div.left p {font:normal 15px Arial; color:#666666}
+div.section.outer_content div.content div.middle div.left p a {color:#666666;}
+div.section.outer_content div.content div.middle div.left p a:hover {color:#333333;}
+div.section.outer_content div.content div.middle div.left h2 {width:100%; padding:0 0 2px; margin:25px 0 10px 0; border-bottom:1px solid #E9EBEE; font:bold 13px Arial; color:#FF6600; text-transform:uppercase;}
+div.section.outer_content div.content div.middle div.left h3 {padding:0 0 0 12px; font:bold 15px Arial; color:#333333;}
+div.section.outer_content div.content div.middle div.left ul {margin:15px 0 0 12px; padding:0 0 15px 0;}
+div.section.outer_content div.content div.middle div.left ul li {padding:0 0 0 12px; color:#9397A4; background:url('/images/admin/api/list_style.png') no-repeat 0 -12px; font:normal 13px Arial; color:#999999;}
+div.section.outer_content div.content div.middle div.left ul li code {color:#333333; font:bold 13px Arial;}
+div.section.outer_content div.content div.middle div.left ul li h4 {font:normal 15px Arial; color:#666666;}
+div.section.outer_content div.content div.middle div.left ul li p {padding:4px 0 0 0; font:normal 13px Arial; color:#999999;}
+div.section.outer_content div.content div.middle div.left ul li a {color:#666666; font:normal 13px Arial;}
+div.section.outer_content div.content div.middle div.left ul li a:hover {color:#333333;}
+div.section.outer_content div.content div.middle div.left p.tab {display:inline-block; width:auto!important; padding:8px 10px 5px; margin:20px 0 0 0; background:#aaaaaa; color:white; font:normal 12px Arial; text-transform:uppercase;
   -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; border-top-left-radius: 5px; border-top-right-radius: 5px;}
 
-section.outer_content div.content div.middle div.left div.map {position:relative; width:555px; margin:30px 0 0 0; padding:10px; background:#EEF5F6;}
-section.outer_content div.content div.middle div.left div.map div#map {width:555px; height:400px;}
-section.outer_content div.content div.middle div.left div.map a#add_point {position:absolute; bottom:30px; left:50%; width:110px; height:15px; margin:0 0 0 -55px; padding:10px 0; background:url('/images/admin/api/add_point.png') no-repeat 0 0;
+div.section.outer_content div.content div.middle div.left div.map {position:relative; width:555px; margin:30px 0 0 0; padding:10px; background:#EEF5F6;}
+div.section.outer_content div.content div.middle div.left div.map div#map {width:555px; height:400px;}
+div.section.outer_content div.content div.middle div.left div.map a#add_point {position:absolute; bottom:30px; left:50%; width:110px; height:15px; margin:0 0 0 -55px; padding:10px 0; background:url('/images/admin/api/add_point.png') no-repeat 0 0;
   text-align:center;  line-height:15px; font:bold 15px Arial; color:white; text-shadow:0 1px black; text-decoration:none;}
-section.outer_content div.content div.middle div.left div.map a#add_point:hover {background-position:0 -35px;}
+div.section.outer_content div.content div.middle div.left div.map a#add_point:hover {background-position:0 -35px;}
 
-section.outer_content div.content div.middle div.right {display:inline-block; width:220px; padding:30px 20px 30px 5px; vertical-align:top;}  
-section.outer_content div.content div.middle div.right ul {display:inline-block; width:100%; margin:0;}
-section.outer_content div.content div.middle div.right ul li {width:225px; margin:5px 0 0 0; padding:0 5px;}
+div.section.outer_content div.content div.middle div.right {display:inline-block; width:220px; padding:30px 20px 30px 5px; vertical-align:top; zoom: 1; *display:inline;}  
+div.section.outer_content div.content div.middle div.right ul {display:inline-block; width:100%; margin:0;}
+div.section.outer_content div.content div.middle div.right ul li {width:225px; margin:5px 0 0 0; padding:0 5px;}
 
-section.outer_content div.content div.middle div.right ul li a {width:215px; padding:0 0 0 5px; font:normal 13px Arial; color:#9CA5AF; text-decoration:none;}
-section.outer_content div.content div.middle div.right ul li a:hover {color:#27304B; cursor:pointer;}
-section.outer_content div.content div.middle div.right ul li p {width:205px; margin:15px 0 0 0; padding:3px 10px; background:#27304B; -webkit-border-radius:8px; border-radius:8px; -moz-border-radius:8px; font:normal 13px Arial; color:white;}
-section.outer_content div.content div.middle div.right ul li ul {margin:0 0 0 13px; display:none;}
-section.outer_content div.content div.middle div.right ul li ul li {width:210px;}
-section.outer_content div.content div.middle div.right ul li ul li a { padding:0 0 0 10px; background:url('/images/admin/api/list_style.png') no-repeat 2px -13px;}
-section.outer_content div.content div.middle div.right ul li ul li ul {display:none;}
-section.outer_content div.content div.middle div.right ul li ul li ul li {width:195px;}
-section.outer_content div.content div.middle div.right ul li.selected {padding:3px 5px; background:#27304B; -webkit-border-radius:10px; border-radius:10px; -moz-border-radius:10px; color:white;}
-section.outer_content div.content div.middle div.right ul li.selected a {color:white;}
-section.outer_content div.content div.middle div.right ul li.selected a:hover {color:white; cursor:default;}
-section.outer_content div.content div.middle div.right ul li ul li.selected a {background-position:2px -31px;}
+div.section.outer_content div.content div.middle div.right ul li a {width:215px; padding:0 0 0 5px; font:normal 13px Arial; color:#9CA5AF; text-decoration:none;}
+div.section.outer_content div.content div.middle div.right ul li a:hover {color:#27304B; cursor:pointer;}
+div.section.outer_content div.content div.middle div.right ul li p {width:205px; margin:15px 0 0 0; padding:3px 10px; background:#27304B; -webkit-border-radius:8px; border-radius:8px; -moz-border-radius:8px; font:normal 13px Arial; color:white;}
+div.section.outer_content div.content div.middle div.right ul li ul {margin:0 0 0 13px; display:none;}
+div.section.outer_content div.content div.middle div.right ul li ul li {width:210px;}
+div.section.outer_content div.content div.middle div.right ul li ul li a { padding:0 0 0 10px; background:url('/images/admin/api/list_style.png') no-repeat 2px -13px;}
+div.section.outer_content div.content div.middle div.right ul li ul li ul {display:none;}
+div.section.outer_content div.content div.middle div.right ul li ul li ul li {width:195px;}
+div.section.outer_content div.content div.middle div.right ul li.selected {padding:3px 5px; background:#27304B; -webkit-border-radius:10px; border-radius:10px; -moz-border-radius:10px; color:white;}
+div.section.outer_content div.content div.middle div.right ul li.selected a {color:white;}
+div.section.outer_content div.content div.middle div.right ul li.selected a:hover {color:white; cursor:default;}
+div.section.outer_content div.content div.middle div.right ul li ul li.selected a {background-position:2px -31px;}

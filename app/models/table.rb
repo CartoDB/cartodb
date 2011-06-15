@@ -35,29 +35,49 @@ class Table < Sequel::Model(:user_tables)
     super
   end
 
-  # Before creating a user table a table should be created in the database.
-  # A serie of steps should be done:
-  #  - set the new updated_at value
-  #  - if the table is created and imported from a file
-  #    - convert the file to a well known format
-  #    - read or guess the schema
-  #  - set the cartodb schema, adding cartodb primary key, etc..
-  #  - import the data if necessary
   def before_create
     self.database_name = owner.database_name
     update_updated_at
-    unless import_from_file.blank?
-      handle_import_file!
-      guess_schema if force_schema.blank? && imported_table_name.blank?
+    if import_from_file.present?
+      importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => owner.database_name, :logger => ::Rails.logger,
+        "username" => owner.database_username, "password" => owner.database_password,
+        :import_from_file => import_from_file, :suggested_name => self.name
+      ).symbolize_keys
+      importer_result = importer.import!
+      
+      self[:name] = importer_result.name
+      schema = self.schema(:reload => true)
+      
+      if importer_result.import_type == '.csv'
+        owner.in_database do |user_database|
+          if schema.nil? || !schema.flatten.include?(:cartodb_id)
+            user_database.run("alter table #{self.name} add column cartodb_id integer")
+          end
+          user_database.run("create sequence cartodb_id_#{oid}_seq")
+          user_database.run("update #{self.name} set cartodb_id = nextval('cartodb_id_#{oid}_seq')")
+          user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('cartodb_id_#{oid}_seq')")
+          user_database.run("alter table #{self.name} alter column cartodb_id set not null")
+          user_database.run("alter table #{self.name} add unique (cartodb_id)")
+          user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
+          user_database.run("alter table #{self.name} add primary key (cartodb_id)")
+          if schema.nil? || !schema.flatten.include?(:created_at)
+            user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
+          end
+          if schema.nil? || !schema.flatten.include?(:updated_at)
+            user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
+          end
+        end
+        # 
+      elsif importer_result.import_type == '.shp'
+        geometry_type = owner.in_database["select GeometryType(the_geom) FROM #{self.name} where the_geom is not null limit 1"].first[:geometrytype]
+        set_the_geom_column!(geometry_type)
+      end
+    else
+      self.name = get_valid_name(self.name) if self.name.blank?
+      create_table_in_database!
+      set_the_geom_column!(the_geom_type.try(:to_sym) || "point")
     end
-    # Before assign the name, the method #key can not be used,
-    # because depends on the name of the table
-    self.name = get_valid_name if self.name.blank?
-    create_table_in_database!
-    if !import_from_file.blank? && imported_table_name.blank?
-      import_data_from_file!
-    end
-    $tables_metadata.hset key, "privacy", self.privacy || PRIVATE
     if !self.temporal_the_geom_type.blank?
       self.the_geom_type = self.temporal_the_geom_type
       self.temporal_the_geom_type = nil
@@ -83,11 +103,10 @@ class Table < Sequel::Model(:user_tables)
     unless private?
       owner.in_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
     end
-    set_the_geom_column!(the_geom_type.try(:to_sym) || "point")
     set_trigger_update_updated_at
     @force_schema = nil
     $tables_metadata.hset key, "user_id", user_id
-    $tables_metadata.hset key, "privacy", self.privacy
+    $tables_metadata.hset key, "privacy", PRIVATE
   end
 
   def before_destroy
@@ -530,140 +549,6 @@ TRIGGER
     base_name
   end
 
-  def import_data_from_file!
-    return if self.import_from_file.blank?
-
-    path = if import_from_file.respond_to?(:tempfile)
-      import_from_file.tempfile.path
-    else
-      import_from_file.path
-    end
-
-    db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
-    host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
-    port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-    @quote = (@quote == '"' || @quote.blank?) ? '\"' : @quote
-    @quote = @quote == '`' ? '\`' : @quote
-    command = "copy #{self.name} from STDIN WITH (HEADER true, FORMAT 'csv')"
-    import_csv_command = %Q{cat #{path} | `which psql` #{host} #{port} -U#{db_configuration['username']} -w #{database_name} -c"#{command}"}
-    Rails.logger.info "Importing CSV. Executing command: " + import_csv_command
-    output = `#{import_csv_command}`
-    Rails.logger.info ">> #{output}"
-    owner.in_database do |user_database|
-      # Check if the file had data, if not rise an error because probably something went wrong
-      if user_database["SELECT * from #{self.name} LIMIT 1"].first.blank?
-        raise CartoDB::EmtpyFile
-      end
-      if force_schema.blank? || !force_schema.include?("cartodb_id")
-        user_database.run("alter table #{self.name} add column cartodb_id integer")
-      end
-      user_database.run("create sequence cartodb_id_#{oid}_seq")
-      user_database.run("update #{self.name} set cartodb_id = nextval('cartodb_id_#{oid}_seq')")
-      user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('cartodb_id_#{oid}_seq')")
-      user_database.run("alter table #{self.name} alter column cartodb_id set not null")
-      user_database.run("alter table #{self.name} add unique (cartodb_id)")
-      user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
-      user_database.run("alter table #{self.name} add primary key (cartodb_id)")
-      if force_schema.blank? || !force_schema.include?("created_at")
-        user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
-      end
-      if force_schema.blank? || !force_schema.include?("updated_at")
-        user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
-      end
-      set_the_geom_column!("point")
-    end
-    FileUtils.rm_rf(path)
-  end
-
-  def guess_schema
-    @col_separator = ','
-    options = {:col_sep => @col_separator}
-    schemas = []
-    uk_column_counter = 0
-
-    path = if import_from_file.respond_to?(:tempfile)
-      import_from_file.tempfile.path
-    else
-      import_from_file.path
-    end
-
-    csv = CSV.open(path, options)
-    column_names = csv.gets
-
-    if column_names.size == 1
-      candidate_col_separators = {}
-      column_names.first.scan(/([^\w\s])/i).flatten.uniq.each do |candidate|
-        candidate_col_separators[candidate] = 0
-      end
-      candidate_col_separators.keys.each do |candidate|
-        csv = CSV.open(path, options.merge(:col_sep => candidate))
-        column_names = csv.gets
-        candidate_col_separators[candidate] = column_names.size
-      end
-      @col_separator = candidate_col_separators.sort{|a,b| a[1]<=>b[1]}.last.first
-      csv = CSV.open(path, options.merge(:col_sep => @col_separator))
-      column_names = csv.gets
-    end
-
-    column_names = column_names.map do |c|
-      if c.blank?
-        uk_column_counter += 1
-        "unknow_name_#{uk_column_counter}"
-      else
-        c = c.force_encoding('utf-8').encode
-        results = c.scan(/^(["`\'])[^"`\']+(["`\'])$/).flatten
-        if results.size == 2 && results[0] == results[1]
-          @quote = $1
-        end
-        c.sanitize_column_name
-      end
-    end
-
-    while (line = csv.gets)
-      line.each_with_index do |field, i|
-        next if line[i].blank?
-        unless @quote
-          results = line[i].scan(/^(["`\'])[^"`\']+(["`\'])$/).flatten
-          if results.size == 2 && results[0] == results[1]
-            @quote = $1
-          end
-        end
-        if schemas[i].nil?
-          if line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
-            schemas[i] = "float"
-          elsif line[i] =~ /^[0-9]+$/
-            schemas[i] = "integer"
-          else
-            schemas[i] = "varchar"
-          end
-        else
-          case schemas[i]
-          when "integer"
-            if line[i] !~ /^[0-9]+$/
-              if line[i] =~ /^\-?[0-9]+[\.|\,][0-9]+$/
-                schemas[i] = "float"
-              else
-                schemas[i] = "varchar"
-              end
-            elsif line[i].to_i > 2147483647
-              schemas[i] = "float"
-            end
-          end
-        end
-      end
-    end
-
-    result = []
-    column_names.each_with_index do |column_name, i|
-      if RESERVED_COLUMN_NAMES.include?(column_name.to_s)
-        column_name = "_#{column_name}"
-      end
-      result << "#{column_name} #{schemas[i] || "varchar"}"
-    end
-
-    self.force_schema = result.join(', ')
-  end
-
   def delete_constraints
     owner.in_database.alter_table(self.name.to_sym) do
       drop_constraint(:enforce_srid_the_geom)
@@ -715,7 +600,7 @@ TRIGGER
       end
     end
     self.the_geom_type = type.downcase
-    save_changes
+    save_changes unless new?
     if updates
       set_trigger_the_geom_webmercator
     end
@@ -723,172 +608,33 @@ TRIGGER
 
   def create_table_in_database!
     owner.in_database do |user_database|
-      if imported_table_name.blank?
-        if force_schema.blank?
-          user_database.create_table self.name.to_sym do
-            column :cartodb_id, "SERIAL PRIMARY KEY"
-            String :name
-            String :description, :text => true
-            DateTime :created_at, :default => "NOW()"
-            DateTime :updated_at, :default => "NOW()"
-          end
-        else
-          sanitized_force_schema = force_schema.split(',').map do |column|
-            if column =~ /^\s*\"([^\"]+)\"(.*)$/
-              "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,"UNIQUE")}"
-            else
-              column.gsub(/primary\s+key/i,"UNIQUE")
-            end
-          end
-          # If import_from_file is blank primary key is added now.
-          # If not we add it after importing the CSV file, becaus the number of columns
-          # will not match
-          if import_from_file.blank?
-            sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY")
-            sanitized_force_schema.unshift("created_at timestamp")
-            sanitized_force_schema.unshift("updated_at timestamp")
-          end
-          user_database.run("CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')})")
-          if import_from_file.blank?
-            user_database.run("alter table #{self.name} alter column created_at SET DEFAULT now()")
-            user_database.run("alter table #{self.name} alter column updated_at SET DEFAULT now()")
-          end
+      if force_schema.blank?
+        user_database.create_table self.name.to_sym do
+          column :cartodb_id, "SERIAL PRIMARY KEY"
+          String :name
+          String :description, :text => true
+          DateTime :created_at, :default => "NOW()"
+          DateTime :updated_at, :default => "NOW()"
         end
       else
-        pk = user_database.schema(self.name).select{ |c| c[1][:primary_key] == true }
-        if pk.size > 0
-          pk = pk.first[0] if pk.size > 1
-          user_database.rename_column name.to_sym, pk, :cartodb_id
-        else
-          user_database.run("alter table #{self.name} add column cartodb_id integer")
-          user_database.run("create sequence cartodb_id_#{oid}_seq")
-          user_database.run("update #{self.name} set cartodb_id = nextval('cartodb_id_#{oid}_seq')")
-          user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('cartodb_id_#{oid}_seq')")
-          user_database.run("alter table #{self.name} alter column cartodb_id set not null")
-          user_database.run("alter table #{self.name} add unique (cartodb_id)")
-          user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
-          user_database.run("alter table #{self.name} add primary key (cartodb_id)")
+        sanitized_force_schema = force_schema.split(',').map do |column|
+          # Convert existing primary key into a unique key
+          if column =~ /^\s*\"([^\"]+)\"(.*)$/
+            "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,"UNIQUE")}"
+          else
+            column.gsub(/primary\s+key/i,"UNIQUE")
+          end
         end
-        user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
-        user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
+        sanitized_force_schema.unshift("cartodb_id SERIAL PRIMARY KEY").
+                               unshift("created_at timestamp").
+                               unshift("updated_at timestamp")
+        user_database.run(<<-SQL
+CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')});
+alter table #{self.name} alter column created_at SET DEFAULT now();
+alter table #{self.name} alter column updated_at SET DEFAULT now();
+SQL
+        )
       end
-    end
-  end
-
-  # FIXME: handle exceptions and don't create tables
-  def handle_import_file!
-    if import_from_file.is_a?(String)
-      open(URI.escape(import_from_file)) do |res|
-        file_name = File.basename(import_from_file)
-        ext = File.extname(file_name)
-        self.name ||= File.basename(import_from_file, ext).downcase.sanitize
-        self.import_from_file = File.new(Rails.root.join('tmp', "uploading_#{file_name}"), 'w+')
-        self.import_from_file.write(res.read.force_encoding('utf-8'))
-        self.import_from_file.close
-      end
-    end
-
-    original_filename = if import_from_file.respond_to?(:original_filename)
-      import_from_file.original_filename
-    else
-      import_from_file.path
-    end
-    ext = File.extname(original_filename)
-    path = if import_from_file.respond_to?(:tempfile)
-      import_from_file.tempfile.path
-    else
-      import_from_file.path
-    end
-
-    # If it is a zip file we should find a shp file
-    entries = []
-    if ext == '.zip'
-      Rails.logger.info "Importing zip file: #{path}"
-      Zip::ZipFile.foreach(path) do |entry|
-        name = entry.name.split('/').last
-        next if name =~ /^(\.|\_{2})/
-        entries << "/tmp/#{name}"
-        if File.extname(name) == '.shp'
-          ext = '.shp'
-          path = "/tmp/#{name}"
-          original_filename = name
-          Rails.logger.info "Found original shapefile #{name} in path #{path}"
-        end
-        if File.file?("/tmp/#{name}")
-          FileUtils.rm("/tmp/#{name}")
-        end
-        entry.extract("/tmp/#{name}")
-      end
-    elsif ext == '.csv'
-      file_name = if import_from_file.is_a?(ActionDispatch::Http::UploadedFile)
-        File.basename(import_from_file.original_filename, File.extname(import_from_file.original_filename))
-      else
-        File.basename(import_from_file, File.extname(import_from_file))
-      end
-      new_path = Rails.root.join('tmp', "uploading_#{file_name}")
-      self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
-      self.import_from_file = File.new(new_path, 'w+')
-      self.import_from_file.close
-      Rails.logger.info "Normalizing CSV file: #{path}"
-      system %Q{`which python` misc/csv_normalizer.py #{path} > #{new_path}}
-    end    
-    if ext != '.shp'
-      self.name ||= File.basename(original_filename,ext).tr('.','_').downcase.sanitize
-    end
-    return unless %W{ .ods .xls .xlsx .shp }.include?(ext)
-
-    if ext == '.shp'
-      raise CartoDB::InvalidSRID if self.importing_SRID.blank?
-      self.importing_encoding ||= 'LATIN1'
-      db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
-      host = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
-      port = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-      self.imported_table_name = File.basename(path).tr('.','_').downcase.sanitize
-      self.name = self.imported_table_name.dup if self.name.blank?
-      random_name = "importing_table_#{self.name}"
-      Rails.logger.info "Table name to import: #{random_name}"
-      command = `\`which python\` misc/shp_normalizer.py #{path} #{random_name}`
-      if command.strip.blank?
-        raise "Error running python shp_normalizer script: \`which python\` misc/shp_normalizer.py #{path} #{random_name}"
-      end
-      Rails.logger.info "Running shp2pgsql: #{command.strip} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{database_name}"
-      system("#{command.strip} | `which psql` #{host} #{port} -U#{owner.database_username} -w #{database_name}")
-      owner.in_database do |user_database|
-        imported_schema = user_database[random_name.to_sym].columns
-        user_database.run("CREATE TABLE #{self.name} AS SELECT #{(imported_schema - [:the_geom]).join(',')},the_geom,ST_TRANSFORM(the_geom,#{CartoDB::GOOGLE_SRID}) as #{THE_GEOM_WEBMERCATOR} FROM #{random_name}")
-        user_database.run("DROP TABLE #{random_name}")
-        user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")
-        geometry_type = user_database["select GeometryType(the_geom) FROM #{self.name} where the_geom is not null limit 1"].first[:geometrytype]
-        user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
-        user_database.run("VACUUM ANALYZE #{self.name}")
-        self.set_trigger_the_geom_webmercator
-        # TODO
-        # geometry_type can be null: so handle this case
-        # and show the proper error message
-        self.the_geom_type = geometry_type.downcase
-      end
-      if entries.any?
-        entries.each{ |e| FileUtils.rm_rf(e) }
-      end
-      return
-    else
-      csv_name = File.basename(original_filename, ext)
-      new_path = "/tmp/#{csv_name}#{ext}"
-      fd = File.open(new_path,'w')
-      fd.write(import_from_file.read.force_encoding('utf-8'))
-      fd.close
-      s = case ext
-      when '.xls'
-        Excel.new(new_path)
-      when '.xlsx'
-        Excelx.new(new_path)
-      when '.ods'
-        Openoffice.new(new_path)
-      else
-        raise ArgumentError, "Don't know how to open file #{file}"
-      end
-      s.to_csv("/tmp/#{csv_name}.csv")
-      self.import_from_file = File.open("/tmp/#{csv_name}.csv",'r')
     end
   end
 

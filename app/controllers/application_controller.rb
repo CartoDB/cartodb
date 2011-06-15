@@ -119,7 +119,7 @@ class ApplicationController < ActionController::Base
       return exception
     end
     case exception
-      when CartoDB::EmtpyFile
+      when CartoDB::EmptyFile
         ERROR_CODES[:empty_file]
       when Sequel::DatabaseError
         if exception.message.include?("transform: couldn't project")

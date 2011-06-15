@@ -76,11 +76,11 @@ class Table < Sequel::Model(:user_tables)
     else
       self.name = get_valid_name(self.name) if self.name.blank?
       create_table_in_database!
-      set_the_geom_column!(the_geom_type.try(:to_sym) || "point")
-    end
-    if !self.temporal_the_geom_type.blank?
-      self.the_geom_type = self.temporal_the_geom_type
-      self.temporal_the_geom_type = nil
+      if !self.temporal_the_geom_type.blank?
+        self.the_geom_type = self.temporal_the_geom_type
+        self.temporal_the_geom_type = nil
+      end
+      set_the_geom_column!(self.the_geom_type)
     end
     super
   rescue => e

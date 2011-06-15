@@ -48,6 +48,7 @@ module CartoDB
     rescue => e
       puts $!
       puts e.backtrace
+      raise e
     end
     
     def import!

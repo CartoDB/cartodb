@@ -10,12 +10,6 @@
 <section id="content">
   <div class="inner_content">
 
-    <% [:success, :error].each do |key| %>
-      <% if flash[key] %>
-        <div class="flash <%= key %>"><%= flash[key] %></div>
-      <% end %>
-    <% end %>
-
     <div class="tables_list">
       <div class="left">
         <div class="top_blue_medium">
@@ -27,6 +21,7 @@
             <span class="form_block">
               <%= f.label :email, 'YOUR EMAIL' %>
               <%= f.text_field :email, :disabled => true %>
+              <span class="block"></span>
             </span>
             <span class="form_block">
               <%= f.label :password, 'YOUR PASSWORD' %>
@@ -36,20 +31,20 @@
                   <p><span>Your passwords have to be the same</span></p>
                 </div>
               <% end %>
+              <span class="block"></span>
             </span>
             <span class="form_block last">
               <%= f.label :password_confirmation, 'CONFIRM PASSWORD' %>
               <%= f.password_field :password_confirmation, :disabled => true, :class => current_user.errors.on(:password) ? 'error' : nil %>
+              <span class="block"></span>
             </span>
             <span class="submit_block">
-              <button type="submit" class="submit">
-                <span>Save changes</span>
-              </button>
+              <input type="submit" class="close submit" value="Save changes" />
               <p>To edit this data you need to <a class="open_unlock" href="#unlock_account">verify your identity</a></p>
             </span>
           <% end %>
           <div class="delete">
-            <a href="#delete_account" class="delete_account disabled"><span>Delete your account</span></a>
+            <a href="#delete_account" class="delete_account disabled">Delete your account</a>
             <p><strong> All</strong> your user information and tables will be erased</p>
           </div>
         </div>
@@ -66,12 +61,21 @@
   <div class="unlock_window">
     <a href="#close_unlock" class="close_unlock">Close</a>
     <div class="inner_">
+      
+      <div class="email_sent">
+        <h3>We have sent an email to you</h3>
+        <p>Follow the instructions there to generate a new password</p>
+      </div>
+      
       <%= form_tag unlock_path, :method => :post do %>
       <form action="#">
         <span class="top">
           <%= label_tag 'unlock_password', 'Insert your current password' %>
           <%= password_field_tag 'unlock_password' %>
           <a class="forget">did you forget it?</a>
+          <div class="error_content">
+            <p><span>This password is not correct</span></p>
+          </div>
         </span>
         <span class="bottom">
           <a class="cancel">cancel</a>

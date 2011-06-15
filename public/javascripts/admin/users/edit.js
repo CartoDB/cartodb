@@ -1,6 +1,11 @@
 
 
     $(document).ready(function(){
+      
+      //Add fake password
+      $('input#user_password').val('lalalala');
+      $('input#user_password_confirmation').val('lalalala');
+      
 
       $('div.unlock_window input[type="password"]').focusin(function(){
         $('span.top label').hide();
@@ -17,12 +22,22 @@
         ev.preventDefault();
         $.post($(this).attr('action'), $(this).serialize())
         .success(function(){
+          $('div.unlock_window div.error_content').hide()
           $('#user_email, #user_password, #user_password_confirmation').attr('disabled', null);
+          $('#user_password_confirmation, #user_password')
+            .val('')
+            .css({color:'#333333'})
+            .removeClass('error')
+            .closest('span')
+            .find('span.block').hide();
           $('a.delete_account').removeClass('disabled');
+          $('input.close').removeClass('close');
+          $('div.error_content').hide();
+          $('span.submit_block p').text('You have verified your account').css({color:'#999999'});
           close_mamufas();
         })
         .error(function(){
-          alert('Invalid password');
+          $('div.unlock_window div.error_content').show()
         });
       });
 
@@ -44,7 +59,7 @@
       });
 
       //Delete account
-      $('a.delete_account.disabled').live('click', function(ev){
+      $('.disabled, .close').live('click', function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         $('div.mamufas div.unlock_window').show();

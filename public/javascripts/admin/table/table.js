@@ -7,7 +7,7 @@
         "/javascripts/admin/maps/map.js",
         "/javascripts/admin/maps/map_elements.js",
         "/javascripts/admin/maps/header_elements.js",
-        // "/javascripts/admin/maps/map_functions.js",
+        "/javascripts/admin/maps/map_functions.js",
         // "/javascripts/admin/maps/style_functions.js",
         // "/javascripts/admin/maps/map_functions.js",
         // "/javascripts/admin/maps/CartoMarker.js",

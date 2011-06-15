@@ -38,9 +38,10 @@ class Table < Sequel::Model(:user_tables)
   def before_create
     self.database_name = owner.database_name
     update_updated_at
+    
     if import_from_file.present?
       importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => owner.database_name, :logger => ::Rails.logger,
+        "database" => database_name, :logger => ::Rails.logger,
         "username" => owner.database_username, "password" => owner.database_password,
         :import_from_file => import_from_file, :suggested_name => self.name
       ).symbolize_keys
@@ -67,13 +68,8 @@ class Table < Sequel::Model(:user_tables)
           user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
         end
       end
-      # Prepare the geometry is necessary for SHP files
-      if importer_result.import_type == '.shp'
-        geometry_type = owner.in_database["select GeometryType(the_geom) FROM #{self.name} where the_geom is not null limit 1"].first[:geometrytype]
-        set_the_geom_column!(geometry_type)
-      end
+      set_the_geom_column!
     else
-      self.name = get_valid_name(self.name) if self.name.blank?
       create_table_in_database!
       if !self.temporal_the_geom_type.blank?
         self.the_geom_type = self.temporal_the_geom_type
@@ -81,6 +77,7 @@ class Table < Sequel::Model(:user_tables)
       end
       set_the_geom_column!(self.the_geom_type)
     end
+    
     super
   rescue => e
     unless self.name.blank?
@@ -489,10 +486,10 @@ TRIGGER
     host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
     port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
     username = db_configuration['username']
-    Rails.logger.info "Executing command: #{%Q{`which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{owner.database_name} #{self.name}}}"
+    Rails.logger.info "Executing command: #{%Q{`which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}}}"
     system <<-CMD
       rm -rf #{all_files_path};
-      `which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{owner.database_name} #{self.name}
+      `which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}
     CMD
     Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
       Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|
@@ -540,13 +537,17 @@ TRIGGER
     raw_new_name = (raw_new_name || "Untitle table").sanitize
     raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
     raw_new_name = "table#{raw_new_name}" if raw_new_name =~ /^_/
-    base_name = "#{raw_new_name}"
-    i = 1
-    while Table.filter(:user_id => user_id, :name => base_name).count != 0
-      i += 1
-      base_name = "#{raw_new_name}_#{i}".sanitize
+    candidates = owner.in_database.tables.map{ |t| t.to_s }.select{ |t| t.match(/^#{raw_new_name}/) }
+    if candidates.any?
+      max_candidate = candidates.max
+      if max_candidate =~ /(.+)_(\d+)$/
+        return $1 + "_#{$2.to_i +  1}"
+      else
+        return max_candidate + "_2"
+      end
+    else
+      return raw_new_name
     end
-    base_name
   end
 
   def delete_constraints
@@ -581,7 +582,13 @@ TRIGGER
     CartoDB::NEXT_TYPE[cartodb_column_type]
   end
 
-  def set_the_geom_column!(type)
+  def set_the_geom_column!(type = nil)
+    if type.nil?
+      if self.schema(:reload => true).flatten.include?(:the_geom)
+        type = owner.in_database["select GeometryType(the_geom) FROM #{self.name} where the_geom is not null limit 1"].first[:geometrytype]
+      end
+    end
+    return if type.nil?
     raise InvalidArgument unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
     updates = false
     type = type.to_s.upcase
@@ -607,6 +614,8 @@ TRIGGER
   end
 
   def create_table_in_database!
+    self.name ||= get_valid_name(self.name)
+    
     owner.in_database do |user_database|
       if force_schema.blank?
         user_database.create_table self.name.to_sym do

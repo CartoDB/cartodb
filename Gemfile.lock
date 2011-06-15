@@ -17,6 +17,19 @@ GIT
       childprocess (~> 0.1.7)
       multi_json (~> 0.0.5)
 
+PATH
+  remote: vendor/cartodb-importer
+  specs:
+    cartodb-importer (0.0.1)
+      builder
+      google-spreadsheet-ruby
+      pg (= 0.10.1)
+      roo
+      rubyzip
+      sequel
+      sequel
+      spreadsheet
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -236,8 +249,8 @@ DEPENDENCIES
   capistrano-ext
   capybara
   capybara-zombie!
+  cartodb-importer!
   email_spec
-  google-spreadsheet-ruby
   htmlentities
   launchy
   mocha
@@ -252,14 +265,12 @@ DEPENDENCIES
   resque
   rgeo
   rgeo-geojson
-  roo
   rspec
   rspec-rails
   ruby-debug19
   rubyzip
   sequel-rails!
   sequel_column_type_array
-  spreadsheet
   steak
   terminitor
   timecop

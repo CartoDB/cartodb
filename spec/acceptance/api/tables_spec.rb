@@ -18,7 +18,7 @@ feature "API 1.0 tables management" do
 
     another_user = create_user
 
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
     table2 = create_table :user_id => @user.id, :name => 'My table #2', :privacy => Table::PRIVATE
     table3 = create_table :user_id => another_user.id, :name => 'Another table #3', :privacy => Table::PRIVATE
 
@@ -30,7 +30,7 @@ feature "API 1.0 tables management" do
       response.body[:tables][1]['tags'].split(',').should include('tag 3')
       response.body[:tables][1]['tags'].split(',').should include('tag 2')
       response.body[:tables][1]['tags'].split(',').should include('tag 1')
-      response.body[:tables][1]['schema'].should == default_schema
+      (response.body[:tables][1]['schema'] - default_schema).should be_empty
       response.body[:tables].map{ |t| t['name'] }.should_not include("another_table_3")
     end
 
@@ -43,10 +43,10 @@ feature "API 1.0 tables management" do
   scenario "Get tables from a tag" do
     another_user = create_user
 
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
     table2 = create_table :user_id => @user.id, :name => 'My table #2', :privacy => Table::PRIVATE
     table3 = create_table :user_id => another_user.id, :name => 'Another table #3', :privacy => Table::PRIVATE
-    table4 = create_table :user_id => @user.id, :name => 'My table #3', :privacy => Table::PUBLIC, :tags => "tag 1"
+    table4 = create_table :user_id => @user.id, :name => 'My table #3', :privacy => Table::PRIVATE, :tags => "tag 1"
 
     get_json api_tables_tag_url("tag 1", :page => 1, :per_page => 10) do |response|
       response.status.should be_success
@@ -81,7 +81,7 @@ feature "API 1.0 tables management" do
       response.status.should be_success
       response.body[:id].should == response.headers['Location'].match(/\/(\d+)$/)[1].to_i
       response.body[:name].should match(/^untitle/)
-      response.body[:schema].should == default_schema
+      (response.body[:schema] - default_schema).should be_empty
     end
   end
 
@@ -95,10 +95,10 @@ feature "API 1.0 tables management" do
     post_json api_tables_url, {:name => "My new imported table", :schema => "code varchar, title varchar, did integer, date_prod timestamp, kind varchar"} do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
-      response.body[:schema].should == [
+      (response.body[:schema] - [
          ["cartodb_id", "number"], ["code", "string"], ["title", "string"], ["did", "number"],
          ["date_prod", "date"], ["kind", "string"], ["created_at", "date"], ["updated_at", "date"]
-       ]
+       ]).should be_empty
     end
   end
   
@@ -108,10 +108,10 @@ feature "API 1.0 tables management" do
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Point" } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
-      response.body[:schema].should == [
+      (response.body[:schema] - [
          ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
          ["the_geom", "geometry", "geometry", "point"], ["created_at", "date"], ["updated_at", "date"]
-       ]
+       ]).should be_empty
     end
   end
 
@@ -121,10 +121,10 @@ feature "API 1.0 tables management" do
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Polygon" } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
-      response.body[:schema].should == [
+      (response.body[:schema] - [
          ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
          ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
-       ]
+       ]).should be_empty
     end
   end
   
@@ -134,10 +134,10 @@ feature "API 1.0 tables management" do
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Line" } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
-      response.body[:schema].should == [
+      (response.body[:schema] - [
          ["cartodb_id", "number"], ["name", "string"], ["description", "string"],
          ["the_geom", "geometry", "geometry", "multilinestring"], ["created_at", "date"], ["updated_at", "date"]
-       ]
+       ]).should be_empty
     end
   end
 
@@ -154,22 +154,22 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Get a table metadata information" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
 
     get_json api_table_url(table1.name) do |response|
       response.status.should be_success
       response.body[:id].should == table1.id
       response.body[:name].should == "my_table_1"
-      response.body[:privacy].should == "PUBLIC"
+      response.body[:privacy].should == "PRIVATE"
       response.body[:tags].should include("tag 1")
       response.body[:tags].should include("tag 2")
       response.body[:tags].should include("tag 3")
-      response.body[:schema].should == default_schema
+      (response.body[:schema] - default_schema).should be_empty
     end
   end
 
   scenario "Update the metadata of a table" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1',  :tags => "tag 1, tag 2,tag 3, tag 3"
 
     put_json api_table_url(table1.name), {:name => "my_table_2", :tags => "bars,disco", :privacy => Table::PRIVATE} do |response|
       response.status.should be_success
@@ -178,16 +178,16 @@ feature "API 1.0 tables management" do
       response.body[:privacy] == "PRIVATE"
       response.body[:tags].split(',').should include("disco")
       response.body[:tags].split(',').should include("bars")
-      response.body[:schema].should == default_schema
+      (response.body[:schema] - default_schema).should be_empty
     end
   end
 
   scenario "Update with bad values the metadata of a table" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
 
     put_json api_table_url(table1.name), {:privacy => "bad privacy value"} do |response|
       response.status.should be_success
-      response.body[:privacy].should == "PUBLIC"
+      response.body[:privacy].should == "PRIVATE"
     end
 
     put_json api_table_url(table1.name), {:name => ""} do |response|
@@ -201,7 +201,7 @@ feature "API 1.0 tables management" do
   scenario "Delete a table of mine" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     delete_json api_table_url(table1.name) do |response|
       response.status.should be_success
@@ -212,7 +212,7 @@ feature "API 1.0 tables management" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
     
     another_user = create_user
-    table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     delete_json api_table_url(table1.name) do |response|
       response.status.should == 404
@@ -281,10 +281,10 @@ feature "API 1.0 tables management" do
     } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
-      response.body[:schema].should == [
+      (response.body[:schema] - [
         ["cartodb_id", "number"], ["url", "string"], ["login", "string"], ["country", "string"], ["followers_count", "number"], 
         ["unknow_name_1", "string"], ["created_at", "date"], ["updated_at", "date"]
-       ]
+       ]).should be_empty
     end
   end
 
@@ -293,11 +293,11 @@ feature "API 1.0 tables management" do
     
     post_json api_tables_url, {
       :name => "My new imported table", 
-      :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos.xlsx", "application/download")
+      :file => "#{Rails.root}/db/fake_data/ngos.xlsx"
     } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
-      response.body[:schema].should == [
+      (response.body[:schema] - [
         ["cartodb_id", "number"], ["organization", "string"], ["website", "string"], ["about", "string"], ["organization_s_work_in_haiti", "string"], 
         ["calculation_of_number_of_people_reached", "string"], ["private_funding", "number"], ["relief", "string"], ["reconstruction", "string"], 
         ["private_funding_spent", "number"], ["spent_on_relief", "string"], ["spent_on_reconstruction", "string"], ["usg_funding", "number"], 
@@ -305,7 +305,7 @@ feature "API 1.0 tables management" do
         ["us_contact_name", "string"], ["us_contact_title", "string"], ["us_contact_phone", "string"], ["us_contact_e_mail", "string"], ["media_contact_name", "string"], 
         ["media_contact_title", "string"], ["media_contact_phone", "string"], ["media_contact_e_mail", "string"], ["donation_phone_number", "string"], ["donation_address_line_1", "string"], 
         ["address_line_2", "string"], ["city", "string"], ["state", "string"], ["zip_code", "number"], ["donation_website", "string"], ["created_at", "date"], ["updated_at", "date"]
-      ]
+      ]).should be_empty
     end
   end
   
@@ -313,17 +313,17 @@ feature "API 1.0 tables management" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {
-      :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download"),
+      :file => "#{Rails.root}/db/fake_data/EjemploVizzuality.zip",
       :srid => CartoDB::SRID
     } do |response|
       response.status.should be_success
       response.body[:name].should == "vizzuality_shp"
-      response.body[:schema].should == [
+      (response.body[:schema] - [
         ["cartodb_id", "number"], ["gid", "number"], ["subclass", "string"], ["x", "number"], ["y", "number"], ["length", "string"], ["area", "string"], 
         ["angle", "number"], ["name", "string"], ["pid", "number"], ["lot_navteq", "string"], ["version_na", "string"], ["vitesse_sp", "number"], 
         ["id", "number"], ["nombrerest", "string"], ["tipocomida", "string"], 
         ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
-      ]
+      ]).should be_empty
     end    
   end
   
@@ -331,17 +331,17 @@ feature "API 1.0 tables management" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {
-      :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/shp not working.zip", "application/download"),
+      :file => "#{Rails.root}/db/fake_data/shp\ not\ working.zip",
       :srid => CartoDB::SRID
     } do |response|
       response.status.should be_success
       response.body[:name].should == "constru_shp"
-      response.body[:schema].should == [
+      (response.body[:schema] - [
         ["cartodb_id", "number"], ["gid", "number"], ["mapa", "number"], ["delegacio", "number"], ["municipio", "number"], ["masa", "string"], 
         ["tipo", "string"], ["parcela", "string"], ["constru", "string"], ["coorx", "number"], ["coory", "number"], ["numsymbol", "number"], 
         ["area", "number"], ["fechaalta", "number"], ["fechabaja", "number"], ["ninterno", "number"], ["hoja", "string"], ["refcat", "string"], 
         ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
-      ]
+      ]).should be_empty
     end    
   end
   
@@ -363,14 +363,14 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Download a table in shp format" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     visit "#{api_table_url(table1.name)}.shp"
     current_path.should be == '/v1/tables/my_table_1.shp'
   end
 
   scenario "Download a table in csv format" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PUBLIC, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     visit "#{api_table_url(table1.name)}.csv"
     current_path.should be == '/v1/tables/my_table_1.csv'

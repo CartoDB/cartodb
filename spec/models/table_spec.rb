@@ -335,68 +335,40 @@ describe Table do
     ]).should be_empty
   end
 
-  it "should import a CSV if the schema is given and is valid" do
-    table = new_table :name => nil
-    table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-    table.save.reload
-    
-    table.rows_counted.should == 7
-    table.name.should == 'twitters'
-    row0 = table.records[:rows][0]
-    row0[:cartodb_id].should == 1
-    row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
-    row0[:login].should == "vzlaturistica "
-    row0[:country].should == " Venezuela "
-    row0[:followers_count].should == 211
-  end
-
-  it "should be able to insert rows in a table imported from a CSV file" do
-    table = new_table :name => nil
-    table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-    table.save
-
-    lambda {
-      pk = table.insert_row!({:url => 'http://twitter.com/ferblape/statuses/1231231', :login => 'ferblape', :country => 'Spain', :followers_count => 33})
-      pk.should_not be_nil
-    }.should_not raise_error
-  end
-
-  it "should guess the schema from import file import_csv_1.csv" do
-    Table.send(:public, *Table.private_instance_methods)
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-    table.force_schema.should be_blank
-    table.guess_schema
-    table.force_schema.should == "id integer, name_of_species varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
-  end
-
-  it "should guess the schema from import file import_csv_2.csv" do
-    Table.send(:public, *Table.private_instance_methods)
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
-    table.force_schema.should be_blank
-    table.guess_schema
-    table.force_schema.should == "id integer, name_of_species varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
-  end
-
-  it "should guess the schema from import file twitters.csv" do
-    Table.send(:public, *Table.private_instance_methods)
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-    table.force_schema.should be_blank
-    table.guess_schema
-    table.force_schema.should == "url varchar, login varchar, country varchar, followers_count integer, unknow_name_1 varchar"
-  end
+  # it "should import a CSV if the schema is given and is valid" do
+  #   table = new_table :name => nil
+  #   table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
+  #   table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+  #   table.save.reload
+  #   
+  #   table.rows_counted.should == 7
+  #   table.name.should == 'twitters'
+  #   row0 = table.records[:rows][0]
+  #   row0[:cartodb_id].should == 1
+  #   row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+  #   row0[:login].should == "vzlaturistica "
+  #   row0[:country].should == " Venezuela "
+  #   row0[:followers_count].should == 211
+  # end
+  # 
+  # it "should be able to insert rows in a table imported from a CSV file" do
+  #   table = new_table :name => nil
+  #   table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
+  #   table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+  #   table.save
+  # 
+  #   lambda {
+  #     pk = table.insert_row!({:url => 'http://twitter.com/ferblape/statuses/1231231', :login => 'ferblape', :country => 'Spain', :followers_count => 33})
+  #     pk.should_not be_nil
+  #   }.should_not raise_error
+  # end
 
   it "should import file twitters.csv" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
     table.save.reload
     table.name.should == 'twitters'
-
-    table.rows_counted.should == 7
+    table.rows_counted.should == 7    
     (table.schema(:cartodb_types => false) - [
       [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
       [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"], 
@@ -462,7 +434,7 @@ describe Table do
     table = new_table
     table.user_id = user.id
     table.name = "empty_table"
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/empty_file.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/empty_file.csv"
     lambda {
       table.save
     }.should raise_error
@@ -474,7 +446,7 @@ describe Table do
   # It has strange line breaks
   it "should import file arrivals_BCN.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/arrivals_BCN.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/arrivals_BCN.csv"
     table.save
     table.reload
     table.name.should == 'arrivals_bcn'
@@ -483,7 +455,7 @@ describe Table do
   
   it "should import file clubbing.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/clubbing.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv"
     table.save
     table.reload
     table.name.should == 'clubbing'
@@ -492,7 +464,7 @@ describe Table do
 
   it "should import file short_clubbing.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/short_clubbing.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/short_clubbing.csv"
     table.save
     table.reload
     table.name.should == 'short_clubbing'
@@ -501,7 +473,7 @@ describe Table do
   
   it "should import ngos_aidmaps.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos_aidmaps.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/ngos_aidmaps.csv"
     table.save
     table.reload
     table.name.should == 'ngos_aidmaps'
@@ -511,7 +483,7 @@ describe Table do
   # File in format different than UTF-8
   it "should import estaciones.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/estaciones.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/estaciones.csv"
     table.save
     table.reload
     table.name.should == 'estaciones'
@@ -521,7 +493,7 @@ describe Table do
   # File in format UTF-8
   it "should import estaciones2.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/estaciones2.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/estaciones2.csv"
     table.save
     table.reload
     table.name.should == 'estaciones2'
@@ -532,7 +504,7 @@ describe Table do
     user = create_user
     table = new_table :name => nil
     table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos.xlsx", "application/download")
+    table.import_from_file = "#{Rails.root}/db/fake_data/ngos.xlsx"
     table.save
     table.reload
     table.name.should == 'ngos'
@@ -553,18 +525,9 @@ describe Table do
     table.rows_counted.should == 76
   end
   
-  it "should raise an error if importing a SHP file without indicating an SRID" do
-    lambda {
-      table = new_table
-      table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download")
-      table.save
-    }.should raise_error(CartoDB::InvalidSRID)
-  end
-  
   it "should import EjemploVizzuality.zip" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download")
-    table.importing_SRID = CartoDB::SRID
     table.importing_encoding = 'LATIN1'
     table.save
 
@@ -575,7 +538,6 @@ describe Table do
   pending "should import TM_WORLD_BORDERS_SIMPL-0.3.zip" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/TM_WORLD_BORDERS_SIMPL-0.3.zip", "application/download")
-    table.importing_SRID = CartoDB::SRID
     table.importing_encoding = 'LATIN1'
     table.save
 
@@ -585,7 +547,6 @@ describe Table do
   it "should import SHP1.zip" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/SHP1.zip", "application/download")
-    table.importing_SRID = CartoDB::SRID
     table.importing_encoding = 'LATIN1'
     table.save
 
@@ -837,11 +798,11 @@ describe Table do
   it "should overwrite given name over name of the file when importing " do
     user = create_user
     table = new_table :user_id => user.id, :name => 'wadus'
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/csv_no_quotes.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
     table.save.reload
     
     table.name.should == 'wadus'
-    table.rows_counted.should == 8406        
+    table.rows_counted.should == 8406
   end
   
   it "should not drop a table that exists when upload fails" do
@@ -967,10 +928,10 @@ describe Table do
     FileUtils.rm_rf(path)
   end
   
-  it "should import a CSV file with a column named cartodb_id" do
+  it "should not import a CSV file with a column named cartodb_id" do
     user = create_user
     table = new_table :user_id => user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/gadm4_export.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
     table.save.reload
     (table.schema -  [
       [:cartodb_id, "number"], [:gid, "number"], [:id_0, "number"], [:iso, "string"], 

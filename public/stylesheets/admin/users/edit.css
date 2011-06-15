@@ -1,4 +1,14 @@
 section#content div.inner_content {padding:40px 0 50px 0;}
+
+section#content div.inner_content div.notification div.top_white {width:906px; height:7px; padding:0; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
+section#content div.inner_content div.notification div.middle_white {position:relative; width:846px; padding:12px 30px 12px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
+section#content div.inner_content div.notification div.middle_white h2 {width:100%; font:bold 21px Arial; color:#333333;}
+section#content div.inner_content div.notification div.middle_white p {display:inline-block; width:100%; padding:0 0 0 20px; font:normal 15px Arial; color:#80CA73; background:url('/images/admin/icons/done.png') no-repeat 0 1px;}
+section#content div.inner_content div.notification div.middle_white a.close_notification {position:absolute; top:12px; right:13px; width:17px; height:17px; background:url('/images/admin/icons/close_button.png') no-repeat 0 0; text-indent:-9999px;}
+section#content div.inner_content div.notification div.middle_white a.close_notification:hover {background-position:0 -17px;}
+section#content div.inner_content div.notification div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 10px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
+
+
 section#content div.left {display:inline-block; width:626px; vertical-align:top;}
 section#content div.left div.top_blue_medium {float:left; width:626px; height:61px; background:url('/images/admin/backgrounds/top_blue_medium.png') no-repeat 0 0;}
 section#content div.left div.top_blue_medium h3 {float:left; margin:18px 0 0 25px; font:normal 23px "Aller",Arial; color:white; text-shadow:0 1px #718C92;}
@@ -95,11 +105,9 @@ div.mamufas div.unlock_window {position:absolute; display:none; top:50%; left:50
 div.mamufas div.unlock_window a.close_unlock {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0; text-indent:-9999px!important;}
 div.mamufas div.unlock_window a.close_unlock:hover {background-position:0 -24px;}
 div.mamufas div.unlock_window div.inner_ {width:430px; height:120px; border:2px solid #FF6600; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:url('/images/admin/icons/lock.png') no-repeat 15px 15px #EDEEF0;}
-
 div.mamufas div.unlock_window div.inner_ div.email_sent {float:left; display:none; opacity:0; width:347px; height:40px; padding:0 0 0 57px; margin:10px; background:url('/images/admin/account/ok.png') no-repeat 5px 7px;}
 div.mamufas div.unlock_window div.inner_ div.email_sent h3 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.unlock_window div.inner_ div.email_sent p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
-
 div.mamufas div.unlock_window div.inner_ span.top {position:relative; float:left; width:402px; padding:14px 14px 17px 14px; border-bottom:1px solid #CCCCCC;}
 div.mamufas div.unlock_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.unlock_window div.inner_ span.top label {position:absolute; left:95px; height:auto; width:100%; padding:10px 0 0 0!important; margin:0!important; font:bold 13px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}

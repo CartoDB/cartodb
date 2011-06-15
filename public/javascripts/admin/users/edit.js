@@ -81,6 +81,13 @@
         ev.preventDefault();
         showForget();
       });
+      
+      //Close notification
+      $('div.notification a.close_notification').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $('div.notification').fadeOut();
+      });
     });
 
 

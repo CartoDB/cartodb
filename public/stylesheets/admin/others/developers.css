@@ -1,21 +1,21 @@
 body {position:relative; background:url('/images/admin/common/header_bkg_2.jpg') repeat-x center 0 #2D3451;}
 
-section.outer_content {position:relative; width:100%; padding:0 0 50px; background:url('/images/admin/dashboard/content_bkg.png') repeat center 0;}
-section.outer_content div.mesh1 {position:absolute; display:block; width:100%; min-width:880px; height:150px; background:url('/images/admin/common/header_bkg_2.jpg') repeat-x center -58px; z-index:0;}
-section.outer_content div.mesh2 {position:absolute; display:block; width:100%; min-width:880px; height:151px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0; z-index:0;}
-section.outer_content div.content {position:relative; z-index:2;}
-section.outer_content div.content div.top {width:900px; margin:0 auto; padding:20px 0 30px!important;}
-section.outer_content div.content div.top h1 {width:100%; margin:0; padding:10px 0 0px; font:normal 35px "Aller"; color:white; letter-spacing:-1px; word-spacing:6px; text-align:center;}
-section.outer_content div.content div.middle {width:906px; margin:0 auto; padding:0;}
-section.outer_content div.content div.small_blocks {width:100%; padding:0; margin:0; height:250px;}
-section.outer_content div.content div.small_blocks div.block {float:left; width:220px; height:160px; margin:0 24px 0 0; padding:33px; background:url('/images/admin/api/block.png') no-repeat 0 0;}
-section.outer_content div.content div.small_blocks div.block.email {background:url('/images/admin/api/block_email.png') no-repeat 0 0;}
-section.outer_content div.content div.small_blocks div.block.gallery {background:url('/images/admin/api/block_gallery.png') no-repeat 0 0;}
-section.outer_content div.content div.small_blocks div.block.last {margin:0!important;}
-section.outer_content div.content div.small_blocks div.block h2 {font:bold 21px Arial; color:#333333;}
-section.outer_content div.content div.small_blocks div.block p {margin:15px 0 0 0; font:normal 15px Arial; color:#666666;}
-section.outer_content div.content div.small_blocks div.block a {float:left; width:auto; height:15px; margin:15px 0 0 0; padding:10px 15px; font:bold 15px Arial; line-height:15px; text-decoration:none;}
-section.outer_content div.content div.small_blocks div.block a.disabled {color:#666666; text-shadow:0 1px white; text-align:center;
+div.section.outer_content {position:relative; width:100%; padding:0 0 50px; background:url('/images/admin/dashboard/content_bkg.png') repeat center 0;}
+div.section.outer_content div.mesh1 {position:absolute; display:block; width:100%; min-width:880px; height:150px; background:url('/images/admin/common/header_bkg_2.jpg') repeat-x center -58px; z-index:0;}
+div.section.outer_content div.mesh2 {position:absolute; display:block; width:100%; min-width:880px; height:151px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0; z-index:0;}
+div.section.outer_content div.content {position:relative; z-index:2;}
+div.section.outer_content div.content div.top {width:900px; margin:0 auto; padding:20px 0 30px!important;}
+div.section.outer_content div.content div.top h1 {width:100%; margin:0; padding:10px 0 0px; font:normal 35px "Aller"; color:white; letter-spacing:-1px; word-spacing:6px; text-align:center;}
+div.section.outer_content div.content div.middle {width:906px; margin:0 auto; padding:0;}
+div.section.outer_content div.content div.small_blocks {width:100%; padding:0; margin:0; height:250px;}
+div.section.outer_content div.content div.small_blocks div.block {float:left; width:220px; height:160px; margin:0 24px 0 0; padding:33px; background:url('/images/admin/api/block.png') no-repeat 0 0;}
+div.section.outer_content div.content div.small_blocks div.block.email {background:url('/images/admin/api/block_email.png') no-repeat 0 0;}
+div.section.outer_content div.content div.small_blocks div.block.gallery {background:url('/images/admin/api/block_gallery.png') no-repeat 0 0;}
+div.section.outer_content div.content div.small_blocks div.block.last {margin:0!important;}
+div.section.outer_content div.content div.small_blocks div.block h2 {font:bold 21px Arial; color:#333333;}
+div.section.outer_content div.content div.small_blocks div.block p {margin:15px 0 0 0; font:normal 15px Arial; color:#666666;}
+div.section.outer_content div.content div.small_blocks div.block a {float:left; width:auto; height:15px; margin:15px 0 0 0; padding:10px 15px; font:bold 15px Arial; line-height:15px; text-decoration:none;}
+div.section.outer_content div.content div.small_blocks div.block a.disabled {color:#666666; text-shadow:0 1px white; text-align:center;
   -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #aaaaaa;
   -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #cccccc, #eeeeee); 
@@ -25,8 +25,8 @@ section.outer_content div.content div.small_blocks div.block a.disabled {color:#
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px\9;
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#cccccc', endColorstr='#eeeeee');
 }
-section.outer_content div.content div.small_blocks div.block a.disabled:hover {cursor:default;}
-section.outer_content div.content div.small_blocks div.block a.green {color:#305233; text-shadow:0 1px #95C994;
+div.section.outer_content div.content div.small_blocks div.block a.disabled:hover {cursor:default;}
+div.section.outer_content div.content div.small_blocks div.block a.green {color:#305233; text-shadow:0 1px #95C994;
   -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #538C55;
   -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #8FD484, #67BA6A); 
@@ -35,14 +35,14 @@ section.outer_content div.content div.small_blocks div.block a.green {color:#305
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#8FD484,#67BA6A); 
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px #8FD484\9;
 }
-section.outer_content div.content div.small_blocks div.block a.green:hover {
+div.section.outer_content div.content div.small_blocks div.block a.green:hover {
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #67BA6A, #8FD484); 
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#67BA6A), to(#8FD484));
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #67BA6A, #8FD484);
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#67BA6A,#8FD484); 
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px #67BA6A\9;
 }
-section.outer_content div.content div.small_blocks div.block a.orange {color:#895101; text-shadow:0 1px #FFC266;
+div.section.outer_content div.content div.small_blocks div.block a.orange {color:#895101; text-shadow:0 1px #FFC266;
   -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #A26001;
   -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #FF9900, #BF7201); 
@@ -51,7 +51,7 @@ section.outer_content div.content div.small_blocks div.block a.orange {color:#89
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#FF9900,#BF7201); 
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px #FF9900\9;
 }
-section.outer_content div.content div.small_blocks div.block a.orange:hover {
+div.section.outer_content div.content div.small_blocks div.block a.orange:hover {
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #BF7201, #FF9900); 
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#BF7201), to(#FF9900));
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #BF7201, #FF9900);
@@ -59,12 +59,12 @@ section.outer_content div.content div.small_blocks div.block a.orange:hover {
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px #BF7201\9;
 }
 
-section.outer_content div.content div.tutorial {width:100%; padding:0; margin:0;}
-section.outer_content div.content div.tutorial div.top {width:906px; height:7px; padding:0!important; margin:0!important; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
-section.outer_content div.content div.tutorial div.middle {position:relative; width:840px; margin:0; padding:27px 33px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
-section.outer_content div.content div.tutorial div.middle div {display:inline-block; width:255px; vertical-align:top;}
-section.outer_content div.content div.tutorial div.middle div.right {margin:0 0 0 20px;}
-section.outer_content div.content div.tutorial div.middle h5 {width:100%; font:normal 15px Arial; color:#CCCCCC;}
-section.outer_content div.content div.tutorial div.middle h2 {width:100%; padding:0 0 5px 0; font:bold 21px Arial; color:#333333;}
-section.outer_content div.content div.tutorial div.middle p {width:100%; padding:16px 0 0 0; font:normal 15px Arial; color:#666666;}
-section.outer_content div.content div.tutorial div.bottom {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
+div.section.outer_content div.content div.tutorial {width:100%; padding:0; margin:0;}
+div.section.outer_content div.content div.tutorial div.top {width:906px; height:7px; padding:0!important; margin:0!important; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
+div.section.outer_content div.content div.tutorial div.middle {position:relative; width:840px; margin:0; padding:27px 33px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
+div.section.outer_content div.content div.tutorial div.middle div.left {display:inline-block; width:255px!important; margin:0; padding:0; zoom: 1; *display:inline; vertical-align:top;}
+div.section.outer_content div.content div.tutorial div.middle div.right {display:inline-block; width:560px!important; margin:0 0 0 20px!important; padding:0!important; zoom: 1; *display:inline; vertical-align:top;}
+div.section.outer_content div.content div.tutorial div.middle h5 {width:100%; font:normal 15px Arial; color:#CCCCCC;}
+div.section.outer_content div.content div.tutorial div.middle h2 {width:100%; padding:0 0 5px 0; font:bold 21px Arial; color:#333333;}
+div.section.outer_content div.content div.tutorial div.middle p {width:100%; padding:16px 0 0 0; font:normal 15px Arial; color:#666666;}
+div.section.outer_content div.content div.tutorial div.bottom {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}

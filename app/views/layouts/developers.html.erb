@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html lang="en">
   <head>
     <meta charset=utf-8 />
     <title>CartoDB - Documentation</title>
     <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
     <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
-    <link href="/stylesheets/admin/layout.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/admin/others/layout_dev.css" media="screen" rel="stylesheet" type="text/css" />
     <% if env['PATH_INFO'] == '/' || env['PATH_INFO'].blank? %>
       <link href="/stylesheets/admin/others/developers.css" media="screen" rel="stylesheet" type="text/css" />
     <% else %>
@@ -33,7 +33,7 @@
 <% end %>
   </head>
   <body>
-    <header>
+    <div class="header">
       <a class="logo" href="<%= APP_CONFIG[:app_host] %>">CartoDB</a>
       <ul>
         <li><a href="<%= APP_CONFIG[:developers_host] %>">Developers</a></li>
@@ -47,8 +47,8 @@
           <% end %>
         </li>
       </ul>
-    </header>
-    <section class="outer_content">
+    </div>
+    <div class="section outer_content">
       <div class="mesh1"></div>
       <div class="mesh2"></div>
       <div class="content">
@@ -63,14 +63,14 @@
         <% end %>
         {{yield}}
       </div>
-    </section>
+    </div>
 
-    <footer>
-      <section class="prefooter">
+    <div class="footer">
+      <div class="prefooter">
         <%=  File.read(CartoDB::LAST_BLOG_POSTS_FILE_PATH) if File.file?(CartoDB::LAST_BLOG_POSTS_FILE_PATH) %>
-      </section>
+      </div>
       <div class="outer_footer">
-        <section class="footer">
+        <div class="section_footer">
           <a class="logo" href="<%= APP_CONFIG[:app_host] %>">CartoDB</a>
           <div class="long">
             <p class="rights">All rights reserved 2011. <a href="#" target="_blank">Contact us</a> / <a href="#" target="_blank">Give us your feedback</a> / <a href="#" target="_blank">Read the TOS</a></p>
@@ -78,9 +78,9 @@
             <p class="vizzuality">A product by </p><a href="http://www.vizzuality.com" target="_blank">Vizzuality</a>
             </span>
           </div>
-        </section>
+        </div>
       </div>
-    </footer>
+    </div>
     <script type="text/javascript">
         jQuery(function($) {
             $.syntax();

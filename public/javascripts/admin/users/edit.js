@@ -2,6 +2,9 @@
 
     $(document).ready(function(){
       
+      // Hide notification if it is opened
+      $('div.notification').delay(4000).fadeOut();
+      
       //Add fake password
       $('input#user_password').val('lalalala');
       $('input#user_password_confirmation').val('lalalala');
@@ -32,6 +35,7 @@
             .removeClass('error')
             .closest('span')
             .find('span.block').hide();
+          $('#user_password').focus();
           $('a.delete_account').removeClass('disabled');
           $('input.close').removeClass('close');
           $('div.error_content').hide();

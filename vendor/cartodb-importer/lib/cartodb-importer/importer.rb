@@ -164,6 +164,7 @@ module CartoDB
       if !@table_created.nil?
         @db_connection.drop_table(@suggested_name)
       end
+      raise e
     ensure
       @db_connection.disconnect
       if @import_from_file.is_a?(File)

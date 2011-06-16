@@ -118,7 +118,7 @@ class Table < Sequel::Model(:user_tables)
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
       rescue
-        Rails.logger.info "after_destroy: maybe table doesn't exist"
+        Rails.logger.info "[Exception captured] Table#after_destroy: maybe table #{self.name} doesn't exist"
       end
       user_database.run("DROP TABLE IF EXISTS #{self.name}")
     end
@@ -168,9 +168,31 @@ class Table < Sequel::Model(:user_tables)
     nil
   end
 
-  # TODO: use the database field
   def rows_counted
     owner.in_database[name.to_sym].count
+  end
+
+  def schema(options = {})
+    temporal_schema = []
+    owner.in_database.schema(self.name, options.slice(:reload)).each do |column| 
+      next if column[0] == THE_GEOM_WEBMERCATOR
+      col = [ column[0], 
+        column[0] == THE_GEOM ? "geometry" : (options[:cartodb_types] == false) ? column[1][:db_type] : column[1][:db_type].convert_to_cartodb_type, 
+        column[0] == THE_GEOM ? "geometry" : nil, 
+        column[0] == THE_GEOM ? the_geom_type : nil
+      ].compact
+      
+      # Make sensible sorting for jamon 
+      case column[0]
+        when :cartodb_id
+          temporal_schema.insert(0,col)
+        when :created_at, :updated_at
+          temporal_schema.insert(-1,col)
+        else
+          temporal_schema.insert(1,col)
+      end
+    end
+    temporal_schema.compact
   end
   
   def insert_row!(raw_attributes)
@@ -243,29 +265,6 @@ class Table < Sequel::Model(:user_tables)
     end
     update_the_geom!(raw_attributes, row_id)
     rows_updated
-  end
-
-  def schema(options = {})
-    temporal_schema = []
-    owner.in_database.schema(self.name, options.slice(:reload)).each do |column| 
-      next if column[0] == THE_GEOM_WEBMERCATOR
-      col = [ column[0], 
-        column[0] == THE_GEOM ? "geometry" : (options[:cartodb_types] == false) ? column[1][:db_type] : column[1][:db_type].convert_to_cartodb_type, 
-        column[0] == THE_GEOM ? "geometry" : nil, 
-        column[0] == THE_GEOM ? the_geom_type : nil
-      ].compact
-      
-      # Make sensible sorting for jamon 
-      case column[0]
-        when :cartodb_id
-          temporal_schema.insert(0,col)
-        when :created_at, :updated_at
-          temporal_schema.insert(-1,col)
-        else
-          temporal_schema.insert(1,col)
-      end
-    end
-    temporal_schema.compact
   end
  
   def add_column!(options)

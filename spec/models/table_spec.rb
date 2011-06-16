@@ -335,34 +335,6 @@ describe Table do
     ]).should be_empty
   end
 
-  # it "should import a CSV if the schema is given and is valid" do
-  #   table = new_table :name => nil
-  #   table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
-  #   table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-  #   table.save.reload
-  #   
-  #   table.rows_counted.should == 7
-  #   table.name.should == 'twitters'
-  #   row0 = table.records[:rows][0]
-  #   row0[:cartodb_id].should == 1
-  #   row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
-  #   row0[:login].should == "vzlaturistica "
-  #   row0[:country].should == " Venezuela "
-  #   row0[:followers_count].should == 211
-  # end
-  # 
-  # it "should be able to insert rows in a table imported from a CSV file" do
-  #   table = new_table :name => nil
-  #   table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
-  #   table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-  #   table.save
-  # 
-  #   lambda {
-  #     pk = table.insert_row!({:url => 'http://twitter.com/ferblape/statuses/1231231', :login => 'ferblape', :country => 'Spain', :followers_count => 33})
-  #     pk.should_not be_nil
-  #   }.should_not raise_error
-  # end
-
   it "should import file twitters.csv" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
@@ -535,15 +507,6 @@ describe Table do
     table.name.should == "vizzuality_shp"
   end
   
-  pending "should import TM_WORLD_BORDERS_SIMPL-0.3.zip" do
-    table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/TM_WORLD_BORDERS_SIMPL-0.3.zip", "application/download")
-    table.importing_encoding = 'LATIN1'
-    table.save
-
-    table.name.should == "tm_world_borders_simpl"
-  end
-  
   it "should import SHP1.zip" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/SHP1.zip", "application/download")
@@ -553,17 +516,6 @@ describe Table do
     table.name.should == "esp_adm1_shp"
   end
   
-  # FIXME
-  # it "should import whs_features_gr.csv" do
-  #   table = new_table :name => nil
-  #   table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/whs_features_gr.csv", "text/csv")
-  #   table.save
-  #   table.reload
-  #   table.name.should == 'whs_features_gr'
-  #   table.rows_counted.should == 29
-  # end
-  
-  # FIXME
   it "should import ngoaidmap_projects.csv" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngoaidmap_projects.csv", "text/csv")

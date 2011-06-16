@@ -15,7 +15,7 @@ tab "cartodb app server" do
   run "cd $CARTODB_PATH"
   run "git pull"
   run "bundle install"
-  run "bundle exec rake db:reset"
+  run "bin/rake db:reset"
   run "rails s"
 end
 

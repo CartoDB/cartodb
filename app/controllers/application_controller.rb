@@ -11,8 +11,6 @@ class ApplicationController < ActionController::Base
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound, :with => :render_404
 
-  $progress ||= {}
-
   include SslRequirement
 
   unless Rails.env.production?

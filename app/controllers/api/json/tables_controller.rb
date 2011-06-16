@@ -52,12 +52,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @table = Table.new
     @table.user_id = current_user.id
     @table.name = params[:name] if params[:name]
-    if params[:file]
-      @table.import_from_file = params[:file]
-      if $progress[params["X-Progress-ID".to_sym]].nil?
-        $progress[params["X-Progress-ID".to_sym]] = 0
-      end
-    end
+    @table.import_from_file = params[:file] if params[:file]
     @table.importing_SRID = params[:srid] || CartoDB::SRID
     @table.force_schema   = params[:schema] if params[:schema]
     @table.the_geom_type  = params[:the_geom_type].downcase if params[:the_geom_type]

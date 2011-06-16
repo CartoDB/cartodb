@@ -14,7 +14,6 @@ end
 CartoDB::Application.routes.draw do
   root :to => "home#index"
 
-  get '/progress' => 'upload#progress', :format => :json
   post '/upload' => 'upload#create', :format => :json
 
   get   '/login' => 'sessions#new', :as => :login

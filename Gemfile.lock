@@ -9,16 +9,8 @@ GIT
       sequel (~> 3.13)
 
 GIT
-  remote: https://github.com/plataformatec/capybara-zombie.git
-  revision: b794e45a96c9f1192429e01722d222d402231b9e
-  specs:
-    capybara-zombie (0.0.1)
-      capybara (~> 0.4.1)
-      childprocess (~> 0.1.7)
-      multi_json (~> 0.0.5)
-
-PATH
-  remote: vendor/cartodb-importer
+  remote: git@github.com:Vizzuality/cartodb-importer.git
+  revision: 1a7c53513a2ad3fd0934ef6ec9883c1d9546d340
   specs:
     cartodb-importer (0.0.1)
       builder
@@ -29,6 +21,15 @@ PATH
       sequel
       sequel
       spreadsheet
+
+GIT
+  remote: https://github.com/plataformatec/capybara-zombie.git
+  revision: b794e45a96c9f1192429e01722d222d402231b9e
+  specs:
+    capybara-zombie (0.0.1)
+      capybara (~> 0.4.1)
+      childprocess (~> 0.1.7)
+      multi_json (~> 0.0.5)
 
 GEM
   remote: http://rubygems.org/

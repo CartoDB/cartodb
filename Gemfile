@@ -19,7 +19,7 @@ gem "rubyzip", :require => "zip/zip"
 gem "redis"
 gem "resque"
 gem "yajl-ruby", :require => "yajl"
-gem "cartodb-importer", :path => "vendor/cartodb-importer"
+gem "cartodb-importer", :git => "git@github.com:Vizzuality/cartodb-importer.git"
 
 group :development do
   gem "capistrano"

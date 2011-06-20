@@ -13,8 +13,7 @@ class Table < Sequel::Model(:user_tables)
   set_allowed_columns(:privacy, :tags)
 
   attr_accessor :force_schema, :import_from_file,
-                :imported_table_name, :importing_SRID,
-                :importing_encoding, :temporal_the_geom_type
+                :importing_SRID, :importing_encoding, :temporal_the_geom_type
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
@@ -102,8 +101,10 @@ class Table < Sequel::Model(:user_tables)
     end
     set_trigger_update_updated_at
     @force_schema = nil
-    $tables_metadata.hset key, "user_id", user_id
-    $tables_metadata.hset key, "privacy", PRIVATE
+    $tables_metadata.multi do 
+      $tables_metadata.hset key, "user_id", user_id
+      $tables_metadata.hset key, "privacy", PRIVATE
+    end
   end
 
   def before_destroy
@@ -419,18 +420,15 @@ TRIGGER
   end
   
   def the_geom_type=(value)
-    the_geom_type_value = if value == "point"
-      value
-    elsif value == "line"
-      "multilinestring"
-    else
-      unless value =~ /^multi/
-        "multi#{value}"
+    the_geom_type_value = case value.downcase
+      when "point"
+        "point"
+      when "line"
+        "multilinestring"
       else
-        value
-      end
+        value !~ /^multi/ ? "multi#{value}" : value.downcase
     end
-    raise CartoDB::InvalidGeomType unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type_value.downcase)
+    raise CartoDB::InvalidGeomType unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type_value)
     if key.blank?
       self.temporal_the_geom_type = the_geom_type_value
     else

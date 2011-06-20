@@ -38,12 +38,21 @@ describe Table do
     user.in_database do |user_database|
       user_database.table_exists?(table.name.to_sym).should be_true
     end
+    
     table.name = 'Wadus table #23'
     table.save
     table.reload
     table.name.should == "Wadus table #23".sanitize
     user.in_database do |user_database|
       user_database.table_exists?('wadus_table'.to_sym).should be_false
+      user_database.table_exists?('wadus_table_23'.to_sym).should be_true
+    end
+    
+    table.name = ''
+    table.save
+    table.reload
+    table.name.should == "Wadus table #23".sanitize
+    user.in_database do |user_database|
       user_database.table_exists?('wadus_table_23'.to_sym).should be_true
     end
   end
@@ -909,6 +918,44 @@ describe Table do
     lambda {
       Table.find_by_identifier(666, table.id)
     }.should raise_error
+  end
+  
+  it "should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception" do
+    user = create_user
+    table = new_table :name => 'table1'
+    table.user_id = user.id
+    table.save
+    pk = table.insert_row!({:name => "name #1", :description => "description #1"})
+    
+    Table.any_instance.stubs(:the_geom_type=).raises(CartoDB::InvalidGeomType)
+    
+    table = new_table
+    table.user_id = user.id
+    table.name = "table1"
+    lambda {
+      table.save
+    }.should raise_error(CartoDB::InvalidGeomType)
+    
+    table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
+  end
+  
+  it "should not remove an existing table when the creation of a new table from a file with the same name has raised an exception" do
+    user = create_user
+    table = new_table :name => 'table1'
+    table.user_id = user.id
+    table.save
+    pk = table.insert_row!({:name => "name #1", :description => "description #1"})
+    
+    Table.any_instance.stubs(:schema).raises(CartoDB::QueryNotAllowed)
+    
+    table = new_table
+    table.user_id = user.id
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/reserved_columns.csv", "text/csv")
+    lambda {
+      table.save
+    }.should raise_error(CartoDB::QueryNotAllowed)
+    
+    table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
   end
   
 end

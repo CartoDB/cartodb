@@ -454,11 +454,13 @@
     ///////////////////////////////////////
     //  Application tabs menu            //
     ///////////////////////////////////////
+
     $('section.subheader ul.tab_menu li a').click(function(ev){
       stopPropagation(ev);
       closeOutTableWindows();
       if (!$(this).parent().hasClass('selected')) {
         if ($(this).text()=="Table") {
+					window.location.hash = "#table";
           $('section.subheader ul.tab_menu li').removeClass('selected');
           $(this).parent().addClass('selected');
           $(document).trigger('click');
@@ -467,6 +469,7 @@
           $('div.table_position').show();
           hideMap();
         } else {
+					window.location.hash = "#map";
           if (geolocating) {
             $('p.geo').trigger('click');
           } else {
@@ -480,8 +483,7 @@
         }
       }
     });
-    
-    
+
     
     ///////////////////////////////////////////////
     // REMOVE WHEN FINISH WITH MAP CUSTOMIZATION //

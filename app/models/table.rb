@@ -121,7 +121,7 @@ class Table < Sequel::Model(:user_tables)
   ## End of Callbacks
   
   def name=(value)
-    return if value == self[:name]
+    return if value == self[:name] || value.blank?
     new_name = get_valid_name(value)
     unless new?
       owner.in_database.rename_table name, new_name

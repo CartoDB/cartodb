@@ -18,7 +18,6 @@ class Table < Sequel::Model(:user_tables)
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
-  SKIP_SCHEMA_COLUMNS = [THE_GEOM_WEBMERCATOR, :cartodb_id, :created_at, :updated_at]
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
 
   ## Callbacks

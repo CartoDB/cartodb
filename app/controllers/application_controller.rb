@@ -84,6 +84,7 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+  
   def login_required
     authenticated? || not_authorized
   end
@@ -149,13 +150,10 @@ class ApplicationController < ActionController::Base
       raise NoHTML5Compliant
     end
     
-    puts controller_name
-    
     # login or developer ie ready
     if controller_name == "home" || controller_name == "invitations" || controller_name == "sessions" && !user_agent.match(/msie [0-6]/)
       return true
     end
-    
     
     #IE 
     # mozilla/4.0 (compatible; msie 8.0; windows nt 6.1; wow64; trident/4.0; slcc2; .net clr 2.0.50727; .net clr 3.5.30729; .net clr 3.0.30729; media center pc 6.0)
@@ -168,7 +166,6 @@ class ApplicationController < ActionController::Base
     if user_agent.match(/chrome\/\d[0-1]/)
       raise NoHTML5Compliant
     end
-    
     
     #SAFARI
     # mozilla/5.0 (macintosh; u; intel mac os x 10_6_7; en-us) applewebkit/533.21.1 (khtml, like gecko) version/5.0.5 safari/533.21.1
@@ -188,7 +185,6 @@ class ApplicationController < ActionController::Base
       raise NoHTML5Compliant
     end
     
-    
     #IPHONE IPAD IPOD
     # Mozilla/5.0 (iPhone; U; XXXXX like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/241 Safari/419.3
     # Checked in safari
@@ -196,11 +192,6 @@ class ApplicationController < ActionController::Base
     #ANDROID
     # Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3
     # Checked in safari
-    
-    
-    
-    
-
   end
   
 end

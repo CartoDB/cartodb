@@ -12,19 +12,39 @@
         // "/javascripts/admin/maps/map_functions.js",
         // "/javascripts/admin/maps/CartoMarker.js",
         // "/javascripts/admin/maps/CartoInfowindow.js",
-        "http://maps.google.com/maps/api/js?sensor=true&callback=initMap");
+        "http://maps.google.com/maps/api/js?sensor=true&callback=initApp"
+			);
         
-        $("table#carto_table").cDBtable(
-          'start',{
-            getDataUrl: '/v1/tables/',
-            resultsPerPage: 20,
-            reuseResults: 600,
-            total: 5000,
-            query: "SELECT * FROM "+ table_name,
-            order_by: 'cartodb_id',
-            mode: 'asc'
-          }
-        );
-        
-        requests_queue = new loaderQueue();
+
     });
+
+		function initApp() {
+			// Inits loader queue
+			requests_queue = new loaderQueue();
+			
+			// Inits map
+			initMap();
+			
+			// Inits carto table
+			$("table#carto_table").cDBtable(
+        'start',{
+          getDataUrl: '/v1/tables/',
+          resultsPerPage: 20,
+          reuseResults: 600,
+          total: 5000,
+          query: "SELECT * FROM "+ table_name,
+          order_by: 'cartodb_id',
+          mode: 'asc'
+        }
+      );
+
+			// Manage tabs with url hash
+			var hash = window.location.hash;
+			if (hash == "#map") {
+				$('section.subheader ul.tab_menu li a:contains("Map")').click();
+				setTimeout(function(){$('body').trigger('enabled',[false])},500);
+			} else {
+				window.location.hash = "#table";
+			}
+      
+		}

@@ -13,4 +13,5 @@
     loadingMessages["delete_row"] = "row deleted";
     loadingMessages["add_row"] = "row added";
     loadingMessages["change_latlng"] = "position updated";
+    loadingMessages["add_occ"] = "point added";
     

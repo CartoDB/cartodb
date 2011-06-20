@@ -12,9 +12,9 @@
         '</div>'+
         '<div id="map_tools">'+
           '<ul>'+
-            '<li><a class="select">select</a></li>'+
-            '<li><a class="add">add</a></li>'+
-            '<li><a class="select_area">select_area</a></li>'+
+            '<li><a onclick="selectStatus(\'select\')" class="select">select</a></li>'+
+            '<li><a onclick="selectStatus(\'add\')" class="add">add</a></li>'+
+            '<li><a onclick="selectStatus(\'select_area\')" class="select_area">select_area</a></li>'+
           '</ul>'+
           '<div class="tooltip">'+
             '<p>select</p>'+

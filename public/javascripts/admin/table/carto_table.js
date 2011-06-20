@@ -213,7 +213,7 @@
         }
         
         // Save column headers
-        headers[element[0]] = element[3] || element[1];
+     		headers[element[0]] = element[3] || element[1];
         
         // Playing with templates (table_templates.js - Mustache.js)
         thead += Mustache.to_html(th,{
@@ -261,7 +261,7 @@
           thead += '<th>'+
                      '<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
                        '<span class="long">'+
-                         '<h3 class="'+((i=="cartodb_id" || i=="created_at" || i=="updated_at")?'static':'')+'">'+i+'</h3>'+
+                      '<h3 class="'+((i=="cartodb_id" || i=="created_at" ||  i=="updated_at")?'static':'')+'">'+i+'</h3>'+
                        '</span>'+
                      '</div>'+
                    '</th>';
@@ -312,7 +312,7 @@
             },
             cartodb_id: element['cartodb_id'],
             is_cartodb_id:(j=="cartodb_id")?true:false,
-            allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
+         allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
             cellsize: cell_size,
             column: j
           });
@@ -363,7 +363,7 @@
 
         tbody += '<tr><td class="first"><div></div></td>';
     		for(var j in element){
-    			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
+    tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
     		}
         
         var start = tbody.lastIndexOf('"width:');
@@ -758,7 +758,7 @@
       } 
       var end = total <= ((actualPage+1)*defaults.resultsPerPage);
        
-      if (end || $('div.empty_table').length>0) {
+   		if (end || $('div.empty_table').length>0) {
         if ($('div.empty_table').length>0) {
           $('div.empty_table').remove();
           $('span.full_table').remove();
@@ -824,7 +824,7 @@
                     var text = '';
                     if (data[i][0]=="cartodb_id") {
                       text = row_id;
-                    } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
+                 } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
                       var date = new Date();
                       var test = new Date();
                       var offset = -test.getTimezoneOffset()/60;
@@ -833,7 +833,7 @@
                     } else {
                       text = '';
                     }
-                    row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+text+'</div></td>';
+                 		row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+text+'</div></td>';
                   }
               
                   var start = row.lastIndexOf('"width:');
@@ -904,7 +904,7 @@
         if ($(document).scrollTop()>58) {
           $('section.subheader').css('top','-3px');
           $(table).children('thead').css('top','99px');
-          if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
+       if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
             $('div.general_options').addClass('end');
             $('div.sql_console').addClass('end');
           } else {
@@ -944,7 +944,7 @@
       });
 
       $('div.table_position').scroll(function(ev){
-        if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
+     if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
           $('div.general_options').addClass('end');
           $('div.sql_console').addClass('end');
         } else {
@@ -1032,7 +1032,7 @@
       ///////////////////////////////////////
       $(document).dblclick(function(event){
         if (enabled && !query_mode) {
-          var target = event.target || event.srcElement;
+       var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
           if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" &&
@@ -1161,11 +1161,11 @@
       ///////////////////////////////////////
       $(document).click(function(event){
         if (enabled) {
-          var target = event.target || event.srcElement;
+       		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
           //Clicking in first column element + Key
-          if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
+       		if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
             methods.closeTablePopups();
             
             if ($(target).closest('tr').hasClass('selecting')) {
@@ -1245,7 +1245,7 @@
       ///////////////////////////////////////
       $(document).mousedown(function(event){
         if (enabled) {
-          var target = event.target || event.srcElement;
+       		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
       
           if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
@@ -1281,7 +1281,7 @@
           }
       
           $(document).mousemove(function(event){
-            var target = event.target || event.srcElement;
+         		var target = event.target || event.srcElement;
             var targetElement = target.nodeName.toLowerCase();
         
             if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {  
@@ -1337,7 +1337,7 @@
       });
       $(document).mouseup(function(event){
         if (enabled) {
-          var target = event.target || event.srcElement;
+       var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
       
           if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
@@ -1414,7 +1414,7 @@
           }
         } else if (type=="number") {
           if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
-            var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
+         var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
             var value_ = $("div.edit_cell textarea").val();
             if (pattern.test(value_)) {
               $('div.edit_cell textarea').removeClass('error');
@@ -1435,7 +1435,7 @@
           if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=new_value) {
             var errors = '';
             //TODO - Check pattern numbers!
-            var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
+         var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
             if (!pattern.test($('input#longitude_value').val())) {
               $('input#longitude_value').addClass('error');
               errors = 'lon';
@@ -1555,7 +1555,7 @@
       });
 
       $("div.edit_cell div.date div.hour input").livequery('keyup',function(){
-          var pattern = /([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]/;
+       var pattern = /([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]/;
           if (pattern.test($(this).val())) {
             $(this).removeClass('error');
           } else {
@@ -1905,7 +1905,7 @@
                }
 
                for (var i = 0; i<data.length; i++) {
-                 if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at" && (data[i][1]=="number" || data[i][1]=="string")) {
+              if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at" && (data[i][1]=="number" || data[i][1]=="string")) {
                    if (data[i][2]==undefined) {
                      $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                    } else {
@@ -2394,14 +2394,14 @@
       var table_width = $(table).width();
       
       
-      if (window_width==table_width || $('table tbody').length==0) {
+   if (window_width==table_width || $('table tbody').length==0) {
         $('span.paginate a#previousButton').addClass('disabled');
         $('span.paginate a#nextButton').addClass('disabled');
       } else {
         if (scrollable<1) {
           $('span.paginate a#previousButton').addClass('disabled');
           $('span.paginate a#nextButton').removeClass('disabled');
-        } else if ((window_width+scrollable)==$(table).width() || ($(table).width()-window_width-scrollable)<(last_cell_size+28)) {
+     } else if ((window_width+scrollable)==$(table).width() || ($(table).width()-window_width-scrollable)<(last_cell_size+28)) {
           $('span.paginate a#nextButton').addClass('disabled');
           $('span.paginate a#previousButton').removeClass('disabled');
         } else {
@@ -2661,7 +2661,7 @@
 
     if (methods[method]) {
       return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
-    } else if ( typeof method === 'object' || ! method ) {
+ } else if ( typeof method === 'object' || ! method ) {
       return methods.init.apply( this, arguments );
     } else {
       return methods.init.apply( this, arguments );

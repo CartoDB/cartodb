@@ -81,7 +81,6 @@ class Table < Sequel::Model(:user_tables)
   rescue => e
     unless self.name.blank?
       $tables_metadata.del key
-      # TODO: make it more transactional
       owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
     end
     raise e
@@ -90,15 +89,11 @@ class Table < Sequel::Model(:user_tables)
   def after_save
     super
     manage_tags
-    # ADD Redis stuff here
   end
 
   def after_create
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
-    unless private?
-      owner.in_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
-    end
     set_trigger_update_updated_at
     @force_schema = nil
     $tables_metadata.multi do 
@@ -150,14 +145,14 @@ class Table < Sequel::Model(:user_tables)
   def privacy=(value)
     if value == "PRIVATE" || value == PRIVATE || value == PRIVATE.to_s
       self[:privacy] = PRIVATE
-      $tables_metadata.hset key, "privacy", PRIVATE unless new?
-      if !new?
+      unless new?
         owner.in_database.run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
+        $tables_metadata.hset key, "privacy", PRIVATE
       end
     elsif value == "PUBLIC" || value == PUBLIC || value == PUBLIC.to_s
       self[:privacy] = PUBLIC
-      $tables_metadata.hset key, "privacy", PUBLIC unless new?
-      if !new?
+      unless new?
+        $tables_metadata.hset key, "privacy", PUBLIC
         owner.in_database.run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
       end
     end
@@ -374,17 +369,6 @@ class Table < Sequel::Model(:user_tables)
     owner.run_query(query)
   end
 
-  def constraints
-    owner.in_database do |user_database|
-      table_constraints_sql = <<-SQL
-        SELECT constraint_name
-        FROM information_schema.table_constraints
-        WHERE table_name = ? AND constraint_name = ?
-      SQL
-      user_database.fetch(table_constraints_sql, name, 'enforce_srid_the_geom').all
-    end
-  end
-
   def georeference_from!(options = {})
     if !options[:latitude_column].blank? && !options[:longitude_column].blank?
       set_the_geom_column!("point")
@@ -544,12 +528,6 @@ TRIGGER
       end
     else
       return raw_new_name
-    end
-  end
-
-  def delete_constraints
-    owner.in_database.alter_table(self.name.to_sym) do
-      drop_constraint(:enforce_srid_the_geom)
     end
   end
 

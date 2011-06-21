@@ -19,6 +19,7 @@
 					
 	  var me = this;
 		var num = 0;
+		
 
 	  var div = this.div_;
 	  if (!div) {
@@ -73,12 +74,15 @@
 	
 	
 	CartoInfowindow.prototype.open = function(marker_id){
+	  
+	  console.log(carto_map.points_[1]);
+	  
 	  if (this.div_) {
 	    var div = this.div_;
-	    this.latlng_ = new google.maps.LatLng(vector_markers[marker_id].data.lat_,vector_markers[marker_id].data.lon_);
+	    this.latlng_ = new google.maps.LatLng(carto_map.points_[marker_id].lat_,carto_map.points_[marker_id].lon_);
 	    $(div).find('div.top').html('');
 	    
-	    var marker_data = vector_markers[marker_id].data;
+	    var marker_data = carto_map.points_[marker_id];
 	    
 	    _.each(marker_data,function(value,label){
 	      if (label != 'created_at' && label != 'updated_at' && label != 'the_geom' && label != 'the_geom_webmercator') {

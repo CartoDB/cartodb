@@ -1,8 +1,50 @@
+   
+    /* Function to create all the map DOM elements */
 
-    function createHeaderElements() {
+    function createMapElements() {
       
       ///////////////////////////////////////
-      //  Map elements                     //
+      //  Map header elements              //
+      ///////////////////////////////////////
+      $('div.map_window').append(
+        '<div class="map_curtain"></div>'+
+        '<div class="map_header">'+
+          '<ul>'+
+            '<li class="first">'+
+              '<h4>Map type</h4>'+
+              '<p>Roadmap</p>'+
+            '</li>'+
+            '<li>'+
+              '<h4>Visualization type</h4>'+
+              '<p>Features visualization</p>'+
+            '</li>'+
+            '<li>'+
+              '<h4>Markers customization <a href="#" style="text-decoration:underline;" id="carto_css">css</a></h4>'+
+              '<p>Customized dots</p>'+
+            '</li>'+
+          '</ul>'+
+        '</div>'+
+        '<p class="georeferencing"></p>'+
+        '<div id="map"></div>'+
+        
+        '<div class="css_editor">'+
+          '<a class="close" href="#close">close</a>'+
+          '<div class="inner_">'+
+            '<span class="top">'+
+              '<h3>Edit your tiles</h3>'+
+              '<textarea id="css_editor">#'+ table_name +'{\n marker-fill: #FF6600;\n marker-opacity: 1;\n marker-width: 8;\n marker-line-color: white;\n marker-line-width: 3;\n marker-line-opacity: 0.9;\n marker-placement: point;\n marker-type: ellipse;\n marker-allow-overlap: true;\n}</textarea>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#try" class="try_css">Try CSS</a>'+
+              '<a href="#cancel" class="cancel">Cancel</a>'+
+            '</span>'+
+          '</div>'+
+        '</div>'
+      );
+      
+      
+      ///////////////////////////////////////
+      //  Map control elements             //
       ///////////////////////////////////////
       $('div.map_window').append(
         '<div id="zoom_control">'+
@@ -10,66 +52,10 @@
           '<a href="#zoom_out" class="zoom_out"></a>'+
           '<span class="slider"></span>'+
         '</div>'+
-        '<p class="loading">Loading</p>'
+        '<div class="loading">'+
+          '<span class="loader"></span>'+
+        '</div>'
       );
-      
-      //Move terms and conditions
-      setTimeout(function(){$('div#map').find('a:contains("Terms of Use")').closest('div').parent().removeAttr('class').addClass('terms');},1100)
-      
-      
-      // Map tools
-      $('div.general_options ul li.map a').hover(function(){
-        // Change text
-        var text = $(this).text().replace('_',' ');
-        $('div.general_options div.tooltip p').text(text);
-        // Check position
-        var right = -($(this).offset().left-$(window).width());
-        var offset = $('div.general_options div.tooltip').width()/2;
-        // near right edge
-        if (right-13-offset<0) {
-          right = 16 + offset;
-          $('div.general_options div.tooltip span.arrow').css({left:'83%'});
-        } else {
-          $('div.general_options div.tooltip span.arrow').css({left:'50%'});
-        }
-        $('div.general_options div.tooltip').css({right:right-13-offset+'px'});        
-        // Show
-        $('div.general_options div.tooltip').show();
-      },function(){
-        $('div.general_options div.tooltip').hide();
-      });
-      
-      
-      //Zooms
-      $('a.zoom_in').click(function(ev){
-        stopPropagation(ev);
-        var new_zoom = map.getZoom()+1;
-        if (new_zoom<=20) {
-          map.setZoom(new_zoom);
-          $('span.slider').slider('value',new_zoom);
-        }
-      });
-      $('a.zoom_out').click(function(ev){
-        stopPropagation(ev);
-        var new_zoom = map.getZoom()-1;
-        if (new_zoom>=0) {
-          map.setZoom(new_zoom);
-          $('span.slider').slider('value',new_zoom);
-        }
-      });
-      
-      // Zoom slider
-      $('span.slider').slider({
-        orientation: 'vertical',
-        min:0,
-        max:20,
-        value:1,
-        change: function(event,ui){
-          map.setZoom(ui.value);
-        }
-      });
     }
 
-    
-    
     

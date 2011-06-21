@@ -12,12 +12,12 @@
     $('body').append(
       '<div class="general_options table">'+
         '<ul>'+
-          '<li><a class="sql" href="#open_sql">SQL</a></li>'+
+          '<li class="all"><a class="sql" href="#open_sql">SQL</a></li>'+
           '<li class="table"><a href="#add_row" class="add_row">Add row</a></li>'+
           '<li class="table"><a href="#add_column" class="add_column">Add column</a></li>'+
-          '<li class="map"><a onclick="selectStatus(\'select\')" class="select">select</a></li>'+
-          '<li class="map"><a onclick="selectStatus(\'add\')" class="add">add</a></li>'+
-          '<li class="map"><a onclick="selectStatus(\'select_area\')" class="select_area">select_area</a></li>'+
+          '<li class="selected map"><a class="select">select</a></li>'+
+          '<li class="map"><a class="add">add</a></li>'+
+          '<li class="map"><a class="select_area">select_area</a></li>'+
         '</ul>'+
         
         '<div class="tooltip">'+
@@ -508,6 +508,7 @@
           $(document).trigger('click');
           $('body').trigger('refresh');
           $('body').trigger('enabled',[true]);
+          $('div.general_options').removeClass('map').addClass('table');
           $('div.table_position').show();
           hideMap();
         } else {
@@ -516,7 +517,8 @@
             $('p.geo').trigger('click');
           } else {
             $('section.subheader ul.tab_menu li').removeClass('selected');
-            $(this).parent().addClass('selected')
+            $('div.general_options').removeClass('table end').addClass('map');
+            $(this).parent().addClass('selected');
             $('div.table_position').hide();
             $(document).trigger('click');
             $('body').trigger('enabled',[false]);

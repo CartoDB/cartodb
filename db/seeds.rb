@@ -39,7 +39,7 @@ if Rails.env.development?
   table.save
 
   user.in_database do |user_database|
-    200.times do
+    1000.times do
       user_database.run("INSERT INTO #{table.name}  (name, surname, address, city, country , nif , age , twitter_account , postal_code) values ('#{String.random(15)}','#{String.random(15)}','#{String.random(30)}','#{String.random(10)}','#{String.random(20)}','#{String.random(20)}',40.#{rand(10000)},'#{String.random(3)}',40.#{rand(10000)})" )
     end
   end

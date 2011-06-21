@@ -13,10 +13,11 @@
 
 
 //Elements out of the plugin (Be careful with this!)
-// - Blue header
+// - header
 // - div.table_position
-// - section subheader
-// - mamufas
+// - section div.subheader
+// - div.mamufas
+// - div.general_options
 
 // We are playing with these containers but they don't belong to the plugin
 
@@ -874,7 +875,7 @@
         if ($(document).scrollTop()>58) {
           $('section.subheader').css('top','-3px');
           $(table).children('thead').css('top','99px');
-       if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
+          if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && $('div.table_position').scrollLeft()>0) {
             $('div.general_options').addClass('end');
             $('div.sql_console').addClass('end');
           } else {
@@ -914,7 +915,7 @@
       });
 
       $('div.table_position').scroll(function(ev){
-     if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height()) {
+        if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && $('div.table_position').scrollLeft()>0) {
           $('div.general_options').addClass('end');
           $('div.sql_console').addClass('end');
         } else {
@@ -2550,9 +2551,13 @@
     refreshTable: function(position) {
       loading = true;
       if (position!='') {
+        // Reset pages position
         minPage = 0;
         maxPage = -1;
       } else {
+        //Hide scroll loaders
+        $('div.loading_previous').hide();
+        $('div.loading_next').hide();
         previous_scroll = $(document).scrollTop();
       }
       $(table).children('thead').remove();

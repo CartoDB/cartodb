@@ -15,7 +15,7 @@ div.map_window div#zoom_control .ui-slider .ui-slider-handle { position: absolut
 div.map_window div#zoom_control .ui-slider-vertical .ui-slider-handle { left:-2px; margin-left:0; margin-bottom:-.6em; }
 div.map_window div#zoom_control .ui-slider .ui-state-hover {cursor:pointer; background-image:-moz-linear-gradient(100% 100% 90deg, #C3C3C3, #ffffff); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#C3C3C3), to(#ffffff));}
 /*map tools*/
-div.terms {position:absolute; bottom:3px!important; right:110px!important;}
+div.terms {position:absolute; bottom:5px!important; right:140px!important;}
 div.map_window div#map_tools {position:absolute; bottom:0; right:0; left:0; height:2px; width:100%; background:#282F49; z-index:10;}
 div.map_window div#map_tools ul {position:absolute; bottom:2px; right:0; width:auto; height:38px; padding:0 0 0 7px; overflow:hidden; -webkit-border-top-left-radius: 5px; -moz-border-radius-topleft: 5px; border-top-left-radius: 5px; background:#282F49;}
 div.map_window div#map_tools ul li {display:inline-block; width:25px; height:25px; margin:8px 5px 0 0;}
@@ -104,6 +104,12 @@ div.map_window p.georeferencing a {color:white; text-decoration:underline;}
 div.map_window p.loading {position:absolute; display:none; top:70px; left:50%; margin:0 0 0 -47px; padding:5px 30px 5px 10px; background:url('/images/admin/others/activity_indicator.gif') no-repeat 68px 5px rgba(0,0,0,0.8);
  -wekit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; font:normal 15px Arial; color:white; z-index:10;}
 
+
+/* LOADING WINDOW */
+div.map_window div.loading {position:absolute; display:none; top:61px; left:0; right:0; bottom:0; width:100%; background:rgba(0,0,0,0.5); z-index:10;}
+div.map_window div.loading span.loader {position:absolute; top:50%; left:50%; width:50px; height:50px; margin:-25px 0 0 -25px; border-radius:50px; -webkit-border-radius:50px; -moz-border-radius:50px; 
+  background:url('/images/admin/map/loader.gif') no-repeat center center rgba(0,0,0,0.6);}
+  
 
 /* CSS EDITOR */
 div.map_window div.css_editor {position:absolute; display:none; top:50%; left:50%; width:500px; height:400px; margin:-200px 0 0 -250px; padding:8px; background:#e7f2e4; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 10px 3px #666666; box-shadow:0 0 10px 3px #666666;

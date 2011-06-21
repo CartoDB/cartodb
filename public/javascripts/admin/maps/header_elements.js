@@ -14,7 +14,7 @@
             '<li class="first">'+
               '<h4>Map type</h4>'+
               '<p>Roadmap</p>'+
-              '<a class="open" href="#open_map_type">open</a>'+
+              // '<a class="open" href="#open_map_type">open</a>'+
               // '<span >'+
               //   '<ul>'+
               //     '<li class="selected"><a href="#roadmap">Roadmap</a></li>'+

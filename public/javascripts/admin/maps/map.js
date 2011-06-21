@@ -4,6 +4,8 @@
 	var bounds;
 	var map_status = 'select';
 
+  /* map objects */
+  var infowindow,tooltip;
 
   function initMap() {
     createHeaderElements();  
@@ -45,8 +47,8 @@
 			// Start map
 			startMap();
 			
-			var tooltip = new CartoTooltip(new google.maps.LatLng(43,-3),1,map);
-			var infowindow = new CartoInfowindow(new google.maps.LatLng(43,-3),1,null,map);
+			tooltip = new CartoTooltip(new google.maps.LatLng(43,-3),1,map);
+			infowindow = new CartoInfowindow(new google.maps.LatLng(-180.00,-180.00),null,map);
 		});
   }
 

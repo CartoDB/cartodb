@@ -223,6 +223,12 @@
 				onMoveOccurrence(ev.latLng,cartodb_id);
 			});
 			
+			google.maps.event.addListener(marker,'click',function(ev){
+			  if (map_status=="select") {
+			    infowindow.open(marker.data.cartodb_id);
+			  }
+			});
+			
 			return marker;
 		}
 

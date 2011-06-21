@@ -40,7 +40,6 @@
   var last_cell_size = 100;
 
   var query_mode = false;
-  var editor;
   var enabled = true;
   
   var methods = {
@@ -453,28 +452,7 @@
       '</div>');
 
 
-      //General options
-      $(table).parent().append(
-        '<div class="general_options">'+
-          '<ul>'+
-            '<li><a class="sql" href="#open_sql"><span>SQL</span></a></li>'+
-            '<li><a href="#add_row" class="add_row"><span>Add row</span></a></li>'+
-            '<li><a href="#add_column" class="add_column"><span>Add column</span></a></li>'+
-            '<li class="other"><a href="#"><span class="dropdown">Other queries (2)</span></a></li>'+
-          '</ul>'+
-          //SQL Console
-          '<div class="sql_console">'+
-            '<span>'+
-              '<h3> </h3>'+ //<a class="get_api_call" href="#get_api_call">GET API CALL</a>
-              '<a href="#close_this_view" class="close">close this view</a>'+
-            '</span>'+
-            '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
-            '<span>'+
-              '<a class="try_query">Try query</a>'+
-              '<p class="errors">Your query is not correct, try again with another ;)</p>'+
-            '</span>'+
-          '</div>'+
-        '</div>');
+
 
       //Edit caption
       $(table).parent().append(
@@ -715,14 +693,6 @@
           '</div>'+
         '</div>'
         );
-        
-        
-      editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
-        lineNumbers: false,
-        mode: "text/x-plsql"
-      });
-
-
     },
 
 
@@ -2292,27 +2262,33 @@
       ///////////////////////////////////////
       // //SQL Editor
       $('div.general_options div.sql_console span a.close').livequery('click',function(ev){
-        stopPropagation(ev);
-        methods.closeTablePopups();
-        if (query_mode) {
-          query_mode = false;
-          methods.refreshTable('');
+        if (enabled) {
+          stopPropagation(ev);
+          methods.closeTablePopups();
+          if (query_mode) {
+            query_mode = false;
+            methods.refreshTable('');
+          }
+          $('div.general_options div.sql_console').hide();
+          $('div.general_options ul').removeClass('sql');
         }
-        $('div.general_options div.sql_console').hide();
-        $('div.general_options ul').removeClass('sql');
       });
       // General options
       $('div.general_options ul li a.sql').livequery('click',function(ev){
-        stopPropagation(ev);
-        methods.closeTablePopups();
-
-        $('div.general_options div.sql_console').show();
-        $('div.general_options ul').addClass('sql');
-        editor.focus();
+        if (enabled) {
+          stopPropagation(ev);
+          methods.closeTablePopups();
+          $('div.general_options div.sql_console').show();
+          $('div.general_options ul').addClass('sql');
+          editor.focus();
+        } 
       });
       $('div.general_options a.try_query').livequery('click',function(ev){
-        query_mode = true;
-        methods.refreshTable(0);
+        if (enabled) {
+          stopPropagation(ev);
+          query_mode = true;
+          methods.refreshTable(0);
+        }
       });
 
 

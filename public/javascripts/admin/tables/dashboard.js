@@ -28,13 +28,14 @@
       });
 
       //Close all modal windows
-      $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_settings, div.mamufas a.close_create').click(function(ev){
+      $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_settings, div.mamufas a.close_create, div.mamufas a.close').click(function(ev){
         ev.preventDefault();
         ev.stopPropagation();
         $('div.mamufas').fadeOut('fast',function(){
           $('div.mamufas div.settings_window').hide();
           $('div.mamufas div.delete_window').hide();
           $('div.mamufas div.create_window').hide();
+          $('div.mamufas div.export_window').hide();
         });
         unbindESC();
       });
@@ -68,6 +69,36 @@
           }
         });
       });
+      
+      
+      
+      //Export window
+      $('a.export_data').click(function(ev){
+        stopPropagation(ev);
+        if ($('div.mamufas').is(':visible') && $('div.delete_window').is(':visible')) {
+          $('div.mamufas div.export_window form').attr('action','/tables/'+$('div.mamufas a.confirm_delete').attr('table-name'));
+          $('div.mamufas div.delete_window').hide();
+          $('div.mamufas div.export_window').show();
+        } else {
+          $('div.mamufas div.export_window').show();
+          $('div.mamufas').fadeIn('fast');
+          bindESC();
+        }
+      });
+      
+      $('div.mamufas div.export_window form a.option').click(function(ev){
+        stopPropagation(ev);
+        var format = $(this).attr('rel');
+        $('div.mamufas div.export_window form ul li').removeClass('selected');
+        $(this).parent().addClass('selected');
+        $('#export_format').val(format);
+      });
+      
+      $('div.mamufas div.export_window form').submit(function(ev){
+        bindESC();
+      });
+      
+      $('#export_format').val($('div.mamufas div.export_window form ul li.selected a.option').attr('rel'));
     });
 
 
@@ -78,6 +109,7 @@
             $('div.mamufas div.settings_window').hide();
             $('div.mamufas div.delete_window').hide();
             $('div.mamufas div.create_window').hide();
+            $('div.mamufas div.export_window').hide();
           });
         }
       });

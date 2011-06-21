@@ -1,8 +1,50 @@
 
   //SUBHEADER EVENTS AND FLOATING WINDOWS+//
-
+  
+  var editor;
+  
 
   head(function(){
+    
+    ///////////////////////////////////////
+    //  Bottom bar with tools (SQL,...)  //
+    ///////////////////////////////////////
+    $('body').append(
+      '<div class="general_options table">'+
+        '<ul>'+
+          '<li><a class="sql" href="#open_sql">SQL</a></li>'+
+          '<li class="table"><a href="#add_row" class="add_row">Add row</a></li>'+
+          '<li class="table"><a href="#add_column" class="add_column">Add column</a></li>'+
+          '<li class="map"><a onclick="selectStatus(\'select\')" class="select">select</a></li>'+
+          '<li class="map"><a onclick="selectStatus(\'add\')" class="add">add</a></li>'+
+          '<li class="map"><a onclick="selectStatus(\'select_area\')" class="select_area">select_area</a></li>'+
+        '</ul>'+
+        
+        '<div class="tooltip">'+
+          '<p>select</p>'+
+          '<span class="arrow"></span>'+
+        '</div>'+
+        
+        //SQL Console
+        '<div class="sql_console">'+
+          '<span>'+
+            '<h3> </h3>'+ //<a class="get_api_call" href="#get_api_call">GET API CALL</a>
+            '<a href="#close_this_view" class="close">close this view</a>'+
+          '</span>'+
+          '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
+          '<span>'+
+            '<a class="try_query">Try query</a>'+
+            '<p class="errors">Your query is not correct, try again with another ;)</p>'+
+          '</span>'+
+        '</div>'+
+      '</div>');
+    
+    // Editor common to table and map
+    editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
+      lineNumbers: false,
+      mode: "text/x-plsql"
+    });
+    
 
     ///////////////////////////////////////
     //  Mamufas addition                 //
@@ -483,13 +525,7 @@
         }
       }
     });
-
-    
-    ///////////////////////////////////////////////
-    // REMOVE WHEN FINISH WITH MAP CUSTOMIZATION //
-    ///////////////////////////////////////////////
-    //setTimeout(function(){$("section.subheader ul.tab_menu li a:contains('Map')").trigger('click');},500);
-    
+        
   });
 
 

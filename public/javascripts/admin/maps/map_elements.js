@@ -10,17 +10,6 @@
           '<a href="#zoom_out" class="zoom_out"></a>'+
           '<span class="slider"></span>'+
         '</div>'+
-        '<div id="map_tools">'+
-          '<ul>'+
-            '<li><a onclick="selectStatus(\'select\')" class="select">select</a></li>'+
-            '<li><a onclick="selectStatus(\'add\')" class="add">add</a></li>'+
-            '<li><a onclick="selectStatus(\'select_area\')" class="select_area">select_area</a></li>'+
-          '</ul>'+
-          '<div class="tooltip">'+
-            '<p>select</p>'+
-            '<span class="arrow"></span>'+
-          '</div>'+
-        '</div>'+
         '<p class="loading">Loading</p>'
       );
       
@@ -29,25 +18,25 @@
       
       
       // Map tools
-      $('div#map_tools a').hover(function(){
+      $('div.general_options ul li.map a').hover(function(){
         // Change text
         var text = $(this).text().replace('_',' ');
-        $('div#map_tools div.tooltip p').text(text);
+        $('div.general_options div.tooltip p').text(text);
         // Check position
         var right = -($(this).offset().left-$(window).width());
-        var offset = $('div#map_tools div.tooltip').width()/2;
+        var offset = $('div.general_options div.tooltip').width()/2;
         // near right edge
         if (right-13-offset<0) {
           right = 16 + offset;
-          $('div#map_tools div.tooltip span.arrow').css({left:'83%'});
+          $('div.general_options div.tooltip span.arrow').css({left:'83%'});
         } else {
-          $('div#map_tools div.tooltip span.arrow').css({left:'50%'});
+          $('div.general_options div.tooltip span.arrow').css({left:'50%'});
         }
-        $('div#map_tools div.tooltip').css({right:right-13-offset+'px'});        
+        $('div.general_options div.tooltip').css({right:right-13-offset+'px'});        
         // Show
-        $('div#map_tools div.tooltip').show();
+        $('div.general_options div.tooltip').show();
       },function(){
-        $('div#map_tools div.tooltip').hide();
+        $('div.general_options div.tooltip').hide();
       });
       
       

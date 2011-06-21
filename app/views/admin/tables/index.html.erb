@@ -181,12 +181,33 @@
         <div class="inner_">
           <span class="top">
             <h3>You are about to delete this table</h3>
-            <p>You will not be able to recover this information. We really recommend you <a href="#export_data">export the data</a> before deleting it.</p>
+            <p>You will not be able to recover this information. We really recommend you <a class="export_data" href="#export_data">export the data</a> before deleting it.</p>
           </span>
           <span class="bottom">
             <a href="#close_window" class="cancel">cancel</a>
             <a href="#confirm_delete" class="confirm_delete">Delete this table</a>
           </span>
+        </div>
+      </div>
+      
+      <div class="export_window">
+        <a href="#close_window" class="close"></a>
+        <div class="inner_">
+          <form action="/tables/" method="get">
+            <input id="export_format" type="hidden" name="format" />
+            <span class="top">
+              <h3>Export your data</h3>
+              <p>Select your desired format for downloading the data</p>
+              <ul>
+                <li class="selected"><a class="option" href="#CSV" rel="csv">CSV (Comma separated values)</a></li>
+                <li><a class="option" href="#KML" rel="kml">KML</a></li>
+                <li><a class="option" href="#SHP"rel="shp">SHP</a></li>
+              </ul>
+            </span>
+            <span class="bottom">
+              <a href="#close_window" class="cancel">cancel</a>
+              <input type="submit" class="download" value="Download" />
+            </span>
         </div>
       </div>
     </div>

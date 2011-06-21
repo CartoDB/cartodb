@@ -9,9 +9,6 @@
         "/javascripts/admin/maps/header_elements.js",
         "/javascripts/admin/maps/map_functions.js",
         // "/javascripts/admin/maps/style_functions.js",
-        // "/javascripts/admin/maps/map_functions.js",
-        // "/javascripts/admin/maps/CartoMarker.js",
-        // "/javascripts/admin/maps/CartoInfowindow.js",
         "http://maps.google.com/maps/api/js?sensor=true&callback=initApp"
 			);
         

@@ -133,22 +133,6 @@ div.table_position div.loading p.count {width:100%; padding:2px 0 0 0; text-alig
 div.table_position div.loading img {position:absolute; width:25; height:25px ; margin:0 0 0 -13px; top:12px; left:50%;}
 
 
-/*GENERAL OPTIONS*/
-div.table_position div.general_options {position:fixed; bottom:0; right:0; left:0; height:28px; border-bottom:3px solid #282F49; z-index:200;}
-div.table_position div.general_options.end {bottom:15px;}
-div.table_position div.general_options ul {position:absolute; bottom:0; right:0; width:auto; height:23px!important; padding:5px 5px 0 0; margin:0; background:#282F49; -webkit-border-top-left-radius: 5px; -moz-border-radius-topleft: 5px; border-top-left-radius: 5px; z-index:100;}
-div.table_position div.general_options ul li {float:left; width:auto; margin:0 0 0 5px;}
-div.table_position div.general_options ul li.other {display:none;}
-div.table_position div.general_options ul.sql {background:black;}
-div.table_position div.general_options ul.sql li {display:none;}
-div.table_position div.general_options ul.sql li.other {display:block;}
-div.table_position div.general_options ul li a {float:left; height:21px; padding:0 0 0 4px; background:url('/images/admin/table/left_general_button.png') no-repeat left 0; text-decoration:none;}
-div.table_position div.general_options ul li a span {float:left; height:11px; padding:4px 10px 6px 5px; background:url('/images/admin/table/right_general_button.png') no-repeat right 0; font:bold 11px Arial; color:#333333; text-shadow:0 1px white;}
-div.table_position div.general_options ul li a span.dropdown {padding:4px 18px 6px 5px; background:url('/images/admin/table/right_general_button2.png') no-repeat right 0;}
-div.table_position div.general_options ul li a:hover {background-position:0 -21px;}
-div.table_position div.general_options ul li a:hover span {background-position:right -21px;}
-
-
 /*DELETE ROW AND COLUMN*/
 div.table_position div.delete_row {position:absolute; display:none; top:60px; left:15px; width:166px; height:73px; padding:22px 20px 22px 34px; background:url('/images/admin/table/delete_row_bkg.png') no-repeat 0 0; z-index:20;}
 div.table_position div.delete_row p {font:normal 13px Arial; color:#333333; text-shadow:0 1px white;}
@@ -187,31 +171,6 @@ div.table_position div.explain_tooltip p {width:90px; padding:8px 10px; backgrou
   line-height:14px;}
 div.table_position div.explain_tooltip span.arrow {position:absolute; bottom:-10px; left:46px; width:0; height:0; margin:20px 0 0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:10px solid rgba(0,0,0,0.7);}
 
-
-/*SQL CONSOLE*/
-div.table_position div.general_options div.sql_console {position:fixed; display:none; bottom:0; left:0; right:0; min-height:158px; padding:36px; border-bottom:3px solid black; z-index:0; background:url('/images/admin/table/console_bkg.jpg') #282F49}
-div.table_position div.general_options div.sql_console.end {bottom:15px;}
-div.table_position div.general_options div.sql_console span {float:left; width:100%;}
-div.table_position div.general_options div.sql_console span h3 {float:left; width:auto; padding:5px 0; font:normal 13px Arial; color:white; text-shadow:0 1px black;}
-div.table_position div.general_options div.sql_console span h3 strong {color:#FFCC00;}
-div.table_position div.general_options div.sql_console span h3 a.get_api_call {float:none; padding:3px 7px; margin:0 0 0 10px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; background:black; text-transform:uppercase; color:white;
-  font:bold 11px Arial; text-decoration:none; text-shadow:none;}
-div.table_position div.general_options div.sql_console span h3 a.get_api_call:hover {background:white; color:black; text-shadow:none;}
-div.table_position div.general_options div.sql_console span a.close {float:right; margin:3px 0 0 0; font:normal 11px Arial; color:white; text-decoration:underline;}
-div.table_position div.general_options div.sql_console span a.close:hover {}
-div.table_position div.general_options div.sql_console span a.save_query {float:right; margin:20px 0 0 0; font:bold 12px Arial; color:#6FBE6F; text-decoration:underline;}
-div.table_position div.general_options div.sql_console span a.save_query:hover {color:#93FF93;}
-div.table_position div.general_options div.sql_console span a.try_query {float:right; margin:10px 0 0 10px; padding:8px 9px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927; font:bold 12px Arial; text-shadow:0 1px white; 
-  color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
-  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#DEDEDE\9}
-div.table_position div.general_options div.sql_console span a.try_query:hover { background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
-          background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); background:#CACBCE\9; cursor:pointer;}
-div.table_position div.general_options div.sql_console span p.errors {display:none; float:left; width:auto; padding:5px 10px; margin:10px 0 0 0; background:red; color:white; border:1px solid red; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial;}
-/*div.table_position div.general_options div.sql_console textarea {float:left; min-width:98.7%; max-width:98.7%; min-height:63px; max-height:350px; margin:7px 0 0 0; padding:7px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927;
-  font:normal 13px Arial; color:#333333;}
-div.table_position div.general_options div.sql_console textarea:focus {outline:none; border:1px solid black;}*/
-/*.outer_textarea{float:left;width:100%;min-height:73px; margin:10px 0 0 0; padding:5px 0 0 0; background:white;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;}*/
-.outer_textarea{display:inline-block; width:100%;height:73px; margin:10px 0 0 0; padding:5px 0 0 0; background:white;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;}
 
 /************************************EDIT FIELDS************************************/
 div.table_position div.edit_cell {position:absolute; display:none; top:200px; left:200px; min-width:262px; padding:7px 7px 42px; -moz-box-shadow:0px 0px 10px 2px #999; -webkit-box-shadow:0px 0px 10px 2px #999; box-shadow:0px 0px 10px 2px #999; border:1px solid #999999; background:#E6F2E4; 
@@ -463,6 +422,7 @@ div.mamufas div.stopgeo_window div.inner_ span.stop p a:hover {color:#333333;}
 .jspHorizontalBar .jspArrow{width:16px;float:left;height:100%;}
 .jspVerticalBar .jspArrow:focus{outline:none;}
 .jspCorner{background:#eeeef4;float:left;height:100%;}
+
 
 /*Codemirror CSS*/
 .CodeMirror{overflow:auto;height:100%;line-height:1em;font-family:monospace;}

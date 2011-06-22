@@ -34,10 +34,7 @@
 											'<a href="#delete">Delete</a>'+
 		                '</div>');
 		
-			$(div).find('a.close').click(function(ev){
-				stopPropagation(ev);
-				me.hide();
-			});
+
 
       google.maps.event.addDomListener(div,'click',function(ev){ 
         try{
@@ -58,9 +55,22 @@
 	    var panes = this.getPanes();
 	    panes.floatPane.appendChild(div);
 	
+			$(div).find('a.close').click(function(ev){
+				stopPropagation(ev);
+				me.hide();
+			});
+	
 			this.moveMaptoOpen();
 	  }
-		this.setPosition();
+	
+		var div = this.div_;
+	  var pixPosition = this.getProjection().fromLatLngToDivPixel(this.latlng_);
+	  if (pixPosition) {
+		  div.style.width = this.width_ + 'px';
+		  div.style.left = (pixPosition.x - 49) + 'px';
+		  var actual_height = - $(div).height();
+		  div.style.top = (pixPosition.y + actual_height - (($(div).css('opacity') == 1)? 10 : 0)) + 'px';
+	  }
 	};
 	
 	
@@ -73,7 +83,7 @@
   		  div.style.width = this.width_ + 'px';
   		  div.style.left = (pixPosition.x - 49) + 'px';
   		  var actual_height = - $(div).height();
-  		  div.style.top = (pixPosition.y + actual_height - (($(div).css('opacity') == 1)? 10 : 0)) + 'px';
+  		  div.style.top = (pixPosition.y + actual_height - 5) + 'px';
   	  }
   	  this.show();
     }
@@ -90,7 +100,7 @@
 	    var marker_data = marker.data;
 	    
 	    _.each(marker_data,function(value,label){
-	      if (label != 'created_at' && label != 'updated_at' && label != 'the_geom' && label != 'the_geom_webmercator' && label!="lat_" && label!="lon_" && label!="cartodb_id") {
+	      if (label != 'created_at' && label != 'updated_at' && label != 'the_geom' && label != 'the_geom_webmercator' && label!="lat_" && label!="lon_" && label!="cartodb_id" && label!="init_latlng") {
 	        $(div).find('div.top').append('<label>'+label+'</label><input type="text" rel="'+label+'" value="'+(value!=null?value:'')+'" />');
 	      }
 				if (label=="cartodb_id") {

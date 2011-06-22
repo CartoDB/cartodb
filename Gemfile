@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 gem "rails", "3.0.7"
 
-gem "pg", "0.10.1"
+gem "pg", "0.11"
 gem "sequel-rails", :git => "git://github.com/ferblape/sequel-rails.git"
 gem "nofxx-georuby", :require => "geo_ruby"
 

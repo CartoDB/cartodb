@@ -10,13 +10,14 @@
       this.color_ = null;                             // Cache marker color
                         
       this.status_ = "select";                        // Status of the map (select, add, )
+      this.columns_ = null;
                                                     
       this.show();                                    // First step is show the map canvas
       this.showLoader();                              // Show loader
       this.createMap();                               // Create the map
-      
-      
     }
+    
+    
     
     
     CartoMap.prototype.createMap = function () {
@@ -64,8 +65,10 @@
 			});
 			
 			google.maps.event.addListener(this.map_, 'click', function(ev) {
-        if (me.status_=="add")
+        if (me.status_=="add") {
           me.addMarker(ev.latLng, {lat_:ev.latLng.lat(), lon_:ev.latLng.lng()}, true);
+        }
+
 			});
     }
     
@@ -219,14 +222,18 @@
           me.bounds_.extend(latlng);
           setTimeout(asyncDrawing(_.rest(rest)),0);
         } else {
+          console.log(me.bounds_.getCenter());
           me.map_.fitBounds(me.bounds_);
+          me.map_.setCenter(me.bounds_.getCenter());
           me.hideLoader();
         }
       }
     }
     
     
-    
+    /*******************************************/
+    /*  Add a simple marker to the map         */
+    /*******************************************/
     CartoMap.prototype.addMarker = function(latlng,info,save) {
       var me = this;
       
@@ -242,32 +249,35 @@
         data: info
       });
       
-       google.maps.event.addListener(marker,'dragstart',function(ev){
-         me.points_[this.data.cartodb_id].init_latlng = ev.latLng;
-       });
-      
-       google.maps.event.addListener(marker,'dragend',function(ev){
-         // var cartodb_id = this.data.cartodb_id;
-         // vector_markers[cartodb_id].lat_ = ev.latLng.lat();
-         // vector_markers[cartodb_id].lon_ = ev.latLng.lng();
-         // onMoveOccurrence(ev.latLng,cartodb_id);
-       });
+      google.maps.event.addListener(marker,'dragstart',function(ev){
+        this.data.init_latlng = ev.latLng;
+      });
+
+      google.maps.event.addListener(marker,'dragend',function(ev){
+        var occ_id = this.data.cartodb_id;
+        var params = {};
+        params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
+        params.cartodb_id = occ_id;
+        me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"change_latlng","PUT");
+      });
+
+      google.maps.event.addListener(marker,'click',function(ev){
+        if (this.status_=="select") {
+          //infowindow.open(marker.data.cartodb_id);
+        }
+      });
        
-       google.maps.event.addListener(marker,'click',function(ev){
-         if (this.status_=="select") {
-           //infowindow.open(marker.data.cartodb_id);
-         }
-       });
        
+      if (save) {
+        var params = {};
+        params.the_geom = '{"type":"Point","coordinates":['+latlng.lng()+','+latlng.lat()+']}';
+        this.updateTable('/records',params,marker,null,"add_point","POST");
+      } 
        
-       if (save) {
-         // Send request
-       } 
-       
-       return marker;
+      return marker;
     }
     
-    
+
     
     
     
@@ -311,7 +321,7 @@
     /*******************************************/
     /*  Remove one or serveral markers         */
     /*******************************************/
-    CartoMap.prototype.removeMarkers = function() {
+    CartoMap.prototype.removeMarkers = function(array) {
       
     }
     
@@ -355,10 +365,7 @@
       $('div.loading').fadeIn();
     }
     
-    
-    
-    
-    
+
     
     /*******************************************/
     /*  Toggle map visibility                  */
@@ -387,38 +394,57 @@
     /*******************************************/
     /*  Request operations on the map          */
     /*******************************************/
-    CartoMap.prototype.sendRequest = function() {
-      // cleanMap();
-      // 
-      // $.ajax({
-      //    method: "GET",
-      //    url: '/v1?sql='+escape(editor.getValue()),
-      //         headers: {"cartodbclient":"true"},
-      //    success: function(data) {
-      //      $('div.sql_console p.errors').fadeOut();
-      //      $('div.sql_console span h3').html('<strong>'+data.total_rows+' results</strong>');
-      //    },
-      //    error: function(e) {
-      //      var json = $.parseJSON(e.responseText);
-      //      var msg = '';
-      // 
-      //      _.each(json.errors,function(text,pos){
-      //        msg += text + ', ';
-      //      });
-      //      msg = msg.substr(0,msg.length-2);
-      //      $('div.sql_console p.errors').text(msg).stop().fadeIn().delay(10000).fadeOut();
-      //    }
-      //  });
+    CartoMap.prototype.updateTable = function(url_change,params,new_value,old_value,type,request_type) {
+      var me = this;
+      
+      //Queue loader
+      var requestId = createUniqueId();
+      params.requestId = requestId;
+      requests_queue.newRequest(requestId,type);
+
+      $.ajax({
+        dataType: 'json',
+        type: request_type,
+        dataType: "text",
+        headers: {"cartodbclient": true},
+        url: '/v1/tables/'+table_name+url_change,
+        data: params,
+        success: function(data) {
+          requests_queue.responseRequest(requestId,'ok','');
+          me.successRequest(params,new_value,old_value,type,data);
+        },
+        error: function(e, textStatus) {
+          try {
+            requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
+          } catch (e) {
+            requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
+          }
+          me.errorRequest(params,new_value,old_value,type);
+        }
+      });
     }
     
     
-    CartoMap.prototype.sucessRequest = function() {
-      
+    CartoMap.prototype.successRequest = function(params,new_value,old_value,type,more) {
+      switch (type) {
+        case "add_point":       var occ_id = $.parseJSON(more).id;
+                                new_value.data.cartodb_id = occ_id;
+                                this.points_[occ_id] = new_value;
+                                break;
+        default:                break;
+      }
     }
     
     
-    CartoMap.prototype.errorRequest = function() {
-      
+    CartoMap.prototype.errorRequest = function(params,new_value,old_value,type) {      
+      switch (type) {
+        case "add_point":       new_value.setMap(null);
+                                break;
+        case "change_latlng":   var occ_id = params.cartodb_id;
+                                (this.points_[occ_id]).setPosition(old_value);
+                                break;
+        default:                break;
+      }
     }
     
     

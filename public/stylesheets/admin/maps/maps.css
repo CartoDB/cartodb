@@ -44,17 +44,21 @@ div.marker_tooltip a.margin {margin:0 0 0 3px}
 div.marker_tooltip a:hover {background:white;}
 
 /*Marker infowindow*/
-div.marker_infowindow {position:absolute; display:block;}
-div.marker_infowindow div.top {width:203px; margin:0 0 20px 0; padding:15px; background:#bbbbbb; border-radius:10px; -webkit-border-radius:10px; -moz-border-radius:10px; border:1px solid #333333;
-  -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
-  background-image:linear-gradient(-90deg, #eeeeee, #f7f7f7);
-  background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#eeeeee), to(#f7f7f7));
-  background-image:-moz-linear-gradient(-90deg, #eeeeee, #f7f7f7);
-  background-image: -o-linear-gradient(#eeeeee,#f7f7f7); 
-  background:#f7f7f7\9;}
-div.marker_infowindow div.top label {display:block; width:100%; font:normal 11px Arial; color:#333333;}
-div.marker_infowindow div.top input {display:block; width:185px; padding:4px 5px; margin:3px 0 7px; font:normal 12px Arial; color:#333333; border:1px solid #666666; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;}
-div.marker_infowindow span.arrow {position:absolute; bottom:0px; left:50%; width:0; height:0; margin:20px 0 0 -20px; border-left:20px solid transparent; border-right:20px solid transparent; border-top:20px solid rgba(0,0,0,0.7);}
+div.marker_infowindow {position:absolute; display:block; width:214px; padding:0}
+div.marker_infowindow a.close {position:absolute; right:3px; top:3px; width:22px; height:15px; padding:4px 0 3px 0; text-align:center; font:bold 15px "Helvetica",Arial; color:#666666; text-decoration:none; line-height:15px}
+div.marker_infowindow a.close:hover {color:#333333}
+div.marker_infowindow div.top {width:186px; padding:25px 18px 5px 10px; background:url('/images/admin/map/infowindow_top.png') 0 top;}
+div.marker_infowindow div.top label {display:block; width:auto; padding:0 0 0 5px; font:normal 11px Arial; color:#B3B3B3; text-shadow:0 1px white}
+div.marker_infowindow div.top input {display:block; width:175px; padding:4px 5px; margin:2px 0 7px; font:bold 11px 'Helvetica',Arial; color:#666666; border:none; background:none; text-shadow:0 1px white}
+div.marker_infowindow div.top input:focus {border:1px solid #666666; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;}
+div.marker_infowindow div.bottom {width:186px; height:36px; padding:11px 18px 10px 10px; background:url('/images/admin/map/infowindow_bottom.png') no-repeat 0 bottom;}
+div.marker_infowindow div.bottom label {margin:1px 0 0 3px; font:normal 11px Arial; color:#B3B3B3; text-shadow:0 1px white}
+div.marker_infowindow div.bottom label strong {font:bold 11px 'Helvetica',Arial; color:#666666; text-shadow:0 1px white;}
+div.marker_infowindow div.bottom a {float:right; height:12px; margin:0 5px 0 0; padding:4px 7px; border:1px solid #999; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
+  text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.marker_infowindow div.bottom a:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+        background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 
 
 div.map_window div.map_header {position:relative; float:left; width:100%; height:60px; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white; border-bottom:1px solid rgba(00,00,00,0.25); z-index:10;}
@@ -107,9 +111,9 @@ div.map_window p.loading {position:absolute; display:none; top:70px; left:50%; m
 
 /* LOADING WINDOW */
 div.map_window div.loading {position:absolute; display:none; top:61px; left:0; right:0; bottom:0; width:100%; background:rgba(0,0,0,0.5); z-index:10;}
-div.map_window div.loading span.loader {position:absolute; top:50%; left:50%; width:50px; height:50px; margin:-25px 0 0 -25px; border-radius:50px; -webkit-border-radius:50px; -moz-border-radius:50px; 
+div.map_window div.loading span.loader {position:absolute; top:50%; left:50%; width:50px; height:50px; margin:-25px 0 0 -25px; border-radius:50px; -webkit-border-radius:50px; -moz-border-radius:50px;
   background:url('/images/admin/map/loader.gif') no-repeat center center rgba(0,0,0,0.6);}
-  
+
 
 /* CSS EDITOR */
 div.map_window div.css_editor {position:absolute; display:none; top:50%; left:50%; width:500px; height:400px; margin:-200px 0 0 -250px; padding:8px; background:#e7f2e4; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 10px 3px #666666; box-shadow:0 0 10px 3px #666666;

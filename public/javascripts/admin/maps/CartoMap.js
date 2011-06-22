@@ -46,11 +46,11 @@
               '/javascripts/admin/maps/Overlays/CartoInfowindow.js',
               // '/javascripts/admin/maps/Overlays/CartoDeletewindow.js',
         function(){
-          me.selection_area_  = new google.maps.Polygon();                                              // Selection polygon area
+          me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                                              // Selection polygon area
     			me.infowindow_      = new CartoInfowindow(new google.maps.LatLng(-180,-180),null,me.map_);    // InfoWindow for markers
     			// me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-180,-180),1,me.map_);        // Over tooltip for markers and selection area
           // me.deleteWindow_    = new CartoDeleteWindow(new google.maps.LatLng(-180,-180), me.map_);    // Delete window to confirm remove one/several markers
-
+					me.map_canvas_ 			= new mapCanvasStub(me.map_);
           me.getPoints();
         }
       );
@@ -68,7 +68,6 @@
         if (me.status_=="add") {
           me.addMarker(ev.latLng, {lat_:ev.latLng.lat(), lon_:ev.latLng.lng()}, true);
         }
-
 			});
     }
     
@@ -163,12 +162,127 @@
 			$('div.general_options li.map').removeClass('selected')
 			$('div.general_options').find('li.map').filter(function(){return $(this).text() == status}).addClass('selected');
 			
-      // if (status=="select_area") {
-      //  enableSelectionTool()
-      // } else {
-      //  disableSelectionTool()
-      // }
+      if (status=="select_area") {
+      	this.enableSelectionTool()
+      } else {
+      	this.disableSelectionTool()
+      }
     }
+
+
+
+		/*******************************************/
+    /*  Polygon selection in the map				   */
+    /*******************************************/
+		CartoMap.prototype.disableSelectionTool = function() {
+			this.map_.setOptions({draggable:true});
+	    $('div#map').unbind('mousedown');
+	    if (this.selection_area_!=null) this.selection_area_.setMap(null);
+		}
+		
+		CartoMap.prototype.enableSelectionTool = function() {
+			var me = this;
+	  	this.map_.setOptions({draggable:false});
+	     
+	    // Selection tool
+	    $('div#map').mousedown(function(ev){
+	     	if (me.status_=="select_area") {
+	     		google.maps.event.clearListeners(me.selection_area_, 'mouseover');
+	        google.maps.event.clearListeners(me.selection_area_, 'mouseout');
+          // if (over_polygon_tooltip!=null) {
+          //  over_polygon_tooltip.hide();
+          // }
+	              
+	        var position = {};
+	        position.x = ev.pageX-($('div#map').offset().left);
+	        position.y = ev.pageY-($('div#map').offset().top);
+	        var latlng = me.map_canvas_.transformCoordinates(new google.maps.Point(position.x,position.y));
+	        
+	        me.selection_area_.setOptions({fillOpacity: 0});
+	        me.drawing = true;
+	        me.selection_area_.setPath([latlng,latlng,latlng,latlng]);
+	        me.selection_area_.setMap(me.map_);
+	        
+	        $('div#map').mousemove(function(ev){
+	          position.x = ev.pageX-($('div#map').offset().left);
+	          position.y = ev.pageY-($('div#map').offset().top);
+	          var latlng = me.map_canvas_.transformCoordinates(new google.maps.Point(position.x,position.y));
+	               
+	         	me.selection_area_.setPath([
+							me.selection_area_.getPath().getAt(0),
+              new google.maps.LatLng(me.selection_area_.getPath().getAt(0).lat(),latlng.lng()),
+              latlng,
+              new google.maps.LatLng(latlng.lat(),me.selection_area_.getPath().getAt(0).lng()),
+              me.selection_area_.getPath().getAt(0)]);
+     				});
+	        
+	         	$('div#map').mouseup(function(ev){
+	          	var position = {};
+	           	position.x = ev.pageX-($('div#map').offset().left);
+	           	position.y = ev.pageY-($('div#map').offset().top);
+	           	var latlng = me.map_canvas_.transformCoordinates(new google.maps.Point(position.x,position.y));
+	           
+	           	$('div#map').unbind('mouseup');
+	           	$('div#map').unbind('mousemove');
+	
+            	drawing = false;
+              me.selection_area_.setOptions({fillOpacity: 0.40});
+              google.maps.event.clearListeners(me.map_, 'mousemove');
+              google.maps.event.clearListeners(me.selection_area_, 'click');
+    
+           		console.log(me.markersInPolygon(me.selection_area_));
+	    
+	                // if (over_polygon_tooltip!=null) {
+	                //   over_polygon_tooltip.changeData(markersInPolygon(),latLng);
+	                // } else {
+	                //   over_polygon_tooltip = new PolygonOverTooltip(latLng, markersInPolygon(), map);
+	                // }
+	    
+	                // google.maps.event.addListener(selection_polygon,'mouseover',function(){
+	                //  if (over_polygon_tooltip!=null) {
+	                //    over_polygon_tooltip.show();
+	                //  }
+	                //  over_polygon = true;
+	                // });
+	                // 
+	                // google.maps.event.addListener(selection_polygon,'mouseout',function(){
+	                //  if (over_polygon_tooltip!=null && !say_polygon_tooltip) {
+	                //    over_polygon_tooltip.hide();
+	                //  }
+	                //  over_polygon = false;
+	                // });
+	         	});
+	       	}
+	     });
+		}
+		
+		CartoMap.prototype.markersInPolygon = function(selection_polygon) {
+	   	//Check if the polygon contains this point
+	     function Contains(polygon, point) { 
+	       var j=0; 
+	       var oddNodes = false; 
+	       var x = point.lng(); 
+	       var y = point.lat(); 
+	       for (var i=0; i < polygon.getPath().getLength(); i++) { 
+	         j++; 
+	         if (j == polygon.getPath().getLength()) {j = 0;} 
+	         if (((polygon.getPath().getAt(i).lat() < y) && (polygon.getPath().getAt(j).lat() >= y)) || ((polygon.getPath().getAt(j).lat() < y) && (polygon.getPath().getAt(i).lat() >= y))) { 
+	           if ( polygon.getPath().getAt(i).lng() + (y - polygon.getPath().getAt(i).lat()) /  (polygon.getPath().getAt(j).lat()-polygon.getPath().getAt(i).lat()) *  (polygon.getPath().getAt(j).lng() - polygon.getPath().getAt(i).lng())<x ) { 
+	             oddNodes = !oddNodes; 
+	           } 
+	         } 
+	       } 
+	       return oddNodes; 
+	     };
+       
+	     var markers_polygon = [];
+	 		_.each(this.points_, function(element){
+	      if (Contains(selection_polygon,element.getPosition())) {
+	        markers_polygon.push(element.data);
+	      }
+	     });
+	     return markers_polygon;
+		}
     
    
     
@@ -222,7 +336,6 @@
           me.bounds_.extend(latlng);
           setTimeout(asyncDrawing(_.rest(rest)),0);
         } else {
-          console.log(me.bounds_.getCenter());
           me.map_.fitBounds(me.bounds_);
           me.map_.setCenter(me.bounds_.getCenter());
           me.hideLoader();
@@ -248,10 +361,12 @@
         map: this.map_,
         data: info
       });
-      
+
+
       google.maps.event.addListener(marker,'dragstart',function(ev){
         this.data.init_latlng = ev.latLng;
       });
+
 
       google.maps.event.addListener(marker,'dragend',function(ev){
         var occ_id = this.data.cartodb_id;
@@ -262,8 +377,8 @@
       });
 
       google.maps.event.addListener(marker,'click',function(ev){
-        if (this.status_=="select") {
-          //infowindow.open(marker.data.cartodb_id);
+        if (me.status_=="select") {
+          me.infowindow_.open(this);
         }
       });
        
@@ -335,8 +450,11 @@
       this.status_ = "select";
   		$('div#map_tools').find('li').removeClass('selected');
   		$('div#map_tools li').first().addClass('selected');
+
+			this.getPoints();
     }
     
+
     /*******************************************/
     /*  Clear map                              */
     /*******************************************/
@@ -422,9 +540,13 @@
           me.errorRequest(params,new_value,old_value,type);
         }
       });
+
     }
     
     
+		/*******************************************/
+    /*  Request operations on the map          */
+    /*******************************************/
     CartoMap.prototype.successRequest = function(params,new_value,old_value,type,more) {
       switch (type) {
         case "add_point":       var occ_id = $.parseJSON(more).id;

@@ -5,8 +5,8 @@
 		this.info_ = info;
 		this.map_ = map;
 	
-	  this.offsetHorizontal_ = -116;
-	  this.width_ = 233;
+	  this.offsetHorizontal_ = -107;
+	  this.width_ = 214;
 	
 	  this.setMap(map);
 	}
@@ -26,11 +26,18 @@
 	    div = this.div_ = document.createElement('div');
 	    div.setAttribute('class','marker_infowindow');
 	
-			$(div).append('<a href="#close">close</a>'+
+			$(div).append('<a href="#close" class="close">x</a>'+
 			              '<div class="top">'+
 			              '</div>'+
-			              '<span class="arrow">'+
-		                '</span>');
+			              '<div class="bottom">'+
+											'<label>cartodb_id:1</label>'+
+											'<a href="#delete">Delete</a>'+
+		                '</div>');
+		
+			$(div).find('a.close').click(function(ev){
+				stopPropagation(ev);
+				me.hide();
+			});
 
       google.maps.event.addDomListener(div,'click',function(ev){ 
         try{
@@ -64,7 +71,7 @@
   	  var pixPosition = this.getProjection().fromLatLngToDivPixel(this.latlng_);
   	  if (pixPosition) {
   		  div.style.width = this.width_ + 'px';
-  		  div.style.left = (pixPosition.x + this.offsetHorizontal_) + 'px';
+  		  div.style.left = (pixPosition.x - 49) + 'px';
   		  var actual_height = - $(div).height();
   		  div.style.top = (pixPosition.y + actual_height - (($(div).css('opacity') == 1)? 10 : 0)) + 'px';
   	  }
@@ -73,25 +80,25 @@
 	}
 	
 	
-	CartoInfowindow.prototype.open = function(marker_id){
-	  
-	  console.log(carto_map.points_[1]);
+	CartoInfowindow.prototype.open = function(marker){
 	  
 	  if (this.div_) {
 	    var div = this.div_;
-	    this.latlng_ = new google.maps.LatLng(carto_map.points_[marker_id].lat_,carto_map.points_[marker_id].lon_);
+	    this.latlng_ = marker.getPosition();
 	    $(div).find('div.top').html('');
 	    
-	    var marker_data = carto_map.points_[marker_id];
+	    var marker_data = marker.data;
 	    
 	    _.each(marker_data,function(value,label){
-	      if (label != 'created_at' && label != 'updated_at' && label != 'the_geom' && label != 'the_geom_webmercator') {
-	        $(div).find('div.top').append('<label>'+label+'</label><input type="text" readonly="true" value="'+value+'" />');
+	      if (label != 'created_at' && label != 'updated_at' && label != 'the_geom' && label != 'the_geom_webmercator' && label!="lat_" && label!="lon_" && label!="cartodb_id") {
+	        $(div).find('div.top').append('<label>'+label+'</label><input type="text" rel="'+label+'" value="'+(value!=null?value:'')+'" />');
 	      }
+				if (label=="cartodb_id") {
+					$(div).find('div.bottom').find('label').html('cartodb_id: <strong>'+value+'</strong>');
+				}
 	    });
 	    
 	    this.moveMaptoOpen();
-	    
 	    this.setPosition();			
 	  }
 	}

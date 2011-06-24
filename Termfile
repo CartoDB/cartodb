@@ -32,3 +32,8 @@ tab "cartodb resque server" do
   run "sleep 30"
   run "script/resque"
 end
+
+tab "cartodb textmate" do
+  run "cd $CARTODB_PATH"
+  run "mate ."
+end

@@ -68,7 +68,6 @@
 				carto_map.removeMarkers([me.marker_]);
 			});
 
-			this.moveMaptoOpen();
 			$(div).css({opacity:0});
 	  }
 
@@ -139,10 +138,10 @@
 	}
 
 
-	CartoDeleteWindow.prototype.isVisible = function() {
+	CartoDeleteWindow.prototype.isVisible = function(marker_id) {
 	  if (this.div_) {
 	    var div = this.div_;
-			if ($(div).css('visibility')=='visible') {
+			if ($(div).css('visibility')=='visible' && this.marker_!=null && this.marker_.data.cartodb_id==marker_id) {
 				return true;
 			} else {
 				return false;

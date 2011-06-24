@@ -373,7 +373,7 @@
       $("span.tags span").remove();
       $("li.tagit-choice").each(function(index,element){
         var value = (($.trim($(element).text())).slice(0, -2));
-        $('<p>'+value+'</p>').insertBefore('a.add');
+        $('<p>'+value+'</p>').insertBefore('span.tags a.add');
         new_values+=value+',';
       });
 

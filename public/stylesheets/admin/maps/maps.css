@@ -1,6 +1,8 @@
 div.map_window {position:absolute; top:161px; left:0; right:0; bottom:0; width:100%; background:white;}
 div.map_window div.map_curtain {position:absolute; left:0; right:0; top:0; bottom:0; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5; z-index:12;}
 div.map_window div#map {position:absolute; left:0; right:0; bottom:0; top:51px; width:100%; z-index:5; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;}
+div.map_window div#map div {-webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;}
+
 
 /*Zoom controls*/
 div.map_window div#zoom_control {position:absolute; top:72px; left:10px; width:28px; height:227px; z-index:10; -webkit-border-radius:4px; -moz-border-radius:4px; border-radius:4px; background-image:-moz-linear-gradient(100% 100% 90deg, rgba(38,44,69,0.9), rgba(23,27,43,0.9)); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(38,44,69,0.9)), to(rgba(23,27,43,0.9)));}
@@ -38,10 +40,12 @@ div.map_window div#map_tools div.tooltip span.arrow {position:absolute; bottom:-
 
 /*MARKERS STUFF*/
 /*Marker tooltip*/
-div.marker_tooltip {position:absolute; display:block; width:31px!important; height:14px!important; padding:4px 5px; border-radius:30px; -webkit-border-radius:30px; -moz-border-radius:30px; background:rgba(0,0,0,0.5)}
-div.marker_tooltip a {position:relative; float:left; width:14px; height:14px; padding:0; border-radius:10px; -webkit-border-radius:10px; -moz-border-radius:10px; font:normal 11px Arial; background:rgba(255,255,255,0.9); color:#333333; text-align:center; text-decoration:none; line-height:11px}
-div.marker_tooltip a.margin {margin:0 0 0 3px}
-div.marker_tooltip a:hover {background:white;}
+div.marker_tooltip {position:absolute; display:block; width:31px; height:14px!important; padding:4px 5px; border-radius:30px; -webkit-border-radius:30px; -moz-border-radius:30px; background:rgba(0,0,0,0.5)}
+div.marker_tooltip a {position:relative; float:left; width:14px; height:14px; padding:0; border-radius:10px; -webkit-border-radius:10px; -moz-border-radius:10px; font:normal 11px Arial; color:#333333; text-align:center;
+  text-decoration:none; line-height:11px; text-indent:-9999px; background:url('/images/admin/map/tooltip.png') no-repeat 0 0}
+div.marker_tooltip a:hover {background-position:0 -14px}
+div.marker_tooltip a.margin {margin:0 0 0 3px; background-position:-14px 0}
+div.marker_tooltip a.margin:hover {background-position:-14px -14px}
 
 /*Marker infowindow*/
 div.marker_infowindow {position:absolute; display:block; width:214px; padding:0}
@@ -49,10 +53,11 @@ div.marker_infowindow a.close {position:absolute; right:3px; top:3px; width:22px
 div.marker_infowindow a.close:hover {color:#333333}
 div.marker_infowindow div.top {width:186px; padding:25px 18px 5px 10px; background:url('/images/admin/map/infowindow_top.png') 0 top;}
 div.marker_infowindow div.top label {display:block; width:auto; padding:0 0 0 5px; font:normal 11px Arial; color:#B3B3B3; text-shadow:0 1px white}
-div.marker_infowindow div.top input {display:block; width:175px; padding:4px 5px; margin:2px 0 7px; font:bold 11px 'Helvetica',Arial; color:#666666; border:none; background:none; text-shadow:0 1px white}
+div.marker_infowindow div.top input {display:block; width:175px; padding:2px 4px; margin:2px 0 7px; font:bold 11px 'Helvetica',Arial; color:#666666; border:none; background:none; text-shadow:0 1px white}
+div.marker_infowindow div.top input.empty {font-weight:normal; font-style:italic; color:#b7b7b7;}
 div.marker_infowindow div.top input:focus {border:1px solid #666666; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;}
-div.marker_infowindow div.bottom {width:186px; height:36px; padding:11px 18px 10px 10px; background:url('/images/admin/map/infowindow_bottom.png') no-repeat 0 bottom;}
-div.marker_infowindow div.bottom label {margin:1px 0 0 3px; font:normal 11px Arial; color:#B3B3B3; text-shadow:0 1px white}
+div.marker_infowindow div.bottom {width:188px; height:36px; padding:11px 16px 10px 10px; background:url('/images/admin/map/infowindow_bottom.png') no-repeat 0 bottom;}
+div.marker_infowindow div.bottom label {float:left; margin:5px 0 0 3px; font:normal 11px Arial; color:#B3B3B3; text-shadow:0 1px white}
 div.marker_infowindow div.bottom label strong {font:bold 11px 'Helvetica',Arial; color:#666666; text-shadow:0 1px white;}
 div.marker_infowindow div.bottom a {float:right; height:12px; margin:0 5px 0 0; padding:4px 7px; border:1px solid #999; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
   text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
@@ -62,11 +67,12 @@ div.marker_infowindow div.bottom a:hover {background:linear-gradient(-90deg, #CA
 
 /*Marker deletewindow*/
 div.marker_deletewindow {position:absolute; background:url('/images/admin/map/delete_window.png') no-repeat 0 0;}
-div.marker_deletewindow div.top {display:block; width:115px; padding:24px 20px 6px 23px; }
-div.marker_deletewindow div.top p {font:normal 11px "Helvetica",Arial; color:white}
-div.marker_deletewindow div.bottom {display:block; width:115px; padding:0 20px 0 23px; background:red}
-div.marker_deletewindow div.bottom a.cancel {float:left; margin:4px 0 0 0; font:normal 11px "Helvetica",Arial; color:white}
-div.marker_deletewindow div.bottom a.delete {float:right; height:12px; margin:0 5px 0 0; padding:4px 13px; border:1px solid black; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
+div.marker_deletewindow div.top {display:block; width:166px; padding:24px 20px 6px 20px; }
+div.marker_deletewindow div.top p {font:normal 13px "Helvetica",Arial; color:#333333}
+div.marker_deletewindow div.bottom {display:block; width:166px; padding:8px 20px 0 20px;}
+div.marker_deletewindow div.bottom a.cancel {float:left; margin:4px 0 0 0; font:normal 13px "Helvetica",Arial; color:#666666}
+div.marker_deletewindow div.bottom a.cancel:hover {color:#333333}
+div.marker_deletewindow div.bottom a.delete {float:right; height:11px; margin:0; padding:7px 13px 8px; border:1px solid black; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
   text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
 div.marker_deletewindow div.bottom a.delete:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));

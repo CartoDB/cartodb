@@ -47,11 +47,13 @@
               '/javascripts/admin/maps/Overlays/CartoDeletewindow.js',
         function(){
           me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
-    			me.info_window_      = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);    	// InfoWindow for markers
-    			me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-180,-180),1,me.map_);		// Over tooltip for markers and selection area
-          me.delete_window_    = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_); 	// Delete window to confirm remove one/several markers
+    			me.info_window_      = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);    // InfoWindow for markers
+    			me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-180,-180),me.map_);			// Over tooltip for markers and selection area
+          me.delete_window_    = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_); // Delete window to confirm remove one/several markers
 					me.map_canvas_ 			= new mapCanvasStub(me.map_);
          
+					
+					me.getColumns();
  					me.getPoints();
         }
       );
@@ -160,7 +162,11 @@
 
     CartoMap.prototype.setMapStatus = function(status) {
       this.status_ = status;
-			$('div.general_options li.map').removeClass('selected')
+			this.setMarkerStatus(status);
+			
+			$('div.general_options li.map').each(function(i,ele){
+				$(ele).removeClass('selected');
+			});
 			$('div.general_options').find('li.map').filter(function(){return $(this).text() == status}).addClass('selected');
 			
       if (status=="select_area") {
@@ -168,7 +174,17 @@
       } else {
       	this.disableSelectionTool()
       }
+			
+			this.hideOverlays()
     }
+
+		
+		CartoMap.prototype.setMarkerStatus = function(status) {
+			_.each(this.points_,function(marker,i){
+				marker.setDraggable((status=="select")?true:false);
+				marker.setClickable((status=="select")?true:false);
+			});
+		}
 
 
 
@@ -287,6 +303,11 @@
     
    
     
+		CartoMap.prototype.hideOverlays = function() {
+			this.delete_window_.hide();
+			this.info_window_.hide();
+			this.tooltip_.hide();
+		}
     
     
     
@@ -333,13 +354,15 @@
           var info = _.first(rest);
           var occ_id = info.cartodb_id;
           var latlng = new google.maps.LatLng(info.lat_,info.lon_);
-          me.points_[occ_id] = me.addMarker(latlng, _.first(rest), false);
+					var marker = me.addMarker(latlng, _.first(rest), false);
+          me.points_[occ_id] = marker;
           me.bounds_.extend(latlng);
-          setTimeout(asyncDrawing(_.rest(rest)),0);
+          setTimeout(asyncDrawing(_.rest(rest)),1);
         } else {
-          me.map_.fitBounds(me.bounds_);
-          me.map_.setCenter(me.bounds_.getCenter());
-          me.hideLoader();
+          setTimeout(function(){
+						me.map_.fitBounds(me.bounds_);
+						me.hideLoader();
+					},1000);
         }
       }
     }
@@ -363,18 +386,36 @@
         data: info
       });
 
+			
+			google.maps.event.addListener(marker,'mouseover',function(){
+				me.over_marker_ = true;
+        if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
+					var latlng = this.getPosition();
+					me.tooltip_.open(latlng,this);
+				} else {
+					me.tooltip_.hide();
+				}
+      });
+
+			google.maps.event.addListener(marker,'mouseout',function(){
+				me.over_marker_ = false;
+				setTimeout(function(){
+					if (!me.over_marker_) me.tooltip_.hide();
+				},100);
+      });
+
 
       google.maps.event.addListener(marker,'dragstart',function(ev){
+				me.marker_drawing_ = true;
         this.data.init_latlng = ev.latLng;
 				
 				// Hide all floating map windows
-				me.delete_window_.hide();
-				me.info_window_.hide();
-				me.tooltip_.hide();
+				me.hideOverlays();
       });
 
 
       google.maps.event.addListener(marker,'dragend',function(ev){
+				me.marker_drawing_ = false;
         var occ_id = this.data.cartodb_id;
         var params = {};
         params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
@@ -487,12 +528,40 @@
     CartoMap.prototype.refresh = function() {
       this.show();
   		
-      this.status_ = "select";
-  		$('div#map_tools').find('li').removeClass('selected');
-  		$('div#map_tools li').first().addClass('selected');
+			this.setMapStatus('select');
 
+			this.getColumns();
 			this.getPoints();
     }
+
+
+    /*******************************************/
+    /*  Get table columns to fill Infowindow   */
+    /*******************************************/
+    CartoMap.prototype.getColumns = function() {
+			var me = this;
+			
+      $.ajax({
+        dataType: 'json',
+        type: 'GET',
+        headers: {"cartodbclient": true},
+        url: '/v1/tables/'+table_name +'/columns',
+        success: function(data) {
+					var new_array = [];
+					_.each(data,function(ele,i){
+						if (ele[0] != 'created_at' && ele[0] != 'updated_at' && ele[0] != 'the_geom' && ele[0] != 'cartodb_id') {
+							new_array.push(ele[0]);
+						}
+					});
+					
+					me.info_window_.columns_ = new_array;
+        },
+        error: function(e, textStatus) {
+          me.info_window_.columns_ = [];
+        }
+      });
+    }
+
     
 
     /*******************************************/
@@ -583,10 +652,6 @@
 
     }
     
-    
-		/*******************************************/
-    /*  Request operations on the map          */
-    /*******************************************/
     CartoMap.prototype.successRequest = function(params,new_value,old_value,type,more) {
       switch (type) {
         case "add_point":       var occ_id = $.parseJSON(more).id;

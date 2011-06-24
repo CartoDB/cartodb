@@ -4,6 +4,7 @@
 	  this.latlng_ = latlng;
 		this.marker_;
 		this.map_ = map;
+		this.columns_;
 	
 	  this.offsetHorizontal_ = -107;
 	  this.width_ = 214;
@@ -35,6 +36,17 @@
 		                '</div>');
 		
 
+			$(div).find('a.close').click(function(ev){
+				stopPropagation(ev);
+				me.hide();
+			});
+
+			$(div).find('a.delete').click(function(ev){
+				stopPropagation(ev);
+				me.hide();
+				carto_map.delete_window_.open(me.latlng_,me.marker_);
+			});
+										
 
       google.maps.event.addDomListener(div,'click',function(ev){ 
         try{
@@ -55,18 +67,6 @@
 	    var panes = this.getPanes();
 	    panes.floatPane.appendChild(div);
 	
-			$(div).find('a.close').click(function(ev){
-				stopPropagation(ev);
-				me.hide();
-			});
-			
-			$(div).find('a.delete').click(function(ev){
-				stopPropagation(ev);
-				me.hide();
-				carto_map.delete_window_.open(me.latlng_,me.marker_);
-			});
-	
-			this.moveMaptoOpen();
 			$(div).css({opacity:0});
 	  }
 	
@@ -107,14 +107,12 @@
 	    
 	    var marker_data = marker.data;
 	    
-	    _.each(marker_data,function(value,label){
-	      if (label != 'created_at' && label != 'updated_at' && label != 'the_geom' && label != 'the_geom_webmercator' && label!="lat_" && label!="lon_" && label!="cartodb_id" && label!="init_latlng") {
-	        $(div).find('div.top').append('<label>'+label+'</label><input type="text" rel="'+label+'" value="'+(value!=null?value:'')+'" />');
-	      }
-				if (label=="cartodb_id") {
-					$(div).find('div.bottom').find('label').html('cartodb_id: <strong>'+value+'</strong>');
-				}
+	    _.each(this.columns_,function(label){
+				$(div).find('div.top').append('<label>'+label+'</label><input type="text" rel="'+label+'" value="'+(marker.data[label]!=null?marker.data[label]:'Empty field')+'" />');
 	    });
+	
+			$(div).find('div.bottom').find('label').html('cartodb_id: <strong>'+marker.data.cartodb_id+'</strong>');
+	
 	    
 	    this.moveMaptoOpen();
 	    this.setPosition();			
@@ -150,10 +148,10 @@
 	}
 
 
-	CartoInfowindow.prototype.isVisible = function() {
+	CartoInfowindow.prototype.isVisible = function(marker_id) {
 	  if (this.div_) {
 	    var div = this.div_;
-			if ($(div).css('visibility')=='visible') {
+			if ($(div).css('visibility')=='visible' && this.marker_!=null && this.marker_.data.cartodb_id==marker_id) {
 				return true;
 			} else {
 				return false;

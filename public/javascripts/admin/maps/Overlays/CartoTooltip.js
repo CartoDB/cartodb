@@ -1,7 +1,7 @@
 
-		function CartoTooltip(latlng, marker_id, map) {
+		function CartoTooltip(latlng, map) {
 		  this.latlng_ = latlng;
-			this.marker_id = marker_id;
+			this.marker_;
 		  this.offsetVertical_ = -21;
 		  this.offsetHorizontal_ = 1;
 		  this.height_ = 22;
@@ -19,8 +19,31 @@
 		    div = this.div_ = document.createElement('DIV');
 				div.setAttribute('class','marker_tooltip');
 				
-				$(div).append('<a href="#show_info">i</a><a class="margin" href="#delete_marker">x</a>');
-
+				$(div).append('<a class="info" href="#show_info">i</a><a class="margin delete" href="#delete_marker">x</a>');
+				
+				$(div).find('a.info').click(function(ev){
+					stopPropagation(ev);
+					me.hide();
+					carto_map.info_window_.open(me.marker_);
+				});
+				
+				$(div).find('a.delete').click(function(ev){
+					stopPropagation(ev);
+					me.hide();
+					carto_map.delete_window_.open(me.latlng_,me.marker_);
+				});
+				
+				$(div).hover(
+					function(){
+						carto_map.over_marker_ = true;
+					},
+					function(){
+						carto_map.over_marker_ = false;
+						setTimeout(function(){
+							if (!carto_map.over_marker_) me.hide();
+						},100);
+					}
+				);
 
 		    var panes = this.getPanes();
 		    panes.floatPane.appendChild(div);
@@ -43,48 +66,20 @@
 		  }
 		};
 
-		CartoTooltip.prototype.getPosition = function() {
-		 return this.latlng_;
-		};
 
-
-		CartoTooltip.prototype.changePosition = function(latlng,marker_id) {
+		CartoTooltip.prototype.open = function(latlng,marker) {
 			if (this.div_) {
-				this.marker_id = marker_id;
+				this.marker_ = marker;
 				this.latlng_ = latlng;
 				var div = this.div_;
-				div.style.zIndex = global_zIndex + 1;
 			  var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
 			  if (pixPosition) {
 				  div.style.left = (pixPosition.x + this.offsetHorizontal_) + "px";
-				  div.style.top = (pixPosition.y + this.offsetVertical_) + "px";
+				  div.style.top = (pixPosition.y + this.offsetVertical_ - 7) + "px";
 			  }
+				this.show();
 		  }
 		}
-
-
-		CartoTooltip.prototype.deleteMarker = function() {
-			this.hide();
-			removeMarkers([{catalogue_id: this.marker_id}]);
-		}
-
-
-		// MarkerOverTooltip.prototype.makeActive = function() {
-		// 	this.hide();
-		// 	makeActive([{catalogue_id: this.marker_id}],false);
-		// }
-		// 
-		// 
-		// MarkerOverTooltip.prototype.showInformation = function() {
-		// 	this.hide();
-		// 	if (click_infowindow!=null) {					
-		// 		if (occurrences[this.marker_id].data.catalogue_id == click_infowindow.marker_id || !click_infowindow.isVisible()) {
-		// 			click_infowindow.changePosition(occurrences[this.marker_id].getPosition(),occurrences[this.marker_id].data.catalogue_id,occurrences[this.marker_id].data);
-		// 		}
-		// 	} else {
-		// 		click_infowindow = new MarkerTooltip(occurrences[this.marker_id].getPosition(), occurrences[this.marker_id].data.catalogue_id, occurrences[this.marker_id].data, map);
-		// 	}
-		// }		
 
 
 

@@ -18,61 +18,8 @@
 		  if (!div) {
 		    div = this.div_ = document.createElement('DIV');
 				div.setAttribute('class','marker_tooltip');
-				div.style.zIndex = global_zIndex;
 				
 				$(div).append('<a href="#show_info">i</a><a class="margin" href="#delete_marker">x</a>');
-
-				// $(div).hover(function(){
-				// 	over_mini_tooltip = true;
-				// }, function(){			
-				// 	over_mini_tooltip = false;
-				// 	setTimeout(function(ev){
-				// 		if (!over_marker) {
-				// 			me.hide();
-				// 		}
-				// 	},50);
-				// });
-
-				// var button_i = document.createElement('a');
-				// 		    button_i.style.position = "absolute";
-				// button_i.style.left = "4px";
-				// button_i.style.top = "4px";
-				// button_i.style.width = "14px";
-				// button_i.style.height = "14px";		
-				// button_i.style.background = "url(/images/editor/over_i.png) no-repeat 0 0";
-				// button_i.style.cursor = "pointer";
-				// $(button_i).click(function(ev){
-				// 	try{ev.stopPropagation();}catch(e){event.cancelBubble=true;};
-				// 	me.showInformation();
-				// });
-				// $(button_i).hover(function(ev){
-				// 	$(this).css('background-position','0 -14px');
-				// }, function(ev){
-				// 	$(this).css('background-position','0 0');
-				// });
-				// div.appendChild(button_i);
-
-
-
-
-				// var button_x = document.createElement('a');
-				// 		    button_x.style.position = "absolute";
-				// button_x.style.left = "38px";
-				// button_x.style.top = "4px";
-				// button_x.style.width = "14px";
-				// button_x.style.height = "14px";		
-				// button_x.style.background = "url(/images/editor/over_x.png) no-repeat 0 0";
-				// button_x.style.cursor = "pointer";
-				// $(button_x).click(function(ev){
-				// 	try{ev.stopPropagation();}catch(e){event.cancelBubble=true;};
-				// 	me.deleteMarker();
-				// });
-				// $(button_x).hover(function(ev){
-				// 	$(this).css('background-position','0 -14px');
-				// }, function(ev){
-				// 	$(this).css('background-position','0 0');
-				// });
-				// div.appendChild(button_x);
 
 
 		    var panes = this.getPanes();

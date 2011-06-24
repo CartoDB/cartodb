@@ -6,7 +6,7 @@
       this.bounds_ = new google.maps.LatLngBounds();  // A latlngbounds for the map
       
       this.points_ = {};                              // Points belong to the map
-      this.marker_zIndex = 1000;                      // Necessary for the markers hover
+      this.marker_zIndex_ = 1000;                      // Necessary for the markers hover
       this.color_ = null;                             // Cache marker color
                         
       this.status_ = "select";                        // Status of the map (select, add, )
@@ -47,9 +47,9 @@
               '/javascripts/admin/maps/Overlays/CartoDeletewindow.js',
         function(){
           me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
-    			me.infowindow_      = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);    	// InfoWindow for markers
-    			// me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-180,-180),1,me.map_);		// Over tooltip for markers and selection area
-          me.deleteWindow_    = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_); 	// Delete window to confirm remove one/several markers
+    			me.info_window_      = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);    	// InfoWindow for markers
+    			me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-180,-180),1,me.map_);		// Over tooltip for markers and selection area
+          me.delete_window_    = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_); 	// Delete window to confirm remove one/several markers
 					me.map_canvas_ 			= new mapCanvasStub(me.map_);
          
  					me.getPoints();
@@ -366,6 +366,11 @@
 
       google.maps.event.addListener(marker,'dragstart',function(ev){
         this.data.init_latlng = ev.latLng;
+				
+				// Hide all floating map windows
+				me.delete_window_.hide();
+				me.info_window_.hide();
+				me.tooltip_.hide();
       });
 
 
@@ -379,7 +384,13 @@
 
       google.maps.event.addListener(marker,'click',function(ev){
         if (me.status_=="select") {
-          me.infowindow_.open(this);
+          me.info_window_.open(this);
+        }
+      });
+
+			google.maps.event.addListener(marker,'mouseover',function(ev){
+        if (me.status_=="select") {
+          this.setZIndex(me.marker_zIndex_++);
         }
       });
        

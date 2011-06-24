@@ -63,7 +63,7 @@
 			$(div).find('a.delete').click(function(ev){
 				stopPropagation(ev);
 				me.hide();
-				carto_map.deleteWindow_.open(me.latlng_,me.marker_);
+				carto_map.delete_window_.open(me.latlng_,me.marker_);
 			});
 	
 			this.moveMaptoOpen();
@@ -174,8 +174,8 @@
 			left = (pixPosition.x + this.offsetHorizontal_ - 20);
 		}
 		
-		if ((pixPosition.x - this.offsetHorizontal_) >= ($('div#map').width())) {
-			left = (pixPosition.x - this.offsetHorizontal_ - $('div#map').width() + 20);
+		if ((pixPosition.x + 180) >= ($('div#map').width())) {
+			left = (pixPosition.x + 180 - $('div#map').width());
 		}
 		
 		if ((pixPosition.y - $(div).height()) < 0) {

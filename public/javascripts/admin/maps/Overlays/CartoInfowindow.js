@@ -1,8 +1,8 @@
 
 
-	function CartoInfowindow(latlng, info, map) {
+	function CartoInfowindow(latlng, map) {
 	  this.latlng_ = latlng;
-		this.info_ = info;
+		this.marker_;
 		this.map_ = map;
 	
 	  this.offsetHorizontal_ = -107;
@@ -31,7 +31,7 @@
 			              '</div>'+
 			              '<div class="bottom">'+
 											'<label>cartodb_id:1</label>'+
-											'<a href="#delete">Delete</a>'+
+											'<a class="delete" href="#delete">Delete</a>'+
 		                '</div>');
 		
 
@@ -59,17 +59,23 @@
 				stopPropagation(ev);
 				me.hide();
 			});
+			
+			$(div).find('a.delete').click(function(ev){
+				stopPropagation(ev);
+				me.hide();
+				carto_map.deleteWindow_.open(me.latlng_,me.marker_);
+			});
 	
 			this.moveMaptoOpen();
+			$(div).css({opacity:0});
 	  }
 	
-		var div = this.div_;
 	  var pixPosition = this.getProjection().fromLatLngToDivPixel(this.latlng_);
 	  if (pixPosition) {
 		  div.style.width = this.width_ + 'px';
 		  div.style.left = (pixPosition.x - 49) + 'px';
 		  var actual_height = - $(div).height();
-		  div.style.top = (pixPosition.y + actual_height - (($(div).css('opacity') == 1)? 10 : 0)) + 'px';
+		  div.style.top = (pixPosition.y + actual_height + 5) + 'px';
 	  }
 	};
 	
@@ -83,7 +89,7 @@
   		  div.style.width = this.width_ + 'px';
   		  div.style.left = (pixPosition.x - 49) + 'px';
   		  var actual_height = - $(div).height();
-  		  div.style.top = (pixPosition.y + actual_height - 5) + 'px';
+  		  div.style.top = (pixPosition.y + actual_height + 5) + 'px';
   	  }
   	  this.show();
     }
@@ -95,6 +101,8 @@
 	  if (this.div_) {
 	    var div = this.div_;
 	    this.latlng_ = marker.getPosition();
+			this.marker_ = marker;
+	
 	    $(div).find('div.top').html('');
 	    
 	    var marker_data = marker.data;

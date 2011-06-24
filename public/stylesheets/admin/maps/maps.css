@@ -58,7 +58,19 @@ div.marker_infowindow div.bottom a {float:right; height:12px; margin:0 5px 0 0; 
   text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
 div.marker_infowindow div.bottom a:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
-        background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
+  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
+
+/*Marker deletewindow*/
+div.marker_deletewindow {position:absolute; background:url('/images/admin/map/delete_window.png') no-repeat 0 0;}
+div.marker_deletewindow div.top {display:block; width:115px; padding:24px 20px 6px 23px; }
+div.marker_deletewindow div.top p {font:normal 11px "Helvetica",Arial; color:white}
+div.marker_deletewindow div.bottom {display:block; width:115px; padding:0 20px 0 23px; background:red}
+div.marker_deletewindow div.bottom a.cancel {float:left; margin:4px 0 0 0; font:normal 11px "Helvetica",Arial; color:white}
+div.marker_deletewindow div.bottom a.delete {float:right; height:12px; margin:0 5px 0 0; padding:4px 13px; border:1px solid black; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
+  text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.marker_deletewindow div.bottom a.delete:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+    background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 
 
 div.map_window div.map_header {position:relative; float:left; width:100%; height:60px; background:url('/images/admin/table/head_bkg.png') repeat-x 0 bottom white; border-bottom:1px solid rgba(00,00,00,0.25); z-index:10;}

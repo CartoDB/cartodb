@@ -44,14 +44,15 @@
       head.js('/javascripts/admin/maps/Overlays/mapCanvasStub.js',
               '/javascripts/admin/maps/Overlays/CartoTooltip.js',
               '/javascripts/admin/maps/Overlays/CartoInfowindow.js',
-              // '/javascripts/admin/maps/Overlays/CartoDeletewindow.js',
+              '/javascripts/admin/maps/Overlays/CartoDeletewindow.js',
         function(){
-          me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                                              // Selection polygon area
-    			me.infowindow_      = new CartoInfowindow(new google.maps.LatLng(-180,-180),null,me.map_);    // InfoWindow for markers
-    			// me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-180,-180),1,me.map_);        // Over tooltip for markers and selection area
-          // me.deleteWindow_    = new CartoDeleteWindow(new google.maps.LatLng(-180,-180), me.map_);    // Delete window to confirm remove one/several markers
+          me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
+    			me.infowindow_      = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);    	// InfoWindow for markers
+    			// me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-180,-180),1,me.map_);		// Over tooltip for markers and selection area
+          me.deleteWindow_    = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_); 	// Delete window to confirm remove one/several markers
 					me.map_canvas_ 			= new mapCanvasStub(me.map_);
-          me.getPoints();
+         
+ 					me.getPoints();
         }
       );
     }
@@ -437,7 +438,35 @@
     /*  Remove one or serveral markers         */
     /*******************************************/
     CartoMap.prototype.removeMarkers = function(array) {
-      
+      var me = this;
+			var type = 'remove_point';
+			var cartodb_ids = '';
+			
+			if (_.size(array)>20) {
+				this.showLoader();
+				type = 'remove_points';
+			}
+			
+			asyncRemoving(array);
+			
+			function asyncRemoving(rest) {
+				if (_.size(rest)>0) {
+          var marker = _.first(rest);
+          me.deleteMarker(marker);
+					cartodb_ids += marker.data.cartodb_id + ','
+          setTimeout(asyncRemoving(_.rest(rest)),0);
+				} else {
+					var params = {};
+					params.cartodb_ids = cartodb_ids.substr(0,cartodb_ids.length-1);
+					me.updateTable('/records/'+params.cartodb_ids,params,null,null,type,"DELETE");
+					me.hideLoader();
+				}
+			}
+    }
+
+
+		CartoMap.prototype.deleteMarker = function(marker) {
+      marker.setMap(null);
     }
     
     
@@ -553,6 +582,13 @@
                                 new_value.data.cartodb_id = occ_id;
                                 this.points_[occ_id] = new_value;
                                 break;
+        case "remove_point":    var array = (params.cartodb_ids).split(',');
+																var me = this;
+																_.each(array,function(ele,i){
+																	delete me.points_[ele];
+																});
+                                break;
+
         default:                break;
       }
     }
@@ -565,6 +601,13 @@
         case "change_latlng":   var occ_id = params.cartodb_id;
                                 (this.points_[occ_id]).setPosition(old_value);
                                 break;
+        case "remove_point":    var array = (params.cartodb_ids).split(',');
+																var me = this;
+																_.each(array,function(ele,i){
+																	me.points_[ele].setMap(me.map_);
+																});
+                                break;
+
         default:                break;
       }
     }

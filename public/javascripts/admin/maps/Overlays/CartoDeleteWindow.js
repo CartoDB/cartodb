@@ -4,10 +4,10 @@
 	  this.latlng_ = latlng;
 		this.map_ = map;
 
-		this.height_ = 110;
-		this.width_ = 158;
-	  this.offsetHorizontal_ = -79;
-	  this.offsetVertical_ = -96;
+		this.height_ = 130;
+		this.width_ = 206;
+	  this.offsetHorizontal_ = -105;
+	  this.offsetVertical_ = -123;
 	
 
 	  this.setMap(map);
@@ -29,11 +29,11 @@
 	    div.setAttribute('class','marker_deletewindow');
 
 			$(div).append('<div class="top">'+
-											'<p>Do you really want to delete this point?</p>'+
+											'<p>You are about to delete this row. Are you sure?</p>'+
 			              '</div>'+
 			              '<div class="bottom">'+
-											'<a href="#nooo" class="cancel">Ops! no</a>'+
-											'<a href="#delete" class="delete">YES</a>'+
+											'<a href="#nooo" class="cancel">cancel</a>'+
+											'<a href="#delete" class="delete">Yes, delete</a>'+
 		                '</div>');
 	
 
@@ -65,7 +65,7 @@
 			$(div).find('a.delete').click(function(ev){
 				stopPropagation(ev);
 				me.hide();
-				carto_map.removeMarkers([me.marker_]);
+				carto_map.removeMarkers(me.markers_);
 			});
 
 			$(div).css({opacity:0});
@@ -97,12 +97,12 @@
 	}
 
 
-	CartoDeleteWindow.prototype.open = function(latlng,marker){
+	CartoDeleteWindow.prototype.open = function(latlng,markers){
   
 	  if (this.div_) {
 	    var div = this.div_;
 	    this.latlng_ = latlng;
-			this.marker_ = marker;
+			this.markers_ = markers;
     
 	    this.moveMaptoOpen();
 	    this.setPosition();			

@@ -1,7 +1,7 @@
 
 		function CartoTooltip(latlng, map) {
 		  this.latlng_ = latlng;
-			this.marker_;
+			this.markers_;
 		  this.offsetVertical_ = -21;
 		  this.offsetHorizontal_ = 1;
 		  this.height_ = 22;
@@ -24,14 +24,10 @@
 				$(div).find('a.info').click(function(ev){
 					stopPropagation(ev);
 					me.hide();
-					carto_map.info_window_.open(me.marker_);
+					carto_map.over_marker_ = true;
+					carto_map.info_window_.open(me.markers_[0]);
 				});
 				
-				$(div).find('a.delete').click(function(ev){
-					stopPropagation(ev);
-					me.hide();
-					carto_map.delete_window_.open(me.latlng_,me.marker_);
-				});
 				
 				$(div).hover(
 					function(){
@@ -69,13 +65,50 @@
 
 		CartoTooltip.prototype.open = function(latlng,marker) {
 			if (this.div_) {
-				this.marker_ = marker;
-				this.latlng_ = latlng;
 				var div = this.div_;
+				var me = this;
+				div.style.width = '31px';
+				$(div).find('a.info').show();
+				$(div).find('a.delete').unbind('click');
+				$(div).find('a.delete').click(function(ev){
+					stopPropagation(ev);
+					carto_map.over_marker_ = true;
+					me.hide();
+					carto_map.delete_window_.open(me.latlng_,me.markers_);
+				});
+				
+				this.markers_ = marker;
+				this.latlng_ = latlng;
 			  var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
 			  if (pixPosition) {
 				  div.style.left = (pixPosition.x + this.offsetHorizontal_) + "px";
 				  div.style.top = (pixPosition.y + this.offsetVertical_ - 7) + "px";
+			  }
+				this.show();
+		  }
+		}
+		
+		
+		CartoTooltip.prototype.openPolgyon = function(latlng,markers) {
+			if (this.div_) {
+				var div = this.div_;
+				var me = this;
+				div.style.width = '15px';
+				$(div).find('a.info').hide();
+				$(div).find('a.delete').unbind('click');
+				$(div).find('a.delete').click(function(ev){
+					stopPropagation(ev);
+					carto_map.over_marker_ = true;
+					me.hide();
+					carto_map.removeMarkers(me.markers_);
+				});
+				
+				this.markers_ = markers;
+				this.latlng_ = latlng;
+			  var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
+			  if (pixPosition) {
+				  div.style.left = (pixPosition.x + this.offsetHorizontal_ + 1) + "px";
+				  div.style.top = (pixPosition.y + this.offsetVertical_ + 5) + "px";
 			  }
 				this.show();
 		  }

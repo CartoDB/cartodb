@@ -44,7 +44,7 @@
 			$(div).find('a.delete').click(function(ev){
 				stopPropagation(ev);
 				me.hide();
-				carto_map.delete_window_.open(me.latlng_,me.marker_);
+				carto_map.delete_window_.open(me.latlng_,[me.marker_]);
 			});
 										
 
@@ -108,7 +108,7 @@
 	    var marker_data = marker.data;
 	    
 	    _.each(this.columns_,function(label){
-				$(div).find('div.top').append('<label>'+label+'</label><input type="text" rel="'+label+'" value="'+(marker.data[label]!=null?marker.data[label]:'Empty field')+'" />');
+				$(div).find('div.top').append('<label>'+label+'</label><input type="text" class="'+(marker.data[label]!=null?'':'empty')+'" rel="'+label+'" value="'+(marker.data[label]!=null?marker.data[label]:'<<Empty field>>')+'" />');
 	    });
 	
 			$(div).find('div.bottom').find('label').html('cartodb_id: <strong>'+marker.data.cartodb_id+'</strong>');

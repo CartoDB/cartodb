@@ -1,4 +1,5 @@
 body {position:relative; background:url('/images/admin/common/header_bkg.jpg') repeat-x center 0 #2D3451; overflow-x:hidden;}
+body.query {background-position:center -160px;}
 body, html {height:100%;} /*table hack*/
 a:focus {outline:none;}
 
@@ -10,18 +11,30 @@ header ul {float:right; margin: 24px 40px 0 0; }
 header ul li {float:left; display: inline; list-style: none; padding: 0 10px 0 0; border-right: solid 1px #949BAB; }
 header ul li.last {padding: 0; border: none; }
 header ul li a { float:left; margin:0 0 0 10px; font:normal 13px Arial; color:#949BAB; text-decoration: none;}
+body.query header ul li a {color:#aaaaaa}
+body.query header ul li a:hover {color:white}
 header ul li a:hover {color:#FFFFFF;}
 header ul li span a { margin:0 0 0 4px; text-decoration: underline; color:#949BAB;}
 header ul li span a:hover {color:#FFFFFF;}
 
 
 /*SUBHEADER*/
+section.subheader span.query {display:none}
+body.query section.subheader span.normal {display:none}
+body.query section.subheader span.query {display:block}
+
 section.subheader {position:fixed; top:58px; left:0; width:100%; min-width:880px; height:103px; background:url('/images/admin/common/header_bkg.jpg') repeat-x center -58px #2D3451; z-index:100;}
+body.query section.subheader {background-position:center -218px}
 section.subheader div.outer {float:left; width:100%; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
+body.query section.subheader div.outer {background:url('/images/admin/table/sql_border.png') repeat-x 0 0}
 section.subheader div.left {position:relative; float:left; width:600px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
 section.subheader h2 {float:left; width:auto; font:bold 21px Arial; color:white;}
 section.subheader h2 a {color:white; text-decoration:none;}
 section.subheader h2 a:hover {}
+section.subheader h3 {float:left; width:auto; font:bold 21px Arial; color:white; letter-spacing:-1px}
+section.subheader h3 a {display:inline-block; padding:2px 7px; margin:2px 0 0 5px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none; text-transform:uppercase; background:#FF6600}
+section.subheader h3 a:hover {background:#FF4400}
+section.subheader span.query p {float:left; display:block; width:100%; margin:5px 0 0 0; font:normal 13px Arial; color:#999999}
 section.subheader p.status {float:left; width:auto;}
 section.subheader p.status a {float:left; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none; text-transform:uppercase;}
 section.subheader p.status a.public {background:#6FBE6F;}
@@ -45,7 +58,6 @@ section.subheader span.privacy_window ul li.disabled {background:none; opacity:0
 section.subheader span.privacy_window ul li.disabled:hover {background:none;}
 section.subheader span.privacy_window ul li.disabled:hover a {color:black; background-position:0 -28px; cursor:default;}
 
-
 section.subheader span.tags {float:left; width:100%;}
 section.subheader span.tags p {float:left; width:auto; padding:3px 7px; margin:4px 4px 0 0; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:normal 11px Arial; color:white; text-decoration:none; background:#121621;}
 section.subheader span.tags p.last {margin:4px 6px 0 0;}
@@ -55,7 +67,8 @@ section.subheader span.tags a:hover {background:black; text-decoration:underline
 section.subheader span.tags a.add:hover {background:none;}
 section.subheader ul.tab_menu {position:absolute; bottom:0; left:0; height:auto; width:100%; padding:0; margin:0;}
 section.subheader ul.tab_menu li {float:left; width:auto; height:auto; margin:0 3px 0 0; padding:0;}
-section.subheader ul.tab_menu li a {float:left; padding:7px 15px; color:white; font:bold 13px Arial; text-decoration:underline; background-color:rgba(256,256,256,0.1); -webkit-border-top-left-radius:5px; -webkit-border-top-right-radius:5px; -moz-border-radius-topleft:5px; -moz-border-radius-topright:5px; border-top-left-radius:5px; border-top-right-radius:5px;}
+section.subheader ul.tab_menu li a {float:left; padding:7px 15px; color:white; font:bold 13px Arial; text-decoration:underline; background-color:rgba(256,256,256,0.1); -webkit-border-top-left-radius:5px; -webkit-border-top-right-radius:5px; -moz-border-radius-topleft:5px; -moz-border-radius-topright:5px; border-top-left-radius:5px; border-top-right-radius:5px;
+  text-decoration:none}
 section.subheader ul.tab_menu li a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
 section.subheader ul.tab_menu li.selected a {background-color:rgba(256,256,256,1); color:#272E48; text-decoration:none;}
 section.subheader ul.tab_menu li.selected a:hover {color:#272E48; text-decoration:none;}
@@ -66,16 +79,20 @@ section.subheader div.right p.settings {float:right; font:normal 15px Arial; col
 section.subheader div.right p.settings a {font:normal 13px Arial; text-shadow:0 1px black;}
 section.subheader div.right p.settings a.delete {padding:0 3px 0 0; color:#FF3300;}
 section.subheader div.right p.settings a.delete:hover {color:#FF4400;}
+body.query section.subheader div.right p.settings a.delete {display:none}
 section.subheader div.right p.settings a.settings {padding:0 20px 0 3px; color:white; background:url('/images/admin/icons/settings.png') no-repeat right 1px;}
 section.subheader div.right p.settings a.settings:hover {color:white;}
 section.subheader div.right span.advanced_options {position:absolute; display:none; right:-10px; top:9px; width:122px; z-index:100;}
 section.subheader div.right span.advanced_options a.advanced {position:relative; float:right; padding:7px 29px 7px 9px; font:normal 13px Arial; text-shadow:0 1px black;
-text-decoration:none; color:#949BAA; z-index:100; border:1px solid black; border-bottom:0; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px;
+text-decoration:none; color:#949BAA!important; z-index:100; border:1px solid black; border-bottom:0; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px;
 border-top-left-radius: 5px; border-top-right-radius: 5px; background:#23314E;}
+body.query section.subheader div.right span.advanced_options a.advanced {background:#333333; color:#CCCCCC!important}
 section.subheader div.right span.advanced_options a.advanced span {position:absolute; right:9px; top:6px; height:16px; width:13px; background:url('/images/admin/icons/settings.png') no-repeat right -13px;}
 section.subheader div.right span.advanced_options ul {float:left; width:100px; height:auto; padding:5px 11px 5px 9px; margin:-1px 0 0 0; border:1px solid black; -webkit-border-radius: 5px;
-  -webkit-border-top-right-radius: 0; -moz-border-radius: 5px; -moz-border-radius-topright: 0; border-radius: 5px; border-top-right-radius: 0; background:linear-gradient(-90deg, #233151, #232B46); 
-  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#233151), to(#232B46)); background:-moz-linear-gradient(-90deg, #233151, #232B46); background:-o-linear-gradient(#233151,#232B46);  background:#233151;}
+  -webkit-border-top-right-radius: 0; -moz-border-radius: 5px; -moz-border-radius-topright: 0; border-radius: 5px; border-top-right-radius: 0; background:linear-gradient(-90deg, #233151, #232B46);
+  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#233151), to(#232B46)); background:-moz-linear-gradient(-90deg, #233151, #232B46); background:-o-linear-gradient(#233151,#232B46);  background:#233151\9;}
+body.query section.subheader div.right span.advanced_options ul {background:linear-gradient(-90deg, #333333, #111111); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#333333), to(#111111)); background:-moz-linear-gradient(-90deg, #333333, #111111);
+  background:-o-linear-gradient(#333333,#111111);  background:#333333\9;}
 section.subheader div.right span.advanced_options ul li {background:none; margin: 0 0 4px 0;}
 section.subheader div.right span.advanced_options ul li a {background:none; font:normal 11px "Helvetica"; color:white; text-decoration:none;}
 section.subheader div.right span.advanced_options ul li a:hover {text-decoration:underline; cursor:pointer;}
@@ -89,6 +106,14 @@ section.subheader div.right span.paginate a.next {background:url('/images/admin/
 section.subheader div.right span.paginate a.next.disabled {background-position:0 -46px;}
 section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
 section.subheader div.right span.paginate a.disabled:hover {cursor:default;}
+body.query section.subheader div.right span.paginate a.previous {background:url('/images/admin/icons/sql_paginate.png') no-repeat 0 0;}
+body.query section.subheader div.right span.paginate a.previous:hover {background-position:0 -24px}
+body.query section.subheader div.right span.paginate a.previous.disabled {background-position:0 -46px; opacity:0.5}
+body.query section.subheader div.right span.paginate a.next {background:url('/images/admin/icons/sql_paginate.png') -27px 0;}
+body.query section.subheader div.right span.paginate a.next.disabled {background-position:-27px -46px; opacity:0.5}
+body.query section.subheader div.right span.paginate a.next:hover {background-position:-27px -23px;}
+body.query section.subheader div.right span.paginate a.disabled:hover {cursor:default;}
+
 
 
 
@@ -135,9 +160,11 @@ section.subheader span.tags_window a:hover {  background:linear-gradient(-90deg,
 
 /*GENERAL OPTIONS (bottom bar with SQL,add column/row - map tools)*/
 div.general_options {position:fixed; bottom:0; right:0; left:0; height:3px; background:#282F49; z-index:200;}
+body.query div.general_options {background:#333333}
 div.general_options.end {bottom:15px;}
 div.general_options ul {position:absolute; bottom:0; right:0; display:inline-block; width:auto; height:25px; padding:5px 5px 3px 0; margin:0; background:#282F49; -webkit-border-top-left-radius: 5px; -moz-border-radius-topleft: 5px; border-top-left-radius: 5px; z-index:100;}
-div.general_options ul li {display:inline-block; width:auto; height:25px; margin:0 0 0 5px; vertical-align:middle; overflow:hidden;}
+body.query div.general_options ul {background:#313131}
+div.general_options ul li {display:inline-block; width:auto; height:25px; margin:0 0 0 2px; vertical-align:middle; overflow:hidden;}
 div.general_options ul.sql {display:none;}
 div.general_options ul li a {display:block; width:auto; height:11px; padding:6px 7px; text-decoration:none; -webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;border:1px solid #161A29; font:bold 11px Arial; color:#333333; text-shadow:0 1px white;
 background:linear-gradient(-90deg,#ffffff,#CACBCE);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#ffffff),to(#CACBCE));background:-moz-linear-gradient(-90deg,#ffffff,#CACBCE);background:-o-linear-gradient(#ffffff,#CACBCE);background:#ffffff\9;cursor:default;}
@@ -162,28 +189,60 @@ div.general_options.table li.map {display:none;}
 div.general_options.map ul {padding-right:2px;}
 div.general_options.map li {display:none;}
 div.general_options.map li.map {display:inline-block;}
-div.general_options.map li.all {display:inline-block; margin:0 2px 0 5px;}
+body.query div.general_options ul li {display:none}
+div.general_options ul li.all {display:inline-block!important; margin:0 0 0 5px!important;}
+div.general_options.map ul li.all {display:inline-block!important; margin:0 2px 0 5px!important;}
+div.general_options.map ul li.all a:hover {background:linear-gradient(-90deg,#CACBCE,#ffffff)!important;background:-webkit-gradient(linear,50% 0%,50% 100%,from(#CACBCE),to(#ffffff))!important;background:-moz-linear-gradient(-90deg,#CACBCE,#ffffff)!important;background:-o-linear-gradient(#CACBCE,#ffffff)!important;background:#CACBCE\9!important;cursor:pointer!important;}
+div.general_options ul li.all a:hover {background:linear-gradient(-90deg,#CACBCE,#ffffff)!important;background:-webkit-gradient(linear,50% 0%,50% 100%,from(#CACBCE),to(#ffffff))!important;background:-moz-linear-gradient(-90deg,#CACBCE,#ffffff)!important;background:-o-linear-gradient(#CACBCE,#ffffff)!important;background:#CACBCE\9!important;cursor:pointer!important;}
+
 
 /*sql console*/
-div.general_options div.sql_console {position:fixed; display:none; bottom:0; left:0; right:0; min-height:158px; padding:15px 36px 5px; border-bottom:3px solid black; z-index:5; background:url('/images/admin/table/console_bkg.jpg') #282F49}
-div.general_options div.sql_console.end {bottom:15px;}
-div.general_options div.sql_console span {float:left; width:100%;}
-div.general_options div.sql_console span h3 {float:left; width:auto; padding:5px 0; font:normal 13px Arial; color:white; text-shadow:0 1px black;}
-div.general_options div.sql_console span h3 strong {color:#FFCC00;}
-div.general_options div.sql_console span h3 a.get_api_call {float:none; padding:3px 7px; margin:0 0 0 10px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; background:black; text-transform:uppercase; color:white;
-  font:bold 11px Arial; text-decoration:none; text-shadow:none;}
-div.general_options div.sql_console span h3 a.get_api_call:hover {background:white; color:black; text-shadow:none;}
-div.general_options div.sql_console span a.close {float:right; margin:3px 0 0 0; font:normal 11px Arial; color:white; text-decoration:underline;}
-div.general_options div.sql_console span a.close:hover {}
-div.general_options div.sql_console span a.save_query {float:right; margin:20px 0 0 0; font:bold 12px Arial; color:#6FBE6F; text-decoration:underline;}
-div.general_options div.sql_console span a.save_query:hover {color:#93FF93;}
-div.general_options div.sql_console span a.try_query {float:right; margin:10px 0 0 10px; padding:8px 9px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; border:1px solid #151927; font:bold 12px Arial; text-shadow:0 1px white; 
+div.sql_window {position:fixed; display:none; top:50%; left:50%; min-width:610px; min-height:199px; padding:9px; margin:-109px 0 0 -314px; z-index:100; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
+  -webkit-box-shadow:0 0 10px 3px rgba(0,0,0,0.31); -moz-box-shadow:0 0 50px 3px rgba(0,0,0,0.31); box-shadow:0 0 15px 3px rgba(0,0,0,0.31);}
+div.sql_window a.close {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0; text-indent:-9999px; z-index:10}
+div.sql_window a.close:hover {background-position:0 -23px;}
+div.sql_window div.inner {position:absolute; top:8px; left:8px; right:8px; bottom:8px; margin:0; border:1px solid #ccc; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0; z-index:1}
+div.sql_window div.inner h3 {display:block; padding:10px 0 0 10px; font:bold 15px Arial; color:#333333; text-shadow:0 1px white;}
+div.sql_window div.inner p {display:block; padding:3px 0 0 10px; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
+div.sql_window div.inner div.outer_textarea {position:absolute; top:55px; left:9px; right:9px; bottom:50px; margin:10px 0 0 0; padding:5px ; background:white;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD}
+div.sql_window span.bottom {position:absolute; bottom:10px; left:10px; right:10px; height:28px;}
+div.sql_window span.bottom a.clear_table {float:right; margin:7px 12px 0 0; font:normal 13px 'Helvetica',Arial; color:#333333; text-shadow:0 1px white;}
+div.sql_window span.bottom a.clear:hover {color:black;}
+div.sql_window span.bottom a.try_query {float:right; margin:0; height:12px; padding:7px 9px; -webkit-border-radius: 5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999; font:bold 12px Arial; text-shadow:0 1px white;
   color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
-  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#DEDEDE\9}
-div.general_options div.sql_console span a.try_query:hover { background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
-          background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); background:#CACBCE\9; cursor:pointer;}
-div.general_options div.sql_console span p.errors {display:none; float:left; width:auto; padding:5px 10px; margin:10px 0 0 0; background:red; color:white; border:1px solid red; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial;}
-.outer_textarea{display:inline-block; width:100%;height:73px; margin:10px 0 0 0; padding:5px 0 0 0; background:white;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;}
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#DEDEDE\9; text-decoration:none}
+div.sql_window span.bottom a.try_query:hover { background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); background:#CACBCE\9; cursor:pointer;}
+div.sql_window span.bottom p.errors {float:left; display:none; width:auto; padding:5px 10px; margin:3px 0 0 0; background:red; color:white; border:1px solid red; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;
+  font:normal 11px Arial; text-shadow:none}
+div.sql_window .ui-resizable-handle {position:absolute; right:4px; bottom:4px; width:10px; height:10px; background:url('/images/admin/table/resize.png') no-repeat 0 0}
+
+
+/*Codemirror SQL*/
+.CodeMirror{overflow:auto;height:100%;line-height:1em;font:normal 13px Arial;}
+.CodeMirror-gutter{position:absolute;left:0;top:0;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
+.CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;}
+.CodeMirror-lines{padding:.4em;}
+.CodeMirror pre{-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;font-family:Arial;}
+.CodeMirror textarea{font-family:Arial !important;}
+.CodeMirror-cursor{z-index:10;position:absolute;visibility:hidden;border-left:1px solid black !important;}
+.CodeMirror-focused .CodeMirror-cursor{visibility:visible;}
+span.CodeMirror-selected{background:#ccc !important;color:HighlightText !important;}
+.CodeMirror-focused span.CodeMirror-selected{background:Highlight !important;}
+.CodeMirror-matchingbracket{color:#0f0 !important;}
+.CodeMirror-nonmatchingbracket{color:#f22 !important;}
+pre span {float:none!important; width:auto!important;}
+span.plsql-keyword{color:#0099CC; font-weight:bold}
+span.plsql-var{color:red;}
+span.plsql-comment{color:#AA7700;}
+span.plsql-string{color:green;}
+span.plsql-operator{color:#0099CC;}
+span.plsql-word{color:black;}
+span.plsql-function{color:darkorange; font-weight:bold}
+span.plsql-sqlplus{color:darkorange; font-weight:bold}
+span.plsql-type{color:purple;}
+span.plsql-separator{color:#666666;}
+span.plsql-number{color:darkcyan;}
 
 
 

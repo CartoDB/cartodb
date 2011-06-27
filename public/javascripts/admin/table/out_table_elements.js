@@ -24,19 +24,21 @@
           '<p>select</p>'+
           '<span class="arrow"></span>'+
         '</div>'+
-        
-        //SQL Console
-        '<div class="sql_console">'+
-          '<span>'+
-            '<h3> </h3>'+ //<a class="get_api_call" href="#get_api_call">GET API CALL</a>
-            '<a href="#close_this_view" class="close">close this view</a>'+
-          '</span>'+
-          '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
-          '<span>'+
-            '<a class="try_query">Try query</a>'+
-            '<p class="errors">Your query is not correct, try again with another ;)</p>'+
-          '</span>'+
-        '</div>'+
+      '</div>'+
+
+			//SQL Console
+      '<div class="sql_window">'+
+      	'<a href="#close_this_view" class="close">close this view</a>'+
+				'<div class="inner">'+
+       		'<h3>Add your custom SQL query</h3>'+
+					'<p>You can free move or close this window to watch the table</p>'+
+	        '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
+	        '<span class="bottom">'+
+	          '<a href="#apply" class="try_query">Apply query</a>'+
+	          '<a href="#clear" class="clear_table">Clear view</a>'+
+	          '<p class="errors">Your query is not correct, try again with another ;)</p>'+
+	        '</span>'+
+				'</div>'+
       '</div>');
     
     // Editor common to table and map
@@ -44,6 +46,8 @@
       lineNumbers: false,
       mode: "text/x-plsql"
     });
+		// Draggable and resizable capacities to sql window
+    $('div.sql_window').draggable({appendTo: 'body'}).resizable({maxWidth:800,maxHeight:400});
     
 
     ///////////////////////////////////////
@@ -190,11 +194,13 @@
     
     $('a.import_data').livequery('click',function(ev){
       stopPropagation(ev);
-      closeOutTableWindows();
-      
-      $('div.mamufas div.import_window').show();
-      $('div.mamufas').fadeIn('fast');
-      bindESC();
+			if (!$(this).closest('li').hasClass('disabled')) {
+				closeOutTableWindows();
+	      $('div.mamufas div.import_window').show();
+	      $('div.mamufas').fadeIn('fast');
+	      bindESC();
+			}
+
     });
 
 
@@ -444,7 +450,7 @@
     ///////////////////////////////////////
     //  Delete table                     //
     ///////////////////////////////////////
-    $('a.delete').click(function(ev){
+    $('a.delete').livequery('click',function(ev){
       stopPropagation(ev);
       closeOutTableWindows();
       var table_id = $(this).attr('table-id');

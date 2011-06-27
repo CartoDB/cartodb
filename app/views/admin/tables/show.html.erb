@@ -26,7 +26,7 @@
       "admin/table/table",
       "admin/table/table_templates",
     )%>
-      
+
     <script type="text/javascript">
       var table_id = <%= @table["id"] %>;
       var status = "<%= table_privacy_text(@table).downcase %>";
@@ -34,7 +34,7 @@
       var user_id = "<%= current_user.id %>";
     </script>
   <% end %>
-  
+
 
   <% content_for(:head) do %>
     <%= stylesheet_link_tag('reset.css','admin/table/out_table_elements','admin/table/carto_table', 'admin/maps/maps' ) %>
@@ -44,22 +44,28 @@
     <div class="outer">
       <div class="inner_subheader">
         <div class="left">
-          <h2><a href="#change_title"><%= @table["name"] %></a></h2>
-          <p class="status">
-            <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
-          </p>
-          <span class="tags">
-            <% unless @table["tags"].blank? %>
-              <% tagsSize=@table["tags"].split(',').size %>
-              <% @table["tags"].split(',').each_with_index do |tag_name,index| %>
-              <% if index==tagsSize-1 %>
-                <p class="last"><%= tag_name %></p>
-              <% else %>
-                <p><%= tag_name %></p>
+          <span class="query">
+            <h3></h3>
+            <p>This query took XX.XX seconds</p>
+          </span>
+          <span class="normal">
+            <h2><a href="#change_title"><%= @table["name"] %></a></h2>
+            <p class="status">
+              <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
+            </p>
+            <span class="tags">
+              <% unless @table["tags"].blank? %>
+                <% tagsSize=@table["tags"].split(',').size %>
+                <% @table["tags"].split(',').each_with_index do |tag_name,index| %>
+                <% if index==tagsSize-1 %>
+                  <p class="last"><%= tag_name %></p>
+                <% else %>
+                  <p><%= tag_name %></p>
+                <% end %>
+                <% end %>
               <% end %>
-              <% end %>
-            <% end %>
-            <a href="#" class="add">edit tags</a>
+              <a href="#" class="add">edit tags</a>
+            </span>
           </span>
           <ul class="tab_menu">
             <li class="selected"><a href="#view_table">Table</a></li>

@@ -121,6 +121,7 @@
          }
        });
      } else {
+			 var now = new Date();
        $.ajax({
          method: "GET",
          url: '/v1?sql='+escape(editor.getValue()),
@@ -130,13 +131,14 @@
          },
   			 headers: {"cartodbclient":"true"},
          success: function(data) {
+					 var arrived = new Date();
            $('div.sql_console p.errors').fadeOut();
            $('div.sql_console span h3').html('<strong>'+data.total_rows+' results</strong>');
            rows = data.rows;
            total_rows = data.total_rows;
            cell_size = 100;
            last_cell_size = 100;
-           methods.drawQueryColumns(rows);
+           methods.drawQueryColumns(rows,total_rows,arrived-now);
            methods.drawQueryRows(rows,direction,actualPage);
            $(document).unbind('arrived');
          },
@@ -148,8 +150,8 @@
              msg += text + ', ';
            });
            msg = msg.substr(0,msg.length-2);
-           $('div.sql_console p.errors').text(msg).stop().fadeIn().delay(10000).fadeOut();
-           methods.drawQueryColumns([{'':''}]);
+           $('div.sql_window p.errors').text(msg).stop().fadeIn().delay(10000).fadeOut();
+           methods.drawQueryColumns([]);
            $(document).unbind('arrived');
          }
        });
@@ -251,28 +253,54 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW COLUMNS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    drawQueryColumns: function(data) {
-      //Draw the columns headers
-      var thead = '<thead><tr><th class="first"><div></div></th>';
-      headers = {};
-      
+    drawQueryColumns: function(data,total,time) {
+			
       if (data.length>0) {
+	      //Draw the columns headers
+	      var thead = '<thead style="height:91px"><tr><th class="first"><div></div></th>';
+	      headers = {};
+	
+				$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+				$('span.query p').text('This query took '+time/1000+' seconds');
         $.each(data[0],function(i,ele){
-          thead += '<th>'+
-                     '<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
-                       '<span class="long">'+
-                      '<h3 class="'+((i=="cartodb_id" || i=="created_at" ||  i=="updated_at")?'static':'')+'">'+i+'</h3>'+
-                       '</span>'+
-                     '</div>'+
-                   '</th>';
+					
+					switch (i) {
+						case "the_geom": type = 'Geometry'; break;
+						case "created_at": type = 'Date'; break;
+						case "updated_at": type = 'Date'; break;
+						case "cartodb_id": type = 'Number'; break;
+						default: type = 'Unknown';
+					}
+					
+	
+          thead += 	'<th>'+
+                     	'<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
+                      	'<span class="long">'+
+                     			'<h3 class="static">'+i+'</h3>'+
+													((i=="the_geom")?'<p class="geo disabled">geo</p':'')+
+                      	'</span>'+
+												'<p class="long">'+
+                     			'<a class="static">'+type+'</a>'+
+                      	'</p>'+
+												'<a class="options disabled">options</a>'+
+                     	'</div>'+
+                   	'</th>';
+					});
+					
+					thead += "</tr></thead>";
+					$(table).append(thead);
+		      
+					$(table).find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear</a></p></div>');
+					var p_left = ($(window).width() - $('div.stickies p').width())/2;
+					$('div.stickies p').css({'margin-left':p_left+'px'});
+      } else {
+				$('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+				$('span.query p').text('');
+				var thead = '<thead><tr><th class="first"><div></div></th><th><div></div></th></tr></thead>';
+				$(table).append(thead);
+			}
 
-        });
-      }  
-
-      
-      thead += "</thead></tr>";
-      $(table).append(thead);
-      methods.resizeTable();
+			methods.resizeTable();
     },
 
 
@@ -312,7 +340,7 @@
             },
             cartodb_id: element['cartodb_id'],
             is_cartodb_id:(j=="cartodb_id")?true:false,
-         allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
+         		allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
             cellsize: cell_size,
             column: j
           });
@@ -352,7 +380,7 @@
     drawQueryRows: function(data,direction,page) {
 
       if ($(table).children('tbody').length==0) {
-        var tbody = '<tbody style="padding-top:53px;">';
+        var tbody = '<tbody style="padding-top:89px;">';
       } else {
         var tbody = '';
       }
@@ -952,8 +980,8 @@
 
       if (kind=="previous") {
         $('div.loading_previous p.count').text('Now vizzualizing '+range+' of '+defaults.total);
-        $(table).children('tbody').css('padding','0');
-        $(table).children('tbody').css('margin','0');
+				$(table).children('tbody').css('padding','0');
+				$(table).children('tbody').css('margin','0');
         $('div.loading_previous').show();
       } else {
         $('div.loading_next p.count').text('Now vizzualizing '+range+' of '+defaults.total);
@@ -970,7 +998,11 @@
       loading = false;
       $('div.loading_next').hide();
       $('div.loading_previous').hide();
-      $(table).children('tbody').css('padding','53px 0 0 0');
+			if (query_mode) {
+				$(table).children('tbody').css('padding','89px 0 0 0');
+			} else {
+				$(table).children('tbody').css('padding','53px 0 0 0');
+			}
       $(table).children('tbody').css('margin','5px 0 0 0');
       $(document).scroll();
     },
@@ -1003,7 +1035,7 @@
       ///////////////////////////////////////
       $(document).dblclick(function(event){
         if (enabled && !query_mode) {
-       var target = event.target || event.srcElement;
+       		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
           if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" &&
@@ -1131,7 +1163,7 @@
       //  SIMPLE CLICK -> Open editor      //
       ///////////////////////////////////////
       $(document).click(function(event){
-        if (enabled) {
+        if (enabled && !query_mode) {
        		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
@@ -1215,7 +1247,7 @@
       //  Editing selected rows            //
       ///////////////////////////////////////
       $(document).mousedown(function(event){
-        if (enabled) {
+        if (enabled && !query_mode) {
        		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
       
@@ -1307,8 +1339,8 @@
         }
       });
       $(document).mouseup(function(event){
-        if (enabled) {
-       var target = event.target || event.srcElement;
+        if (enabled && !query_mode) {
+       		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
       
           if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
@@ -1385,7 +1417,7 @@
           }
         } else if (type=="number") {
           if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
-         var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
+         		var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
             var value_ = $("div.edit_cell textarea").val();
             if (pattern.test(value_)) {
               $('div.edit_cell textarea').removeClass('error');
@@ -1406,7 +1438,7 @@
           if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=new_value) {
             var errors = '';
             //TODO - Check pattern numbers!
-         var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
+         		var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
             if (!pattern.test($('input#longitude_value').val())) {
               $('input#longitude_value').addClass('error');
               errors = 'lon';
@@ -1568,31 +1600,32 @@
       //Head options even
       $('thead tr a.options').livequery('click',function(ev){
         stopPropagation(ev);
+				if (enabled && !query_mode) {
+					if (!$(this).hasClass('selected')) {
+	          methods.closeTablePopups();
+	          methods.bindESCkey();
+	          $(this).addClass('selected');
+	          var col_type = $(this).closest('th').find('a.column_type').text().toLowerCase();
+	          if (col_type!="string" && col_type!="number") {
+	            $('span.col_ops_list h5:contains("GEOREFERENCE")').hide();
+	            $('span.col_ops_list div.geo_line').hide();
+	            $('span.col_ops_list ul.geo_list').hide();
+	          } else {
+	            $('span.col_ops_list h5:contains("GEOREFERENCE")').show();
+	            $('span.col_ops_list div.geo_line').show();
+	            $('span.col_ops_list ul.geo_list').show();
+	          }
+	          $(this).parent().children('span.col_ops_list').show();
 
-        if (!$(this).hasClass('selected')) {
-          methods.closeTablePopups();
-          methods.bindESCkey();
-          $(this).addClass('selected');
-          var col_type = $(this).closest('th').find('a.column_type').text().toLowerCase();
-          if (col_type!="string" && col_type!="number") {
-            $('span.col_ops_list h5:contains("GEOREFERENCE")').hide();
-            $('span.col_ops_list div.geo_line').hide();
-            $('span.col_ops_list ul.geo_list').hide();
-          } else {
-            $('span.col_ops_list h5:contains("GEOREFERENCE")').show();
-            $('span.col_ops_list div.geo_line').show();
-            $('span.col_ops_list ul.geo_list').show();
-          }
-          $(this).parent().children('span.col_ops_list').show();
-
-          $('body').click(function(event) {
-            if (!$(event.target).closest('thead tr span').length) {
-              methods.closeTablePopups();
-            };
-          });
-        } else {
-          methods.closeTablePopups();
-        }
+	          $('body').click(function(event) {
+	            if (!$(event.target).closest('thead tr span').length) {
+	              methods.closeTablePopups();
+	            };
+	          });
+	        } else {
+	          methods.closeTablePopups();
+	        }
+				}
       });
       $('thead tr a.column_type').livequery('click',function(ev){
         stopPropagation(ev);
@@ -1801,21 +1834,22 @@
       ///////////////////////////////////////
       $('a.open_georeference,p.geo').livequery('click',function(ev){
         stopPropagation(ev);
-        methods.closeTablePopups();
-        methods.bindESCkey();
-        enabled = false;
-        var me = this;
-        
-        if (geolocating) {
-          $('div.mamufas div.stopgeo_window').show();
-          $('div.mamufas').fadeIn();
-          return false;
-        }
-                
-        
-        resetProperties();
-        getColumns();
-        
+				if (enabled && !query_mode) {
+					methods.closeTablePopups();
+	        methods.bindESCkey();
+	        enabled = false;
+	        var me = this;
+
+	        if (geolocating) {
+	          $('div.mamufas div.stopgeo_window').show();
+	          $('div.mamufas').fadeIn();
+	          return false;
+	        }
+
+	        resetProperties();
+	        getColumns();
+				} 
+
         
         function resetProperties() {
           $('div.georeference_window div.inner_ span.top').css('opacity',1).show();
@@ -2094,7 +2128,7 @@
       ///////////////////////////////////////
       $('a.add_row').livequery('click',function(ev){
         stopPropagation(ev);
-        if (enabled){
+        if (enabled && !query_mode){
           methods.addRow();
         }
       });
@@ -2154,51 +2188,53 @@
       ///////////////////////////////////////
       $('a.add_column').livequery('click',function(ev){
         stopPropagation(ev);
-        methods.closeTablePopups();
-        methods.bindESCkey();
-        enabled = false;
-        
-        $('div.column_window p.error').hide();
-        $('div.column_window span.select').removeClass('error');
-        $('div.column_window input').removeClass('error');
-        $('div.column_window span.select').addClass('disabled');
-        $('div.column_window span.select a:eq(0)').text('Retreiving types...').attr('type','');
-        $('div.column_window a.column_add').addClass('disabled');
-        $('div.column_window span.select').removeClass('clicked');
-        
-        $.ajax({
-           method: "GET",
-           url: '/v1/column_types',
-           headers: {"cartodbclient": true},
-           success: function(data) {
-             //Remove ScrollPane
-             var custom_scrolls = [];
-             $('.scrollPane').each(function(){
-               custom_scrolls.push($(this).jScrollPane().data().jsp);
-             });
-             $.each(custom_scrolls,function(i) {
-              this.destroy();
-              });
-             $('div.column_window span.select ul li').remove();
-             for (var i = 0; i<data.length; i++) {
-               $('div.column_window span.select ul').append('<li><a href="#'+data[i]+'">'+data[i]+'</a></li>');
-             }
-             $('div.column_window span.select').removeClass('disabled');
-             
-             $('div.column_window span.select a.option').each(function(i,ele){
-               if ($(ele).text()=="Retreiving types...") {
-                  $(ele).text('Select a type').attr('type','');
-                }
-             });
-             $('div.column_window a.column_add').removeClass('disabled');
-           },
-           error: function(e) {
-              $('div.column_window span.select a.option').text('Error retrieving types').attr('type','');
-           }
-        });
+				if (enabled && !query_mode) {
+					methods.closeTablePopups();
+	        methods.bindESCkey();
+	        enabled = false;
 
-        $('div.mamufas div.column_window').show();
-        $('div.mamufas').fadeIn();
+	        $('div.column_window p.error').hide();
+	        $('div.column_window span.select').removeClass('error');
+	        $('div.column_window input').removeClass('error');
+	        $('div.column_window span.select').addClass('disabled');
+	        $('div.column_window span.select a:eq(0)').text('Retreiving types...').attr('type','');
+	        $('div.column_window a.column_add').addClass('disabled');
+	        $('div.column_window span.select').removeClass('clicked');
+
+	        $.ajax({
+	           method: "GET",
+	           url: '/v1/column_types',
+	           headers: {"cartodbclient": true},
+	           success: function(data) {
+	             //Remove ScrollPane
+	             var custom_scrolls = [];
+	             $('.scrollPane').each(function(){
+	               custom_scrolls.push($(this).jScrollPane().data().jsp);
+	             });
+	             $.each(custom_scrolls,function(i) {
+	              this.destroy();
+	              });
+	             $('div.column_window span.select ul li').remove();
+	             for (var i = 0; i<data.length; i++) {
+	               $('div.column_window span.select ul').append('<li><a href="#'+data[i]+'">'+data[i]+'</a></li>');
+	             }
+	             $('div.column_window span.select').removeClass('disabled');
+
+	             $('div.column_window span.select a.option').each(function(i,ele){
+	               if ($(ele).text()=="Retreiving types...") {
+	                  $(ele).text('Select a type').attr('type','');
+	                }
+	             });
+	             $('div.column_window a.column_add').removeClass('disabled');
+	           },
+	           error: function(e) {
+	              $('div.column_window span.select a.option').text('Error retrieving types').attr('type','');
+	           }
+	        });
+
+	        $('div.mamufas div.column_window').show();
+	        $('div.mamufas').fadeIn();
+				}
       });
       $('div.column_window span.select a.option').livequery('click',function(ev){
         stopPropagation(ev);
@@ -2262,33 +2298,57 @@
       //  SQL Editor                       //
       ///////////////////////////////////////
       // //SQL Editor
-      $('div.general_options div.sql_console span a.close').livequery('click',function(ev){
-        if (enabled) {
-          stopPropagation(ev);
-          methods.closeTablePopups();
-          if (query_mode) {
-            query_mode = false;
-            methods.refreshTable('');
-          }
-          $('div.general_options div.sql_console').hide();
-          $('div.general_options ul').removeClass('sql');
-        }
-      });
+      // $('div.general_options div.sql_console span a.close').livequery('click',function(ev){
+      //   if (enabled) {
+      //     stopPropagation(ev);
+      //     methods.closeTablePopups();
+      //     if (query_mode) {
+      //       query_mode = false;
+      //       methods.refreshTable('');
+      //     }
+      //     $('div.sql_window').hide();
+      //   }
+      // });
+
       // General options
-      $('div.general_options ul li a.sql').livequery('click',function(ev){
+      $('div.general_options ul li a.sql,a.open_console').livequery('click',function(ev){
         if (enabled) {
           stopPropagation(ev);
-          methods.closeTablePopups();
-          $('div.general_options div.sql_console').show();
-          $('div.general_options ul').addClass('sql');
-          editor.focus();
+	        
+					if ($('div.sql_window').is(':visible')) {
+						methods.closeTablePopups();
+					} else {
+						$('div.sql_window').removeAttr('style');
+						methods.closeTablePopups();
+						methods.bindESCkey();
+	          $('div.sql_window').show();
+	          editor.focus();
+					}
         } 
       });
-      $('div.general_options a.try_query').livequery('click',function(ev){
+      $('div.sql_window a.try_query').livequery('click',function(ev){
         if (enabled) {
           stopPropagation(ev);
           query_mode = true;
           methods.refreshTable(0);
+					methods.queryModeStyle();
+        }
+      });
+			$('a.clear_table').livequery('click',function(ev){
+				stopPropagation(ev);
+			  if (enabled) {
+          methods.closeTablePopups();
+          if (query_mode) {
+            query_mode = false;
+            methods.refreshTable('');
+						methods.queryModeStyle();
+          }
+        }
+			});
+			$('div.sql_window a.close').livequery('click',function(ev){
+        if (enabled) {
+          stopPropagation(ev);
+          methods.closeTablePopups();
         }
       });
 
@@ -2343,7 +2403,25 @@
     },
 
     
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  SQL MODE STYLE
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    queryModeStyle: function(){
+			if (query_mode) {
+				var html = $('p.settings').html();
+				$('p.settings').html(html.replace('\|',''));
+				$('body').addClass('query');
+				$('span.advanced_options li:eq(0)').addClass('disabled');
+			} else {
+				$('body').removeClass('query');
+				$('p.settings a:eq(0)').after(' | ');
+				$('span.advanced_options li:eq(0)').removeClass('disabled');
+			}
+		},
+
     
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  KEEP SIZE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2578,6 +2656,8 @@
       $('body').unbind('click');
       enabled = true;
       
+			//SQL Console
+      $('div.sql_window').hide();
       //Column row popup
       $('div.delete_row').hide();
       //Column delete popup

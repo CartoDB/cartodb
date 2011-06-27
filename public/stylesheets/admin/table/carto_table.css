@@ -1,5 +1,4 @@
 /*TABLE*/
-
 div.table_position {position:relative; float:left; width:100%; min-width:880px; min-height:55px; margin:103px 0 0 0; padding:0; overflow-y:hidden; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5; z-index:15;}
 div.table_position.end {padding:0 0 150px;}
 
@@ -16,23 +15,27 @@ div.table_position table thead tr th h3:hover {cursor:pointer; color:#444444;}
 div.table_position table thead tr th h3.static {color:#bbb; max-width:90%;}
 div.table_position table thead tr th h3.static:hover {cursor:default; color:#bbb;}
 div.table_position table thead tr th p {padding:3px 0 0 0;  font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white;}
-div.table_position table thead tr th div p.long {float:left; display:block; width:100%;}
-div.table_position table thead tr th div input {position:absolute; display:none; left:8px; top:10px; width:65%; margin:0; padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; 
+div.table_position table thead tr th div p.long {float:left; display:block; width:100%; margin:0; padding:0}
+div.table_position table thead tr th div input {position:absolute; display:none; left:8px; top:10px; width:65%; margin:0; padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px;
   cursor:pointer; font:normal 11px "Helvetica"; color:#727272; text-shadow:0 1px white; z-index:10;}
 div.table_position table thead tr th div input:hover {}
 div.table_position table thead tr th div input:focus {outline:none; cursor:pointer;}
 div.table_position table thead tr th p.geo {float:left; width:22px; height:12px; padding:0!important; margin:3px 0 0 5px; background:url('/images/admin/icons/geo.png') no-repeat 0 0; text-indent:-9999px;}
 div.table_position table thead tr th p.geo:hover {background-position:0 -12px; cursor:pointer;}
+div.table_position table thead tr th p.geo.disabled {opacity:0.7}
+div.table_position table thead tr th p.geo.disabled:hover {cursor:default; background-position:0 0}
 div.table_position table thead tr th p.geo.loading {height:16px; width:16px; background:url('/images/admin/table/ajax-loader.gif') no-repeat 0 0;}
 div.table_position table thead tr th a.options {position:absolute; right:10px; top:12px; height:14px; width:14px; margin:0; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10; overflow:hidden;}
 div.table_position table thead tr th a.options:hover {background-position:0 -14px;}
 div.table_position table thead tr th a.options.selected {height:20px; background-image:url('/images/admin/table/selected_option.png')}
 div.table_position table thead tr th a.options.selected:hover {background-position:0 0;}
+div.table_position table thead tr th a.options.disabled {opacity:0.7}
+div.table_position table thead tr th a.options.disabled:hover {background-position:0 0;}
 div.table_position table thead tr th a.static {float:left; margin:0 0 0 4px; font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white; text-transform:capitalize;}
 div.table_position table thead tr th div a.column_type {float:left; max-width:60px; margin:0 0 0 4px; padding:0; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#B4B4B4; text-decoration:none; text-transform:capitalize;}
 div.table_position table thead tr th div a.column_type:hover {color:#666666; padding:0 7px 0 0; background:url('/images/admin/icons/grey_down_arrow.png') no-repeat right 6px;}
 div.table_position table thead tr th div span.col_types {position:absolute; display:none; left:7px; background:none; width:82px; height:auto; padding:19px 0 0 0;}
-div.table_position table thead tr th div span.col_types p {position:absolute; max-width:60px; height:15px; left:0; top:0; margin:0; padding:4px 14px 0 4px; border:1px solid #A7A7A7; border-bottom:none; z-index:10; background:url('/images/admin/icons/grey_up_arrow.png') no-repeat right 9px #F7f8f8; 
+div.table_position table thead tr th div span.col_types p {position:absolute; max-width:60px; height:15px; left:0; top:0; margin:0; padding:4px 14px 0 4px; border:1px solid #A7A7A7; border-bottom:none; z-index:10; background:url('/images/admin/icons/grey_up_arrow.png') no-repeat right 9px #F7f8f8;
   font:normal 11px "Helvetica",Arial; color:#666666; text-transform:capitalize; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; line-height:11px;}
 div.table_position table thead tr th div span.col_types ul {float:left; width:82px; margin:0; padding:5px 0 3px; border:1px solid #A7A7A7; -webkit-border-radius: 3px; -webkit-border-top-left-radius: 0; -moz-border-radius: 3px; -moz-border-radius-topleft: 0; border-radius: 3px; border-top-left-radius: 0;
   background-image:linear-gradient(-90deg, #F7f8f8, #CACBCE); background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#F7f8f8), to(#CACBCE)); background-image:-moz-linear-gradient(-90deg, #F7f8f8, #CACBCE);
@@ -53,6 +56,12 @@ div.table_position table thead tr th span.col_ops_list li.last a {color:#FFCC00;
 div.table_position table thead tr th span.col_ops_list li.last a:hover {color:#FFFE5E;}
 div.table_position table thead tr th span.col_ops_list h5 {padding:8px 0 0 7px; font:bold 10px Helvetica; color:#53596B; text-shadow:0 -1px #1E2A40; text-align:left;}
 div.table_position table thead tr th span.col_ops_list div.line {float:left; width:124px; min-height:1px; height:1px!important; padding:0; margin:0 0 8px 3px; background:#393F55;}
+div.table_position table thead div.stickies {position:absolute; display:block; bottom:0; right:0; left:0; width:100%; height:37px; background:linear-gradient(-90deg, #FFFFE2, #F6F5D9); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFE2), to(#F6F5D9));
+  background:-moz-linear-gradient(-90deg, #FFFFE2, #F6F5D9); background: -o-linear-gradient(#FFFFE2,#F6F5D9); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFE2', endColorstr='#F6F5D9'); z-index:10; border-bottom:1px solid #E9EACE}
+div.table_position table thead div.stickies p {display:inline-block; width:auto; margin:12px 0 0 0; font:normal 13px Helvetica,Arial; color:#333333}
+div.table_position table thead div.stickies p strong {color:black; font-weight:normal}
+div.table_position table thead div.stickies p a {color:#333333;}
+div.table_position table thead div.stickies p a:hover {color:black}
 
 div.table_position table tbody {float:left; margin:5px 0 0 0;}
 div.table_position table tbody tr {position:relative; float:left; height:38px!important; padding:0 0 0 41px;}
@@ -173,7 +182,7 @@ div.table_position div.explain_tooltip span.arrow {position:absolute; bottom:-10
 
 
 /************************************EDIT FIELDS************************************/
-div.table_position div.edit_cell {position:absolute; display:none; top:200px; left:200px; min-width:262px; padding:7px 7px 42px; -moz-box-shadow:0px 0px 10px 2px #999; -webkit-box-shadow:0px 0px 10px 2px #999; box-shadow:0px 0px 10px 2px #999; border:1px solid #999999; background:#E6F2E4; 
+div.table_position div.edit_cell {position:absolute; display:none; top:200px; left:200px; min-width:262px; padding:7px 7px 42px; -moz-box-shadow:0px 0px 10px 2px #999; -webkit-box-shadow:0px 0px 10px 2px #999; box-shadow:0px 0px 10px 2px #999; border:1px solid #999999; background:#E6F2E4;
   -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:10; -moz-user-select:text!important;}
 div.table_position div.edit_cell a.close {position:absolute; top:-7px; right:-8px; width:24px; height:24px; background:url('/images/admin/table/close.png') no-repeat 0 0; text-indent:-9999px; z-index:10;}
 div.table_position div.edit_cell a.close:hover {background-position:0 -24px;}
@@ -212,7 +221,7 @@ div.table_position div.edit_cell div.date div.month span.bounds {position:relati
   background-image:-moz-linear-gradient(100% 100% 90deg, #DBDCDF, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#DBDCDF));}
 div.table_position div.edit_cell div.date div.month span.bounds a {float:left; width:78px!important; margin:2px 0 0 0!important; padding:0 10px 0 0!important; background:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;
     text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:url('/images/admin/icons/select_arrows.png') no-repeat 70px 5px; text-decoration:none;}
-div.table_position div.edit_cell div.date div.month div.months_list {position:absolute; display:none; top:27px; left:-15px; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
+div.table_position div.edit_cell div.date div.month div.months_list {position:absolute; display:none; top:27px; left:-15px; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px;
        background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
        border-bottom-right-radius: 3px; border-bottom-left-radius: 3px; z-index:20;}
 div.table_position div.edit_cell div.date div.month div.months_list ul {float:left; display:block; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
@@ -292,14 +301,14 @@ div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.selec
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select a:hover {color:#000000;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select select {display:none;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked a {background-position:130px -15px;}
-div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked div.select_content {position:absolute; top:18px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked div.select_content {position:absolute; top:18px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px;
    background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
    border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul {float:left; display:default; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li {float:left; width:90px!important; margin:0; padding:3px 0 2px;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li a {float:left; width:90px!important; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
   text-shadow:none;}
-div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li a:hover {color:#6DBE6D;}  
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.select span.select.clicked ul li a:hover {color:#6DBE6D;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option {display:none;}
 div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.address_option {display:block;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option p {float:left; width:340px; margin:10px 0!important; padding:0 10px!important; font-size:12px; line-height:16px;}
@@ -313,7 +322,7 @@ div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option
   text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:url('/images/admin/icons/select_arrows.png') no-repeat 130px 5px;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select a:hover {color:#000000;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content {display:default;}
-div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content {position:absolute; top:18px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px; 
+div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content {position:absolute; top:18px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px;
    background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
    border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
 div.mamufas div.georeference_window div.inner_ span.top ul li div.address_option span.select.clicked div.select_content ul {float:left; display:default; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
@@ -347,7 +356,7 @@ div.mamufas div.column_window div.inner_ span.top p {position:relative; float:le
 div.mamufas div.column_window div.inner_ span.top p a {color:#444444;}
 div.mamufas div.column_window div.inner_ span.top p a:hover {color:#222222;}
 div.mamufas div.column_window div.inner_ span.top div.options {float:left; width:337px; margin:5px 0 0 0;}
-div.mamufas div.column_window div.inner_ span.top div.options input {float:left; width:195px; padding:5px 7px; margin:5px 0 0 0; border:1px solid #CCCCCC; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; 
+div.mamufas div.column_window div.inner_ span.top div.options input {float:left; width:195px; padding:5px 7px; margin:5px 0 0 0; border:1px solid #CCCCCC; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
   border:1px solid #999999; font:normal 13px Arial; color:#666666;}
 div.mamufas div.column_window div.inner_ span.top div.options input.error {border-color:#C04E03;}
 div.mamufas div.column_window div.inner_ span.top label {float:left; width:100%; margin:10px 0 0 0; text-transform:uppercase; font:normal 10px "Helvetica",Arial; color:#999999;}
@@ -360,7 +369,7 @@ div.mamufas div.column_window div.inner_ span.top span.select a {float:left; wid
 div.mamufas div.column_window div.inner_ span.top span.select a:hover {color:#000000;}
 div.mamufas div.column_window div.inner_ span.top span.select select {display:none;}
 div.mamufas div.column_window div.inner_ span.top span.select.clicked a {background-position:188px -15px;}
-div.mamufas div.column_window div.inner_ span.top span.select.clicked div.select_content {position:absolute; top:18px; left:35px; display:block; width:120px; max-height:110px; margin:0!important; padding:2px 0px 5px; 
+div.mamufas div.column_window div.inner_ span.top span.select.clicked div.select_content {position:absolute; top:18px; left:35px; display:block; width:120px; max-height:110px; margin:0!important; padding:2px 0px 5px;
    background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
    border-bottom-right-radius: 3px; border-bottom-left-radius: 3px; z-index:20;}
 div.mamufas div.column_window div.inner_ span.top span.select.clicked ul {float:left; display:default; width:100px; max-height:90px; margin:14px 0 0 1px; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
@@ -422,30 +431,3 @@ div.mamufas div.stopgeo_window div.inner_ span.stop p a:hover {color:#333333;}
 .jspHorizontalBar .jspArrow{width:16px;float:left;height:100%;}
 .jspVerticalBar .jspArrow:focus{outline:none;}
 .jspCorner{background:#eeeef4;float:left;height:100%;}
-
-
-/*Codemirror CSS*/
-.CodeMirror{overflow:auto;height:100%;line-height:1em;font-family:monospace;}
-.CodeMirror-gutter{position:absolute;left:0;top:0;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
-.CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;}
-.CodeMirror-lines{padding:.4em;}
-.CodeMirror pre{-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;font-family:inherit;}
-.CodeMirror textarea{font-family:monospace !important;}
-.CodeMirror-cursor{z-index:10;position:absolute;visibility:hidden;border-left:1px solid black !important;}
-.CodeMirror-focused .CodeMirror-cursor{visibility:visible;}
-span.CodeMirror-selected{background:#ccc !important;color:HighlightText !important;}
-.CodeMirror-focused span.CodeMirror-selected{background:Highlight !important;}
-.CodeMirror-matchingbracket{color:#0f0 !important;}
-.CodeMirror-nonmatchingbracket{color:#f22 !important;}
-pre span {float:none!important; width:auto!important;}
-span.plsql-keyword{color:blue;}
-span.plsql-var{color:red;}
-span.plsql-comment{color:#AA7700;}
-span.plsql-string{color:green;}
-span.plsql-operator{color:blue;}
-span.plsql-word{color:black;}
-span.plsql-function{color:darkorange;}
-span.plsql-sqlplus{color:darkorange;}
-span.plsql-type{color:purple;}
-span.plsql-separator{color:#666666;}
-span.plsql-number{color:darkcyan;}

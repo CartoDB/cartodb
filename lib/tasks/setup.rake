@@ -13,11 +13,11 @@ DESC
         raise "You should provide a valid password" if ENV['PASSWORD'].nil? || ENV['PASSWORD'].empty?
         raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].nil? || ENV['SUBDOMAIN'].empty?
         u = User.new
-        u.email = ENV['email']
-        u.password = ENV['password']
-        u.password_confirmation = ENV['password']
-        u.subdomain = ENV['subdomain']
-        u.username = ENV['subdomain']
+        u.email = ENV['EMAIL']
+        u.password = ENV['PASSWORD']
+        u.password_confirmation = ENV['PASSWORD']
+        u.subdomain = ENV['SUBDOMAIN']
+        u.username = ENV['SUBDOMAIN']
         u.save
         if u.new?
           raise u.errors.inspect

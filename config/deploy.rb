@@ -27,8 +27,8 @@ set(:deploy_to){
   "/home/ubuntu/www/#{stage}.#{application}.com"
 }
 
-after  "deploy:update_code", :symlinks, :run_migrations, :set_staging_flag, :get_last_blog_posts
-before "db:setup", "db:update_code_bootstrap", "bundle:install"
+after  "deploy:symlink", :symlinks, :run_migrations, :set_staging_flag, :get_last_blog_posts
+before "db:setup", "deploy:update_code", "bundle:install"
 
 desc "Restart Application"
 deploy.task :restart, :roles => [:app] do
@@ -82,13 +82,6 @@ task :get_last_blog_posts, :roles => [:app] do
 end
 
 namespace :db do
-  desc "Upload code without any callbacks"
-  task :update_code_bootstrap, :roles => :app do
-    on_rollback { run "rm -rf #{release_path}; true" }
-    strategy.deploy!
-    finalize_update
-  end
-  
   desc "Run rake:seed on remote app server"
   task :seed, :roles => :app do
     raise "Cannot seed production enviornment" if stage == "production"

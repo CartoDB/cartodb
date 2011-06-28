@@ -43,5 +43,4 @@
 				window.location.hash = "#table";
 			}
 			$('body').attr('query_mode','false');
-      
 		}

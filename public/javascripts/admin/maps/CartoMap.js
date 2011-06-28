@@ -158,7 +158,7 @@
       
       // SQL Map console
       $('div.general_options.map ul li.all a.sql').click(function(ev){
-        var map_status = ($('section.subheader ul.tab_menu li.selected a').text() == "Map");
+        var map_status = ($('body').attr('view_mode') == "map");
         if (map_status) {
           stopPropagation(ev);
           $('div.sql_window').show();
@@ -176,6 +176,14 @@
 					setAppStatus();
 					me.showLoader();
           me.refresh(true);
+        }
+      });
+			// Close sql window
+			$('div.sql_window a.close').livequery('click',function(ev){
+        var map_status = ($('body').attr('view_mode') == "map");
+        if (map_status) {
+          stopPropagation(ev);
+          $('div.sql_window').hide();
         }
       });
 			// Clear table

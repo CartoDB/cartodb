@@ -715,10 +715,18 @@
 			var html = $('p.settings').html();
 			$('p.settings').html(html.replace('\|',''));
 			$('body').addClass('query');
+			$('body').animate({backgroundColor:'#282828'},500);
+			setTimeout(function(){$('body').css('background-position','0 -160px');},300);
+			$('section.subheader').animate({backgroundColor:'#282828'},500);
+			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
 			$('span.advanced_options li:eq(0)').addClass('disabled');
 		} else {
 			$('body').removeClass('query');
 			$('p.settings a:eq(0)').after(' | ');
+			$('body').animate({backgroundColor:'#2D3451'},500);
+			setTimeout(function(){$('body').css('background-position','0 0');},300);
+			$('section.subheader').animate({backgroundColor:'#2D3451'},500);
+			setTimeout(function(){$('section.subheader').css('background-position','0 -58px');},300);
 			$('span.advanced_options li:eq(0)').removeClass('disabled');
 		}
 	}

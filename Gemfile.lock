@@ -10,10 +10,9 @@ GIT
 
 GIT
   remote: git@github.com:Vizzuality/cartodb-importer.git
-  revision: 0622eb6473a5eab6c337db5fcb69359dc74bab14
-  ref: 0622eb6
+  revision: 9bee076e3ae9fc89193537c0d614f2c47440b3dd
   specs:
-    cartodb-importer (0.0.1)
+    cartodb-importer (0.1.0)
       builder
       google-spreadsheet-ruby
       pg (= 0.11)
@@ -251,7 +250,7 @@ DEPENDENCIES
   capistrano-ext
   capybara
   capybara-zombie!
-  cartodb-importer!
+  cartodb-importer (~> 0.1.0)!
   email_spec
   htmlentities
   launchy

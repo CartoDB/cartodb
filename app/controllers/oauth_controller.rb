@@ -7,7 +7,6 @@ class OauthController < ApplicationController
   
   ssl_required :authorize, :request_token, :access_token, :token, :test_request
   
-  skip_before_filter :app_host_required
   skip_before_filter :login_required, :only => :authorize
   after_filter :store_token_in_redis, :only => :access_token
 
@@ -26,7 +25,7 @@ class OauthController < ApplicationController
     else
       @token.authorize!(@token.client_application.user)
     end
-    @redirect_url = URI.parse(@token.oob? ? @token.client_application.callback_url || APP_CONFIG[:app_host] : @token.callback_url)
+    @redirect_url = URI.parse(@token.oob? ? @token.client_application.callback_url || CartoDB.hostname : @token.callback_url)
 
     unless @redirect_url.to_s.blank?
       @redirect_url.query = @redirect_url.query.blank? ?

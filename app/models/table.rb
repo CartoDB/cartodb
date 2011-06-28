@@ -409,8 +409,8 @@ TRIGGER
       when "line"
         "multilinestring"
       else
-        value !~ /^multi/ ? "multi#{value}" : value.downcase
-    end
+        value !~ /^multi/ ? "multi#{value.downcase}" : value.downcase
+    end    
     raise CartoDB::InvalidGeomType unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type_value)
     if key.blank?
       self.temporal_the_geom_type = the_geom_type_value

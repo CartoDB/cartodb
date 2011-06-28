@@ -10,7 +10,7 @@ class Admin::TablesController < ApplicationController
     per_page = 10
     # TODO: V2
     # unless params[:public]
-      resp = access_token.get("/v1/tables/tags?limit=5")
+      resp = access_token.get("/api/v1/tables/tags?limit=5")
       if resp.code.to_i == 200
         @tags = Yajl::Parser.new.parse(resp.body)
       elsif resp.code.to_i == 401
@@ -21,9 +21,9 @@ class Admin::TablesController < ApplicationController
       end
       if params[:tag_name]
         @tag_name = params[:tag_name].sanitize.tr('_',' ')
-        resp = access_token.get(URI.encode("/v1/tables/tags/#{@tag_name}?page=#{current_page}&per_page=#{per_page}"))
+        resp = access_token.get(URI.encode("/api/v1/tables/tags/#{@tag_name}?page=#{current_page}&per_page=#{per_page}"))
       else
-        resp = access_token.get("/v1/tables?page=#{current_page}&per_page=#{per_page}")
+        resp = access_token.get("/api/v1/tables?page=#{current_page}&per_page=#{per_page}")
       end
       if resp.code.to_i == 200
         response = Yajl::Parser.new.parse(resp.body)
@@ -56,7 +56,7 @@ class Admin::TablesController < ApplicationController
 
   def show
     id = params[:id].sanitize.tr('_',' ')
-    resp = access_token.get("/v1/tables/#{id}")
+    resp = access_token.get("/api/v1/tables/#{id}")
     if resp.code.to_i == 200
       @table = Yajl::Parser.new.parse(resp.body)
     else
@@ -66,7 +66,7 @@ class Admin::TablesController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do
-        resp = access_token.get("/v1/tables/#{id}/export/#{params[:format]}") 
+        resp = access_token.get("/api/v1/tables/#{id}/export/#{params[:format]}") 
         if resp.code.to_i == 200
           send_data resp.body,
             :type => 'application/octet-stream; charset=binary; header=present',
@@ -79,7 +79,7 @@ class Admin::TablesController < ApplicationController
         end
       end
       format.shp do
-        resp = access_token.get("/v1/tables/#{id}/export/#{params[:format]}") 
+        resp = access_token.get("/api/v1/tables/#{id}/export/#{params[:format]}") 
         if resp.code.to_i == 200
           send_data resp.body,
             :type => 'application/octet-stream; charset=binary; header=present',

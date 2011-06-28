@@ -191,8 +191,9 @@ feature "API 1.0 tables management" do
     end
 
     put_json api_table_url(table1.name), {:name => ""} do |response|
-      response.status.should == 400
+      response.status.should be_success
     end
+    
     get_json api_table_url(table1.name) do |response|
       response.status.should be_success
     end
@@ -366,14 +367,14 @@ feature "API 1.0 tables management" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     visit "#{api_table_url(table1.name)}.shp"
-    current_path.should be == '/v1/tables/my_table_1.shp'
+    current_path.should be == '/api/v1/tables/my_table_1.shp'
   end
 
   scenario "Download a table in csv format" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     visit "#{api_table_url(table1.name)}.csv"
-    current_path.should be == '/v1/tables/my_table_1.csv'
+    current_path.should be == '/api/v1/tables/my_table_1.csv'
   end
   
 end

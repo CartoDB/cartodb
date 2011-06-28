@@ -18,7 +18,7 @@ gem "aws-ses", "0.4.1", :require => "aws/ses"
 gem "redis"
 gem "resque"
 gem "yajl-ruby", :require => "yajl"
-gem "cartodb-importer", :git => "git@github.com:Vizzuality/cartodb-importer.git", :ref => "0622eb6"
+gem "cartodb-importer", "~> 0.1.0", :git => "git@github.com:Vizzuality/cartodb-importer.git"
 
 group :development do
   gem "capistrano"

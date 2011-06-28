@@ -74,7 +74,7 @@ module NavigationHelpers
   private
 
   def api_url_prefix
-    "#{APP_CONFIG[:api_host]}/#{CartoDB::API::VERSION_1}"
+    "#{CartoDB.hostname}/api/#{CartoDB::API::VERSION_1}"
   end
 
 end

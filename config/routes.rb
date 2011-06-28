@@ -1,16 +1,3 @@
-# All the requests from a host with the header
-# cartodbclient are allowed in other subdomain
-# that api
-class APISubdomainConstraint
-  def matches?(req)
-    if req.headers["cartodbclient"].blank?
-      req.host =~ /^api\./
-    else
-      return true
-    end
-  end
-end
-
 CartoDB::Application.routes.draw do
   root :to => "home#index"
 
@@ -37,25 +24,21 @@ CartoDB::Application.routes.draw do
     get '/byebye' => 'users#byebye', :as => :farewel
   end
 
-
   namespace :superadmin do
     get '/' => 'users#index', :as => :users
     post '/' => 'users#create', :as => :users
     resources :users, :except => [:index]
   end
+  
+  scope :oauth, :path => :oauth do
+    match '/authorize'      => 'oauth#authorize',     :as => :authorize
+    match '/request_token'  => 'oauth#request_token', :as => :request_token
+    match '/access_token'   => 'oauth#access_token',  :as => :access_token
+    get   '/identity'       => 'sessions#show'
+  end
 
-  constraints APISubdomainConstraint.new do
-    scope :oauth, :path => :oauth do
-      match '/authorize'      => 'oauth#authorize',     :as => :authorize
-      match '/request_token'  => 'oauth#request_token', :as => :request_token
-      match '/access_token'   => 'oauth#access_token',  :as => :access_token
-      match '/token'          => 'oauth#token',         :as => :token
-      match '/test_request'   => 'oauth#test_request',  :as => :test_request
-      get   '/identity'       => 'sessions#show'
-    end
-
+  scope "/api" do    
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
-      match  '/'                                     => 'queries#run'
       get    '/column_types'                         => 'meta#column_types'
       get    '/tables'                               => 'tables#index'
       post   '/tables'                               => 'tables#create'

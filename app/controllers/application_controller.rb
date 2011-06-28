@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   helper :all
 
-  before_filter :browser_is_html5_compliant?, :app_host_required
+  before_filter :browser_is_html5_compliant?
 
   class NoHTML5Compliant < Exception; end;
 
@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
   def access_token
     return nil unless logged_in?
     access_token = nil
-    consumer = OAuth::Consumer.new(current_user.client_application.key, current_user.client_application.secret, :site => APP_CONFIG[:api_host])
+    consumer = OAuth::Consumer.new(current_user.client_application.key, current_user.client_application.secret, :site => CartoDB.hostname)
     if !session[:access_token].blank? && !session[:access_token_secret].blank?
       access_token = OAuth::AccessToken.new(consumer, session[:access_token], session[:access_token_secret])
     end
@@ -51,10 +51,6 @@ class ApplicationController < ActionController::Base
 
   protected
   
-  def app_host_required
-    (request.host_with_port == APP_CONFIG[:app_host].host) || (render_api_endpoint and return false)
-  end
-
   def render_404
     respond_to do |format|
       format.html do
@@ -70,17 +66,6 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.html do
         render :file => "public/500.html", :status => 500, :layout => false
-      end
-    end
-  end
-
-  def render_api_endpoint
-    respond_to do |format|
-      format.html do
-        render :file => "public/api.html.erb", :status => 404, :layout => false
-      end
-      format.json do
-        render :nothing => true, :status => 404
       end
     end
   end

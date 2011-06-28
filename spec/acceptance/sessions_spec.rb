@@ -23,7 +23,7 @@ feature "Sessions" do
     Capybara.current_driver = :rack_test
     user = create_user :email => 'fernando.blat@vizzuality.com', :username => 'blat'
 
-    client_application = create_client_application :user => user, :url => "#{APP_CONFIG[:api_host]}", :callback_url => "#{APP_CONFIG[:api_host]}/oauth/callback/url"
+    client_application = create_client_application :user => user, :url => CartoDB.hostname, :callback_url => CartoDB.hostname
 
     oauth_consumer = OAuth::Consumer.new(client_application.key, client_application.secret, {
       :site => client_application.url,
@@ -32,7 +32,7 @@ feature "Sessions" do
     })
     access_token = create_access_token :client_application => client_application, :user => user
 
-    req = oauth_consumer.create_signed_request(:get, "#{APP_CONFIG[:api_host]}/oauth/identity.json", access_token)
+    req = oauth_consumer.create_signed_request(:get, "#{CartoDB.hostname}/oauth/identity.json", access_token)
     get_json req.path do |response|
       response.status.should be_success
       response.body.should == { :uid => user.id, :email => 'fernando.blat@vizzuality.com', :username => 'blat' }

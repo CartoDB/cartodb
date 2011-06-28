@@ -470,7 +470,7 @@
       stopPropagation(ev);
       $.ajax({
         type: "DELETE",
-        url: '/v1/tables/'+table_name,
+        url: global_api_url+'tables/'+table_name,
         dataType: "text",
         headers: {'cartodbclient':true},
         success: function(data, textStatus, XMLHttpRequest) {
@@ -549,7 +549,7 @@
     $.ajax({
       dataType: 'json',
       type: "PUT",
-      url: '/v1/tables/'+table_name,
+      url: global_api_url+'tables/'+table_name,
       data: params,
       headers: {'cartodbclient':true},
       success: function(data) {
@@ -630,7 +630,6 @@
   }
   
 
-
   function resetUploadFile() {
     $('div.import_window div.inner_ span.top').show();
     $('div.import_window div.inner_ span.bottom').show();
@@ -652,7 +651,6 @@
     $('div.import_window div.inner_ span.loading p').html('It\'s not gonna be a lot of time. Just a few seconds, ok?');
     $('div.import_window div.inner_ span.loading h5').html('We are creating your table...');
   }
-
 
 
   function createNewToFinish (type,url) {
@@ -709,7 +707,22 @@
     });
   }
   
-  
+
+
+  // Change application to SQL or normal mode
+	function setAppStatus() {
+		var query_mode = ($('body').attr('query_mode') === "true");
+		if (query_mode) {
+			var html = $('p.settings').html();
+			$('p.settings').html(html.replace('\|',''));
+			$('body').addClass('query');
+			$('span.advanced_options li:eq(0)').addClass('disabled');
+		} else {
+			$('body').removeClass('query');
+			$('p.settings a:eq(0)').after(' | ');
+			$('span.advanced_options li:eq(0)').removeClass('disabled');
+		}
+	}
   
   
   

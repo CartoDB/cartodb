@@ -20,7 +20,7 @@ section#content div.left div.middle_white_medium span.form_block {position:relat
 section#content div.left div.middle_white_medium span.form_block.last {margin:0;}
 section#content div.left div.middle_white_medium span.form_block label {font:bold 10px "Helvetica",Arial; color:#999999;}
 section#content div.left div.middle_white_medium span.form_block input {width:257px; height:17px; padding:7px 10px!important; margin:5px 0 0 0; background:url('/images/admin/api/input_bkg.png') no-repeat 1px 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
-  font:normal 15px Arial; color:#D1D1D1; line-height:15px;}
+  font:normal 15px Arial; color:#EEEEEE; line-height:15px;}
 section#content div.left div.middle_white_medium span.form_block input.error {border-color:#C04E03;}
 section#content div.left div.middle_white_medium span.form_block div.error_content {position:absolute; z-index:10; right:0px; top:-39px;}
 section#content div.left div.middle_white_medium span.form_block div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
@@ -35,25 +35,25 @@ section#content div.left div.middle_white_medium span.submit_block p a:hover {co
 section#content div.left div.middle_white_medium span.submit_block input.submit  {float:right; margin:14px 0 0 2px; width:150px; height:35px; padding:9px 0!important; text-align:center; font:bold 15px Arial; color:#305234; text-shadow:0 1px #9ED6A4; text-decoration:none;
   -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #aaaaaa;
   -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #8FD484, #67BA6A); 
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #8FD484, #67BA6A);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#8FD484), to(#67BA6A));
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg, #8FD484, #67BA6A);
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#8FD484,#67BA6A); 
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#8FD484,#67BA6A);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px #8FD484\9;
 }
 section#content div.left div.middle_white_medium span.submit_block input.submit:hover {
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #67BA6A, #8FD484); 
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #67BA6A, #8FD484);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#67BA6A), to(#8FD484));
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg, #67BA6A, #8FD484);
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#67BA6A,#8FD484); 
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#67BA6A,#8FD484);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px #67BA6A\9;
   cursor:pointer;
 }
 section#content div.left div.middle_white_medium span.submit_block input.submit.close {
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #D5D5D5, #C8C8C8); 
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #D5D5D5, #C8C8C8);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#D5D5D5), to(#C8C8C8));
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg, #D5D5D5, #C8C8C8);
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#D5D5D5,#C8C8C8); 
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#D5D5D5,#C8C8C8);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px #D5D5D5\9;
   color:#A0A0A0; text-shadow:0 1px white;
 }
@@ -63,28 +63,28 @@ section#content div.left div.middle_white_medium div.delete {border-top:1px soli
 section#content div.left div.middle_white_medium div.delete a {float:left; width:auto; height:15px; padding:10px 14px; margin:8px 0 0 22px;  color:#895101; text-shadow:0 1px #FFC266; text-decoration:none;
   -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #A26001; font:bold 15px Arial; line-height:15px;
   -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #FF9900, #BF7201); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #FF9900, #BF7201);
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FF9900), to(#BF7201));
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #FF9900, #BF7201);
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#FF9900,#BF7201); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#FF9900,#BF7201);
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px #FF9900\9;
 }
 section#content div.left div.middle_white_medium div.delete a:hover {
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #BF7201, #FF9900); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #BF7201, #FF9900);
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#BF7201), to(#FF9900));
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #BF7201, #FF9900);
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#BF7201,#FF9900); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#BF7201,#FF9900);
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px #BF7201\9;
 }
 section#content div.left div.middle_white_medium div.delete a.disabled {
-    background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #D5D5D5, #C8C8C8); 
+    background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #D5D5D5, #C8C8C8);
     background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#D5D5D5), to(#C8C8C8));
     background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg, #D5D5D5, #C8C8C8);
-    background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#D5D5D5,#C8C8C8); 
+    background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#D5D5D5,#C8C8C8);
     background:url('/images/front/home/button_border.png') repeat-x 0 -1px #D5D5D5\9;
     color:#A0A0A0; text-shadow:0 1px white; border-color:#999999;
 }
-section#content div.left div.middle_white_medium div.delete a.disabled:hover {cursor:default;} 
+section#content div.left div.middle_white_medium div.delete a.disabled:hover {cursor:default;}
 section#content div.left div.middle_white_medium div.delete p {margin-left:15px; padding:0; font-size:13px; color:#666666;}
 section#content div.left div.bottom_white_medium {float:left; width:626px; height:10px; padding:0; background:url('/images/admin/backgrounds/bottom_white_medium.png') no-repeat 0 top;}
 section#content div.right {display:inline-block; vertical-align:top; width:260px; margin:0 0 0 16px;}

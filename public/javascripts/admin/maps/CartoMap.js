@@ -1,13 +1,19 @@
-
+	
+		////////////////////////////////////////////////////////////////////////////////
+    //																																						//
+		//  	 CLASS TO MANAGE ALL THE STUFF IN THE MAP (variable -> carto_map)			  //
+		//																																						//
+    ////////////////////////////////////////////////////////////////////////////////
+		
 
     function CartoMap (latlng,zoom) {
       this.center_ = latlng;                          // Center of the map at the beginning
       this.zoom_ = zoom;                              // Zoom at the beginning
       this.bounds_ = new google.maps.LatLngBounds();  // A latlngbounds for the map
-      
+      this.query_mode = false;												// Query mode
+
       this.points_ = {};                              // Points belong to the map
-      this.marker_zIndex_ = 1000;                      // Necessary for the markers hover
-      this.color_ = null;                             // Cache marker color
+      this.marker_zIndex_ = 1000;                     // Necessary for the markers hover
                         
       this.status_ = "select";                        // Status of the map (select, add, )
       this.columns_ = null;
@@ -19,7 +25,9 @@
     
     
     
-    
+    ////////////////////////////////////////
+    //  INIT MAP												  //
+    ////////////////////////////////////////
     CartoMap.prototype.createMap = function () {
       // Generate a google map
       var myOptions = {
@@ -30,6 +38,9 @@
       }
       this.map_ = new google.maps.Map(document.getElementById("map"),myOptions);
       
+			// Change view mode and watch if query mode is activated
+			this.query_mode = ($('body').attr('query_mode') === 'true');
+			$('body').attr('view_mode','map');
       
       this.addMapOverlays();
       
@@ -38,6 +49,10 @@
     }
     
     
+
+		////////////////////////////////////////
+    //  ADD ALL NECESSARY OVERLAYS				//
+    ////////////////////////////////////////
     CartoMap.prototype.addMapOverlays = function () {
       var me = this;
       
@@ -48,11 +63,10 @@
         function(){
           me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
     			me.info_window_      = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);    // InfoWindow for markers
-    			me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-180,-180),me.map_);			// Over tooltip for markers and selection area
+    			me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-180,-180),me.map_);				// Over tooltip for markers and selection area
           me.delete_window_    = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_); // Delete window to confirm remove one/several markers
 					me.map_canvas_ 			= new mapCanvasStub(me.map_);
-         
-					
+         					
 					me.getColumns();
  					me.getPoints();
         }
@@ -60,6 +74,11 @@
     }
     
     
+
+		////////////////////////////////////////
+    //  MAP AND TOOLS LISTENERS						//
+    ////////////////////////////////////////
+		/* Event listeners of the map */
     CartoMap.prototype.addMapListeners = function() {
       var me = this;
       
@@ -73,8 +92,8 @@
         }
 			});
     }
-    
-    
+      
+		/* Event listeners of the map tools */
     CartoMap.prototype.addToolListeners = function() {
       var me = this;
       
@@ -138,29 +157,48 @@
       
       
       // SQL Map console
-      $('div.general_options ul li a.sql').click(function(ev){
+      $('div.general_options.map ul li.all a.sql').click(function(ev){
         var map_status = ($('section.subheader ul.tab_menu li.selected a').text() == "Map");
         if (map_status) {
           stopPropagation(ev);
-          $('div.general_options div.sql_console').show();
-          $('div.general_options ul').addClass('sql');
-          $('div.general_options span p.errors').text('Remember, if you don\'t select "the_geom", we won\'t be able to show you geolocated points').show();
+          $('div.sql_window').show();
+          $('div.sql_window span p.errors').text('Select "the_geom" or you won\'t see any geolocated point').show();
           editor.focus();
         } 
       });
-      // 
-      // 
-      // $('div.general_options a.try_query').livequery('click',function(ev){
-      //   var map_status = ($('section.subheader ul.tab_menu li.selected a').text() == "Map");
-      //   if (map_status) {
-      //     stopPropagation(ev);
-      //     getSQL();
-      //   }
-      // });
+			// Try query
+      $('div.sql_window a.try_query').livequery('click',function(ev){
+        var map_status = ($('body').attr('view_mode') == "map");
+        if (map_status) {
+	        $('body').attr('query_mode','true');
+					me.query_mode = true;
+          stopPropagation(ev);
+					setAppStatus();
+					me.showLoader();
+          me.refresh(true);
+        }
+      });
+			// Clear table
+			$('a.clear_table').livequery('click',function(ev){
+				stopPropagation(ev);
+				var view_map = ($('body').attr('view_mode') == 'map');
+			  if (view_map && me.query_mode) {
+					$('body').attr('query_mode','false');
+					me.showLoader();
+					me.refresh();
+					setAppStatus();	// Out function to change app to SQL or NORMAL
+					$('div.sql_window').hide();
+        }
+			});
     }
-    
 
-    CartoMap.prototype.setMapStatus = function(status) {
+
+
+    ////////////////////////////////////////
+    //  SET MAP && MARKER STATUS			    //
+    ////////////////////////////////////////
+		/* Set map status */
+		CartoMap.prototype.setMapStatus = function(status) {
       this.status_ = status;
 			this.setMarkerStatus(status);
 			
@@ -178,7 +216,7 @@
 			this.hideOverlays()
     }
 
-		
+		/* Set markers status */		
 		CartoMap.prototype.setMarkerStatus = function(status) {
 			_.each(this.points_,function(marker,i){
 				marker.setDraggable((status=="select")?true:false);
@@ -188,15 +226,17 @@
 
 
 
-		/*******************************************/
-    /*  Polygon selection in the map				   */
-    /*******************************************/
+    ////////////////////////////////////////
+    //  POLYGON OPERATIONS OVER THE MAP		//
+    ////////////////////////////////////////
+		/* Disable selection area  */
 		CartoMap.prototype.disableSelectionTool = function() {
 			this.map_.setOptions({draggable:true});
 	    $('div#map').unbind('mousedown');
 	    if (this.selection_area_!=null) this.selection_area_.setMap(null);
 		}
-		
+
+		/* Enable selection area  */	
 		CartoMap.prototype.enableSelectionTool = function() {
 			var me = this;
 	  	this.map_.setOptions({draggable:false});
@@ -266,7 +306,8 @@
 	       	}
 	     });
 		}
-		
+
+		/* Calculate markers in selection area  */			
 		CartoMap.prototype.markersInPolygon = function(selection_polygon) {
 	   	//Check if the polygon contains this point
 	     function Contains(polygon, point) { 
@@ -296,41 +337,63 @@
 		}
     
    
-    
-		CartoMap.prototype.hideOverlays = function() {
-			this.delete_window_.hide();
-			this.info_window_.hide();
-			this.tooltip_.hide();
-		}
-    
-    
-    
 
-    
+    ////////////////////////////////////////
+    //  REQUEST POINTS TO DRAW IN THE MAP	//
+    ////////////////////////////////////////
     CartoMap.prototype.getPoints = function() {
       var me = this;
       
-      var api_key = "";
-      var query = "select *," +
-                  "ST_X(ST_Transform(the_geom, 4326)) as lon_, ST_Y(ST_Transform(the_geom, 4326)) as lat_" +
-                  " from " + table_name;
+      var api_key = "",
+					query = "";
+					
+			if (this.query_mode) {
+				query = editor.getValue();
+				var now = new Date();
+			} else {
+				query = "select * from" + table_name;
+			}
+
       $.ajax({
         method: 'GET',
-        url: "/v1/",
+        url: global_api_url,
         data: ({api_key: api_key, sql: query}),
         headers: {'cartodbclient':true},
-        dataType: 'jsonp',
         success: function(result) {
-          me.drawMarkers(result.rows);
+					if (me.query_mode) {
+						var arrived = new Date();
+						var total = result.total_rows;
+	          $('div.sql_window p.errors').fadeOut();
+						$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+						$('span.query p').text('This query took '+(arrived - now)/1000+' seconds');
+					}
+					
+					me.drawMarkers(result.rows);
         },
-        error: function(req, textStatus, e) {
+        error: function(e) {
+					if (me.query_mode) {
+						var json = $.parseJSON(e.responseText);
+	          var msg = '';
+
+	          _.each(json.errors,function(text,pos){
+	            msg += text + ', ';
+	          });
+	          msg = msg.substr(0,msg.length-2);
+						
+						$('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+						$('span.query p').text('');
+						$('div.sql_window p.errors').text(msg).fadeIn();
+					}
           me.hideLoader();
         }
       });
     }
     
     
-    
+    ////////////////////////////////////////
+    //  DRAW MARKERS WITH CANVAS ASYNC		//
+    ////////////////////////////////////////
+		/* Draw markers asyncronously */
     CartoMap.prototype.drawMarkers = function(points) {
       var me = this;
       this.bounds_ = new google.maps.LatLngBounds();
@@ -338,33 +401,43 @@
       
       function asyncDrawing(rest) {
         if (_.size(rest)>0) {
-          var info = _.first(rest);
-          var occ_id = info.cartodb_id;
-          var latlng = new google.maps.LatLng(info.lat_,info.lon_);
-					var marker = me.addMarker(latlng, _.first(rest), false);
-          me.points_[occ_id] = marker;
-          me.bounds_.extend(latlng);
+					var info = _.first(rest);
+
+					// Get the_geom
+					if (info.the_geom!=undefined) {
+						var geom = $.parseJSON(info.the_geom);
+						if (geom.type == "Point") {
+		          var occ_id = info.cartodb_id;
+		          var latlng = new google.maps.LatLng(geom.coordinates[1],geom.coordinates[0]);
+							var marker = me.addMarker(latlng, _.first(rest), false);
+		          me.points_[occ_id] = marker;
+		          me.bounds_.extend(latlng);
+						}
+					}
+
           setTimeout(asyncDrawing(_.rest(rest)),1);
         } else {
-					me.map_.fitBounds(me.bounds_);
+					if (me.bounds_.isEmpty()) {
+						me.map_.setCenter(new google.maps.LatLng(0,0));
+						me.map_.setZoom(2);
+					} else {
+						me.map_.fitBounds(me.bounds_);
+					}
 					me.hideLoader();
         }
       }
     }
     
-    
-    /*******************************************/
-    /*  Add a simple marker to the map         */
-    /*******************************************/
+    /* Add single google marker to the map */
     CartoMap.prototype.addMarker = function(latlng,info,save) {
       var me = this;
       
       var marker = new google.maps.Marker({
         position: latlng,
-        icon: this.generateDot('#FF6600'),
+        icon: (!this.query_mode)?this.generateDot('#FF6600'):this.generateDot('#666666'),
         flat: true,
-        clickable: true,
-        draggable: true,
+        clickable: (!this.query_mode)?true:false,
+        draggable: (!this.query_mode)?true:false,
         raiseOnDrag: false,
         animation: false,
         map: this.map_,
@@ -372,51 +445,54 @@
       });
 
 			
-			google.maps.event.addListener(marker,'mouseover',function(){
-				me.over_marker_ = true;
-        if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
-					var latlng = this.getPosition();
-					me.tooltip_.open(latlng,[this]);
-				} else {
-					me.tooltip_.hide();
-				}
-      });
+			if (!this.query_mode) {
+				google.maps.event.addListener(marker,'mouseover',function(){
+					me.over_marker_ = true;
+	        if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
+						var latlng = this.getPosition();
+						me.tooltip_.open(latlng,[this]);
+					} else {
+						me.tooltip_.hide();
+					}
+	      });
 
-			google.maps.event.addListener(marker,'mouseout',function(){
-				me.over_marker_ = false;
-				setTimeout(function(){
-					if (!me.over_marker_) me.tooltip_.hide();
-				},100);
-      });
+				google.maps.event.addListener(marker,'mouseout',function(){
+					me.over_marker_ = false;
+					setTimeout(function(){
+						if (!me.over_marker_) me.tooltip_.hide();
+					},100);
+	      });
 
-      google.maps.event.addListener(marker,'dragstart',function(ev){
-				me.marker_dragging_ = true;
-        this.data.init_latlng = ev.latLng;
-				
-				// Hide all floating map windows
-				me.hideOverlays();
-      });
+	      google.maps.event.addListener(marker,'dragstart',function(ev){
+					me.marker_dragging_ = true;
+	        this.data.init_latlng = ev.latLng;
 
-      google.maps.event.addListener(marker,'dragend',function(ev){
-				me.marker_dragging_ = false;
-        var occ_id = this.data.cartodb_id;
-        var params = {};
-        params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
-        params.cartodb_id = occ_id;
-        me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"change_latlng","PUT");
-      });
+					// Hide all floating map windows
+					me.hideOverlays();
+	      });
 
-      google.maps.event.addListener(marker,'click',function(ev){
-        if (me.status_=="select") {
-          me.info_window_.open(this);
-        }
-      });
+	      google.maps.event.addListener(marker,'dragend',function(ev){
+					me.marker_dragging_ = false;
+	        var occ_id = this.data.cartodb_id;
+	        var params = {};
+	        params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
+	        params.cartodb_id = occ_id;
+	        me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"change_latlng","PUT");
+	      });
 
-			google.maps.event.addListener(marker,'mouseover',function(ev){
-        if (me.status_=="select") {
-          this.setZIndex(me.marker_zIndex_++);
-        }
-      });
+	      google.maps.event.addListener(marker,'click',function(ev){
+	        if (me.status_=="select") {
+	          me.info_window_.open(this);
+	        }
+	      });
+
+				google.maps.event.addListener(marker,'mouseover',function(ev){
+	        if (me.status_=="select") {
+	          this.setZIndex(me.marker_zIndex_++);
+	        }
+	      });
+			}
+
        
        
       if (save) {
@@ -428,15 +504,9 @@
       return marker;
     }
     
-
-    
-    
-    
-    /*******************************************/
-    /*  Generate canvas image to fill marker   */
-    /*******************************************/
+    /* Generate canvas image to fill marker   */
     CartoMap.prototype.generateDot = function(color) {
-      if (this.color_==null) {
+      if (this[color]==null) {
         var radius = 8;
         var el = document.createElement('canvas');
         el.width = (radius * 2) + 2;
@@ -460,18 +530,17 @@
         ctx.closePath();
         ctx.fill();
         
-        this.color_ = el.toDataURL();
+        this[color] = el.toDataURL();
       }
-      return this.color_;
+      return this[color];
     }
     
     
     
-    
-    
-    /*******************************************/
-    /*  Remove one or serveral markers         */
-    /*******************************************/
+    ////////////////////////////////////////
+    //  REMOVE MARKERS FROM MAP ASYNC 		//
+    ////////////////////////////////////////
+    /* Remove markers from map object */
     CartoMap.prototype.removeMarkers = function(array) {
       var me = this;
 			var type = 'remove_point';
@@ -502,28 +571,16 @@
 			}
     }
 
-
+		/* Set each marker to null in the map */
 		CartoMap.prototype.deleteMarker = function(marker) {
       marker.setMap(null);
     }
     
-    
-    /*******************************************/
-    /*  Reset map                              */
-    /*******************************************/
-    CartoMap.prototype.refresh = function() {
-      this.show();
-  		
-			this.setMapStatus('select');
-
-			this.getColumns();
-			this.getPoints();
-    }
 
 
-    /*******************************************/
-    /*  Get table columns to fill Infowindow   */
-    /*******************************************/
+    ////////////////////////////////////////
+    //  GET TABLE COLUMNS TO FILL INFO	  //
+    ////////////////////////////////////////
     CartoMap.prototype.getColumns = function() {
 			var me = this;
 			
@@ -531,7 +588,7 @@
         dataType: 'json',
         type: 'GET',
         headers: {"cartodbclient": true},
-        url: '/v1/tables/'+table_name +'/columns',
+        url: global_api_url+'tables/'+table_name +'/columns',
         success: function(data) {
 					var new_array = [];
 					_.each(data,function(ele,i){
@@ -548,28 +605,50 @@
       });
     }
 
-    
 
-    /*******************************************/
-    /*  Clear map                              */
-    /*******************************************/
-    CartoMap.prototype.clearMap = function() {
+    
+    ////////////////////////////////////////
+    //  REFRESH / CLEAR / CLEAN OVERLAYS  //
+    ////////////////////////////////////////
+    /* Reset map */
+    CartoMap.prototype.refresh = function(sql) {
+			this.query_mode = ($('body').attr('query_mode') === 'true');
+			$('body').attr('view_mode','map');
+		
+      this.show();
+			this.showLoader();
+
+			if (sql) {
+				this.clearMap(true);
+			} else {
+				this.setMapStatus('select');
+				this.getColumns();
+				this.getPoints();
+			}
+    }
+
+    /* Clear map */
+    CartoMap.prototype.clearMap = function(sql) {
       // Making this function faster as possible, we don't use async + underscore-each
       _.each(this.points_,function(ele,i){
         ele.setMap(null);
       });
       this.points_ = {};
+			if (sql) this.getPoints();
     }
     
+		/* Hide all overlays (no markers) */ 
+		CartoMap.prototype.hideOverlays = function() {
+			this.delete_window_.hide();
+			this.info_window_.hide();
+			this.tooltip_.hide();
+		}
+    
 
-    
-    
-    
-    
-    
-    /*******************************************/
-    /*  Toggle loader visibility               */
-    /*******************************************/
+
+    ////////////////////////////////////////
+    //  HIDE OR SHOW THE MAP LOADER				//
+    ////////////////////////////////////////
     CartoMap.prototype.hideLoader = function() {
       $('div.loading').fadeOut();
     }
@@ -580,9 +659,9 @@
     
 
     
-    /*******************************************/
-    /*  Toggle map visibility                  */
-    /*******************************************/
+    ////////////////////////////////////////
+    //  HIDE OR SHOW MAP							    //
+    ////////////////////////////////////////
     CartoMap.prototype.hide = function() {
       $('div.map_window div.map_curtain').show();
     }
@@ -593,20 +672,11 @@
     }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /*******************************************/
-    /*  Request operations on the map          */
-    /*******************************************/
+
+    ////////////////////////////////////////
+    //  REQUEST OPERATIONS OVER THE MAP   //
+    ////////////////////////////////////////
+		/* Send request */
     CartoMap.prototype.updateTable = function(url_change,params,new_value,old_value,type,request_type) {
       var me = this;
       
@@ -620,7 +690,7 @@
         type: request_type,
         dataType: "text",
         headers: {"cartodbclient": true},
-        url: '/v1/tables/'+table_name+url_change,
+        url: global_api_url+'tables/'+table_name+url_change,
         data: params,
         success: function(data) {
           requests_queue.responseRequest(requestId,'ok','');
@@ -638,6 +708,7 @@
 
     }
     
+		/* If request is succesful */
     CartoMap.prototype.successRequest = function(params,new_value,old_value,type,more) {
       switch (type) {
         case "add_point":       var occ_id = $.parseJSON(more).id;
@@ -655,7 +726,7 @@
       }
     }
     
-    
+		/* If request fails */   
     CartoMap.prototype.errorRequest = function(params,new_value,old_value,type) {      
       switch (type) {
         case "add_point":       new_value.setMap(null);
@@ -673,8 +744,4 @@
         default:                break;
       }
     }
-    
-    
-    
-    
     

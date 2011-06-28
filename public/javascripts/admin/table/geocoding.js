@@ -14,7 +14,7 @@
 	  var me = this;
 		$.ajax({
       method: "GET",
-      url: '/v1/tables/'+table_name+'/records/pending_addresses',
+      url: global_api_url+'tables/'+table_name+'/records/pending_addresses',
       headers: {'cartodbclient':true},
       data: {rows_per_page:5000},
       success: function(data) {
@@ -63,7 +63,7 @@
                   
         $.ajax({
           type: "PUT",
-          url: '/v1/tables/'+table_name+'/records/'+event.data.cartodb_id,
+          url: global_api_url+'tables/'+table_name+'/records/'+event.data.cartodb_id,
           headers: {'cartodbclient':true},
           data: params,
           dataType: 'text',
@@ -93,7 +93,7 @@
 	  var me = this;
 		$.ajax({
       method: "GET",
-      url: '/v1/tables/'+table_name+'/records/pending_addresses',
+      url: global_api_url+'tables/'+table_name+'/records/pending_addresses',
       headers: {'cartodbclient':true},
       success: function(data) {
         if (data.length==0) {

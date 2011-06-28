@@ -102,6 +102,7 @@
             $('div.mamufas div.settings_window').hide();
             $('div.mamufas div.delete_window').hide();
             $('div.mamufas div.create_window').hide();
+						resetUnlock();
           });
         }
       });
@@ -113,15 +114,16 @@
 
     function close_mamufas(){
       $('div.mamufas').fadeOut('fast',function(){
-        $('div.mamufas div.unlock_window').hide(function(){
-          resetUnlock();
-        });
+        $('div.mamufas div.unlock_window').hide();
+				resetUnlock();
       });
       unbindESC();
     };
     
     function showForget() {
+	    $('div.unlock_window div.inner_').animate({borderColor:'#67BA6A'},50);
       $('div.unlock_window .inner_').animate({height:'72px'},300);
+			$('div.unlock_window a.close_unlock').delay(150).css('background-position','0 -48px');
       $('div.unlock_window form').animate({opacity:0,},300,function(){
         $('div.unlock_window form').hide();
         $('div.unlock_window div.inner_').css('background-position','-200px -200px');
@@ -130,10 +132,11 @@
       });
     };
     
-    
     function resetUnlock() {
       $('div.unlock_window .inner_').animate({height:'120px'},300);
       $('div.unlock_window form').css('opacity',1);
+			$('div.unlock_window a.close_unlock').css('background-position','0 0');
+      $('div.unlock_window div.inner_').css('border','2px solid #FF6600');
       $('div.unlock_window form').show();
       $('div.unlock_window div.inner_').css('background-position','15px 15px');
       $('div.email_sent').hide();

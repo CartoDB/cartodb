@@ -1,6 +1,6 @@
     var requests_queue;
     var geolocating = false;
-
+	  
     
     head.ready(function(){
       head.js(
@@ -22,7 +22,7 @@
 			// Inits carto table
 			$("table#carto_table").cDBtable(
         'start',{
-          getDataUrl: '/v1/tables/',
+          getDataUrl: global_api_url + 'tables/',
           resultsPerPage: 20,
           reuseResults: 600,
           total: 5000,
@@ -37,8 +37,11 @@
 			if (hash == "#map") {
 				$('section.subheader ul.tab_menu li a:contains("Map")').click();
 				setTimeout(function(){$('body').trigger('enabled',[false])},500);
+				$('body').attr('view_mode','map');
 			} else {
+				$('body').attr('view_mode','table');
 				window.location.hash = "#table";
 			}
+			$('body').attr('query_mode','false');
       
 		}

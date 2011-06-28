@@ -33,7 +33,7 @@
 			              '</div>'+
 			              '<div class="bottom">'+
 											'<a href="#nooo" class="cancel">cancel</a>'+
-											'<a href="#delete" class="delete">Yes, delete</a>'+
+											'<a href="#delete" class="delete_point">Yes, delete</a>'+
 		                '</div>');
 	
 
@@ -62,7 +62,7 @@
 				me.hide();
 			});
 			
-			$(div).find('a.delete').click(function(ev){
+			$(div).find('a.delete_point').click(function(ev){
 				stopPropagation(ev);
 				me.hide();
 				carto_map.removeMarkers(me.markers_);

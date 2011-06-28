@@ -9,9 +9,9 @@ DESC
     task :setup => ["rake:db:create", "rake:db:migrate"] do
       begin
         ::Rails::Sequel.connection.run("CREATE USER #{CartoDB::PUBLIC_DB_USER}")
-        raise "You should provide a valid e-mail" if ENV['email'].nil? || ENV['email'].empty?
-        raise "You should provide a valid password" if ENV['password'].nil? || ENV['password'].empty?
-        raise "You should provide a valid subdomain" if ENV['subdomain'].nil? || ENV['subdomain'].empty?
+        raise "You should provide a valid e-mail" if ENV['EMAIL'].nil? || ENV['EMAIL'].empty?
+        raise "You should provide a valid password" if ENV['PASSWORD'].nil? || ENV['PASSWORD'].empty?
+        raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].nil? || ENV['SUBDOMAIN'].empty?
         u = User.new
         u.email = ENV['email']
         u.password = ENV['password']

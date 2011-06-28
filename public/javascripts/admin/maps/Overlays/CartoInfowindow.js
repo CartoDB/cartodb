@@ -32,7 +32,7 @@
 			              '</div>'+
 			              '<div class="bottom">'+
 											'<label>cartodb_id:1</label>'+
-											'<a class="delete" href="#delete">Delete</a>'+
+											'<a class="delete_point" href="#delete">Delete</a>'+
 		                '</div>');
 		
 
@@ -41,7 +41,7 @@
 				me.hide();
 			});
 
-			$(div).find('a.delete').click(function(ev){
+			$(div).find('a.delete_point').click(function(ev){
 				stopPropagation(ev);
 				me.hide();
 				carto_map.delete_window_.open(me.latlng_,[me.marker_]);

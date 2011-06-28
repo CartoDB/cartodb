@@ -130,7 +130,7 @@
           }
           $.ajax({
             type: "POST",
-            url: '/v1/tables/',
+            url: global_api_url+'tables/',
             data: params,
             headers: {'cartodbclient':true},
             success: function(data, textStatus, XMLHttpRequest) {

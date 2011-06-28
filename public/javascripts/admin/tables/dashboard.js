@@ -59,7 +59,7 @@
         $.ajax({
           type: "DELETE",
           dataType: "text",
-          url:'/v1/tables/'+table_name,
+          url:global_api_url+'tables/'+table_name,
           headers: {'cartodbclient':true},
           success: function(data, textStatus, XMLHttpRequest) {
             window.location.href = "/dashboard";

@@ -19,8 +19,8 @@
               '<p>Features visualization</p>'+
             '</li>'+
             '<li>'+
-              '<h4>Markers customization <a href="#" style="text-decoration:underline;" id="carto_css">css</a></h4>'+
-              '<p>Customized dots</p>'+
+              '<h4>Markers customization css</h4>'+
+              '<p>Default dots</p>'+
             '</li>'+
           '</ul>'+
         '</div>'+

@@ -1,5 +1,5 @@
 <%= content_for(:js) do %>
-  <%= headjs_include_tag "plugins/jquery.min", "admin/users/edit"  %>
+  <%= headjs_include_tag "plugins/jquery.min", "plugins/jquery.color", "admin/users/edit"  %>
 <% end %>
 <%= content_for(:head) do %>
   <%= stylesheet_link_tag('reset.css','admin/layout','admin/users/edit') %>
@@ -9,7 +9,7 @@
 
 <section id="content">
   <div class="inner_content">
-    
+
    <% [:success].each do |key| %>
      <% if flash[key] %>
        <div class="notification section">

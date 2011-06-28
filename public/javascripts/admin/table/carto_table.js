@@ -1,18 +1,20 @@
 
 // FUNCIONALITIES
-//   - Editing table data with events - OK
-//   - Resize columns -- KO
-//   - Pagination with ajax --- OK
-//   - Custom style --- OK
-//   - jScrollPane --- OK
-//   - Update table (remove columns and rows, add columns and rows, move columns, sort columns) - OK
-//   - Validate fields --- OK
-//   - Rows selection for multiple edition --- OK
-//   - Floating tHead  --- OK
-//   - Floating first column --- OK
+// - Editing table data with events - OK
+// - Resize columns -- KO
+// - Pagination with ajax --- OK
+// - Custom style --- OK
+// - jScrollPane --- OK
+// - Update table (remove columns and rows, add columns and rows, move columns, sort columns) - OK
+// - Validate fields --- OK
+// - Rows selection for multiple edition --- OK
+// - Floating tHead  --- OK
+// - Floating first column --- OK
 
+// OUT FUNCTIONS
+// - setAppStatus function
 
-//Elements out of the plugin (Be careful with this!)
+// Elements out of the plugin (Be careful with this!)
 // - header
 // - div.table_position
 // - section div.subheader
@@ -34,15 +36,14 @@
   var maxPage = -1;
   var actualPage;
   var total;
+	var query_mode = false;
   
   var previous_scroll = 0;
   var defaults;
   var cell_size = 100;
   var last_cell_size = 100;
 
-  var query_mode = false;
   var enabled = true;
-  
   var methods = {
 
 
@@ -121,6 +122,7 @@
          }
        });
      } else {
+			 setAppStatus(); // Change app status depending on query mode
 			 var now = new Date();
        $.ajax({
          method: "GET",
@@ -135,10 +137,10 @@
            $('div.sql_console p.errors').fadeOut();
            $('div.sql_console span h3').html('<strong>'+data.total_rows+' results</strong>');
            rows = data.rows;
-           total_rows = data.total_rows;
+					 total = data.total_rows;
            cell_size = 100;
            last_cell_size = 100;
-           methods.drawQueryColumns(rows,total_rows,arrived-now);
+           methods.drawQueryColumns(rows,total,arrived-now);
            methods.drawQueryRows(rows,direction,actualPage);
            $(document).unbind('arrived');
          },
@@ -425,7 +427,7 @@
     getColumnTypes: function() {
       $.ajax({
          method: "GET",
-         url: '/v1/column_types',
+         url: global_api_url + 'column_types',
          headers: {"cartodbclient": true},
          success: function(data) {
            $('span.col_types').each(function(index,element){
@@ -930,12 +932,12 @@
           if ($(window).scrollTop()==difference && !end && maxPage!=-1) {
             loading = true;
             methods.showLoader('next');
-            setTimeout(function(){methods.getData(defaults,'next')},300);
+            setTimeout(function(){methods.getData(defaults,'next')},500);
           } else if ($(window).scrollTop()==0 && minPage!=0) {
             loading = true;
             $('div.table_position').removeClass('end');
             methods.showLoader('previous');
-            setTimeout(function(){methods.getData(defaults,'previous')},300);
+            setTimeout(function(){methods.getData(defaults,'previous')},500);
           } else if (end && actualPage!=0) {
             $('div.table_position').addClass('end');
           }
@@ -971,7 +973,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  SHOW PAGINATE LOADER
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    showLoader: function(kind){
+    showLoader: function(kind){	
       if (minPage==0) {
         var range = (maxPage - minPage + 1)*defaults.resultsPerPage;
       } else {
@@ -2203,7 +2205,7 @@
 
 	        $.ajax({
 	           method: "GET",
-	           url: '/v1/column_types',
+	           url: global_api_url + 'column_types',
 	           headers: {"cartodbclient": true},
 	           success: function(data) {
 	             //Remove ScrollPane
@@ -2297,19 +2299,6 @@
       ///////////////////////////////////////
       //  SQL Editor                       //
       ///////////////////////////////////////
-      // //SQL Editor
-      // $('div.general_options div.sql_console span a.close').livequery('click',function(ev){
-      //   if (enabled) {
-      //     stopPropagation(ev);
-      //     methods.closeTablePopups();
-      //     if (query_mode) {
-      //       query_mode = false;
-      //       methods.refreshTable('');
-      //     }
-      //     $('div.sql_window').hide();
-      //   }
-      // });
-
       // General options
       $('div.general_options ul li a.sql,a.open_console').livequery('click',function(ev){
         if (enabled) {
@@ -2329,19 +2318,21 @@
       $('div.sql_window a.try_query').livequery('click',function(ev){
         if (enabled) {
           stopPropagation(ev);
+					$('body').attr('query_mode',"true");
           query_mode = true;
           methods.refreshTable(0);
-					methods.queryModeStyle();
-        }
+        	setAppStatus();
+				}
       });
 			$('a.clear_table').livequery('click',function(ev){
 				stopPropagation(ev);
 			  if (enabled) {
           methods.closeTablePopups();
           if (query_mode) {
+						$('body').attr('query_mode','false');
             query_mode = false;
             methods.refreshTable('');
-						methods.queryModeStyle();
+						setAppStatus();	// Out function to change app to SQL or NORMAL
           }
         }
 			});
@@ -2403,25 +2394,7 @@
     },
 
     
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  SQL MODE STYLE
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    queryModeStyle: function(){
-			if (query_mode) {
-				var html = $('p.settings').html();
-				$('p.settings').html(html.replace('\|',''));
-				$('body').addClass('query');
-				$('span.advanced_options li:eq(0)').addClass('disabled');
-			} else {
-				$('body').removeClass('query');
-				$('p.settings a:eq(0)').after(' | ');
-				$('span.advanced_options li:eq(0)').removeClass('disabled');
-			}
-		},
-
     
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  KEEP SIZE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2449,14 +2422,14 @@
       var table_width = $(table).width();
       
       
-   if (window_width==table_width || $('table tbody').length==0) {
+   		if (window_width==table_width || $('table tbody').length==0) {
         $('span.paginate a#previousButton').addClass('disabled');
         $('span.paginate a#nextButton').addClass('disabled');
       } else {
         if (scrollable<1) {
           $('span.paginate a#previousButton').addClass('disabled');
           $('span.paginate a#nextButton').removeClass('disabled');
-     } else if ((window_width+scrollable)==$(table).width() || ($(table).width()-window_width-scrollable)<(last_cell_size+28)) {
+     		} else if ((window_width+scrollable)==$(table).width() || ($(table).width()-window_width-scrollable)<(last_cell_size+28)) {
           $('span.paginate a#nextButton').addClass('disabled');
           $('span.paginate a#previousButton').removeClass('disabled');
         } else {
@@ -2627,6 +2600,9 @@
     //  REFRESH TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     refreshTable: function(position) {
+			query_mode = ($('body').attr('query_mode') === "true");
+			$('body').attr('view_mode','table');
+			
       loading = true;
       if (position!='') {
         // Reset pages position
@@ -2713,9 +2689,9 @@
 
 
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //  START PLUGIN
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////
+  //  START PLUGIN           //
+  /////////////////////////////
   $.fn.cDBtable = function(method,options) {
 
     defaults = options;

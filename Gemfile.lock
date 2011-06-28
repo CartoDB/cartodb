@@ -11,6 +11,7 @@ GIT
 GIT
   remote: git@github.com:Vizzuality/cartodb-importer.git
   revision: 9bee076e3ae9fc89193537c0d614f2c47440b3dd
+  tag: v0.1.0
   specs:
     cartodb-importer (0.1.0)
       builder
@@ -250,7 +251,7 @@ DEPENDENCIES
   capistrano-ext
   capybara
   capybara-zombie!
-  cartodb-importer (~> 0.1.0)!
+  cartodb-importer!
   email_spec
   htmlentities
   launchy

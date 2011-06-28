@@ -1,5 +1,4 @@
-body {position:relative; background:url('/images/admin/common/header_bkg.jpg') repeat-x center 0 #2D3451; overflow-x:hidden;}
-body.query {background-position:center -160px;}
+body {position:relative; background:url('/images/admin/common/new_header.png') repeat-x center 0 #2D3451; overflow-x:hidden;}
 body, html {height:100%;} /*table hack*/
 a:focus {outline:none;}
 
@@ -23,8 +22,7 @@ section.subheader span.query {display:none}
 body.query section.subheader span.normal {display:none}
 body.query section.subheader span.query {display:block}
 
-section.subheader {position:fixed; top:58px; left:0; width:100%; min-width:880px; height:103px; background:url('/images/admin/common/header_bkg.jpg') repeat-x center -58px #2D3451; z-index:100;}
-body.query section.subheader {background-position:center -218px}
+section.subheader {position:fixed; top:58px; left:0; width:100%; min-width:880px; height:103px; background:url('/images/admin/common/new_header.png') repeat-x center -58px #2D3451; z-index:100;}
 section.subheader div.outer {float:left; width:100%; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
 body.query section.subheader div.outer {background:url('/images/admin/table/sql_border.png') repeat-x 0 0}
 section.subheader div.left {position:relative; float:left; width:600px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
@@ -207,8 +205,8 @@ div.sql_window div.inner h3 {display:block; padding:10px 0 0 10px; font:bold 15p
 div.sql_window div.inner p {display:block; padding:3px 0 0 10px; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
 div.sql_window div.inner div.outer_textarea {position:absolute; top:55px; left:9px; right:9px; bottom:50px; margin:10px 0 0 0; padding:5px ; background:white;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD}
 div.sql_window span.bottom {position:absolute; bottom:10px; left:10px; right:10px; height:28px;}
-div.sql_window span.bottom a.clear_table {float:right; margin:7px 12px 0 0; font:normal 13px 'Helvetica',Arial; color:#333333; text-shadow:0 1px white;}
-div.sql_window span.bottom a.clear:hover {color:black;}
+div.sql_window span.bottom a.clear_table {float:right; margin:7px 12px 0 0; font:normal 13px 'Helvetica',Arial; color:#FF6600; text-shadow:0 1px white;}
+div.sql_window span.bottom a.clear_table:hover {color:#FF3300}
 div.sql_window span.bottom a.try_query {float:right; margin:0; height:12px; padding:7px 9px; -webkit-border-radius: 5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999; font:bold 12px Arial; text-shadow:0 1px white;
   color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#DEDEDE\9; text-decoration:none}

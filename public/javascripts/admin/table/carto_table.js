@@ -126,7 +126,7 @@
 			 var now = new Date();
        $.ajax({
          method: "GET",
-         url: '/v1?sql='+escape(editor.getValue()),
+         url: global_api_url+'?sql='+escape(editor.getValue()),
          data: {
            rows_per_page: options.resultsPerPage,
            page: petition_pages

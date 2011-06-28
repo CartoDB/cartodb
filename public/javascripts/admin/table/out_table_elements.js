@@ -265,7 +265,6 @@
           $('div.mamufas div.warning_window').show();
           $('div.mamufas').fadeIn('fast');
           bindESC();
-
         } else {
           changeTableName(new_value,old_value);
         }
@@ -319,7 +318,7 @@
 
     $('p.status a').livequery('click',function(ev){
       stopPropagation(ev);
-      var privacy_window = $(this).parent().parent().children('span.privacy_window');
+      var privacy_window = $(this).closest('div.left').children('span.privacy_window');
       if (!$(this).hasClass('save')) {
         if (privacy_window.is(':visible')) {
           privacy_window.hide();

@@ -79,7 +79,7 @@ feature "Dashboard", %q{
 
     page.should have_content("BROWSE BY TAGS")
     
-    page.should have_css("ul li:eq(2) a span", :text => "personal")
+    page.should have_css("ul li:eq(1) a span", :text => "personal")
     page.should have_css("ul li a span", :text => "4sq")
     page.should have_css("ul li a span", :text => "feed aggregator")
     page.should have_css("ul li a span", :text => "movies")

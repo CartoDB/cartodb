@@ -23,6 +23,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.password              = attributes[:password]
       @user.password_confirmation = attributes[:password]
       @user.admin                 = attributes[:admin]
+      @user.subdomain             = attributes[:subdomain]
       @user.enabled               = true
       if @user.save
         redirect_to superadmin_users_path, :flash => {:success => 'User created successfully'}

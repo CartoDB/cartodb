@@ -30,9 +30,9 @@
     )%>
 
     <script type="text/javascript">
-      var table_id = <%= @table["id"] %>;
+      var table_id = <%= @table.id %>;
       var status = "<%= table_privacy_text(@table).downcase %>";
-      var table_name = "<%= @table["name"] %>";
+      var table_name = "<%= @table.name %>";
       var user_id = "<%= current_user.id %>";
     </script>
   <% end %>
@@ -51,14 +51,14 @@
             <p></p>
           </span>
           <span class="normal">
-            <h2><a href="#change_title"><%= @table["name"] %></a></h2>
+            <h2><a href="#change_title"><%= @table.name %></a></h2>
             <p class="status">
               <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
             </p>
             <span class="tags">
-              <% unless @table["tags"].blank? %>
-                <% tagsSize=@table["tags"].split(',').size %>
-                <% @table["tags"].split(',').each_with_index do |tag_name,index| %>
+              <% unless @table[:tags_names].blank? %>
+                <% tagsSize=@table[:tags_names].split(',').size %>
+                <% @table[:tags_names].split(',').each_with_index do |tag_name,index| %>
                 <% if index==tagsSize-1 %>
                   <p class="last"><%= tag_name %></p>
                 <% else %>
@@ -76,7 +76,7 @@
         </div>
         <div class="right">
           <p class="settings">
-            <a class="delete" table-id="<%= @table["id"] %>" href="#delete_table">delete table</a> | <a class="settings selected" href="#show_advanced_options">advanced</a>
+            <a class="delete" table-id="<%= @table.id %>" href="#delete_table">delete table</a> | <a class="settings selected" href="#show_advanced_options">advanced</a>
           </p>
           <span class="paginate">
             <a id="nextButton"class="next" href="#next_column">Next column</a>

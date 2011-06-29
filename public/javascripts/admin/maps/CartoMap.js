@@ -234,9 +234,7 @@
 	     	if (me.status_=="select_area") {
 	     		google.maps.event.clearListeners(me.selection_area_, 'mouseover');
 	        google.maps.event.clearListeners(me.selection_area_, 'mouseout');
-          // if (over_polygon_tooltip!=null) {
-          //  over_polygon_tooltip.hide();
-          // }
+          me.tooltip_.hide();
 	              
 	        var position = {};
 	        position.x = ev.pageX-($('div#map').offset().left);

@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   helper :all
 
   before_filter :browser_is_html5_compliant?
+  after_filter :remove_flash_cookie
 
   class NoHTML5Compliant < Exception; end;
 
@@ -179,4 +180,9 @@ class ApplicationController < ActionController::Base
     # Checked in safari
   end
   
+  # In some cases the flash message is going to be set in the fronted with js after making a request to the API
+  # We use this filter to ensure it disappears in the very first request
+  def remove_flash_cookie
+    cookies.delete(:flash) if cookies[:flash]
+  end
 end

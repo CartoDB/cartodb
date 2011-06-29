@@ -1,6 +1,7 @@
 
   head(function(){
     $('div.error_content').delay(4000).fadeOut();
+		$('div.notification').delay(4000).fadeOut();
 
     $('span.end_key a.open_confirm_renew').click(function(ev){
       stopPropagation(ev);

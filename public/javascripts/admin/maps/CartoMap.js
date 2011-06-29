@@ -157,47 +157,27 @@
       
       
       // SQL Map console
-      $('div.general_options.map ul li.all a.sql').click(function(ev){
-        var map_status = ($('body').attr('view_mode') == "map");
-        if (map_status) {
-          stopPropagation(ev);
-          $('div.sql_window').show();
-          $('div.sql_window span p.errors').text('Select "the_geom" or you won\'t see any geolocated point').show();
-          editor.focus();
-        } 
-      });
+			$('body').bind('query_refresh',function(ev){
+				var view_map = ($('body').attr('view_mode') == 'map');
+			  if (view_map && me.query_mode) {
+					stopPropagation(ev);
+					me.query_mode = false;
+					me.showLoader();
+					me.refresh();
+        }
+			});
 			// Try query
       $('div.sql_window a.try_query').livequery('click',function(ev){
         var map_status = ($('body').attr('view_mode') == "map");
         if (map_status) {
+	        stopPropagation(ev);
 	        $('body').attr('query_mode','true');
 					me.query_mode = true;
-          stopPropagation(ev);
 					setAppStatus();
 					me.showLoader();
           me.refresh(true);
         }
       });
-			// Close sql window
-			$('div.sql_window a.close').livequery('click',function(ev){
-        var map_status = ($('body').attr('view_mode') == "map");
-        if (map_status) {
-          stopPropagation(ev);
-          $('div.sql_window').hide();
-        }
-      });
-			// Clear table
-			$('a.clear_table').livequery('click',function(ev){
-				stopPropagation(ev);
-				var view_map = ($('body').attr('view_mode') == 'map');
-			  if (view_map && me.query_mode) {
-					$('body').attr('query_mode','false');
-					me.showLoader();
-					me.refresh();
-					setAppStatus();	// Out function to change app to SQL or NORMAL
-					$('div.sql_window').hide();
-        }
-			});
     }
 
 

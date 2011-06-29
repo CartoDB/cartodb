@@ -1,4 +1,13 @@
 section#content div.inner_content {padding:40px 0 50px 0;}
+
+section#content div.inner_content div.notification div.top_white {width:906px; height:7px; padding:0; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
+section#content div.inner_content div.notification div.middle_white {position:relative; width:846px; padding:12px 30px 12px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
+section#content div.inner_content div.notification div.middle_white h2 {width:100%; font:bold 21px Arial; color:#333333;}
+section#content div.inner_content div.notification div.middle_white p {display:inline-block; width:100%; padding:0 0 0 20px; font:normal 15px Arial; color:#80CA73; background:url('/images/admin/icons/done.png') no-repeat 0 1px;}
+section#content div.inner_content div.notification div.middle_white a.close {position:absolute; top:12px; right:13px; width:17px; height:17px; background:url('/images/admin/icons/close_button.png') no-repeat 0 0; text-indent:-9999px;}
+section#content div.inner_content div.notification div.middle_white a.close:hover {background-position:0 -17px;}
+section#content div.inner_content div.notification div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 10px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
+
 section#content div.left {display:inline-block; width:626px; vertical-align:top;}
 section#content div.left div.top_blue_medium {float:left; width:626px; height:61px; background:url('/images/admin/backgrounds/top_blue_medium.png') no-repeat 0 0;}
 section#content div.left div.top_blue_medium h3 {float:left; margin:18px 0 0 25px; font:normal 23px "Aller",Arial; color:white; text-shadow:0 1px #718C92;}
@@ -16,7 +25,7 @@ section#content div.left div.top_blue_medium p a.selected {color:#5F6C70; text-s
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#A4BCC1), to(#B5CFD4));
   background:-moz-linear-gradient(-90deg, #A4BCC1, #B5CFD4);
   background: -o-linear-gradient(#A4BCC1,#B5CFD4);
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#A4BCC1', endColorstr='#B5CFD4'); 
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#A4BCC1', endColorstr='#B5CFD4');
 }
 section#content div.left div.top_blue_medium p a:hover {cursor:pointer;}
 section#content div.left div.top_blue_medium p a.oauth { -webkit-border-top-left-radius: 5px; -webkit-border-bottom-left-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-bottomleft: 5px; border-top-left-radius: 5px; border-bottom-left-radius: 5px;}
@@ -34,7 +43,7 @@ section#content div.left div.middle_white_medium span.form_block input {width:17
   background-image:linear-gradient(-90deg, #eeeeee, #ffffff);
   background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#eeeeee), to(#ffffff));
   background-image:-moz-linear-gradient(-90deg, #eeeeee, #ffffff);
-  background-image: -o-linear-gradient(#eeeeee,#ffffff); 
+  background-image: -o-linear-gradient(#eeeeee,#ffffff);
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#eeeeee', endColorstr='#ffffff');
 }
 section#content div.left div.middle_white_medium span.form_block.long input {width:203px;}
@@ -42,22 +51,22 @@ section#content div.left div.middle_white_medium span.submit_block {display:inli
 section#content div.left div.middle_white_medium span.submit_block p {float:right; margin:23px 20px 0 0; font-size:13px; color:#333333;}
 section#content div.left div.middle_white_medium span.submit_block p a {color:#FF9900;}
 section#content div.left div.middle_white_medium span.submit_block p a:hover {color:#FF6600;}
-section#content div.left div.middle_white_medium a.submit {display:inline-block; width:auto; height:15px; margin:5px 0 0 10px; padding:10px 19px 10px 19px!important; font:bold 15px Arial; line-height:15px; padding:0 0 0 5px; vertical-align:bottom; text-decoration:none;} 
+section#content div.left div.middle_white_medium a.submit {display:inline-block; width:auto; height:15px; margin:5px 0 0 10px; padding:10px 19px 10px 19px!important; font:bold 15px Arial; line-height:15px; padding:0 0 0 5px; vertical-align:bottom; text-decoration:none;}
 section#content div.left div.middle_white_medium a.submit.green {color:#305233; text-shadow:0 1px #95C994;
   -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #538C55;
   -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #8FD484, #67BA6A); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #8FD484, #67BA6A);
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#8FD484), to(#67BA6A));
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #8FD484, #67BA6A);
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#8FD484,#67BA6A); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#8FD484,#67BA6A);
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px\10;
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#8FD484', endColorstr='#67BA6A');
 }
 section#content div.left div.middle_white_medium a.submit.green:hover {
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #67BA6A, #8FD484); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px,linear-gradient(-90deg, #67BA6A, #8FD484);
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#67BA6A), to(#8FD484));
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px,-moz-linear-gradient(-90deg, #67BA6A, #8FD484);
-  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#67BA6A,#8FD484); 
+  background:url('/images/front/home/button_border.png') no-repeat 0 -1px, -o-linear-gradient(#67BA6A,#8FD484);
   background:url('/images/front/home/button_border.png') no-repeat 0 -1px\10;
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#67BA6A', endColorstr='#8FD484');
 }
@@ -65,19 +74,19 @@ section#content div.left div.middle_white_medium a.submit.green:hover {
 section#content div.left div.middle_white_medium a.submit.orange {color:#895101; text-shadow:0 1px #FFC266;
   -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #A26001;
   -moz-box-shadow:0 1px 0 0 white; -webkit-box-shadow:0 1px 0 0 white; box-shadow:0 1px 0 0 white;
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #FF9900, #BF7201); 
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #FF9900, #BF7201);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FF9900), to(#BF7201));
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg, #FF9900, #BF7201);
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#FF9900,#BF7201); 
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#FF9900,#BF7201);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px\10;
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FF9900', endColorstr='#BF7201');
 }
 
 section#content div.left div.middle_white_medium a.submit.orange:hover {
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #BF7201, #FF9900); 
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg, #BF7201, #FF9900);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear, 50% 0%, 50% 100%, from(#BF7201), to(#FF9900));
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg, #BF7201, #FF9900);
-  background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#BF7201,#FF9900); 
+  background:url('/images/front/home/button_border.png') repeat-x 0 -1px, -o-linear-gradient(#BF7201,#FF9900);
   background:url('/images/front/home/button_border.png') repeat-x 0 -1px\10;
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#BF7201', endColorstr='#FF9900');
 }
@@ -93,7 +102,7 @@ section#content div.left div.middle_white_medium div.end_oauth span.form_block i
   background-image:linear-gradient(-90deg, #eeeeee, #ffffff);
   background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#eeeeee), to(#ffffff));
   background-image:-moz-linear-gradient(-90deg, #eeeeee, #ffffff);
-  background-image: -o-linear-gradient(#eeeeee,#ffffff); 
+  background-image: -o-linear-gradient(#eeeeee,#ffffff);
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#dddddd', endColorstr='#ffffff');
 }
 section#content div.left div.middle_white_medium span.form_block input.error {border-color:#FF6600;}
@@ -102,7 +111,7 @@ section#content div.left div.middle_white_medium div.error_content p {float:left
 section#content div.left div.middle_white_medium div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial;
  color:white; text-shadow:0 -1px #C55B14;}
 
-  
+
 section#content div.left div.middle_white_medium div.end_oauth span.end_key {width:100%; padding:0;}
 section#content div.left div.middle_white_medium div.end_oauth span.end_key a.orange {margin-left:0;}
 section#content div.left div.middle_white_medium div.end_oauth span.end_key p {display:inline-block; padding:0 0 10px 10px; margin:0; font:normal 13px Arial; color:#666666; vertical-align:middle;}
@@ -123,7 +132,7 @@ section#content div.right div.banner div.middle_white_short ul li a:hover {color
 section#content div.right div.banner div.bottom_white_short {float:left; width:100%; height:15px; background:url('/images/admin/backgrounds/bottom_white_short.png') no-repeat 0 0;}
 
 
-div.mamufas div.delete_window {position:absolute; display:block; top:50%; left:50%; width:434px; height:139px; margin:-120px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; 
+div.mamufas div.delete_window {position:absolute; display:block; top:50%; left:50%; width:434px; height:139px; margin:-120px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
   -webkit-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.delete_window a.close_delete {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0;}
 div.mamufas div.delete_window a.close_delete:hover {background-position:0 -24px;}
@@ -138,17 +147,17 @@ div.mamufas div.delete_window div.inner_ span.bottom a.cancel {float:left; margi
 div.mamufas div.delete_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
 div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;
-  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); 
+  background:linear-gradient(-90deg, #FFFFFF, #CACBCE);
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE);
-  background: -o-linear-gradient(#FFFFFF,#CACBCE); 
+  background: -o-linear-gradient(#FFFFFF,#CACBCE);
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');
 }
 div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete:hover {
-  background:linear-gradient(-90deg, #CACBCE, #FFFFFF); 
+  background:linear-gradient(-90deg, #CACBCE, #FFFFFF);
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF);
-  background: -o-linear-gradient(#CACBCE,#FFFFFF); 
+  background: -o-linear-gradient(#CACBCE,#FFFFFF);
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF');
   cursor:pointer;
 }
@@ -168,18 +177,18 @@ div.mamufas div.renew_window div.inner_ span.bottom {float:left; width:430px; bo
 div.mamufas div.renew_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.renew_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
 div.mamufas div.renew_window div.inner_ span.bottom a.confirm_renew {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
-  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; 
-  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); 
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;
+  background:linear-gradient(-90deg, #FFFFFF, #CACBCE);
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE);
-  background: -o-linear-gradient(#FFFFFF,#CACBCE); 
+  background: -o-linear-gradient(#FFFFFF,#CACBCE);
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');
 }
 div.mamufas div.renew_window div.inner_ span.bottom a.confirm_renew:hover {
-  background:linear-gradient(-90deg, #CACBCE, #FFFFFF); 
+  background:linear-gradient(-90deg, #CACBCE, #FFFFFF);
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF);
-  background: -o-linear-gradient(#CACBCE,#FFFFFF); 
+  background: -o-linear-gradient(#CACBCE,#FFFFFF);
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF');
   cursor:pointer;
 }

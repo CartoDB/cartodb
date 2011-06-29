@@ -5,7 +5,6 @@
 		  this.offsetVertical_ = -21;
 		  this.offsetHorizontal_ = 1;
 		  this.height_ = 22;
-		  this.width_ = 57;
 		  this.setMap(map);
 		}
 
@@ -19,7 +18,7 @@
 		    div = this.div_ = document.createElement('DIV');
 				div.setAttribute('class','marker_tooltip');
 				
-				$(div).append('<a class="info" href="#show_info">i</a><a class="margin delete" href="#delete_marker">x</a>');
+				$(div).append('<span><p>1 point</p><a class="info" href="#show_info">i</a><a class="margin delete" href="#delete_marker">x</a></span');
 				
 				$(div).find('a.info').click(function(ev){
 					stopPropagation(ev);
@@ -43,12 +42,12 @@
 
 		    var panes = this.getPanes();
 		    panes.floatPane.appendChild(div);
+				$(div).css({opacity:0});
 		  }
 
 		  // Position the overlay 
 		  var pixPosition = this.getProjection().fromLatLngToDivPixel(this.latlng_);
 		  if (pixPosition) {
-			  div.style.width = this.width_ + "px";
 			  div.style.left = (pixPosition.x + this.offsetHorizontal_) + "px";
 			  div.style.height = this.height_ + "px";
 			  div.style.top = (pixPosition.y + this.offsetVertical_) + "px";
@@ -67,8 +66,9 @@
 			if (this.div_) {
 				var div = this.div_;
 				var me = this;
-				div.style.width = '31px';
+				div.style.width = '32px';
 				$(div).find('a.info').show();
+				$(div).find('p').hide();
 				$(div).find('a.delete').unbind('click');
 				$(div).find('a.delete').click(function(ev){
 					stopPropagation(ev);
@@ -93,8 +93,9 @@
 			if (this.div_) {
 				var div = this.div_;
 				var me = this;
-				div.style.width = '15px';
+				var total_markers = _.size(markers);
 				$(div).find('a.info').hide();
+				$(div).find('p').text(total_markers + ((total_markers>1)?' points':' point')).show();
 				$(div).find('a.delete').unbind('click');
 				$(div).find('a.delete').click(function(ev){
 					stopPropagation(ev);
@@ -102,12 +103,14 @@
 					me.hide();
 					carto_map.removeMarkers(me.markers_);
 				});
+				var p_width = 	$(div).find('p').width();
+				div.style.width = 21 + p_width + 'px';
 				
 				this.markers_ = markers;
 				this.latlng_ = latlng;
 			  var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
 			  if (pixPosition) {
-				  div.style.left = (pixPosition.x + this.offsetHorizontal_ + 1) + "px";
+				  div.style.left = (pixPosition.x + this.offsetHorizontal_ - 7) + "px";
 				  div.style.top = (pixPosition.y + this.offsetVertical_ + 5) + "px";
 			  }
 				this.show();
@@ -128,6 +131,7 @@
 		  if (this.div_) {
 		    var div = this.div_;  
 				div.style.visibility = "visible";
+				div.style.opacity = 1;
 			}
 		}
 

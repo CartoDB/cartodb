@@ -41,7 +41,8 @@ div.map_window div#map_tools div.tooltip span.arrow {position:absolute; bottom:-
 
 /*MARKERS STUFF*/
 /*Marker tooltip*/
-div.marker_tooltip {position:absolute; display:block; width:31px; height:14px!important; padding:4px 5px; border-radius:30px; -webkit-border-radius:30px; -moz-border-radius:30px; background:rgba(0,0,0,0.5)}
+div.marker_tooltip {position:absolute; display:block; width:57px; height:14px!important; padding:4px 5px; border-radius:30px; -webkit-border-radius:30px; -moz-border-radius:30px; background:rgba(0,0,0,0.5)}
+div.marker_tooltip p {position:relative; float:left; margin:0 3px 0 0; font:normal 11px Arial; color:white;}
 div.marker_tooltip a {position:relative; float:left; width:14px; height:14px; padding:0; border-radius:10px; -webkit-border-radius:10px; -moz-border-radius:10px; font:normal 11px Arial; color:#333333; text-align:center;
   text-decoration:none; line-height:11px; text-indent:-9999px; background:url('/images/admin/map/tooltip.png') no-repeat 0 0}
 div.marker_tooltip a:hover {background-position:0 -14px}

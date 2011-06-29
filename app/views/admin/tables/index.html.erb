@@ -1,5 +1,5 @@
   <%= content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/tumblr", "plugins/file_uploader", "admin/tables/dashboard", "plugins/jquery.color", "admin/tables/import"  %>
+    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/tumblr", "plugins/file_uploader", "admin/tables/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/tables/import"  %>
   <% end %>
   <%= content_for(:head) do %>
     <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/dashboard') %>

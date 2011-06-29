@@ -1,7 +1,5 @@
 CartoDB::Application.routes.draw do
-  root :to => "home#index"
-
-  post '/upload' => 'upload#create', :format => :json
+  root :to => redirect("/login")
 
   get   '/login' => 'sessions#new', :as => :login
   get   '/logout' => 'sessions#destroy', :as => :logout
@@ -12,9 +10,10 @@ CartoDB::Application.routes.draw do
   match '/limits' => 'home#limits', :as => :limits
   match '/status' => 'home#app_status'
 
+  post '/upload' => 'upload#create', :format => :json
+
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard
-    match '/dashboard/public' => 'tables#index', :as => :dashboard_public, :defaults => {:public => true}
     resources :tables, :only => [:show]
     match '/your_apps/oauth' => 'client_applications#oauth', :as => :oauth_credentials
     match '/your_apps/jsonp' => 'client_applications#jsonp', :as => :jsonp_credentials

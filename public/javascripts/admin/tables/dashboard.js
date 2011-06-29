@@ -62,6 +62,7 @@
           url:global_api_url+'tables/'+table_name,
           headers: {'cartodbclient':true},
           success: function(data, textStatus, XMLHttpRequest) {
+						$.cookie('flash', 'Table successfully removed');
             window.location.href = "/dashboard";
           },
           error: function(e) {

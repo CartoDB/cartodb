@@ -63,7 +63,7 @@
         function(){
           me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
     			me.info_window_      = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);    // InfoWindow for markers
-    			me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-180,-180),me.map_);				// Over tooltip for markers and selection area
+    			me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-260,-260),me.map_);				// Over tooltip for markers and selection area
           me.delete_window_    = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_); // Delete window to confirm remove one/several markers
 					me.map_canvas_ 			= new mapCanvasStub(me.map_);
          					

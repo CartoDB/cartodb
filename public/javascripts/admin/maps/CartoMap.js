@@ -280,15 +280,17 @@
 	            google.maps.event.addListener(me.selection_area_,'mouseover',function(){
 	              me.tooltip_.openPolgyon(latlng,markers);
 	             	me.over_marker_ = true;
+								me.tooltip_.show();
 	            });
             
 	            google.maps.event.addListener(me.selection_area_,'mouseout',function(){
 	             	me.over_marker_ = false;
-								setTimeout(function(){
-									if (!me.over_marker_) {
-		               me.tooltip_.hide();
-		             	}
-								},200);
+								// var self = me;
+								// setTimeout(function(){
+								// 	if (!self.over_marker_) {
+								// 		               self.tooltip_.hide();
+								// 		             	}
+								// },200);
 	            });
 	         	});
 	       	}

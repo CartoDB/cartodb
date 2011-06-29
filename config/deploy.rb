@@ -90,7 +90,10 @@ namespace :db do
 
   desc "Setup the database"
   task :setup, :roles => :app do
-    run "cd #{current_release} && RAILS_ENV=#{stage} rake cartodb:db:setup"
+    raise "You should provide a valid e-mail" if ENV['EMAIL'].nil? || ENV['EMAIL'].empty?
+    raise "You should provide a valid password" if ENV['PASSWORD'].nil? || ENV['PASSWORD'].empty?
+    raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].nil? || ENV['SUBDOMAIN'].empty?
+    run "cd #{current_release} && RAILS_ENV=#{stage} EMAIL=#{ENV['EMAIL']} PASSWORD=#{ENV['PASSWORD']} SUBDOMAIN=#{ENV['SUBDOMAIN']} rake cartodb:db:setup"
   end
 
   desc "Resets the database"

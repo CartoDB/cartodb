@@ -15,7 +15,7 @@ class Admin::UsersController < ApplicationController
 
     current_user.email                 = params[:user].delete(:email)
     current_user.password              = params[:user].delete(:password)
-    current_user.password_confirmation = params[:user].delete(:password_confirmation)
+    current_user.password_confirmation = params[:user].delete(:password_confirmation)    
     if current_user.save
       redirect_to edit_user_path(current_user), :flash => {:success => 'Your data was updated successfully.'}
     else

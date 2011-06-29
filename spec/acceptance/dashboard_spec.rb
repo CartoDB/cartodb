@@ -14,21 +14,19 @@ feature "Dashboard", %q{
     t = Time.now - 6.minutes
     Timecop.travel(t)
     20.times do |i|
-      create_table :user_id => user.id, :name => "Table ##{20 - i}", :privacy => Table::PUBLIC,
-                   :tags => 'personal'
+      create_table :user_id => user.id, :name => "Table ##{20 - i}", :privacy => Table::PRIVATE, :tags => 'personal'
     end
     20.times do |i|
-      create_table :user_id => the_other.id, :name => "Other Table ##{20 - i}", :privacy => Table::PUBLIC,
-                   :tags => 'vodka'
+      create_table :user_id => the_other.id, :name => "Other Table ##{20 - i}", :privacy => Table::PRIVATE, :tags => 'vodka'
     end
     Timecop.travel(t + 1.minute)
-    create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PUBLIC,
+    create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PRIVATE,
                  :tags => "4sq, personal, feed aggregator"
     Timecop.travel(t + 2.minutes)
     create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE,
                  :tags => "movies, personal"
     Timecop.travel(t + 3.minutes)
-    create_table :user_id => the_other.id, :name => 'Favourite restaurants', :privacy => Table::PUBLIC,
+    create_table :user_id => the_other.id, :name => 'Favourite restaurants', :privacy => Table::PRIVATE,
                  :tags => "restaurants"
     Timecop.travel(t + 4.minutes)
     create_table :user_id => the_other.id, :name => 'Secret vodkas', :privacy => Table::PRIVATE,
@@ -61,7 +59,7 @@ feature "Dashboard", %q{
 
     within("ul.your_tables li:eq(2)") do
       page.should have_link("my_check_ins")
-      page.should have_content("PUBLIC")
+      page.should have_content("PRIVATE")
       # page.should have_content("5 minutes ago")
       within(:css, "span.tags") do
         page.should have_content("4sq")
@@ -72,7 +70,7 @@ feature "Dashboard", %q{
 
     within("ul.your_tables li:eq(10).last") do
       page.should have_link("table_8")
-      page.should have_content("PUBLIC")
+      page.should have_content("PRIVATE")
       # page.should have_content("6 minutes ago")
       within(:css, "span.tags") do
         page.should have_content("personal")
@@ -80,7 +78,8 @@ feature "Dashboard", %q{
     end
 
     page.should have_content("BROWSE BY TAGS")
-    page.should have_css("ul li:eq(1) a span", :text => "personal")
+    
+    page.should have_css("ul li:eq(2) a span", :text => "personal")
     page.should have_css("ul li a span", :text => "4sq")
     page.should have_css("ul li a span", :text => "feed aggregator")
     page.should have_css("ul li a span", :text => "movies")
@@ -97,7 +96,7 @@ feature "Dashboard", %q{
 
     within("ul.your_tables li:eq(1)") do
       page.should have_link("table_19")
-      page.should have_content("PUBLIC")
+      page.should have_content("PRIVATE")
       within(:css, "span.tags") do
         page.should have_content("personal")
       end
@@ -105,7 +104,7 @@ feature "Dashboard", %q{
 
     within("ul.your_tables li:eq(2)") do
       page.should have_link("table_20")
-      page.should have_content("PUBLIC")
+      page.should have_content("PRIVATE")
       within(:css, "span.tags") do
         page.should have_content("personal")
       end
@@ -123,7 +122,7 @@ feature "Dashboard", %q{
 
     within("ul.your_tables li:eq(1)") do
       page.should have_link("table_9")
-      page.should have_content("PUBLIC")
+      page.should have_content("PRIVATE")
       within(:css, "span.tags") do
         page.should have_content("personal")
       end
@@ -131,7 +130,7 @@ feature "Dashboard", %q{
 
     within("ul.your_tables li:eq(2)") do
       page.should have_link("table_10")
-      page.should have_content("PUBLIC")
+      page.should have_content("PRIVATE")
       within(:css, "span.tags") do
         page.should have_content("personal")
       end
@@ -160,7 +159,7 @@ feature "Dashboard", %q{
     
     visit '/dashboard'
     click_link_or_button('close session')
-    page.current_path.should == homepage
+    page.current_path.should == '/login'
   end
 
   # TODO: implement it
@@ -193,7 +192,6 @@ feature "Dashboard", %q{
     page.find('div.create_window span.bottom input#create_table').click
 
     page.should have_css("h2 a", :text => 'untitle_table')
-    page.should have_css("p.status a.save", :text => 'SAVE')
   end
 
   scenario "Get OAuth credentials" do

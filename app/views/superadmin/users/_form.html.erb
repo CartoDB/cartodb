@@ -9,6 +9,10 @@
     <%= form.text_field :email %>
   </li>
   <li>
+    <%= form.label :subdomain %><br />
+    <%= form.text_field :subdomain, :disabled => !@user.new? %>
+  </li>
+  <li>
     <%= label_tag 'user[password]', 'Password' %><br />
     <%= password_field_tag 'user[password]' %>
   </li>

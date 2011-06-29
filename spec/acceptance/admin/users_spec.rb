@@ -26,7 +26,7 @@ feature "User updating" do
     fill_in 'CONFIRM PASSWORD', :with => 'fuuuuuuuu'
 
     click_button 'Save changes'
-
+    
     page.should have_content('Your data was updated successfully.')
 
     visit logout_path

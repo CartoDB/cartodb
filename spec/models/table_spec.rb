@@ -958,4 +958,11 @@ describe Table do
     table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
   end
   
+  it "should get a valid name when a table when a name containing the current name exists" do
+    table = create_table :name => 'Table #20'
+    table2 = create_table :name => 'Table #2'
+    table2.reload
+    table2.name.should == 'table_2'
+  end
+  
 end

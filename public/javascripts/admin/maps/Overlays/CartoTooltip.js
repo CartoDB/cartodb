@@ -39,6 +39,7 @@
 						},100);
 					}
 				);
+				
 
 		    var panes = this.getPanes();
 		    panes.floatPane.appendChild(div);
@@ -95,11 +96,10 @@
 				var me = this;
 				var total_markers = _.size(markers);
 				$(div).find('a.info').hide();
-				$(div).find('p').text(total_markers + ((total_markers>1)?' points':' point')).show();
+				$(div).find('p').text(total_markers + ((total_markers==1)?' point':' points')).show();
 				$(div).find('a.delete').unbind('click');
 				$(div).find('a.delete').click(function(ev){
 					stopPropagation(ev);
-					carto_map.over_marker_ = true;
 					me.hide();
 					carto_map.removeMarkers(me.markers_);
 				});

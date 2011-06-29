@@ -41,7 +41,7 @@ class Table < Sequel::Model(:user_tables)
       importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         "database" => database_name, :logger => ::Rails.logger,
         "username" => owner.database_username, "password" => owner.database_password,
-        :import_from_file => import_from_file, :suggested_name => self.name
+        :import_from_file => import_from_file, :suggested_name => self.name, :debug => (Rails.env.development?)
       ).symbolize_keys
       importer_result = importer.import!
       

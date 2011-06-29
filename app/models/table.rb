@@ -376,6 +376,7 @@ class Table < Sequel::Model(:user_tables)
         user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{options[:longitude_column]}")
         user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{options[:latitude_column]}")
       end
+      schema(:reload => true)
     else
       raise InvalidArgument
     end
@@ -517,16 +518,15 @@ TRIGGER
     raw_new_name = (raw_new_name || "Untitle table").sanitize
     raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
     raw_new_name = "table#{raw_new_name}" if raw_new_name =~ /^_/
-    candidates = owner.in_database.tables.map{ |t| t.to_s }.select{ |t| t.match(/^#{raw_new_name}$/) }
-    if candidates.any?
-      max_candidate = candidates.max
-      if max_candidate =~ /(.+)_(\d+)$/
-        return $1 + "_#{$2.to_i +  1}"
-      else
-        return max_candidate + "_2"
-      end
+    candidates = owner.in_database.tables.map{ |t| t.to_s }.select{ |t| t.match(/^#{raw_new_name}/) }
+    
+    return raw_new_name unless candidates.include?(raw_new_name)
+    
+    max_candidate = candidates.max
+    if max_candidate =~ /(.+)_(\d+)$/
+      return $1 + "_#{$2.to_i +  1}"
     else
-      return raw_new_name
+      return max_candidate + "_2"
     end
   end
 

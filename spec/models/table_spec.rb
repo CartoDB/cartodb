@@ -721,12 +721,14 @@ describe Table do
     table.reload
     table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
     table.reload
-    (table.schema(:reload => true) - [
+    # Check if the schema stored in memory is fresh and does not contain
+    # latitude and longitude columns
+    (table.schema - [
       [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
       [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"]
     ]).should be_empty
     record = table.record(pk)
-    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.6f" % -3.699732} #{"%.6f" % 40.423012})"
+    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{-3.699732.round(6)} #{40.423012.round(6)})"
   end
   
   it "should store the name of its database" do
@@ -959,10 +961,16 @@ describe Table do
   end
   
   it "should get a valid name when a table when a name containing the current name exists" do
-    table = create_table :name => 'Table #20'
-    table2 = create_table :name => 'Table #2'
+    user = create_user
+    table = create_table :name => 'Table #20', :user_id => user.id
+    table2 = create_table :name => 'Table #2', :user_id => user.id
     table2.reload
     table2.name.should == 'table_2'
+    
+    table3 = create_table :name => nil, :user_id => user.id
+    table4 = create_table :name => nil, :user_id => user.id
+    table5 = create_table :name => nil, :user_id => user.id
+    table6 = create_table :name => nil, :user_id => user.id
   end
   
 end

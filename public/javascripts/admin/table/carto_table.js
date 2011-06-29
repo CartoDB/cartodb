@@ -388,19 +388,12 @@
 
       //Loop all the data
       $.each(data, function(i,element){
-
         tbody += '<tr><td class="first"><div></div></td>';
     		for(var j in element){
-    tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
+    			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
     		}
-        
-        var start = tbody.lastIndexOf('"width:');
-        var end = tbody.lastIndexOf('px"');
-        tbody = tbody.substring(0,start) + '"width:' + last_cell_size + tbody.substring(end);
-        
         tbody += '</tr>';
       });
-
 
       if ($(table).children('tbody').length==0) {
         tbody += '</tbody>';
@@ -2394,7 +2387,7 @@
       var window_width = $(window).width();
       var table_width = $(table).width();
       
-   		if ((window_width-3)>=table_width || $('table tbody').length==0) {
+   		if (window_width==table_width || (window_width-3)>=table_width || $('table tbody').length==0) {
         $('span.paginate a#previousButton').addClass('disabled');
         $('span.paginate a#nextButton').addClass('disabled');
       } else {

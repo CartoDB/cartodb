@@ -118,6 +118,7 @@ class ApplicationController < ActionController::Base
   end
 
   def no_html5_compliant
+    logout
     render :file => "#{Rails.root}/public/HTML5.html", :status => 500, :layout => false
   end
 

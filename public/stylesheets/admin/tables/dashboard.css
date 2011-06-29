@@ -10,7 +10,6 @@ section#content div.inner_content div.notification div.middle_white a.close {pos
 section#content div.inner_content div.notification div.middle_white a.close:hover {background-position:0 -17px;}
 section#content div.inner_content div.notification div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 10px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
 
-
 section#content div.inner_content div.requests_info div.top_white {width:906px; height:7px; padding:0; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
 section#content div.inner_content div.requests_info div.middle_white {position:relative; width:846px; padding:25px 30px 24px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
 section#content div.inner_content div.requests_info div.middle_white h2 {width:100%; font:bold 21px Arial; color:#333333;}
@@ -105,6 +104,9 @@ section#content div.right ul li a {float:left; width:100%; height:20px; padding:
 section#content div.right ul li a span {float:left; width:237px; height:18px; padding:2px 10px 0 0; background:url('/images/admin/dashboard/tag_right.png') no-repeat right 0; font:normal 13px Arial; color:#333333;}
 section#content div.right ul li a:hover {background-position:0 -20px;}
 section#content div.right ul li a:hover span {background-position:right -20px!important; color:black;}
+section#content div.right ul li.all a {width:246px!important; height:15px; padding:2px 0 2px 8px; color:#FF6600; font:normal 13px Arial; background:white; border-radius:10px; -webkit-border-radius:10px; -moz-border-radius:10px }
+section#content div.right ul li.all a:hover {color:#FF3300}
+
 
 /*Mamufas*/
 div.mamufas {position:fixed; display:none; top:0; left:0; height:100%; width:100%; background:rgba(0,0,0,0.65);}

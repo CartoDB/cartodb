@@ -9,6 +9,18 @@
 
   <section id="content">
     <div class="inner_content">
+
+      <% if true %>
+        <div class="notification section">
+          <div class="top_white"></div>
+          <div class="middle_white">
+            <a class="close" href="#close_notification">close</a>
+            <p>Api key removed</p>
+          </div>
+          <div class="bottom_white"></div>
+        </div>
+      <% end %>
+
       <div class="tables_list">
         <div class="left">
           <div class="top_blue_medium">
@@ -40,8 +52,8 @@
       </div>
     </div>
   </section>
-  
-  
+
+
   <% content_for(:mamufas) do %>
     <div class="mamufas">
       <div class="renew_window">
@@ -59,5 +71,5 @@
       </div>
     </div>
   <% end %>
-  
-  
+
+

@@ -118,7 +118,9 @@
             </span>
           <% else %>
             <ul>
-              <li><a href="/dashboard"><span>all tags</span></a></li>
+              <% if params[:tag_name]%>
+                <li class="all"><a href="/dashboard">View all tables</a></li>
+              <% end %>
               <% @tags.each do |tag| %>
                 <li><a href="<%= dashboard_path(:tag_name => tag["name"]) %>"><span style="background-position:<%= tag_width(tag["count"], @tags.last["count"], @tags.first["count"]) %>px 0"><%= tag["name"] %></span></a></li>
               <% end %>
@@ -189,7 +191,7 @@
           </span>
         </div>
       </div>
-      
+
       <div class="export_window">
         <a href="#close_window" class="close"></a>
         <div class="inner_">

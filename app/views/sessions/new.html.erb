@@ -1,3 +1,7 @@
+  <% content_for :js do %>
+    <%= headjs_include_tag "plugins/jquery.min", "front/login" %>
+  <% end %>
+
   <% content_for :head do %>
     <%= stylesheet_link_tag('reset.css','front/sessions') %>
   <% end %>
@@ -6,11 +10,14 @@
     <h1>Welcome to Carto<strong>DB</strong></h1>
     <p>Enter your account information to start mapping</p>
     <%= form_tag create_session_path do %>
-      <p>Please login</p>
+      <p class="title">Please login</p>
       <%= label_tag :email, 'e-mail' %>
       <%= text_field_tag :email, '', :class => (flash[:alert] ? 'error' : nil) %>
-      <%= label_tag :password, 'password' %>
-      <%= password_field_tag :password, '', :class => (flash[:alert] ? 'error' : nil) %>
+      <span class="password">
+        <%= label_tag :password, 'password' %>
+        <%= password_field_tag :password, '', :class => (flash[:alert] ? 'error' : nil) %>
+      </span>
+      <a class="forget" href="#">Did you forget your password?</a>
       <%= submit_tag 'Log in', :class => "login" %>
       <% if flash[:alert] %>
       <div class="error_content">

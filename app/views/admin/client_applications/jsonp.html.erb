@@ -1,6 +1,6 @@
   <% content_for(:js) do %>
     <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions" ,"admin/api/api" %>
-  <% end %>  
+  <% end %>
   <% content_for(:head) do %>
     <%= stylesheet_link_tag('reset','admin/layout','admin/others/tokens') %>
   <% end %>
@@ -9,6 +9,18 @@
 
   <section id="content">
     <div class="inner_content">
+
+      <% if true %>
+        <div class="notification section">
+          <div class="top_white"></div>
+          <div class="middle_white">
+            <a class="close" href="#close_notification">close</a>
+            <p>Api key removed</p>
+          </div>
+          <div class="bottom_white"></div>
+        </div>
+      <% end %>
+
       <div class="tables_list">
         <div class="left">
           <div class="top_blue_medium">
@@ -38,7 +50,7 @@
                 <label for="api_key_api_key">API KEY</label>
               </span>
             <%- end %>
-            
+
             <% @api_keys.each do |api_key| %>
               <%= form_tag(destroy_api_key_path(api_key.id), :method => :post, :id => "remove_api_key_#{api_key.id}") do %>
                 <%= fields_for api_key do |f| %>

@@ -1030,7 +1030,13 @@
       $('body').livequery('refresh',function(event){
         methods.refreshTable('');
       });
-      
+      $('body').livequery('query_refresh',function(ev){
+				var view_table = ($('body').attr('view_mode') == 'table');
+			  if (view_table) {
+					query_mode = false;
+        	methods.refreshTable('');
+				}
+      });
 
       ///////////////////////////////////////
       //  DOUBLE CLICK -> Open cell editor //
@@ -2300,21 +2306,6 @@
       //  SQL Editor                       //
       ///////////////////////////////////////
       // General options
-      $('div.general_options ul li a.sql,a.open_console').livequery('click',function(ev){
-        if (enabled) {
-          stopPropagation(ev);
-	        
-					if ($('div.sql_window').is(':visible')) {
-						methods.closeTablePopups();
-					} else {
-						$('div.sql_window').removeAttr('style');
-						methods.closeTablePopups();
-						methods.bindESCkey();
-	          $('div.sql_window').show();
-	          editor.focus();
-					}
-        } 
-      });
       $('div.sql_window a.try_query').livequery('click',function(ev){
         if (enabled) {
           stopPropagation(ev);
@@ -2323,24 +2314,6 @@
           methods.refreshTable(0);
         	setAppStatus();
 				}
-      });
-			$('a.clear_table').livequery('click',function(ev){
-				stopPropagation(ev);
-			  if (enabled) {
-          methods.closeTablePopups();
-          if (query_mode) {
-						$('body').attr('query_mode','false');
-            query_mode = false;
-            methods.refreshTable('');
-						setAppStatus();	// Out function to change app to SQL or NORMAL
-          }
-        }
-			});
-			$('div.sql_window a.close').livequery('click',function(ev){
-        if (enabled) {
-          stopPropagation(ev);
-          methods.closeTablePopups();
-        }
       });
 
 
@@ -2632,8 +2605,6 @@
       $('body').unbind('click');
       enabled = true;
       
-			//SQL Console
-      $('div.sql_window').hide();
       //Column row popup
       $('div.delete_row').hide();
       //Column delete popup

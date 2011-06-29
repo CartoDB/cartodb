@@ -133,7 +133,7 @@
     };
     
     function resetUnlock() {
-      $('div.unlock_window .inner_').animate({height:'120px'},300);
+      $('div.unlock_window .inner_').animate({height:'117px'},300);
       $('div.unlock_window form').css('opacity',1);
 			$('div.unlock_window a.close_unlock').css('background-position','0 0');
       $('div.unlock_window div.inner_').css('border','2px solid #FF6600');

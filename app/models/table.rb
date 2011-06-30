@@ -483,6 +483,16 @@ TRIGGER
     response
   end
   
+  def self.find_all_by_user_id_and_tag(user_id, tag_name)
+    fetch("select user_tables.*, 
+                    array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+                        from user_tables, tags
+                        where user_tables.user_id = ? 
+                          and user_tables.id = tags.table_id
+                          and tags.name = ?
+                        order by user_tables.id DESC", user_id, tag_name)
+  end
+  
   def self.find_by_identifier(user_id, identifier)
     table = if identifier =~ /\A\d+\Z/ || identifier.is_a?(Fixnum)
       Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names

@@ -10,13 +10,7 @@ class Admin::TablesController < ApplicationController
     per_page = 10
     @tags = Tag.load_user_tags(current_user.id, :limit => 5)
     @tables = if !params[:tag_name].blank?
-      Table.fetch("select user_tables.*, 
-                      array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
-                          from user_tables, tags
-                          where user_tables.user_id = ? 
-                            and user_tables.id = tags.table_id
-                            and tags.name = ?
-                          order by user_tables.id DESC", current_user.id, params[:tag_name]).order(:id).reverse.paginate(current_page, per_page)
+      Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name]).order(:id).reverse.paginate(current_page, per_page)
     else
       Table.filter({:user_id => current_user.id}).order(:id).reverse.paginate(current_page, per_page)
     end
@@ -27,30 +21,14 @@ class Admin::TablesController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do
-        resp = access_token.get("/api/v1/tables/#{id}/export/#{params[:format]}") 
-        if resp.code.to_i == 200
-          send_data resp.body,
-            :type => 'application/octet-stream; charset=binary; header=present',
-            :disposition => "attachment; filename=#{@table["name"]}.zip"
-        elsif resp.code.to_i == 401
-          logout
-          redirect_to root_path and return
-        else
-          render_404 and return
-        end
+        send_data @table.to_csv,
+          :type => 'application/zip; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
       end
       format.shp do
-        resp = access_token.get("/api/v1/tables/#{id}/export/#{params[:format]}") 
-        if resp.code.to_i == 200
-          send_data resp.body,
-            :type => 'application/octet-stream; charset=binary; header=present',
-            :disposition => "attachment; filename=#{@table["name"]}.zip"
-        elsif resp.code.to_i == 401
-          logout
-          redirect_to root_path and return
-        else
-          render_404 and return
-        end
+        send_data @table.to_shp,
+          :type => 'application/octet-stream; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
       end
     end
   end

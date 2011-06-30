@@ -21,30 +21,14 @@ class Admin::TablesController < ApplicationController
     respond_to do |format|
       format.html
       format.csv do
-        resp = access_token.get("/api/v1/tables/#{id}/export/#{params[:format]}") 
-        if resp.code.to_i == 200
-          send_data resp.body,
-            :type => 'application/octet-stream; charset=binary; header=present',
-            :disposition => "attachment; filename=#{@table["name"]}.zip"
-        elsif resp.code.to_i == 401
-          logout
-          redirect_to root_path and return
-        else
-          render_404 and return
-        end
+        send_data @table.to_csv,
+          :type => 'application/zip; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
       end
       format.shp do
-        resp = access_token.get("/api/v1/tables/#{id}/export/#{params[:format]}") 
-        if resp.code.to_i == 200
-          send_data resp.body,
-            :type => 'application/octet-stream; charset=binary; header=present',
-            :disposition => "attachment; filename=#{@table["name"]}.zip"
-        elsif resp.code.to_i == 401
-          logout
-          redirect_to root_path and return
-        else
-          render_404 and return
-        end
+        send_data @table.to_shp,
+          :type => 'application/octet-stream; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
       end
     end
   end

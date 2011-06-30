@@ -2,9 +2,9 @@ namespace :cartodb do
   namespace :db do
     desc <<-DESC
 Setup cartodb database and creates a new user from environment variables:
-  - ENV['email']: user e-mail
-  - ENV['password']: user password
-  - ENV['subdomain']: user subdomain
+  - ENV['EMAIL']: user e-mail
+  - ENV['PASSWORD']: user password
+  - ENV['SUBDOMAIN']: user subdomain
 DESC
     task :setup => ["rake:db:create", "rake:db:migrate"] do
       begin

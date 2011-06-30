@@ -10,18 +10,27 @@ GIT
 
 GIT
   remote: git@github.com:Vizzuality/cartodb-importer.git
-  revision: a19b561f8b5913c458f8cbaadcb2cb858641117f
-  tag: v0.1.6
+  revision: 272ca3982393c6b578841654b78a043767995b38
+  tag: v0.1.8
   specs:
-    cartodb-importer (0.1.6)
-      builder
-      google-spreadsheet-ruby
+    cartodb-importer (0.1.8)
+      aws-ses (= 0.4.1)
+      cartodb-importer
+      htmlentities
+      nofxx-georuby
+      oauth
+      oauth-plugin (>= 0.4.0.pre1)
       pg (= 0.11)
-      roo
-      rubyzip
-      sequel
-      sequel
-      spreadsheet
+      rails (= 3.0.7)
+      rails_warden (= 0.5.2)
+      redis
+      resque
+      rgeo
+      rgeo-geojson
+      sequel-rails
+      sequel_column_type_array
+      warden
+      yajl-ruby
 
 GIT
   remote: https://github.com/plataformatec/capybara-zombie.git
@@ -106,9 +115,6 @@ GEM
     ffi (1.0.7)
       rake (>= 0.8.7)
     github (0.1.1)
-    google-spreadsheet-ruby (0.1.5)
-      nokogiri (>= 1.4.3.1)
-      oauth (>= 0.3.6)
     highline (1.6.2)
     htmlentities (4.3.0)
     i18n (0.5.0)
@@ -179,7 +185,6 @@ GEM
     rgeo (0.2.9)
     rgeo-geojson (0.2.1)
       rgeo (>= 0.2.8)
-    roo (1.9.3)
     rspec (2.6.0)
       rspec-core (~> 2.6.0)
       rspec-expectations (~> 2.6.0)
@@ -201,7 +206,6 @@ GEM
       columnize (>= 0.3.1)
       linecache19 (>= 0.5.11)
       ruby-debug-base19 (>= 0.11.19)
-    ruby-ole (1.2.11.1)
     ruby_core_source (0.1.5)
       archive-tar-minitar (>= 0.5.2)
     rubyzip (0.9.4)
@@ -215,8 +219,6 @@ GEM
     sinatra (1.2.6)
       rack (~> 1.1)
       tilt (< 2.0, >= 1.2.2)
-    spreadsheet (0.6.5.5)
-      ruby-ole (>= 1.0)
     steak (1.1.0)
       rspec (>= 1.3)
     terminitor (0.2.1)

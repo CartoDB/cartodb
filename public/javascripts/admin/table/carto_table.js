@@ -266,7 +266,7 @@
 	      headers = {};
 	
 				$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-				$('span.query p').text('This query took '+time/1000+' seconds');
+				$('span.query p').text('This query took '+time+' seconds');
         $.each(data[0],function(i,ele){
 					switch (i) {
 						case "the_geom": type = 'Geometry'; break;

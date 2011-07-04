@@ -1640,7 +1640,7 @@
           column_type = column_type.charAt(0).toUpperCase() + column_type.slice(1);
           parent_div.children('span.col_types').children('p').text(column_type);
           parent_div.children('span.col_types').children('ul').children('li').children('a:contains("'+column_type+'")').parent().addClass('selected');
-          parent_div.children('span.col_types').css('top',position.top-5+'px');
+          parent_div.children('span.col_types').css('top',position.top-4+'px');
           parent_div.children('span.col_types').show();
           $('body').click(function(event) {
            if (!$(event.target).closest('thead tr span.col_types').length) {

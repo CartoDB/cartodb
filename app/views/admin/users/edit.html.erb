@@ -10,18 +10,7 @@
 <section id="content">
   <div class="inner_content">
 
-   <% [:success].each do |key| %>
-     <% if flash[key] %>
-       <div class="notification section">
-         <div class="top_white"></div>
-         <div class="middle_white">
-           <a class="close_notification" href="#close_notification">close</a>
-           <p><%= flash[key] %></p>
-         </div>
-         <div class="bottom_white"></div>
-       </div>
-     <% end %>
-   <% end %>
+    <%= render :partial => 'shared/flash_message' %>
 
     <div class="tables_list">
       <div class="left">

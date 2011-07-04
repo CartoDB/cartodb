@@ -27,7 +27,8 @@ set(:deploy_to){
   "/home/ubuntu/www/#{stage}.#{application}.com"
 }
 
-after  "deploy:update_code", :symlinks, :run_migrations, :set_staging_flag, :get_last_blog_posts
+after  "deploy:symlink", :symlinks, :run_migrations, :set_staging_flag, :get_last_blog_posts
+before "db:setup", "deploy:update_code", "bundle:install"
 
 desc "Restart Application"
 deploy.task :restart, :roles => [:app] do
@@ -49,9 +50,10 @@ task :symlinks, :roles => [:app] do
     ln -s #{shared_path}/pdfs #{release_path}/public/;
     ln -s #{shared_path}/cache #{release_path}/public/;
     ln -s #{shared_path}/uploads #{release_path}/public/;
-    ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml;
-    ln -nfs #{shared_path}/config/app_config.yml #{release_path}/config/app_config.yml;
   CMD
+  # For now we'll have them in the repository
+  # ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml;
+  # ln -nfs #{shared_path}/config/app_config.yml #{release_path}/config/app_config.yml;
 end
 
 desc 'Create asset packages'
@@ -79,16 +81,19 @@ task :get_last_blog_posts, :roles => [:app] do
   CMD
 end
 
-
 namespace :db do
   desc "Run rake:seed on remote app server"
   task :seed, :roles => :app do
+    raise "Cannot seed production enviornment" if stage == "production"
     run "cd #{current_release} && RAILS_ENV=#{stage} rake db:seed"
   end
 
   desc "Setup the database"
   task :setup, :roles => :app do
-    run "cd #{current_release} && RAILS_ENV=#{stage} rake db:setup"
+    raise "You should provide a valid e-mail" if ENV['EMAIL'].nil? || ENV['EMAIL'].empty?
+    raise "You should provide a valid password" if ENV['PASSWORD'].nil? || ENV['PASSWORD'].empty?
+    raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].nil? || ENV['SUBDOMAIN'].empty?
+    run "cd #{current_release} && RAILS_ENV=#{stage} EMAIL=#{ENV['EMAIL']} PASSWORD=#{ENV['PASSWORD']} SUBDOMAIN=#{ENV['SUBDOMAIN']} rake cartodb:db:setup"
   end
 
   desc "Resets the database"

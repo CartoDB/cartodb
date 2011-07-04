@@ -18,6 +18,8 @@ class User < Sequel::Model
   ## Validations
   def validate
     super
+    validates_presence :subdomain
+    validates_unique :subdomain, :message => 'is already taken'
     validates_presence :email
     validates_unique :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
@@ -99,22 +101,20 @@ class User < Sequel::Model
     connection = $pool.fetch(configuration) do
       ::Sequel.connect(configuration)
     end
-    yield(connection)
+    if block_given?
+      yield(connection)
+    else
+      connection
+    end
   end
 
   def run_query(query)
-    query = CartoDB::SqlParser.pre_parsing(query,self.id)
     rows = []
     time = nil
     in_database do |user_database|
       time = Benchmark.measure {
-        rows = user_database[CartoDB::SqlParser.parse(query, database_name)].all
+        rows = user_database[query].all
       }
-    end
-    if !CartoDB::SqlParser.update_schema.blank?
-      if table = Table[:user_id => self.id, :name => CartoDB::SqlParser.update_schema]
-        table.update_stored_schema!
-      end
     end
     #TODO: This part of the code should be using memcache.
     {
@@ -124,7 +124,11 @@ class User < Sequel::Model
     }
   rescue => e
     if e.message =~ /^PGError/
-      raise CartoDB::ErrorRunningQuery.new(e.message)
+      if e.message.include?("does not exist")
+        raise CartoDB::TableNotExists.new(e.message.match(/"([^"]+)"/)[1])
+      else
+        raise CartoDB::ErrorRunningQuery.new(e.message)
+      end
     else
       raise e
     end
@@ -192,14 +196,11 @@ class User < Sequel::Model
   end
 
   def database_exists?
-    database_exist = false
-
-    in_database(:as => :superuser) do |user_database|
-      results = user_database[:pg_database].filter(:datname => database_name).all
-      database_exist = results.any? ? true : false
+    if in_database(:as => :superuser)[:pg_database].filter(:datname => database_name).all.any?
+      return true
+    else
+      return false
     end
-
-    database_exist
   end
   private :database_exists?
   
@@ -219,32 +220,36 @@ class User < Sequel::Model
       end
       save
 
-      Thread.new do
+      Thread.new do 
+        conn = Rails::Sequel.connection
         begin
-          Rails::Sequel.connection.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
+          conn.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
         rescue
-          puts "USER #{database_username} already exists"
+          puts "USER #{database_username} already exists: #{$!}"
         end
         begin
-          Rails::Sequel.connection.run("CREATE DATABASE #{self.database_name}
-            WITH TEMPLATE = template_postgis
-            OWNER = postgres
-            ENCODING = 'UTF8'
-            CONNECTION LIMIT=-1")
+          conn.run("CREATE DATABASE #{self.database_name}
+          WITH TEMPLATE = template_postgis
+          OWNER = postgres
+          ENCODING = 'UTF8'
+          CONNECTION LIMIT=-1")
         rescue
-          puts "DATABASE #{self.database_name} already exists"
+          puts "DATABASE #{self.database_name} already exists: #{$!}"
         end
       end.join
+
       in_database(:as => :superuser) do |user_database|
-        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")
-        user_database.run("REVOKE ALL ON SCHEMA public FROM public")
-        user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
-        user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
-        user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        user_database.transaction do 
+          user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")
+          user_database.run("REVOKE ALL ON SCHEMA public FROM public")
+          user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
+          user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
+          user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
+          user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        end  
       end
     end
   end

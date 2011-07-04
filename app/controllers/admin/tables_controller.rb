@@ -8,88 +8,27 @@ class Admin::TablesController < ApplicationController
   def index
     current_page = params[:page].nil? ? 1 : params[:page].to_i
     per_page = 10
-    # TODO: V2
-    # unless params[:public]
-      resp = access_token.get("/v1/tables/tags?limit=5")
-      if resp.code.to_i == 200
-        @tags = Yajl::Parser.new.parse(resp.body)
-      elsif resp.code.to_i == 401
-        logout
-        redirect_to root_path and return
-      else
-        render_500 and return
-      end
-      if params[:tag_name]
-        @tag_name = params[:tag_name].sanitize.tr('_',' ')
-        resp = access_token.get(URI.encode("/v1/tables/tags/#{@tag_name}?page=#{current_page}&per_page=#{per_page}"))
-      else
-        resp = access_token.get("/v1/tables?page=#{current_page}&per_page=#{per_page}")
-      end
-      if resp.code.to_i == 200
-        response = Yajl::Parser.new.parse(resp.body)
-        @tables = response["tables"]
-        count = @tables.empty? ? 0 : response["total_entries"]
-        @pagination = { 
-          :current_page => current_page, 
-          :per_page => per_page, 
-          :page_count => (count.to_f / per_page).ceil, 
-          :next_page => current_page < (count.to_f / per_page).ceil ? current_page + 1 : nil,
-          :previous_page => current_page == 1 ? nil : current_page - 1,
-          :page_range => (1..(count.to_f / per_page).ceil),
-          :total_entries => count
-        }
-      elsif response.code.to_i == 401
-        logout
-        redirect_to root_path and return
-      else
-        render_500 and return
-      end
-    # TODO: V2
-    # else
-    #   render_404 and return
-    #   @tags = Tag.load_public_tags(current_user.id, :limit => 5)
-    #   @tables = Table.filter(~{:user_id => current_user.id} & {:privacy => Table::PUBLIC}).order(:id).reverse.
-    #                     paginate(current_page, per_page)
-    #   render :template => 'admin/tables/index_public' and return
-    # end
+    @tags = Tag.load_user_tags(current_user.id, :limit => 5)
+    @tables = if !params[:tag_name].blank?
+      Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name]).order(:id).reverse.paginate(current_page, per_page)
+    else
+      Table.filter({:user_id => current_user.id}).order(:id).reverse.paginate(current_page, per_page)
+    end
   end
 
   def show
-    id = params[:id].sanitize.tr('_',' ')
-    resp = access_token.get("/v1/tables/#{id}")
-    if resp.code.to_i == 200
-      @table = Yajl::Parser.new.parse(resp.body)
-    else
-      render_404 and return
-    end
-
+    @table = Table.find_by_identifier(current_user.id, params[:id])
     respond_to do |format|
       format.html
       format.csv do
-        resp = access_token.get("/v1/tables/#{id}/export/#{params[:format]}") 
-        if resp.code.to_i == 200
-          send_data resp.body,
-            :type => 'application/octet-stream; charset=binary; header=present',
-            :disposition => "attachment; filename=#{@table["name"]}.zip"
-        elsif resp.code.to_i == 401
-          logout
-          redirect_to root_path and return
-        else
-          render_404 and return
-        end
+        send_data @table.to_csv,
+          :type => 'application/zip; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
       end
       format.shp do
-        resp = access_token.get("/v1/tables/#{id}/export/#{params[:format]}") 
-        if resp.code.to_i == 200
-          send_data resp.body,
-            :type => 'application/octet-stream; charset=binary; header=present',
-            :disposition => "attachment; filename=#{@table["name"]}.zip"
-        elsif resp.code.to_i == 401
-          logout
-          redirect_to root_path and return
-        else
-          render_404 and return
-        end
+        send_data @table.to_shp,
+          :type => 'application/octet-stream; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
       end
     end
   end

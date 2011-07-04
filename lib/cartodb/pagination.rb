@@ -6,6 +6,7 @@ module CartoDB
       # Allow to set the page number as a range between two pages
       if options[:page] && options[:page].is_a?(String) && options[:page].include?('..')
         first_page, last_page = options[:page].split('..')
+        last_page = 1 if last_page.to_i < 1
         page = first_page.to_i*per_page
         per_page = (last_page.to_i - first_page.to_i + 1) *per_page
       else

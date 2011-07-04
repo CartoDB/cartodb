@@ -6,7 +6,7 @@ feature "Tables" do
 
   background do
     @user = create_user
-    @table = create_table :user_id => @user.id, :name => 'Twitter followers', :privacy => Table::PUBLIC,
+    @table = create_table :user_id => @user.id, :name => 'Twitter followers', :privacy => Table::PRIVATE,
                           :tags => 'twitter'
 
     log_in_as @user
@@ -14,7 +14,8 @@ feature "Tables" do
     click_link_or_button("twitter_followers")
   end
 
-  scenario "Toggle the privacy of a table" do
+  # By the moment threre is no privacy in the table
+  pending "Toggle the privacy of a table" do
     # Toggle to private
     click_link_or_button("PUBLIC")
     page.find("span.privacy_window ul li.private a").click

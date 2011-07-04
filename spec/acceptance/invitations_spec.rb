@@ -8,7 +8,7 @@ feature "Invitations", %q{
   I want to let users to access to CartoDB in batches
 } do
 
-  scenario "Get an invitation" do
+  pending "Get an invitation" do
     user = create_user
 
     visit homepage
@@ -45,7 +45,7 @@ feature "Invitations", %q{
     ask_for_invitation_email.body.should match /and explain us why./
   end
 
-  scenario "Invited users can't login" do
+  pending "Invited users can't login" do
     visit homepage
     fill_in 'email', :with => 'invitation@example.com'
     click 'Sign up'
@@ -96,12 +96,12 @@ feature "Invitations", %q{
     # User activation with an empty invite token
     visit edit_invitation_path(user, :invite_token => user.invite_token)
 
-    current_path.should be == homepage
+    current_path.should be == '/login'
 
     # User activation with an expired token
     Timecop.travel(31.days.since)
 
-    current_path.should be == homepage
+    current_path.should be == '/login'
 
   end
 
@@ -112,7 +112,7 @@ feature "Invitations", %q{
 
     visit edit_invitation_path(evil_user, :invite_token => good_user.invite_token)
 
-    current_path.should be == homepage
+    current_path.should be == '/login'
 
   end
 end

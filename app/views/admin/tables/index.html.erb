@@ -10,16 +10,7 @@
   <section id="content">
     <div class="inner_content">
 
-      <% if false %>
-        <div class="notification section">
-          <div class="top_white"></div>
-          <div class="middle_white">
-            <a class="close" href="#close_notification">close</a>
-            <p>Your table has been removed</p>
-          </div>
-          <div class="bottom_white"></div>
-        </div>
-      <% end %>
+      <%= render :partial => 'shared/flash_message' %>
 
       <div class="requests_info section">
         <div class="top_white"></div>
@@ -55,7 +46,7 @@
         <div class="left">
           <div class="top_blue_medium">
             <h3><strong>
-              <%= pluralize(@pagination[:total_entries], 'table', 'tables') %>
+              <%= pluralize(@tables.pagination_record_count, 'table', 'tables') %>
               <% if @tag_name %>
               with the tag <%= @tag_name %>
               <% end %>
@@ -70,21 +61,21 @@
             <% else %>
               <ul class="your_tables">
                 <% @tables.each_with_index do |table, i| %>
-                <li<%= ' class="last"'.html_safe if i == @tables.size - 1%>>
+                <li<%= ' class="last"'.html_safe if i == @tables.count - 1%>>
                   <div class="meta_info">
                     <span class="info">
-                      <h4><%= link_to(table["name"], table_path(table["id"]), :class=>'tableTitle')  %> </h4>
+                      <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
                       <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
-                      <p class="delete"> | <a table-name="<%= table["name"] %>" href="#delete" class="delete">delete table</a></p>
-                      <p class="columns"><strong><%= pluralize(table["rows_counted"].to_i,'row','rows') rescue '' %> / <%= table["schema"].size rescue '' %> columns:</strong>
-                      <%= table["schema"].map{ |e| e.first }[1...4].join(', ') %>...</p>
+                      <p class="delete"> | <a table-name="<%= table.name %>" href="#delete" class="delete">delete table</a></p>
+                      <p class="columns"><strong><%= pluralize(table.rows_counted,'row','rows') rescue '' %> / <%= table.schema.size rescue '' %> columns:</strong>
+                      <%= table.schema.map{ |e| e.first }[1...4].join(', ') %>...</p>
                     </span>
                     <span class="tags">
-                      <% unless table["updated_at"].blank? %>
-                      <p class="last_op"><%= time_ago_in_words(table["updated_at"]) %> ago</p>
+                      <% unless table.updated_at.blank? %>
+                      <p class="last_op"><%= time_ago_in_words(table.updated_at) %> ago</p>
                       <% end %>
-                      <% unless table["tags"].blank? %>
-                        <% table["tags"].split(',').each do |tag_name| %>
+                      <% unless table.tags.blank? %>
+                        <% table.tags.split(',').each do |tag_name| %>
                         <a href="<%= dashboard_path(:tag_name => tag_name) %>"><%= tag_name %></a>
                         <% end %>
                       <% end %>
@@ -96,7 +87,7 @@
             <% end %>
           </div>
           <div class="bottom_white_medium"></div>
-          <%= paginate(@pagination ) %>
+          <%= paginate(@tables) %>
         </div>
         <div class="right">
           <div class="banner">
@@ -122,7 +113,7 @@
                 <li class="all"><a href="/dashboard">View all tables</a></li>
               <% end %>
               <% @tags.each do |tag| %>
-                <li><a href="<%= dashboard_path(:tag_name => tag["name"]) %>"><span style="background-position:<%= tag_width(tag["count"], @tags.last["count"], @tags.first["count"]) %>px 0"><%= tag["name"] %></span></a></li>
+                <li><a href="<%= dashboard_path(:tag_name => tag[:name]) %>"><span style="background-position:<%= tag_width(tag[:count], @tags.last[:count], @tags.first[:count]) %>px 0"><%= tag[:name] %></span></a></li>
               <% end %>
             </ul>
           <% end %>

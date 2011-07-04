@@ -1,4 +1,15 @@
 module CartoDB
+  
+  def self.hostname
+    @@hostname ||= if Rails.env.production?
+      'https://' + `hostname -f`.strip
+    elsif Rails.env.development?
+      "http://vizzuality.localhost.lan:3000"
+    else
+      "http://vizzuality.testhost.lan:53716"      
+    end
+  end
+  
   module API
     VERSION_1 = "v1"
   end

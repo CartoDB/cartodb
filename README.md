@@ -63,7 +63,9 @@ This component runs in Node.JS.
 
           easy_install pip
           pip install -r python_requirements.txt
-          
+      
+      Note: If compilation fails (it did for gdal module raising a Broken pipe error) try doing "export ARCHFLAGS='-arch i386 -arch x86_64'" first
+
   - Setup new hosts in `/etc/hosts`:
       
         # CartoDB

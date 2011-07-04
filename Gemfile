@@ -39,4 +39,5 @@ group :test, :development do
   gem "capybara-zombie", :git => "https://github.com/plataformatec/capybara-zombie.git"
   gem "timecop"
   gem "email_spec"
+  gem "rack-reverse-proxy", "~> 0.4.1", :require => 'rack/reverse_proxy'
 end

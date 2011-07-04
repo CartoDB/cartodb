@@ -2478,8 +2478,9 @@
                                 $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
                                 break;
         case "column_type":     if (params.type!="string") {
-                                  $('tbody tr td[c="'+params.name+'"] div').text('');
-                                  $('tbody tr td[c="'+params.name+'"] div').attr('title','');
+                                  // $('tbody tr td[c="'+params.name+'"] div').text('');
+                                  // $('tbody tr td[c="'+params.name+'"] div').attr('title','');
+																	methods.refreshTable('');
                                 }
                                 headers[params.name] = params.type;
                                 break;

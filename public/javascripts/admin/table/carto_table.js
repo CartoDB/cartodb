@@ -65,99 +65,98 @@
     //  GET DATA
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     getData : function(options, direction) {
-     //Pagination AJAX adding rows
-     var petition_pages;
-     if (direction=="next") {
-       maxPage++;
-       actualPage = maxPage;
-       petition_pages = actualPage;
-     } else if (direction=="previous") {
-       minPage--;
-       actualPage = minPage;
-       petition_pages = actualPage;
-     } else {
-       enabled = false;
-       petition_pages = minPage +'..'+ maxPage;
-     }
+			//Pagination AJAX adding rows
+			var petition_pages;
+			if (direction=="next") {
+			  maxPage++;
+			  actualPage = maxPage;
+			  petition_pages = actualPage;
+			} else if (direction=="previous") {
+			  minPage--;
+			  actualPage = minPage;
+			  petition_pages = actualPage;
+			} else {
+			  enabled = false;
+			  petition_pages = minPage +'..'+ maxPage;
+			}
 
 
-     var columns,total_rows,rows;
-     var count = 0;
-     
-     $(document).bind('arrived',function(){
-       count++;
-       if (count==2) {
-         $(document).unbind('arrived');
-         startTable();
-       }
-     });
-     
+			var columns,total_rows,rows;
+			var count = 0;
+
+			$(document).bind('arrived',function(){
+			  count++;
+			  if (count==2) {
+			    $(document).unbind('arrived');
+			    startTable();
+			  }
+			});
 
 
-     if (!query_mode) {
-       $.ajax({
-         method: "GET",
-         url: options.getDataUrl + table_name,
-  			 headers: {"cartodbclient":"true"},
-         success: function(data) {
-           columns = data.schema;
-           $(document).trigger('arrived');
-         }
-       });
+			if (!query_mode) {
+			  $.ajax({
+			    method: "GET",
+			    url: options.getDataUrl + table_name,
+			 		headers: {"cartodbclient":"true"},
+			    success: function(data) {
+				 		columns = data.schema;
+			      $(document).trigger('arrived');
+			    }
+			  });
 
-       $.ajax({
-          method: "GET",
-          url: options.getDataUrl + table_name +'/records',
-          data: {
-            rows_per_page: options.resultsPerPage,
-            page: petition_pages,
-            mode: defaults.mode,
-            order_by: defaults.order_by
-          },
-   			 headers: {"cartodbclient":"true"},
-         success: function(data) {
-           rows = data.rows;
-           total_rows = data.total_rows;
-           $(document).trigger('arrived');
-         }
-       });
-     } else {
-			 setAppStatus(); // Change app status depending on query mode
-			 var now = new Date();
-       $.ajax({
-         method: "GET",
-         url: global_api_url+'?sql='+escape(editor.getValue()),
-         data: {
-           rows_per_page: options.resultsPerPage,
-           page: petition_pages
-         },
-  			 headers: {"cartodbclient":"true"},
-         success: function(data) {
-					 var arrived = new Date();
-           $('div.sql_console p.errors').fadeOut();
-           $('div.sql_console span h3').html('<strong>'+data.total_rows+' results</strong>');
-           rows = data.rows;
-					 total = data.total_rows;
-           cell_size = 100;
-           last_cell_size = 100;
-           methods.drawQueryColumns(rows,total,arrived-now);
-           methods.drawQueryRows(rows,direction,actualPage);
-           $(document).unbind('arrived');
-         },
-         error: function(e) {
-           var json = $.parseJSON(e.responseText);
-           var msg = '';
+			  $.ajax({
+			     method: "GET",
+			     url: options.getDataUrl + table_name +'/records',
+			     data: {
+			       rows_per_page: options.resultsPerPage,
+			       page: petition_pages,
+			       mode: defaults.mode,
+			       order_by: defaults.order_by
+			     },
+				 	headers: {"cartodbclient":"true"},
+			    success: function(data) {
+			      rows = data.rows;
+			      total_rows = data.total_rows;
+			      $(document).trigger('arrived');
+			    }
+			  });
+			} else {
+				setAppStatus(); // Change app status depending on query mode
+				var now = new Date();
+			  $.ajax({
+			    method: "GET",
+			    url: global_api_url+'?sql='+escape(editor.getValue()),
+			    data: {
+			      rows_per_page: options.resultsPerPage,
+			      page: petition_pages
+			    },
+			 		headers: {"cartodbclient":"true"},
+			    success: function(data) {
+			 			var arrived = new Date();
+			      $('div.sql_console p.errors').fadeOut();
+			      $('div.sql_console span h3').html('<strong>'+data.total_rows+' results</strong>');
+			      rows = data.rows;
+			 			total = data.total_rows;
+			      cell_size = 100;
+			      last_cell_size = 100;
+			      methods.drawQueryColumns(rows,total,arrived-now);
+			      methods.drawQueryRows(rows,direction,actualPage);
+			      $(document).unbind('arrived');
+			    },
+			    error: function(e) {
+			      var json = $.parseJSON(e.responseText);
+			      var msg = '';
 
-           _.each(json.errors,function(text,pos){
-             msg += text + ', ';
-           });
-           msg = msg.substr(0,msg.length-2);
-           $('div.sql_window p.errors').text(msg).stop().fadeIn().delay(10000).fadeOut();
-           methods.drawQueryColumns([]);
-           $(document).unbind('arrived');
-         }
-       });
-     }
+			      _.each(json.errors,function(text,pos){
+			        msg += text + ', ';
+			      });
+			      msg = msg.substr(0,msg.length-2);
+			      $('div.sql_window p.errors').text(msg).stop().fadeIn().delay(10000).fadeOut();
+			      methods.drawQueryColumns([]);
+			      $(document).unbind('arrived');
+			    }
+			  });
+			}
 
      
      
@@ -416,18 +415,13 @@
     //  GET COLUMN TYPES AND PRINT THEM
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
     getColumnTypes: function() {
-      $.ajax({
-         method: "GET",
-         url: global_api_url + 'column_types',
-         headers: {"cartodbclient": true},
-         success: function(data) {
-           $('span.col_types').each(function(index,element){
-             $(element).children('ul').children('li').remove();
-             for (var i = 0; i<data.length; i++) {
-               $(element).children('ul').append('<li><a href="#'+data[i]+'">'+data[i]+'</a></li>');
-             }
-           });
-         }
+			var types = ["Number","String","Date","Boolean"];
+			
+      $('span.col_types').each(function(index,element){
+        $(element).children('ul').children('li').remove();
+        for (var i = 0; i<types.length; i++) {
+          $(element).children('ul').append('<li><a href="#'+types[i]+'">'+types[i]+'</a></li>');
+        }
       });
     },
 

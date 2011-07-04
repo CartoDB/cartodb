@@ -121,6 +121,7 @@
       $('div.create_window div.inner_').animate({borderColor:'#FFC209', height:'68px'},500);
       $('div.create_window div.inner_ form').animate({opacity:0},300,function(){
         $('div.create_window div.inner_ span.loading').show();
+				$('div.create_window a.close_create').hide();
         $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
           var params = {}
           if (url!='') {
@@ -150,7 +151,7 @@
     
     
     function retryImportTable() {
-      $('div.create_window a.close_create').removeClass('last');
+      $('div.create_window a.close_create').show().removeClass('last');
       $('div.create_window div.inner_').animate({borderColor:'#CCCCCC', height:'254px'},500,function(){
         $('div.create_window div.inner_').css('height','auto');
       });

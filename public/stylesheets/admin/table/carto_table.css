@@ -132,6 +132,8 @@ div.table_position div.empty_table h5 {width:100%; text-align:center; font:bold 
 div.table_position div.empty_table p {width:100%; padding:9px 0 0 0; text-align:center; font:normal 15px Arial; color:#999999; text-shadow:0 1px white;}
 div.table_position div.empty_table p a {color:#999999;}
 div.table_position div.empty_table p a:hover {color:#333333;}
+div.table_position div.empty_table p a.disabled {color:#CCC; text-decoration:underline}
+div.table_position div.empty_table p a.disabled:hover {color:#CCC}
 
 /*LOADINGS*/
 /*pagination*/

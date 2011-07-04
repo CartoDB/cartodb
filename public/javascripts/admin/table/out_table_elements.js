@@ -32,8 +32,8 @@
               '<p>Select your desired format for downloading the data</p>'+
               '<ul>'+
                 '<li class="selected"><a class="option" href="#CSV" rel="csv">CSV (Comma separated values)</a></li>'+
-                '<li><a class="option" href="#KML" rel="kml">KML</a></li>'+
-                '<li><a class="option" href="#SHP"rel="shp">SHP</a></li>'+
+                '<li class="disabled"><a class="option" href="#KML" rel="kml">KML</a></li>'+
+                '<li><a class="option" href="#SHP" rel="shp">SHP</a></li>'+
               '</ul>'+
             '</span>'+
             '<span class="bottom">'+
@@ -209,7 +209,7 @@
 	      '<span class="advanced_options">'+
 	        '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
 	        '<ul>'+
-	          '<li><a class="import_data">Import data...</a></li>'+
+	          '<li class="disabled"><a class="import_data">Import data...</a></li>'+
 	          '<li><a class="export_data">Export data...</a></li>'+
 	          '<li class="disabled"><a class="save_table">Save table as...</a></li>'+ //class="save_table"
 	        '</ul>'+
@@ -315,10 +315,12 @@
 			
 	    $('div.mamufas div.export_window form a.option').click(function(ev){
 	      stopPropagation(ev);
-	      var format = $(this).attr('rel');
-	      $('div.mamufas div.export_window form ul li').removeClass('selected');
-	      $(this).parent().addClass('selected');
-	      $('#export_format').val(format);
+				if (!$(this).parent().hasClass('disabled')) {
+					var format = $(this).attr('rel');
+		      $('div.mamufas div.export_window form ul li').removeClass('selected');
+		      $(this).parent().addClass('selected');
+		      $('#export_format').val(format);
+				}
 	    });
 	
 	    $('div.mamufas div.export_window form').submit(function(ev){

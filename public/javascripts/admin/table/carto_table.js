@@ -729,7 +729,7 @@
       $(table).parent().append(
         '<div class="empty_table">'+
           '<h5>Add some rows to your table</h5>'+
-          '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a class="import_data" href="#import_data">import data</a></p>'+
+          '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a class="disabled">import data</a></p>'+
         '</div>'
       );
       
@@ -2387,7 +2387,7 @@
       var window_width = $(window).width();
       var table_width = $(table).width();
       
-   		if (window_width==table_width || (window_width-3)>=table_width || $('table tbody').length==0) {
+   		if (window_width==table_width || (window_width-2)>=table_width || $('table tbody').length==0) {
         $('span.paginate a#previousButton').addClass('disabled');
         $('span.paginate a#nextButton').addClass('disabled');
       } else {

@@ -83,7 +83,9 @@
       $('a.forget').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
-        showForget();
+				if (!$(this).hasClass('disabled')) {
+	        showForget();
+				}
       });
       
       //Close notification

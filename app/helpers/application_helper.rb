@@ -42,7 +42,7 @@ module ApplicationHelper
       end
     end
   end
-  
+
   def headjs_include_tag(*sources)
     sources.unshift("environments/#{Rails.env}.js")
     keys = []
@@ -59,7 +59,7 @@ module ApplicationHelper
       }.join(', ')} );".html_safe
     end
   end
-  
+
   def database_time_usage(user_id)
     time = CartoDB::QueriesThreshold.get(user_id, Date.today.strftime("%Y-%m-%d"), "time").to_f
     if time < 120
@@ -70,7 +70,7 @@ module ApplicationHelper
       number_with_precision(time / 3600.0, :precision => 3)  + ' hours this month'
     end
   end
-  
+
   def requests_number_in_the_last_20_days
     result = []
     20.downto(0) do |days|
@@ -79,10 +79,10 @@ module ApplicationHelper
     end
     result.join(',')
   end
-  
+
   def max_request_in_a_day
     max = 0
-    20.downto(0) do |days|
+    Time.now.day.downto(0) do |days|
       date = (Date.today - days.days).strftime("%Y-%m-%d")
       day_request = CartoDB::QueriesThreshold.get(current_user.id, date)
       if day_request>max
@@ -91,7 +91,7 @@ module ApplicationHelper
     end
     max
   end
-  
+
   def colors_series_in_the_last_20_days
     result = []
     20.downto(0) do |days|
@@ -109,12 +109,12 @@ module ApplicationHelper
     end
     result.join('|')
   end
-  
-  def last_blog_posts    
+
+  def last_blog_posts
     # Data generated from Rake task in lib/tasks/blog.rake
-    if File.file?(CartoDB::LAST_BLOG_POSTS_FILE_PATH)    
+    if File.file?(CartoDB::LAST_BLOG_POSTS_FILE_PATH)
       File.read(CartoDB::LAST_BLOG_POSTS_FILE_PATH).html_safe
     end
   end
-   
+
 end

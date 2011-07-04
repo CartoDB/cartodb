@@ -70,8 +70,8 @@ section.subheader ul.tab_menu li a {float:left; padding:7px 15px; color:white; f
 section.subheader ul.tab_menu li a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
 section.subheader ul.tab_menu li.selected a {background-color:rgba(256,256,256,1); color:#272E48; text-decoration:none;}
 section.subheader ul.tab_menu li.selected a:hover {color:#272E48; text-decoration:none;}
-section.subheader ul.tab_menu li a.disabled {text-decoration:none; color:#999999; }
-section.subheader ul.tab_menu li a.disabled:hover {background-color:rgba(256,256,256,0.1);}
+section.subheader ul.tab_menu li.disabled a {text-decoration:none; color:#999999;}
+section.subheader ul.tab_menu li.disabled:hover {background:rgba(256,256,256,0.1)!important;}
 section.subheader div.right {position:relative; float:right; width:180px; height:88px; padding:15px 0 0 0; margin:0 40px 0 0; color:white!important;}
 section.subheader div.right p.settings {float:right; font:normal 15px Arial; color:white; z-index:10;}
 section.subheader div.right p.settings a {font:normal 13px Arial; text-shadow:0 1px black;}

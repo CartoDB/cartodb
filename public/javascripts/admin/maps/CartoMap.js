@@ -283,12 +283,6 @@
             
 	            google.maps.event.addListener(me.selection_area_,'mouseout',function(){
 	             	me.over_marker_ = false;
-								// var self = me;
-								// setTimeout(function(){
-								// 	if (!self.over_marker_) {
-								// 		               self.tooltip_.hide();
-								// 		             	}
-								// },200);
 	            });
 	
 							me.tooltip_.show();

@@ -38,6 +38,7 @@ describe Table do
     user.in_database do |user_database|
       user_database.table_exists?(table.name.to_sym).should be_true
     end
+    
     table.name = 'Wadus table #23'
     table.save
     table.reload
@@ -46,12 +47,20 @@ describe Table do
       user_database.table_exists?('wadus_table'.to_sym).should be_false
       user_database.table_exists?('wadus_table_23'.to_sym).should be_true
     end
+    
+    table.name = ''
+    table.save
+    table.reload
+    table.name.should == "Wadus table #23".sanitize
+    user.in_database do |user_database|
+      user_database.table_exists?('wadus_table_23'.to_sym).should be_true
+    end
   end
   
   it "should have a unique key to be identified in Redis" do
     table = create_table
     user = User[table.user_id]
-    table.key.should == "rails:#{table.database_name}:#{table.name}"
+    table.key.should == "rails:#{table.database_name}:#{table.oid}"
   end
   
   it "should rename the entries in Redis when the table has been renamed" do
@@ -60,7 +69,7 @@ describe Table do
     table.name = "brand_new_name"
     table.save_changes
     table.reload
-    table.key.should == "rails:#{table.database_name}:brand_new_name"
+    table.key.should == "rails:#{table.database_name}:#{table.oid}"
     $tables_metadata.exists(table.key).should be_true
   end
   
@@ -69,11 +78,6 @@ describe Table do
     $tables_metadata.hget(table.key,"user_id").should == table.user_id.to_s
   end
   
-  it "should store a list of columns in Redis" do
-    table = create_table
-    $tables_metadata.hget(table.key,"columns").should == [:cartodb_id, :name, :description, :the_geom, :created_at, :updated_at].to_json
-  end
-
   it "should store the_geom_type in Redis" do
     table = create_table
     table.the_geom_type.should == "point"
@@ -81,12 +85,6 @@ describe Table do
     
     table.the_geom_type = "multipolygon"
     $tables_metadata.hget(table.key,"the_geom_type").should == "multipolygon"
-  end
-
-  it "should store a schema in Redis" do
-    table = create_table
-    $tables_metadata.hget(table.key,"schema").should == 
-      "[\"cartodb_id,integer,number\", \"name,text,string\", \"description,text,string\", \"the_geom,geometry,geometry,point\", \"created_at,timestamp,date\", \"updated_at,timestamp,date\"]"
   end
   
   it "should remove the table from Redis when removing the table" do
@@ -237,7 +235,7 @@ describe Table do
 
     lambda {
       table.insert_row!({})
-    }.should_not raise_error(CartoDB::EmtpyAttributes)
+    }.should_not raise_error(CartoDB::EmptyAttributes)
 
     lambda {
       table.insert_row!({:non_existing => "bad value"})
@@ -321,84 +319,28 @@ describe Table do
     Tag.count.should == 0
     Table.count == 0
     user.in_database{|database| database.table_exists?(table.name).should be_false}
-    table.constraints.count.should == 0
   end
 
   it "can be created with a given schema if it is valid" do
     table = new_table
     table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    table.schema(:cartodb_types => false).should == [
-      [:cartodb_id, "integer"], [:code, "character(5)"], [:title, "character varying(40)"], 
-      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"], 
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
+    (table.schema(:cartodb_types => false) - [
+      [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
+      [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
+      [:kind, "character varying(10)"]
+    ]).should be_empty
   end
 
   it "should sanitize columns from a given schema" do
     table = new_table
     table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    table.schema(:cartodb_types => false).should == [
-      [:cartodb_id, "integer"], [:code_wadus, "character(5)"], [:title, "character varying(40)"], 
-      [:did, "integer"], [:date_prod, "date"], [:kind, "character varying(10)"],
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
-  end
-
-  it "should import a CSV if the schema is given and is valid" do
-    table = new_table :name => nil
-    table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-    table.save.reload
-    
-    table.rows_counted.should == 7
-    table.name.should == 'twitters'
-    row0 = table.records[:rows][0]
-    row0[:cartodb_id].should == 1
-    row0[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
-    row0[:login].should == "vzlaturistica "
-    row0[:country].should == " Venezuela "
-    row0[:followers_count].should == 211
-  end
-
-  it "should be able to insert rows in a table imported from a CSV file" do
-    table = new_table :name => nil
-    table.force_schema = "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)"
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-    table.save
-
-    lambda {
-      pk = table.insert_row!({:url => 'http://twitter.com/ferblape/statuses/1231231', :login => 'ferblape', :country => 'Spain', :followers_count => 33})
-      pk.should_not be_nil
-    }.should_not raise_error
-  end
-
-  it "should guess the schema from import file import_csv_1.csv" do
-    Table.send(:public, *Table.private_instance_methods)
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-    table.force_schema.should be_blank
-    table.guess_schema
-    table.force_schema.should == "id integer, name_of_species varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
-  end
-
-  it "should guess the schema from import file import_csv_2.csv" do
-    Table.send(:public, *Table.private_instance_methods)
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
-    table.force_schema.should be_blank
-    table.guess_schema
-    table.force_schema.should == "id integer, name_of_species varchar, kingdom varchar, family varchar, lat float, lon float, views integer"
-  end
-
-  it "should guess the schema from import file twitters.csv" do
-    Table.send(:public, *Table.private_instance_methods)
-    table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
-    table.force_schema.should be_blank
-    table.guess_schema
-    table.force_schema.should == "url varchar, login varchar, country varchar, followers_count integer, unknow_name_1 varchar"
+    (table.schema(:cartodb_types => false) - [
+      [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
+      [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
+      [:kind, "character varying(10)"]
+    ]).should be_empty
   end
 
   it "should import file twitters.csv" do
@@ -406,13 +348,12 @@ describe Table do
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
     table.save.reload
     table.name.should == 'twitters'
-
-    table.rows_counted.should == 7
-    table.schema(:cartodb_types => false).should == [
+    table.rows_counted.should == 7    
+    (table.schema(:cartodb_types => false) - [
       [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
       [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"], 
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
+    ]).should be_empty
     row = table.records[:rows][0]
     row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
     row[:login].should == "vzlaturistica "
@@ -473,7 +414,7 @@ describe Table do
     table = new_table
     table.user_id = user.id
     table.name = "empty_table"
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/empty_file.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/empty_file.csv"
     lambda {
       table.save
     }.should raise_error
@@ -485,7 +426,7 @@ describe Table do
   # It has strange line breaks
   it "should import file arrivals_BCN.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/arrivals_BCN.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/arrivals_BCN.csv"
     table.save
     table.reload
     table.name.should == 'arrivals_bcn'
@@ -494,7 +435,7 @@ describe Table do
   
   it "should import file clubbing.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/clubbing.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv"
     table.save
     table.reload
     table.name.should == 'clubbing'
@@ -503,7 +444,7 @@ describe Table do
 
   it "should import file short_clubbing.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/short_clubbing.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/short_clubbing.csv"
     table.save
     table.reload
     table.name.should == 'short_clubbing'
@@ -512,7 +453,7 @@ describe Table do
   
   it "should import ngos_aidmaps.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos_aidmaps.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/ngos_aidmaps.csv"
     table.save
     table.reload
     table.name.should == 'ngos_aidmaps'
@@ -522,7 +463,7 @@ describe Table do
   # File in format different than UTF-8
   it "should import estaciones.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/estaciones.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/estaciones.csv"
     table.save
     table.reload
     table.name.should == 'estaciones'
@@ -532,7 +473,7 @@ describe Table do
   # File in format UTF-8
   it "should import estaciones2.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/estaciones2.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/estaciones2.csv"
     table.save
     table.reload
     table.name.should == 'estaciones2'
@@ -543,12 +484,12 @@ describe Table do
     user = create_user
     table = new_table :name => nil
     table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngos.xlsx", "application/download")
+    table.import_from_file = "#{Rails.root}/db/fake_data/ngos.xlsx"
     table.save
     table.reload
     table.name.should == 'ngos'
 
-    table.schema(:cartodb_types => false).should == [
+    (table.schema(:cartodb_types => false) - [
       [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"],
       [:organization_s_work_in_haiti, "character varying"], [:calculation_of_number_of_people_reached, "character varying"],
       [:private_funding, "double precision"], [:relief, "character varying"], [:reconstruction, "character varying"],
@@ -559,23 +500,14 @@ describe Table do
       [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"],
       [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"],
       [:city, "character varying"], [:state, "character varying"], [:zip_code, "integer"], [:donation_website, "character varying"], 
-      [:created_at, "timestamp"], [:updated_at, "timestamp"]
-    ]
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
+    ]).should be_empty
     table.rows_counted.should == 76
-  end
-  
-  it "should raise an error if importing a SHP file without indicating an SRID" do
-    lambda {
-      table = new_table
-      table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download")
-      table.save
-    }.should raise_error(CartoDB::InvalidSRID)
   end
   
   it "should import EjemploVizzuality.zip" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download")
-    table.importing_SRID = CartoDB::SRID
     table.importing_encoding = 'LATIN1'
     table.save
 
@@ -583,37 +515,15 @@ describe Table do
     table.name.should == "vizzuality_shp"
   end
   
-  pending "should import TM_WORLD_BORDERS_SIMPL-0.3.zip" do
-    table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/TM_WORLD_BORDERS_SIMPL-0.3.zip", "application/download")
-    table.importing_SRID = CartoDB::SRID
-    table.importing_encoding = 'LATIN1'
-    table.save
-
-    table.name.should == "tm_world_borders_simpl"
-  end
-  
   it "should import SHP1.zip" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/SHP1.zip", "application/download")
-    table.importing_SRID = CartoDB::SRID
     table.importing_encoding = 'LATIN1'
     table.save
 
     table.name.should == "esp_adm1_shp"
   end
   
-  # FIXME
-  # it "should import whs_features_gr.csv" do
-  #   table = new_table :name => nil
-  #   table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/whs_features_gr.csv", "text/csv")
-  #   table.save
-  #   table.reload
-  #   table.name.should == 'whs_features_gr'
-  #   table.rows_counted.should == 29
-  # end
-  
-  # FIXME
   it "should import ngoaidmap_projects.csv" do
     table = new_table :name => nil
     table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngoaidmap_projects.csv", "text/csv")
@@ -811,12 +721,14 @@ describe Table do
     table.reload
     table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
     table.reload
-    table.schema.should == [
+    # Check if the schema stored in memory is fresh and does not contain
+    # latitude and longitude columns
+    (table.schema - [
       [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
       [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"]
-    ]    
+    ]).should be_empty
     record = table.record(pk)
-    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.6f" % -3.699732} #{"%.6f" % 40.423012})"
+    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{-3.699732.round(6)} #{40.423012.round(6)})"
   end
   
   it "should store the name of its database" do
@@ -848,11 +760,11 @@ describe Table do
   it "should overwrite given name over name of the file when importing " do
     user = create_user
     table = new_table :user_id => user.id, :name => 'wadus'
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/csv_no_quotes.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
     table.save.reload
     
     table.name.should == 'wadus'
-    table.rows_counted.should == 8406        
+    table.rows_counted.should == 8406
   end
   
   it "should not drop a table that exists when upload fails" do
@@ -951,17 +863,38 @@ describe Table do
   end
   
   it "should return the content of the table in CSV format" do
-    table = create_table :name => 'table1'
-    table.insert_row!({:name => "name #1", :description => "description #1"})
+    user = create_user
+    table = Table.new :privacy => Table::PRIVATE, :tags => 'movies, personal'
+    table.user_id = user.id
+    table.name = 'Madrid Bars'
+    table.force_schema = "name varchar, address varchar, latitude float, longitude float"
+    table.save
+    pk = table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
+    table.insert_row!({:name => "El Estocolmo", :address => "Calle de la Palma 72, Madrid, Spain", :latitude => 40.426949, :longitude => -3.708969})
+    table.insert_row!({:name => "El Rey del Tallarín", :address => "Plaza Conde de Toreno 2, Madrid, Spain", :latitude => 40.424654, :longitude => -3.709570})
+    table.insert_row!({:name => "El Lacón", :address => "Manuel Fernández y González 8, Madrid, Spain", :latitude => 40.415113, :longitude => -3.699871})
+    table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
+
+    table.reload
+    table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+    table.reload
+
+    csv_content = nil
     zip = table.to_csv
     path = "/tmp/temp_csv.zip"
     fd = File.open(path,'w+')
     fd.write(zip)
     fd.close
     Zip::ZipFile.foreach(path) do |entry|
-      entry.name.should == "table1_export.csv"
+      entry.name.should == "madrid_bars_export.csv"
+      csv_content = entry.get_input_stream.read
     end
     FileUtils.rm_rf(path)
+    
+    parsed = CSV.parse(csv_content)
+    parsed[0].should == ["cartodb_id", "address", "name", "updated_at", "created_at", "the_geom"]
+    parsed[1][0].should == "1"
+    parsed[1][5].should ==  "{\"type\":\"Point\",\"coordinates\":[-3.699732,40.423012]}"
   end
 
   it "should return the content of the table in SHP format" do
@@ -978,13 +911,20 @@ describe Table do
     FileUtils.rm_rf(path)
   end
   
-  it "should import a CSV file with a column named cartodb_id" do
+  it "should not import a CSV file with a column named cartodb_id" do
     user = create_user
     table = new_table :user_id => user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/gadm4_export.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
     table.save.reload
-    
-    table.schema.should == [[:cartodb_id, "number"], [:gid, "number"], [:id_0, "number"], [:iso, "string"], [:name_0, "string"], [:id_1, "number"], [:name_1, "string"], [:id_2, "number"], [:name_2, "string"], [:id_3, "number"], [:name_3, "string"], [:id_4, "number"], [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "number"], [:shape_area, "number"], [:latitude, "number"], [:longitude, "string"], [:center_latitude, "number"], [:center_longitude, "number"], [:created_at, "date"], [:updated_at, "date"]]
+    (table.schema -  [
+      [:cartodb_id, "number"], [:gid, "number"], [:id_0, "number"], [:iso, "string"], 
+      [:name_0, "string"], [:id_1, "number"], [:name_1, "string"], [:id_2, "number"], 
+      [:name_2, "string"], [:id_3, "number"], [:name_3, "string"], [:id_4, "number"], 
+      [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], 
+      [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "number"], 
+      [:shape_area, "number"], [:latitude, "number"], [:longitude, "string"], [:center_latitude, "number"], 
+      [:center_longitude, "number"], [:created_at, "string"], [:updated_at, "string"]
+    ]).should be_empty
   end
   
   it "should be able to find a table by name or by identifier" do
@@ -1001,6 +941,57 @@ describe Table do
     lambda {
       Table.find_by_identifier(666, table.id)
     }.should raise_error
+  end
+  
+  it "should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception" do
+    user = create_user
+    table = new_table :name => 'table1'
+    table.user_id = user.id
+    table.save
+    pk = table.insert_row!({:name => "name #1", :description => "description #1"})
+    
+    Table.any_instance.stubs(:the_geom_type=).raises(CartoDB::InvalidGeomType)
+    
+    table = new_table
+    table.user_id = user.id
+    table.name = "table1"
+    lambda {
+      table.save
+    }.should raise_error(CartoDB::InvalidGeomType)
+    
+    table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
+  end
+  
+  it "should not remove an existing table when the creation of a new table from a file with the same name has raised an exception" do
+    user = create_user
+    table = new_table :name => 'table1'
+    table.user_id = user.id
+    table.save
+    pk = table.insert_row!({:name => "name #1", :description => "description #1"})
+    
+    Table.any_instance.stubs(:schema).raises(CartoDB::QueryNotAllowed)
+    
+    table = new_table
+    table.user_id = user.id
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/reserved_columns.csv", "text/csv")
+    lambda {
+      table.save
+    }.should raise_error(CartoDB::QueryNotAllowed)
+    
+    table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
+  end
+  
+  it "should get a valid name when a table when a name containing the current name exists" do
+    user = create_user
+    table = create_table :name => 'Table #20', :user_id => user.id
+    table2 = create_table :name => 'Table #2', :user_id => user.id
+    table2.reload
+    table2.name.should == 'table_2'
+    
+    table3 = create_table :name => nil, :user_id => user.id
+    table4 = create_table :name => nil, :user_id => user.id
+    table5 = create_table :name => nil, :user_id => user.id
+    table6 = create_table :name => nil, :user_id => user.id
   end
   
 end

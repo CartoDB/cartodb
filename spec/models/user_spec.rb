@@ -8,19 +8,15 @@ describe User do
     user.should_not be_new
 
     lambda {
-      user.in_database do |user_database|
-        user_database.test_connection.should == false
-      end    
+      user.in_database.test_connection.should == false
     }.should raise_error
-    
+
     user.database_name.should be_nil
     user.enable(true)
     user.save
     user.setup_user
     user.reload
-    user.in_database do |user_database|
-      user_database.test_connection.should == true
-    end    
+    user.in_database.test_connection.should == true
     user.database_name.should_not be_nil
   end
 
@@ -52,9 +48,7 @@ describe User do
     user = create_user
     user.database_name.should == "cartodb_test_user_#{user.id}_db"
     user.database_username.should == "test_cartodb_user_#{user.id}"
-    user.in_database do |user_database|
-      user_database.test_connection.should == true
-    end
+    user.in_database.test_connection.should == true
   end
 
   it "should create a dabase user that only can read it's own database" do
@@ -192,18 +186,14 @@ describe User do
     table.should be_private
 
     lambda {
-      user.in_database(:as => :public_user) do |user_database|
-        user_database.run("select * from #{table.name}")
-      end
+      user.in_database(:as => :public_user).run("select * from #{table.name}")
     }.should raise_error(Sequel::DatabaseError)
 
     table.privacy = "PUBLIC"
     table.save
     table.reload
 
-    user.in_database(:as => :public_user) do |user_database|
-      user_database.run("select * from #{table.name}")
-    end
+    user.in_database(:as => :public_user).run("select * from #{table.name}")
   end
 
   it "should create a client_application for each user" do
@@ -249,56 +239,6 @@ describe User do
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
     query_result[:rows][2][:name_of_species].should == "cristata barrukia"
   end
-
-  it "should raise an error if detects a create table statment in a query" do
-    user = create_user
-
-    lambda {
-      user.run_query("create table antantaric_species cartodb_id")
-    }.should raise_error(CartoDB::QueryNotAllowed)
-    
-    lambda {
-      user.run_query("create table antantaric_species cartodb_id; insert into antantaric_species (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from antantaric_species where family='Polynoidae' limit 10")
-    }.should raise_error(CartoDB::QueryNotAllowed)
-  end
-  
-  it "should detect a drop table statement and drop the table" do
-    user = create_user
-    table = new_table :name => 'antantaric species'
-    table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-    table.save
-    
-    user.run_query("drop table antantaric_species")
-    Table[table.id].should be_nil
-
-    lambda {
-      user.run_query("drop table antantaric_species")
-    }.should raise_error(CartoDB::TableNotExists)
-  end
-  
-  it "should detect a alter table statement that renames the table to update the user table" do
-    user = create_user
-    table = new_table :name => 'antantaric species'
-    table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-    table.save
-    
-    user.run_query("alter table antantaric_species rename to antantaric_species_dev")
-    Table[table.id].name.should == "antantaric_species_dev"
-  end
-  
-  it "should detect a alter table statement to update the stored schema" do
-    user = create_user
-    table = new_table :name => 'antantaric species'
-    table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
-    table.save
-    
-    user.run_query("alter table antantaric_species rename column family to families")
-    table.reload
-    table.schema.should include([:families,"string"])
-  end  
   
   it "should fail with error if table doesn't exist" do
     user = create_user
@@ -306,5 +246,4 @@ describe User do
       user.run_query("select * from wadus")
     }.should raise_error(CartoDB::TableNotExists)
   end
-
 end

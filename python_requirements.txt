@@ -1,0 +1,4 @@
+GDAL==1.7.1
+chardet==1.0.1
+argparse==1.2.1
+brewery==0.6

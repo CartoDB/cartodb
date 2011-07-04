@@ -15,7 +15,7 @@ feature "API 1.0 columns management" do
   scenario "Get the columns from a table" do
     get_json api_table_columns_url(@table.name) do |response|
       response.status.should be_success
-      response.body.should == default_schema
+      (response.body -  default_schema).should be_empty
     end
   end
 

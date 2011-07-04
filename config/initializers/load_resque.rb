@@ -1,7 +1,5 @@
 require 'resque'
-require 'resque/user_mailer_jobs'
-require 'resque/queries_threshold_jobs'
+# Load automatically all resque files from lib/resque
+Dir[Rails.root.join("lib/resque/*.rb")].each {|f| require f}
 
-redis_config = APP_CONFIG[:redis]
-
-Resque.redis = "#{redis_config['host']}:#{redis_config['port']}"
+Resque.redis = "#{APP_CONFIG[:redis]['host']}:#{APP_CONFIG[:redis]['port']}"

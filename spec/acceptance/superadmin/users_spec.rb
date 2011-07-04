@@ -38,6 +38,7 @@ feature "Superadmin's users administration" do
     page.should have_content "Id: #{@admin_user.id}"
     page.should have_content 'Username: Admin'
     page.should have_content 'E-mail: admin@example.com'
+    page.should have_content 'Subdomain: admin'
     page.should have_content "Database name: cartodb_test_user_#{@admin_user.id}_db"
     page.should have_content 'Tables count: 0'
     page.should have_content 'Has administrator role'
@@ -57,6 +58,7 @@ feature "Superadmin's users administration" do
     page.should have_content "Id: #{@admin_user.id}"
     page.should have_content 'Username: Fulano'
     page.should have_content 'E-mail: fulano@example.com'
+    page.should have_content 'Subdomain: admin'
     page.should have_content "Database name: cartodb_test_user_#{@admin_user.id}_db"
     page.should have_content 'Tables count: 0'
     page.should have_content 'Has administrator role'
@@ -121,6 +123,7 @@ feature "Superadmin's users administration" do
     fill_in 'Username', :with => 'Fulano'
     fill_in 'Email', :with => 'fulano@example.com'
     fill_in 'Password', :with => 'fulanito'
+    fill_in 'Subdomain', :with => 'vizzuality'
     check 'Superman'
     click_button 'Create User'
 

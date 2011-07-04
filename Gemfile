@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 gem "rails", "3.0.7"
 
-gem "pg", "0.10.1"
+gem "pg", "0.11"
 gem "sequel-rails", :git => "git://github.com/ferblape/sequel-rails.git"
 gem "nofxx-georuby", :require => "geo_ruby"
 
@@ -14,14 +14,11 @@ gem "sequel_column_type_array"
 gem "htmlentities"
 gem "rgeo"
 gem "rgeo-geojson", :require => "rgeo/geo_json"
-gem "roo"
-gem "spreadsheet"
-gem "google-spreadsheet-ruby", :require => "google_spreadsheet"
 gem "aws-ses", "0.4.1", :require => "aws/ses"
-gem "rubyzip", :require => "zip/zip"
 gem "redis"
 gem "resque"
 gem "yajl-ruby", :require => "yajl"
+gem "cartodb-importer", :git => "git@github.com:Vizzuality/cartodb-importer.git", :tag => "v0.1.9"
 
 group :development do
   gem "capistrano"

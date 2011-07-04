@@ -1,21 +1,5 @@
-# All the requests from a host with the header
-# cartodbclient are allowed in other subdomain
-# that api
-class APISubdomainConstraint
-  def matches?(req)
-    if req.headers["cartodbclient"].blank?
-      req.host =~ /^api\./
-    else
-      return true
-    end
-  end
-end
-
 CartoDB::Application.routes.draw do
-  root :to => "home#index"
-
-  get '/progress' => 'upload#progress', :format => :json
-  post '/upload' => 'upload#create', :format => :json
+  root :to => redirect("/login")
 
   get   '/login' => 'sessions#new', :as => :login
   get   '/logout' => 'sessions#destroy', :as => :logout
@@ -26,9 +10,10 @@ CartoDB::Application.routes.draw do
   match '/limits' => 'home#limits', :as => :limits
   match '/status' => 'home#app_status'
 
+  post '/upload' => 'upload#create', :format => :json
+
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard
-    match '/dashboard/public' => 'tables#index', :as => :dashboard_public, :defaults => {:public => true}
     resources :tables, :only => [:show]
     match '/your_apps/oauth' => 'client_applications#oauth', :as => :oauth_credentials
     match '/your_apps/jsonp' => 'client_applications#jsonp', :as => :jsonp_credentials
@@ -38,25 +23,21 @@ CartoDB::Application.routes.draw do
     get '/byebye' => 'users#byebye', :as => :farewel
   end
 
-
   namespace :superadmin do
     get '/' => 'users#index', :as => :users
     post '/' => 'users#create', :as => :users
     resources :users, :except => [:index]
   end
+  
+  scope :oauth, :path => :oauth do
+    match '/authorize'      => 'oauth#authorize',     :as => :authorize
+    match '/request_token'  => 'oauth#request_token', :as => :request_token
+    match '/access_token'   => 'oauth#access_token',  :as => :access_token
+    get   '/identity'       => 'sessions#show'
+  end
 
-  constraints APISubdomainConstraint.new do
-    scope :oauth, :path => :oauth do
-      match '/authorize'      => 'oauth#authorize',     :as => :authorize
-      match '/request_token'  => 'oauth#request_token', :as => :request_token
-      match '/access_token'   => 'oauth#access_token',  :as => :access_token
-      match '/token'          => 'oauth#token',         :as => :token
-      match '/test_request'   => 'oauth#test_request',  :as => :test_request
-      get   '/identity'       => 'sessions#show'
-    end
-
+  scope "/api" do    
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
-      match  '/'                                     => 'queries#run'
       get    '/column_types'                         => 'meta#column_types'
       get    '/tables'                               => 'tables#index'
       post   '/tables'                               => 'tables#create'

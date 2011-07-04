@@ -37,7 +37,6 @@ namespace :cartodb do
               user_database.run("SELECT AddGeometryColumn('#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
               user_database.run("CREATE INDEX #{table.name}_#{Table::THE_GEOM_WEBMERCATOR}_idx ON #{table.name} USING GIST(#{Table::THE_GEOM_WEBMERCATOR})")                      
               user_database.run("VACUUM ANALYZE #{table.name}")
-              table.update_stored_schema(user_database)
               table.save_changes
             end
           end

@@ -19,6 +19,7 @@ if Rails.env.development?
   admin.password              = 'example'
   admin.password_confirmation = 'example'
   admin.username              = 'admin'
+  admin.subdomain             = 'vizzuality'
   admin.admin                 = true
   admin.save
 

@@ -4,14 +4,13 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   helper :all
 
-  before_filter :browser_is_html5_compliant?, :app_host_required
+  before_filter :browser_is_html5_compliant?
+  after_filter :remove_flash_cookie
 
   class NoHTML5Compliant < Exception; end;
 
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound, :with => :render_404
-
-  $progress ||= {}
 
   include SslRequirement
 
@@ -27,7 +26,7 @@ class ApplicationController < ActionController::Base
   def access_token
     return nil unless logged_in?
     access_token = nil
-    consumer = OAuth::Consumer.new(current_user.client_application.key, current_user.client_application.secret, :site => APP_CONFIG[:api_host])
+    consumer = OAuth::Consumer.new(current_user.client_application.key, current_user.client_application.secret, :site => CartoDB.hostname)
     if !session[:access_token].blank? && !session[:access_token_secret].blank?
       access_token = OAuth::AccessToken.new(consumer, session[:access_token], session[:access_token_secret])
     end
@@ -53,10 +52,6 @@ class ApplicationController < ActionController::Base
 
   protected
   
-  def app_host_required
-    (request.host_with_port == APP_CONFIG[:app_host].host) || (render_api_endpoint and return false)
-  end
-
   def render_404
     respond_to do |format|
       format.html do
@@ -75,17 +70,7 @@ class ApplicationController < ActionController::Base
       end
     end
   end
-
-  def render_api_endpoint
-    respond_to do |format|
-      format.html do
-        render :file => "public/api.html.erb", :status => 404, :layout => false
-      end
-      format.json do
-        render :nothing => true, :status => 404
-      end
-    end
-  end
+  
   def login_required
     authenticated? || not_authorized
   end
@@ -119,7 +104,7 @@ class ApplicationController < ActionController::Base
       return exception
     end
     case exception
-      when CartoDB::EmtpyFile
+      when CartoDB::EmptyFile
         ERROR_CODES[:empty_file]
       when Sequel::DatabaseError
         if exception.message.include?("transform: couldn't project")
@@ -133,6 +118,7 @@ class ApplicationController < ActionController::Base
   end
 
   def no_html5_compliant
+    logout
     render :file => "#{Rails.root}/public/HTML5.html", :status => 500, :layout => false
   end
 
@@ -151,13 +137,10 @@ class ApplicationController < ActionController::Base
       raise NoHTML5Compliant
     end
     
-    puts controller_name
-    
     # login or developer ie ready
     if controller_name == "home" || controller_name == "invitations" || controller_name == "sessions" && !user_agent.match(/msie [0-6]/)
       return true
     end
-    
     
     #IE 
     # mozilla/4.0 (compatible; msie 8.0; windows nt 6.1; wow64; trident/4.0; slcc2; .net clr 2.0.50727; .net clr 3.5.30729; .net clr 3.0.30729; media center pc 6.0)
@@ -170,7 +153,6 @@ class ApplicationController < ActionController::Base
     if user_agent.match(/chrome\/\d[0-1]/)
       raise NoHTML5Compliant
     end
-    
     
     #SAFARI
     # mozilla/5.0 (macintosh; u; intel mac os x 10_6_7; en-us) applewebkit/533.21.1 (khtml, like gecko) version/5.0.5 safari/533.21.1
@@ -190,7 +172,6 @@ class ApplicationController < ActionController::Base
       raise NoHTML5Compliant
     end
     
-    
     #IPHONE IPAD IPOD
     # Mozilla/5.0 (iPhone; U; XXXXX like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/241 Safari/419.3
     # Checked in safari
@@ -198,11 +179,11 @@ class ApplicationController < ActionController::Base
     #ANDROID
     # Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3
     # Checked in safari
-    
-    
-    
-    
-
   end
   
+  # In some cases the flash message is going to be set in the fronted with js after making a request to the API
+  # We use this filter to ensure it disappears in the very first request
+  def remove_flash_cookie
+    cookies.delete(:flash) if cookies[:flash]
+  end
 end

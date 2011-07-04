@@ -51,16 +51,11 @@ class Api::Json::TablesController < Api::ApplicationController
   def create
     @table = Table.new
     @table.user_id = current_user.id
-    @table.name = params[:name] if params[:name]
-    if params[:file]
-      @table.import_from_file = params[:file]
-      if $progress[params["X-Progress-ID".to_sym]].nil?
-        $progress[params["X-Progress-ID".to_sym]] = 0
-      end
-    end
+    @table.name = params[:name]                    if params[:name]
+    @table.import_from_file = params[:file]        if params[:file]
     @table.importing_SRID = params[:srid] || CartoDB::SRID
-    @table.force_schema   = params[:schema] if params[:schema]
-    @table.the_geom_type  = params[:the_geom_type].downcase if params[:the_geom_type]
+    @table.force_schema   = params[:schema]        if params[:schema]
+    @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
     if @table.valid? && @table.save
       render :json => { :id => @table.id, :name => @table.name, :schema => @table.schema }.to_json,
              :status => 200,

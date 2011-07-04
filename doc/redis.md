@@ -8,7 +8,7 @@ The databases used by CartoDB are:
   - **1 - queries_log**: stores an entry per request performed, storing the IP of the request and some information of the request (deactivated)
   - **2 - threshold**: stores the number of queries run per user and per table, and the kind of those queries (selects, inserts....)
   - **3 - api_credentials**: stores the credentials to access to CartoDB via API. This credentials are OAuth validated tokens and API keys
-  - **4**: base DB used for nodejs tiler. Will change in future
+  - **4 - node_details**: base DB used for nodejs tiler. Will change in future
 
 ### tables_metadata database ###
 
@@ -20,8 +20,6 @@ The database is structured in hashes. The key of each hash has the following for
   
 The values of the hash are:
 
-  - `schema`: the schema of the table, as an array of arrays. Example: `["cartodb_id,integer,number", "name,text,string", "description,text,string", "the_geom,geometry,geometry,point", "autono_id,smallint,number", "autono_name,character varying(255),string", "provincia_id,smallint,number", "provincia_name,character varying(255),string", "municipio_id,smallint,number", "municipio_name,character varying(255),string", "area_id,smallint,number", "created_at,timestamp,date", "updated_at,timestamp,date"]`
-  - `columns`: an array with the names of the columns. Example: `["cartodb_id","name","description","the_geom","autono_id","autono_name","provincia_id","provincia_name","municipio_id","municipio_name","area_id","created_at","updated_at"]`
   - `the_geom_type`: the geometry type. Example: `point`
   - `privacy`: the privacy of the table. 0 means **private** and 1 means **public**
   - `user_id`: the identifier of the owner

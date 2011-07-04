@@ -27,5 +27,9 @@ CartoDB::Application.configure do
   config.action_dispatch.best_standards_support = :builtin
 
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
-
+  
+  # TODO: host vizzuality
+  config.middleware.use Rack::ReverseProxy do
+    reverse_proxy /api\/v1\/\?sql=(.*)/, 'http://vizzuality.localhost.lan:8080/api/v1/?sql=$1'
+  end
 end

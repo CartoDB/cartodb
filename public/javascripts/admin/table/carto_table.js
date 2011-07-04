@@ -144,14 +144,18 @@
 			      $(document).unbind('arrived');
 			    },
 			    error: function(e) {
-			      var json = $.parseJSON(e.responseText);
-			      var msg = '';
+						try {
+							var json = $.parseJSON(e.responseText);
+				      var msg = '';
 
-			      _.each(json.errors,function(text,pos){
-			        msg += text + ', ';
-			      });
-			      msg = msg.substr(0,msg.length-2);
-			      $('div.sql_window p.errors').text(msg).stop().fadeIn().delay(10000).fadeOut();
+				      _.each(json.errors,function(text,pos){
+				        msg += text + ', ';
+				      });
+				      msg = msg.substr(0,msg.length-2);
+						} catch(e) {
+				      msg = "Internal server error";
+						}
+						$('div.sql_window p.errors').text(msg).stop().fadeIn().delay(10000).fadeOut();
 			      methods.drawQueryColumns([]);
 			      $(document).unbind('arrived');
 			    }

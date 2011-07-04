@@ -23,7 +23,7 @@
 
 // We are playing with these containers but they don't belong to the plugin
 
-(function( $ ){
+(function($){
 
   var first = true;
   var table;
@@ -125,7 +125,7 @@
 				var now = new Date();
 			  $.ajax({
 			    method: "GET",
-			    url: global_api_url+'?sql='+escape(editor.getValue()),
+			    url: global_api_url+'?sql='+escape(editor.getValue())+'&database=' + database_name,
 			    data: {
 			      rows_per_page: options.resultsPerPage,
 			      page: petition_pages
@@ -158,7 +158,7 @@
 			  });
 			}
 
-     
+
      
       function startTable() {
         if (total_rows==0) {
@@ -2650,12 +2650,11 @@
   //  START PLUGIN           //
   /////////////////////////////
   $.fn.cDBtable = function(method,options) {
-
     defaults = options;
 
     if (methods[method]) {
       return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
- } else if ( typeof method === 'object' || ! method ) {
+ 		} else if ( typeof method === 'object' || ! method ) {
       return methods.init.apply( this, arguments );
     } else {
       return methods.init.apply( this, arguments );

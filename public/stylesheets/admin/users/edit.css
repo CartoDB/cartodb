@@ -114,6 +114,8 @@ div.mamufas div.unlock_window div.inner_ span.top label {position:absolute; left
 div.mamufas div.unlock_window div.inner_ span.top input {float:right; width:205px; height:13px; margin:0; padding:10px 115px 10px 10px; border:1px solid #CCCCCC; font:bold 13px 'Helvetica',Arial; color:#333333; line-height:13px; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
 div.mamufas div.unlock_window div.inner_ span.top a.forget {position:absolute; right:28px; top:25px; font:normal 13px "Helvetica",Arial; color:#FF9900;}
 div.mamufas div.unlock_window div.inner_ span.top a.forget:hover {color:#FF6600; cursor:pointer;}
+div.mamufas div.unlock_window div.inner_ span.top a.forget.disabled {color:#CCCCCC; text-decoration:none}
+div.mamufas div.unlock_window div.inner_ span.top a.forget.disabled:hover {color:#CCCCCC; cursor:default;}
 div.mamufas div.unlock_window div.inner_ span.top div.error_content {position:absolute; display:none; z-index:10; left:70px; top:-25px;}
 div.mamufas div.unlock_window div.inner_ span.top div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
 div.mamufas div.unlock_window div.inner_ span.top div.error_content p span {float:left; width:auto!important; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}

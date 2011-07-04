@@ -152,7 +152,13 @@
 			// SQL editor
 			editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
 	      lineNumbers: false,
-	      mode: "text/x-plsql"
+	      mode: "text/x-plsql",
+				onKeyEvent: function(editor,event) {
+					if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
+						stopPropagation(event);
+						$('div.sql_window a.try_query').trigger('click');
+					}
+				}
 	    });
 			
 			// Draggable and resizable capacities to sql window
@@ -659,33 +665,35 @@
     ///////////////////////////////////////
     $('section.subheader ul.tab_menu li a').click(function(ev){
       stopPropagation(ev);
-      closeOutTableWindows();
-      if (!$(this).parent().hasClass('selected')) {
-        if ($(this).text()=="Table") {
-					window.location.hash = "#table";
-          $('section.subheader ul.tab_menu li').removeClass('selected');
-          $(this).parent().addClass('selected');
-          $(document).trigger('click');
-          $('body').trigger('refresh');
-          $('body').trigger('enabled',[true]);
-          $('div.general_options').removeClass('map').addClass('table');
-          $('div.table_position').show();
-          hideMap();
-        } else {
-					window.location.hash = "#map";
-          if (geolocating) {
-            $('p.geo').trigger('click');
-          } else {
-            $('section.subheader ul.tab_menu li').removeClass('selected');
-            $('div.general_options').removeClass('table end').addClass('map');
-            $(this).parent().addClass('selected');
-            $('div.table_position').hide();
-            $(document).trigger('click');
-            $('body').trigger('enabled',[false]);
-            showMap();
-          }
-        }
-      }
+      //closeOutTableWindows();
+					//       if (!$(this).parent().hasClass('selected')) {
+					//         if ($(this).text()=="Table") {
+					// window.location.hash = "#table";
+					//           $('section.subheader ul.tab_menu li').removeClass('selected');
+					//           $(this).parent().addClass('selected');
+					//           $(document).trigger('click');
+					//           $('body').trigger('refresh');
+					//           $('body').trigger('enabled',[true]);
+					//					 $('body').attr('view_mode','table');
+					//           $('div.general_options').removeClass('map').addClass('table');
+					//           $('div.table_position').show();
+					//           hideMap();
+					//         } else {
+					// window.location.hash = "#map";
+					//           if (geolocating) {
+					//             $('p.geo').trigger('click');
+					//           } else {
+					//             $('section.subheader ul.tab_menu li').removeClass('selected');
+					//             $('div.general_options').removeClass('table end').addClass('map');
+					//             $(this).parent().addClass('selected');
+					//             $('div.table_position').hide();
+					//						 $('body').attr('view_mode','map');
+					//             $(document).trigger('click');
+					//             $('body').trigger('enabled',[false]);
+					//             showMap();
+					//           }
+					//         }
+					//       }
     });
         
   });

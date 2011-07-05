@@ -41,6 +41,12 @@
           $(this).parent().addClass('selected');
           (create_type==0)?create_type++:create_type--;
         }
+				
+				if ($(this).closest('li').index()==1) {
+					$('div.create_window span.bottom input').addClass('disabled');
+				} else {
+					$('div.create_window span.bottom input').removeClass('disabled');
+				}
       });
       
 
@@ -138,10 +144,12 @@
               window.location.href = "/tables/"+data.id;
             },
             error: function(e) {
+							var json = $.parseJSON(e.responseText);
               $('div.create_window div.inner_ span.loading').addClass('error');
-              $('div.create_window div.inner_ span.loading p').html('Something weird has occurred when creating your table. Do you want to <a onclick="retryImportTable()">retry</a>?');
-              $('div.create_window div.inner_ span.loading h5').text('Ops! There has been an error');
-              $('div.create_window div.inner_').height(78);
+              $('div.create_window div.inner_ span.loading p').html(json.hint);
+              $('div.create_window div.inner_ span.loading h5').text(json.message);
+							$('div.create_window a.close_create').show().addClass('last');
+              $('div.create_window div.inner_').height(98);
             }
           });
         });

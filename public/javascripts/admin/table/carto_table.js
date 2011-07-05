@@ -117,6 +117,7 @@
 			    success: function(data) {
 			      rows = data.rows;
 			      total_rows = data.total_rows;
+						defaults.total = total_rows;
 			      $(document).trigger('arrived');
 			    }
 			  });
@@ -147,7 +148,7 @@
 							var json = $.parseJSON(e.responseText);
 				      var msg = '';
 
-				      _.each(json.errors,function(text,pos){
+				      _.each(json.error,function(text,pos){
 				        msg += text + ', ';
 				      });
 				      msg = msg.substr(0,msg.length-2);
@@ -209,33 +210,36 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawColumns: function(data) {
       headers = {};
-      
       //Draw the columns headers
       var thead = '<thead><tr><th class="first"><div></div></th>';
+
       
       _.each(data,function(element,index){
         //Get type of table -> Point or Polygon
         if (element[3]!=undefined) {
           map_type = element[3];
         }
-        
-        // Save column headers
-     		headers[element[0]] = element[3] || element[1];
-        
-        // Playing with templates (table_templates.js - Mustache.js)
-        thead += Mustache.to_html(th,{
-          allowed:(element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?true:false,
-          type:element[1],
-          name:element[0],
-          cartodb_id: (element[0]!="cartodb_id")?false:true,
-          cellsize: cell_size,
-          geo: (element[3]==undefined)?false:true
-          //loading: (loading)?true:false
-        });
+        if (element[1]!="length") {
+	        // Save column headers
+	     		headers[element[0]] = element[3] || element[1];
+
+	        // Playing with templates (table_templates.js - Mustache.js)
+	        thead += Mustache.to_html(th,{
+	          allowed:(element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?true:false,
+	          type:element[1],
+	          name:element[0],
+	          cartodb_id: (element[0]!="cartodb_id")?false:true,
+	          cellsize: cell_size,
+	          geo: (element[3]==undefined)?false:true
+	          //loading: (loading)?true:false
+	        });
+				}
+
       });
       
       thead += "</thead></tr>";
       $(table).append(thead);
+
             
       if (first) {
         first = false;
@@ -323,30 +327,33 @@
       _.each(data, function(element,i){
         // Get first td
         tbody += Mustache.to_html(first_td,{
-          cartodb_id: element['cartodb_id'],
+          cartodb_id: element['cartodb_id']
         });
-        
+
+
         // Get rest generic td
-        _.each(element,function(data,j){
-          tbody += Mustache.to_html(generic_td,{
-            value: function(){
+				_.eachRow(element,function(data,j){
+		        tbody += Mustache.to_html(generic_td,{
+	           value: function(){
               if (data==null) {
                 return '';
               } else if (j=="the_geom") {
                 var json = $.parseJSON(data);
                 if (json.type=="Point") {
                   return json.coordinates[0] +', ' + json.coordinates[1];
-                }
+                } else {
+									return data;
+								}
               } else {
                 return data;
               }
-            },
-            cartodb_id: element['cartodb_id'],
-            is_cartodb_id:(j=="cartodb_id")?true:false,
-         		allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
-            cellsize: cell_size,
-            column: j
-          });
+	           },
+	           cartodb_id: element['cartodb_id'],
+	           is_cartodb_id:(j=="cartodb_id")?true:false,
+	        		allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
+	           cellsize: cell_size,
+	           column: j
+	         });
         });
 
         var start = tbody.lastIndexOf('"width:');
@@ -970,12 +977,12 @@
       }
 
       if (kind=="previous") {
-        $('div.loading_previous p.count').text('Now vizzualizing '+range+' of '+defaults.total);
+        $('div.loading_previous p.count').text('Now vizzualizing '+range+' of '+ defaults.total);
 				$(table).children('tbody').css('padding','0');
 				$(table).children('tbody').css('margin','0');
         $('div.loading_previous').show();
       } else {
-        $('div.loading_next p.count').text('Now vizzualizing '+range+' of '+defaults.total);
+        $('div.loading_next p.count').text('Now vizzualizing '+range+' of '+ defaults.total);
         $('div.loading_next').show();
       }
     },
@@ -986,7 +993,8 @@
     //  HIDE PAGINATE LOADER
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     hideLoader: function() {
-      loading = false;
+			loading = false;
+      
       $('div.loading_next').hide();
       $('div.loading_previous').hide();
 			if (query_mode) {
@@ -995,7 +1003,6 @@
 				$(table).children('tbody').css('padding','53px 0 0 0');
 			}
       $(table).children('tbody').css('margin','5px 0 0 0');
-      $(document).scroll();
     },
 
 

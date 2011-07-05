@@ -9,7 +9,6 @@ feature "Dashboard", %q{
 } do
 
   scenario "Login and visit my dashboard" do
-    false.should be_true # DELETEME
     user = create_user
     the_other = create_user
     t = Time.now - 6.minutes

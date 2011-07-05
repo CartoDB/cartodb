@@ -199,7 +199,7 @@ feature "Dashboard", %q{
         
     page.should have_content("1 table in your account")
 
-    page.should have_css("ul li:eq(1) a", :text => "View all tables")
+    page.should have_css("ul li:eq(1) a", :text => "view all tables")
     page.should have_css("ul li:eq(2) a span", :text => "personal")
     page.should have_css("ul li a span", :text => "4sq")
     page.should have_css("ul li a span", :text => "feed aggregator")

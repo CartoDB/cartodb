@@ -122,7 +122,6 @@
 			  });
 			} else {
 				setAppStatus(); // Change app status depending on query mode
-				var now = new Date();
 			  $.ajax({
 			    method: "GET",
 			    url: global_api_url+'?sql='+escape(editor.getValue())+'&database=' + database_name,
@@ -132,14 +131,14 @@
 			    },
 			 		headers: {"cartodbclient":"true"},
 			    success: function(data) {
-			 			var arrived = new Date();
+						$('span.blablabla').hide();
 			      $('div.sql_console p.errors').fadeOut();
 			      $('div.sql_console span h3').html('<strong>'+data.total_rows+' results</strong>');
 			      rows = data.rows;
 			 			total = data.total_rows;
 			      cell_size = 100;
 			      last_cell_size = 100;
-			      methods.drawQueryColumns(rows,total,arrived-now);
+			      methods.drawQueryColumns(rows,total,data.time);
 			      methods.drawQueryRows(rows,direction,actualPage);
 			      $(document).unbind('arrived');
 			    },
@@ -154,8 +153,9 @@
 				      msg = msg.substr(0,msg.length-2);
 						} catch(e) {
 				      msg = "Internal server error";
+							$('span.blablabla').fadeIn().delay(10000).fadeOut();
 						}
-						$('div.sql_window p.errors').text(msg).stop().fadeIn().delay(10000).fadeOut();
+						$('div.sql_window p.errors').html(msg).stop().fadeIn().delay(10000).fadeOut();
 			      methods.drawQueryColumns([]);
 			      $(document).unbind('arrived');
 			    }
@@ -266,7 +266,7 @@
 	      headers = {};
 	
 				$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-				$('span.query p').text('This query took '+time/1000+' seconds');
+				$('span.query p').text('This query took '+time+' seconds');
         $.each(data[0],function(i,ele){
 					switch (i) {
 						case "the_geom": type = 'Geometry'; break;

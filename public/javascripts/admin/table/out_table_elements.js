@@ -141,6 +141,7 @@
 		        '<span class="bottom">'+
 		          '<a href="#apply" class="try_query">Apply query</a>'+
 		          '<a href="#clear" class="clear_table">Clear view</a>'+
+							'<span class="blablabla"></span>'+
 		          '<p class="errors">Your query is not correct, try again with another ;)</p>'+
 		        '</span>'+
 					'</div>'+

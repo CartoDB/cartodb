@@ -214,6 +214,7 @@ div.sql_window span.bottom a.try_query:hover { background:linear-gradient(-90deg
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); background:#CACBCE\9; cursor:pointer;}
 div.sql_window span.bottom p.errors {float:left; display:none; width:auto; padding:5px 10px; margin:3px 0 0 0; background:red; color:white; border:1px solid red; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;
   font:normal 11px Arial; text-shadow:none}
+div.sql_window span.bottom span.blablabla {position:absolute; display:none; bottom:-7px; right:160px; width:40px; height:30px; background:url('/images/admin/table/blat.gif') no-repeat 0 0}
 div.sql_window .ui-resizable-handle {position:absolute; right:4px; bottom:4px; width:10px; height:10px; background:url('/images/admin/table/resize.png') no-repeat 0 0}
 
 

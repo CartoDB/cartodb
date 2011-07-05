@@ -124,6 +124,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.16)
+    minitest (2.0.2)
     mocha (0.9.12)
     multi_json (0.0.5)
     net-scp (1.0.4)
@@ -256,6 +257,7 @@ DEPENDENCIES
   email_spec
   htmlentities
   launchy
+  minitest (~> 2.0.2)
   mocha
   nofxx-georuby
   oauth

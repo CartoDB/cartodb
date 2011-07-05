@@ -40,4 +40,5 @@ group :test, :development do
   gem "timecop"
   gem "email_spec"
   gem "rack-reverse-proxy", "~> 0.4.1", :require => 'rack/reverse_proxy'
+  gem 'minitest', '~> 2.0.2'
 end

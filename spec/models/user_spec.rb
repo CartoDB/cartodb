@@ -177,7 +177,7 @@ describe User do
     api_key.api_key.should == key.api_key
   end
 
-  it "should only be accessed by the public user if its status is public" do
+  it "should be accessed by the public user independently of the table status" do
     user = create_user
     table = new_table
     table.user_id = user.id
@@ -187,7 +187,7 @@ describe User do
 
     lambda {
       user.in_database(:as => :public_user).run("select * from #{table.name}")
-    }.should raise_error(Sequel::DatabaseError)
+    }.should_not raise_error(Sequel::DatabaseError)
 
     table.privacy = "PUBLIC"
     table.save

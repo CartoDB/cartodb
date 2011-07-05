@@ -9,7 +9,6 @@ feature "Dashboard", %q{
 } do
 
   scenario "Login and visit my dashboard" do
-    false.should be_true # DELETEME
     user = create_user
     the_other = create_user
     t = Time.now - 6.minutes
@@ -200,7 +199,7 @@ feature "Dashboard", %q{
         
     page.should have_content("1 table in your account")
 
-    page.should have_css("ul li:eq(1) a", :text => "View all tables")
+    page.should have_css("ul li:eq(1) a", :text => "view all tables")
     page.should have_css("ul li:eq(2) a span", :text => "personal")
     page.should have_css("ul li a span", :text => "4sq")
     page.should have_css("ul li a span", :text => "feed aggregator")

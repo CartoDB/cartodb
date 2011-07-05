@@ -41,6 +41,12 @@
           $(this).parent().addClass('selected');
           (create_type==0)?create_type++:create_type--;
         }
+				
+				if ($(this).closest('li').index()==1) {
+					$('div.create_window span.bottom input').addClass('disabled');
+				} else {
+					$('div.create_window span.bottom input').removeClass('disabled');
+				}
       });
       
 

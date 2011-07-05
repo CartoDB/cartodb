@@ -136,7 +136,7 @@
 	      	'<a href="#close_this_view" class="close">close this view</a>'+
 					'<div class="inner">'+
 	       		'<h3>Add your custom SQL query</h3>'+
-						'<p>You can free move or close this window to watch the table</p>'+
+						'<p>You can free move or close this window to watch the table. Protip: Ctrl+RETURN for lauching your query</p>'+
 		        '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
 		        '<span class="bottom">'+
 		          '<a href="#apply" class="try_query">Apply query</a>'+

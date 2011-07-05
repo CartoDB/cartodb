@@ -922,7 +922,7 @@
 
         //For paginating data
         var end = total <= ((actualPage+1)*defaults.resultsPerPage);
-        
+
         if (!loading && enabled) {
           var difference = $(document).height() - $(window).height();
           if ($(window).scrollTop()==difference && !end && maxPage!=-1) {

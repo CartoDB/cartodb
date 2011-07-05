@@ -19,14 +19,6 @@ tab "cartodb app server" do
   run "rails s"
 end
 
-tab "cartodb api server" do
-  run "echo 'Hello developer, this is cartodb api server'"
-  run "cd $CARTODB_PATH"
-  run "echo 'Waiting 30 secs, you can wank meanwhile'"
-  run "sleep 30"
-  run "rails s -p 3001"
-end
-
 tab "cartodb resque server" do
   run "cd $CARTODB_PATH"
   run "sleep 30"
@@ -36,4 +28,9 @@ end
 tab "cartodb textmate" do
   run "cd $CARTODB_PATH"
   run "mate ."
+end
+
+tab "cartodb sql api" do
+  run "cd $CARTODB_SQL_PATH"
+  run "node cluster development"
 end

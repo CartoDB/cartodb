@@ -78,6 +78,9 @@ class Table < Sequel::Model(:user_tables)
     
     super
   rescue => e
+    puts "======================"
+    puts e.backtrace
+    puts "======================"
     unless self.name.blank?
       $tables_metadata.del key
       owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
@@ -173,9 +176,9 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database.schema(self.name, options.slice(:reload)).each do |column| 
       next if column[0] == THE_GEOM_WEBMERCATOR
       col = [ column[0], 
-        column[0] == THE_GEOM ? "geometry" : (options[:cartodb_types] == false) ? column[1][:db_type] : column[1][:db_type].convert_to_cartodb_type, 
-        column[0] == THE_GEOM ? "geometry" : nil, 
-        column[0] == THE_GEOM ? the_geom_type : nil
+        (options[:cartodb_types] == false) ? column[1][:db_type] : column[1][:db_type].convert_to_cartodb_type, 
+        column[1][:db_type] == "geometry" ? "geometry" : nil, 
+        column[1][:db_type] == "geometry" ? the_geom_type : nil
       ].compact
       
       # Make sensible sorting for jamon 
@@ -570,7 +573,13 @@ TRIGGER
   def set_the_geom_column!(type = nil)
     if type.nil?
       if self.schema(:reload => true).flatten.include?(THE_GEOM)
-        type = owner.in_database["select GeometryType(the_geom) FROM #{self.name} where the_geom is not null limit 1"].first[:geometrytype]
+        if self.schema.select{ |k| k[0] == THE_GEOM }.first[1] == "geometry"
+          if row = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{self.name} where #{THE_GEOM} is not null limit 1"].first
+            type = row[:geometrytype]
+          end
+        else
+          owner.in_database.rename_column(self.name.to_sym, THE_GEOM, :the_geom_str)
+        end
       end
     end
     return if type.nil?

@@ -26,7 +26,7 @@
         'start',{
           getDataUrl: global_api_url + 'tables/',
           resultsPerPage: 20,
-          reuseResults: 600,
+          reuseResults: 100,
           total: 5000,
           query: "SELECT * FROM "+ table_name,
           order_by: 'cartodb_id',

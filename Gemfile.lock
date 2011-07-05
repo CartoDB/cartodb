@@ -1,4 +1,10 @@
 GIT
+  remote: git://github.com/dblock/rspec-core.git
+  revision: 67520e684b8248f9fd7858cf913f0fb8341884c8
+  specs:
+    rspec-core (2.6.4)
+
+GIT
   remote: git://github.com/ferblape/sequel-rails.git
   revision: a283527d53895d6189f879bd96d2500b609b82e7
   specs:
@@ -186,7 +192,6 @@ GEM
       rspec-core (~> 2.6.0)
       rspec-expectations (~> 2.6.0)
       rspec-mocks (~> 2.6.0)
-    rspec-core (2.6.0)
     rspec-expectations (2.6.0)
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.6.0)
@@ -272,6 +277,7 @@ DEPENDENCIES
   rgeo
   rgeo-geojson
   rspec
+  rspec-core!
   rspec-rails
   ruby-debug19
   sequel-rails!

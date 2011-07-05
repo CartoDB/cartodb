@@ -814,7 +814,6 @@
 			setTimeout(function(){$('body').css('background-position','0 -160px');},300);
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
-			$('span.advanced_options li:eq(0)').addClass('disabled');
 		} else {
 			$.favicon('/favicon/blue_32x32.png');
 			$('body').removeClass('query');
@@ -823,7 +822,6 @@
 			setTimeout(function(){$('body').css('background-position','0 0');},300);
 			$('section.subheader').animate({backgroundColor:'#2D3451'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -58px');},300);
-			$('span.advanced_options li:eq(0)').removeClass('disabled');
 		}
 	}
   

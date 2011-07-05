@@ -33,6 +33,7 @@ group :test, :development do
   gem "steak"
   gem "rspec"
   gem "rspec-rails"
+  gem "rspec-core", :git => "git://github.com/dblock/rspec-core.git"
   gem "launchy"
   gem "capybara"
   gem "webrat"

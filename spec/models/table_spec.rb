@@ -994,4 +994,14 @@ describe Table do
     table6 = create_table :name => nil, :user_id => user.id
   end
   
+  it "should import a CSV file with a the_geom column in GeoJSON format" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/cp_vizzuality_export.csv", "text/csv")
+    table.save
+
+    table.rows_counted.should == 19235
+  end
+  
 end

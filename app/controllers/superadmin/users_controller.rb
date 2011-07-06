@@ -47,6 +47,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       end
       @user.admin    = attributes[:admin]
       @user.enable attributes[:enabled]
+      @user.map_enabled = attributes[:map_enabled]
       if @user.save
         @user.setup_user
         Resque.enqueue(Resque::Mailer::User::InvitationSent, @user, request.protocol, request.host_with_port) if @user.was_disabled? && @user.enabled?

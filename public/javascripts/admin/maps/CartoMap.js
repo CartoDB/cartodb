@@ -339,19 +339,19 @@
       var me = this;
       
       var api_key = "",
-					query = "";
+					query_url = "";
 					
 			if (this.query_mode) {
-				query = editor.getValue();
+				query_url = global_api_url+'?sql='+ escape(editor.getValue()) + '&database=' + database_name;
 				var now = new Date();
 			} else {
-				query = "select * from" + table_name;
+				query_url = global_api_url+'?sql='+ escape("select * from " + table_name) + '&database=' + database_name;
 			}
+
 
       $.ajax({
         method: 'GET',
-        url: global_api_url,
-        data: ({api_key: api_key, sql: query}),
+        url: query_url,
         headers: {'cartodbclient':true},
         success: function(result) {
 					if (me.query_mode) {
@@ -393,6 +393,7 @@
       var me = this;
       this.bounds_ = new google.maps.LatLngBounds();
       asyncDrawing(points);
+
       
       function asyncDrawing(rest) {
         if (_.size(rest)>0) {

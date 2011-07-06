@@ -2,9 +2,19 @@
 		////////////////////////////////////////////////////////////////////////////////
     //																																						//
 		//  	 CLASS TO MANAGE ALL THE STUFF IN THE MAP (variable -> carto_map)			  //
+		//     Actually, this is map of the application, and everything that					//
+		//		 occurs on/over/with/in the map will be manage here.										//
+		//		 																																				//
+		//		 Overlays:  																														//
+		//			 .selection_area_ 																										//
+		//			 .info_window_    																										//					
+    //			 .tooltip_                                                         		//
+		//       .delete_windsow_                                                  		//
+    //       .map_canvas_                                                      		//
 		//																																						//
-    ////////////////////////////////////////////////////////////////////////////////
-		
+		////////////////////////////////////////////////////////////////////////////////
+
+
 
     function CartoMap (latlng,zoom) {
       this.center_ = latlng;                          // Center of the map at the beginning

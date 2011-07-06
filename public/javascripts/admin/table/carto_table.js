@@ -64,7 +64,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  GET DATA
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    getData : function(options, direction) {
+    getData : function(options, direction, new_query) {
 			//Pagination AJAX adding rows
 			var petition_pages;
 			if (direction=="next") {
@@ -84,16 +84,16 @@
 			var columns,total_rows,rows;
 			var count = 0;
 
-			$(document).bind('arrived',function(){
-			  count++;
-			  if (count==2) {
-			    $(document).unbind('arrived');
-			    startTable();
-			  }
-			});
-
 
 			if (!query_mode) {
+				$(document).bind('arrived',function(){
+				  count++;
+				  if (count==2) {
+				    $(document).unbind('arrived');
+				    startTable();
+				  }
+				});
+				
 			  $.ajax({
 			    method: "GET",
 			    url: options.getDataUrl + table_name,
@@ -123,6 +123,39 @@
 			  });
 			} else {
 				setAppStatus(); // Change app status depending on query mode
+				
+				$(document).bind('arrived',function(){
+				  count++;
+				  if (count==2) {
+				    $(document).unbind('arrived');
+				    methods.drawQueryColumns(rows,total,time,new_query);
+			      methods.drawQueryRows(rows,direction,actualPage);
+				  }
+				});
+				
+				var time;
+
+				if (new_query!=undefined) {
+					$.ajax({
+				    method: "GET",
+				    url: global_api_url+'?sql='+escape('SELECT count(*) FROM ('+editor.getValue()+') as count')+'&database=' + database_name,
+				 		headers: {"cartodbclient":"true"},
+				    success: function(data) {
+							total = data.rows[0].count;
+							defaults.total_rows = data.rows[0].count;
+							$('div.sql_console span h3').html('<strong>'+total+' results</strong>');
+							$(document).trigger('arrived');
+				    },
+				    error: function(e) {
+				      $(document).unbind('arrived');
+				    }
+				  });
+				} else {
+					$(document).trigger('arrived');
+				}
+
+				
+				
 			  $.ajax({
 			    method: "GET",
 			    url: global_api_url+'?sql='+escape(editor.getValue())+'&database=' + database_name,
@@ -134,14 +167,9 @@
 			    success: function(data) {
 						$('span.blablabla').hide();
 			      $('div.sql_console p.errors').fadeOut();
-			      $('div.sql_console span h3').html('<strong>'+data.total_rows+' results</strong>');
+						time = data.time;
 			      rows = data.rows;
-			 			total = data.total_rows;
-			      cell_size = 100;
-			      last_cell_size = 100;
-			      methods.drawQueryColumns(rows,total,data.time);
-			      methods.drawQueryRows(rows,direction,actualPage);
-			      $(document).unbind('arrived');
+			      $(document).trigger('arrived');
 			    },
 			    error: function(e) {
 						try {
@@ -262,44 +290,46 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW COLUMNS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    drawQueryColumns: function(data,total,time) {
+    drawQueryColumns: function(data,total,time,new_query) {
 			
       if (data.length>0) {
-	      //Draw the columns headers
-	      var thead = '<thead style="height:91px"><tr><th class="first"><div></div></th>';
-	      headers = {};
-	
-				$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-				$('span.query p').text('This query took '+time+' seconds');
-        $.each(data[0],function(i,ele){
-					switch (i) {
-						case "the_geom": type = 'Geometry'; break;
-						case "created_at": type = 'Date'; break;
-						case "updated_at": type = 'Date'; break;
-						case "cartodb_id": type = 'Number'; break;
-						default: type = 'Unknown';
-					}
+				if (new_query) {
+					//Draw the columns headers
+		      var thead = '<thead style="height:91px"><tr><th class="first"><div></div></th>';
+		      headers = {};
 
-          thead += 	'<th>'+
-                     	'<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
-                      	'<span class="long">'+
-                     			'<h3 class="static">'+i+'</h3>'+
-													((i=="the_geom")?'<p class="geo disabled">geo</p':'')+
-                      	'</span>'+
-												'<p class="long">'+
-                     			'<a class="static">'+type+'</a>'+
-                      	'</p>'+
-												'<a class="options disabled">options</a>'+
-                     	'</div>'+
-                   	'</th>';
-				});
-					
-				thead += "</tr></thead>";
-				$(table).append(thead);
-		    
-				$(table).find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear</a></p></div>');
-				var p_left = ($(window).width() - $('div.stickies p').width())/2;
-				$('div.stickies p').css({'margin-left':p_left+'px'});
+					$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+					$('span.query p').text('This query took '+time+' seconds');
+	        $.each(data[0],function(i,ele){
+						switch (i) {
+							case "the_geom": type = 'Geometry'; break;
+							case "created_at": type = 'Date'; break;
+							case "updated_at": type = 'Date'; break;
+							case "cartodb_id": type = 'Number'; break;
+							default: type = 'Unknown';
+						}
+
+	          thead += 	'<th>'+
+	                     	'<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
+	                      	'<span class="long">'+
+	                     			'<h3 class="static">'+i+'</h3>'+
+														((i=="the_geom")?'<p class="geo disabled">geo</p':'')+
+	                      	'</span>'+
+													'<p class="long">'+
+	                     			'<a class="static">'+type+'</a>'+
+	                      	'</p>'+
+													'<a class="options disabled">options</a>'+
+	                     	'</div>'+
+	                   	'</th>';
+					});
+
+					thead += "</tr></thead>";
+					$(table).append(thead);
+
+					$(table).find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear</a></p></div>');
+					var p_left = ($(window).width() - $('div.stickies p').width())/2;
+					$('div.stickies p').css({'margin-left':p_left+'px'});
+				}
       } else {
 				$('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
 				$('span.query p').text('');
@@ -2573,8 +2603,9 @@
     refreshTable: function(position) {
 			query_mode = ($('body').attr('query_mode') === "true");
 			$('body').attr('view_mode','table');
-			
+			var new_query = undefined;
       loading = true;
+
       if (position!='') {
         // Reset pages position
         minPage = 0;
@@ -2584,12 +2615,13 @@
         $('div.loading_previous').hide();
         $('div.loading_next').hide();
         previous_scroll = $(document).scrollTop();
+				new_query = true;
       }
       $(table).children('thead').remove();
       $(table).children('tbody').remove();
       $(document).scrollTop(0);
       $('div.table_position').removeClass('end');
-      methods.getData(defaults, position);
+      methods.getData(defaults, position, new_query);
       enabled = true;
     },
     

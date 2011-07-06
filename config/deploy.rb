@@ -1,3 +1,6 @@
+puts "This script is no longer usable for deploy, is still here temporarily just in case we have to force a deploy on the old cartodb.com"
+exit 1
+
 require 'capistrano/ext/multistage'
 
 set :stages, %w(staging production)
@@ -20,7 +23,7 @@ ssh_options[:keys] = [File.join(ENV["HOME"], ".ec2", "id-vizzuality")]
 set :keep_releases, 5
 
 set :appserver_staging, '184.73.254.217'
-set :appserver_production, '184.73.254.217'
+#set :appserver_production, '184.73.254.217'
 set :user,  'ubuntu'
 
 set(:deploy_to){

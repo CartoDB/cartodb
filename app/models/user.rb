@@ -7,7 +7,7 @@ class User < Sequel::Model
   plugin :validation_helpers
 
   self.raise_on_save_failure = false
-  set_allowed_columns :email
+  set_allowed_columns :email, :map_enabled
   plugin :validation_helpers
 
   attr_reader :password

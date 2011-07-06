@@ -27,6 +27,7 @@
           <span>Has administrator role</span><br />
           <% end %>
           <span><%= @user.enabled ? 'Enabled' : 'Disabled' %> user</span>
+          <span><%= @user.map_enabled ? 'Map tab enabled' : 'Map tab disabled' %></span>
           <%= link_to 'Remove user', superadmin_user_path(@user), :confirm => 'Are you sure?', :method => :delete, :class=>"remove" %>
         </div>
         <div class="bottom_white_medium"></div>

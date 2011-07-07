@@ -345,7 +345,7 @@
 				query_url = global_api_url+'?sql='+ escape(editor.getValue()) + '&database=' + database_name;
 				var now = new Date();
 			} else {
-				query_url = global_api_url+'?sql='+ escape("select * from " + table_name) + '&database=' + database_name;
+				query_url = global_api_url+'?sql='+ escape("select *,ST_AsGeoJSON(the_geom) as coordinates_ from " + table_name) + '&database=' + database_name;
 			}
 
 
@@ -393,19 +393,18 @@
       var me = this;
       this.bounds_ = new google.maps.LatLngBounds();
       asyncDrawing(points);
-
       
       function asyncDrawing(rest) {
         if (_.size(rest)>0) {
 					var info = _.first(rest);
-
 					// Get the_geom
-					if (info.the_geom!=undefined) {
-						var geom = $.parseJSON(info.the_geom);
+					if (info.coordinates_!=undefined) {
+						var geom = $.parseJSON(info.coordinates_);
+						
 						if (geom.type == "Point") {
 		          var occ_id = info.cartodb_id;
 		          var latlng = new google.maps.LatLng(geom.coordinates[1],geom.coordinates[0]);
-							var marker = me.addMarker(latlng, _.first(rest), false);
+							var marker = me.addMarker(latlng, info, false);
 		          me.points_[occ_id] = marker;
 		          me.bounds_.extend(latlng);
 						}
@@ -694,7 +693,12 @@
         },
         error: function(e, textStatus) {
           try {
-            requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
+						var msg = $.parseJSON(e.responseText).errors[0].error_message;
+						if (msg == "Invalid rows: the_geom") {
+	            requests_queue.responseRequest(requestId,'error','First georeference your table');
+						} else {
+	            requests_queue.responseRequest(requestId,'error',msg);
+						}
           } catch (e) {
             requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
           }

@@ -35,7 +35,8 @@
             <p>Please <a href="mailto:wadus@cartodb.com">send us</a> your questions or requests!</p>
           </span>
           <% else %>
-            <p>You have done <strong><%= pluralize(number_with_delimiter(CartoDB::QueriesThreshold.get(current_user.id, Date.today.strftime("%Y-%m-%d")).to_i),'request','requests') %></strong> this month<% if (max_request_in_a_day!=0) %>, with a max of <strong><%= max_request_in_a_day %></strong> in a day<% end %>.</p>
+            <% debugger %>
+            <p>You have done <strong><%= pluralize(number_with_delimiter(CartoDB::QueriesThreshold.get(current_user.id, Date.today.strftime("%Y-%m")).to_i),'request','requests') %></strong> this month<% if (max_request_in_a_day!=0) %>, with a max of <strong><%= max_request_in_a_day %></strong> in a day<% end %>.</p>
             <img src="https://chart.googleapis.com/chart?chxr=0,6.667,100&chxs=0,676767,0,0,_,676767|1,676767,0,0,_,676767&chxt=x,y&chbh=37,1,1&chs=849x60&cht=bvg&chco=<%= colors_series_in_the_last_20_days %>&chd=t:<%= requests_number_in_the_last_20_days %>&chp=0.033&chds=0,<%= max_request_in_a_day %>" width="849" height="60" alt="Requests stats" />
           <% end %>
         </div>

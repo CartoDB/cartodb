@@ -1,12 +1,22 @@
 module CartoDB
+
+  def self.domain
+    @@domain ||= if Rails.env.production?
+      `hostname -f`.strip
+    elsif Rails.env.development?
+      "vizzuality.localhost.lan"
+    else
+      "vizzuality.testhost.lan"      
+    end
+  end
   
   def self.hostname
     @@hostname ||= if Rails.env.production?
-      'https://' + `hostname -f`.strip
+      "https://#{domain}"
     elsif Rails.env.development?
-      "http://vizzuality.localhost.lan:3000"
+      "http://#{domain}:3000"
     else
-      "http://vizzuality.testhost.lan:53716"      
+      "http://#{domain}:53716"      
     end
   end
   

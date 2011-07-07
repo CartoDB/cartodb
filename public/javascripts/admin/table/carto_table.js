@@ -926,7 +926,7 @@
       
       $(document).scroll(function(ev) {
         stopPropagation(ev);
-        
+
         //For moving thead when scrolling
         if ($(document).scrollTop()>58) {
           $('section.subheader').css('top','-3px');
@@ -1302,12 +1302,17 @@
             
             //Show tooltip about editing cell
             if (first_double_click) {
+							var initial_top = $(target).closest('tr').position().top;
               var initial_left = $(target).closest('td').position().left;
               var cell_width = $(target).closest('td').width();
-              $('div.explain_tooltip').css({top:initial_x-45+'px',left:initial_left+(cell_width/2)-55+'px'});
-              $('div.explain_tooltip').stop(true).delay(100).fadeIn().delay(4000).fadeOut();
+              // If click on the first or second row
+							if (initial_top<100) { 
+								$('div.explain_tooltip').addClass('down').css({top:initial_x+'px',left:initial_left+(cell_width/2)-55+'px'});
+              } else {
+								$('div.explain_tooltip').removeClass('down').css({top:initial_x-45+'px',left:initial_left+(cell_width/2)-55+'px'});
+							}
+							$('div.explain_tooltip').hide().stop(true).fadeIn().delay(4000).fadeOut();
             }
-            
             
             if (event.preventDefault) {
               event.preventDefault();
@@ -1329,6 +1334,7 @@
               var current_x = current_row.position().top;
               $(table).children('tbody').children('tr').removeClass('selecting');
               current_row.addClass('selecting');
+							
               var find = false;
               var cursor = first_row;
       

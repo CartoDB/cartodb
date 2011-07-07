@@ -178,9 +178,11 @@ div.table_position div.change_type_column a.button:hover {background:linear-grad
 
 /*TABLE TOOLTIP*/
 div.table_position div.explain_tooltip {position:absolute; display:none; top:60px; left:15px; }
-div.table_position div.explain_tooltip p {width:90px; padding:8px 10px; background:rgba(0,0,0,0.7); z-index:20; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 12px Arial; color:white; text-align:center;
+div.table_position div.explain_tooltip p {position:relative; width:90px; padding:8px 10px; background:rgba(0,0,0,0.7); z-index:20; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; font:normal 12px Arial; color:white; text-align:center;
   line-height:14px;}
 div.table_position div.explain_tooltip span.arrow {position:absolute; bottom:-10px; left:46px; width:0; height:0; margin:20px 0 0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:10px solid rgba(0,0,0,0.7);}
+div.table_position div.explain_tooltip.down p {margin:30px 0 0 0!important;}
+div.table_position div.explain_tooltip.down span.arrow {top:0!important; border-top:0; border-bottom:10px solid rgba(0,0,0,0.7)}
 
 
 /************************************EDIT FIELDS************************************/

@@ -49,4 +49,9 @@ CartoDB::Application.configure do
 
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
+
+  config.middleware.use ExceptionNotifier,
+    :email_prefix => "[#{CartoDB.hostname}] ",
+    :sender_address => %{"CartoDB Notifier" <notifier@cartodb.com>},
+    :exception_recipients => %w{ alvarobp@vizzuality.com }
 end

@@ -1123,8 +1123,6 @@
 							if (type=="polygon" || type=="point" || type=="line" || type=="multipolygon" && !_.isEmpty(json)) {
 								var json = $.parseJSON(data.value);
 								type = json.type.toLowerCase();
-							} else if (type=="geometry" && _.isEmpty(json)) {
-								type=(type=="point")'point':'free';
 							}
 							
 

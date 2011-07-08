@@ -107,6 +107,7 @@ GEM
       rspec (~> 2.0)
     erubis (2.6.6)
       abstract (>= 1.0.0)
+    exception_notification (2.4.1)
     fastthread (1.0.7)
     ffi (1.0.7)
       rake (>= 0.8.7)
@@ -260,6 +261,7 @@ DEPENDENCIES
   capybara-zombie!
   cartodb-importer!
   email_spec
+  exception_notification
   htmlentities
   launchy
   minitest (~> 2.0.2)

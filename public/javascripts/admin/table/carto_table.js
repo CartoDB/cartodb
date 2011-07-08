@@ -1117,8 +1117,17 @@
                 $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
               }
 
-              
+
               var type = headers[data.column];
+							
+							if (type=="polygon" || type=="point" || type=="line" || type=="multipolygon" && !_.isEmpty(json)) {
+								var json = $.parseJSON(data.value);
+								type = json.type.toLowerCase();
+							} else if (type=="geometry" && _.isEmpty(json)) {
+								type=(type=="point")'point':'free';
+							}
+							
+
               $('div.edit_cell div.free').hide();
               $('div.edit_cell div.boolean').hide();
               $('div.edit_cell div.date').hide();
@@ -1307,7 +1316,7 @@
               var cell_width = $(target).closest('td').width();
               // If click on the first or second row
 							if (initial_top<100) { 
-								$('div.explain_tooltip').addClass('down').css({top:initial_x+'px',left:initial_left+(cell_width/2)-55+'px'});
+								$('div.explain_tooltip').addClass('down').css({top:initial_x+16+'px',left:initial_left+(cell_width/2)-55+'px'});
               } else {
 								$('div.explain_tooltip').removeClass('down').css({top:initial_x-45+'px',left:initial_left+(cell_width/2)-55+'px'});
 							}

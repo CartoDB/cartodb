@@ -300,7 +300,7 @@
 
 					$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
 					$('span.query p').text('This query took '+time+' seconds');
-	        $.each(data[0],function(i,ele){
+					_.eachRow(data[0],function(ele,i){
 						switch (i) {
 							case "the_geom": type = 'Geometry'; break;
 							case "created_at": type = 'Date'; break;
@@ -425,13 +425,13 @@
         var tbody = '';
       }
 
-
-      //Loop all the data
-      $.each(data, function(i,element){
+      _.each(data, function(element,i){
         tbody += '<tr><td class="first"><div></div></td>';
-    		for(var j in element){
-    			tbody += '<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+((element[j]==null)?'':element[j])+'</div></td>';
-    		}
+    		_.eachRow(element,function(ele,j){
+    			tbody += 	'<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+
+									 	' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') +
+									 	'>'+((element[j]==null)?'':element[j])+'</div></td>';
+    		});
         tbody += '</tr>';
       });
 

@@ -52,6 +52,6 @@ CartoDB::Application.configure do
 
   config.middleware.use ExceptionNotifier,
     :email_prefix => "[CartoDB] ",
-    :sender_address => %{"CartoDB Notifier" <notifier@cartodb.com>},
+    :sender_address => %{"CartoDB Notifier" <wadus@cartodb.com>},
     :exception_recipients => %w{ alvarobp@vizzuality.com }
 end

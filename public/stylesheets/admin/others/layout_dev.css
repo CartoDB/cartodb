@@ -17,36 +17,11 @@ div.section.subheader div.inner_subheader {margin:0 auto; width:900px;}
 div.section.subheader div.left {position:relative; float:left; width:auto; padding:12px 0 0 0;}
 div.section.subheader div.left ul.tables_list {float:left; width:auto; margin:0;}
 div.section.subheader div.left ul.tables_list li {float:left; width:auto; margin:0 10px 0 0;}
-div.section.subheader div.left ul.tables_list li a {float:left; height:13px; padding:8px 10px 9px 10px; font:normal 13px Arial; text-shadow:0 1px black; color:white; text-decoration:none;
-  -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #000000;
-  -moz-box-shadow:0 1px 0 0 #484E64; -webkit-box-shadow:0 1px 0 0 #484E64; box-shadow:0 1px 0 0 #484E64;
-  background:linear-gradient(-90deg, #1D283F, #0C101A);
-  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#1D283F), to(#0C101A));
-  background:-moz-linear-gradient(-90deg, #1D283F, #0C101A);
-  background: -o-linear-gradient(#1D283F,#0C101A);
-  background:#1D283F\9;
-}
-div.section.subheader div.left ul.tables_list li a:hover {
-  background:linear-gradient(-90deg, #0C101A, #1D283F);
-  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#0C101A), to(#1D283F));
-  background:-moz-linear-gradient(-90deg, #0C101A, #1D283F);
-  background: -o-linear-gradient(#0C101A,#1D283F);
-  background:#0C101A\9;
-}
-div.section.subheader div.left ul.tables_list li.selected a {color:#949BAB;
-  background:linear-gradient(-90deg, #0C101A, #1D283F);
-  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#0C101A), to(#1D283F));
-  background:-moz-linear-gradient(-90deg, #0C101A, #1D283F);
-  background: -o-linear-gradient(#0C101A,#1D283F);
-  background:#0C101A\9;
-}
-div.section.subheader div.left ul.tables_list li.selected a:hover {cursor:default;
-  background:linear-gradient(-90deg, #0C101A, #1D283F);
-  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#0C101A), to(#1D283F));
-  background:-moz-linear-gradient(-90deg, #0C101A, #1D283F);
-  background: -o-linear-gradient(#0C101A,#1D283F);
-  background:#0C101A\9;
-}
+div.section.subheader div.left ul.tables_list li a{float:left;height:13px;padding:8px 10px 9px 10px;font:normal 13px Arial;text-shadow:0 1px black;color:white;text-decoration:none;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;border:1px solid #000000;-moz-box-shadow:0 1px 0 0 #484E64;-webkit-box-shadow:0 1px 0 0 #484E64;box-shadow:0 1px 0 0 #484E64;background:linear-gradient(-90deg,#1D283F,#0C101A);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#1D283F),to(#0C101A));background:-moz-linear-gradient(-90deg,#1D283F,#0C101A);background:-o-linear-gradient(#1D283F,#0C101A);background:#1D283F\9;}
+div.section.subheader div.left ul.tables_list li a:hover{background:linear-gradient(-90deg,#0C101A,#1D283F);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#0C101A),to(#1D283F));background:-moz-linear-gradient(-90deg,#0C101A,#1D283F);background:-o-linear-gradient(#0C101A,#1D283F);background:#0C101A\9;}
+div.section.subheader div.left ul.tables_list li.selected a{color:#949BAB;background:linear-gradient(-90deg,#0C101A,#1D283F);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#0C101A),to(#1D283F));background:-moz-linear-gradient(-90deg,#0C101A,#1D283F);background:-o-linear-gradient(#0C101A,#1D283F);background:#0C101A\9;}
+div.section.subheader div.left ul.tables_list li.selected a:hover{cursor:default;background:linear-gradient(-90deg,#0C101A,#1D283F);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#0C101A),to(#1D283F));background:-moz-linear-gradient(-90deg,#0C101A,#1D283F);background:-o-linear-gradient(#0C101A,#1D283F);background:#0C101A\9;}
+
 
 div.section.subheader div.right {position:relative; float:right; width:auto; padding:18px 0 0 0; color:white!important;}
 div.section.subheader div.right p.settings {float:right;}

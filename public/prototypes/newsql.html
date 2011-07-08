@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en">
+  <head>
+    <meta charset=utf-8 />
+    <title>CartoDB - Documentation</title>
+    <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
+    <link href="/stylesheets/reset.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/admin/others/layout_dev.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/admin/others/sql_api.css" media="screen" rel="stylesheet" type="text/css" />
+    <script src="/javascripts/plugins/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  </head>
+  <body>
+    <div class="header">
+      <a class="logo" href="<%= CartoDB.hostname %>">CartoDB</a>
+      <ul>
+        <li><a href="<%= APP_CONFIG[:developers_host] %>">Developers</a></li>
+        <li><a href="http://cartodb.tumblr.com" target="_blank">Blog</a></li>
+        <li class="last"></li>
+      </ul>
+    </div>
+    <div class="section outer_content">
+      <div class="mesh1"></div>
+      <div class="mesh2"></div>
+      <div class="content">
+        <div class="top">
+          <ul class="tables_list">
+            <li class="selected"><a class="oth" href="/">Documentation</a></li>
+            <li><a class="oth" href="/galleries/">Gallery</a></li>
+          </ul>
+          <a class="get_key" href="<%= CartoDB.hostname %>/your_apps/oauth">GET YOUR API KEY</a>
+        </div>
+
+
+
+        <!-- NEW CODE -->
+        <div class="notebook">
+          <div class="top"></div>
+          <div class="middle">
+            <h1>it's just SQL</h1>
+            <p class="sub">The SQL API for CartoDB exposes the full query power of SQL to the CartoDB API user. It has been engineered for<br/>secure, high speed query response and also for highly concurrent access.</p>
+            <ul class="steps">
+              <li>
+                <h3>1. Authentication</h3>
+                <p>You must be authenticated to interact with your cartodb data. Take a look to <a href="#">how to do it</a>.</p>
+              </li>
+              <li>
+                <h3>2. Create a request</h3>
+                <p>This is an example of a typical request you can do throw our API.</p>
+                <div class="stickie">
+                  <span class="zeal left"></span>
+                  <span class="zeal right"></span>
+                  <p>http://user.cartodb.com/api?token=”you_token”&sql=”SELECT * FROM table_name”&rows_per_page=”100”&page=”0”</p>
+                </div>
+                <ul>
+                  <li>
+                    <label>oauth_token:</label>
+                    <p>Here is where your oauth token goes in your requests. <strong>(Required)</strong></p>
+                  </li>
+                  <li class="short">
+                    <label>sql:</label>
+                    <p>Your url encoded SQL statement <strong>(Required)</strong></p>
+                  </li>
+                  <li class="last">
+                    <label>rows_per_page and page</label>
+                    <p>Only if you want to paginate. Rows per page and page you want.</p>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <h3>3. Get your results</h3>
+                <p>You will get your results in a JSON file like <a href="">this one</a>, <a href="">this one</a> or <a href="">this one</a>.</p>
+              </li>
+            </ul>
+          </div>
+          <div class="bottom"></div>
+        </div>
+
+        <h2>So... learn more about our API</h2>
+
+        <div class="api_block">
+          <div class="top"></div>
+          <div class="middle">
+            <div class="left">
+              <h3>Authentication</h3>
+              <p><strong>API access is secured by SSL and oAuth</strong>. OAuth is an authentication protocol that allows users to approve application to act on their behalf without sharing their password. More information can be found at oauth.net or in the excellent Beginner’s Guide to <a href="#">OAuth</a> from Hueniverse.</p>
+              <p>For secure access to your application you will need to generate an API key on your API Keys page.</p>
+            </div>
+            <div class="right">
+              <h3>Next steps?</h3>
+              <ul>
+                <li><a href="#">Get all the rows of a table</a></li>
+                <li><a href="#">Create a new table</a></li>
+                <li><a href="#">Remove a row</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="bottom"></div>
+        </div>
+
+        <h2>Need examples? Take a look to the <a href="#">gallery</a>.</h2>
+
+        <!-- END NEW CODE -->
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="section prefooter">
+        <div class="block">
+          <h3>Latest from the blog</h3>
+          <h4><a href="http://blog.cartodb.com/post/4257185140">CartoDays: Hack with us for a day!</a></h4>
+          <p>Today we want to announce the launch of CartoDays!
+            CartoDB began life as an internal Vizzuality tool to take away the pain of online mapping and help... <a href="http://blog.cartodb.com/post/4257185140">Read more</a></p>
+        </div>
+        <div class="block">
+          <h3></h3>
+          <h4><a href="http://blog.cartodb.com/post/4062571877" >Welcome to CartoDB blog</a></h4>
+          <p>Hi all, We are very excited to start the new CartoDB blog. CartoDB is a a geospatial database on the cloud to help you develop location aware applications... <a href="http://blog.cartodb.com/post/4062571877">Read       more</a></p>
+        </div>
+      </div>
+      <div class="outer_footer">
+        <div class="section_footer">
+          <a class="logo" href="<%= CartoDB.hostname %>">CartoDB</a>
+          <div class="long">
+            <p class="rights">All rights reserved 2011. <a href="#" target="_blank">Contact us</a> / <a href="#" target="_blank">Give us your feedback</a> / <a href="#" target="_blank">Read the TOS</a></p>
+            <span class="poweredby">
+            <p class="vizzuality">A product by </p><a href="http://www.vizzuality.com" target="_blank">Vizzuality</a>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

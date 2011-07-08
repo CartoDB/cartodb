@@ -43,9 +43,9 @@ module CartoDB
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
 
-    ::Sequel.extension(:pagination)  
-    
-    # config.middleware.use CartoDB::ApiDocumentationServer  
+    ::Sequel.extension(:pagination)
+
+    # config.middleware.use CartoDB::ApiDocumentationServer
   end
 end
 

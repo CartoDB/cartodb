@@ -5,8 +5,6 @@ CartoDB::Application.routes.draw do
   get   '/logout' => 'sessions#destroy', :as => :logout
   match '/sessions/create' => 'sessions#create', :as => :create_session
 
-  resources :invitations, :only => [:create, :edit, :update]
-  match '/thanks' => 'invitations#thanks', :as => :thanks
   match '/limits' => 'home#limits', :as => :limits
   match '/status' => 'home#app_status'
 

@@ -3,7 +3,7 @@
     $(document).ready(function(){
       
       // Hide notification if it is opened
-      $('div.notification').delay(4000).fadeOut();
+      //$('div.notification').delay(4000).fadeOut();
       
       //Add fake password
       $('input#user_password').val('lalalala');
@@ -64,12 +64,22 @@
         bindESC();
       });
 
+
+			//Close notification
+      $('div.notification a.close').click(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        $('div.notification').fadeOut();
+      });
+
+
       //Delete account
       $('.disabled, .close').live('click', function(ev){
         ev.stopPropagation();
         ev.preventDefault();
         $('div.mamufas div.unlock_window').show();
         $('div.mamufas').fadeIn('fast');
+				bindESC();
       });
 
       // Show delete window
@@ -87,13 +97,7 @@
 	        showForget();
 				}
       });
-      
-      //Close notification
-      $('div.notification a.close_notification').click(function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
-        $('div.notification').fadeOut();
-      });
+     
     });
 
 

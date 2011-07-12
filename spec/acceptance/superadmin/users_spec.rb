@@ -49,7 +49,6 @@ feature "Superadmin's users administration" do
     fill_in 'Email', :with => 'fulano@example.com'
     fill_in 'Password', :with => 'fulanito'
     click_button 'Update User'
-    
     page.should have_content 'User updated successfully'
     page.should have_css('ul.users li a', :count => 6)
 
@@ -62,53 +61,6 @@ feature "Superadmin's users administration" do
     page.should have_content "Database name: cartodb_test_user_#{@admin_user.id}_db"
     page.should have_content 'Tables count: 0'
     page.should have_content 'Has administrator role'
-    page.should have_content 'Enabled user'
-
-  end
-
-  scenario "Admins can activate a disabled user" do
-    user = create_user :username => 'invitation@example.com',
-                       :email => 'invitation@example.com',
-                       :password => 'invitation@example.com',
-                       :enabled => false
-
-    log_in_as @admin_user
-
-    visit superadmin_path
-    page.should have_css('ul.users li a', :count => 7)
-
-    click_link 'invitation@example.com'
-
-    page.should have_content "Id: #{user.id}"
-    page.should have_content 'Username: invitation@example.com'
-    page.should have_content 'E-mail: invitation@example.com'
-    page.should have_content "Database name: "
-    page.should have_content 'Tables count: 0'
-    page.should have_no_content 'Has administrator role'
-    page.should have_content 'Disabled user'
-
-    click_link 'Edit user'
-    fill_in 'Username', :with => 'Fulano'
-    fill_in 'Email', :with => 'fulano@example.com'
-    fill_in 'Password', :with => 'fulanito'
-    check 'Enabled user'
-
-
-    expect {
-      click_button 'Update User'
-    }.to change{Resque.size("mailer")}.from(0).to(1)  
-
-    page.should have_content 'User updated successfully'
-    page.should have_css('ul.users li a', :count => 7)
-
-    click_link 'Fulano'
-
-    page.should have_content "Id: #{user.id}"
-    page.should have_content 'Username: Fulano'
-    page.should have_content 'E-mail: fulano@example.com'
-    page.should have_content "Database name: cartodb_test_user_#{user.id}_db"
-    page.should have_content 'Tables count: 0'
-    page.should have_no_content 'Has administrator role'
     page.should have_content 'Enabled user'
 
   end

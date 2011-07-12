@@ -287,6 +287,5 @@ DEPENDENCIES
   steak
   terminitor
   timecop
-  warden
   webrat
   yajl-ruby

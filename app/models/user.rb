@@ -29,7 +29,7 @@ class User < Sequel::Model
   ## Callbacks
   def after_create
     super
-    setup_user if enabled?
+    setup_user
   end
   #### End of Callbacks
   
@@ -155,14 +155,6 @@ class User < Sequel::Model
     User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin).first
   end
 
-  def enable(enabled_flag)
-    @was_disabled = self.disabled?
-    self.enabled = enabled_flag
-    if self.enabled
-      self.invite_token = self.class.make_token
-      self.invite_token_date = Time.now
-    end
-  end
 
   def enabled?
     self.enabled
@@ -170,29 +162,6 @@ class User < Sequel::Model
 
   def disabled?
     !self.enabled
-  end
-
-  def was_disabled?
-    @was_disabled
-  end
-
-  def self.new_from_email(email)
-    user = self.new
-    if email.present?
-      user.username              = email.split('@').first
-      user.email                 = email
-      user.password              = email
-      user.password_confirmation = email
-    end
-    user
-  end
-
-  def activate
-    return false unless valid?
-    self.invite_token = nil
-    self.invite_token_date = nil
-    self.enabled = true
-    save
   end
 
   def database_exists?

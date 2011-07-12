@@ -45,12 +45,10 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         @user.password = attributes[:password]
         @user.password_confirmation = attributes[:password]
       end
-      @user.admin    = attributes[:admin]
-      @user.enable attributes[:enabled]
+      @user.admin = attributes[:admin]
+      @user.enabled = attributes[:enabled]
       @user.map_enabled = attributes[:map_enabled]
       if @user.save
-        @user.setup_user
-        Resque.enqueue(Resque::Mailer::User::InvitationSent, @user, request.protocol, request.host_with_port) if @user.was_disabled? && @user.enabled?
         redirect_to superadmin_users_path, :flash => {:success => 'User updated successfully'}
       else
         render edit_superadmin_user_path(@user)

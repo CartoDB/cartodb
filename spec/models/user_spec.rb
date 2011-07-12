@@ -2,20 +2,11 @@ require 'spec_helper'
 
 describe User do
   
-  it "should not set up a new user until enabled" do
-    user = new_user :enabled => false
+  it "should set up a user after create" do
+    user = new_user
     user.save
-    user.should_not be_new
-
-    lambda {
-      user.in_database.test_connection.should == false
-    }.should raise_error
-
-    user.database_name.should be_nil
-    user.enable(true)
-    user.save
-    user.setup_user
     user.reload
+    user.should_not be_new
     user.in_database.test_connection.should == true
     user.database_name.should_not be_nil
   end

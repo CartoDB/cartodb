@@ -1,12 +1,20 @@
 module CartoDB
-
+  
+  def self.session_domain
+    case Rails.env
+    when "production" then ".cartodb.com"
+    when "development" then ".localhost.lan"
+    when "test" then ".testhost.lan"
+    end
+  end
+  
   def self.domain
     @@domain ||= if Rails.env.production?
       `hostname -f`.strip
     elsif Rails.env.development?
-      "vizzuality.localhost.lan"
+      "vizzuality#{session_domain}"
     else
-      "vizzuality.testhost.lan"      
+      "vizzuality#{session_domain}"      
     end
   end
   

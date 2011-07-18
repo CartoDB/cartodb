@@ -22,8 +22,6 @@ DESC
         if u.new?
           raise u.errors.inspect
         end
-        u.enable true
-        u.setup_user
       rescue
         puts $!
       end

@@ -6,11 +6,11 @@ end
 # Setup Session Serialization
 class Warden::SessionSerializer
   def serialize(user)
-    user.id
+    user.username
   end
 
-  def deserialize(user_id)
-    User.filter(:id => user_id).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin, :subdomain, :map_enabled).first
+  def deserialize(username)
+    User.filter(:username => username).select(:id,:email,:username,:tables_count,:crypted_password,:database_name,:admin, :subdomain, :map_enabled).first
   end
 end
 

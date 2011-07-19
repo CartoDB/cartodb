@@ -1,67 +1,47 @@
 class Superadmin::UsersController < Superadmin::SuperadminController
-  ssl_required :index, :show, :new, :create, :edit, :update, :destroy
-
-  before_filter :get_user, :only => [:show, :edit, :update, :destroy]
-
-  def index
-    @users = User.all
-  end
-
-  def show
-  end
-
-  def new
-    @user = User.new
-  end
-
+  respond_to :json
+  ssl_required
+  before_filter :get_user, :only => [:update, :destroy]
+  
   def create
-    if params[:user]
-      attributes = params[:user]
-      @user = User.new
+    # BEWARE. don't get clever. This is all explicit because of mass assignment limitations
+    @user = User.new
+
+    if attributes = params[:user]
       @user.username              = attributes[:username]
-      @user.email                 = attributes[:email]
+      @user.email                 = attributes[:email]   
       @user.password              = attributes[:password]
       @user.password_confirmation = attributes[:password]
-      @user.admin                 = attributes[:admin]
+      @user.admin                 = attributes[:admin]   
       @user.subdomain             = attributes[:subdomain]
       @user.enabled               = true
-      if @user.save
-        redirect_to superadmin_users_path, :flash => {:success => 'User created successfully'}
-      else
-        render new_superadmin_user_path
-      end
     end
-  end
-
-  def edit
+    
+    @user.save
+    debugger
+    respond_with(@user)
   end
 
   def update
-    if params[:user]
-      attributes = params[:user]
-      @user.username = attributes[:username]
-      @user.email    = attributes[:email]
+    if attributes = params[:user]
+      @user.username = attributes[:username] if attributes.has_key?(:username)
+      @user.email    = attributes[:email] if attributes.has_key?(:email)
       if attributes[:password].present?
-        @user.password = attributes[:password]
+        @user.password = attributes[:password] 
         @user.password_confirmation = attributes[:password]
       end
-      @user.admin = attributes[:admin]
-      @user.enabled = attributes[:enabled]
-      @user.map_enabled = attributes[:map_enabled]
-      if @user.save
-        redirect_to superadmin_users_path, :flash => {:success => 'User updated successfully'}
-      else
-        render edit_superadmin_user_path(@user)
-      end
+      @user.admin       = attributes[:admin] if attributes.has_key?(:admin)
+      @user.enabled     = attributes[:enabled] if attributes.has_key?(:enabled)
+      @user.map_enabled = attributes[:map_enabled] if attributes.has_key?(:map_enabled)
     end
+
+    @user.save
+    respond_with(@user)
   end
 
   def destroy
-    if @user.destroy
-      redirect_to superadmin_users_path, :flash => {:success => 'User removed successfully'}
-    else
-      render superadmin_user_path(@user)
-    end
+    @user.destroy
+    respond_with(@user)
   end
 
   def get_user

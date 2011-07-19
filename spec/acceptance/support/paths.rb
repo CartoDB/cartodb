@@ -15,10 +15,6 @@ module NavigationHelpers
     "/dashboard"
   end
 
-  def superadmin_path
-    "/superadmin"
-  end
-
   def api_query_url
     "#{api_url_prefix}/"
   end
@@ -71,6 +67,14 @@ module NavigationHelpers
     "#{api_url_prefix}/tables/#{table_identifier}/export/shp"
   end
 
+  def superadmin_users_path
+    "/superadmin/users"
+  end
+
+  def superadmin_user_path(user)
+    "/superadmin/users/#{user.id}"
+  end
+  
   private
 
   def api_url_prefix

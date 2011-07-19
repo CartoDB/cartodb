@@ -5,24 +5,36 @@ class User < Sequel::Model
   one_to_many :tokens, :class => :OauthToken
 
   plugin :validation_helpers
+  
+  # Make to_json use just the values attributes, otherwise we will return
+  # a json with a representation of the whole dataset
+  plugin :json_serializer
+  @json_serializer_opts = { 
+    :except => [ :crypted_password, :salt, :invite_token,
+      :invite_token_date, :admin, :enabled, :map_enabled ],
+    :naked => true # To avoid it adding a json_class value to the result
+  }
 
   self.raise_on_save_failure = false
-  set_allowed_columns :email, :map_enabled
+  set_allowed_columns :email, :map_enabled, :password_confirmation
   plugin :validation_helpers
 
   attr_reader :password
   attr_accessor :password_confirmation
 
+  self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
   ## Validations
   def validate
     super
+    validates_presence :username
     validates_presence :subdomain
     validates_unique :subdomain, :message => 'is already taken'
     validates_presence :email
     validates_unique :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
+    validates_presence :password if new?
     errors.add(:password, "doesn't match confirmation") if password.present? && ( password_confirmation.blank? || password != password_confirmation )
   end
 
@@ -243,5 +255,5 @@ class User < Sequel::Model
     puts "total queries: #{CartoDB::QueriesThreshold.get(self.id, "total")}"
     puts "==========================================="
   end
-
+  
 end

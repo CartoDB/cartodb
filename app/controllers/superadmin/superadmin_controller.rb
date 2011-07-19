@@ -1,8 +1,13 @@
-class Superadmin::SuperadminController < ApplicationController
-  before_filter :check_admin_user
+class Superadmin::SuperadminController < ActionController::Base
+  include SslRequirement
+  
+  before_filter :authenticate
 
-  def check_admin_user
-    redirect_to login_path and return unless logged_in?
-    redirect_to dashboard_path and return unless current_user.admin
+  protected
+
+  def authenticate
+    authenticate_or_request_with_http_basic do |username, password|
+      username == APP_CONFIG[:superadmin]["username"] && password == APP_CONFIG[:superadmin]["password"]
+    end
   end
 end

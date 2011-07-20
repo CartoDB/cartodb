@@ -690,7 +690,7 @@
             $('div.general_options').removeClass('table end').addClass('map');
             $(this).parent().addClass('selected');
             $('div.table_position').hide();
-						 $('body').attr('view_mode','map');
+						$('body').attr('view_mode','map');
             $(document).trigger('click');
             $('body').trigger('enabled',[false]);
             showMap();

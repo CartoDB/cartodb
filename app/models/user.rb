@@ -29,8 +29,6 @@ class User < Sequel::Model
   def validate
     super
     validates_presence :username
-    validates_presence :subdomain
-    validates_unique :subdomain, :message => 'is already taken'
     validates_presence :email
     validates_unique :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'

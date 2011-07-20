@@ -16,7 +16,6 @@ DESC
         u.email = ENV['EMAIL']
         u.password = ENV['PASSWORD']
         u.password_confirmation = ENV['PASSWORD']
-        u.subdomain = ENV['SUBDOMAIN']
         u.username = ENV['SUBDOMAIN']
         u.save
         if u.new?
@@ -35,7 +34,6 @@ DESC
       u.email = "admin@cartodb.com"
       u.password = password
       u.password_confirmation = password
-      u.subdomain = "admin"
       u.username = "admin"
       u.enabled = true
       u.admin = true

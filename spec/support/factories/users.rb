@@ -4,7 +4,6 @@ module CartoDB
       attributes = attributes.dup
       user = User.new
       user.username              = attributes[:username] || String.random(5)
-      user.subdomain             = user.username.downcase
       user.email                 = attributes[:email]    || String.random(5).downcase + '@' + String.random(5).downcase + '.com'
       user.password              = attributes[:password] || user.email.split('@').first
       user.password_confirmation = user.password

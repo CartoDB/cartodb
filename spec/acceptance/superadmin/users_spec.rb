@@ -37,10 +37,9 @@ feature "Superadmin's users administration" do
         response.status.should == 201
         response.body[:email].should == @user_atts[:email]
         response.body[:username].should == @user_atts[:username]
-        response.body[:subdomain].should == @user_atts[:subdomain]
         response.body.should_not have_key(:crypted_password)
         response.body.should_not have_key(:salt)
-        
+
         # Double check that the user has been created properly
         user = User.filter(:email => @user_atts[:email]).first
         user.should be_present
@@ -56,7 +55,6 @@ feature "Superadmin's users administration" do
         response.status.should == 201
         response.body[:email].should == @user_atts[:email]
         response.body[:username].should == @user_atts[:username]
-        response.body[:subdomain].should == @user_atts[:subdomain]
         response.body.should_not have_key(:crypted_password)
         response.body.should_not have_key(:salt)
         

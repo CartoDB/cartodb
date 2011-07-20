@@ -11,7 +11,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.username                = attributes[:username]
       @user.email                   = attributes[:email]   
       @user.admin                   = attributes[:admin]   
-      @user.subdomain               = attributes[:subdomain]
       @user.enabled                 = true
       if attributes[:password].present?
         @user.password              = attributes[:password]

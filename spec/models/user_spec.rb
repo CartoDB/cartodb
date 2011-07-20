@@ -27,7 +27,6 @@ describe User do
   it "should validate that password is present if record is new and crypted_password or salt are blank" do
     user = User.new
     user.username = "admin"
-    user.subdomain = "admin"
     user.email = "admin@example.com"
     
     user.valid?.should be_false

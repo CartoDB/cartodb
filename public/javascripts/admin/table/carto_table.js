@@ -800,15 +800,19 @@
         maxPage = Math.ceil(total / defaults.resultsPerPage) - 1;
         minPage = maxPage-1;
         actualPage = maxPage;
-  
+				defaults.mode = "asc";
+  			defaults.order_by = 'cartodb_id';
+
         $.ajax({
           method: "GET",
           url: defaults.getDataUrl+table_name+'/records',
-          headers: {"cartodbclient": true},
           data: {
             rows_per_page: defaults.resultsPerPage,
-            page: minPage+'..'+maxPage
+            page: minPage+'..'+maxPage,
+						mode: defaults.mode,
+						order_by: defaults.order_by
           },
+          headers: {"cartodbclient": true},
           success: function(data) {
             $(table).children('tbody').remove();
             methods.drawRows(defaults,data.rows,'next',actualPage);

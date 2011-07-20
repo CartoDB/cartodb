@@ -8,17 +8,21 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user = User.new
 
     if attributes = params[:user]
-      @user.username              = attributes[:username]
-      @user.email                 = attributes[:email]   
-      @user.password              = attributes[:password]
-      @user.password_confirmation = attributes[:password]
-      @user.admin                 = attributes[:admin]   
-      @user.subdomain             = attributes[:subdomain]
-      @user.enabled               = true
+      @user.username                = attributes[:username]
+      @user.email                   = attributes[:email]   
+      @user.admin                   = attributes[:admin]   
+      @user.subdomain               = attributes[:subdomain]
+      @user.enabled                 = true
+      if attributes[:password].present?
+        @user.password              = attributes[:password]
+        @user.password_confirmation = attributes[:password]
+      else
+        @user.crypted_password      = attributes[:crypted_password]
+        @user.salt                  = attributes[:salt]
+      end
     end
     
     @user.save
-    debugger
     respond_with(@user)
   end
 

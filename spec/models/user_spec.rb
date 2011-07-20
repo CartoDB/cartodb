@@ -24,6 +24,31 @@ describe User do
     User.authenticate('', '').should be_nil
   end
 
+  it "should validate that password is present if record is new and crypted_password or salt are blank" do
+    user = User.new
+    user.username = "admin"
+    user.subdomain = "admin"
+    user.email = "admin@example.com"
+    
+    user.valid?.should be_false
+    user.errors[:password].should be_present
+    
+    another_user = new_user(user.values.merge(:password => "admin123"))
+    user.crypted_password = another_user.crypted_password
+    user.salt = another_user.salt
+    user.valid?.should be_true
+    user.save
+    
+    # Let's ensure that crypted_password and salt does not change
+    user_check = User[user.id]
+    user_check.crypted_password.should == another_user.crypted_password
+    user_check.salt.should == another_user.salt
+    
+    user.password = nil
+    user.password_confirmation = nil
+    user.valid?.should be_true
+  end
+
   it "should have many tables" do
     user = create_user
     user.tables.should be_empty

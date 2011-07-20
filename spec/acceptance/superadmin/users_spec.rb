@@ -6,7 +6,8 @@ feature "Superadmin's users administration" do
 
   background do
     Capybara.current_driver = :rack_test
-    @user_atts = new_user.values.merge({:password => "this_is_a_password"})
+    @new_user = new_user(:password => "this_is_a_password")
+    @user_atts = @new_user.values
   end
 
   scenario "Http auth is needed" do
@@ -17,7 +18,7 @@ feature "Superadmin's users administration" do
 
   scenario "user create fail" do
     @user_atts[:email] = nil
-    
+
     basic_auth do
       post_json superadmin_users_path, { :user => @user_atts } do |response|
         response.status.should == 422
@@ -27,9 +28,12 @@ feature "Superadmin's users administration" do
     end
   end
 
-  scenario "user create success" do
+  scenario "user create with password success" do
+    @user_atts.delete(:crypted_password)
+    @user_atts.delete(:salt)
+    @user_atts.merge!(:password => "this_is_a_password")
     basic_auth do
-      post_json superadmin_users_path, { :user => @user_atts} do |response|
+      post_json superadmin_users_path, { :user => @user_atts } do |response|
         response.status.should == 201
         response.body[:email].should == @user_atts[:email]
         response.body[:username].should == @user_atts[:username]
@@ -41,10 +45,30 @@ feature "Superadmin's users administration" do
         user = User.filter(:email => @user_atts[:email]).first
         user.should be_present
         user.id.should == response.body[:id]
+        User.authenticate(user.username, "this_is_a_password").should == user
       end
     end
   end
-
+  
+  scenario "user create with crypted_password and salt success" do
+    basic_auth do
+      post_json superadmin_users_path, { :user => @user_atts } do |response|
+        response.status.should == 201
+        response.body[:email].should == @user_atts[:email]
+        response.body[:username].should == @user_atts[:username]
+        response.body[:subdomain].should == @user_atts[:subdomain]
+        response.body.should_not have_key(:crypted_password)
+        response.body.should_not have_key(:salt)
+        
+        # Double check that the user has been created properly
+        user = User.filter(:email => @user_atts[:email]).first
+        user.should be_present
+        user.id.should == response.body[:id]
+        User.authenticate(user.username, "this_is_a_password").should == user
+      end
+    end
+  end
+  
   scenario "user update fail" do
     user = create_user
     

@@ -34,7 +34,7 @@ class User < Sequel::Model
     validates_presence :email
     validates_unique :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
-    validates_presence :password if new?
+    validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
     errors.add(:password, "doesn't match confirmation") if password.present? && ( password_confirmation.blank? || password != password_confirmation )
   end
 

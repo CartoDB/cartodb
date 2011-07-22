@@ -1,5 +1,6 @@
 class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
+
   ssl_required
   before_filter :get_user, :only => [:update, :destroy]
   
@@ -32,6 +33,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       if attributes[:password].present?
         @user.password = attributes[:password] 
         @user.password_confirmation = attributes[:password]
+      else
+        @user.crypted_password      = attributes[:crypted_password]
+        @user.salt                  = attributes[:salt]
       end
       @user.admin       = attributes[:admin] if attributes.has_key?(:admin)
       @user.enabled     = attributes[:enabled] if attributes.has_key?(:enabled)

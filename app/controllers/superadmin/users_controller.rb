@@ -34,8 +34,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         @user.password = attributes[:password] 
         @user.password_confirmation = attributes[:password]
       else
-        @user.crypted_password      = attributes[:crypted_password]
-        @user.salt                  = attributes[:salt]
+        @user.crypted_password      = attributes[:crypted_password] if attributes.has_key?(:crypted_password)
+        @user.salt                  = attributes[:salt] if attributes.has_key?(:salt)
       end
       @user.admin       = attributes[:admin] if attributes.has_key?(:admin)
       @user.enabled     = attributes[:enabled] if attributes.has_key?(:enabled)

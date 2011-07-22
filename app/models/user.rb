@@ -44,7 +44,7 @@ class User < Sequel::Model
   #### End of Callbacks
   
   ## Authentication methods
-  AUTH_DIGEST = '999f2da2a5fd99c5af493af3daf22fde939c0e67'
+  AUTH_DIGEST = '47f940ec20a0993b5e9e4310461cc8a6a7fb84e3'
 
   def self.password_digest(password, salt)
     digest = AUTH_DIGEST

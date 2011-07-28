@@ -28,6 +28,10 @@ module CartoDB
     end
   end
   
+  def self.account_host
+    APP_CONFIG[:account_host] || domain
+  end
+  
   module API
     VERSION_1 = "v1"
   end

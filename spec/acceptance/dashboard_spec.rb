@@ -38,7 +38,7 @@ feature "Dashboard", %q{
     
     within(:css, "header") do
       page.should have_link("CartoDB")
-      page.should have_content(user.email)
+      page.should have_content("My account")
     end
 
     page.should have_css("footer")
@@ -192,7 +192,7 @@ feature "Dashboard", %q{
 
     within(:css, "header") do
       page.should have_link("CartoDB")
-      page.should have_content(user.email)
+      page.should have_content("My account")
     end
     
     page.find("ul li a span", :text => "4sq").click

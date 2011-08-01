@@ -1,0 +1,1 @@
+ pg_dump -f main_db.sql -Fp -s -Upostgres carto_db_development

@@ -1,0 +1,1 @@
+pg_dump -f user_db.sql -Fp -s -Upostgres cartodb_dev_user_1_db

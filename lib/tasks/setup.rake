@@ -6,9 +6,8 @@ Setup cartodb database and creates a new user from environment variables:
   - ENV['PASSWORD']: user password
   - ENV['SUBDOMAIN']: user subdomain
 DESC
-    task :setup => ["rake:db:create", "rake:db:migrate", "cartodb:db:create_admin"] do
+    task :setup => ["rake:db:create", "rake:db:migrate", "cartodb:db:create_publicuser", "cartodb:db:create_admin"] do
       begin
-        ::Rails::Sequel.connection.run("CREATE USER #{CartoDB::PUBLIC_DB_USER}")
         raise "You should provide a valid e-mail" if ENV['EMAIL'].nil? || ENV['EMAIL'].empty?
         raise "You should provide a valid password" if ENV['PASSWORD'].nil? || ENV['PASSWORD'].empty?
         raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].nil? || ENV['SUBDOMAIN'].empty?
@@ -24,6 +23,10 @@ DESC
       rescue
         puts $!
       end
+    end
+    
+    task :create_publicuser => :environment do
+      ::Rails::Sequel.connection.run("CREATE USER #{CartoDB::PUBLIC_DB_USER}")
     end
     
     desc "Create an admin account with a default user password unless ADMIN_PASSWORD environment variable is set"

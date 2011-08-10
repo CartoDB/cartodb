@@ -1,7 +1,7 @@
 class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
-  ssl_required
+  ssl_required :create, :update, :destroy
   before_filter :get_user, :only => [:update, :destroy]
   
   def create

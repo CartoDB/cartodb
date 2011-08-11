@@ -1124,7 +1124,7 @@
 
               var type = headers[data.column];
 							
-							if (type=="polygon" || type=="point" || type=="line" || type=="multipolygon" && !_.isEmpty(json)) {
+							if ((type=="polygon" || type=="point" || type=="line" || type=="multipolygon") && !_.isEmpty(data.value)) {
 								var json = $.parseJSON(data.value);
 								type = json.type.toLowerCase();
 							}

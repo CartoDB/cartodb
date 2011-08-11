@@ -21,7 +21,7 @@ CartoDB::Application.routes.draw do
   namespace :superadmin do
     get '/' => 'users#index', :as => :users
     post '/' => 'users#create', :as => :users
-    resources :users, :except => [:index]
+    resources :users, :only => [:create, :update, :destroy]
   end
   
   scope :oauth, :path => :oauth do

@@ -23,7 +23,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     end
     
     @user.save
-    respond_with(@user)
+    respond_with(:superadmin, @user)
   end
 
   def update
@@ -43,12 +43,12 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     end
 
     @user.save
-    respond_with(@user)
+    respond_with(:superadmin, @user)
   end
 
   def destroy
     @user.destroy
-    respond_with(@user)
+    respond_with(:superadmin, @user)
   end
 
   def get_user

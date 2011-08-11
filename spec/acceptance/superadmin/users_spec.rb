@@ -2,7 +2,7 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
 
-feature "Superadmin's users administration" do
+feature "Superadmin's users API" do
 
   background do
     Capybara.current_driver = :rack_test

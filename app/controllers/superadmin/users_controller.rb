@@ -1,7 +1,7 @@
 class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
-  ssl_required :create, :update, :destroy
+  ssl_required :create, :update, :destroy if Rails.env.production?
   before_filter :get_user, :only => [:update, :destroy]
   
   def create

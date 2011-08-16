@@ -3,6 +3,8 @@ class OauthToken < Sequel::Model
   many_to_one :client_application
   many_to_one :user
 
+  plugin :single_table_inheritance, :type
+
   def invalidated?
     invalidated_at != nil
   end

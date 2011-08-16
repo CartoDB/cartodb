@@ -16,10 +16,23 @@ feature "API Authentication" do
   end
 
   describe "Standard OAuth" do
-    scenario "should authorize requests with standard plain OAuth" do
-      req = prepare_oauth_request(@oauth_consumer, api_tables_url, :token => @access_token)
-      response = get req.path, {}, {"Authorization" => req["Authorization"]}
+    
+    before(:each) do
+      # We need to specify the complete url in both the prepare_oauth_request method call which we use to build a request from which to take the Authorization header
+      # and also when making the request otherwise get/post integration test methods will use example.org
+      @request_url = "http://vizzuality.testhost.lan/api/v1/tables"
+    end
+    
+    scenario "should authorize requests properly signed" do
+      req = prepare_oauth_request(@oauth_consumer, @request_url, :token => @access_token)
+      response = get @request_url, {}, {"Authorization" => req["Authorization"]}
       response.status.should == 200
+    end
+
+    scenario "should not authorize requests with a bad signature" do
+      req = prepare_oauth_request(@oauth_consumer, @request_url, :token => @access_token)
+      response = get @request_url, {}, {"Authorization" => req["Authorization"].gsub('oauth_signature="','oauth_signature="314')}
+      response.status.should == 401
     end
   end
 
@@ -56,8 +69,12 @@ feature "API Authentication" do
   def prepare_oauth_request(consumer, url, options={})
     url = URI.parse(url)
     http = Net::HTTP.new(url.host, url.port)
-    req = Net::HTTP::Post.new(url.request_uri)
-    req.set_form_data(options[:form_data]) if options[:form_data]
+    if options[:form_data]
+      req = Net::HTTP::Post.new(url.request_uri)
+      req.set_form_data(options[:form_data])
+    else
+      req = Net::HTTP::Get.new(url.request_uri)
+    end
     req.oauth!(http, consumer, options[:token])
     req
   end

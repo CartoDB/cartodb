@@ -138,7 +138,7 @@
 				if (new_query!=undefined) {
 					$.ajax({
 				    method: "GET",
-				    url: global_api_url+'?sql='+escape('SELECT count(*) FROM ('+editor.getValue()+') as count')+'&database=' + database_name,
+				    url: global_api_url+'/queries?sql='+escape('SELECT count(*) FROM ('+editor.getValue()+') as count'),
 				 		headers: {"cartodbclient":"true"},
 				    success: function(data) {
 							total = data.rows[0].count;
@@ -158,7 +158,7 @@
 				
 			  $.ajax({
 			    method: "GET",
-			    url: global_api_url+'?sql='+escape(editor.getValue())+'&database=' + database_name,
+			    url: global_api_url+'/queries?sql='+escape(editor.getValue()),
 			    data: {
 			      rows_per_page: options.resultsPerPage,
 			      page: petition_pages

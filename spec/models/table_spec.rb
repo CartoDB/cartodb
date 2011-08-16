@@ -22,6 +22,27 @@ describe Table do
     table.should be_private
   end
 
+  it "should not allow public user access to a table when it is private" do
+    table = create_table
+    table.should be_private
+    user = User[table.user_id]
+    expect {
+      user.in_database(:as => :public_user).run("select * from #{table.name}")
+    }.to raise_error(Sequel::DatabaseError)
+  end
+
+  it "should allow public user access when the table is public" do
+    table = create_table
+    table.should be_private
+
+    table.privacy = Table::PUBLIC
+    table.save
+    user = User[table.user_id]
+    expect {
+      user.in_database(:as => :public_user).run("select * from #{table.name}")
+    }.to_not raise_error
+  end
+
   it "should be associated to a database table" do
     user = create_user
     table = create_table :name => 'Wadus table', :user_id => user.id

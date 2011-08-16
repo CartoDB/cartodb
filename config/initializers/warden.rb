@@ -30,48 +30,17 @@ end
 
 Warden::Strategies.add(:api_authentication) do
   def authenticate!
-    if params[:api_key].blank? && request.headers['Authorization'].blank? && params[:oauth_token].blank?
-      throw(:warden)
-    else
-      if params[:api_key]
-        if api_key = APIKey[:api_key => params[:api_key]]
-          success!(User[api_key.user_id])
-          # TODO
-          # if api_key.domain == request.host
-          #   success!(api_key.user)
-          # else
-          #   fail!
-          # end
-        else
-          throw(:warden)
-        end
-      else
-        if request.headers['Authorization'].present?
-          token = request.headers['Authorization'].split(',').select{ |p| p.include?('oauth_token') }.first.split('=').last.tr('\"','')
-          if token and user_id = $api_credentials.hget("rails:oauth_tokens:#{token}", "user_id")
-            success!(User.find_with_custom_fields(user_id))
+    if request.headers['Authorization'].present?
+      if ClientApplication.verify_request(request) do |request_proxy|
+          unless oauth_token = ClientApplication.find_token(request_proxy.token)
+            throw(:warden)
           else
-            if ClientApplication.verify_request(request) do |request_proxy|
-                unless oauth_token = ClientApplication.find_token(request_proxy.token)
-                  throw(:warden)
-                else
-                  success!(User.find_with_custom_fields(oauth_token.user_id))
-                end
-              end
-            end
-          end
-        elsif params[:oauth_token].present?
-          if user_id = $api_credentials.hget("rails:oauth_tokens:#{params[:oauth_token]}", "user_id")
-            success!(User.find_with_custom_fields(user_id))
-          else
-            unless oauth_token = ClientApplication.find_token(params[:oauth_token])
-              throw(:warden)
-            else
-              success!(User.find_with_custom_fields(oauth_token.user_id))
-            end
+            success!(User.find_with_custom_fields(oauth_token.user_id))
           end
         end
       end
+    else
+      throw(:warden)
     end
   end
 end

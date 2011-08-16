@@ -34,7 +34,6 @@
       var status = "<%= table_privacy_text(@table).downcase %>";
       var table_name = "<%= @table.name %>";
       var user_id = "<%= current_user.id %>";
-      var database_name = "<%= current_user.database_name %>";
       var map_enabled = <%= current_user.map_enabled.to_s %>;
     </script>
   <% end %>

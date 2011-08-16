@@ -19,46 +19,38 @@ class OauthController < ApplicationController
   # 4) redirects you with a url you specify.  
 
   # 5) call access_token with the authorized request token, HTTP cycle, returns access token and access secret.
-  
 
-  # generates request token (temporary tokens)
-  def authorize
-    unless params[:oauth_token]
-      render :nothing => true, :status => 404 and return
-    end
-    unless @token = ::RequestToken.find_by_token(params[:oauth_token])
-      render :action => "authorize_failure" and return
-    end
+  def access_token_with_xauth
+    warden.custom_failure!
+    if params[:x_auth_mode] == 'client_auth'
+      if user = User.authenticate(params[:x_auth_username], params[:x_auth_password])
+        @token = AccessToken.filter(:user => user, :client_application => current_client_application, :invalidated_at => nil).limit(1).first
+        @token = AccessToken.create(:user => user, :client_application => current_client_application) if @token.blank?
 
-    if @token.invalidated?
-      render :action => "authorize_failure" and return
-    end
-
-    if logged_in?
-      @token.authorize!(current_user)
+        if @token
+          render :text => @token.to_query
+        else
+          render_unauthorized
+        end
+      else
+        render_unauthorized
+      end
     else
-      # should be the login page redirect // TODO HUUGE BUG: MUST BE A LOGIN SCREEN. TOTALLY WRONG.
-      @token.authorize!(@token.client_application.user) # bypasses resource owner granting access to resources??
-    end
-
-    @redirect_url = URI.parse(@token.oob? ? @token.client_application.callback_url || CartoDB.hostname : @token.callback_url)
-
-    # sending temporary
-    unless @redirect_url.to_s.blank?
-      @redirect_url.query = @redirect_url.query.blank? ?
-                            "oauth_token=#{@token.token}&oauth_verifier=#{@token.verifier}" :
-                            @redirect_url.query + "&oauth_token=#{@token.token}&oauth_verifier=#{@token.verifier}"
-      redirect_to @redirect_url.to_s
-    else
-      render :action => "authorize_success"
+      access_token_without_xauth
     end
   end
-  
+  alias_method_chain :access_token, :xauth
+
   protected
   
   def store_token_in_redis
-    $api_credentials.hset "rails:oauth_tokens:#{@token.token}", "user_id", @token.user_id
-    $api_credentials.hset "rails:oauth_tokens:#{@token.token}", "time", Time.now
+    if @token
+      $api_credentials.hset "rails:oauth_tokens:#{@token.token}", "user_id", @token.user_id
+      $api_credentials.hset "rails:oauth_tokens:#{@token.token}", "time", Time.now
+    end
   end
 
+  def render_unauthorized
+    render :nothing => true, :status => 401
+  end
 end

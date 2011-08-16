@@ -33,16 +33,14 @@ class ClientApplication < Sequel::Model
   def self.verify_request(request, options = {}, &block)
     begin
       signature = OAuth::Signature.build(request, options, &block)
-      # Performance: don't remember nonces
-      # Although it may introduce some weakness because requests could be done more than one time
-      # return false unless OauthNonce.remember(signature.request.nonce, signature.request.timestamp)
+      return false unless OauthNonce.remember(signature.request.nonce, signature.request.timestamp)
       value = signature.verify
       value
     rescue OAuth::Signature::UnknownSignatureMethod => e
       false
     end
   end
-
+  
   def oauth_server
     @oauth_server ||= OAuth::Server.new("http://your.site")
   end

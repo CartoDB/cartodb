@@ -192,25 +192,6 @@ describe User do
     api_key.api_key.should == key.api_key
   end
 
-  it "should be accessed by the public user independently of the table status" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.force_schema = "name varchar, age integer"
-    table.save
-    table.should be_private
-
-    lambda {
-      user.in_database(:as => :public_user).run("select * from #{table.name}")
-    }.should_not raise_error(Sequel::DatabaseError)
-
-    table.privacy = "PUBLIC"
-    table.save
-    table.reload
-
-    user.in_database(:as => :public_user).run("select * from #{table.name}")
-  end
-
   it "should create a client_application for each user" do
     user = create_user
     user.client_application.should_not be_nil

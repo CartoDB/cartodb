@@ -39,7 +39,7 @@ Warden::Strategies.add(:api_authentication) do
             @oauth_token.provided_oauth_verifier=request_proxy.oauth_verifier 
           end
           # return the token secret and the consumer secret
-          [(@oauth_token.nil? ? nil : @oauth_token.secret), (@oauth_token.client_application.nil? ? nil : @oauth_token.client_application.secret)]
+          [(@oauth_token.nil? ? nil : @oauth_token.secret), (@oauth_token.nil? || @oauth_token.client_application.nil? ? nil : @oauth_token.client_application.secret)]
         end
       
       if @oauth_token && @oauth_token.is_a?(::AccessToken)

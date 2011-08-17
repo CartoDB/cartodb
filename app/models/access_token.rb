@@ -15,6 +15,7 @@ class AccessToken < OauthToken
     base_key = "rails:oauth_access_tokens:#{token}"
 
     $api_credentials.hset base_key, "consumer_key", client_application.key
+    $api_credentials.hset base_key, "consumer_secret", client_application.secret
     $api_credentials.hset base_key, "access_token_token", token
     $api_credentials.hset base_key, "access_token_secret", secret
     $api_credentials.hset base_key, "user_id", user_id

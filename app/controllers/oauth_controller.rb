@@ -8,7 +8,6 @@ class OauthController < ApplicationController
   ssl_required :authorize, :request_token, :access_token, :token, :test_request
   
   skip_before_filter :login_required, :only => :authorize
-  after_filter :store_token_in_redis, :only => :access_token
 
   # 1) call request_token wiht consumer key and secret
   
@@ -42,13 +41,6 @@ class OauthController < ApplicationController
   alias_method_chain :access_token, :xauth
 
   protected
-  
-  def store_token_in_redis
-    if @token
-      $api_credentials.hset "rails:oauth_tokens:#{@token.token}", "user_id", @token.user_id
-      $api_credentials.hset "rails:oauth_tokens:#{@token.token}", "time", Time.now
-    end
-  end
 
   def render_unauthorized
     render :nothing => true, :status => 401

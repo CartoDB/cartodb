@@ -33,7 +33,9 @@ class ClientApplication < Sequel::Model
   def self.verify_request(request, options = {}, &block)
     begin
       signature = OAuth::Signature.build(request, options, &block)
-      return false unless OauthNonce.remember(signature.request.nonce, signature.request.timestamp)
+      # As we're always over SSL the extra Nonce security is not really needed so we gain performance and
+      # we avoid storing every nonce in redis as well (for node).
+      # return false unless OauthNonce.remember(signature.request.nonce, signature.request.timestamp)
       value = signature.verify
       value
     rescue OAuth::Signature::UnknownSignatureMethod => e

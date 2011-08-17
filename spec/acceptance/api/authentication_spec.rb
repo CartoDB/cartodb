@@ -29,7 +29,7 @@ feature "API Authentication" do
       response.status.should == 200
     end
 
-    scenario "should not authorize requests with a bad signature" do
+    scenario "should not authorize requests with wrong signature" do
       req = prepare_oauth_request(@oauth_consumer, @request_url, :token => @access_token)
       response = get @request_url, {}, {"Authorization" => req["Authorization"].gsub('oauth_signature="','oauth_signature="314')}
       response.status.should == 401
@@ -38,30 +38,32 @@ feature "API Authentication" do
 
   describe "xAuth" do
     before(:each) do
+      @request_url = "http://vizzuality.testhost.lan/oauth/access_token"
       @xauth_params = { :x_auth_username => @user.email, :x_auth_password => "clientex", :x_auth_mode => 'client_auth' }
     end
     
     it "should not return an access token with invalid xAuth params" do
       @xauth_params.merge!(:x_auth_password => "invalid")
-      req = prepare_oauth_request(@oauth_consumer, "http://example.org/oauth/access_token", :form_data => @xauth_params)
+      req = prepare_oauth_request(@oauth_consumer, @request_url, :form_data => @xauth_params)
       
-      response = post req.path, @xauth_params, {"Authorization" => req["Authorization"]}
+      response = post @request_url, @xauth_params, {"Authorization" => req["Authorization"]}
       response.status.should == 401
     end
     
     it "should return access tokens with valid xAuth params" do
       # Not exactly sure why requests come with SERVER_NAME = "example.org"
-      req = prepare_oauth_request(@oauth_consumer, "http://example.org/oauth/access_token", :form_data => @xauth_params)
+      req = prepare_oauth_request(@oauth_consumer, @request_url, :form_data => @xauth_params)
       
-      response = post req.path, @xauth_params, {"Authorization" => req["Authorization"]}
+      response = post @request_url, @xauth_params, {"Authorization" => req["Authorization"]}
       response.status.should == 200
       
       values = response.body.split('&').inject({}) { |h,v| h[v.split("=")[0]] = v.split("=")[1]; h }
       
       new_access_token = OAuth::AccessToken.new(@oauth_consumer, values["oauth_token"], values["oauth_token_secret"])
-      
-      req = prepare_oauth_request(@oauth_consumer, api_tables_url, :token => new_access_token)
-      response = get req.path, {}, {"Authorization" => req["Authorization"]}
+
+      tables_uri = "http://vizzuality.testhost.lan/api/v1/tables"
+      req = prepare_oauth_request(@oauth_consumer, tables_uri, :token => new_access_token)
+      response = get tables_uri, {}, {"Authorization" => req["Authorization"]}
       response.status.should == 200
     end
   end

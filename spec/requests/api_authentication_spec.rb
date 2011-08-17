@@ -1,8 +1,8 @@
-require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
+require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-feature "API Authentication" do
+describe "API Authentication" do
 
-  background do
+  before(:each) do
     @user = create_user(:email => "client@example.com", :password => "clientex")
     @oauth_consumer = OAuth::Consumer.new(@user.client_application.key, @user.client_application.secret, {
       :site => "http://testhost.lan", :scheme => :query_string, :http_method => :post
@@ -10,9 +10,9 @@ feature "API Authentication" do
     @access_token = AccessToken.create(:user => @user, :client_application => @user.client_application)
   end
   
-  scenario "should not authorize requests without signature" do
-    response = get api_tables_url
-    response.status.should == 401
+  it "should not authorize requests without signature" do
+    get "http://vizzuality.testhost.lan/api/v1/tables"
+    status.should == 401
   end
 
   describe "Standard OAuth" do
@@ -23,16 +23,16 @@ feature "API Authentication" do
       @request_url = "http://vizzuality.testhost.lan/api/v1/tables"
     end
     
-    scenario "should authorize requests properly signed" do
+    it "should authorize requests properly signed" do
       req = prepare_oauth_request(@oauth_consumer, @request_url, :token => @access_token)
-      response = get @request_url, {}, {"Authorization" => req["Authorization"]}
-      response.status.should == 200
+      get @request_url, {}, {"Authorization" => req["Authorization"]}
+      status.should == 200
     end
 
-    scenario "should not authorize requests with wrong signature" do
+    it "should not authorize requests with wrong signature" do
       req = prepare_oauth_request(@oauth_consumer, @request_url, :token => @access_token)
-      response = get @request_url, {}, {"Authorization" => req["Authorization"].gsub('oauth_signature="','oauth_signature="314')}
-      response.status.should == 401
+      get @request_url, {}, {"Authorization" => req["Authorization"].gsub('oauth_signature="','oauth_signature="314')}
+      status.should == 401
     end
   end
 
@@ -46,25 +46,25 @@ feature "API Authentication" do
       @xauth_params.merge!(:x_auth_password => "invalid")
       req = prepare_oauth_request(@oauth_consumer, @request_url, :form_data => @xauth_params)
       
-      response = post @request_url, @xauth_params, {"Authorization" => req["Authorization"]}
-      response.status.should == 401
+      post @request_url, @xauth_params, {"Authorization" => req["Authorization"]}
+      status.should == 401
     end
     
     it "should return access tokens with valid xAuth params" do
       # Not exactly sure why requests come with SERVER_NAME = "example.org"
       req = prepare_oauth_request(@oauth_consumer, @request_url, :form_data => @xauth_params)
       
-      response = post @request_url, @xauth_params, {"Authorization" => req["Authorization"]}
-      response.status.should == 200
-      
+      post @request_url, @xauth_params, {"Authorization" => req["Authorization"]}
+      status.should == 200
+
       values = response.body.split('&').inject({}) { |h,v| h[v.split("=")[0]] = v.split("=")[1]; h }
       
       new_access_token = OAuth::AccessToken.new(@oauth_consumer, values["oauth_token"], values["oauth_token_secret"])
 
       tables_uri = "http://vizzuality.testhost.lan/api/v1/tables"
       req = prepare_oauth_request(@oauth_consumer, tables_uri, :token => new_access_token)
-      response = get tables_uri, {}, {"Authorization" => req["Authorization"]}
-      response.status.should == 200
+      get tables_uri, {}, {"Authorization" => req["Authorization"]}
+      status.should == 200
     end
   end
   

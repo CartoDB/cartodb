@@ -138,7 +138,7 @@
 				if (new_query!=undefined) {
 					$.ajax({
 				    method: "GET",
-				    url: global_api_url+'/queries?sql='+escape('SELECT count(*) FROM ('+editor.getValue()+') as count'),
+				    url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+editor.getValue()+') as count'),
 				 		headers: {"cartodbclient":"true"},
 				    success: function(data) {
 							total = data.rows[0].count;

@@ -16,8 +16,8 @@ GIT
 
 GIT
   remote: git@github.com:Vizzuality/cartodb-importer.git
-  revision: d4ebab97aa466b2448876d4cd6e109df1884d87f
-  tag: v0.1.10
+  revision: b17748720f5739ec7a9ec7837cf5f84d6d9890f5
+  tag: v0.1.11
   specs:
     cartodb-importer (0.1.9)
       builder

@@ -16,8 +16,8 @@ GIT
 
 GIT
   remote: git@github.com:Vizzuality/cartodb-importer.git
-  revision: 28fc2a81b799281c568f6feea6a55603062619f5
-  tag: v0.1.9
+  revision: d4ebab97aa466b2448876d4cd6e109df1884d87f
+  tag: v0.1.10
   specs:
     cartodb-importer (0.1.9)
       builder
@@ -223,7 +223,7 @@ GEM
     sinatra (1.2.6)
       rack (~> 1.1)
       tilt (< 2.0, >= 1.2.2)
-    spreadsheet (0.6.5.5)
+    spreadsheet (0.6.5.7)
       ruby-ole (>= 1.0)
     steak (1.1.0)
       rspec (>= 1.3)

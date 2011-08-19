@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
 
   def create
     authenticate!(:password)
-    redirect_to dashboard_path
+    redirect_to(session[:return_to] || dashboard_path)
   end
 
   def destroy

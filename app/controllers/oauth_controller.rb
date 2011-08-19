@@ -6,6 +6,8 @@ class OauthController < ApplicationController
   include OAuth::Controllers::ProviderController
   
   ssl_required :authorize, :request_token, :access_token, :token, :test_request
+  
+  layout 'front_layout'
 
   # 1) call request_token wiht consumer key and secret
   

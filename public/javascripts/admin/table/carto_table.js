@@ -23,7 +23,7 @@
 
 // We are playing with these containers but they don't belong to the plugin
 
-(function($){
+;(function($){
 
   var first = true;
   var table;

@@ -342,10 +342,11 @@
 					query_url = "";
 					
 			if (this.query_mode) {
-				query_url = global_api_url+'?sql='+ escape(editor.getValue()) + '&database=' + database_name;
+			  
+				query_url = global_api_url+'queries?sql='+ escape(editor.getValue());
 				var now = new Date();
 			} else {
-				query_url = global_api_url+'?sql='+ escape("select *,ST_AsGeoJSON(the_geom) as coordinates_ from " + table_name) + '&database=' + database_name;
+				query_url = global_api_url+'queries?sql='+ escape("select *,ST_AsGeoJSON(the_geom) as coordinates_ from " + table_name);
 			}
 
 

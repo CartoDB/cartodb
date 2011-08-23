@@ -40,6 +40,7 @@ class User < Sequel::Model
   def after_create
     super
     setup_user
+    save_metadata
   end
   #### End of Callbacks
   
@@ -153,6 +154,16 @@ class User < Sequel::Model
     key = self.class.secure_digest(domain)
     APIKey.create :api_key => key, :user_id => self.id, :domain => domain
   end
+  
+  # create the core user_metadata key that is used in redis
+  def key
+    "rails:users:#{username}"
+  end  
+  
+  # save users basic metadata to redis for node sql api to use
+  def save_metadata
+    $users_metadata.HMSET key, 'id', id, 'database_name', database_name
+  end      
 
   def reset_client_application!
     if client_application

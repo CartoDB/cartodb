@@ -180,7 +180,6 @@
       $('div.sql_window a.try_query').livequery('click',function(ev){
         var map_status = ($('body').attr('view_mode') == "map");
         if (map_status) {
-	        stopPropagation(ev);
 	        $('body').attr('query_mode','true');
 					me.query_mode = true;
 					setAppStatus();
@@ -340,15 +339,19 @@
       
       var api_key = "",
 					query_url = "";
-					
+
 			if (this.query_mode) {
+			  var value = editor.getValue();
+			  var sql_ = value.split(/(from|FROM|From)/,3);
+			  sql_[1] = ", ST_AsGeoJSON(the_geom) as coordinates_ FROM ";
+			  value = sql_.join('');
 			  
-				query_url = global_api_url+'queries?sql='+ escape(editor.getValue());
+				query_url = global_api_url+'queries?sql='+ escape(value);
 				var now = new Date();
 			} else {
 				query_url = global_api_url+'queries?sql='+ escape("select *,ST_AsGeoJSON(the_geom) as coordinates_ from " + table_name);
 			}
-
+						
 
       $.ajax({
         method: 'GET',
@@ -362,7 +365,6 @@
 						$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
 						$('span.query p').text('This query took '+(arrived - now)/1000+' seconds');
 					}
-					
 					me.drawMarkers(result.rows);
         },
         error: function(e) {

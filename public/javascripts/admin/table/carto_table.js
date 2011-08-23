@@ -2353,7 +2353,6 @@
       // General options
       $('div.sql_window a.try_query').livequery('click',function(ev){
         if (enabled) {
-          stopPropagation(ev);
 					$('body').attr('query_mode',"true");
           query_mode = true;
           methods.refreshTable(0);

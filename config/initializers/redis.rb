@@ -14,3 +14,4 @@ $tables_metadata = Redis.new(:host => APP_CONFIG[:redis]['host'], :port => APP_C
 # $queries_log = Redis.new(:host => APP_CONFIG[:redis]['host'], :port => APP_CONFIG[:redis]['port'],     :db => 1)
 $threshold = Redis.new(:host => APP_CONFIG[:redis]['host'], :port => APP_CONFIG[:redis]['port'],       :db => 2)
 $api_credentials = Redis.new(:host => APP_CONFIG[:redis]['host'], :port => APP_CONFIG[:redis]['port'], :db => 3)
+$users_metadata = Redis.new(:host => APP_CONFIG[:redis]['host'], :port => APP_CONFIG[:redis]['port'], :db => 5)

@@ -1,14 +1,14 @@
     var requests_queue;
     var geolocating = false;
-	  
-    
+
+
     head.ready(function(){
 			if (map_enabled) {
 				head.js(
 	        "/javascripts/admin/maps/map.js",
 	        "/javascripts/admin/maps/map_elements.js",
 	        "/javascripts/admin/maps/CartoMap.js",
-	        "http://maps.google.com/maps/api/js?sensor=true&callback=initApp"
+	        "https://maps.google.com/maps/api/js?sensor=true&callback=initApp"
 				);
 			} else {
 				initApp();
@@ -19,10 +19,10 @@
 		function initApp() {
 			// Inits loader queue
 			requests_queue = new loaderQueue();
-			
+
 			// Inits map if map_enabled = true
 			if (map_enabled) initMap();
-			
+
 			// Inits carto table
 			$("table#carto_table").cDBtable(
         'start',{
@@ -39,8 +39,8 @@
 			// Manage tabs with url hash
 			manageHash();
 		}
-		
-		
+
+
 		function manageHash() {
 			if (map_enabled) {
 				var hash = window.location.hash;

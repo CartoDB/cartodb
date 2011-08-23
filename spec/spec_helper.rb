@@ -24,6 +24,8 @@ RSpec.configure do |config|
     # $queries_log.flushdb
     $tables_metadata.flushdb
     $api_credentials.flushdb
+    $users_metadata.flushdb
+    
     Rails::Sequel.connection.tables.each{ |t| next if t == :schema_migrations; Rails::Sequel.connection[t].truncate }
   end
 

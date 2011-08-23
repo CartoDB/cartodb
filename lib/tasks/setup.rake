@@ -26,7 +26,10 @@ DESC
     end
     
     task :create_publicuser => :environment do
-      ::Rails::Sequel.connection.run("CREATE USER #{CartoDB::PUBLIC_DB_USER}")
+      begin
+        ::Rails::Sequel.connection.run("CREATE USER #{CartoDB::PUBLIC_DB_USER}")
+      rescue
+      end
     end
     
     desc "Create an admin account with a default user password unless ADMIN_PASSWORD environment variable is set"

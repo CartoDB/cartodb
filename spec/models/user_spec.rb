@@ -242,4 +242,25 @@ describe User do
       user.run_query("select * from wadus")
     }.should raise_error(CartoDB::TableNotExists)
   end
+  
+  it "should have a method that generates users redis users_metadata key" do
+    user = create_user
+    user.key.should == "rails:users:#{user.username}"
+  end  
+  
+  it "should be able to store the users id and database name in redis" do
+    user = create_user
+    
+    user.save_metadata.should be_true    
+    $users_metadata.HGET(user.key, 'id').should == user.id.to_s
+    $users_metadata.HGET(user.key, 'database_name').should == user.database_name
+  end
+  
+  it "should store it's metadata automatically after creation" do
+    user = create_user
+    
+    $users_metadata.HGET(user.key, 'id').should == user.id.to_s
+    $users_metadata.HGET(user.key, 'database_name').should == user.database_name
+  end
+  
 end

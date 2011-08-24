@@ -21,12 +21,6 @@ gem "yajl-ruby", :require => "yajl"
 gem "cartodb-importer", :git => "git@github.com:Vizzuality/cartodb-importer.git", :tag => "v0.1.12"
 gem "exception_notification"
 
-group :development do
-  gem "capistrano"
-  gem "capistrano-ext"
-  #gem "terminitor"
-end
-
 group :test, :development do
   gem "passenger"
   gem "ruby-debug19", :require => "ruby-debug", :platforms => :mri_19

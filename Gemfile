@@ -24,7 +24,7 @@ gem "exception_notification"
 group :development do
   gem "capistrano"
   gem "capistrano-ext"
-  gem "terminitor"
+  #gem "terminitor"
 end
 
 group :test, :development do

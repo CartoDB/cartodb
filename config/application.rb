@@ -8,8 +8,6 @@ require "action_mailer/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env) if defined?(Bundler)
 
-# require File.expand_path('../../lib/cartodb/api_documentation_server', __FILE__)
-
 module CartoDB
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
@@ -44,8 +42,6 @@ module CartoDB
     config.filter_parameters += [:password]
 
     ::Sequel.extension(:pagination)
-
-    # config.middleware.use CartoDB::ApiDocumentationServer
   end
 end
 

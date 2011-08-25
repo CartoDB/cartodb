@@ -59,6 +59,4 @@ CartoDB::Application.routes.draw do
       get    '/queries'                              => 'queries#run'
     end
   end
-
-  # Subdomain "developers." is served by rack application ApiDocumentationServer
 end

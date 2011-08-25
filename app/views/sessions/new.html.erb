@@ -17,7 +17,7 @@
         <%= label_tag :password, 'password' %>
         <%= password_field_tag :password, '', :class => (flash[:alert] ? 'error' : nil) %>
       </span>
-      <a class="forget" href="#">Did you forget your password?</a>
+      <%= link_to "Did you forget your password?", forget_password_url, :class => "forget" if forget_password_url.present? %>
       <%= submit_tag 'Log in', :class => "login" %>
       <% if flash[:alert] %>
       <div class="error_content">

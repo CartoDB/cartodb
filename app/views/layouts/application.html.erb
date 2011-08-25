@@ -20,7 +20,7 @@
         <% end %>
         <!-- <li><a href="<%= APP_CONFIG[:developers_host] %>">Developers</a></li> -->
         <li><a href="http://blog.cartodb.com" target="_blank">Blog</a></li>
-        <li class="last"><%= link_to "My account", account_url, :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
+        <li class="last"><%= link_to current_user.email, account_url, :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
       </ul>
     </header>
 

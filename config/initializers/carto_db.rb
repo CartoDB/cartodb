@@ -64,6 +64,6 @@ module CartoDB
                                   REFERENCES RIGHT SELECT SESSION_USER SIMILAR SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION UNIQUE USER 
                                   USING VERBOSE WHEN WHERE }
   
-  LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/tmp/last_blog_posts"
+  LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
   
 end

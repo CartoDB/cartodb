@@ -932,7 +932,7 @@ describe Table do
     FileUtils.rm_rf(path)
   end
   
-  it "should not import a CSV file with a column named cartodb_id" do
+  it "should import a CSV file with a column named cartodb_id" do
     user = create_user
     table = new_table :user_id => user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
@@ -1023,6 +1023,66 @@ describe Table do
     table.save
 
     table.rows_counted.should == 19235
+  end
+  
+  it "should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id" do
+    user = create_user
+    table = new_table :user_id => user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+    table.save.reload
+    user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
+    table_schema = user.in_database.schema(table.name)
+    
+    cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
+    cartodb_id_schema.should be_present
+    cartodb_id_schema = cartodb_id_schema[1]
+    cartodb_id_schema[:db_type].should == "integer"
+    cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
+    cartodb_id_schema[:primary_key].should == true
+    cartodb_id_schema[:allow_null].should == false
+  end
+  
+  it "should copy cartodb_id values to a new cartodb_id serial column when importing a file which already has a cartodb_id column" do
+    user = create_user
+    table = new_table :user_id => user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+    table.save.reload
+    
+    (table.schema -  [
+      [:cartodb_id, "number"], [:name, "string"], [:the_geom_str, "string"], 
+      [:created_at, "string"], [:updated_at, "string"]
+    ]).should be_empty
+    
+    user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
+    table_schema = user.in_database.schema(table.name)
+    cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
+    cartodb_id_schema.should be_present
+    cartodb_id_schema = cartodb_id_schema[1]
+    cartodb_id_schema[:db_type].should == "integer"
+    cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
+    cartodb_id_schema[:primary_key].should == true
+    cartodb_id_schema[:allow_null].should == false
+    
+    # CSV has this data:
+    # 3,Row 3,2011-08-29 16:18:37.114106,2011-08-29 16:19:07.61527,
+    # 5,Row 5,2011-08-29 16:18:37.114106,2011-08-29 16:19:16.216058,
+    # 7,Row 7,2011-08-29 16:18:37.114106,2011-08-29 16:19:31.380103,
+    
+    # cartodb_id values should be preserved
+    rows = table.records(:order_by => "cartodb_id", :mode => "asc")[:rows]
+    rows.size.should == 3
+    rows[0][:cartodb_id].should == 3
+    rows[0][:name].should == "Row 3"
+    rows[1][:cartodb_id].should == 5
+    rows[1][:name].should == "Row 5"
+    rows[2][:cartodb_id].should == 7
+    rows[2][:name].should == "Row 7"
+    
+    table.insert_row!(:name => "Row 8")
+    rows = table.records(:order_by => "cartodb_id", :mode => "asc")[:rows]
+    rows.size.should == 4
+    rows.last[:cartodb_id].should == 8
+    rows.last[:name].should == "Row 8"
   end
   
 end

@@ -49,21 +49,32 @@ class Table < Sequel::Model(:user_tables)
       schema = self.schema(:reload => true)
       
       owner.in_database do |user_database|
-        if schema.nil? || !schema.flatten.include?(:cartodb_id)
-          user_database.run("alter table #{self.name} add column cartodb_id integer")
+        # If we already have a cartodb_id column let's rename it to an auxiliary column
+        aux_cartodb_id_column = nil
+        if schema.present? && schema.flatten.include?(:cartodb_id)
+           aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
+           user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
         end
-        user_database.run("create sequence cartodb_id_#{oid}_seq")
-        user_database.run("update #{self.name} set cartodb_id = nextval('cartodb_id_#{oid}_seq')")
-        user_database.run("alter table #{self.name} alter column cartodb_id set default nextval('cartodb_id_#{oid}_seq')")
-        user_database.run("alter table #{self.name} alter column cartodb_id set not null")
-        user_database.run("alter table #{self.name} add unique (cartodb_id)")
-        user_database.run("alter table #{self.name} drop constraint #{self.name}_cartodb_id_key restrict")
-        user_database.run("alter table #{self.name} add primary key (cartodb_id)")
+          
+        user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
+        
+        # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
+        # IMPORTANT: Do this before adding constraints cause otherwise we can have duplicate key errors
+        if aux_cartodb_id_column.present?
+          user_database.run("UPDATE #{self.name} SET cartodb_id = #{aux_cartodb_id_column}")
+          user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
+          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
+          max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max]
+          user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
+        end
+        
+        user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
+        
         if schema.nil? || !schema.flatten.include?(:created_at)
-          user_database.run("alter table #{self.name} add column created_at timestamp DEFAULT now()")
+          user_database.run("ALTER TABLE #{self.name} ADD COLUMN created_at timestamp DEFAULT NOW()")
         end
         if schema.nil? || !schema.flatten.include?(:updated_at)
-          user_database.run("alter table #{self.name} add column updated_at timestamp DEFAULT now()")
+          user_database.run("ALTER TABLE #{self.name} ADD COLUMN updated_at timestamp DEFAULT NOW()")
         end
       end
       set_the_geom_column!

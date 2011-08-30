@@ -102,6 +102,7 @@ class Table < Sequel::Model(:user_tables)
   def after_save
     super
     manage_tags
+    move_metadata_if_needed
   end
 
   def after_create
@@ -140,6 +141,8 @@ class Table < Sequel::Model(:user_tables)
     unless new?
       owner.in_database.rename_table name, new_name
     end
+    # Do not keep track of name changes until table has been saved
+    @name_changed_from = self.name if !new? && self.name.present?
     self[:name] = new_name
   end
 
@@ -172,9 +175,13 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def key
-    "rails:#{database_name}:#{oid}"
+    Table.key(database_name, name)
   rescue
     nil
+  end
+  
+  def self.key(db_name, table_name)
+    "rails:#{db_name}:#{table_name}"
   end
 
   def rows_counted
@@ -427,10 +434,10 @@ TRIGGER
         value !~ /^multi/ ? "multi#{value.downcase}" : value.downcase
     end    
     raise CartoDB::InvalidGeomType unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type_value)
-    if key.blank?
-      self.temporal_the_geom_type = the_geom_type_value
-    else
+    if owner.in_database.table_exists?(name)
       $tables_metadata.hset(key,"the_geom_type",the_geom_type_value)
+    else
+      self.temporal_the_geom_type = the_geom_type_value
     end
   end
 
@@ -682,6 +689,13 @@ SQL
         new_tag.save
       end
     end
+  end
+  
+  def move_metadata_if_needed
+    if @name_changed_from.present? && @name_changed_from != name
+      $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
+    end
+    @name_changed_from = nil
   end
   
 end

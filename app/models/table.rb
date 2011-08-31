@@ -192,10 +192,12 @@ class Table < Sequel::Model(:user_tables)
     temporal_schema = []
     owner.in_database.schema(self.name, options.slice(:reload)).each do |column| 
       next if column[0] == THE_GEOM_WEBMERCATOR
+      col_db_type = column[1][:db_type].starts_with?("geometry") ? "geometry" : column[1][:db_type]
+      
       col = [ column[0], 
-        (options[:cartodb_types] == false) ? column[1][:db_type] : column[1][:db_type].convert_to_cartodb_type, 
-        column[1][:db_type] == "geometry" ? "geometry" : nil, 
-        column[1][:db_type] == "geometry" ? the_geom_type : nil
+        (options[:cartodb_types] == false) ? col_db_type : col_db_type.convert_to_cartodb_type, 
+        col_db_type == "geometry" ? "geometry" : nil, 
+        col_db_type == "geometry" ? the_geom_type : nil
       ].compact
       
       # Make sensible sorting for jamon 

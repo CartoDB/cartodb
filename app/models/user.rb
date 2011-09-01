@@ -227,19 +227,32 @@ class User < Sequel::Model
           puts "DATABASE #{self.database_name} already exists: #{$!}"
         end
       end.join
-
-      in_database(:as => :superuser) do |user_database|
-        user_database.transaction do 
-          user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")
-          user_database.run("REVOKE ALL ON SCHEMA public FROM public")
-          user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
-          user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
-          user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
-          user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-        end  
+      set_database_permissions
+    end
+  end
+  
+  def set_database_permissions
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do 
+        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")
+        user_database.run("REVOKE ALL ON SCHEMA public FROM public")
+        user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
+        user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
+        user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        
+        yield(user_database) if block_given?
+      end  
+    end
+  end
+  
+  def fix_permissions
+    set_database_permissions do |user_database|
+      tables.each do |table|
+        user_database.run("ALTER TABLE #{table.name} OWNER TO #{database_username}")
       end
     end
   end

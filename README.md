@@ -94,8 +94,10 @@ This component runs in Node.JS.
   
         cd /tmp
         redis-server
-        
-  - Run `bin/rake cartodb:db:setup` in cartodb folder
+  
+  - Run `rake db:create db:migrate cartodb:db:create_publicuser cartodb:db:create_admin` in cartodb folder
+  
+  Note: `bin/rake cartodb:db:setup` is now only used to setup private servers
 
 ### Every day usage ###
   

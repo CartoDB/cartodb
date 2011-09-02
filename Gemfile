@@ -28,7 +28,7 @@ group :test, :development do
   gem "steak"
   gem "rspec-rails"
   gem "launchy"
-  gem "capybara"
+  gem "capybara", "~> 1.1.0.rc1"
   gem "webrat"
   gem "timecop"
   gem "email_spec"

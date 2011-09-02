@@ -12,6 +12,10 @@ class AccessToken < OauthToken
   end
 
   def after_create
+    store_api_credentials
+  end
+  
+  def store_api_credentials
     base_key = "rails:oauth_access_tokens:#{token}"
 
     $api_credentials.hset base_key, "consumer_key", client_application.key

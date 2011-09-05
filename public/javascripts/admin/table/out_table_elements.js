@@ -562,7 +562,7 @@
 	    $('div.inner_subheader div.left').append(
 	      '<span class="privacy_window">'+
 	        '<ul>'+
-	          '<li class="public"><a href="#"><strong>Public</strong> (visible to others)</a></li>'+
+	          '<li class="public '+((status=="public")?'selected':'')+'"><a href="#"><strong>Public</strong> (visible to others)</a></li>'+
 	          '<li class="private '+((status=="private")?'selected':'')+'"><a href="#"><strong>Private</strong> (visible to you)</a></li>'+
 	        '</ul>'+
 	      '</span>');

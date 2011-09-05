@@ -21,8 +21,8 @@
                         '<li><a class="order_asc">Order by ASC</a></li>' +
                         '<li><a class="order_desc">Order by DESC</a></li>' +
                       '</ul>' +
+                      '<div class="line"></div>'+
                       '{{#allowed}}' +
-                        '<div class="line"></div>'+
                         '<h5>EDIT</h5>'+
                         '<ul>' +
                           '<li><a class="rename_column" href="#rename_column">Rename column</a></li>' +
@@ -36,6 +36,11 @@
                         '</ul>' +
                         '<div class="line"></div>'+
                       '{{/allowed}}'+
+                      '<h5>FILTER</h5>' +
+                      '<ul>' +
+                        '<li><a href="#filter_by_column" class="filter_column">Filter by this column</a></li>' +
+                      '</ul>' +
+                      '<div class="line"></div>'+
                       '<h5>CREATE</h5>' +
                       '<ul>' +
                         '<li class="last"><a href="#add_column" class="add_column">Add new column</a></li>' +

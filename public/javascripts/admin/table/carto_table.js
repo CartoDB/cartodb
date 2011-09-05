@@ -748,6 +748,21 @@
               '<p>If you don\'t want to wait, <a href="#cancel_geo" class="cancel_geo">cancel de process</a> in progress.</p>'+
             '</span>'+
           '</div>'+
+        '</div>'+
+        '<div class="filter_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="top">'+
+              '<h3>Filter by a column</h3>'+
+              '<p>This helps you to find something in your table</p>'+
+              '<label>TEXT FILTER</label>'+
+              '<input type="text" value=""/>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#apply_query" class="apply_query">Apply query</a>'+
+              '<a href="#clear_filter" class="clear_filter">Clear filter</a>'+
+            '</span>'+
+          '</div>'+
         '</div>'
         );
     },
@@ -764,7 +779,7 @@
       $(table).parent().append(
         '<div class="empty_table">'+
           '<h5>Add some rows to your table</h5>'+
-          '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a class="disabled">import data</a></p>'+
+          '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a class="import_data" href="#import_data">import data</a></p>'+
         '</div>'
       );
       
@@ -2253,6 +2268,7 @@
 	        $('div.column_window span.select a:eq(0)').text('Retreiving types...').attr('type','');
 	        $('div.column_window a.column_add').addClass('disabled');
 	        $('div.column_window span.select').removeClass('clicked');
+	        
 
 	        $.ajax({
 	           method: "GET",
@@ -2286,7 +2302,9 @@
 	        });
 
 	        $('div.mamufas div.column_window').show();
-	        $('div.mamufas').fadeIn();
+	        $('div.mamufas').fadeIn(function(ev){
+	          $('div.column_window div.options input').focus();
+	        });
 				}
       });
       $('div.column_window span.select a.option').livequery('click',function(ev){
@@ -2408,6 +2426,32 @@
 
         methods.paginateControls();
       });
+    
+    
+      ///////////////////////////////////////
+      //  Filter by this column            //
+      ///////////////////////////////////////
+      $('a.filter_column').livequery('click',function(ev){
+        stopPropagation(ev);
+				if (enabled && !query_mode) {
+					methods.closeTablePopups();
+	        methods.bindESCkey();
+	        enabled = false;
+	        $('div.mamufas div.filter_window').show();
+	        $('div.mamufas').fadeIn(function(ev){
+	          $('div.filter_window input').focus();
+	        });
+	      }
+      });
+      $('div.mamufas div.filter_window a.apply_query').click(function(ev){
+        alert('jamon');
+        stopPropagation(ev);
+      });
+      $('div.mamufas div.filter_window a.clear_filter').click(function(ev){
+        alert('paco');
+        stopPropagation(ev);
+      });
+    
     },
 
     

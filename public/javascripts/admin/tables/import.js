@@ -82,7 +82,7 @@
         },
         onCancel: function(id, fileName){},
         showMessage: function(message){
-          $('div.select_file p').text(message);
+          $('div.select_file p').html(message);
           $('div.select_file p').addClass('error');
         }
       });

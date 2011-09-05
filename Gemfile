@@ -26,13 +26,10 @@ group :test, :development do
   gem "ruby-debug19", :require => "ruby-debug", :platforms => :mri_19
   gem "mocha"
   gem "steak"
-  gem "rspec"
   gem "rspec-rails"
-  gem "rspec-core", :git => "git://github.com/dblock/rspec-core.git"
   gem "launchy"
-  gem "capybara"
+  gem "capybara", "~> 1.1.0.rc1"
   gem "webrat"
-  gem "capybara-zombie", :git => "https://github.com/plataformatec/capybara-zombie.git"
   gem "timecop"
   gem "email_spec"
   gem "rack-reverse-proxy", "~> 0.4.1", :require => 'rack/reverse_proxy'

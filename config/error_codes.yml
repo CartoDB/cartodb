@@ -2,7 +2,7 @@ cartodb_errors:
   unknown_error:
     code: 0
     message: Some error we don't recognize has happen
-    hint: "We would really apreciate if you send us a detailed e-mail with all the information you can, in order we can fix it as soon as possible"
+    hint: "We would really apreciate if you <a href='mailto:wadus@cartodb.com'>send us</a> a detailed e-mail with all the information you can, in order we can fix it as soon as possible"
   empty_file:
     code: 1
     message: The file you have tried to upload has no data

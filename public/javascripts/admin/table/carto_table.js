@@ -764,7 +764,7 @@
       $(table).parent().append(
         '<div class="empty_table">'+
           '<h5>Add some rows to your table</h5>'+
-          '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a class="disabled">import data</a></p>'+
+          '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a class="import_data" href="#import_data">import data</a></p>'+
         '</div>'
       );
       
@@ -2253,6 +2253,7 @@
 	        $('div.column_window span.select a:eq(0)').text('Retreiving types...').attr('type','');
 	        $('div.column_window a.column_add').addClass('disabled');
 	        $('div.column_window span.select').removeClass('clicked');
+	        
 
 	        $.ajax({
 	           method: "GET",
@@ -2286,7 +2287,9 @@
 	        });
 
 	        $('div.mamufas div.column_window').show();
-	        $('div.mamufas').fadeIn();
+	        $('div.mamufas').fadeIn(function(ev){
+	          $('div.column_window div.options input').focus();
+	        });
 				}
       });
       $('div.column_window span.select a.option').livequery('click',function(ev){

@@ -210,9 +210,9 @@
 	      '<span class="advanced_options">'+
 	        '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
 	        '<ul>'+
-	          '<li class="disabled"><a class="import_data">Import data...</a></li>'+
+	          '<li><a class="import_data">Import data...</a></li>'+
 	          '<li><a class="export_data">Export data...</a></li>'+
-	          '<li class="disabled"><a class="save_table">Save table as...</a></li>'+ //class="save_table"
+	          '<li><a class="save_table">Save table as...</a></li>'+ //class="save_table"
 	        '</ul>'+
 	      '</span>');
 	
@@ -236,10 +236,10 @@
 	
 	    $('a.save_table').click(function(ev){
 	      stopPropagation(ev);
-	      //closeOutTableWindows();
-	      // $('div.mamufas div.save_window').show();
-	      // $('div.mamufas').fadeIn('fast');
-	      // bindESC();
+        closeOutTableWindows();
+        $('div.mamufas div.save_window').show();
+        $('div.mamufas').fadeIn('fast');
+        bindESC();
 	    });
 	
 	    $('a.table_save').click(function(ev){
@@ -562,7 +562,7 @@
 	    $('div.inner_subheader div.left').append(
 	      '<span class="privacy_window">'+
 	        '<ul>'+
-	          '<li class="public"><a href="#"><strong>Public</strong> (visible to others)</a></li>'+
+	          '<li class="public '+((status=="public")?'selected':'')+'"><a href="#"><strong>Public</strong> (visible to others)</a></li>'+
 	          '<li class="private '+((status=="private")?'selected':'')+'"><a href="#"><strong>Private</strong> (visible to you)</a></li>'+
 	        '</ul>'+
 	      '</span>');
@@ -653,6 +653,14 @@
 	        $('<p>'+value+'</p>').insertBefore('span.tags a.add');
 	        new_values+=value+',';
 	      });
+	      
+	      // Get last input value if it isn't empty
+	      var last_input = $('input.tagit-input').val();
+	      if (last_input.length>0) {
+		    	$('<p>'+last_input+'</p>').insertBefore('span.tags a.add');
+	      	new_values+=last_input;
+	      }
+	      
 
 	      $("span.tags p:last").last().addClass('last');
 	      $('span.tags_window').hide();

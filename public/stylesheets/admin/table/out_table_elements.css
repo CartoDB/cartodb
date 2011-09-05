@@ -374,6 +374,8 @@ div.mamufas div.import_window div.inner_ span.top ul li.selected {width:373px!im
 div.mamufas div.import_window div.inner_ span.top ul li.selected a {color:white; background-position:0 1px;}
 div.mamufas div.import_window div.inner_ span.top ul li.selected a:hover {color:white; cursor:default; background-position:0 1px;}
 div.mamufas div.import_window div.inner_ span.top ul li.selected ul.qq-upload-list {display:none;}
+div.mamufas div.import_window div.inner_ span.top ul li.selected .qq-upload-drop-area {position:absolute; z-index:100; top:0; left:0; width:100%; height:28px; border-radius:3px; background:rgba(0,0,0,0.7); font:bold 12px Arial; color:white; text-align:center}
+div.mamufas div.import_window div.inner_ span.top ul li.selected .qq-upload-drop-area span {display:block; padding:8px 0 0 0;}
 div.mamufas div.import_window div.inner_ span.top ul li span.file {display:none;}
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file {position:relative; display:block; width:348px; height:28px; margin:10px 10px 0 15px; border:1px solid #000000; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.select_file {display:block;}

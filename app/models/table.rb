@@ -353,15 +353,21 @@ class Table < Sequel::Model(:user_tables)
     page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
     order_by_column = options[:order_by] || "cartodb_id"
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'asc' : 'desc'
+    
     owner.in_database do |user_database|
-      select = if schema.flatten.include?(THE_GEOM)
-        schema.map{ |c| c[0] == THE_GEOM ? "ST_AsGeoJSON(the_geom,6) as the_geom" : c[0]}.join(',')
-      else
-        schema.map{|c| c[0] }.join(',')
-      end
+      columns_sql_builder = <<-SQL
+      SELECT array_to_string(ARRAY(SELECT '#{name}' || '.' || c.column_name
+        FROM information_schema.columns As c
+        WHERE table_name = '#{name}' 
+        AND c.column_name NOT IN('the_geom', 'the_geom_webmercator')
+        ), ',')||',ST_AsGeoJSON(the_geom,6) as the_geom' AS column_names
+      SQL
+      
+      select = user_database[columns_sql_builder].first[:column_names]
+      
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      rows = user_database["SELECT #{select} FROM public.#{name} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
+      rows = user_database["SELECT #{select} FROM #{name} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
     end
     {
       :id         => id,

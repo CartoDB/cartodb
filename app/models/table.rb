@@ -359,15 +359,19 @@ class Table < Sequel::Model(:user_tables)
       SELECT array_to_string(ARRAY(SELECT '#{name}' || '.' || c.column_name
         FROM information_schema.columns As c
         WHERE table_name = '#{name}' 
-        AND c.column_name NOT IN('the_geom', 'the_geom_webmercator')
-        ), ',')||',ST_AsGeoJSON(the_geom,6) as the_geom' AS column_names
+        AND c.column_name NOT IN('the_geom_webmercator')
+        ), ',') AS column_names
       SQL
       
-      select = user_database[columns_sql_builder].first[:column_names]
+      column_names = user_database[columns_sql_builder].first[:column_names].split(',')
+      if the_geom_index = column_names.index("the_geom")
+        column_names[the_geom_index] = "ST_AsGeoJSON(the_geom,6) as the_geom"
+      end
+      select_columns = column_names.join(',')
       
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      rows = user_database["SELECT #{select} FROM #{name} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
+      rows = user_database["SELECT #{select_columns} FROM #{name} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
     end
     {
       :id         => id,

@@ -230,7 +230,7 @@ PLATFORMS
 
 DEPENDENCIES
   aws-ses (= 0.4.1)
-  capybara (~> 1.1.0.rc1)
+  capybara (~> 1.1.1)
   cartodb-importer!
   email_spec
   exception_notification

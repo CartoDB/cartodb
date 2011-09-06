@@ -93,7 +93,7 @@ class Api::Json::TablesController < Api::ApplicationController
                   :name => @table.name,
                   :privacy => table_privacy_text(@table),
                   :tags => @table[:tags_names],
-                  :schema => @table.schema
+                  :schema => @table.schema(:reload => true)
                 }.to_json,
                :callback => params[:callback]
       end

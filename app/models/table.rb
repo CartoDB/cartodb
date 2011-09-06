@@ -36,7 +36,7 @@ class Table < Sequel::Model(:user_tables)
   def before_create
     self.database_name = owner.database_name
     update_updated_at
-    
+
     if import_from_file.present?
       importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         "database" => database_name, :logger => ::Rails.logger,
@@ -44,10 +44,10 @@ class Table < Sequel::Model(:user_tables)
         :import_from_file => import_from_file, :suggested_name => self.name, :debug => (Rails.env.development?)
       ).symbolize_keys
       importer_result = importer.import!
-      
+
       self[:name] = importer_result.name
       schema = self.schema(:reload => true)
-      
+
       owner.in_database do |user_database|
         # If we already have a cartodb_id column let's rename it to an auxiliary column
         aux_cartodb_id_column = nil
@@ -55,9 +55,9 @@ class Table < Sequel::Model(:user_tables)
            aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
            user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
         end
-          
+
         user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
-        
+
         # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
         # IMPORTANT: Do this before adding constraints cause otherwise we can have duplicate key errors
         if aux_cartodb_id_column.present?
@@ -67,9 +67,9 @@ class Table < Sequel::Model(:user_tables)
           max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max]
           user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
         end
-        
+
         user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
-        
+
         if schema.nil? || !schema.flatten.include?(:created_at)
           user_database.run("ALTER TABLE #{self.name} ADD COLUMN created_at timestamp DEFAULT NOW()")
         end
@@ -86,7 +86,7 @@ class Table < Sequel::Model(:user_tables)
       end
       set_the_geom_column!(self.the_geom_type)
     end
-    
+
     super
   rescue => e
     puts "======================"
@@ -110,7 +110,7 @@ class Table < Sequel::Model(:user_tables)
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     set_trigger_update_updated_at
     @force_schema = nil
-    $tables_metadata.multi do 
+    $tables_metadata.multi do
       $tables_metadata.hset key, "user_id", user_id
       $tables_metadata.hset key, "privacy", PRIVATE
     end
@@ -134,7 +134,7 @@ class Table < Sequel::Model(:user_tables)
     end
   end
   ## End of Callbacks
-  
+
   def name=(value)
     return if value == self[:name] || value.blank?
     new_name = get_valid_name(value)
@@ -179,7 +179,7 @@ class Table < Sequel::Model(:user_tables)
   rescue
     nil
   end
-  
+
   def self.key(db_name, table_name)
     "rails:#{db_name}:#{table_name}"
   end
@@ -190,17 +190,17 @@ class Table < Sequel::Model(:user_tables)
 
   def schema(options = {})
     temporal_schema = []
-    owner.in_database.schema(self.name, options.slice(:reload)).each do |column| 
+    owner.in_database.schema(self.name, options.slice(:reload)).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
       col_db_type = column[1][:db_type].starts_with?("geometry") ? "geometry" : column[1][:db_type]
-      
-      col = [ column[0], 
-        (options[:cartodb_types] == false) ? col_db_type : col_db_type.convert_to_cartodb_type, 
-        col_db_type == "geometry" ? "geometry" : nil, 
+
+      col = [ column[0],
+        (options[:cartodb_types] == false) ? col_db_type : col_db_type.convert_to_cartodb_type,
+        col_db_type == "geometry" ? "geometry" : nil,
         col_db_type == "geometry" ? the_geom_type : nil
       ].compact
-      
-      # Make sensible sorting for jamon 
+
+      # Make sensible sorting for jamon
       case column[0]
         when :cartodb_id
           temporal_schema.insert(0,col)
@@ -212,7 +212,7 @@ class Table < Sequel::Model(:user_tables)
     end
     temporal_schema.compact
   end
-  
+
   def insert_row!(raw_attributes)
     primary_key = nil
     owner.in_database do |user_database|
@@ -284,7 +284,7 @@ class Table < Sequel::Model(:user_tables)
     update_the_geom!(raw_attributes, row_id)
     rows_updated
   end
- 
+
   def add_column!(options)
     raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9_]/
     type = options[:type].convert_to_db_type
@@ -353,15 +353,25 @@ class Table < Sequel::Model(:user_tables)
     page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
     order_by_column = options[:order_by] || "cartodb_id"
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'asc' : 'desc'
+
     owner.in_database do |user_database|
-      select = if schema.flatten.include?(THE_GEOM)
-        schema.map{ |c| c[0] == THE_GEOM ? "ST_AsGeoJSON(the_geom,6) as the_geom" : c[0]}.join(',')
-      else
-        schema.map{|c| c[0] }.join(',')
+      columns_sql_builder = <<-SQL
+      SELECT array_to_string(ARRAY(SELECT '#{name}' || '.' || c.column_name
+        FROM information_schema.columns As c
+        WHERE table_name = '#{name}'
+        AND c.column_name <> 'the_geom_webmercator'
+        ), ',') AS column_names
+      SQL
+
+      column_names = user_database[columns_sql_builder].first[:column_names].split(',')
+      if the_geom_index = column_names.index("#{name}.the_geom")
+        column_names[the_geom_index] = "ST_AsGeoJSON(the_geom,6) as the_geom"
       end
+      select_columns = column_names.join(',')
+
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      rows = user_database["SELECT #{select} FROM public.#{name} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
+      rows = user_database["SELECT #{select_columns} FROM #{name} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
     end
     {
       :id         => id,
@@ -421,11 +431,11 @@ class Table < Sequel::Model(:user_tables)
 TRIGGER
     )
   end
-  
+
   def the_geom_type
     $tables_metadata.hget(key,"the_geom_type") || "point"
   end
-  
+
   def the_geom_type=(value)
     the_geom_type_value = case value.downcase
       when "point"
@@ -434,7 +444,7 @@ TRIGGER
         "multilinestring"
       else
         value !~ /^multi/ ? "multi#{value.downcase}" : value.downcase
-    end    
+    end
     raise CartoDB::InvalidGeomType unless CartoDB::VALID_GEOMETRY_TYPES.include?(the_geom_type_value)
     if owner.in_database.table_exists?(name)
       $tables_metadata.hset(key,"the_geom_type",the_geom_type_value)
@@ -454,7 +464,7 @@ TRIGGER
       FileUtils.rm_rf(csv_file_path)
 
       user_database.run("DROP TABLE IF EXISTS #{table_name}")
-      
+
       export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
       export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
       user_database.run("CREATE TABLE #{table_name} AS SELECT #{export_schema.join(',')} FROM #{self.name}")
@@ -469,7 +479,7 @@ TRIGGER
         `which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}" > #{csv_file_path}
       CMD
       user_database.run("DROP TABLE #{table_name}")
-      
+
       Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
         zipfile.add(File.basename(csv_file_path), csv_file_path)
       end
@@ -505,17 +515,17 @@ TRIGGER
     FileUtils.rm_rf(zip_file_path)
     response
   end
-  
+
   def self.find_all_by_user_id_and_tag(user_id, tag_name)
-    fetch("select user_tables.*, 
+    fetch("select user_tables.*,
                     array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                         from user_tables, tags
-                        where user_tables.user_id = ? 
+                        where user_tables.user_id = ?
                           and user_tables.id = tags.table_id
                           and tags.name = ?
                         order by user_tables.id DESC", user_id, tag_name)
   end
-  
+
   def self.find_by_identifier(user_id, identifier)
     table = if identifier =~ /\A\d+\Z/ || identifier.is_a?(Fixnum)
       Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
@@ -552,9 +562,9 @@ TRIGGER
     raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
     raw_new_name = "table#{raw_new_name}" if raw_new_name =~ /^_/
     candidates = owner.in_database.tables.map{ |t| t.to_s }.select{ |t| t.match(/^#{raw_new_name}/) }
-    
+
     return raw_new_name unless candidates.include?(raw_new_name)
-    
+
     max_candidate = candidates.max
     if max_candidate =~ /(.+)_(\d+)$/
       return $1 + "_#{$2.to_i +  1}"
@@ -628,7 +638,7 @@ TRIGGER
 
   def create_table_in_database!
     self.name ||= get_valid_name(self.name)
-    
+
     owner.in_database do |user_database|
       if force_schema.blank?
         user_database.create_table self.name.to_sym do
@@ -666,7 +676,7 @@ SQL
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?
     owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
   end
-  
+
   def manage_tags
     if self[:tags].blank?
       Tag.filter(:user_id => user_id, :table_id => id).delete
@@ -692,12 +702,12 @@ SQL
       end
     end
   end
-  
+
   def move_metadata_if_needed
     if @name_changed_from.present? && @name_changed_from != name
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
     end
     @name_changed_from = nil
   end
-  
+
 end

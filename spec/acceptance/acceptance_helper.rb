@@ -18,7 +18,7 @@ Capybara.server_port       = 53716
 
 RSpec.configure do |config|
   config.include Warden::Test::Helpers
-  config.include Capybara, :type => :acceptance
+  config.include Capybara::DSL, :type => :acceptance
 
   config.before(:each) do
     Rails.cache.clear

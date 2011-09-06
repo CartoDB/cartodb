@@ -14,6 +14,7 @@ RSpec.configure do |config|
   config.include EmailSpec::Helpers
   config.include EmailSpec::Matchers
   config.include CartoDB::Factories
+  config.include HelperMethods
   
   config.before(:suite) do
     CartoDB::RedisTest.up

@@ -31,9 +31,9 @@ feature "Sessions" do
       :http_method => :post
     })
     access_token = create_access_token :client_application => client_application, :user => user
-
-    req = oauth_consumer.create_signed_request(:get, "#{CartoDB.hostname}/oauth/identity.json", access_token)
-    get_json req.path do |response|
+    identity_uri = "http://vizzuality.testhost.lan/oauth/identity.json"
+    req = prepare_oauth_request(oauth_consumer, identity_uri, :token => access_token)
+    get_json identity_uri, {}, {'Authorization' => req["Authorization"]} do |response|
       response.status.should be_success
       response.body.should == { :uid => user.id, :email => 'fernando.blat@vizzuality.com', :username => 'blat' }
     end

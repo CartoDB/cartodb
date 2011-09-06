@@ -155,7 +155,6 @@
 				}
 
 				
-				
 			  $.ajax({
 			    method: "GET",
 			    url: global_api_url+'queries?sql='+escape(editor.getValue()),
@@ -216,9 +215,9 @@
                 cell_size = ((window_width-150)/(columns.length-1))-27;
                 last_cell_size = cell_size;
               }
-              methods.drawColumns(columns);
+              methods.drawColumns(columns,rows,direction,actualPage,options);
             }
-            methods.drawRows(options,rows,direction,actualPage);
+            //methods.drawRows(options,rows,direction,actualPage);
           } else {
             methods.hideLoader();
             if (direction=="next") {
@@ -236,8 +235,8 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW COLUMNS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    drawColumns: function(data) {
-      headers = {};
+    drawColumns: function(data,rows,direction,actualPage,options) {
+      headers = [];
       //Draw the columns headers
       var thead = '<thead><tr><th class="first"><div></div></th>';
 
@@ -249,7 +248,7 @@
         }
         if (element[1]!="length") {
 	        // Save column headers
-	     		headers[element[0]] = element[3] || element[1];
+	        headers.push({name:element[0],type:element[3] || element[1]});
 
 	        // Playing with templates (table_templates.js - Mustache.js)
 	        thead += Mustache.to_html(th,{
@@ -259,11 +258,11 @@
 	          cartodb_id: (element[0]!="cartodb_id")?false:true,
 	          cellsize: cell_size,
 	          geo: (element[3]==undefined)?false:true
-	          //loading: (loading)?true:false
 	        });
 				}
 
       });
+      
       
       thead += "</thead></tr>";
       $(table).append(thead);
@@ -283,6 +282,8 @@
         //Create elements
         methods.createElements();
       }
+      
+      methods.drawRows(options,rows,direction,actualPage);
     },
 
 
@@ -355,6 +356,7 @@
 
       //Loop all the data
       _.each(data, function(element,i){
+        
         // Get first td
         tbody += Mustache.to_html(first_td,{
           cartodb_id: element['cartodb_id']
@@ -362,9 +364,11 @@
 
 
         // Get rest generic td
-				_.eachRow(element,function(data,j){
-		        tbody += Mustache.to_html(generic_td,{
-	           value: function(){
+				_.eachRow(headers,function(head,x){
+				  var data = element[head.name];
+				  var j = head.name;
+		      tbody += Mustache.to_html(generic_td,{
+	          value: function(){
               if (data==null) {
                 return '';
               } else if (j=="the_geom") {
@@ -1137,13 +1141,13 @@
               }
 
 
-              var type = headers[data.column];
+              var type = _.detect(headers,function(head,j){return head.name == data.column}).type;
 
 							if ((type=="polygon" || type=="line" || type=="multipolygon") && !_.isEmpty(data.value)) {
 							  var json = $.parseJSON(data.value);
 								type = json.type.toLowerCase();
 							}
-							
+
 							
               $('div.edit_cell div.free').hide();
               $('div.edit_cell div.boolean').hide();

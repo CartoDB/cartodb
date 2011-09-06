@@ -1,14 +1,4 @@
 GIT
-  remote: git://github.com/ferblape/sequel-rails.git
-  revision: a283527d53895d6189f879bd96d2500b609b82e7
-  specs:
-    sequel-rails (0.1.7)
-      actionpack (~> 3.0.0.rc)
-      activesupport (~> 3.0.0.rc)
-      railties (~> 3.0.0.rc)
-      sequel (~> 3.13)
-
-GIT
   remote: git@github.com:Vizzuality/cartodb-importer.git
   revision: fceec699fe74839ccd132c8416260c0d9d80e4b1
   tag: v0.2.0
@@ -185,6 +175,11 @@ GEM
       json_pure
       rubyzip
     sequel (3.26.0)
+    sequel-rails (0.1.8)
+      actionpack (~> 3.0.0)
+      activesupport (~> 3.0.0)
+      railties (~> 3.0.0)
+      sequel (~> 3.13)
     sequel_column_type_array (0.0.2)
     sinatra (1.2.6)
       rack (~> 1.1)
@@ -241,7 +236,7 @@ DEPENDENCIES
   rspec-rails
   ruby-debug19
   sequel (= 3.26.0)
-  sequel-rails!
+  sequel-rails (~> 0.1.8)
   sequel_column_type_array (~> 0.0.2)
   steak (= 2.0.0)
   text-hyphen (= 1.2.0)

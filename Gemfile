@@ -4,7 +4,7 @@ gem "rails", "3.0.7"
 
 gem "pg", "0.11"
 gem "sequel", "3.26.0"
-gem "sequel-rails", :git => "git://github.com/ferblape/sequel-rails.git"
+gem "sequel-rails", "~> 0.1.8"
 gem "nofxx-georuby", "~> 1.9.2", :require => "geo_ruby"
 
 gem "rails_warden", "0.5.2"

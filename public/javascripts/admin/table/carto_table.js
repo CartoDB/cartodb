@@ -384,7 +384,7 @@
 	           },
 	           cartodb_id: element['cartodb_id'],
 	           is_cartodb_id:(j=="cartodb_id")?true:false,
-	        		allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
+	        	 allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
 	           cellsize: cell_size,
 	           column: j
 	         });

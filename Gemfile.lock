@@ -8,20 +8,6 @@ GIT
       railties (~> 3.0.0.rc)
       sequel (~> 3.13)
 
-GIT
-  remote: git@github.com:Vizzuality/cartodb-importer.git
-  revision: 7fb4cf0bbead3694c3aad4ca5a4c50f4f638951b
-  tag: v0.2.0
-  specs:
-    cartodb-importer (0.2.0)
-      builder
-      google-spreadsheet-ruby
-      pg (= 0.11)
-      roo
-      rubyzip
-      sequel
-      spreadsheet
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -71,6 +57,14 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (~> 2.0)
       xpath (~> 0.1.4)
+    cartodb-importer (0.2.0)
+      builder
+      google-spreadsheet-ruby
+      pg (= 0.11)
+      roo
+      rubyzip
+      sequel
+      spreadsheet
     childprocess (0.2.2)
       ffi (~> 1.0.6)
     choice (0.1.4)
@@ -228,7 +222,7 @@ PLATFORMS
 DEPENDENCIES
   aws-ses (= 0.4.1)
   capybara (~> 1.1.1)
-  cartodb-importer!
+  cartodb-importer
   email_spec
   exception_notification
   htmlentities

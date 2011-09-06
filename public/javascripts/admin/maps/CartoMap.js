@@ -39,6 +39,7 @@
     //  INIT MAP												  //
     ////////////////////////////////////////
     CartoMap.prototype.createMap = function () {
+      
       // Generate a google map
       var myOptions = {
         zoom: this.zoom_,
@@ -46,7 +47,24 @@
         disableDefaultUI: true,
         mapTypeId: google.maps.MapTypeId.ROADMAP
       }
+      
       this.map_ = new google.maps.Map(document.getElementById("map"),myOptions);
+
+
+      // var tilejson = {
+      //   tilejson: '1.0.0',
+      //   scheme: 'xyz',
+      //   tiles: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8'],
+      //   grids: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
+      //   formatter: function(options, data) { return data.NAME }
+      // };
+      // 
+      // this.map_.mapTypes.set('mb',new wax.g.connector(tilejson));
+      // this.map_.setMapTypeId('mb');
+      // wax.g.interaction(this.map_, tilejson);
+      
+
+      
       
 			// Change view mode and watch if query mode is activated
 			this.query_mode = ($('body').attr('query_mode') === 'true');
@@ -351,7 +369,8 @@
 			} else {
 				query_url = global_api_url+'queries?sql='+ escape("select *,ST_AsGeoJSON(the_geom) as coordinates_ from " + table_name);
 			}
-						
+			
+			
 
       $.ajax({
         method: 'GET',

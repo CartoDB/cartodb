@@ -10,10 +10,10 @@ GIT
 
 GIT
   remote: git@github.com:Vizzuality/cartodb-importer.git
-  revision: 5546ddfa552d63dcef9ac5551653794a057b5489
-  tag: v0.1.12
+  revision: 7fb4cf0bbead3694c3aad4ca5a4c50f4f638951b
+  tag: v0.2.0
   specs:
-    cartodb-importer (0.1.9)
+    cartodb-importer (0.2.0)
       builder
       google-spreadsheet-ruby
       pg (= 0.11)
@@ -64,7 +64,7 @@ GEM
       xml-simple
       xml-simple
     builder (2.1.2)
-    capybara (1.1.0.rc1)
+    capybara (1.1.1)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
       rack (>= 1.0.0)
@@ -152,7 +152,7 @@ GEM
     rgeo (0.3.2)
     rgeo-geojson (0.2.1)
       rgeo (>= 0.2.8)
-    roo (1.9.6)
+    roo (1.9.7)
       choice (>= 0.1.4)
       google-spreadsheet-ruby (>= 0.1.5)
       nokogiri (>= 1.5.0)
@@ -193,11 +193,12 @@ GEM
     sinatra (1.2.6)
       rack (~> 1.1)
       tilt (< 2.0, >= 1.2.2)
-    spreadsheet (0.6.5.7)
+    spreadsheet (0.6.5.8)
       ruby-ole (>= 1.0)
     spruz (0.2.13)
-    steak (1.1.0)
-      rspec (>= 1.3)
+    steak (2.0.0)
+      capybara (>= 1.0.0)
+      rspec-rails (>= 2.5.0)
     text-hyphen (1.2)
     thor (0.14.6)
     tilt (1.3.2)
@@ -226,7 +227,7 @@ PLATFORMS
 
 DEPENDENCIES
   aws-ses (= 0.4.1)
-  capybara (~> 1.1.0.rc1)
+  capybara (~> 1.1.1)
   cartodb-importer!
   email_spec
   exception_notification

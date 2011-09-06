@@ -18,7 +18,7 @@ gem "rgeo-geojson", :require => "rgeo/geo_json"
 gem "redis"
 gem "resque"
 gem "yajl-ruby", :require => "yajl"
-gem "cartodb-importer"
+gem "cartodb-importer", :git => "git@github.com:Vizzuality/cartodb-importer.git", :tag => "v0.2.0"
 gem "exception_notification"
 
 group :test, :development do

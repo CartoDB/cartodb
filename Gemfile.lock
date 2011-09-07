@@ -1,9 +1,9 @@
 GIT
   remote: git@github.com:Vizzuality/cartodb-importer.git
-  revision: fceec699fe74839ccd132c8416260c0d9d80e4b1
-  tag: v0.2.0
+  revision: d88ca8b06ee7c5145be86cc2f059c4df0a7e4ed4
+  tag: v0.2.1
   specs:
-    cartodb-importer (0.2.0)
+    cartodb-importer (0.2.1)
       builder
       google-spreadsheet-ruby
       pg (= 0.11)

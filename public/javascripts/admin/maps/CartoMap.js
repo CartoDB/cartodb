@@ -85,6 +85,13 @@
       this.map_.overlayMapTypes.insertAt(0,new wax.g.connector(tilejson));
       wax.g.interaction(this.map_, tilejson, waxOptions);
       
+      var interaction = wax.g.interaction(this.map_, tilejson);
+      
+      // interaction.click(function(x){
+      //   console.log(x);
+      // });
+      // console.log(interaction);
+      
       
 			// Change view mode and watch if query mode is activated
 			this.query_mode = ($('body').attr('query_mode') === 'true');
@@ -446,8 +453,9 @@
 						if (geom.type == "Point") {
 		          var occ_id = info.cartodb_id;
 		          var latlng = new google.maps.LatLng(geom.coordinates[1],geom.coordinates[0]);
-							var marker = me.addMarker(latlng, info, false);
-		          me.points_[occ_id] = marker;
+							//var marker = me.addMarker(latlng, info, false);
+		          //me.points_[occ_id] = marker;
+		          me.points_[occ_id] = info;
 		          me.bounds_.extend(latlng);
 						}
 					}

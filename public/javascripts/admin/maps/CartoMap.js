@@ -67,13 +67,17 @@
       var waxOptions = {
         callbacks: {
           out: function(){
-            
+            //maybe can destroy tooltips here?
           }, 
-          over: function(){
-            alert('over');
+          // you can see lat/long & pixel x/y in the evt object.
+          // feature has the cartodb_id that we use for the ajax tooltip
+          over: function(feature, div, opt3, evt){
+            alert('over'); 
           },
-          click: function(feature, div, unknown, evt){
-            alert('click');
+          click: function(feature, div, opt3, evt){
+            // you can see lat/long & pixel x/y in the evt object. 
+            //feature has the cartodb_id that we use for the ajax tooltip
+            alert('click'); 
           }
         },
         clickAction: 'full'  //or 'location' or 'teaser'

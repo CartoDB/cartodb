@@ -51,19 +51,18 @@
       this.map_ = new google.maps.Map(document.getElementById("map"),myOptions);
 
 
-      // var tilejson = {
-      //   tilejson: '1.0.0',
-      //   scheme: 'xyz',
-      //   tiles: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8'],
-      //   grids: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
-      //   formatter: function(options, data) { return data.NAME }
-      // };
-      // 
-      // this.map_.mapTypes.set('mb',new wax.g.connector(tilejson));
-      // this.map_.setMapTypeId('mb');
-      // wax.g.interaction(this.map_, tilejson);
+      var tilejson = {
+        tilejson: '1.0.0',
+        scheme: 'xyz',
+        tiles: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8'],
+        grids: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
+        formatter: function(options, data) { return data.NAME }
+      };
       
-
+      //this.map_.mapTypes.set('mb',new wax.g.connector(tilejson));
+      //this.map_.setMapTypeId('mb');
+      this.map_.overlayMapTypes.insertAt(0,new wax.g.connector(tilejson));
+      wax.g.interaction(this.map_, tilejson);
       
       
 			// Change view mode and watch if query mode is activated
@@ -449,9 +448,14 @@
     CartoMap.prototype.addMarker = function(latlng,info,save) {
       var me = this;
       
+      var image = new google.maps.MarkerImage((!this.query_mode)?this.generateDot('#FF6600'):this.generateDot('#666666'),
+            new google.maps.Size(20, 20),
+            new google.maps.Point(0,0),
+            new google.maps.Point(10, 10));
+      
       var marker = new google.maps.Marker({
         position: latlng,
-        icon: (!this.query_mode)?this.generateDot('#FF6600'):this.generateDot('#666666'),
+        icon: image,
         flat: true,
         clickable: (!this.query_mode)?true:false,
         draggable: (!this.query_mode)?true:false,

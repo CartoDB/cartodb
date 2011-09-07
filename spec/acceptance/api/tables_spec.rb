@@ -282,10 +282,11 @@ feature "API 1.0 tables management" do
     } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
-      (response.body[:schema] - [
-        ["cartodb_id", "number"], ["url", "string"], ["login", "string"], ["country", "string"], ["followers_count", "number"], 
-        ["unknow_name_1", "string"], ["created_at", "date"], ["updated_at", "date"]
-       ]).should be_empty
+      schema_differences = (response.body[:schema] - [
+        ["cartodb_id", "number"], ["url", "string"], ["login", "string"], ["country", "string"], ["followers_count", "string"], 
+        ["field_5", "string"], ["created_at", "date"], ["updated_at", "date"]
+       ])
+       schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     end
   end
 
@@ -298,15 +299,16 @@ feature "API 1.0 tables management" do
     } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
-      (response.body[:schema] - [
+      schema_differences = (response.body[:schema] - [
         ["cartodb_id", "number"], ["organization", "string"], ["website", "string"], ["about", "string"], ["organization_s_work_in_haiti", "string"], 
-        ["calculation_of_number_of_people_reached", "string"], ["private_funding", "number"], ["relief", "string"], ["reconstruction", "string"], 
-        ["private_funding_spent", "number"], ["spent_on_relief", "string"], ["spent_on_reconstruction", "string"], ["usg_funding", "number"], 
-        ["usg_funding_spent", "number"], ["other_funding", "number"], ["other_funding_spent", "number"], ["international_staff", "number"], ["national_staff", "number"], 
+        ["calculation_of_number_of_people_reached", "string"], ["private_funding", "string"], ["relief", "string"], ["reconstruction", "string"], 
+        ["private_funding_spent", "string"], ["spent_on_relief", "string"], ["spent_on_reconstruction", "string"], ["usg_funding", "string"], 
+        ["usg_funding_spent", "string"], ["other_funding", "string"], ["other_funding_spent", "string"], ["international_staff", "string"], ["national_staff", "string"], 
         ["us_contact_name", "string"], ["us_contact_title", "string"], ["us_contact_phone", "string"], ["us_contact_e_mail", "string"], ["media_contact_name", "string"], 
         ["media_contact_title", "string"], ["media_contact_phone", "string"], ["media_contact_e_mail", "string"], ["donation_phone_number", "string"], ["donation_address_line_1", "string"], 
-        ["address_line_2", "string"], ["city", "string"], ["state", "string"], ["zip_code", "number"], ["donation_website", "string"], ["created_at", "date"], ["updated_at", "date"]
-      ]).should be_empty
+        ["address_line_2", "string"], ["city", "string"], ["state", "string"], ["zip_code", "string"], ["donation_website", "string"], ["created_at", "date"], ["updated_at", "date"]
+      ])
+      schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     end
   end
   
@@ -319,12 +321,13 @@ feature "API 1.0 tables management" do
     } do |response|
       response.status.should be_success
       response.body[:name].should == "vizzuality_shp"
-      (response.body[:schema] - [
+      schema_differences = (response.body[:schema] - [
         ["cartodb_id", "number"], ["gid", "number"], ["subclass", "string"], ["x", "number"], ["y", "number"], ["length", "string"], ["area", "string"], 
         ["angle", "number"], ["name", "string"], ["pid", "number"], ["lot_navteq", "string"], ["version_na", "string"], ["vitesse_sp", "number"], 
         ["id", "number"], ["nombrerest", "string"], ["tipocomida", "string"], 
         ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
-      ]).should be_empty
+      ])
+      schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     end    
   end
   
@@ -337,12 +340,13 @@ feature "API 1.0 tables management" do
     } do |response|
       response.status.should be_success
       response.body[:name].should == "constru_shp"
-      (response.body[:schema] - [
+      schema_differences = (response.body[:schema] - [
         ["cartodb_id", "number"], ["gid", "number"], ["mapa", "number"], ["delegacio", "number"], ["municipio", "number"], ["masa", "string"], 
         ["tipo", "string"], ["parcela", "string"], ["constru", "string"], ["coorx", "number"], ["coory", "number"], ["numsymbol", "number"], 
         ["area", "number"], ["fechaalta", "number"], ["fechabaja", "number"], ["ninterno", "number"], ["hoja", "string"], ["refcat", "string"], 
         ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
-      ]).should be_empty
+      ])
+      schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     end    
   end
   

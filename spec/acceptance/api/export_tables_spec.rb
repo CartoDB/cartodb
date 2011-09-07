@@ -10,15 +10,15 @@ feature "API 1.0 tables export" do
     login_as @user
     
     @table = new_table
-    @table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+    @table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     @table.user_id = @user.id
     @table.name = "antantaric_species"
     @table.save
   end
 
   scenario "Get table in CSV format" do
-    response = get "#{api_table_export_to_csv_url(@table.name)}"
-    response.status.should be_success
+    get "#{api_table_export_to_csv_url(@table.name)}"
+    response.status.should == 200
     
     path = "/tmp/temp_csv.zip"
     fd = File.open(path,'w+')
@@ -31,8 +31,8 @@ feature "API 1.0 tables export" do
   end
 
   scenario "Get table in SHP format" do
-    response = get "#{api_table_export_to_shp_url(@table.name)}"
-    response.status.should be_success
+    get "#{api_table_export_to_shp_url(@table.name)}"
+    response.status.should == 200
     
     path = "/tmp/temp_shp.zip"
     fd = File.open(path,'w+')

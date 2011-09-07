@@ -60,7 +60,7 @@
         grids: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
         formatter: function(options, data) { 
           current_cartodb = data.cartodb_id;
-          alert(data.cartodb_id);
+          //alert(data.cartodb_id);
           return data.cartodb_id; 
         }
       };
@@ -69,6 +69,13 @@
       //this.map_.setMapTypeId('mb');
       this.map_.overlayMapTypes.insertAt(0,new wax.g.connector(tilejson));
       wax.g.interaction(this.map_, tilejson);
+      
+      var interaction = wax.g.interaction(this.map_, tilejson);
+      
+      // interaction.click(function(x){
+      //   console.log(x);
+      // });
+      // console.log(interaction);
       
       
 			// Change view mode and watch if query mode is activated
@@ -431,8 +438,9 @@
 						if (geom.type == "Point") {
 		          var occ_id = info.cartodb_id;
 		          var latlng = new google.maps.LatLng(geom.coordinates[1],geom.coordinates[0]);
-							var marker = me.addMarker(latlng, info, false);
-		          me.points_[occ_id] = marker;
+							//var marker = me.addMarker(latlng, info, false);
+		          //me.points_[occ_id] = marker;
+		          me.points_[occ_id] = info;
 		          me.bounds_.extend(latlng);
 						}
 					}

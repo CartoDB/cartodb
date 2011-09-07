@@ -124,7 +124,7 @@ describe User do
     user = create_user
     table = new_table :name => 'antantaric species'
     table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
     query_result = user.run_query("select * from antantaric_species where family='Polynoidae' limit 10")
@@ -147,7 +147,7 @@ describe User do
 
     table2 = new_table :name => 'twitts'
     table2.user_id = user.id
-    table2.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+    table2.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
     table2.save
 
     # query_result = user.run_query("select antantaric_species.family as fam, twitts.login as login from antantaric_species, twitts where family='Polynoidae' limit 10")
@@ -174,7 +174,7 @@ describe User do
     table = new_table
     table.user_id = user.id
     table.name = 'antantaric species'
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
     lambda {
@@ -211,7 +211,7 @@ describe User do
     user = create_user
     table = new_table :name => 'antantaric species'
     table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
     query_result = user.run_query("select * from antantaric_species where family='Polynoidae' limit 1; select * from antantaric_species where family='Polynoidae' limit 10")
@@ -226,7 +226,7 @@ describe User do
     user = create_user
     table = new_table :name => 'antantaric species'
     table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
     query_result = user.run_query("insert into antantaric_species (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from antantaric_species where family='Polynoidae' limit 10")

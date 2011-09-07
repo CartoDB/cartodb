@@ -355,45 +355,49 @@ describe Table do
     table = new_table
     table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    (table.schema(:cartodb_types => false) - [
+    schema_differences = (table.schema(:cartodb_types => false) - [
       [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
       [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
       [:kind, "character varying(10)"]
-    ]).should be_empty
+    ])
+    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
   end
 
   it "should sanitize columns from a given schema" do
     table = new_table
     table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    (table.schema(:cartodb_types => false) - [
+    schema_differences = (table.schema(:cartodb_types => false) - [
       [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
       [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
       [:kind, "character varying(10)"]
-    ]).should be_empty
+    ])
+    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
   end
 
   it "should import file twitters.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
     table.save.reload
-    table.name.should == 'twitters'
-    table.rows_counted.should == 7    
-    (table.schema(:cartodb_types => false) - [
+    table.name.should match(/^twitters/)
+    table.rows_counted.should == 7
+
+    schema_differences = (table.schema(:cartodb_types => false) - [
       [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
-      [:country, "character varying"], [:followers_count, "integer"], [:unknow_name_1, "character varying"], 
+      [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
       [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
-    ]).should be_empty
+    ])
+    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     row = table.records[:rows][0]
     row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
     row[:login].should == "vzlaturistica "
     row[:country].should == " Venezuela "
-    row[:followers_count].should == 211
+    row[:followers_count].should == "211"
   end
 
   it "should import file import_csv_1.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_1.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
     table.reload
     table.name.should == 'import_csv_1'
@@ -401,18 +405,18 @@ describe Table do
     table.rows_counted.should == 100
     row = table.records[:rows][6]
     row[:cartodb_id] == 6
-    row[:id].should == 6
+    row[:id].should == "6"
     row[:name_of_species].should == "Laetmonice producta 6"
     row[:kingdom].should == "Animalia"
     row[:family].should == "Aphroditidae"
-    row[:lat].should == 0.2
-    row[:lon].should == 2.8
-    row[:views].should == 540
+    row[:lat].should == "0.2"
+    row[:lon].should == "2.8"
+    row[:views].should == "540"
   end
 
   it "should import file import_csv_2.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/import_csv_2.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_2.csv"
     table.save
     table.reload
     table.name.should == 'import_csv_2'
@@ -420,18 +424,18 @@ describe Table do
     table.rows_counted.should == 100
     row = table.records[:rows][6]
     row[:cartodb_id] == 6
-    row[:id].should == 6
+    row[:id].should == "6"
     row[:name_of_species].should == "Laetmonice producta 6"
     row[:kingdom].should == "Animalia"
     row[:family].should == "Aphroditidae"
-    row[:lat].should == 0.2
-    row[:lon].should == 2.8
-    row[:views].should == 540
+    row[:lat].should == "0.2"
+    row[:lon].should == "2.8"
+    row[:views].should == "540"
   end
   
   it "should import file flights-bad-encoding.csv" do
     table = new_table
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/flights-bad-encoding.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/flights-bad-encoding.csv"
     table.save
     
     table.rows_counted.should == 791
@@ -463,7 +467,8 @@ describe Table do
     table.rows_counted.should == 3855
   end
   
-  it "should import file clubbing.csv" do
+  # Not supported by cartodb-importer v0.2.1
+  pending "should import file clubbing.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv"
     table.save
@@ -490,8 +495,9 @@ describe Table do
     table.rows_counted.should == 85
   end
 
+  # Not supported by cartodb-importer v0.2.1
   # File in format different than UTF-8
-  it "should import estaciones.csv" do
+  pending "should import estaciones.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/estaciones.csv"
     table.save
@@ -500,8 +506,9 @@ describe Table do
     table.rows_counted.should == 29
   end
   
+  # Not supported by cartodb-importer v0.2.1
   # File in format UTF-8
-  it "should import estaciones2.csv" do
+  pending "should import estaciones2.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/estaciones2.csv"
     table.save
@@ -519,25 +526,26 @@ describe Table do
     table.reload
     table.name.should == 'ngos'
 
-    (table.schema(:cartodb_types => false) - [
+    schema_differences = (table.schema(:cartodb_types => false) - [
       [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"],
       [:organization_s_work_in_haiti, "character varying"], [:calculation_of_number_of_people_reached, "character varying"],
-      [:private_funding, "double precision"], [:relief, "character varying"], [:reconstruction, "character varying"],
-      [:private_funding_spent, "double precision"], [:spent_on_relief, "character varying"], [:spent_on_reconstruction, "character varying"],
-      [:usg_funding, "integer"], [:usg_funding_spent, "integer"], [:other_funding, "integer"], [:other_funding_spent, "integer"],
-      [:international_staff, "integer"], [:national_staff, "integer"], [:us_contact_name, "character varying"], [:us_contact_title, "character varying"],
+      [:private_funding, "character varying"], [:relief, "character varying"], [:reconstruction, "character varying"],
+      [:private_funding_spent, "character varying"], [:spent_on_relief, "character varying"], [:spent_on_reconstruction, "character varying"],
+      [:usg_funding, "character varying"], [:usg_funding_spent, "character varying"], [:other_funding, "character varying"], [:other_funding_spent, "character varying"],
+      [:international_staff, "character varying"], [:national_staff, "character varying"], [:us_contact_name, "character varying"], [:us_contact_title, "character varying"],
       [:us_contact_phone, "character varying"], [:us_contact_e_mail, "character varying"], [:media_contact_name, "character varying"],
       [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"],
       [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"],
-      [:city, "character varying"], [:state, "character varying"], [:zip_code, "integer"], [:donation_website, "character varying"], 
+      [:city, "character varying"], [:state, "character varying"], [:zip_code, "character varying"], [:donation_website, "character varying"], 
       [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
-    ]).should be_empty
+    ])
+    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     table.rows_counted.should == 76
   end
   
   it "should import EjemploVizzuality.zip" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/EjemploVizzuality.zip", "application/download")
+    table.import_from_file = "#{Rails.root}/db/fake_data/EjemploVizzuality.zip"
     table.importing_encoding = 'LATIN1'
     table.save
 
@@ -547,7 +555,7 @@ describe Table do
   
   it "should import SHP1.zip" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/SHP1.zip", "application/download")
+    table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
     table.importing_encoding = 'LATIN1'
     table.save
 
@@ -556,7 +564,7 @@ describe Table do
   
   it "should import ngoaidmap_projects.csv" do
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/ngoaidmap_projects.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/ngoaidmap_projects.csv"
     table.save
     table.reload
     table.name.should == 'ngoaidmap_projects'
@@ -754,10 +762,11 @@ describe Table do
     table.reload
     # Check if the schema stored in memory is fresh and does not contain
     # latitude and longitude columns
-    (table.schema - [
+    schema_differences = (table.schema - [
       [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
       [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"]
-    ]).should be_empty
+    ])
+    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     record = table.record(pk)
     RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{-3.699732.round(6)} #{40.423012.round(6)})"
   end
@@ -771,7 +780,7 @@ describe Table do
   it "should import CSV file csv_no_quotes.csv" do
     user = create_user
     table = new_table :name => nil, :user_id => user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/csv_no_quotes.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
     table.save.reload
     
     table.name.should == 'csv_no_quotes'
@@ -781,7 +790,7 @@ describe Table do
   it "should import reserved_names.csv" do
     user = create_user
     table = new_table :name => nil
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/reserved_names.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/reserved_names.csv"
     table.save.reload
     
     table.name.should == 'reserved_names'
@@ -805,7 +814,7 @@ describe Table do
     table.name.should == 'empty_file'
     
     table2 = new_table :name => nil, :user_id => user.id
-    table2.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/empty_file.csv", "text/csv")
+    table2.import_from_file = "#{Rails.root}/db/fake_data/empty_file.csv"
     lambda {
       table2.save
     }.should raise_error
@@ -822,7 +831,7 @@ describe Table do
     table.name.should == 'empty_file'
     
     table2 = new_table :name => 'empty_file', :user_id => user.id
-    table2.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/csv_no_quotes.csv", "text/csv")
+    table2.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
     table2.save.reload
     table2.name.should == 'empty_file_2'
     
@@ -870,10 +879,11 @@ describe Table do
     table.name.should == "table_table_name"
   end
   
-  it "should escape a reserved column name when importing a file with a column with an invalid name" do
+  # Not supported by cartodb-importer v0.2.1
+  pending "should escape reserved column names" do
     user = create_user
     table = new_table :user_id => user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/reserved_columns.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/reserved_columns.csv"
     table.save.reload
     
     table.schema.should include([:_xmin, "number"])
@@ -927,7 +937,7 @@ describe Table do
     parsed[1][0].should == "1"
     parsed[1][5].should ==  "{\"type\":\"Point\",\"coordinates\":[-3.699732,40.423012]}"
   end
-
+  
   it "should return the content of the table in SHP format" do
     table = create_table :name => 'table1'
     table.insert_row!({:name => "name #1", :description => "description #1"})
@@ -937,7 +947,7 @@ describe Table do
     fd.write(zip)
     fd.close
     Zip::ZipFile.foreach(path) do |entry|
-      %W{ table1_export.shp table1_export.dbf table1_export.prj }.should include(entry.name)
+      %W{ table1_export.shx table1_export.shp table1_export.dbf table1_export.prj }.should include(entry.name)
     end
     FileUtils.rm_rf(path)
   end
@@ -947,15 +957,16 @@ describe Table do
     table = new_table :user_id => user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
     table.save.reload
-    (table.schema -  [
-      [:cartodb_id, "number"], [:gid, "number"], [:id_0, "number"], [:iso, "string"], 
-      [:name_0, "string"], [:id_1, "number"], [:name_1, "string"], [:id_2, "number"], 
-      [:name_2, "string"], [:id_3, "number"], [:name_3, "string"], [:id_4, "number"], 
+    schema_differences = (table.schema -  [
+      [:cartodb_id, "number"], [:gid, "string"], [:id_0, "string"], [:iso, "string"], 
+      [:name_0, "string"], [:id_1, "string"], [:name_1, "string"], [:id_2, "string"], 
+      [:name_2, "string"], [:id_3, "string"], [:name_3, "string"], [:id_4, "string"], 
       [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], 
-      [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "number"], 
-      [:shape_area, "number"], [:latitude, "number"], [:longitude, "string"], [:center_latitude, "number"], 
-      [:center_longitude, "number"], [:created_at, "string"], [:updated_at, "string"]
-    ]).should be_empty
+      [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "string"], 
+      [:shape_area, "string"], [:latitude, "string"], [:longitude, "string"], [:center_latitude, "string"], 
+      [:center_longitude, "string"], [:created_at, "string"], [:updated_at, "string"]
+    ])
+    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
   end
   
   it "should be able to find a table by name or by identifier" do
@@ -1029,7 +1040,7 @@ describe Table do
     user = create_user
     table = new_table
     table.user_id = user.id
-    table.import_from_file = Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/cp_vizzuality_export.csv", "text/csv")
+    table.import_from_file = "#{Rails.root}/db/fake_data/cp_vizzuality_export.csv"
     table.save
 
     table.rows_counted.should == 19235
@@ -1058,10 +1069,11 @@ describe Table do
     table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
     table.save.reload
     
-    (table.schema -  [
+    schema_differences = (table.schema -  [
       [:cartodb_id, "number"], [:name, "string"], [:the_geom_str, "string"], 
       [:created_at, "string"], [:updated_at, "string"]
-    ]).should be_empty
+    ])
+    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     
     user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
     table_schema = user.in_database.schema(table.name)

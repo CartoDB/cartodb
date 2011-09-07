@@ -74,9 +74,9 @@
           over: function(feature, div, opt3, evt){
             alert('over'); 
           },
+          // you can see lat/long & pixel x/y in the evt object. 
+          //feature has the cartodb_id that we use for the ajax tooltip
           click: function(feature, div, opt3, evt){
-            // you can see lat/long & pixel x/y in the evt object. 
-            //feature has the cartodb_id that we use for the ajax tooltip
             alert('click'); 
           }
         },

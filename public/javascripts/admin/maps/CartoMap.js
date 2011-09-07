@@ -51,7 +51,7 @@
       this.map_ = new google.maps.Map(document.getElementById("map"),myOptions);
 
       // interaction placeholder
-      var current_cartodb;
+      var currentCartoDbId;
 
       var tilejson = {
         tilejson: '1.0.0',
@@ -59,16 +59,31 @@
         tiles: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8'],
         grids: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
         formatter: function(options, data) { 
-          current_cartodb = data.cartodb_id;
-          alert(data.cartodb_id);
+          currentCartoDbId = data.cartodb_id;
           return data.cartodb_id; 
         }
       };
       
+      var waxOptions = {
+        callbacks: {
+          out: function(){
+            
+          }, 
+          over: function(){
+            alert('over');
+          },
+          click: function(feature, div, unknown, evt){
+            alert('click');
+          }
+        },
+        clickAction: 'full'  //or 'location' or 'teaser'
+      };
+      
+      
       //this.map_.mapTypes.set('mb',new wax.g.connector(tilejson));
       //this.map_.setMapTypeId('mb');
       this.map_.overlayMapTypes.insertAt(0,new wax.g.connector(tilejson));
-      wax.g.interaction(this.map_, tilejson);
+      wax.g.interaction(this.map_, tilejson, waxOptions);
       
       
 			// Change view mode and watch if query mode is activated

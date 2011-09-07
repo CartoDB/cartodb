@@ -55,13 +55,25 @@ class Table < Sequel::Model(:user_tables)
            aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
            user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
         end
-
+        
+        # When tables are created using ogr2ogr they are added a ogc_fid primary key
+        # In that case:
+        #  - If cartodb_id already exists, remove ogc_fid
+        #  - If cartodb_id does not exist, remove the primary key constraint and treat ogc_fid as the auxiliary column
+        if schema.present? && schema.flatten.include?(:ogc_fid)
+          if aux_cartodb_id_column.nil?
+            aux_cartodb_id_column = "ogc_fid"
+          else
+            user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
+          end
+        end
+        
         user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
 
         # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
         # IMPORTANT: Do this before adding constraints cause otherwise we can have duplicate key errors
         if aux_cartodb_id_column.present?
-          user_database.run("UPDATE #{self.name} SET cartodb_id = #{aux_cartodb_id_column}")
+          user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
           user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
           cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
           max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max]
@@ -193,10 +205,9 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database.schema(self.name, options.slice(:reload)).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
       col_db_type = column[1][:db_type].starts_with?("geometry") ? "geometry" : column[1][:db_type]
-
-      col = [ column[0],
-        (options[:cartodb_types] == false) ? col_db_type : col_db_type.convert_to_cartodb_type,
-        col_db_type == "geometry" ? "geometry" : nil,
+      col = [ column[0], 
+        (options[:cartodb_types] == false) ? col_db_type : col_db_type.convert_to_cartodb_type, 
+        col_db_type == "geometry" ? "geometry" : nil, 
         col_db_type == "geometry" ? the_geom_type : nil
       ].compact
 

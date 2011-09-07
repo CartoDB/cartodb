@@ -147,7 +147,7 @@ feature "API 1.0 tables management" do
     post_json api_tables_url, {
                :name => "Twitts",
                :schema => "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)",
-               :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+               :file => "#{Rails.root}/db/fake_data/twitters.csv"
               } do |response|
       response.status.should be_success
     end
@@ -278,7 +278,7 @@ feature "API 1.0 tables management" do
     
     post_json api_tables_url, {
       :name => "My new imported table", 
-      :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")
+      :file => "#{Rails.root}/db/fake_data/twitters.csv"
     } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -350,7 +350,7 @@ feature "API 1.0 tables management" do
   scenario "Create a table, remove a table, and recreate it with the same name" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).times(3)
     
-    post_json api_tables_url, {:name => "wadus", :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")} do |response|
+    post_json api_tables_url, {:name => "wadus", :file => "#{Rails.root}/db/fake_data/twitters.csv"} do |response|
       response.status.should be_success
     end       
     
@@ -358,7 +358,7 @@ feature "API 1.0 tables management" do
       response.status.should be_success
     end
 
-    post_json api_tables_url, {:name => "wadus", :file => Rack::Test::UploadedFile.new("#{Rails.root}/db/fake_data/twitters.csv", "text/csv")} do |response|
+    post_json api_tables_url, {:name => "wadus", :file => "#{Rails.root}/db/fake_data/twitters.csv"} do |response|
       response.status.should be_success
     end    
   end

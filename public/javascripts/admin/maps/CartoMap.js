@@ -50,13 +50,19 @@
       
       this.map_ = new google.maps.Map(document.getElementById("map"),myOptions);
 
+      // interaction placeholder
+      var current_cartodb;
 
       var tilejson = {
         tilejson: '1.0.0',
         scheme: 'xyz',
         tiles: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8'],
         grids: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
-        formatter: function(options, data) { return data.NAME }
+        formatter: function(options, data) { 
+          current_cartodb = data.cartodb_id;
+          alert(data.cartodb_id);
+          return data.cartodb_id; 
+        }
       };
       
       //this.map_.mapTypes.set('mb',new wax.g.connector(tilejson));

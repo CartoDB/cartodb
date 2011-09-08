@@ -26,9 +26,14 @@ class Admin::TablesController < ApplicationController
           :disposition => "attachment; filename=#{@table.name}.zip"
       end
       format.shp do
-        send_data @table.to_shp,
-          :type => 'application/octet-stream; charset=binary; header=present',
-          :disposition => "attachment; filename=#{@table.name}.zip"
+        if shp_content = @table.to_shp
+          send_data shp_content,
+            :type => 'application/octet-stream; charset=binary; header=present',
+            :disposition => "attachment; filename=#{@table.name}.zip"
+        else
+          # FIXME: Give some feedback in the UI
+          redirect_to table_path(@table), :alert => "There was an error exporting the table"
+        end
       end
     end
   end

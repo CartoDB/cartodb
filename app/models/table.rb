@@ -5,7 +5,7 @@ class Table < Sequel::Model(:user_tables)
   # Privacy constants
   PRIVATE = 0
   PUBLIC  = 1
-
+  
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
 
@@ -506,25 +506,30 @@ TRIGGER
     all_files_path = Rails.root.join('tmp', "#{shp_files_name}.*")
     shp_file_path  = Rails.root.join('tmp', "#{shp_files_name}.shp")
     zip_file_path  = Rails.root.join('tmp', "#{shp_files_name}.zip")
+    pgsql2shp_bin  = `which pgsql2shp`.strip
 
     db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
     host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
     port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
     username = db_configuration['username']
-    Rails.logger.info "Executing command: #{%Q{`which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}}}"
-    system <<-CMD
-      rm -rf #{all_files_path};
-      `which pgsql2shp` #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}
-    CMD
-    Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
-      Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|
-        zipfile.add(File.basename(f), f)
+    
+    command = "#{pgsql2shp_bin} #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}"
+    system("rm -rf #{all_files_path}")
+    
+    Rails.logger.info "Executing command: #{command}"
+    puts `#{command}`
+    
+    if $?.success?
+      Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+        Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|
+          zipfile.add(File.basename(f), f)
+        end
       end
+      response = File.read(zip_file_path)
+      FileUtils.rm_rf(shp_file_path)
+      FileUtils.rm_rf(zip_file_path)
+      response
     end
-    response = File.read(zip_file_path)
-    FileUtils.rm_rf(shp_file_path)
-    FileUtils.rm_rf(zip_file_path)
-    response
   end
 
   def self.find_all_by_user_id_and_tag(user_id, tag_name)

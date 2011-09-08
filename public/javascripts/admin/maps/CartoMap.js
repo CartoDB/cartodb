@@ -49,11 +49,26 @@
       }
       
       this.map_ = new google.maps.Map(document.getElementById("map"),myOptions);
+      
+			// Change view mode and watch if query mode is activated
+			this.query_mode = ($('body').attr('query_mode') === 'true');
+			$('body').attr('view_mode','map');
+      
+      this.addMapOverlays();
+      this.addMapListeners();
+      this.addToolListeners();
+      
+      
+      
+      
+      
+      /*TEST ZONE*/
 
       // interaction placeholder
-      var currentCartoDbId;
-
-      var tilejson = {
+      var currentCartoDbId,
+          me = this;
+      
+      this.tilejson = {
         tilejson: '1.0.0',
         scheme: 'xyz',
         tiles: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8'],
@@ -64,7 +79,7 @@
         }
       };
       
-      var waxOptions = {
+      this.waxOptions = {
         callbacks: {
           out: function(){
             //maybe can destroy tooltips here?
@@ -72,12 +87,14 @@
           // you can see lat/long & pixel x/y in the evt object.
           // feature has the cartodb_id that we use for the ajax tooltip
           over: function(feature, div, opt3, evt){
-            alert('over'); 
+            //console.log(feature,div,opt3,evt);
+            //me.tooltip_.open(evt.latLng,[this]);
           },
           // you can see lat/long & pixel x/y in the evt object. 
           //feature has the cartodb_id that we use for the ajax tooltip
           click: function(feature, div, opt3, evt){
-            alert('click'); 
+            console.log('click!');
+            me.info_window_.openWax(feature);
           }
         },
         clickAction: 'full'  //or 'location' or 'teaser'
@@ -86,25 +103,14 @@
       
       //this.map_.mapTypes.set('mb',new wax.g.connector(tilejson));
       //this.map_.setMapTypeId('mb');
-      this.map_.overlayMapTypes.insertAt(0,new wax.g.connector(tilejson));
-      wax.g.interaction(this.map_, tilejson, waxOptions);
-      
-      var interaction = wax.g.interaction(this.map_, tilejson);
-      
-      // interaction.click(function(x){
-      //   console.log(x);
-      // });
-      // console.log(interaction);
-      
-      
-			// Change view mode and watch if query mode is activated
-			this.query_mode = ($('body').attr('query_mode') === 'true');
-			$('body').attr('view_mode','map');
-      
-      this.addMapOverlays();
-      
-      this.addMapListeners();
-      this.addToolListeners();
+      this.wax_tile = new wax.g.connector(this.tilejson);
+      this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
+      this.interaction = wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
+
+
+      this.hideLoader();
+
+      /*END TEST ZONE*/
     }
     
     
@@ -121,13 +127,13 @@
               '/javascripts/admin/maps/Overlays/CartoDeletewindow.js',
         function(){
           me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
-    			me.info_window_      = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);    // InfoWindow for markers
+    			me.info_window_     = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);     // InfoWindow for markers
     			me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-260,-260),me.map_);				// Over tooltip for markers and selection area
-          me.delete_window_    = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_); // Delete window to confirm remove one/several markers
+          me.delete_window_   = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_);  // Delete window to confirm remove one/several markers
 					me.map_canvas_ 			= new mapCanvasStub(me.map_);
          					
-					me.getColumns();
- 					me.getPoints();
+					//me.getColumns();
+ 					//me.getPoints();
         }
       );
     }
@@ -457,8 +463,8 @@
 						if (geom.type == "Point") {
 		          var occ_id = info.cartodb_id;
 		          var latlng = new google.maps.LatLng(geom.coordinates[1],geom.coordinates[0]);
-							//var marker = me.addMarker(latlng, info, false);
-		          //me.points_[occ_id] = marker;
+							var marker = me.addMarker(latlng, info, false);
+		          me.points_[occ_id] = marker;
 		          me.points_[occ_id] = info;
 		          me.bounds_.extend(latlng);
 						}
@@ -670,25 +676,36 @@
 			$('body').attr('view_mode','map');
 		
       this.show();
-			this.showLoader();
+			//this.showLoader();
 
-			if (sql) {
-				this.clearMap(true);
-			} else {
-				this.setMapStatus('select');
-				this.getColumns();
-				this.getPoints();
-			}
+      // Add again wax layer
+      this.wax_tile = new wax.g.connector(this.tilejson);
+      this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
+      wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
+
+      // if (sql) {
+      //  this.clearMap(true);
+      // } else {
+      //  this.setMapStatus('select');
+      //  this.getColumns();
+      //  this.getPoints();
+      // }
     }
 
     /* Clear map */
     CartoMap.prototype.clearMap = function(sql) {
+      
+      // Remove wax layer and fake markers | polygon | polyline
+      if (this.map_ != undefined) {
+        this.map_.overlayMapTypes.clear();
+      }
+      
       // Making this function faster as possible, we don't use async + underscore-each
-      _.each(this.points_,function(ele,i){
-        ele.setMap(null);
-      });
-      this.points_ = {};
-			if (sql) this.getPoints();
+      // _.each(this.points_,function(ele,i){
+      //   ele.setMap(null);
+      // });
+      // this.points_ = {};
+			//if (sql) this.getPoints();
     }
     
 		/* Hide all overlays (no markers) */ 

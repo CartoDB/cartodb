@@ -29,7 +29,7 @@ module CartoDB
   end
   
   def self.account_host
-    APP_CONFIG[:account_host] || domain
+    APP_CONFIG[:account_host]
   end
   
   module API

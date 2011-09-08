@@ -120,8 +120,6 @@ module ApplicationHelper
   def account_url
     if APP_CONFIG[:account_host]
       request.protocol + CartoDB.account_host
-    else
-      edit_user_path(current_user)
     end
   end
 

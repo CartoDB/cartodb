@@ -119,6 +119,57 @@
 	    this.setPosition();			
 	  }
 	}
+	
+	
+	CartoInfowindow.prototype.openWax = function(feature){
+	  // TODO
+	  // Generate loader or something similar
+	  // Errors?
+	  var me = this;
+	  $.ajax({
+      method: "GET",
+      url:global_api_url + 'tables/'+table_name+'/records/'+feature,
+      headers: {"cartodbclient": true},
+      success:function(data){
+        positionateInfowindow(me,data);
+      },
+      error:function(e){
+        alert('error!');
+      }
+    });
+    
+    
+    function positionateInfowindow(me,info) {
+      
+      // Hide wax layer
+      // Show fake marker
+      // debugger;
+
+      if (me.div_) {
+  	    var div = me.div_;
+  	    // Get latlng position
+  	    me.latlng_ = geoPosition(info.the_geom);
+  			//this.marker_ = info;  // Create marker?
+
+  	    $(div).find('div.top').html('');
+
+  	    //var marker_data = info;
+
+  	    _.each(info,function(value,label){
+  	      if (label!='cartodb_id') {
+    				$(div).find('div.top').append('<label>'+label+'</label><p class="'+((info[label]!=null)?'':'empty')+'">'+value+'</p>');
+  	      }
+  	    });
+
+  			$(div).find('div.bottom').find('label').html('cartodb_id: <strong>'+info.cartodb_id+'</strong>');
+
+
+  	    me.moveMaptoOpen();
+  	    me.setPosition();			
+  	  }
+    }
+	}	
+	
 
 
 	CartoInfowindow.prototype.hide = function() {

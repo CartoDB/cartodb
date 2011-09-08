@@ -149,3 +149,15 @@
     };
     
     
+    /*============================================================================*/
+    /* Get lat&lon from GeoJSON  */
+    /*============================================================================*/
+    function geoPosition(str) {
+      var json = $.parseJSON(str);
+      if (json.type=="Point") 
+        return new google.maps.LatLng(json.coordinates[1],json.coordinates[0]);
+      else 
+        return null;
+    }
+    
+    

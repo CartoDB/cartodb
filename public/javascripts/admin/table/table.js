@@ -8,7 +8,7 @@
 	        "/javascripts/admin/maps/map.js",
 	        "/javascripts/admin/maps/map_elements.js",
 	        "/javascripts/admin/maps/CartoMap.js",
-	        "/javascripts/admin/maps/wax.g.min.js",
+	        "/javascripts/admin/maps/wax.g.js",
 	        "https://maps.google.com/maps/api/js?sensor=true&callback=initApp"
 				);
 			} else {

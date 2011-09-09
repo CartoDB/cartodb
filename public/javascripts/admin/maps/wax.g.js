@@ -1,4 +1,4 @@
-/* wax - 3.0.6 - 1.0.4-376-g30842d3 */
+/* wax - 3.0.6 - 1.0.4-380-g06e93bd */
 
 
 /*!
@@ -355,19 +355,25 @@ wax.GridInstance = function(grid_tile, formatter, options) {
     // with the DOM. Takes a px offset from 0, 0 of a grid.
     instance.gridFeature = function(x, y) {
         if (!(grid_tile && grid_tile.grid)) return;
+        //console.log("gridfeature")
+        //console.log('(0.0)');
+//        console.log(x + '|' + y);
         if ((y < 0) || (x < 0)) return;
         if ((Math.floor(y) > tileSize) ||
             (Math.floor(x) > tileSize)) return;
+        //console.log(':D');
         // Find the key in the grid. The above calls should ensure that
         // the grid's array is large enough to make this work.
-        var key = resolveCode(grid_tile.grid[
-           Math.floor((y) / resolution)
-        ].charCodeAt(
-           Math.floor((x) / resolution)
-        ));
+
+          var key = resolveCode(grid_tile.grid[
+             Math.floor((y) / resolution)
+          ].charCodeAt(
+             Math.floor((x) / resolution)
+          ));          
+
 
         if (grid_tile.keys[key] && grid_tile.data[grid_tile.keys[key]]) {
-            return grid_tile.data[grid_tile.keys[key]];
+          return grid_tile.data[grid_tile.keys[key]];
         }
     };
 
@@ -378,9 +384,14 @@ wax.GridInstance = function(grid_tile, formatter, options) {
     // * `options` options to give to the formatter: minimally having a `format`
     //   member, being `full`, `teaser`, or something else.
     instance.tileFeature = function(x, y, tile_element, options) {
+
+        
         // IE problem here - though recoverable, for whatever reason
+        //console.log(tile_element);
         var offset = wax.util.offset(tile_element);
-            feature = this.gridFeature(x - offset.left, y - offset.top);
+        //console.log(offset.top + '|' + offset.left);
+       // console.log(x + '|' + y + '|' + offset.top + '|' + offset.left);
+        var feature = this.gridFeature(x - offset.left, y - offset.top);
 
         if (feature) return formatter.format(options, feature);
     };
@@ -751,6 +762,7 @@ wax.util = {
         try {
             while (el = el.offsetParent) calculateOffset(el);
         } catch(e) {
+            console.log("boom");
             // Hello, internet explorer.
         }
 
@@ -772,13 +784,15 @@ wax.util = {
             top += parseInt(htmlComputed.marginTop, 10);
         left += parseInt(htmlComputed.marginLeft, 10);
         }
-
-        return {
+        var return_val ={
             top: top,
             left: left,
             height: height,
             width: width
         };
+
+//        console.log(return_val.left + '|' + return_val.top);
+        return return_val;
     },
 
     '$': function(x) {
@@ -968,19 +982,26 @@ wax.g.interaction = function(map, tilejson, options) {
             // each tile, with a reference to the tile object in `tile`, since the API
             // returns evt coordinates as relative to the map object.
             if (!this._getTileGrid) {
+                console.log('recreating grid');
                 this._getTileGrid = [];
                 var zoom = map.getZoom();
+
                 var mapOffset = wax.util.offset(map.getDiv());
+                //console.log(mapOffset.top + '|' + mapOffset.bottom + '|' + mapOffset.left + '|' + mapOffset.right);
+
+
                 var get = wax.util.bind(function(mapType) {
                     if (!mapType.interactive) return;
                     for (var key in mapType.cache) {
                         if (key.split('/')[0] != zoom) continue;
                         var tileOffset = wax.util.offset(mapType.cache[key]);
+                        //console.log(tileOffset.left + '|' + tileOffset.top);
                         this._getTileGrid.push([
                             tileOffset.top - mapOffset.top,
                             tileOffset.left - mapOffset.left,
                             mapType.cache[key]
                         ]);
+                        //console.log((tileOffset.top - mapOffset.top) + '|' + (tileOffset.left - mapOffset.left) + (mapType.cache[key].src));
                     }
                 }, this);
                 // Iterate over base mapTypes and overlayMapTypes.
@@ -1003,6 +1024,7 @@ wax.g.interaction = function(map, tilejson, options) {
                     (grid[i][1] < evt.pixel.x) &&
                    ((grid[i][1] + 256) > evt.pixel.x)) {
                     tile = grid[i][2];
+                    //console.log(grid[i][2]);
                     break;
                 }
             }
@@ -1011,10 +1033,19 @@ wax.g.interaction = function(map, tilejson, options) {
 
         onMove: function(evt) {
             if (!this._onMove) this._onMove = wax.util.bind(function(evt) {
+                //console.log(evt.pixel.x + '|' + evt.pixel.y);
+                //console.log(evt.latLng.Pa + '|' + evt.latLng.Qa);
+                // ok, so the event updates fine. the problem is inside getTile
                 var tile = this.getTile(evt);
+                //console.log(tile); // tile is wrong after zoom
+                //console.log(tile.pixel.x + '|' + tile.pixel.y);
                 if (tile) {
                     this.waxGM.getGrid(tile.src, wax.util.bind(function(err, g) {
-                        if (err || !g) return;
+                        if (err || !g){
+                          console.log(err)                          
+                          console.log(g)
+                          return;
+                        } 
                         var feature = g.tileFeature(
                             evt.pixel.x + wax.util.offset(map.getDiv()).left,
                             evt.pixel.y + wax.util.offset(map.getDiv()).top,
@@ -1023,11 +1054,13 @@ wax.g.interaction = function(map, tilejson, options) {
                         );
                         // Support only a single layer.
                         // Thus a layer index of **0** is given to the tooltip library
+                        if (feature !== undefined) console.log(feature);
                         if (feature && this.feature !== feature) {
+                          //console.log('over');
                             this.feature = feature;
                             this.callbacks.out(map.getDiv());
                             this.callbacks.over(feature, map.getDiv(), 0, evt);
-                        } else if (!feature) {
+                        } else if (!feature) {                          
                             this.feature = null;
                             this.callbacks.out(map.getDiv());
                         }
@@ -1166,14 +1199,13 @@ wax.g.connector.prototype.getTileUrl = function(coord, z) {
     var mod = Math.pow(2, z),
         y = (this.options.scheme === 'tms') ?
             (mod - 1) - coord.y :
-            y,
+            coord.y,
         x = (coord.x % mod);
 
     x = (x < 0) ? (coord.x % mod) + mod : x;
 
     if (y < 0) return this.options.blankImage;
-    
-    
+
     return this.options.tiles
         [parseInt(x + y, 10) %
             this.options.tiles.length]

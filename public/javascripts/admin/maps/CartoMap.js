@@ -78,15 +78,19 @@
           return data.cartodb_id; 
         }
       };
-      
+      var that = this;
       this.waxOptions = {
         callbacks: {
           out: function(){
+            that.map_.setOptions({ draggableCursor: 'default' });
+            //document.body.style.cursor='progress';
             //maybe can destroy tooltips here?
           }, 
           // you can see lat/long & pixel x/y in the evt object.
           // feature has the cartodb_id that we use for the ajax tooltip
           over: function(feature, div, opt3, evt){
+            that.map_.setOptions({ draggableCursor: 'pointer' });
+            //document.body.style.cursor='pointer';
             //console.log(feature,div,opt3,evt);
             //me.tooltip_.open(evt.latLng,[this]);
           },

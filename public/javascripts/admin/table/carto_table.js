@@ -2273,13 +2273,14 @@
 	        $('div.column_window a.column_add').addClass('disabled');
 	        $('div.column_window span.select').removeClass('clicked');
 	        
-
 	        $.ajax({
 	           method: "GET",
 	           url: global_api_url + 'column_types',
 	           headers: {"cartodbclient": true},
 	           success: function(data) {
-	             //Remove ScrollPane
+				 //Saves the position of the String type for setting it as type per default
+				 var defaultTypeIndex = undefined;
+				 //Remove ScrollPane
 	             var custom_scrolls = [];
 	             $('.scrollPane').each(function(){
 	               custom_scrolls.push($(this).jScrollPane().data().jsp);
@@ -2290,15 +2291,52 @@
 	             $('div.column_window span.select ul li').remove();
 	             for (var i = 0; i<data.length; i++) {
 	               $('div.column_window span.select ul').append('<li><a href="#'+data[i]+'">'+data[i]+'</a></li>');
+	               //It looks for the index in data for the string type
+	               if (defaultTypeIndex == undefined && data[i] == 'String'){
+		               defaultTypeIndex = i;
+	               }
 	             }
 	             $('div.column_window span.select').removeClass('disabled');
 
 	             $('div.column_window span.select a.option').each(function(i,ele){
 	               if ($(ele).text()=="Retreiving types...") {
-	                  $(ele).text('Select a type').attr('type','');
+		              //For getting the string type by default
+	                  $(ele).text(data[defaultTypeIndex].toString()).attr('type',data[defaultTypeIndex]);
 	                }
 	             });
 	             $('div.column_window a.column_add').removeClass('disabled');
+	             
+	             //This adds the needed code for adding the column when pushing enter
+				 $(document).keydown(function(event){
+				 	if (event.which == '13') {
+						stopPropagation(event);
+        				if ($('div.column_window input').attr('value')!='' && $('div.column_window a.option').attr('type')!='') {
+				          methods.addColumn($('div.column_window input').attr('value'),$('div.column_window a.option').attr('type'));
+				          $('div.column_window input').attr('value','');
+				        } else {
+				          if ($('div.column_window input').attr('value')=='' && $('div.column_window a.option').attr('type')=='') {
+				            $('div.column_window span.select,div.column_window input').addClass('error');
+				            var position = $('div.column_window input').position().top;
+				            $('div.column_window p.error').css('top',position-32+'px');
+				            $('div.column_window p.error span').text('Choose a name and type');
+				          } else {
+				            if ($('div.column_window input').attr('value')=='') {
+				              $('div.column_window input').addClass('error');
+				              var position = $('div.column_window input').position().top;
+				              $('div.column_window p.error').css('top',position-32+'px');
+				              $('div.column_window p.error span').text('Choose a name');
+				            } else {
+				              var position = $('div.column_window span.select').position().top;
+				              $('div.column_window p.error').css('top',position-32+'px');
+				              $('div.column_window span.select').addClass('error');
+				              $('div.column_window p.error span').text('Choose a type');
+				            }
+				          }
+				          $('div.column_window p.error').fadeIn().delay(2000).fadeOut();
+				        }
+			      	}
+			     });
+				 //End of the controller for the enter key			 
 	           },
 	           error: function(e) {
 	              $('div.column_window span.select a.option').text('Error retrieving types').attr('type','');
@@ -2359,7 +2397,6 @@
             }
           }
           $('div.column_window p.error').fadeIn().delay(2000).fadeOut();
-          
         }
       });
       $('div.column_window a.close_create,div.column_window a.cancel').livequery('click',function(ev){

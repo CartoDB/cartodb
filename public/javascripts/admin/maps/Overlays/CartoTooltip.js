@@ -63,7 +63,34 @@
 		};
 
 
-		CartoTooltip.prototype.open = function(latlng,marker) {
+		CartoTooltip.prototype.openMarker = function(latlng,marker) {
+			if (this.div_) {
+				var div = this.div_;
+				var me = this;
+				div.style.width = '32px';
+				$(div).find('a.info').show();
+				$(div).find('p').hide();
+				$(div).find('a.delete').unbind('click');
+				$(div).find('a.delete').click(function(ev){
+					stopPropagation(ev);
+					carto_map.over_marker_ = true;
+					me.hide();
+					carto_map.delete_window_.open(me.latlng_,me.markers_);
+				});
+				
+				this.markers_ = marker;
+				this.latlng_ = latlng;
+			  var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
+			  if (pixPosition) {
+				  div.style.left = (pixPosition.x + this.offsetHorizontal_) + "px";
+				  div.style.top = (pixPosition.y + this.offsetVertical_ - 7) + "px";
+			  }
+				this.show();
+		  }
+		}
+		
+		
+		CartoTooltip.prototype.open = function(latlng,id) {
 			if (this.div_) {
 				var div = this.div_;
 				var me = this;

@@ -82,7 +82,7 @@
           // feature has the cartodb_id that we use for the ajax tooltip
           over: function(feature, div, opt3, evt){
             me.over_marker_ = true;
-            that.map_.setOptions({ draggableCursor: 'pointer' });
+            that.map_.setOptions({ draggableCursor: 'pointer' });          
             //document.body.style.cursor='pointer';
             //console.log(feature,div,opt3,evt);
             me.tooltip_.open(evt.latLng,[this]);

@@ -163,11 +163,11 @@ class Table < Sequel::Model(:user_tables)
   end
   
   def infowindow=(value)
-    $tables_metadate.hset(key, 'infowindow', value)
+    $tables_metadata.hset(key, 'infowindow', value)
   end
 
   def infowindow
-    $tables_metadate.hget(key, 'infowindow')
+    $tables_metadata.hget(key, 'infowindow')
   end
 
   def private?

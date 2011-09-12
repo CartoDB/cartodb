@@ -1133,6 +1133,8 @@ describe Table do
   it "should let a user save an infowindow and retrieve it" do
     user = create_user
     table = new_table :user_id => user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+    table.save.reload
     
     table.infowindow = "id, name, description"
     

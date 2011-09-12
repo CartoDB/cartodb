@@ -38,7 +38,7 @@
                       '{{/allowed}}'+
                       '<h5>FILTER</h5>' +
                       '<ul>' +
-                        '<li><a href="#filter_by_column" class="filter_column">Filter by this column</a></li>' +
+                        '<li class="disabled"><a href="#filter_by_column">Filter by this column</a></li>' + //filter_column
                       '</ul>' +
                       '<div class="line"></div>'+
                       '<h5>CREATE</h5>' +

@@ -216,8 +216,9 @@
                 last_cell_size = cell_size;
               }
               methods.drawColumns(columns,rows,direction,actualPage,options);
+            } else {
+              methods.drawRows(options,rows,direction,actualPage);              
             }
-            //methods.drawRows(options,rows,direction,actualPage);
           } else {
             methods.hideLoader();
             if (direction=="next") {

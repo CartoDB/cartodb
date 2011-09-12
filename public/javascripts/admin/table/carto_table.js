@@ -2437,15 +2437,15 @@
       ///////////////////////////////////////
       $('a.filter_column').livequery('click',function(ev){
         stopPropagation(ev);
-				if (enabled && !query_mode) {
-					methods.closeTablePopups();
-	        methods.bindESCkey();
-	        enabled = false;
-	        $('div.mamufas div.filter_window').show();
-	        $('div.mamufas').fadeIn(function(ev){
-	          $('div.filter_window input').focus();
-	        });
-	      }
+        // if (enabled && !query_mode) {
+        //  methods.closeTablePopups();
+        //          methods.bindESCkey();
+        //          enabled = false;
+        //          $('div.mamufas div.filter_window').show();
+        //          $('div.mamufas').fadeIn(function(ev){
+        //            $('div.filter_window input').focus();
+        //          });
+        //        }
       });
       $('div.mamufas div.filter_window a.apply_query').click(function(ev){
         alert('jamon');

@@ -6,7 +6,6 @@ gem "pg", "0.11"
 gem "sequel", "3.26.0"
 gem "sequel-rails", "~> 0.1.8"
 gem "nofxx-georuby", "~> 1.9.2", :require => "geo_ruby"
-
 gem "rails_warden", "0.5.2"
 gem "oauth", "0.4.5"
 gem "oauth-plugin", ">=0.4.0.pre1"
@@ -19,7 +18,7 @@ gem "rgeo-geojson", :require => "rgeo/geo_json"
 gem "redis", "~> 2.2.2"
 gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
-gem "cartodb-importer", :git => "git@github.com:Vizzuality/cartodb-importer.git", :tag => "v0.2.2"
+gem "cartodb-importer", "~> 0.2.2"
 gem "exception_notification"
 
 group :test, :development do

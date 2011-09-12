@@ -1,17 +1,3 @@
-GIT
-  remote: git@github.com:Vizzuality/cartodb-importer.git
-  revision: b7b43b91b9e509747a8fee498256b437b3fe9a6f
-  tag: v0.2.2
-  specs:
-    cartodb-importer (0.2.2)
-      builder
-      google-spreadsheet-ruby
-      pg (= 0.11)
-      roo
-      rubyzip
-      sequel
-      spreadsheet
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -61,6 +47,14 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (~> 2.0)
       xpath (~> 0.1.4)
+    cartodb-importer (0.2.2)
+      builder
+      google-spreadsheet-ruby
+      pg (= 0.11)
+      roo
+      rubyzip
+      sequel
+      spreadsheet
     childprocess (0.2.2)
       ffi (~> 1.0.6)
     choice (0.1.4)
@@ -165,7 +159,7 @@ GEM
       columnize (>= 0.3.1)
       linecache19 (>= 0.5.11)
       ruby-debug-base19 (>= 0.11.19)
-    ruby-ole (1.2.11.1)
+    ruby-ole (1.2.11.2)
     ruby_core_source (0.1.5)
       archive-tar-minitar (>= 0.5.2)
     rubyzip (0.9.4)
@@ -215,7 +209,7 @@ PLATFORMS
 DEPENDENCIES
   aws-ses (= 0.4.1)
   capybara (~> 1.1.1)
-  cartodb-importer!
+  cartodb-importer (~> 0.2.2)
   email_spec
   exception_notification
   htmlentities

@@ -22,6 +22,7 @@ The database is structured in hashes. The key of each hash has the following for
 The values of the hash are:
 
   - `the_geom_type`: the geometry type. Example: `point`
+  - `infowindow`: the CSV string of values to use in the infowindow SQL. eg. 'id, name, description'. Should be suitable for passing to the CartoDB API
   - `privacy`: the privacy of the table. 0 means **private** and 1 means **public**
   - `user_id`: the identifier of the owner
   

@@ -161,6 +161,14 @@ class Table < Sequel::Model(:user_tables)
   def tags=(value)
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
+  
+  def infowindow=(value)
+    $tables_metadate.hset(key, 'infowindow', value)
+  end
+
+  def infowindow
+    $tables_metadate.hget(key, 'infowindow')
+  end
 
   def private?
     $tables_metadata.hget(key, "privacy").to_i == PRIVATE

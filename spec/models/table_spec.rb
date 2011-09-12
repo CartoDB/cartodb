@@ -1107,4 +1107,13 @@ describe Table do
     rows.last[:name].should == "Row 8"
   end
   
+  it "should let a user save an infowindow and retrieve it" do
+    user = create_user
+    table = new_table :user_id => user.id
+    
+    table.infowindow = "id, name, description"
+    
+    table.infowindow.should == "id, name, description"
+  end
+  
 end

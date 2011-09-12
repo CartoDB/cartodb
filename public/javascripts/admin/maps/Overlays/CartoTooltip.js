@@ -1,4 +1,3 @@
-
 function CartoTooltip(latlng, map) {
     this.latlng_ = latlng;
     this.markers_;

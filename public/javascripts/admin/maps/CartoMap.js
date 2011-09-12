@@ -82,11 +82,11 @@
           // you can see lat/long & pixel x/y in the evt object.
           // feature has the cartodb_id that we use for the ajax tooltip
           over: function(feature, div, opt3, evt){
-            me.over_marker_ = true;
-            that.map_.setOptions({ draggableCursor: 'pointer' });          
-            //document.body.style.cursor='pointer';
-            //console.log(feature,div,opt3,evt);
-            me.tooltip_.open(evt.latLng,[this]);
+            if (me.status_ == "select") {
+              me.over_marker_ = true;
+              that.map_.setOptions({ draggableCursor: 'pointer' });
+              me.tooltip_.open(evt.latLng,[this]);
+            }
           },
           // you can see lat/long & pixel x/y in the evt object. 
           //feature has the cartodb_id that we use for the ajax tooltip

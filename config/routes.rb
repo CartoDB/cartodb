@@ -41,6 +41,7 @@ CartoDB::Application.routes.draw do
       get    '/tables/:id'                           => 'tables#show'
       put    '/tables/:id'                           => 'tables#update'
       delete '/tables/:id'                           => 'tables#destroy'
+      post   '/tables/:id/infowindow'                => 'tables#set_infowindow'
       get    '/tables/:table_id/export/csv'          => 'export_tables#show', :format => :csv
       get    '/tables/:table_id/export/shp'          => 'export_tables#show', :format => :shp
       get    '/tables/:table_id/records'             => 'records#index'

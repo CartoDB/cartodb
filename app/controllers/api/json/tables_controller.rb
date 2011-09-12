@@ -1,9 +1,9 @@
 # coding: UTF-8
 
 class Api::Json::TablesController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :destroy
+  ssl_required :index, :show, :create, :update, :destroy, :infowindow
 
-  before_filter :load_table, :only => [:show, :update, :destroy]
+  before_filter :load_table, :only => [:show, :update, :destroy, :infowindow]
   before_filter :set_start_time
   after_filter :record_query_threshold
 
@@ -139,6 +139,12 @@ class Api::Json::TablesController < Api::ApplicationController
                           where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
     raise RecordNotFound if @table.nil?
     @table.destroy
+    render :nothing => true, :status => 200, :callback => params[:callback]
+  end
+
+  # expects the infowindow data in the infowindow parameter
+  def set_infowindow
+    @table.infowindow = params[:infowindow]
     render :nothing => true, :status => 200, :callback => params[:callback]
   end
 

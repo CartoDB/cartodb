@@ -459,6 +459,7 @@ wax.GridManager = function(options) {
     };
 
      manager.getGrid = function(url, callback) {
+         //console.log(url);
         getFormatter(url, function(err, f) {
             var gurl = gridUrl(url);
             if (err || !f || !gurl) return callback(err, null);
@@ -717,6 +718,7 @@ wax.util = wax.util || {};
 wax.util = {
     // From Bonzo
     offset: function(el) {
+        var origin_el = el;
         // TODO: window margins
         //
         // Okay, so fall back to styles if offsetWidth and height are botched
@@ -725,7 +727,7 @@ wax.util = {
             height = el.offsetHeight || parseInt(el.style.height, 10),
             top = 0,
             left = 0;
-
+//if (el.width === 256) console.log(el.offsetTop + '|' + el.offsetLeft);
         var calculateOffset = function(el) {
             if (el === document.body || el === document.documentElement) return;
             top += el.offsetTop;
@@ -738,6 +740,8 @@ wax.util = {
                 el.style.msTransform;
 
             if (style) {
+
+//                console.log(el.offsetTop);
                 if (match = style.match(/translate\((.+)px, (.+)px\)/)) {
                     top += parseInt(match[2], 10);
                     left += parseInt(match[1], 10);
@@ -763,12 +767,16 @@ wax.util = {
             // Hello, internet explorer.
         }
 
+       // console.log(top + '|' + left);
+
         // Offsets from the body
         top += document.body.offsetTop;
         left += document.body.offsetLeft;
         // Offsets from the HTML element
         top += document.body.parentNode.offsetTop;
         left += document.body.parentNode.offsetLeft;
+
+
 
         // Firefox and other weirdos. Similar technique to jQuery's
         // `doesNotIncludeMarginInBodyOffset`.
@@ -982,15 +990,22 @@ wax.g.interaction = function(map, tilejson, options) {
                 var mapOffset = wax.util.offset(map.getDiv());
                 var get = wax.util.bind(function(mapType) {
                     if (!mapType.interactive) return;
+                    //console.log("[OFFSET START]")
                     for (var key in mapType.cache) {
                         if (key.split('/')[0] != zoom) continue;
+                        //console.log(mapType.cache[key]); # all the same stuff going in
+
                         var tileOffset = wax.util.offset(mapType.cache[key]);
+
+                        //console.log(tileOffset.top + '|' + tileOffset.left); //#! totally different pre/post move
+                        
                         this._getTileGrid.push([
                             tileOffset.top - mapOffset.top,
                             tileOffset.left - mapOffset.left,
                             mapType.cache[key]
                         ]);
                     }
+                    //console.log("[OFFSET END]")
                 }, this);
                 // Iterate over base mapTypes and overlayMapTypes.
                 for (var i in map.mapTypes) get(map.mapTypes[i]);

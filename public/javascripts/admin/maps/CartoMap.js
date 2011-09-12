@@ -27,6 +27,7 @@
                         
       this.status_ = "select";                        // Status of the map (select, add, )
       this.columns_ = null;
+      this.cache_buster = 0;
                                                     
       this.show();                                    // First step is show the map canvas
       this.showLoader();                              // Show loader
@@ -555,6 +556,7 @@
     
     /* Add record to database */
     CartoMap.prototype.addMarker = function(latlng) {
+      this.cache_buster++;
       var params = {};
       params.the_geom = '{"type":"Point","coordinates":['+latlng.lng()+','+latlng.lat()+']}';
       this.updateTable('/records',params,latlng,null,"add_point","POST");
@@ -719,7 +721,9 @@
     }
 
     /* Generate another tilejson */
+
     CartoMap.prototype.generateTilejson = function() {
+      var that = this;
       return {
         tilejson: '1.0.0',
         scheme: 'xyz',
@@ -728,6 +732,10 @@
         formatter: function(options, data) { 
           currentCartoDbId = data.cartodb_id;
           return data.cartodb_id; 
+        },
+        cache_buster: function(){
+            console.log(that.cache_buster);
+            return that.cache_buster;
         }
       }
     }

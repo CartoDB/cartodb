@@ -14,6 +14,8 @@ feature "API 1.0 tables export" do
     @table.user_id = @user.id
     @table.name = "antantaric_species"
     @table.save
+    # FIXME: At some point georeferencing an imported table won't be necessary here
+    @table.georeference_from!(:latitude_column => "lat", :longitude_column => "lon")
   end
 
   scenario "Get table in CSV format" do
@@ -39,7 +41,7 @@ feature "API 1.0 tables export" do
     fd.write(response.body)
     fd.close
     Zip::ZipFile.foreach(path) do |entry|
-      %W{ antantaric_species_export.shp antantaric_species_export.dbf antantaric_species_export.prj }.should include(entry.name)
+      %W{ antantaric_species_export.shx antantaric_species_export.shp antantaric_species_export.dbf antantaric_species_export.prj }.should include(entry.name)
     end
     FileUtils.rm_rf(path)
   end

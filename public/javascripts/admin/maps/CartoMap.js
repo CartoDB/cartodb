@@ -67,17 +67,8 @@
       // interaction placeholder
       var currentCartoDbId,
           me = this;
-      
-      this.tilejson = {
-        tilejson: '1.0.0',
-        scheme: 'xyz',
-        tiles: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8'],
-        grids: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
-        formatter: function(options, data) { 
-          currentCartoDbId = data.cartodb_id;
-          return data.cartodb_id; 
-        }
-      };
+      this.tilejson = this.generateTilejson();
+
       var that = this;
       this.waxOptions = {
         callbacks: {
@@ -94,7 +85,7 @@
             that.map_.setOptions({ draggableCursor: 'pointer' });
             //document.body.style.cursor='pointer';
             //console.log(feature,div,opt3,evt);
-            //me.tooltip_.open(evt.latLng,[this]);
+            me.tooltip_.open(evt.latLng,[this]);
           },
           // you can see lat/long & pixel x/y in the evt object. 
           //feature has the cartodb_id that we use for the ajax tooltip
@@ -489,8 +480,8 @@
       }
     }
     
-    /* Add single google marker to the map */
-    CartoMap.prototype.addMarker = function(latlng,info,save) {
+    /* Add fake google marker to the map */
+    CartoMap.prototype.addFakeMarker = function(latlng,info,save) {
       var me = this;
       
       var image = new google.maps.MarkerImage((!this.query_mode)?this.generateDot('#FF6600'):this.generateDot('#666666'),
@@ -558,16 +549,15 @@
 	        }
 	      });
 			}
-
-       
-       
-      if (save) {
-        var params = {};
-        params.the_geom = '{"type":"Point","coordinates":['+latlng.lng()+','+latlng.lat()+']}';
-        this.updateTable('/records',params,marker,null,"add_point","POST");
-      } 
        
       return marker;
+    }
+    
+    /* Add record to database */
+    CartoMap.prototype.addMarker = function(latlng) {
+      var params = {};
+      params.the_geom = '{"type":"Point","coordinates":['+latlng.lng()+','+latlng.lat()+']}';
+      this.updateTable('/records',params,latlng,null,"add_point","POST");
     }
     
     /* Generate canvas image to fill marker   */
@@ -684,10 +674,8 @@
       this.show();
 			//this.showLoader();
 
-      // Add again wax layer
-      this.wax_tile = new wax.g.connector(this.tilejson);
-      this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
-      wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
+      // Refresh wax layer
+      this.refreshWax();
 
       // if (sql) {
       //  this.clearMap(true);
@@ -721,7 +709,28 @@
 			this.tooltip_.hide();
 		}
     
+    /* Refresh wax tiles */
+    CartoMap.prototype.refreshWax = function() {
+      // Add again wax layer
+      this.map_.overlayMapTypes.clear();
+      this.wax_tile = new wax.g.connector(this.tilejson);
+      this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
+      wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
+    }
 
+    /* Generate another tilejson */
+    CartoMap.prototype.generateTilejson = function() {
+      return {
+        tilejson: '1.0.0',
+        scheme: 'xyz',
+        tiles: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8?cache_buster={cache}'],
+        grids: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
+        formatter: function(options, data) { 
+          currentCartoDbId = data.cartodb_id;
+          return data.cartodb_id; 
+        }
+      }
+    }
 
     ////////////////////////////////////////
     //  HIDE OR SHOW THE MAP LOADER				//
@@ -792,10 +801,9 @@
     
 		/* If request is succesful */
     CartoMap.prototype.successRequest = function(params,new_value,old_value,type,more) {
+      var me = this;
       switch (type) {
-        case "add_point":       var occ_id = $.parseJSON(more).id;
-                                new_value.data.cartodb_id = occ_id;
-                                this.points_[occ_id] = new_value;
+        case "add_point":       me.refreshWax();
                                 break;
         case "remove_point":    var array = (params.cartodb_ids).split(',');
 																var me = this;

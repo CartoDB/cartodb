@@ -562,8 +562,9 @@ wax.request = {
             // Request.
             var that = this;
             this.locks[url] = true;
+            var time = String('j'+(new Date()).getTime());
             reqwest({
-                url: url + '?callback=grid',
+                url: url + '?callback=' + time,
                 type: 'jsonp',
                 jsonpCallback: 'callback',
                 success: function(data) {
@@ -588,8 +589,9 @@ if (!wax) var wax = {};
 
 // A wrapper for reqwest jsonp to easily load TileJSON from a URL.
 wax.tilejson = function(url, callback) {
+    var time = String('j'+(new Date()).getTime());
     reqwest({
-        url: url + '?callback=grid',
+        url: url + '?callback=' + time,
         type: 'jsonp',
         jsonpCallback: 'callback',
         success: callback,
@@ -1187,5 +1189,6 @@ wax.g.connector.prototype.getTileUrl = function(coord, z) {
             this.options.tiles.length]
                 .replace('{z}', z)
                 .replace('{x}', x)
-                .replace('{y}', y);
+                .replace('{y}', y)
+                .replace('{cache}', new Date().getTime());
 };

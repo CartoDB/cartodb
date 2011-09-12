@@ -57,7 +57,7 @@
           <div class="middle_white_medium">
             <ul class="your_tables">
               <% @tables.each_with_index do |table, i| %>
-              <li<%= ' class="last"'.html_safe if i == @tables.count - 1%>>
+              <li<%= ' class="last"'.html_safe if i == (@tables.count - 1) && i>2%>>
                 <div class="meta_info">
                   <span class="info">
                     <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
@@ -83,7 +83,7 @@
             <% if @tables.count<3 %>
               <div class="no_tables">
                 <% if @tables.count>0 && @tables.count<3 %>
-                  <h5>Few tables!</h5>
+                  <h5>Create more tables!</h5>
                   <p>Time to <a href="#create_table" class="new_table">create another table</a>?</p>
                 <% else %>
                   <h5>Hey! You don't have any tables</h5>

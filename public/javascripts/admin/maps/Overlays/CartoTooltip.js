@@ -18,7 +18,7 @@ CartoTooltip.prototype.draw = function() {
         div = this.div_ = document.createElement('DIV');
         div.setAttribute('class','marker_tooltip');
 
-        $(div).append('<span><p>1 point</p><a class="info" href="#show_info">i</a><a class="margin delete" href="#delete_marker">x</a></span');
+        $(div).append('<span><p>1 point</p><a class="info" href="#show_info">i</a><a class="margin edit" href="#edit">e</a><a class="margin delete" href="#delete_marker">x</a></span');
 
         $(div).find('a.info').click(function(ev){
             stopPropagation(ev);
@@ -26,6 +26,13 @@ CartoTooltip.prototype.draw = function() {
             carto_map.over_marker_ = true;
             carto_map.info_window_.open(me.markers_[0]);
         });
+
+        $(div).find('a.edit').click(function(ev){
+            stopPropagation(ev);
+            me.hide();
+            carto_map.over_marker_ = true;
+        });
+
 
 
         $(div).hover(
@@ -67,8 +74,8 @@ CartoTooltip.prototype.open = function(latlng,marker) {
     if (this.div_) {
         var div = this.div_;
         var me = this;
-        div.style.width = '32px';
-        $(div).find('a.info').show();
+        div.style.width = '48px';
+        $(div).find('a.info', 'a.edit').show();
         $(div).find('p').hide();
         $(div).find('a.delete').unbind('click');
         $(div).find('a.delete').click(function(ev){

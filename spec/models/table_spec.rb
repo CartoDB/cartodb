@@ -938,9 +938,10 @@ describe Table do
     parsed[1][5].should ==  "{\"type\":\"Point\",\"coordinates\":[-3.699732,40.423012]}"
   end
   
-  it "should return the content of the table in SHP format" do
+  it "should return the content of a brand new table in SHP format" do
     table = create_table :name => 'table1'
     table.insert_row!({:name => "name #1", :description => "description #1"})
+    
     zip = table.to_shp
     path = "/tmp/temp_shp.zip"
     fd = File.open(path,'w+')
@@ -948,6 +949,28 @@ describe Table do
     fd.close
     Zip::ZipFile.foreach(path) do |entry|
       %W{ table1_export.shx table1_export.shp table1_export.dbf table1_export.prj }.should include(entry.name)
+    end
+    FileUtils.rm_rf(path)
+  end
+  
+  it "should return the content of a populated table in SHP format" do
+    user = create_user
+    table = new_table
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
+    table.user_id = user.id
+    table.name = "antantaric_species"
+    table.save
+    
+    # FIXME: At some point georeferencing an imported table won't be necessary here
+    table.georeference_from!(:latitude_column => "lat", :longitude_column => "lon")
+    
+    zip = table.to_shp
+    path = "/tmp/temp_shp.zip"
+    fd = File.open(path,'w+')
+    fd.write(zip)
+    fd.close
+    Zip::ZipFile.foreach(path) do |entry|
+      %W{ antantaric_species_export.shx antantaric_species_export.shp antantaric_species_export.dbf antantaric_species_export.prj }.should include(entry.name)
     end
     FileUtils.rm_rf(path)
   end

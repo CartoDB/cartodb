@@ -144,6 +144,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
   # expects the infowindow data in the infowindow parameter
   def set_infowindow
+    puts params
     @table.infowindow = params[:infowindow]
     render :nothing => true, :status => 200, :callback => params[:callback]
   end

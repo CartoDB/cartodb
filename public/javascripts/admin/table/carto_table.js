@@ -807,6 +807,7 @@
    		if (end || $('div.empty_table').length>0) {
         if ($('div.empty_table').length>0) {
           $('div.empty_table').remove();
+          $(table).find('tbody').remove();
           $('span.full_table').remove();
           addSingleRow(0);
         } else {
@@ -874,7 +875,7 @@
                     var text = '';
                     if (data[i][0]=="cartodb_id") {
                       text = row_id;
-                 } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
+                    } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
                       var date = new Date();
                       var test = new Date();
                       var offset = -test.getTimezoneOffset()/60;
@@ -895,8 +896,9 @@
                     $(table).append(row);
                   } else {
                     row += '</tr>';
-                    $(table).children('tbody').append(row);
+                    $(table).find('tbody').append(row);
                   }
+                  
               
                   if (type==2) {
                     $('div.table_position').addClass('end');

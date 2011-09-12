@@ -307,7 +307,7 @@ feature "Dashboard", %q{
     end
   end
 
-  scenario "Manage JSONP API keys" do
+  pending "Manage JSONP API keys" do
     user = create_user
 
     log_in_as user

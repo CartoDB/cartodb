@@ -6,8 +6,10 @@
         <li class="<%= selected_if(controller_name == "client_applications") %>"><a class="oth <%= selected_if(controller_name == "client_applications") %>" href="<%= oauth_credentials_path %>">Your api keys</a></li>
       </ul>
     </div>
+    <% if CartoDB.account_host %>
     <div class="right">
       <p class="settings"><%= link_to 'settings', account_url, :class=>"settings" %></p>
     </div>
+    <% end %>
   </div>
 </section>

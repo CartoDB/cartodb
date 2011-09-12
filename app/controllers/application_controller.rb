@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   helper :all
 
   before_filter :browser_is_html5_compliant?
+  before_filter :check_domain
   after_filter :remove_flash_cookie
 
   class NoHTML5Compliant < Exception; end;
@@ -63,7 +64,16 @@ class ApplicationController < ActionController::Base
       end
     end
   end
-
+  
+  def check_domain
+    # FIXME: Development and test hosts are fixed so we cannot use this filter unless environment is production
+    if Rails.env.production? && logged_in?
+      if request.host !~ /^#{current_user.username}#{CartoDB.session_domain}$/
+        redirect_to "https://#{current_user.username}#{CartoDB.session_domain}"
+      end
+    end
+  end
+  
   def table_privacy_text(table)
     if table.is_a?(Table)
       table.private? ? 'PRIVATE' : 'PUBLIC'
@@ -160,4 +170,5 @@ class ApplicationController < ActionController::Base
   def remove_flash_cookie
     cookies.delete(:flash) if cookies[:flash]
   end
+  
 end

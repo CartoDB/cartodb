@@ -10,3 +10,4 @@ db/schema.rb
 misc/dbfUtils.pyc
 bin/
 config/database.yml
+.idea/*

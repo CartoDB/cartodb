@@ -1033,6 +1033,7 @@
       }
 
       if (kind=="previous") {
+        $('div.loading_previous p').css({display:'block',padding:$('div.table_position').scrollLeft()+'px'});
         $('div.loading_previous p.count').text('Now vizzualizing '+range+' of '+ defaults.total);
 				$(table).children('tbody').css('padding','0');
 				$(table).children('tbody').css('margin','0');

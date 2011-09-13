@@ -6,7 +6,7 @@ section#content div.inner_content div.notification div.middle_white h2 {width:10
 section#content div.inner_content div.notification div.middle_white p {display:inline-block; width:100%; padding:0 0 0 20px; font:normal 15px Arial; color:#80CA73; background:url('/images/admin/icons/done.png') no-repeat 0 1px;}
 section#content div.inner_content div.notification div.middle_white a.close {position:absolute; top:12px; right:13px; width:17px; height:17px; background:url('/images/admin/icons/close_button.png') no-repeat 0 0; text-indent:-9999px;}
 section#content div.inner_content div.notification div.middle_white a.close:hover {background-position:0 -17px;}
-section#content div.inner_content div.notification div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 10px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
+section#content div.inner_content div.notification div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
 
 section#content div.left {display:inline-block; width:626px; vertical-align:top;}
 section#content div.left div.top_blue_medium {float:left; width:626px; height:61px; background:url('/images/admin/backgrounds/top_blue_medium.png') no-repeat 0 0;}
@@ -32,7 +32,7 @@ section#content div.left div.top_blue_medium p a.oauth { -webkit-border-top-left
 section#content div.left div.top_blue_medium p a.jsonp {display:inline; border-left:0; -webkit-border-top-right-radius: 5px; -webkit-border-bottom-right-radius: 5px; -moz-border-radius-topright: 5px; -moz-border-radius-bottomrigth: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px;}
 section#content div.left div.top_blue_medium p a.selected:hover {cursor:default;}
 
-section#content div.left div.middle_white_medium {position:relative; float:left; width:620px; padding:0 3px 15px 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
+section#content div.left div.middle_white_medium {position:relative; float:left; width:620px; padding:0 3px 25px 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
 section#content div.left div.middle_white_medium p {display:inline-block; margin:20px 0 0 22px; font:normal 15px Arial; color:#333333;}
 section#content div.left div.middle_white_medium span.form_block {display:inline-block; width:197px; margin:0 0 0 22px;}
 section#content div.left div.middle_white_medium span.form_block.long {width:225px; margin:0 0 0 11px;}
@@ -94,8 +94,8 @@ section#content div.left div.middle_white_medium a.submit.orange:hover {
 
 section#content div.left div.middle_white_medium div.end_oauth {width:576px; margin:0; padding:22px 22px 0;}
 section#content div.left div.middle_white_medium div.end_oauth p {margin:0; padding:0; font:normal 15px Arial; color:#333333;}
-section#content div.left div.middle_white_medium div.end_oauth span.form_block {display:inline-block; width:275px; margin:15px 20px 0 0!important; padding:0; vertical-align:top;}
-section#content div.left div.middle_white_medium div.end_oauth span.form_block.last {margin:15px 0 0 0!important;}
+section#content div.left div.middle_white_medium div.end_oauth span.form_block {display:inline-block; width:275px; margin:5px 20px 0 0!important; padding:0; vertical-align:top;}
+section#content div.left div.middle_white_medium div.end_oauth span.form_block.last {margin:5px 0 0 0!important;}
 section#content div.left div.middle_white_medium div.end_oauth span.form_block label {font:bold 10px "Helvetica",Arial; color:#999999;}
 section#content div.left div.middle_white_medium div.end_oauth span.form_block input {width:253px; height:15px; padding:9px 10px!important; margin:5px 0 0 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
   font:normal 15px Arial; color:#333333; line-height:15px; vertical-align:top;

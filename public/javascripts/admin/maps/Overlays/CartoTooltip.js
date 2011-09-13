@@ -23,13 +23,13 @@
               stopPropagation(ev);
               me.hide();
               carto_map.over_marker_ = true;
-              carto_map.info_window_.open(me.markers_[0]);
+              carto_map.info_window_.openWax(me.markers_);
           });
 
           $(div).find('a.edit').click(function(ev){
               stopPropagation(ev);
               me.hide();
-              carto_map.over_marker_ = true;
+              carto_map.addFakeMarker(me.markers_);
           });
 
 

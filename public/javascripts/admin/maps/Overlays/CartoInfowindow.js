@@ -133,17 +133,11 @@
       success:function(data){
         positionateInfowindow(me,data);
       },
-      error:function(e){
-        alert('error!');
-      }
+      error:function(e){}
     });
     
     
     function positionateInfowindow(me,info) {
-      
-      // Hide wax layer
-      // Show fake marker
-      // debugger;
 
       if (me.div_) {
   	    var div = me.div_;

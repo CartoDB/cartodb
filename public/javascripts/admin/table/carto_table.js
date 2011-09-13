@@ -156,7 +156,7 @@
 
 				
 			  $.ajax({
-			    method: "GET",
+			    method: "POST",
 			    url: global_api_url+'queries?sql='+escape(editor.getValue()),
 			    data: {
 			      rows_per_page: options.resultsPerPage,

@@ -157,6 +157,7 @@
       $('div.create_window').removeClass('georeferencing');
       $('div.create_window div.inner_ span.loading p').html('It\'s not gonna be a lot of time. Just a few seconds, ok?');
       $('div.create_window div.inner_ span.loading h5').html('We are creating your table...');
+      $('div.qq-upload-drop-area').hide();
     }
 
 

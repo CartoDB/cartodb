@@ -114,11 +114,10 @@
     function onDragEnter(event){
 		event.stopPropagation();
 		event.preventDefault();
-		console.log('drag enter');
 		$('#hugeUploader').show();
-		$('#hugeUploader').bind('dragleave', onDragExit);
-		$('#hugeUploader').bind('dragover', function(event) {event.stopPropagation(); event.preventDefault();});
-		return false;		    	    
+		$('#hugeUploader .qq-upload-drop-area').bind('dragleave', onDragExit);
+		$('#hugeUploader .qq-upload-drop-area').bind('dragover', function(event) {event.stopPropagation(); event.preventDefault();});
+		return false;    	    
     };
     
     function onDragExit(event){
@@ -128,12 +127,6 @@
 		return false;
     };
     
-	function doDrop(event){
-		event.stopPropagation();
-		event.preventDefault();
-		$('#hugeUploader').hide();
-		return false;
-	}
 
     function bindESC() {
       $(document).keydown(function(event){

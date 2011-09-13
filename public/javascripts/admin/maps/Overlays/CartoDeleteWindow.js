@@ -97,12 +97,12 @@
 	}
 
 
-	CartoDeleteWindow.prototype.open = function(latlng,markers){
+	CartoDeleteWindow.prototype.open = function(latlng,markers_ids){
   
 	  if (this.div_) {
 	    var div = this.div_;
 	    this.latlng_ = latlng;
-			this.markers_ = markers;
+			this.markers_ = markers_ids;
     
 	    this.moveMaptoOpen();
 	    this.setPosition();			

@@ -23,14 +23,15 @@
       this.query_mode = false;												// Query mode
 
       this.points_ = {};                              // Points belong to the map
-      this.marker_zIndex_ = 1000;                     // Necessary for the markers hover
+      this.fakeMarker_ = null;
+      // this.marker_zIndex_ = 1000;                  // Necessary for the markers hover
                         
       this.status_ = "select";                        // Status of the map (select, add, )
       this.columns_ = null;
       this.cache_buster = 0;
                                                     
       this.show();                                    // First step is show the map canvas
-      this.showLoader();                              // Show loader
+      // this.showLoader();                            // Show loader
       this.createMap();                               // Create the map
     }
     
@@ -76,22 +77,17 @@
           out: function(){
             me.over_marker_ = false;
             that.map_.setOptions({ draggableCursor: 'default' });
-            //document.body.style.cursor='progress';
-            //maybe can destroy tooltips here?
           }, 
-          // you can see lat/long & pixel x/y in the evt object.
-          // feature has the cartodb_id that we use for the ajax tooltip
           over: function(feature, div, opt3, evt){
             if (me.status_ == "select") {
               me.over_marker_ = true;
               that.map_.setOptions({ draggableCursor: 'pointer' });
-              me.tooltip_.open(evt.latLng,[this]);
+              me.tooltip_.open(evt.latLng,feature);
             }
           },
           // you can see lat/long & pixel x/y in the evt object. 
           //feature has the cartodb_id that we use for the ajax tooltip
           click: function(feature, div, opt3, evt){
-            console.log('click!');
             me.info_window_.openWax(feature);
           }
         },
@@ -445,47 +441,11 @@
     ////////////////////////////////////////
     //  DRAW MARKERS WITH CANVAS ASYNC		//
     ////////////////////////////////////////
-		/* Draw markers asyncronously */
-    CartoMap.prototype.drawMarkers = function(points) {
-      var me = this;
-      this.bounds_ = new google.maps.LatLngBounds();
-      asyncDrawing(points);
-      
-      function asyncDrawing(rest) {
-        if (_.size(rest)>0) {
-					var info = _.first(rest);
-					// Get the_geom
-					if (info.coordinates_!=undefined) {
-						var geom = $.parseJSON(info.coordinates_);
-						
-						if (geom.type == "Point") {
-		          var occ_id = info.cartodb_id;
-		          var latlng = new google.maps.LatLng(geom.coordinates[1],geom.coordinates[0]);
-							var marker = me.addMarker(latlng, info, false);
-		          me.points_[occ_id] = marker;
-		          me.points_[occ_id] = info;
-		          me.bounds_.extend(latlng);
-						}
-					}
-
-          setTimeout(asyncDrawing(_.rest(rest)),1);
-        } else {
-					if (me.bounds_.isEmpty()) {
-						me.map_.setCenter(new google.maps.LatLng(0,0));
-						me.map_.setZoom(2);
-					} else {
-						me.map_.fitBounds(me.bounds_);
-					}
-					me.hideLoader();
-        }
-      }
-    }
-    
     /* Add fake google marker to the map */
-    CartoMap.prototype.addFakeMarker = function(latlng,info,save) {
+    CartoMap.prototype.addFakeMarker = function(latlng,cartodb_id) {
       var me = this;
       
-      var image = new google.maps.MarkerImage((!this.query_mode)?this.generateDot('#FF6600'):this.generateDot('#666666'),
+      var image = new google.maps.MarkerImage(this.generateDot('#FF6600'),
             new google.maps.Size(20, 20),
             new google.maps.Point(0,0),
             new google.maps.Point(10, 10));
@@ -494,69 +454,71 @@
         position: latlng,
         icon: image,
         flat: true,
-        clickable: (!this.query_mode)?true:false,
-        draggable: (!this.query_mode)?true:false,
+        clickable: true,
+        draggable: true,
         raiseOnDrag: false,
         animation: false,
         map: this.map_,
-        data: info
+        data: {cartodb_id:cartodb_id}
       });
 
 			
-			if (!this.query_mode) {
-				google.maps.event.addListener(marker,'mouseover',function(){
-					me.over_marker_ = true;
-	        if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
-						var latlng = this.getPosition();
-						me.tooltip_.open(latlng,[this]);
-					} else {
-						me.tooltip_.hide();
-					}
-	      });
+			google.maps.event.addListener(marker,'mouseover',function(){
+				me.over_marker_ = true;
+        if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
+					var latlng = this.getPosition();
+					me.tooltip_.open(latlng,[this]);
+				} else {
+					me.tooltip_.hide();
+				}
+      });
 
-				google.maps.event.addListener(marker,'mouseout',function(){
-					me.over_marker_ = false;
-					setTimeout(function(){
-						if (!me.over_marker_) me.tooltip_.hide();
-					},100);
-	      });
+			google.maps.event.addListener(marker,'mouseout',function(){
+				me.over_marker_ = false;
+				setTimeout(function(){
+					if (!me.over_marker_) me.tooltip_.hide();
+				},100);
+      });
 
-	      google.maps.event.addListener(marker,'dragstart',function(ev){
-					me.marker_dragging_ = true;
-	        this.data.init_latlng = ev.latLng;
+      google.maps.event.addListener(marker,'dragstart',function(ev){
+				me.marker_dragging_ = true;
+        this.data.init_latlng = ev.latLng;
 
-					// Hide all floating map windows
-					me.hideOverlays();
-	      });
+				// Hide all floating map windows
+				me.hideOverlays();
+      });
 
-	      google.maps.event.addListener(marker,'dragend',function(ev){
-					me.marker_dragging_ = false;
-	        var occ_id = this.data.cartodb_id;
-	        var params = {};
-	        params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
-	        params.cartodb_id = occ_id;
-	        me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"change_latlng","PUT");
-	      });
+      google.maps.event.addListener(marker,'dragend',function(ev){
+				me.marker_dragging_ = false;
+        var occ_id = this.data.cartodb_id;
+        var params = {};
+        params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
+        params.cartodb_id = occ_id;
+        me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"change_latlng","PUT");
+      });
 
-	      google.maps.event.addListener(marker,'click',function(ev){
-	        if (me.status_=="select") {
-	          me.info_window_.open(this);
-	        }
-	      });
+      google.maps.event.addListener(marker,'click',function(ev){
+        ev.stopPropagation();
+        if (me.status_=="select") {
+          me.info_window_.open(this);
+        }
+      });
 
-				google.maps.event.addListener(marker,'mouseover',function(ev){
-	        if (me.status_=="select") {
-	          this.setZIndex(me.marker_zIndex_++);
-	        }
-	      });
-			}
-       
+			
+			// Click on map to recover wax layer and remove marker
+			google.maps.event.addListener(map,'click',function(ev){
+			  me.fakeMarker_.setMap(null);
+			  me.fakeMarker_ = null;
+			  
+			  // Refresh tiles
+			  me.refreshWax();
+			});
+     
       return marker;
     }
     
     /* Add record to database */
     CartoMap.prototype.addMarker = function(latlng) {
-      this.cache_buster++;
       var params = {};
       params.the_geom = '{"type":"Point","coordinates":['+latlng.lng()+','+latlng.lat()+']}';
       this.updateTable('/records',params,latlng,null,"add_point","POST");
@@ -593,47 +555,17 @@
       return this[color];
     }
     
-    
-    
+
+
     ////////////////////////////////////////
-    //  REMOVE MARKERS FROM MAP ASYNC 		//
+    //  REMOVE POINTS AND REFRESH WAX 		//
     ////////////////////////////////////////
-    /* Remove markers from map object */
-    CartoMap.prototype.removeMarkers = function(array) {
-      var me = this;
-			var type = 'remove_point';
-			var cartodb_ids = '';
-			
-			if (_.size(array)>20) {
-				this.showLoader();
-			}
-			
-			if (_.size(array)>1)
-				type = 'remove_points';
-				
-			
-			asyncRemoving(array);
-			
-			function asyncRemoving(rest) {
-				if (_.size(rest)>0) {
-          var marker = _.first(rest);
-          me.deleteMarker(marker);
-					cartodb_ids += marker.data.cartodb_id + ','
-          setTimeout(asyncRemoving(_.rest(rest)),0);
-				} else {
-					var params = {};
-					params.cartodb_ids = cartodb_ids.substr(0,cartodb_ids.length-1);
-					me.updateTable('/records/'+params.cartodb_ids,params,null,null,type,"DELETE");
-					me.hideLoader();
-				}
-			}
+    CartoMap.prototype.removeMarkers = function(cartodb_ids) {
+      var params = {};
+      params.cartodb_ids = cartodb_ids;
+      this.updateTable('/records/'+cartodb_ids,params,null,null,"remove_points","DELETE");
     }
 
-		/* Set each marker to null in the map */
-		CartoMap.prototype.deleteMarker = function(marker) {
-      marker.setMap(null);
-    }
-    
 
 
     ////////////////////////////////////////
@@ -655,6 +587,8 @@
 						}
 					});
 					
+					me.columns_ = new_array;
+					// Remove before that
 					me.info_window_.columns_ = new_array;
         },
         error: function(e, textStatus) {
@@ -673,39 +607,25 @@
 			this.query_mode = ($('body').attr('query_mode') === 'true');
 			$('body').attr('view_mode','map');
 		
-      this.show();
-			//this.showLoader();
-
       // Refresh wax layer
       this.refreshWax();
+      
+      // Remove the fake marker
+			if (this.fakeMarker_!=null)
+			  this.fakeMarker_.setMap(null);
 
       // if (sql) {
-      //  this.clearMap(true);
+      //   this.clearMap(true);
       // } else {
-      //  this.setMapStatus('select');
-      //  this.getColumns();
-      //  this.getPoints();
+      //   this.setMapStatus('select');
+      //   this.getColumns();
+      //   this.getPoints();
       // }
-    }
-
-    /* Clear map */
-    CartoMap.prototype.clearMap = function(sql) {
-      
-      // Remove wax layer and fake markers | polygon | polyline
-      if (this.map_ != undefined) {
-        this.map_.overlayMapTypes.clear();
-      }
-      
-      // Making this function faster as possible, we don't use async + underscore-each
-      // _.each(this.points_,function(ele,i){
-      //   ele.setMap(null);
-      // });
-      // this.points_ = {};
-			//if (sql) this.getPoints();
     }
     
 		/* Hide all overlays (no markers) */ 
 		CartoMap.prototype.hideOverlays = function() {
+		  // Tooltips
 			this.delete_window_.hide();
 			this.info_window_.hide();
 			this.tooltip_.hide();
@@ -714,14 +634,16 @@
     /* Refresh wax tiles */
     CartoMap.prototype.refreshWax = function() {
       // Add again wax layer
-      this.map_.overlayMapTypes.clear();
-      this.wax_tile = new wax.g.connector(this.tilejson);
-      this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
-      wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
+      if (this.map_) {
+        this.cache_buster++;
+        this.map_.overlayMapTypes.clear();
+        this.wax_tile = new wax.g.connector(this.tilejson);
+        this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
+        wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
+      }
     }
 
     /* Generate another tilejson */
-
     CartoMap.prototype.generateTilejson = function() {
       var that = this;
       return {
@@ -734,11 +656,12 @@
           return data.cartodb_id; 
         },
         cache_buster: function(){
-            console.log(that.cache_buster);
-            return that.cache_buster;
+          return that.cache_buster;
         }
       }
     }
+
+
 
     ////////////////////////////////////////
     //  HIDE OR SHOW THE MAP LOADER				//
@@ -762,7 +685,7 @@
     
     CartoMap.prototype.show = function() {
       $('div.map_window div.map_curtain').hide();
-      this.clearMap();
+      this.refresh();
     }
     
     
@@ -813,11 +736,7 @@
       switch (type) {
         case "add_point":       me.refreshWax();
                                 break;
-        case "remove_point":    var array = (params.cartodb_ids).split(',');
-																var me = this;
-																_.each(array,function(ele,i){
-																	delete me.points_[ele];
-																});
+        case "remove_points":   me.refreshWax();
                                 break;
 
         default:                break;

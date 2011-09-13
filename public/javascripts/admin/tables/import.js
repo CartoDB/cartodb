@@ -109,12 +109,12 @@
 		debug: false,
 	
 		onSubmit: function(id, fileName){
+  		resetUploadFile();
 		  $('div.create_window ul li:eq(0)').addClass('disabled');
 		  $('form input[type="submit"]').addClass('disabled');
 		  $('span.file').addClass('uploading');
-		  resetUploadFile();
 		  $('div.create_window ul li:eq(1) a').click();
-		  $('#hugeUploader').hide();
+      $('#hugeUploader').hide();
       $('div.create_window').show();
       $('div.mamufas').fadeIn();
       bindESC();		  

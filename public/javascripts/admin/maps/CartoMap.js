@@ -79,7 +79,7 @@
             that.map_.setOptions({ draggableCursor: 'default' });
           }, 
           over: function(feature, div, opt3, evt){
-            if (me.status_ == "select") {
+            if (me.status_ == "select" && !me.query_mode) {
               me.over_marker_ = true;
               that.map_.setOptions({ draggableCursor: 'pointer' });
               me.tooltip_.open(evt.latLng,feature);
@@ -230,11 +230,11 @@
       $('div.sql_window a.try_query').livequery('click',function(ev){
         var map_status = ($('body').attr('view_mode') == "map");
         if (map_status) {
+          stopPropagation(ev);
 	        $('body').attr('query_mode','true');
 					me.query_mode = true;
 					setAppStatus();
-					me.showLoader();
-          me.refresh(true);
+          me.refresh();
         }
       });
     }
@@ -587,6 +587,8 @@
       this.fakeMarker_ = null;
     }
 
+    
+    
     ////////////////////////////////////////
     //  GET TABLE COLUMNS TO FILL INFO	  //
     ////////////////////////////////////////
@@ -627,19 +629,12 @@
 			$('body').attr('view_mode','map');
 		
       // Refresh wax layer
+      this.tilejson = this.generateTilejson();
       this.refreshWax();
       
       // Remove the fake marker
 			if (this.fakeMarker_!=null)
 			  this.fakeMarker_.setMap(null);
-
-      // if (sql) {
-      //   this.clearMap(true);
-      // } else {
-      //   this.setMapStatus('select');
-      //   this.getColumns();
-      //   this.getPoints();
-      // }
     }
     
 		/* Hide all overlays (no markers) */ 
@@ -672,11 +667,19 @@
     /* Generate another tilejson */
     CartoMap.prototype.generateTilejson = function() {
       var that = this;
+      // SQL?
+      var query;
+      if (this.query_mode) {
+        query = '&query='+editor.getValue();
+      } else {
+        query = '';
+      }
+            
       return {
         tilejson: '1.0.0',
         scheme: 'xyz',
-        tiles: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8?cache_buster={cache}'],
-        grids: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
+        tiles: ['http://'+user_name+'.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8?cache_buster={cache}'+query],
+        grids: ['http://'+user_name+'.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
         formatter: function(options, data) { 
           currentCartoDbId = data.cartodb_id;
           return data.cartodb_id; 

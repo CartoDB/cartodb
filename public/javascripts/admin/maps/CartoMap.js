@@ -89,6 +89,7 @@
           //feature has the cartodb_id that we use for the ajax tooltip
           click: function(feature, div, opt3, evt){
             me.info_window_.openWax(feature);
+            me.hideOverlays();
           }
         },
         clickAction: 'full'  //or 'location' or 'teaser'
@@ -442,79 +443,94 @@
     //  DRAW MARKERS WITH CANVAS ASYNC		//
     ////////////////////////////////////////
     /* Add fake google marker to the map */
-    CartoMap.prototype.addFakeMarker = function(latlng,cartodb_id) {
+    CartoMap.prototype.addFakeMarker = function(feature) {
       var me = this;
       
-      var image = new google.maps.MarkerImage(this.generateDot('#FF6600'),
-            new google.maps.Size(20, 20),
-            new google.maps.Point(0,0),
-            new google.maps.Point(10, 10));
+      $.ajax({
+        method: "GET",
+        url:global_api_url + 'tables/'+table_name+'/records/'+feature,
+        headers: {"cartodbclient": true},
+        success:function(data){
+          me.removeWax();
+
+          var coordinates = $.parseJSON(data.the_geom).coordinates;
+          var latlng = new google.maps.LatLng(coordinates[1],coordinates[0]);
+
+          var image = new google.maps.MarkerImage(me.generateDot('#FF6600'),
+                new google.maps.Size(20, 20),
+                new google.maps.Point(0,0),
+                new google.maps.Point(10, 10));
+
+          var marker = new google.maps.Marker({
+            position: latlng,
+            icon: image,
+            flat: true,
+            clickable: true,
+            draggable: true,
+            raiseOnDrag: false,
+            animation: false,
+            map: me.map_,
+            data: data
+          });
+
+
+    			google.maps.event.addListener(marker,'mouseover',function(){
+    				me.over_marker_ = true;
+            if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
+    					var latlng = this.getPosition();
+    					me.tooltip_.open(latlng,[this]);
+    				} else {
+    					me.tooltip_.hide();
+    				}
+          });
+
+    			google.maps.event.addListener(marker,'mouseout',function(){
+    				me.over_marker_ = false;
+    				setTimeout(function(){
+    					if (!me.over_marker_) me.tooltip_.hide();
+    				},100);
+          });
+
+          google.maps.event.addListener(marker,'dragstart',function(ev){
+    				me.marker_dragging_ = true;
+            this.data.init_latlng = ev.latLng;
+
+    				// Hide all floating map windows
+    				me.hideOverlays();
+          });
+
+          google.maps.event.addListener(marker,'dragend',function(ev){
+    				me.marker_dragging_ = false;
+            var occ_id = this.data.cartodb_id;
+            var params = {};
+            params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
+            params.cartodb_id = occ_id;
+            me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"change_latlng","PUT");
+          });
+
+          google.maps.event.addListener(marker,'click',function(ev){
+            ev.stopPropagation();
+            if (me.status_=="select") {
+              me.info_window_.open(this);
+            }
+          });
+
+
+    			// Click on map to recover wax layer and remove marker
+    			google.maps.event.addListener(map,'click',function(ev){
+    			  me.fakeMarker_.setMap(null);
+    			  me.fakeMarker_ = null;
+
+    			  // Refresh tiles
+    			  me.refreshWax();
+    			});
+    			
+    			me.fakeMarker_ = marker;
+        },
+        error:function(e){}
+      });
       
-      var marker = new google.maps.Marker({
-        position: latlng,
-        icon: image,
-        flat: true,
-        clickable: true,
-        draggable: true,
-        raiseOnDrag: false,
-        animation: false,
-        map: this.map_,
-        data: {cartodb_id:cartodb_id}
-      });
 
-			
-			google.maps.event.addListener(marker,'mouseover',function(){
-				me.over_marker_ = true;
-        if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
-					var latlng = this.getPosition();
-					me.tooltip_.open(latlng,[this]);
-				} else {
-					me.tooltip_.hide();
-				}
-      });
-
-			google.maps.event.addListener(marker,'mouseout',function(){
-				me.over_marker_ = false;
-				setTimeout(function(){
-					if (!me.over_marker_) me.tooltip_.hide();
-				},100);
-      });
-
-      google.maps.event.addListener(marker,'dragstart',function(ev){
-				me.marker_dragging_ = true;
-        this.data.init_latlng = ev.latLng;
-
-				// Hide all floating map windows
-				me.hideOverlays();
-      });
-
-      google.maps.event.addListener(marker,'dragend',function(ev){
-				me.marker_dragging_ = false;
-        var occ_id = this.data.cartodb_id;
-        var params = {};
-        params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
-        params.cartodb_id = occ_id;
-        me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"change_latlng","PUT");
-      });
-
-      google.maps.event.addListener(marker,'click',function(ev){
-        ev.stopPropagation();
-        if (me.status_=="select") {
-          me.info_window_.open(this);
-        }
-      });
-
-			
-			// Click on map to recover wax layer and remove marker
-			google.maps.event.addListener(map,'click',function(ev){
-			  me.fakeMarker_.setMap(null);
-			  me.fakeMarker_ = null;
-			  
-			  // Refresh tiles
-			  me.refreshWax();
-			});
-     
-      return marker;
     }
     
     /* Add record to database */
@@ -566,7 +582,10 @@
       this.updateTable('/records/'+cartodb_ids,params,null,null,"remove_points","DELETE");
     }
 
-
+    CartoMap.prototype.removeFakeMarker = function() {
+      this.fakeMarker_.setMap(null);
+      this.fakeMarker_ = null;
+    }
 
     ////////////////////////////////////////
     //  GET TABLE COLUMNS TO FILL INFO	  //
@@ -640,6 +659,13 @@
         this.wax_tile = new wax.g.connector(this.tilejson);
         this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
         wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
+      }
+    }
+    
+    /* Remove WAX layer */
+    CartoMap.prototype.removeWax = function() {
+      if (this.map_) {
+        this.map_.overlayMapTypes.clear();
       }
     }
 
@@ -738,7 +764,9 @@
                                 break;
         case "remove_points":   me.refreshWax();
                                 break;
-
+        case "change_latlng":   me.refreshWax();
+                                me.removeFakeMarker();
+                                break;
         default:                break;
       }
     }

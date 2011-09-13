@@ -109,9 +109,9 @@
 		debug: false,
 	
 		onSubmit: function(id, fileName){
-		  // $('div.create_window ul li:eq(0)').addClass('disabled');
-		  // $('form input[type="submit"]').addClass('disabled');
-		  // $('span.file').addClass('uploading');
+		  $('div.create_window ul li:eq(0)').addClass('disabled');
+		  $('form input[type="submit"]').addClass('disabled');
+		  $('span.file').addClass('uploading');
 		  resetUploadFile();
 		  $('div.create_window ul li:eq(1) a').click();
 		  $('#hugeUploader').hide();
@@ -125,6 +125,7 @@
 		},
 		onComplete: function(id, fileName, responseJSON){
 		  createNewToFinish('',responseJSON.file_uri);
+		  $('#hugeUploader').hide();
 		},
 		onCancel: function(id, fileName){},
 		showMessage: function(message){

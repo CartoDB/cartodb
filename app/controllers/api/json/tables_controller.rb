@@ -1,9 +1,9 @@
 # coding: UTF-8
 
 class Api::Json::TablesController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :destroy, :infowindow
+  ssl_required :index, :show, :create, :update, :destroy, :set_infowindow
 
-  before_filter :load_table, :only => [:show, :update, :destroy, :infowindow]
+  before_filter :load_table, :only => [:show, :update, :destroy, :set_infowindow]
   before_filter :set_start_time
   after_filter :record_query_threshold
 
@@ -144,7 +144,6 @@ class Api::Json::TablesController < Api::ApplicationController
 
   # expects the infowindow data in the infowindow parameter
   def set_infowindow
-    puts params
     @table.infowindow = params[:infowindow]
     render :nothing => true, :status => 200, :callback => params[:callback]
   end

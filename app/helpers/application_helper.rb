@@ -27,8 +27,8 @@ module ApplicationHelper
       # mmin   = min   + min
       # ncount = count + min
       # (250 - ((ncount.to_f * 100.0) / nmax.to_f)/100.to_f * 150).to_s
-      rangeUnit = 100 / max
-      -100 - (count * rangeUnit)
+      rangeUnit = 130 / (max)
+      -100 - (count * rangeUnit) 
     end
   end
 

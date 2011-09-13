@@ -8,7 +8,7 @@ class Admin::TablesController < ApplicationController
   def index
     current_page = params[:page].nil? ? 1 : params[:page].to_i
     per_page = 10
-    @tags = Tag.load_user_tags(current_user.id, :limit => 5)
+    @tags = Tag.load_user_tags(current_user.id, :limit => 10)
     @tables = if !params[:tag_name].blank?
       Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name]).order(:id).reverse.paginate(current_page, per_page)
     else

@@ -98,41 +98,41 @@
     });
     
 
-	//Uploader for the whole page (dashboard only)
-	var hugeUploader = new qq.FileUploader({
-		element: document.getElementById('hugeUploader'),
-		action: '/upload',
-		params: {},
-		allowedExtensions: ['csv', 'xls', 'xlsx', 'zip'],
-		sizeLimit: 0, // max size
-		minSizeLimit: 0, // min size
-		debug: false,
-	
-		onSubmit: function(id, fileName){
-  		resetUploadFile();
-		  $('div.create_window ul li:eq(0)').addClass('disabled');
-		  $('form input[type="submit"]').addClass('disabled');
-		  $('span.file').addClass('uploading');
-		  $('div.create_window ul li:eq(1) a').click();
-      $('#hugeUploader').hide();
-      $('div.create_window').show();
-      $('div.mamufas').fadeIn();
-      bindESC();		  
-		},
-		onProgress: function(id, fileName, loaded, total){
-		  var percentage = loaded / total;
-		  $('span.progress').width((346*percentage)/1);
-		},
-		onComplete: function(id, fileName, responseJSON){
-		  createNewToFinish('',responseJSON.file_uri);
-		  $('#hugeUploader').hide();
-		},
-		onCancel: function(id, fileName){},
-		showMessage: function(message){
-		   $('div.select_file p').html(message);
-		   $('div.select_file p').addClass('error');
-		}
-	});
+    //Uploader for the whole page (dashboard only)
+    var hugeUploader = new qq.FileUploader({
+    	element: document.getElementById('hugeUploader'),
+    	action: '/upload',
+    	params: {},
+    	allowedExtensions: ['csv', 'xls', 'xlsx', 'zip'],
+    	sizeLimit: 0, // max size
+    	minSizeLimit: 0, // min size
+    	debug: false,
+    
+    	onSubmit: function(id, fileName){
+      	resetUploadFile();
+    		$('div.create_window ul li:eq(0)').addClass('disabled');
+    		$('form input[type="submit"]').addClass('disabled');
+    		$('span.file').addClass('uploading');
+    		$('div.create_window ul li:eq(1) a').click();
+        $('#hugeUploader').hide();
+        $('div.create_window').show();
+        $('div.mamufas').fadeIn();
+        bindESC();		  
+    	},
+    	onProgress: function(id, fileName, loaded, total){
+    		var percentage = loaded / total;
+    		$('span.progress').width((346*percentage)/1);
+    	},
+    	onComplete: function(id, fileName, responseJSON){
+    		createNewToFinish('',responseJSON.file_uri);
+    		$('#hugeUploader').hide();
+    	},
+    	onCancel: function(id, fileName){},
+    	showMessage: function(message){
+    		 $('div.select_file p').html(message);
+    		 $('div.select_file p').addClass('error');
+    	}
+    });
 	   
 
 

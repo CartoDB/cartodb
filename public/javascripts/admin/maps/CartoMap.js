@@ -119,7 +119,7 @@
       head.js('/javascripts/admin/maps/Overlays/mapCanvasStub.js',
               '/javascripts/admin/maps/Overlays/CartoTooltip.js',
               '/javascripts/admin/maps/Overlays/CartoInfowindow.js',
-              '/javascripts/admin/maps/Overlays/CartoDeletewindow.js',
+              '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
         function(){
           me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
     			me.info_window_     = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);     // InfoWindow for markers

@@ -689,8 +689,8 @@
       return {
         tilejson: '1.0.0',
         scheme: 'xyz',
-        tiles: ['http://'+user_name+'.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8?cache_buster={cache}'+query],
-        grids: ['http://'+user_name+'.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
+        tiles: ['http://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}.png8?cache_buster={cache}'+query],
+        grids: ['http://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}.grid.json'],
         formatter: function(options, data) { 
           currentCartoDbId = data.cartodb_id;
           return data.cartodb_id; 

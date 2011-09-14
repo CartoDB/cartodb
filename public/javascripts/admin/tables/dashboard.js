@@ -115,6 +115,7 @@
   		event.stopPropagation();
   		event.preventDefault();
   		$('#hugeUploader').show();
+  		$('.qq-upload-drop-area').show();  		
   		$('#hugeUploader .qq-upload-drop-area').bind('dragleave', onDragExit);
   		$('#hugeUploader .qq-upload-drop-area').bind('drop', onDragExit);  		
   		$('#hugeUploader .qq-upload-drop-area').bind('dragover', function(event) {event.stopPropagation(); event.preventDefault();});

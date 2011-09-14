@@ -645,11 +645,12 @@ TRIGGER
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM}',#{CartoDB::SRID},'#{type}',2)")
-        user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")
+        user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")        
       end
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
+        user_database.run("UPDATE #{self.name} SET #{THE_GEOM_WEBMERCATOR}=ST_Transform(#{THE_GEOM},#{CartoDB::GOOGLE_SRID}) WHERE #{THE_GEOM} IS NOT NULL")
         user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
       end
     end

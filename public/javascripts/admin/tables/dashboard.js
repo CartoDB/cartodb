@@ -107,8 +107,8 @@
 
 
 
-	$('#hugeUploader').hide();
-	//Drop files on the dashboard to import them
+	  $('#hugeUploader').hide();
+	  //Drop files on the dashboard to import them
     $(document).bind('dragenter', onDragEnter);
     
     function onDragEnter(event){

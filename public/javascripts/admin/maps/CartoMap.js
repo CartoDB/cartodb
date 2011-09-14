@@ -79,7 +79,7 @@
             that.map_.setOptions({ draggableCursor: 'default' });
           }, 
           over: function(feature, div, opt3, evt){
-            if (me.status_ == "select") {
+            if (me.status_ == "select" && !me.query_mode) {
               me.over_marker_ = true;
               that.map_.setOptions({ draggableCursor: 'pointer' });
               me.tooltip_.open(evt.latLng,feature);
@@ -119,7 +119,7 @@
       head.js('/javascripts/admin/maps/Overlays/mapCanvasStub.js',
               '/javascripts/admin/maps/Overlays/CartoTooltip.js',
               '/javascripts/admin/maps/Overlays/CartoInfowindow.js',
-              '/javascripts/admin/maps/Overlays/CartoDeletewindow.js',
+              '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
         function(){
           me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
     			me.info_window_     = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);     // InfoWindow for markers
@@ -222,7 +222,6 @@
 			  if (view_map && me.query_mode) {
 					stopPropagation(ev);
 					me.query_mode = false;
-					me.showLoader();
 					me.refresh();
         }
 			});
@@ -230,11 +229,23 @@
       $('div.sql_window a.try_query').livequery('click',function(ev){
         var map_status = ($('body').attr('view_mode') == "map");
         if (map_status) {
+          stopPropagation(ev);
 	        $('body').attr('query_mode','true');
 					me.query_mode = true;
 					setAppStatus();
-					me.showLoader();
-          me.refresh(true);
+          me.refresh();
+          
+          // Get results from api
+          $.ajax({
+				    method: "GET",
+				    url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+editor.getValue()+') as count'),
+				 		headers: {"cartodbclient":"true"},
+				    success: function(data) {
+				      $('span.query h3').html(data.rows[0].count + ' row' + ((data.rows[0].count>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+				    },
+				    error: function(e) {
+				    }
+				  });
         }
       });
     }
@@ -587,6 +598,8 @@
       this.fakeMarker_ = null;
     }
 
+    
+    
     ////////////////////////////////////////
     //  GET TABLE COLUMNS TO FILL INFO	  //
     ////////////////////////////////////////
@@ -627,19 +640,12 @@
 			$('body').attr('view_mode','map');
 		
       // Refresh wax layer
+      this.tilejson = this.generateTilejson();
       this.refreshWax();
       
       // Remove the fake marker
 			if (this.fakeMarker_!=null)
 			  this.fakeMarker_.setMap(null);
-
-      // if (sql) {
-      //   this.clearMap(true);
-      // } else {
-      //   this.setMapStatus('select');
-      //   this.getColumns();
-      //   this.getPoints();
-      // }
     }
     
 		/* Hide all overlays (no markers) */ 
@@ -672,11 +678,19 @@
     /* Generate another tilejson */
     CartoMap.prototype.generateTilejson = function() {
       var that = this;
+      // SQL?
+      var query;
+      if (this.query_mode) {
+        query = '&sql='+editor.getValue();
+      } else {
+        query = '';
+      }
+            
       return {
         tilejson: '1.0.0',
         scheme: 'xyz',
-        tiles: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.png8?cache_buster={cache}'],
-        grids: ['http://admin.localhost.lan:8181/tiles/'+table_name+'/{z}/{x}/{y}.grid.json'],
+        tiles: [TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}.png8?cache_buster={cache}'+query],
+        grids: [TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}.grid.json'],
         formatter: function(options, data) { 
           currentCartoDbId = data.cartodb_id;
           return data.cartodb_id; 

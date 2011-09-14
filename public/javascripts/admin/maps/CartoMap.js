@@ -681,7 +681,7 @@
       // SQL?
       var query;
       if (this.query_mode) {
-        query = '&query='+editor.getValue();
+        query = '&sql='+editor.getValue();
       } else {
         query = '';
       }

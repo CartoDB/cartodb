@@ -116,6 +116,7 @@
   		event.preventDefault();
   		$('#hugeUploader').show();
   		$('#hugeUploader .qq-upload-drop-area').bind('dragleave', onDragExit);
+  		$('#hugeUploader .qq-upload-drop-area').bind('drop', onDragExit);  		
   		$('#hugeUploader .qq-upload-drop-area').bind('dragover', function(event) {event.stopPropagation(); event.preventDefault();});
   		return false;
     };
@@ -128,8 +129,7 @@
   		return false;
     };
     
-    
-    
+
 
     function bindESC() {
       $(document).keydown(function(event){

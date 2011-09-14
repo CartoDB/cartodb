@@ -26,7 +26,7 @@ namespace :cartodb do
       items.each do |item|
         text = item.search('description').first.inner_text.strip_tags.gsub(/^(.{150}[^\s]*)(.*)/m) {$2.empty? ? $1 : $1 + "... <a href=\"#{item.search('guid').first.inner_text}\">Read more</a>"}
         content += <<-HTML
-<div class="block#{i == 3 ? ' last' : ''}">
+<div class="block#{i == 2 ? ' last' : ''}">
   <h3>#{i == 0 ? "Latest from the blog" : ''}</h3>
   <h4><a href="#{item.search('guid').first.inner_text}" >#{item.search('title').first.inner_text}</a></h4>
   <p>#{text}</p>

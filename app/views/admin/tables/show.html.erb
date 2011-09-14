@@ -34,6 +34,7 @@
       var status = "<%= table_privacy_text(@table).downcase %>";
       var table_name = "<%= @table.name %>";
       var user_id = "<%= current_user.id %>";
+      var user_name = "<%= current_user.username %>";
       var map_enabled = <%= current_user.map_enabled.to_s %>;
       <% if flash[:alert] %>
       var error_message = '<%= flash[:alert] %>';

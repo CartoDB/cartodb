@@ -157,3 +157,9 @@ div.mamufas div.export_window div.inner_ span.bottom input.download {float:right
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
 div.mamufas div.export_window div.inner_ span.bottom input.download:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
     background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
+    
+div#hugeUploader{position: absolute; z-index: 1000; background-color: black; opacity: 0.4; width: 100%; height: 100%; top: 0; left: 0;}
+div#hugeUploader .qq-uploader{height: 100%;}
+div#hugeUploader .qq-upload-drop-area{height: 100%;}
+div#hugeUploader .qq-upload-button{display: none;}
+div#hugeUploader .qq-upload-list{display: none;}

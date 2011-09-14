@@ -41,7 +41,6 @@
       });
 
 
-
       //Delete window
       $('a.delete').click(function(ev){
         ev.preventDefault();
@@ -106,6 +105,31 @@
       $('#export_format').val($('div.mamufas div.export_window form ul li.selected a.option').attr('rel'));
     });
 
+
+
+	$('#hugeUploader').hide();
+	//Drop files on the dashboard to import them
+    $(document).bind('dragenter', onDragEnter);
+    
+    function onDragEnter(event){
+  		event.stopPropagation();
+  		event.preventDefault();
+  		$('#hugeUploader').show();
+  		$('#hugeUploader .qq-upload-drop-area').bind('dragleave', onDragExit);
+  		$('#hugeUploader .qq-upload-drop-area').bind('dragover', function(event) {event.stopPropagation(); event.preventDefault();});
+  		return false;
+    };
+    
+    function onDragExit(event){
+  		event.stopPropagation();
+  		event.preventDefault();
+  		$('#hugeUploader').hide();
+  		$('.qq-upload-drop-area').hide();
+  		return false;
+    };
+    
+    
+    
 
     function bindESC() {
       $(document).keydown(function(event){

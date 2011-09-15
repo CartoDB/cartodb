@@ -16,7 +16,7 @@ module CartoDB
           if t = Table[:user_id => user_id, :name => $1]
             t.destroy
           else
-            raise CartoDB::TableNotExists.new($1)
+            raise CartoDB::TableNotExists.new("relation '#{$1}' does not exist")
           end
           nil
         elsif q.include?('rename to') && q =~ /^alter\s*table\s*([\w_]+)\s*rename\s*to\s*([\w_]+)/i
@@ -24,7 +24,7 @@ module CartoDB
             t.name = $2
             t.save_changes
           else
-            raise CartoDB::TableNotExists.new($1)
+            raise CartoDB::TableNotExists.new("relation '#{$1}' does not exist")
           end
           nil
         elsif q.include?('rename') && q =~ /^\s*alter\s*table\s*([\w_]+)\s*/i

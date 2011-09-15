@@ -136,7 +136,7 @@ class User < Sequel::Model
   rescue => e
     if e.message =~ /^PGError/
       if e.message.include?("does not exist")
-        raise CartoDB::TableNotExists.new(e.message.match(/"([^"]+)"/)[1])
+        raise (e.message.include?("column") ? CartoDB::ColumnNotExists.new(e.message) : CartoDB::TableNotExists.new(e.message))
       else
         raise CartoDB::ErrorRunningQuery.new(e.message)
       end

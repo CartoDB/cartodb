@@ -175,7 +175,7 @@
 							var json = $.parseJSON(e.responseText);
 				      var msg = '';
 
-				      _.each(json.error,function(text,pos){
+				      _.each(json.errors,function(text,pos){
 				        msg += text + ', ';
 				      });
 				      msg = msg.substr(0,msg.length-2);

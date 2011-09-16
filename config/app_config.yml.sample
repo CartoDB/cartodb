@@ -1,6 +1,7 @@
 development:
   account_host: 'localhost.lan:4000'
   developers_host: 'http://developers.localhost.lan:3000'
+  session_domain: '.localhost.lan'
   amazon_access_key: ''
   amazon_secret_key: ''
   redis:
@@ -13,6 +14,7 @@ development:
 test:
   account_host: 'testhost.lan'
   developers_host: 'http://developers.testhost.lan:53716'
+  session_domain: '.testhost.lan'
   amazon_access_key: ''
   amazon_secret_key: ''
   redis:
@@ -25,6 +27,7 @@ test:
 production:
   account_host: ''
   developers_host: ''
+  session_domain: ''
   amazon_access_key: ''
   amazon_secret_key: ''
   redis: 

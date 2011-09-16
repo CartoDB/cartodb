@@ -11,3 +11,4 @@ misc/dbfUtils.pyc
 bin/
 config/database.yml
 .idea/*
+config/app_config.yml

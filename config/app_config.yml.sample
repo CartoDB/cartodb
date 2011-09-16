@@ -1,40 +1,35 @@
 development:
-  main_host: '.localhost.lan'
-  api_host: 'http://api.localhost.lan:3000'
-  app_host: 'http://localhost.lan:3000'
+  account_host: 'localhost.lan:4000'
   developers_host: 'http://developers.localhost.lan:3000'
   amazon_access_key: ''
   amazon_secret_key: ''
   redis:
     host: '127.0.0.1'
     port: 6379
+  superadmin:
+    username: "superadmin"
+    password: "monkey"
+
 test:
-  main_host: '.testhost.lan'
-  api_host: 'http://api.testhost.lan:53716'
-  app_host: 'http://testhost.lan:53716'
+  account_host: 'testhost.lan'
   developers_host: 'http://developers.testhost.lan:53716'
   amazon_access_key: ''
   amazon_secret_key: ''
   redis:
     host: '127.0.0.1'
     port: 6380
-staging:
-  main_host: ''
-  api_host: ''
-  app_host: ''
-  developers_host: ''
-  amazon_access_key: ''
-  amazon_secret_key: ''
-  redis:
-    host: ''
-    port: 
+  superadmin:
+    username: "superadmin"
+    password: "monkeytest"
+
 production:
-  main_host: ''
-  api_host: ''
-  app_host: ''
+  account_host: ''
   developers_host: ''
   amazon_access_key: ''
   amazon_secret_key: ''
   redis: 
-    host: ''
-    port: 
+    host: '127.0.0.1'
+    port: 6379
+  superadmin:
+    username: ""
+    password: ""

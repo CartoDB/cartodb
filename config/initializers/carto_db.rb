@@ -1,11 +1,7 @@
 module CartoDB
   
   def self.session_domain
-    case Rails.env
-    when "production" then ".cartodb.com"
-    when "development" then ".localhost.lan"
-    when "test" then ".testhost.lan"
-    end
+    APP_CONFIG[:session_domain]
   end
   
   def self.domain

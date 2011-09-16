@@ -277,11 +277,10 @@ feature "API 1.0 tables management" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {
-      :name => "My new imported table", 
       :file => "#{Rails.root}/db/fake_data/twitters.csv"
     } do |response|
       response.status.should be_success
-      response.body[:name].should == "my_new_imported_table"
+      response.body[:name].should == "twitters"
       schema_differences = (response.body[:schema] - [
         ["cartodb_id", "number"], ["url", "string"], ["login", "string"], ["country", "string"], ["followers_count", "string"], 
         ["field_5", "string"], ["created_at", "date"], ["updated_at", "date"]
@@ -294,11 +293,10 @@ feature "API 1.0 tables management" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {
-      :name => "My new imported table", 
       :file => "#{Rails.root}/db/fake_data/ngos.xlsx"
     } do |response|
       response.status.should be_success
-      response.body[:name].should == "my_new_imported_table"
+      response.body[:name].should == "ngos"
       schema_differences = (response.body[:schema] - [
         ["cartodb_id", "number"], ["organization", "string"], ["website", "string"], ["about", "string"], ["organization_s_work_in_haiti", "string"], 
         ["calculation_of_number_of_people_reached", "string"], ["private_funding", "string"], ["relief", "string"], ["reconstruction", "string"], 
@@ -320,7 +318,7 @@ feature "API 1.0 tables management" do
       :srid => CartoDB::SRID
     } do |response|
       response.status.should be_success
-      response.body[:name].should == "vizzuality_shp"
+      response.body[:name].should == "vizzuality"
       schema_differences = (response.body[:schema] - [
         ["cartodb_id", "number"], ["gid", "number"], ["subclass", "string"], ["x", "number"], ["y", "number"], ["length", "string"], ["area", "string"], 
         ["angle", "number"], ["name", "string"], ["pid", "number"], ["lot_navteq", "string"], ["version_na", "string"], ["vitesse_sp", "number"], 
@@ -339,7 +337,7 @@ feature "API 1.0 tables management" do
       :srid => CartoDB::SRID
     } do |response|
       response.status.should be_success
-      response.body[:name].should == "constru_shp"
+      response.body[:name].should == "constru"
       schema_differences = (response.body[:schema] - [
         ["cartodb_id", "number"], ["gid", "number"], ["mapa", "number"], ["delegacio", "number"], ["municipio", "number"], ["masa", "string"], 
         ["tipo", "string"], ["parcela", "string"], ["constru", "string"], ["coorx", "number"], ["coory", "number"], ["numsymbol", "number"], 
@@ -354,11 +352,11 @@ feature "API 1.0 tables management" do
   scenario "Create a table, remove a table, and recreate it with the same name" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).times(3)
     
-    post_json api_tables_url, {:name => "wadus", :file => "#{Rails.root}/db/fake_data/twitters.csv"} do |response|
+    post_json api_tables_url, {:file => "#{Rails.root}/db/fake_data/twitters.csv"} do |response|
       response.status.should be_success
     end       
     
-    delete_json api_table_url("wadus") do |response|
+    delete_json api_table_url("twitters") do |response|
       response.status.should be_success
     end
 

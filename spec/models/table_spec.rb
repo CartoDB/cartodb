@@ -550,7 +550,7 @@ describe Table do
     table.save
 
     table.rows_counted.should == 11
-    table.name.should == "vizzuality_shp"
+    table.name.should == "vizzuality"
   end
   
   it "should import SHP1.zip" do
@@ -559,7 +559,7 @@ describe Table do
     table.importing_encoding = 'LATIN1'
     table.save
 
-    table.name.should == "esp_adm1_shp"
+    table.name.should == "esp_adm1"
   end
   
   it "should import ngoaidmap_projects.csv" do
@@ -797,16 +797,6 @@ describe Table do
     table.rows_counted.should == 2
   end
   
-  it "should overwrite given name over name of the file when importing " do
-    user = create_user
-    table = new_table :user_id => user.id, :name => 'wadus'
-    table.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
-    table.save.reload
-    
-    table.name.should == 'wadus'
-    table.rows_counted.should == 8406
-  end
-  
   it "should not drop a table that exists when upload fails" do
     user = create_user
     table = new_table :name => 'empty_file', :user_id => user.id
@@ -833,7 +823,7 @@ describe Table do
     table2 = new_table :name => 'empty_file', :user_id => user.id
     table2.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
     table2.save.reload
-    table2.name.should == 'empty_file_2'
+    table2.name.should == 'csv_no_quotes'
     
     user.in_database do |user_database|
       user_database.table_exists?(table.name.to_sym).should be_true
@@ -958,7 +948,7 @@ describe Table do
     table = new_table
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.user_id = user.id
-    table.name = "antantaric_species"
+    table.name = "import_csv_1"
     table.save
     
     # FIXME: At some point georeferencing an imported table won't be necessary here
@@ -970,7 +960,7 @@ describe Table do
     fd.write(zip)
     fd.close
     Zip::ZipFile.foreach(path) do |entry|
-      %W{ antantaric_species_export.shx antantaric_species_export.shp antantaric_species_export.dbf antantaric_species_export.prj }.should include(entry.name)
+      %W{ import_csv_1_export.shx import_csv_1_export.shp import_csv_1_export.dbf import_csv_1_export.prj }.should include(entry.name)
     end
     FileUtils.rm_rf(path)
   end

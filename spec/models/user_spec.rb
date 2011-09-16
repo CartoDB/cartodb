@@ -122,12 +122,12 @@ describe User do
 
   it "should run valid queries against his database" do
     user = create_user
-    table = new_table :name => 'antantaric species'
+    table = new_table
     table.user_id = user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
-    query_result = user.run_query("select * from antantaric_species where family='Polynoidae' limit 10")
+    query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -139,10 +139,10 @@ describe User do
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
 
-    query_result = user.run_query("update antantaric_species set family='polynoidae' where family='Polynoidae'")
-    query_result = user.run_query("select * from antantaric_species where family='Polynoidae' limit 10")
+    query_result = user.run_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
+    query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:total_rows].should == 0
-    query_result = user.run_query("select * from antantaric_species where family='polynoidae' limit 10")
+    query_result = user.run_query("select * from import_csv_1 where family='polynoidae' limit 10")
     query_result[:total_rows].should == 2
 
     table2 = new_table :name => 'twitts'
@@ -173,12 +173,11 @@ describe User do
     user = create_user
     table = new_table
     table.user_id = user.id
-    table.name = 'antantaric species'
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
     lambda {
-      user.run_query("selectttt * from antantaric_species where family='Polynoidae' limit 10")
+      user.run_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
@@ -209,12 +208,12 @@ describe User do
   
   it "should return the result from the last select query if multiple selects" do
     user = create_user
-    table = new_table :name => 'antantaric species'
+    table = new_table
     table.user_id = user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
-    query_result = user.run_query("select * from antantaric_species where family='Polynoidae' limit 1; select * from antantaric_species where family='Polynoidae' limit 10")
+    query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 1; select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2    
@@ -224,12 +223,12 @@ describe User do
 
   it "should allow multiple queries in the format: insert_query; select_query" do
     user = create_user
-    table = new_table :name => 'antantaric species'
+    table = new_table
     table.user_id = user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
-    query_result = user.run_query("insert into antantaric_species (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from antantaric_species where family='Polynoidae' limit 10")
+    query_result = user.run_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:total_rows].should == 3    
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"

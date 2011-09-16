@@ -27,7 +27,7 @@ feature "API 1.0 tables export" do
     fd.write(response.body)
     fd.close
     Zip::ZipFile.foreach(path) do |entry|
-      entry.name.should == "antantaric_species_export.csv"
+      entry.name.should == "import_csv_1_export.csv"
     end
     FileUtils.rm_rf(path)
   end
@@ -41,7 +41,7 @@ feature "API 1.0 tables export" do
     fd.write(response.body)
     fd.close
     Zip::ZipFile.foreach(path) do |entry|
-      %W{ antantaric_species_export.shx antantaric_species_export.shp antantaric_species_export.dbf antantaric_species_export.prj }.should include(entry.name)
+      %W{ import_csv_1_export.shx import_csv_1_export.shp import_csv_1_export.dbf import_csv_1_export.prj }.should include(entry.name)
     end
     FileUtils.rm_rf(path)
   end

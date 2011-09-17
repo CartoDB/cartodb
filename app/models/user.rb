@@ -194,6 +194,13 @@ class User < Sequel::Model
   end
   private :database_exists?
   
+  def database_size
+    res = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(table_name))
+      FROM information_schema.tables
+      WHERE table_catalog = '#{database_name}' AND table_schema = 'public'")
+    res.first[:sum]
+  end
+  
   ## User's databases setup methods
   def setup_user
     return if disabled?

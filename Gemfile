@@ -18,7 +18,7 @@ gem "rgeo-geojson", :require => "rgeo/geo_json"
 gem "redis", "~> 2.2.2"
 gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
-gem "cartodb-importer", "~> 0.2.8"
+gem "cartodb-importer", "~> 0.2.9"
 gem "airbrake", '~> 3.0.4'
 
 group :test, :development do

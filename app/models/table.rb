@@ -669,7 +669,7 @@ TRIGGER
       end      
       
       # Ensure isValid is set for all tables, imported or not
-      user.database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")
+      # user.database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")
     end
     self.the_geom_type = type.downcase
     save_changes unless new?

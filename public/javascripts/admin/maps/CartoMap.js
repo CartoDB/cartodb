@@ -189,10 +189,11 @@
 					setAppStatus();
           me.refresh();
           
+          
           // Get results from api
           $.ajax({
 				    method: "GET",
-				    url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+editor.getValue()+') as count'),
+				    url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+escape(editor.getValue().replace('/\n/g'," "))+') as count'),
 				 		headers: {"cartodbclient":"true"},
 				    success: function(data) {
 				      $('span.query h3').html(data.rows[0].count + ' row' + ((data.rows[0].count>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');

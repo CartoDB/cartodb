@@ -50,7 +50,6 @@ class Table < Sequel::Model(:user_tables)
     
       #import from URL
       if import_from_url.present?
-        debugger
         importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, :logger => ::Rails.logger,
           "username" => owner.database_username, "password" => owner.database_password,
@@ -81,6 +80,13 @@ class Table < Sequel::Model(:user_tables)
             user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
           end
         end
+        if schema.present? && schema.flatten.include?(:gid)
+          if aux_cartodb_id_column.nil?
+            aux_cartodb_id_column = "gid"
+          else
+            user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
+          end
+        end        
         
         user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
 

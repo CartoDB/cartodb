@@ -29,6 +29,9 @@ GEM
       activesupport (= 3.0.7)
     activesupport (3.0.7)
     addressable (2.2.6)
+    airbrake (3.0.4)
+      activesupport
+      builder
     archive-tar-minitar (0.5.2)
     arel (2.0.10)
     aws-ses (0.4.1)
@@ -65,8 +68,6 @@ GEM
       rspec (~> 2.0)
     erubis (2.6.6)
       abstract (>= 1.0.0)
-    exception_notification (2.5.2)
-      actionmailer (>= 3.0.4)
     ffi (1.0.9)
     google-spreadsheet-ruby (0.1.5)
       nokogiri (>= 1.4.3.1)
@@ -205,11 +206,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  airbrake (~> 3.0.4)
   aws-ses (= 0.4.1)
   capybara (~> 1.1.1)
   cartodb-importer (~> 0.2.8)
   email_spec
-  exception_notification
   htmlentities
   launchy
   minitest (~> 2.0.2)

@@ -401,9 +401,9 @@ div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.s
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.select_file p {float:left; margin:1px 0 0 5px; font:normal 13px "Helvetica",Arial; color:#B3B3B3;}
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.select_file p.error {color:#FF6600;}
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.select_file input {position:absolute; top:0; left:0; width:350px; height:30px; opacity:0;}
+div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.select_file input#url_txt {position:absolute; top:0; left:0; width:330px; height:20px; background-color: transparent; border:none; opacity: 1; float:left; padding: 4px 0 0 6px; font:normal 13px "Helvetica",Arial; color:#B3B3B3;}
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.select_file input:hover {cursor:pointer;}
-div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.progress span.progress {float:left; margin:1px; width:5px; max-width:346px; height:26px; background:yellow; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px;
-  background-image:-moz-linear-gradient(100% 100% 90deg, #FF9900, #FFBE00); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFBE00), to(#FF9900));}
+div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.progress span.progress {float:left; margin:1px; width:5px; max-width:346px; height:26px; background:yellow; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background-image:-moz-linear-gradient(100% 100% 90deg, #FF9900, #FFBE00); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFBE00), to(#FF9900));}
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.progress p {position:absolute; top:2px; left:8px; font:normal 13px "Arial"; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.import_window div.inner_ span.top ul li span.georeference {display:none;}
 div.mamufas div.import_window div.inner_ span.top ul li.finished a {background-position:0 -123px; color:#0E1427;}
@@ -423,3 +423,29 @@ div.mamufas div.import_window div.inner_ span.top ul li.disabled a:hover {cursor
 div.mamufas div.import_window div.inner_ span.bottom {float:left; width:394px; padding:10px; border-top:1px solid white;}
 div.mamufas div.import_window div.inner_ span.bottom a.cancel {float:left; margin:7px 0 0 0; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.import_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
+div.mamufas div.import_window div.inner_ span.bottom input {float:right; height:26px; padding:7px 10px; border:1px solid #999; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
+  text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white;
+  background:linear-gradient(-90deg, #FFFFFF, #CACBCE);
+  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE);
+  background: -o-linear-gradient(#FFFFFF,#CACBCE);
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');
+}
+div.mamufas div.import_window div.inner_ span.bottom input:focus {outline:none;}
+div.mamufas div.import_window div.inner_ span.bottom input:hover {
+  background:linear-gradient(-90deg, #CACBCE, #FFFFFF);
+  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF);
+  background: -o-linear-gradient(#CACBCE,#FFFFFF);
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF');
+  cursor:pointer;
+}
+div.mamufas div.import_window div.inner_ span.bottom input.disabled {opacity:0.5;}
+div.mamufas div.import_window div.inner_ span.bottom input.disabled:hover {
+  background:linear-gradient(-90deg, #FFFFFF, #CACBCE);
+  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE);
+  background: -o-linear-gradient(#FFFFFF,#CACBCE);
+  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');
+  cursor:default;
+}

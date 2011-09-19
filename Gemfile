@@ -19,7 +19,7 @@ gem "redis", "~> 2.2.2"
 gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
 gem "cartodb-importer", "~> 0.2.8"
-gem "exception_notification"
+gem "airbrake", '~> 3.0.4'
 
 group :test, :development do
   gem "ruby-debug19", :require => "ruby-debug", :platforms => :mri_19

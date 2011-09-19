@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file,
+  attr_accessor :force_schema, :import_from_file,:import_from_url,
                 :importing_SRID, :importing_encoding, :temporal_the_geom_type
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
@@ -37,13 +37,27 @@ class Table < Sequel::Model(:user_tables)
     self.database_name = owner.database_name
     update_updated_at
 
-    if import_from_file.present?
-      importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name, :logger => ::Rails.logger,
-        "username" => owner.database_username, "password" => owner.database_password,
-        :import_from_file => import_from_file, :debug => (Rails.env.development?)
-      ).symbolize_keys
-      importer_result = importer.import!
+    #import from file
+    if import_from_file.present? or import_from_url.present?
+      if import_from_file.present?
+        importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          "database" => database_name, :logger => ::Rails.logger,
+          "username" => owner.database_username, "password" => owner.database_password,
+          :import_from_file => import_from_file, :debug => (Rails.env.development?)
+        ).symbolize_keys
+        importer_result = importer.import!
+      end
+    
+      #import from URL
+      if import_from_url.present?
+        debugger
+        importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          "database" => database_name, :logger => ::Rails.logger,
+          "username" => owner.database_username, "password" => owner.database_password,
+          :import_from_url => import_from_url, :debug => (Rails.env.development?)
+        ).symbolize_keys
+        importer_result = importer.import!
+      end
 
       self[:name] = importer_result.name
       schema = self.schema(:reload => true)

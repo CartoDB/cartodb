@@ -636,6 +636,7 @@
 	      });
 	      $("#tags_list").tagit({values: values});
 	      $('span.tags_window').show();
+	      $('input.tagit-input').focus();
 	      $('body').click(function(event) {
 	        if (!$(event.target).closest('span.tags_window').length) {
 	          $('span.tags_window').hide();

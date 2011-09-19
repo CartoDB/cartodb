@@ -304,8 +304,25 @@
       
     }
     
+    /* Refresh wax tiles */
     CartoMap.prototype.refreshWax = function() {
-      
+      // Add again wax layer
+      if (this.map_) {
+        this.cache_buster++;
+        this.map_.overlayMapTypes.clear();
+        this.tilejson.grids = this.tilejson.grids_base + '?cache_buster=' + this.cache_buster;
+        this.wax_tile = new wax.g.connector(this.tilejson);
+        this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
+        this.interaction.remove();
+        this.interaction = wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
+      }
+    }
+
+    /* Remove WAX layer */
+    CartoMap.prototype.removeWax = function() {
+      if (this.map_) {
+        this.map_.overlayMapTypes.clear();
+      }
     }
 
 
@@ -739,25 +756,6 @@
 			this.info_window_.hide();
 			this.tooltip_.hide();
 		}
-    
-    /* Refresh wax tiles */
-    CartoMap.prototype.refreshWax = function() {
-      // Add again wax layer
-      if (this.map_) {
-        this.cache_buster++;
-        this.map_.overlayMapTypes.clear();
-        this.wax_tile = new wax.g.connector(this.tilejson);
-        this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
-        wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
-      }
-    }
-    
-    /* Remove WAX layer */
-    CartoMap.prototype.removeWax = function() {
-      if (this.map_) {
-        this.map_.overlayMapTypes.clear();
-      }
-    }
 
     /* Generate another tilejson */
     CartoMap.prototype.generateTilejson = function() {
@@ -775,6 +773,7 @@
         scheme: 'xyz',
         tiles: [TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}.png8?cache_buster={cache}'+query],
         grids: [TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}.grid.json'],
+        grids_base: [TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}.grid.json'],
         formatter: function(options, data) { 
           currentCartoDbId = data.cartodb_id;
           return data.cartodb_id; 

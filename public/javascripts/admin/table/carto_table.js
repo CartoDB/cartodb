@@ -1907,7 +1907,7 @@
       ///////////////////////////////////////
       //  Georeference window events       //
       ///////////////////////////////////////
-      $('a.open_georeference,p.geo').livequery('click',function(ev){
+      $('a.open_georeference,p.geo,a.georeference_global').livequery('click',function(ev){
         stopPropagation(ev);
 				if (enabled && !query_mode) {
 					methods.closeTablePopups();

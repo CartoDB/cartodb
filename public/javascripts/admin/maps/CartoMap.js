@@ -121,22 +121,27 @@
       
       // Map tools
       $('div.general_options ul li.map a').hover(function(){
-        // Change text
-        var text = $(this).text().replace('_',' ');
-        $('div.general_options div.tooltip p').text(text);
-        // Check position
-        var right = -($(this).offset().left-$(window).width());
-        var offset = $('div.general_options div.tooltip').width()/2;
-        // near right edge
-        if (right-13-offset<0) {
-          right = 16 + offset;
-          $('div.general_options div.tooltip span.arrow').css({left:'83%'});
+        if (!$(this).parent().hasClass('disabled')) {
+          // Change text
+          var text = $(this).text().replace('_',' ');
+          $('div.general_options div.tooltip p').text(text);
+          // Check position
+          var right = -($(this).offset().left-$(window).width());
+          var offset = $('div.general_options div.tooltip').width()/2;
+          // near right edge
+          if (right-13-offset<0) {
+            right = 16 + offset;
+            $('div.general_options div.tooltip span.arrow').css({left:'83%'});
+          } else {
+            $('div.general_options div.tooltip span.arrow').css({left:'50%'});
+          }
+          $('div.general_options div.tooltip').css({right:right-13-offset+'px'});        
+          // Show
+          $('div.general_options div.tooltip').show();
         } else {
-          $('div.general_options div.tooltip span.arrow').css({left:'50%'});
+          $('div.general_options div.tooltip').hide();
         }
-        $('div.general_options div.tooltip').css({right:right-13-offset+'px'});        
-        // Show
-        $('div.general_options div.tooltip').show();
+
       },function(){
         $('div.general_options div.tooltip').hide();
       });
@@ -144,7 +149,7 @@
       // Change map status
       $('div.general_options ul li.map a').click(function(ev){
         stopPropagation(ev);
-        if (!$(this).parent().hasClass('selected')) {
+        if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
           var status = $(this).attr('class');
           me.setMapStatus(status);
         }
@@ -224,13 +229,16 @@
 		    url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
 		 		headers: {"cartodbclient":"true"},
 		    success: function(data) {
-		      var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-		      var coor1 = coordinates[0].split(' ');
-		      var coor2 = coordinates[1].split(' ');
-		      var bounds = new google.maps.LatLngBounds();
-		      bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
-		      bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
-		      me.map_.fitBounds(bounds);
+		      if (data.rows[0].st_extent!=null) {
+		        var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+  		      var coor1 = coordinates[0].split(' ');
+  		      var coor2 = coordinates[1].split(' ');
+  		      var bounds = new google.maps.LatLngBounds();
+  		      bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
+  		      bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+  		      me.map_.fitBounds(bounds);
+		      }
+
 		    },
 		    error: function(e) {
 		    }
@@ -241,24 +249,24 @@
     CartoMap.prototype.setTools = function() {
       $.ajax({
 		    method: "GET",
-		    url: global_api_url+'queries?sql='+escape('SELECT ST_GeometryType(the_geom) FROM ' + table_name + ' LIMIT 1'),
+		    url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
 		 		headers: {"cartodbclient":"true"},
 		    success: function(data) {
-          var type = data.rows[0].st_geometrytype.toLowerCase();
-          
-          if (type=="st_point") {
-            $('div.general_options ul li.map a.add_point').parent().css('display','inline-block');
-          } else if (type=="st_polygon" || type=="st_multipolygon") {
-            $('div.general_options ul li.map a.add_polygon').parent().css('display','inline-block');
+          var type = data.rows[0].type.toLowerCase();
+
+          if (type=="point") {
+            $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
+          } else if (type=="polygon" || type=="multipolygon") {
+            $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');
           } else {
-            $('div.general_options ul li.map a.add_polyline').parent().css('display','inline-block');
+            $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
           }
-          
-          $('div.general_options ul li.map a.select_area').parent().css('display','inline-block');
+
 		    },
 		    error: function(e) {}
 		  });
     }
+    
     
     
 		////////////////////////////////////////

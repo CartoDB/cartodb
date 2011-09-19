@@ -10,7 +10,7 @@ CartoTooltip.prototype.draw = function() {
         div = this.div_ = document.createElement('DIV');
         div.setAttribute('class','marker_tooltip');
 
-        $(div).append('<span><p>1 point</p><a class="info" href="#show_info">i</a><a class="margin edit" href="#edit">e</a><a class="margin delete" href="#delete_marker">x</a></span');
+        $(div).append('<span><p>1 point</p><a class="info" href="#show_info">i</a><a class="margin edit" href="#edit">e</a><a class="margin delete" href="#delete_marker">x</a></span>');
 
         $(div).find('a.info').click(function(ev){
             stopPropagation(ev);

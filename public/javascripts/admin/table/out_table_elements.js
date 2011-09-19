@@ -121,8 +121,10 @@
 	          '<li class="table"><a href="#add_row" class="add_row">Add row</a></li>'+
 	          '<li class="table"><a href="#add_column" class="add_column">Add column</a></li>'+
 	          '<li class="selected map"><a class="select">select</a></li>'+
-	          '<li class="map"><a class="add">add</a></li>'+
-	          '<li class="map"><a class="select_area">select_area</a></li>'+
+	          '<li class="map"><a class="add_point">add point</a></li>'+
+	          '<li class="map"><a class="add_polygon">add polygon</a></li>'+
+	          '<li class="map"><a class="add_polyline">add line</a></li>'+
+	          '<li class="map"><a class="select_area">select area</a></li>'+
 	        '</ul>'+
 
 	        '<div class="tooltip">'+
@@ -689,7 +691,7 @@
           $(document).trigger('click');
           $('body').trigger('refresh');
           $('body').trigger('enabled',[true]);
-					 $('body').attr('view_mode','table');
+					$('body').attr('view_mode','table');
           $('div.general_options').removeClass('map').addClass('table');
           $('div.table_position').show();
           hideMap();

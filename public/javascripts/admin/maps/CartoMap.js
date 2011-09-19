@@ -272,8 +272,26 @@
       
     }
     
+    /* Refresh wax tiles */
     CartoMap.prototype.refreshWax = function() {
-      
+      // Add again wax layer
+      if (this.map_) {
+        this.cache_buster++;
+        this.map_.overlayMapTypes.clear();
+        this.wax_tile = new wax.g.connector(this.tilejson);
+        this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
+        //wax.g.interaction().clearTileGrid();
+        console.log("this should clear things out");
+        this.tilejson.grids = this.tilejson.grids + '?cache_buster=' + this.cache_buster;
+        wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
+      }
+    }
+
+    /* Remove WAX layer */
+    CartoMap.prototype.removeWax = function() {
+      if (this.map_) {
+        this.map_.overlayMapTypes.clear();
+      }
     }
 
 
@@ -680,25 +698,6 @@
 			this.info_window_.hide();
 			this.tooltip_.hide();
 		}
-    
-    /* Refresh wax tiles */
-    CartoMap.prototype.refreshWax = function() {
-      // Add again wax layer
-      if (this.map_) {
-        this.cache_buster++;
-        this.map_.overlayMapTypes.clear();
-        this.wax_tile = new wax.g.connector(this.tilejson);
-        this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
-        wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
-      }
-    }
-    
-    /* Remove WAX layer */
-    CartoMap.prototype.removeWax = function() {
-      if (this.map_) {
-        this.map_.overlayMapTypes.clear();
-      }
-    }
 
     /* Generate another tilejson */
     CartoMap.prototype.generateTilejson = function() {

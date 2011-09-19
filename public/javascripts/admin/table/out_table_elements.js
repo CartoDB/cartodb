@@ -171,6 +171,9 @@
 				if ($('div.sql_window').is(':visible')) {
 					closeOutTableWindows();
 				} else {
+          if (editor.getValue()=='') {
+            editor.setValue('SELECT * FROM ' + table_name);
+          }
 					$('div.sql_window').removeAttr('style');
 	        $('div.sql_window').show();
 					bindESC();

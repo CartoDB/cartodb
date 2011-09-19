@@ -1,7 +1,26 @@
 
 
     head(function(){
-
+      
+      // Right column floating effect
+      $(window).scroll(
+        function(ev) {
+          var right_column = $('div.tables_list div.right');
+          var scrolled = $(window).scrollTop();
+          var right_column_height = right_column.height();
+          var list_height = $('div.tables_list').height() + 300 - right_column_height;
+          if (scrolled>336) {
+            if (scrolled<list_height) {
+              right_column.css({'position':'fixed','margin':'-336px 0 0 20px','display':'inline', 'vertical-align':'top'});
+            } else {
+              right_column.css({'position':'relative','margin':'0 0 0 16px','display':'inline-block','vertical-align':'bottom'});
+            }
+          } else {
+            right_column.css({'position':'relative','margin':'0 0 0 16px','display':'inline-block'});
+          }
+        }
+      );
+      
       //Put paginator in middle
       var paginator_width = $('div.paginate').width();
       $('div.paginate').css('margin-left', ((626-paginator_width)/2) +'px');

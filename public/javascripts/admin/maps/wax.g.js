@@ -1,4 +1,4 @@
-/* wax - 3.0.7 - 1.0.4-391-gfbb37e0 */
+/* wax - 3.0.7 - 1.0.4-396-g837ea07 */
 
 
 /*!
@@ -351,20 +351,30 @@ wax.GridInstance = function(grid_tile, formatter, options) {
         return key;
     }
 
-    // Lower-level than tileFeature - has nothing to do
-    // with the DOM. Takes a px offset from 0, 0 of a grid.
-    instance.gridFeature = function(x, y) {
+    instance.grid_tile = function() {
+        return grid_tile;
+    };
+
+    instance.getKey = function(x, y) {
         if (!(grid_tile && grid_tile.grid)) return;
         if ((y < 0) || (x < 0)) return;
         if ((Math.floor(y) >= tileSize) ||
             (Math.floor(x) >= tileSize)) return;
         // Find the key in the grid. The above calls should ensure that
         // the grid's array is large enough to make this work.
-        var key = resolveCode(grid_tile.grid[
+        return resolveCode(grid_tile.grid[
            Math.floor((y) / resolution)
         ].charCodeAt(
            Math.floor((x) / resolution)
         ));
+    };
+
+    // Lower-level than tileFeature - has nothing to do
+    // with the DOM. Takes a px offset from 0, 0 of a grid.
+    instance.gridFeature = function(x, y) {
+        // Find the key in the grid. The above calls should ensure that
+        // the grid's array is large enough to make this work.
+        var key = this.getKey(x, y);
 
         if (grid_tile.keys[key] && grid_tile.data[grid_tile.keys[key]]) {
             return grid_tile.data[grid_tile.keys[key]];
@@ -563,7 +573,7 @@ wax.request = {
             var that = this;
             this.locks[url] = true;
             reqwest({
-                url: url + '?callback=grid',
+                url: wax.util.addUrlData(url, 'callback=grid'),
                 type: 'jsonp',
                 jsonpCallback: 'callback',
                 success: function(data) {
@@ -589,7 +599,7 @@ if (!wax) var wax = {};
 // A wrapper for reqwest jsonp to easily load TileJSON from a URL.
 wax.tilejson = function(url, callback) {
     reqwest({
-        url: url + '?callback=grid',
+        url: wax.util.addUrlData(url, 'callback=grid'),
         type: 'jsonp',
         jsonpCallback: 'callback',
         success: callback,
@@ -779,7 +789,7 @@ wax.util = {
             parseInt(htmlComputed.marginTop, 10) &&
             !isNaN(parseInt(htmlComputed.marginTop, 10))) {
             top += parseInt(htmlComputed.marginTop, 10);
-        left += parseInt(htmlComputed.marginLeft, 10);
+            left += parseInt(htmlComputed.marginLeft, 10);
         }
 
         return {
@@ -800,14 +810,14 @@ wax.util = {
     // Returns a version of a function that always has the second parameter,
     // `obj`, as `this`.
     bind: function(func, obj) {
-      var args = Array.prototype.slice.call(arguments, 2);
-      return function() {
-        return func.apply(obj, args.concat(Array.prototype.slice.call(arguments)));
-      };
+        var args = Array.prototype.slice.call(arguments, 2);
+        return function() {
+            return func.apply(obj, args.concat(Array.prototype.slice.call(arguments)));
+        };
     },
     // From underscore
     isString: function(obj) {
-      return !!(obj === '' || (obj && obj.charCodeAt && obj.substr));
+        return !!(obj === '' || (obj && obj.charCodeAt && obj.substr));
     },
     // IE doesn't have indexOf
     indexOf: function(array, item) {
@@ -824,10 +834,10 @@ wax.util = {
     },
     // From underscore: reimplement the ECMA5 `Object.keys()` method
     keys: Object.keys || function(obj) {
-        var hasOwnProperty = Object.prototype.hasOwnProperty;
+        var ho = Object.prototype.hasOwnProperty;
         if (obj !== Object(obj)) throw new TypeError('Invalid object');
         var keys = [];
-        for (var key in obj) if (hasOwnProperty.call(obj, key)) keys[keys.length] = key;
+        for (var key in obj) if (ho.call(obj, key)) keys[keys.length] = key;
         return keys;
     },
     // From quirksmode: normalize the offset of an event from the top-left
@@ -850,9 +860,9 @@ wax.util = {
             var leftMargin = parseInt(htmlComputed.marginLeft, 10) || 0;
             return {
                 x: e.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-                  (doc && doc.clientLeft || body && body.clientLeft || 0) + leftMargin,
+                    (doc && doc.clientLeft || body && body.clientLeft || 0) + leftMargin,
                 y: e.clientY + (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
-                  (doc && doc.clientTop  || body && body.clientTop  || 0) + topMargin
+                    (doc && doc.clientTop  || body && body.clientTop  || 0) + topMargin
             };
         } else if (e.touches && e.touches.length === 1) {
             // Touch browsers
@@ -861,6 +871,38 @@ wax.util = {
                 y: e.touches[0].pageY
             };
         }
+    },
+    // parseUri 1.2.2
+    // Steven Levithan <stevenlevithan.com>
+    parseUri: function(str) {
+        var o = {
+            strictMode: false,
+            key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
+            q:   {
+                name:   "queryKey",
+                parser: /(?:^|&)([^&=]*)=?([^&]*)/g
+            },
+            parser: {
+                strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+                loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+            }
+        },
+            m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
+            uri = {},
+            i   = 14;
+
+        while (i--) uri[o.key[i]] = m[i] || "";
+
+        uri[o.q.name] = {};
+        uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
+            if ($1) uri[o.q.name][$1] = $2;
+        });
+        return uri;
+    },
+    // appends callback onto urls regardless of existing query params
+    addUrlData: function(url, data) {
+        url += (this.parseUri(url).query) ? '&' : '?';
+        return url += data;
     }
 };
 wax = wax || {};
@@ -944,27 +986,36 @@ wax.g.interaction = function(map, tilejson, options) {
     // cache of grid information and provide friendly utility methods
     // that return `GridTile` objects instead of raw data.
     var interaction = {
-        modifyingEvents: ['dragstart', 'dragend', 'drag', 'zoom_changed',
-            'resize', 'center_changed', 'bounds_changed'],
-
         waxGM: new wax.GridManager(tilejson),
 
         // This requires wax.Tooltip or similar
         callbacks: options.callbacks || new wax.tooltip(),
-
         clickAction: options.clickAction || 'full',
+        eventHandlers:{},
 
         // Attach listeners to the map
         add: function() {
-            for (var i = 0; i < this.modifyingEvents.length; i++) {
-                google.maps.event.addListener(
-                    map,
-                    this.modifyingEvents[i],
-                    wax.util.bind(this.clearTileGrid, this)
-                );
-            }
-            google.maps.event.addListener(map, 'mousemove', this.onMove());
-            google.maps.event.addListener(map, 'click', this.click());
+            this.eventHandlers.tileloaded = google.maps.event.addListener(map, 'tileloaded',
+                wax.util.bind(this.clearTileGrid, this));
+
+            this.eventHandlers.idle = google.maps.event.addListener(map, 'idle',
+                wax.util.bind(this.clearTileGrid, this));
+
+            this.eventHandlers.mousemove = google.maps.event.addListener(map, 'mousemove',
+                this.onMove());
+
+            this.eventHandlers.click = google.maps.event.addListener(map, 'click',
+                this.click());
+
+            return this;
+        },
+
+        // Remove interaction events from the map.
+        remove: function() {
+            google.maps.event.removeListener(this.eventHandlers.tileloaded);
+            google.maps.event.removeListener(this.eventHandlers.idle);
+            google.maps.event.removeListener(this.eventHandlers.mousemove);
+            google.maps.event.removeListener(this.eventHandlers.click);
             return this;
         },
 
@@ -1008,9 +1059,9 @@ wax.g.interaction = function(map, tilejson, options) {
             var grid = this.getTileGrid();
             for (var i = 0; i < grid.length; i++) {
                 if ((grid[i][0] < evt.pixel.y) &&
-                   ((grid[i][0] + 256) > evt.pixel.y) &&
+                    ((grid[i][0] + 256) > evt.pixel.y) &&
                     (grid[i][1] < evt.pixel.x) &&
-                   ((grid[i][1] + 256) > evt.pixel.x)) {
+                    ((grid[i][1] + 256) > evt.pixel.x)) {
                     tile = grid[i][2];
                     break;
                 }

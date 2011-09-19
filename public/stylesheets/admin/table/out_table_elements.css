@@ -72,14 +72,15 @@ section.subheader ul.tab_menu li.selected a {background-color:rgba(256,256,256,1
 section.subheader ul.tab_menu li.selected a:hover {color:#272E48; text-decoration:none;}
 section.subheader ul.tab_menu li.disabled a {text-decoration:none; color:#999999;}
 section.subheader ul.tab_menu li.disabled a:hover {background:rgba(256,256,256,0.1)!important; cursor:default}
-section.subheader div.right {position:relative; float:right; width:180px; height:88px; padding:15px 0 0 0; margin:0 40px 0 0; color:white!important;}
+section.subheader div.right {position:relative; float:right; width:250px; height:88px; padding:15px 0 0 0; margin:0 40px 0 0; color:white!important;}
 section.subheader div.right p.settings {float:right; font:normal 15px Arial; color:white; z-index:10;}
 section.subheader div.right p.settings a {font:normal 13px Arial; text-shadow:0 1px black;}
 section.subheader div.right p.settings a.delete {padding:0 3px 0 0; color:#FF3300;}
 section.subheader div.right p.settings a.delete:hover {color:#FF4400;}
 body.query section.subheader div.right p.settings a.delete {display:none}
 section.subheader div.right p.settings a.settings {padding:0 20px 0 3px; color:white; background:url('/images/admin/icons/settings.png') no-repeat right 1px;}
-section.subheader div.right p.settings a.settings:hover {color:white;}
+section.subheader div.right p.settings a.georeference_global, section.subheader div.right p.settings a.georeference_global:visited {font:normal 13px Arial; text-shadow:0 1px black; color: white;}
+
 section.subheader div.right span.advanced_options {position:absolute; display:none; right:-10px; top:9px; width:122px; z-index:100;}
 section.subheader div.right span.advanced_options a.advanced {position:relative; float:right; padding:7px 29px 7px 9px; font:normal 13px Arial; text-shadow:0 1px black;
 text-decoration:none; color:#949BAA!important; z-index:100; border:1px solid black; border-bottom:0; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px;

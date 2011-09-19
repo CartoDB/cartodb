@@ -78,13 +78,10 @@
           '<form action="#import_file" id="import_file" enctype="multipart/form-data" method="post">'+
             '<span class="top">'+
               '<h4>Do you want to import some data to this table now?</h4>'+
-              '<p> </p>'+
+              '<p>Be sure your data has the same schema</p>'+
               '<ul>'+
-                '<li class="disabled">'+
-                  '<a href="#">I want to create an empty table</a>'+
-                '</li>'+
                 '<li class="selected">'+
-                  '<a href="#">I want to start with some imported data</a>'+
+                  '<a href="#">I want to add some data from a file</a>'+
                   '<span class="file">'+
                     '<div class="select_file">'+
                       '<div id="uploader"></div>'+
@@ -96,10 +93,19 @@
                     '</div>'+
                   '</span>'+
                 '</li>'+
+                '<li>'+
+                  '<a href="#">I want to add some data from an URL</a>'+
+                  '<span class="file">'+
+                    '<div class="select_file">'+
+                      '<input id="url_txt" type="text" name="url_value" value="Insert a valid URL..."/>'+
+                    '</div>'+
+                  '</span>'+
+                '</li>'+
               '</ul>'+
             '</span>'+
             '<span class="bottom">'+
               '<a href="#" class="cancel">cancel</a>'+
+              '<input id="create_table" type="submit" name="submit" value="Create table"/>'+
             '</span>'+
           '</form>'+
         '</div>'+
@@ -244,7 +250,7 @@
         $('div.mamufas').fadeIn('fast');
         bindESC();
 	    });
-	
+
 	    $('a.table_save').click(function(ev){
 	      stopPropagation(ev);
 	      closeOutTableWindows();
@@ -343,6 +349,8 @@
     ///////////////////////////////////////
 		var import_window = (function(){
 			
+		  $('div.import_window span.bottom input').addClass('disabled');
+			
 			$('span.file input').hover(function(ev){
 	      $('span.file a').addClass('hover');
 	      $(document).css('cursor','pointer');
@@ -379,6 +387,48 @@
 	      }
 	    });
 
+      $('div.import_window div.inner_ ul li a').click(function(ev){
+        var createType = $(this).closest('li').index();
+        ev.stopPropagation();
+        ev.preventDefault();
+        if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled') && !$(this).parent().is("span")) {
+          $('div.import_window ul li').removeClass('selected');
+          $(this).parent().addClass('selected');
+        }        
+      
+        if (($(this).closest('li').index()==0) || (($(this).closest('li').index()==1) && ($('div.select_file input#url_txt').val() == "Insert a valid URL..."))) {
+					$('div.import_window span.bottom input').addClass('disabled');
+				}else{
+  				$('div.import_window span.bottom input').removeClass('disabled');
+				}
+      
+      });
+
+	    $('div.select_file input#url_txt').focusin(function(){
+        $(this).val('');
+        $('div.import_window span.bottom input').removeClass('disabled');        
+	    });
+	    
+      $('div.select_file input#url_txt').focusout(function(){
+  	    if ($(this).val() == ""){
+      	  $(this).val('Insert a valid URL...');  
+          $('div.import_window span.bottom input').addClass('disabled');
+  	    }else{
+    	    $('div.import_window span.bottom input').removeClass('disabled');
+  	    }
+	    });
+	    
+	    // TODO try to get this working. For any reason the change event is not being triggered.
+	    //      the solution just do the previous code more messy  
+	    // $('div.select_file input#url_txt').change(function(){
+	    //    console.log('hola');
+	    //    if ($(this).val() == ""){
+	    //      $('div.import_window span.bottom input').removeClass('disabled');
+	    //    }
+	    // });
+	    
+	    //TODO create the function to send the URL to the server.
+	    
 	    $('a.import_data').livequery('click',function(ev){
 	      stopPropagation(ev);
 				if (!$(this).closest('li').hasClass('disabled')) {
@@ -388,6 +438,15 @@
 		      bindESC();
 				}
 	    });
+	    
+      $('form#import_file').submit(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        if(create_type==1){
+          console.log('send url');
+          // TODO send url to the server
+        }
+      });
 
 
 
@@ -411,6 +470,9 @@
 		    $('div.import_window').removeClass('georeferencing');
 		    $('div.import_window div.inner_ span.loading p').html('It\'s not gonna be a lot of time. Just a few seconds, ok?');
 		    $('div.import_window div.inner_ span.loading h5').html('We are creating your table...');
+		    
+        $('div.import_window span.bottom input').removeClass('disabled');
+
 		  }
 
 

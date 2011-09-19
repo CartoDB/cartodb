@@ -28,8 +28,8 @@ CartoDB::Application.configure do
 
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
   
-  # TODO: host vizzuality
-  config.middleware.use Rack::ReverseProxy do
-    reverse_proxy /api\/v1\/\?sql=(.*)/, 'http://vizzuality.localhost.lan:8080/api/v1/?sql=$1'
-  end
+  # Reverse proxy to the local node sql api server listening on port 8080
+  # config.middleware.use Rack::ReverseProxy do
+  #  reverse_proxy /api\/v1\/sql(.*)/, 'http://vizzuality.localhost.lan:8080/api/v1/sql$1'
+  # end
 end

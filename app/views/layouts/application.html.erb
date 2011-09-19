@@ -16,10 +16,10 @@
       <a class="logo" href="/">CartoDB</a>
       <ul>
         <% if current_user.admin %>
-        <li><%= link_to 'Superadmin', superadmin_users_path %></li>
+        <li><%= link_to 'superadmin', superadmin_users_path %></li>
         <% end %>
-        <li><a href="<%= APP_CONFIG[:developers_host] %>">Developers</a></li>
-        <li><a href="http://blog.cartodb.com" target="_blank">Blog</a></li>
+        <li><a href="<%= APP_CONFIG[:developers_host] %>">developers</a></li>
+        <li><a href="http://blog.cartodb.com" target="_blank">blog</a></li>
         <li class="last"><%= link_to current_user.email, account_url, :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
       </ul>
     </header>

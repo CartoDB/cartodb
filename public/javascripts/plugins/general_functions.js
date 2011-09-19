@@ -17,7 +17,7 @@
     /* Sanitize texts  */
     /*============================================================================*/
     function sanitizeText(str) {
-      return str.replace(/[^a-zA-Z 0-9 _]+/g,'').replace(' ','_').toLowerCase();
+      return str.replace(/[^a-zA-Z 0-9 _]+/g,'').replace(/ /g,'_').toLowerCase();
     }
     
     
@@ -115,6 +115,14 @@
       ev.preventDefault();
       ev.stopPropagation();
     }
+    
+    function stopMapPropagation(ev) {
+      try{
+        ev.stopPropagation();
+      }catch(e){
+        event.cancelBubble=true;
+      };
+    }
 
 
 
@@ -154,10 +162,33 @@
     /*============================================================================*/
     function geoPosition(str) {
       var json = $.parseJSON(str);
-      if (json.type=="Point") 
+      if (json.type.toLowerCase()=="point") {
         return new google.maps.LatLng(json.coordinates[1],json.coordinates[0]);
-      else 
-        return null;
+      } else if (json.type.toLowerCase()=="polygon" || json.type.toLowerCase()=="multipolygon") {
+        
+        // Get the bounds of the polygon
+        var bounds = new google.maps.LatLngBounds();
+        var coords = json.coordinates;
+        var paths = [];
+        for (var i = 0; i < coords.length; i++) {
+          for (var j = 0; j < coords[i].length; j++) {
+            var path = [];
+            for (var k = 0; k < coords[i][j].length; k++) {
+              var ll = new google.maps.LatLng(coords[i][j][k][1],coords[i][j][k][0]);
+              bounds.extend(ll);
+              path.push(ll);
+            }
+            paths.push(path);
+          }
+        }
+
+        return bounds.getCenter();
+      } else if (json.type.toLowerCase()=="linestring" || json.type.toLowerCase()=="multilinestring") {
+        return new google.maps.LatLng(0,0);
+      } else {
+        return new google.maps.LatLng(0,0);
+      }
+      
     }
     
     

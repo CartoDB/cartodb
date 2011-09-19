@@ -13,6 +13,6 @@
     loadingMessages["delete_row"] = "row deleted";
     loadingMessages["add_row"] = "row added";
     loadingMessages["change_latlng"] = "position updated";
-    loadingMessages["add_point"] = "point added";
+    loadingMessages["adding"] = "row added";
     loadingMessages["remove_point"] = "point removed";
     loadingMessages["remove_points"] = "points removed";

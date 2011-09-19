@@ -11,6 +11,7 @@
     //			 .tooltip_                                                         		//
 		//       .delete_windsow_                                                  		//
     //       .map_canvas_                                                      		//
+    //       status -> (add_point,add_polygon,add_polyline,selection,select)      //
 		//																																						//
 		////////////////////////////////////////////////////////////////////////////////
 
@@ -61,6 +62,12 @@
       this.addMapListeners();
       this.addToolListeners();
       this.startWax();
+      
+      // Set up the map tools depending on the records geometry kind
+      this.setTools();
+      
+      // BBox in the map
+      this.zoomToBBox();
     }
     
     
@@ -77,12 +84,13 @@
               '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
               '/javascripts/admin/maps/polygonEdit.js',
               '/javascripts/admin/maps/polylineEdit.js',
+              '/javascripts/admin/maps/polygon_creator.js',
         function(){
           me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
     			me.info_window_     = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);     // InfoWindow for markers
     			me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-260,-260),me.map_);				// Over tooltip for markers and selection area
           me.delete_window_   = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_);  // Delete window to confirm remove one/several markers
-					me.map_canvas_ 			= new mapCanvasStub(me.map_);
+					me.map_canvas_ 			= new mapCanvasStub(me.map_);                                         // Canvas to control the coordinates
 				}
       );
     }
@@ -90,7 +98,7 @@
     
 
 		////////////////////////////////////////
-    //  MAP AND TOOLS LISTENERS						//
+    //  MAP AND TOOLS         						//
     ////////////////////////////////////////
 		/* Event listeners of the map */
     CartoMap.prototype.addMapListeners = function() {
@@ -101,7 +109,7 @@
 			});
 			
 			google.maps.event.addListener(this.map_, 'click', function(ev) {
-        if (me.status_=="add") {
+        if (me.status_=="add_point") {
           me.addMarker(ev.latLng, {lat_:ev.latLng.lat(), lon_:ev.latLng.lng()}, true);
         }
 			});
@@ -113,30 +121,38 @@
       
       // Map tools
       $('div.general_options ul li.map a').hover(function(){
-        // Change text
-        var text = $(this).text().replace('_',' ');
-        $('div.general_options div.tooltip p').text(text);
-        // Check position
-        var right = -($(this).offset().left-$(window).width());
-        var offset = $('div.general_options div.tooltip').width()/2;
-        // near right edge
-        if (right-13-offset<0) {
-          right = 16 + offset;
-          $('div.general_options div.tooltip span.arrow').css({left:'83%'});
+        if (!$(this).parent().hasClass('disabled')) {
+          // Change text
+          var text = $(this).text().replace('_',' ');
+          $('div.general_options div.tooltip p').text(text);
+          // Check position
+          var right = -($(this).offset().left-$(window).width());
+          var offset = $('div.general_options div.tooltip').width()/2;
+          // near right edge
+          if (right-13-offset<0) {
+            right = 16 + offset;
+            $('div.general_options div.tooltip span.arrow').css({left:'83%'});
+          } else {
+            $('div.general_options div.tooltip span.arrow').css({left:'50%'});
+          }
+          $('div.general_options div.tooltip').css({right:right-13-offset+'px'});        
+          // Show
+          $('div.general_options div.tooltip').show();
         } else {
-          $('div.general_options div.tooltip span.arrow').css({left:'50%'});
+          $('div.general_options div.tooltip').hide();
         }
-        $('div.general_options div.tooltip').css({right:right-13-offset+'px'});        
-        // Show
-        $('div.general_options div.tooltip').show();
+
       },function(){
         $('div.general_options div.tooltip').hide();
       });
+      
       // Change map status
       $('div.general_options ul li.map a').click(function(ev){
         stopPropagation(ev);
-        var status = $(this).attr('class');
-        me.setMapStatus(status);
+        if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
+          var status = $(this).attr('class');
+          me.setMapStatus(status);
+        }
       });
       
       
@@ -205,7 +221,53 @@
       });
     }
 
+    /* Set bbox for the map */
+    CartoMap.prototype.zoomToBBox = function() {
+      var me = this;
+      $.ajax({
+		    method: "GET",
+		    url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
+		 		headers: {"cartodbclient":"true"},
+		    success: function(data) {
+		      if (data.rows[0].st_extent!=null) {
+		        var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+  		      var coor1 = coordinates[0].split(' ');
+  		      var coor2 = coordinates[1].split(' ');
+  		      var bounds = new google.maps.LatLngBounds();
+  		      bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
+  		      bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+  		      me.map_.fitBounds(bounds);
+		      }
 
+		    },
+		    error: function(e) {
+		    }
+		  });
+    }
+    
+    /* Set map tools thanks to the geometry */
+    CartoMap.prototype.setTools = function() {
+      $.ajax({
+		    method: "GET",
+		    url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
+		 		headers: {"cartodbclient":"true"},
+		    success: function(data) {
+          var type = data.rows[0].type.toLowerCase();
+
+          if (type=="point") {
+            $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
+          } else if (type=="polygon" || type=="multipolygon") {
+            $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');
+          } else {
+            $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
+          }
+
+		    },
+		    error: function(e) {}
+		  });
+    }
+    
+    
     
 		////////////////////////////////////////
     //  WAX AND TOOLS LISTENERS						//
@@ -233,31 +295,33 @@
             
             // click, load information - show geometry - hide layers
             // Get results from api
-            $.ajax({
-  				    method: "GET",
-  				    url: global_api_url+'queries?sql='+escape('SELECT ST_GeometryType(the_geom) FROM '+table_name+' WHERE cartodb_id = ' + feature),
-  				 		headers: {"cartodbclient":"true"},
-  				    success: function(data) {
-  				      var type = (data.rows[0].st_geometrytype).toLowerCase();
-  				      if (type == "st_point") {
-  				        me.info_window_.openWax(feature);
-  				      } else if (type=="st_multipolygon" || type=="st_polygon") {
-  				        
-  				      } else {
-  				        
-  				      }
-  				      
-  				    },
-  				    error: function(e) {
-  				    }
-  				  });
-            
-            me.hideOverlays();
+            if (me.status_ == "select" && !me.query_mode) {
+              $.ajax({
+    				    method: "GET",
+    				    url: global_api_url+'queries?sql='+escape('SELECT ST_GeometryType(the_geom) FROM '+table_name+' WHERE cartodb_id = ' + feature),
+    				 		headers: {"cartodbclient":"true"},
+    				    success: function(data) {
+    				      var type = (data.rows[0].st_geometrytype).toLowerCase();
+    				      if (type == "st_point") {
+    				        me.info_window_.openWax(feature);
+    				      } else if (type=="st_multipolygon" || type=="st_polygon") {
+                    // bla bla
+    				      } else {
+                    // bla bla
+    				      }
+
+    				    },
+    				    error: function(e) {
+    				    }
+    				  });
+
+              me.hideOverlays();
+            }
+
           }
         },
         clickAction: 'full'
       };
-
 
       this.wax_tile = new wax.g.connector(this.tilejson);
       this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
@@ -294,35 +358,53 @@
     }
 
 
+
     ////////////////////////////////////////
     //  SET MAP && MARKER STATUS			    //
     ////////////////////////////////////////
 		/* Set map status */
 		CartoMap.prototype.setMapStatus = function(status) {
+		  
+		  // Come from creating polygons or polylines? -> Save
+      if (this.status_ == "add_polygon" || this.status_ == "add_polyline") {
+        if (this.polygon_creator_ != null) {
+          var multipolygon = this.polygon_creator_.showGeoJSON();
+          var geojson =  $.parseJSON(multipolygon);
+          if (geojson.coordinates.length>0) {
+            var params = {};
+            params.the_geom = multipolygon;
+            this.updateTable('/records',params,multipolygon,null,"add_polygon","POST");
+          }
+        }
+      }
+		  
       this.status_ = status;
-			this.setMarkerStatus(status);
 			
 			$('div.general_options li.map').each(function(i,ele){
 				$(ele).removeClass('selected');
 			});
-			$('div.general_options').find('li.map').filter(function(){return $(this).text() == status}).addClass('selected');
+			$('div.general_options li.map a.'+status).parent().addClass('selected');
 			
-      if (status=="select_area") {
-      	this.enableSelectionTool()
-      } else {
-      	this.disableSelectionTool()
-      }
+			
+			
+			if (status == "add_polygon") {
+			  this.polygon_creator_ = new PolygonCreator(this.map_);
+			} else {
+			  if (this.polygon_creator_!=null) {
+			    this.polygon_creator_.destroy();
+  			  this.polygon_creator_ = null;
+			  }
+			}
+			
+			
+      // if (status=="select_area") {
+      //  this.enableSelectionTool()
+      // } else {
+      //  this.disableSelectionTool()
+      // }
 			
 			this.hideOverlays()
     }
-
-		/* Set markers status */		
-		CartoMap.prototype.setMarkerStatus = function(status) {
-			_.each(this.points_,function(marker,i){
-				marker.setDraggable((status=="select")?true:false);
-				marker.setClickable((status=="select")?true:false);
-			});
-		}
 
 
 
@@ -432,8 +514,8 @@
 	     return markers_polygon;
 		}
     
+    
    
-
     ////////////////////////////////////////
     //  REQUEST POINTS TO DRAW IN THE MAP	//
     ////////////////////////////////////////
@@ -561,6 +643,7 @@
             me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"change_latlng","PUT");
           });
 
+
           google.maps.event.addListener(marker,'click',function(ev){
             ev.stopPropagation();
             if (me.status_=="select") {
@@ -590,7 +673,7 @@
     CartoMap.prototype.addMarker = function(latlng) {
       var params = {};
       params.the_geom = '{"type":"Point","coordinates":['+latlng.lng()+','+latlng.lat()+']}';
-      this.updateTable('/records',params,latlng,null,"add_point","POST");
+      this.updateTable('/records',params,latlng,null,"adding","POST");
     }
     
     /* Generate canvas image to fill marker   */
@@ -640,39 +723,8 @@
       this.fakeMarker_ = null;
     }
 
-    
-    
-    ////////////////////////////////////////
-    //  GET TABLE COLUMNS TO FILL INFO	  //
-    ////////////////////////////////////////
-    CartoMap.prototype.getColumns = function() {
-			var me = this;
-			
-      $.ajax({
-        dataType: 'json',
-        type: 'GET',
-        headers: {"cartodbclient": true},
-        url: global_api_url+'tables/'+table_name +'/columns',
-        success: function(data) {
-					var new_array = [];
-					_.each(data,function(ele,i){
-						if (ele[0] != 'created_at' && ele[0] != 'updated_at' && ele[0] != 'the_geom' && ele[0] != 'cartodb_id') {
-							new_array.push(ele[0]);
-						}
-					});
-					
-					me.columns_ = new_array;
-					// Remove before that
-					me.info_window_.columns_ = new_array;
-        },
-        error: function(e, textStatus) {
-          me.info_window_.columns_ = [];
-        }
-      });
-    }
 
-
-    
+   
     ////////////////////////////////////////
     //  REFRESH / CLEAR / CLEAN OVERLAYS  //
     ////////////////////////////////////////
@@ -798,7 +850,9 @@
     CartoMap.prototype.successRequest = function(params,new_value,old_value,type,more) {
       var me = this;
       switch (type) {
-        case "add_point":       me.refreshWax();
+        case "adding":          me.refreshWax();
+                                break;
+        case "add_polygon":     me.refreshWax();
                                 break;
         case "remove_points":   me.refreshWax();
                                 break;
@@ -812,12 +866,10 @@
 		/* If request fails */   
     CartoMap.prototype.errorRequest = function(params,new_value,old_value,type) {      
       switch (type) {
-        case "add_point":       new_value.setMap(null);
-                                break;
         case "change_latlng":   var occ_id = params.cartodb_id;
                                 (this.points_[occ_id]).setPosition(old_value);
                                 break;
-        case "remove_point":    var array = (params.cartodb_ids).split(',');
+        case "remove_row":      var array = (params.cartodb_ids).split(',');
 																var me = this;
 																_.each(array,function(ele,i){
 																	me.points_[ele].setMap(me.map_);

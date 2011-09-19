@@ -1,4 +1,4 @@
-/* wax - 3.0.7 - 1.0.4-391-gfbb37e0 */
+/* wax - 3.0.7 - 1.0.4-396-g837ea07 */
 
 
 /*!
@@ -351,20 +351,30 @@ wax.GridInstance = function(grid_tile, formatter, options) {
         return key;
     }
 
-    // Lower-level than tileFeature - has nothing to do
-    // with the DOM. Takes a px offset from 0, 0 of a grid.
-    instance.gridFeature = function(x, y) {
+    instance.grid_tile = function() {
+        return grid_tile;
+    };
+
+    instance.getKey = function(x, y) {
         if (!(grid_tile && grid_tile.grid)) return;
         if ((y < 0) || (x < 0)) return;
         if ((Math.floor(y) >= tileSize) ||
             (Math.floor(x) >= tileSize)) return;
         // Find the key in the grid. The above calls should ensure that
         // the grid's array is large enough to make this work.
-        var key = resolveCode(grid_tile.grid[
+        return resolveCode(grid_tile.grid[
            Math.floor((y) / resolution)
         ].charCodeAt(
            Math.floor((x) / resolution)
         ));
+    };
+
+    // Lower-level than tileFeature - has nothing to do
+    // with the DOM. Takes a px offset from 0, 0 of a grid.
+    instance.gridFeature = function(x, y) {
+        // Find the key in the grid. The above calls should ensure that
+        // the grid's array is large enough to make this work.
+        var key = this.getKey(x, y);
 
         if (grid_tile.keys[key] && grid_tile.data[grid_tile.keys[key]]) {
             return grid_tile.data[grid_tile.keys[key]];
@@ -824,10 +834,10 @@ wax.util = {
     },
     // From underscore: reimplement the ECMA5 `Object.keys()` method
     keys: Object.keys || function(obj) {
-        var hasOwnProperty = Object.prototype.hasOwnProperty;
+        var ho = Object.prototype.hasOwnProperty;
         if (obj !== Object(obj)) throw new TypeError('Invalid object');
         var keys = [];
-        for (var key in obj) if (hasOwnProperty.call(obj, key)) keys[keys.length] = key;
+        for (var key in obj) if (ho.call(obj, key)) keys[keys.length] = key;
         return keys;
     },
     // From quirksmode: normalize the offset of an event from the top-left
@@ -944,9 +954,6 @@ wax.g.interaction = function(map, tilejson, options) {
     // cache of grid information and provide friendly utility methods
     // that return `GridTile` objects instead of raw data.
     var interaction = {
-        modifyingEvents: ['dragstart', 'dragend', 'drag', 'zoom_changed',
-            'resize', 'center_changed', 'bounds_changed'],
-
         waxGM: new wax.GridManager(tilejson),
 
         // This requires wax.Tooltip or similar
@@ -956,13 +963,12 @@ wax.g.interaction = function(map, tilejson, options) {
 
         // Attach listeners to the map
         add: function() {
-            for (var i = 0; i < this.modifyingEvents.length; i++) {
-                google.maps.event.addListener(
-                    map,
-                    this.modifyingEvents[i],
-                    wax.util.bind(this.clearTileGrid, this)
-                );
-            }
+            google.maps.event.addListener(map, 'tileloaded',
+                wax.util.bind(this.clearTileGrid, this));
+
+            google.maps.event.addListener(map, 'idle',
+                wax.util.bind(this.clearTileGrid, this));
+
             google.maps.event.addListener(map, 'mousemove', this.onMove());
             google.maps.event.addListener(map, 'click', this.click());
             return this;

@@ -9,7 +9,7 @@
 	        "/javascripts/admin/maps/map_elements.js",
 	        "/javascripts/admin/maps/CartoMap.js",
 	        "/javascripts/admin/maps/wax.g.js",
-	        "https://maps.google.com/maps/api/js?libraries=geometry&sensor=true&callback=initApp"
+	        "https://maps.google.com/maps/api/js?sensor=true&callback=initApp"
 				);
 			} else {
 				initApp();
@@ -47,7 +47,8 @@
 				var hash = window.location.hash;
 				if (hash == "#map") {
 					$('section.subheader ul.tab_menu li a:contains("Map")').click();
-					setTimeout(function(){$('body').trigger('enabled',[false])},500);
+					// Disabled the table
+					setTimeout(function(){$('body').trigger('enabled',[false])},2000);
 					$('body').attr('view_mode','map');
 				} else {
 					$('body').attr('view_mode','table');

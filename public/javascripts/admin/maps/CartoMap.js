@@ -11,6 +11,7 @@
     //			 .tooltip_                                                         		//
 		//       .delete_windsow_                                                  		//
     //       .map_canvas_                                                      		//
+    //       status -> (add_point,add_polygon,add_polyline,selection,select)      //
 		//																																						//
 		////////////////////////////////////////////////////////////////////////////////
 
@@ -61,6 +62,9 @@
       this.addMapListeners();
       this.addToolListeners();
       this.startWax();
+      
+      // BBox
+      this.zoomToBBox();
     }
     
     
@@ -77,12 +81,13 @@
               '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
               '/javascripts/admin/maps/polygonEdit.js',
               '/javascripts/admin/maps/polylineEdit.js',
+              '/javascripts/admin/maps/polygon_creator.js',
         function(){
           me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
     			me.info_window_     = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);     // InfoWindow for markers
     			me.tooltip_         = new CartoTooltip(new google.maps.LatLng(-260,-260),me.map_);				// Over tooltip for markers and selection area
           me.delete_window_   = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_);  // Delete window to confirm remove one/several markers
-					me.map_canvas_ 			= new mapCanvasStub(me.map_);
+					me.map_canvas_ 			= new mapCanvasStub(me.map_);                                         // Canvas to control the coordinates
 				}
       );
     }
@@ -101,7 +106,7 @@
 			});
 			
 			google.maps.event.addListener(this.map_, 'click', function(ev) {
-        if (me.status_=="add") {
+        if (me.status_=="add_point") {
           me.addMarker(ev.latLng, {lat_:ev.latLng.lat(), lon_:ev.latLng.lng()}, true);
         }
 			});
@@ -132,11 +137,14 @@
       },function(){
         $('div.general_options div.tooltip').hide();
       });
+      
       // Change map status
       $('div.general_options ul li.map a').click(function(ev){
         stopPropagation(ev);
-        var status = $(this).attr('class');
-        me.setMapStatus(status);
+        if (!$(this).parent().hasClass('selected')) {
+          var status = $(this).attr('class');
+          me.setMapStatus(status);
+        }
       });
       
       
@@ -205,7 +213,28 @@
       });
     }
 
-
+    /* Set bbox for the map */
+    CartoMap.prototype.zoomToBBox = function() {
+      var me = this;
+      $.ajax({
+		    method: "GET",
+		    url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
+		 		headers: {"cartodbclient":"true"},
+		    success: function(data) {
+		      var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+		      var coor1 = coordinates[0].split(' ');
+		      var coor2 = coordinates[1].split(' ');
+		      var bounds = new google.maps.LatLngBounds();
+		      bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
+		      bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+		      me.map_.fitBounds(bounds);
+		    },
+		    error: function(e) {
+		    }
+		  });
+    }
+    
+    
     
 		////////////////////////////////////////
     //  WAX AND TOOLS LISTENERS						//
@@ -233,26 +262,29 @@
             
             // click, load information - show geometry - hide layers
             // Get results from api
-            $.ajax({
-  				    method: "GET",
-  				    url: global_api_url+'queries?sql='+escape('SELECT ST_GeometryType(the_geom) FROM '+table_name+' WHERE cartodb_id = ' + feature),
-  				 		headers: {"cartodbclient":"true"},
-  				    success: function(data) {
-  				      var type = (data.rows[0].st_geometrytype).toLowerCase();
-  				      if (type == "st_point") {
-  				        me.info_window_.openWax(feature);
-  				      } else if (type=="st_multipolygon" || type=="st_polygon") {
-  				        
-  				      } else {
-  				        
-  				      }
-  				      
-  				    },
-  				    error: function(e) {
-  				    }
-  				  });
-            
-            me.hideOverlays();
+            if (me.status_ == "select" && !me.query_mode) {
+              $.ajax({
+    				    method: "GET",
+    				    url: global_api_url+'queries?sql='+escape('SELECT ST_GeometryType(the_geom) FROM '+table_name+' WHERE cartodb_id = ' + feature),
+    				 		headers: {"cartodbclient":"true"},
+    				    success: function(data) {
+    				      var type = (data.rows[0].st_geometrytype).toLowerCase();
+    				      if (type == "st_point") {
+    				        me.info_window_.openWax(feature);
+    				      } else if (type=="st_multipolygon" || type=="st_polygon") {
+                    // bla bla
+    				      } else {
+                    // bla bla
+    				      }
+
+    				    },
+    				    error: function(e) {
+    				    }
+    				  });
+
+              me.hideOverlays();
+            }
+
           }
         },
         clickAction: 'full'
@@ -277,35 +309,60 @@
     }
 
 
+
     ////////////////////////////////////////
     //  SET MAP && MARKER STATUS			    //
     ////////////////////////////////////////
 		/* Set map status */
 		CartoMap.prototype.setMapStatus = function(status) {
+		  
+		  // Come from creating polygons or polylines? -> Save
+      if (this.status_ == "add_polygon" || this.status_ == "add_polyline") {
+        if (this.polygon_creator_ != null) {
+          var multipolygon = this.polygon_creator_.showGeoJSON();
+          var geojson =  $.parseJSON(multipolygon);
+          if (geojson.coordinates.length>0) {
+            var params = {};
+            params.the_geom = multipolygon;
+            this.updateTable('/records',params,multipolygon,null,"add_polygon","POST");
+          }
+        }
+      }
+		  
       this.status_ = status;
-			this.setMarkerStatus(status);
 			
 			$('div.general_options li.map').each(function(i,ele){
 				$(ele).removeClass('selected');
 			});
-			$('div.general_options').find('li.map').filter(function(){return $(this).text() == status}).addClass('selected');
+			$('div.general_options li.map a.'+status).parent().addClass('selected');
 			
-      if (status=="select_area") {
-      	this.enableSelectionTool()
-      } else {
-      	this.disableSelectionTool()
-      }
+			
+			
+			if (status == "add_polygon") {
+			  this.polygon_creator_ = new PolygonCreator(this.map_);
+			} else {
+			  if (this.polygon_creator_!=null) {
+			    this.polygon_creator_.destroy();
+  			  this.polygon_creator_ = null;
+			  }
+			}
+			
+			
+      // if (status == "add_polyline") {
+      //   
+      // } else {
+      //   
+      // }
+			
+			
+      // if (status=="select_area") {
+      //  this.enableSelectionTool()
+      // } else {
+      //  this.disableSelectionTool()
+      // }
 			
 			this.hideOverlays()
     }
-
-		/* Set markers status */		
-		CartoMap.prototype.setMarkerStatus = function(status) {
-			_.each(this.points_,function(marker,i){
-				marker.setDraggable((status=="select")?true:false);
-				marker.setClickable((status=="select")?true:false);
-			});
-		}
 
 
 
@@ -414,6 +471,7 @@
 	     });
 	     return markers_polygon;
 		}
+    
     
    
 
@@ -543,6 +601,7 @@
             params.cartodb_id = occ_id;
             me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"change_latlng","PUT");
           });
+
 
           google.maps.event.addListener(marker,'click',function(ev){
             ev.stopPropagation();
@@ -801,6 +860,8 @@
       switch (type) {
         case "add_point":       me.refreshWax();
                                 break;
+        case "add_polygon":     me.refreshWax();
+                                break;
         case "remove_points":   me.refreshWax();
                                 break;
         case "change_latlng":   me.refreshWax();
@@ -813,8 +874,6 @@
 		/* If request fails */   
     CartoMap.prototype.errorRequest = function(params,new_value,old_value,type) {      
       switch (type) {
-        case "add_point":       new_value.setMap(null);
-                                break;
         case "change_latlng":   var occ_id = params.cartodb_id;
                                 (this.points_[occ_id]).setPosition(old_value);
                                 break;

@@ -109,6 +109,7 @@ div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.s
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file p {float:left; margin:1px 0 0 5px; font:normal 13px "Helvetica",Arial; color:#B3B3B3;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file p.error {color:#FF6600;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file input {position:absolute; top:0; left:0; width:350px; height:30px; opacity:0;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file input#url_txt {position:absolute; top:0; left:0; width:330px; height:20px; background-color: transparent; border:none; opacity: 1; float:left; padding: 4px 0 0 6px; font:normal 13px "Helvetica",Arial; color:#B3B3B3;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file input:hover {cursor:pointer;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.progress span.progress {float:left; margin:1px; width:5px; max-width:346px; height:26px; background:yellow; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px;
   background:linear-gradient(-90deg, #FFBE00, #FF9900);

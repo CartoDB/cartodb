@@ -41,14 +41,38 @@
           (create_type==0)?create_type++:create_type--;
         }
 				
-				if ($(this).closest('li').index()==1) {
+				if (($(this).closest('li').index()==1) || ($(this).closest('li').index()==2) && $('div.select_file input#url_txt').val() == "Insert a valid URL...") {
 					$('div.create_window span.bottom input').addClass('disabled');
 				} else {
 					$('div.create_window span.bottom input').removeClass('disabled');
 				}
+      
+      $('div.select_file input#url_txt').focusin(function(){
+        $(this).val('');
+        $('div.create_window span.bottom input').removeClass('disabled');        
+	    });
+	    
+      $('div.select_file input#url_txt').focusout(function(){
+  	    if ($(this).val() == ""){
+      	  $(this).val('Insert a valid URL...');  
+          $('div.create_window span.bottom input').addClass('disabled');
+  	    }else{
+    	    $('div.create_window span.bottom input').removeClass('disabled');
+  	    }
+	    });
+	    
+	    // TODO try to get this working. For any reason the change event is not being triggered.
+	    //      the solution just do the previous code more messy  
+	    // $('div.select_file input#url_txt').change(function(){
+	    //    console.log('hola');
+	    //    if ($(this).val() == ""){
+	    //      $('div.import_window span.bottom input').removeClass('disabled');
+	    //    }
+	    // });
+	   
+      
       });
       
-
 
       $('span.file input').hover(function(ev){
         $('span.file a').addClass('hover');
@@ -93,6 +117,9 @@
         if (create_type==0) {
           var geom_type = $('div.geom_type span.selected a').text();
           createNewToFinish(geom_type,'');
+        }else if(create_type==2){
+          // TODO send url to the server
+          console.log('send url');          
         }
       });
     });

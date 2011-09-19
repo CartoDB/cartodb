@@ -668,7 +668,7 @@ TRIGGER
         user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
 
         # Ensure isValid is set for all tables, imported or not
-        user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")        
+        # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")        
       end            
     end
     self.the_geom_type = type.downcase
@@ -713,6 +713,7 @@ SQL
   end
 
   def update_the_geom!(attributes, primary_key)
+    puts attributes
     return unless attributes[THE_GEOM]
     geo_json = RGeo::GeoJSON.decode(attributes[THE_GEOM], :json_parser => :json).try(:as_text)
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?

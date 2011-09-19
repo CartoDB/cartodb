@@ -9,7 +9,7 @@
 	        "/javascripts/admin/maps/map_elements.js",
 	        "/javascripts/admin/maps/CartoMap.js",
 	        "/javascripts/admin/maps/wax.g.js",
-	        "https://maps.google.com/maps/api/js?sensor=true&callback=initApp"
+	        "https://maps.google.com/maps/api/js?libraries=geometry&sensor=true&callback=initApp"
 				);
 			} else {
 				initApp();

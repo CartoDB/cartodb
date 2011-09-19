@@ -46,23 +46,12 @@
 				me.hide();
 				carto_map.delete_window_.open(me.latlng_,[me.marker_]);
 			});
-										
-
-      google.maps.event.addDomListener(div,'click',function(ev){ 
-        try{
-          ev.stopPropagation();
-        }catch(e){
-          event.cancelBubble=true;
-        };
-      });
-
-      google.maps.event.addDomListener(div,'dblclick',function(ev){ 
-        try{
-          ev.stopPropagation();
-        }catch(e){
-          event.cancelBubble=true;
-        };
-      });
+      
+      google.maps.event.addDomListener(div,'click',function(ev){stopMapPropagation(ev);});
+      google.maps.event.addDomListener(div,'dblclick',function(ev){stopMapPropagation(ev);});
+      google.maps.event.addDomListener(div,'mousedown',function(ev){stopMapPropagation(ev);});
+      google.maps.event.addDomListener(div,'mouseup',function(ev){stopMapPropagation(ev);});
+      google.maps.event.addDomListener(div,'mousemove',function(ev){stopMapPropagation(ev);});
 			
 	    var panes = this.getPanes();
 	    panes.floatPane.appendChild(div);

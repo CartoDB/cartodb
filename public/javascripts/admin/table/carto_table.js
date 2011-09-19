@@ -166,7 +166,7 @@
 			    success: function(data) {
 						$('span.blablabla').hide();
 			      $('div.sql_console p.errors').fadeOut();
-						time = data.time;
+						time = data.time.toFixed(3);
 			      rows = data.rows;
 			      $(document).trigger('arrived');
 			    },

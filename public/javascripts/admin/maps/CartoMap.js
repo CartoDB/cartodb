@@ -278,12 +278,11 @@
       if (this.map_) {
         this.cache_buster++;
         this.map_.overlayMapTypes.clear();
+        this.tilejson.grids = this.tilejson.grids + '?cache_buster=' + this.cache_buster;
         this.wax_tile = new wax.g.connector(this.tilejson);
         this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
-        //wax.g.interaction().clearTileGrid();
-        console.log("this should clear things out");
-        this.tilejson.grids = this.tilejson.grids + '?cache_buster=' + this.cache_buster;
-        wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
+        this.interaction.remove();
+        this.interaction = wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
       }
     }
 

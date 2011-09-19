@@ -121,9 +121,9 @@
 	          '<li class="table"><a href="#add_row" class="add_row">Add row</a></li>'+
 	          '<li class="table"><a href="#add_column" class="add_column">Add column</a></li>'+
 	          '<li class="selected map"><a class="select">select</a></li>'+
-	          '<li class="map"><a class="add_point">add point</a></li>'+
-	          '<li class="map"><a class="add_polygon">add polygon</a></li>'+
-	          '<li class="map"><a class="add_polyline">add line</a></li>'+
+	          '<li class="map disabled"><a class="add_point">add point</a></li>'+
+	          '<li class="map disabled"><a class="add_polygon">add polygon</a></li>'+
+	          '<li class="map disabled"><a class="add_polyline">add line</a></li>'+
 	          '<li class="map"><a class="select_area">select area</a></li>'+
 	        '</ul>'+
 

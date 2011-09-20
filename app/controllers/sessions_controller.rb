@@ -32,7 +32,9 @@ class SessionsController < ApplicationController
   end
 
   def unauthenticated
-    flash[:alert] = 'Your account or your password is not ok'
+    # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
+    # the flash for the next request and we want to show the message only in the current one
+    @login_error = 'Your account or your password is not ok'
     respond_to do |format|
       format.html do
         if api_request?

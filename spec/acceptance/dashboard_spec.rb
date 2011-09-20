@@ -68,8 +68,8 @@ feature "Dashboard", %q{
       end
     end
 
-    within("ul.your_tables li:eq(10).last") do
-      page.should have_link("table_8")
+    within("ul.your_tables li:eq(22).last") do
+      page.should have_link("table_20")
       page.should have_content("PRIVATE")
       # page.should have_content("6 minutes ago")
       within(:css, "span.tags") do
@@ -84,71 +84,9 @@ feature "Dashboard", %q{
     page.should have_css("ul li a span", :text => "feed aggregator")
     page.should have_css("ul li a span", :text => "movies")
 
-    page.should have_no_selector("div.paginate a.previous")
-    page.should have_selector("div.paginate a.next")
-    within(:css, "div.paginate ul") do
-      page.should have_css("li.selected a", :text => "1")
-      page.should have_css("li a", :text => "2")
-      page.should have_css("li a", :text => "3")
-    end
-
-    click_link_or_button('3')
-
-    within("ul.your_tables li:eq(1)") do
-      page.should have_link("table_19")
-      page.should have_content("PRIVATE")
-      within(:css, "span.tags") do
-        page.should have_content("personal")
-      end
-    end
-
-    within("ul.your_tables li:eq(2)") do
-      page.should have_link("table_20")
-      page.should have_content("PRIVATE")
-      within(:css, "span.tags") do
-        page.should have_content("personal")
-      end
-    end
-
-    page.should have_selector("div.paginate a.previous")
-    page.should have_no_selector("div.paginate a.next")
-    within(:css, "div.paginate ul") do
-      page.should have_css("li a", :text => "1")
-      page.should have_css("li a", :text => "2")
-      page.should have_css("li.selected a", :text => "3")
-    end
-
-    click_link_or_button('Previous')
-
-    within("ul.your_tables li:eq(1)") do
-      page.should have_link("table_9")
-      page.should have_content("PRIVATE")
-      within(:css, "span.tags") do
-        page.should have_content("personal")
-      end
-    end
-
-    within("ul.your_tables li:eq(2)") do
-      page.should have_link("table_10")
-      page.should have_content("PRIVATE")
-      within(:css, "span.tags") do
-        page.should have_content("personal")
-      end
-    end
-
-    page.should have_selector("div.paginate a.previous")
-    page.should have_selector("div.paginate a.next")
-    within(:css, "div.paginate ul") do
-      page.should have_css("li a", :text => "1")
-      page.should have_css("li.selected a", :text => "2")
-      page.should have_css("li a", :text => "3")
-    end
-
-    click_link_or_button('1')
-
     click_link_or_button('downloaded_movies')
 
-    page.should have_css("h2", :text => 'downloaded_movies')
+    page.should have_css("h2 a", :text => 'downloaded_movies')
     page.should have_css("p.status", :text => 'PRIVATE')
     within(:css, "span.tags") do
       page.should have_content("movies")
@@ -230,13 +168,6 @@ feature "Dashboard", %q{
 
     within("ul.your_tables li:eq(2)") do
       page.should have_link("table_1")
-      page.should have_content("PRIVATE")
-    end
-    
-    click_link_or_button('2')
-
-    within("ul.your_tables li:eq(1)") do
-      page.should have_link("table_10")
       page.should have_content("PRIVATE")
     end
     

@@ -165,30 +165,33 @@
       if (json.type.toLowerCase()=="point") {
         return new google.maps.LatLng(json.coordinates[1],json.coordinates[0]);
       } else if (json.type.toLowerCase()=="polygon" || json.type.toLowerCase()=="multipolygon") {
-        
         // Get the bounds of the polygon
         var bounds = new google.maps.LatLngBounds();
         var coords = json.coordinates;
-        var paths = [];
         for (var i = 0; i < coords.length; i++) {
           for (var j = 0; j < coords[i].length; j++) {
             var path = [];
             for (var k = 0; k < coords[i][j].length; k++) {
               var ll = new google.maps.LatLng(coords[i][j][k][1],coords[i][j][k][0]);
               bounds.extend(ll);
-              path.push(ll);
             }
-            paths.push(path);
           }
         }
-
         return bounds.getCenter();
       } else if (json.type.toLowerCase()=="linestring" || json.type.toLowerCase()=="multilinestring") {
-        return new google.maps.LatLng(0,0);
+        // Get the bounds of the polyline
+        var bounds = new google.maps.LatLngBounds();
+        var coords = json.coordinates[0];
+
+        for (var k = 0; k < coords.length; k++) {
+          var ll = new google.maps.LatLng(coords[k][1],coords[k][0]);
+          bounds.extend(ll);
+        }
+        
+        return bounds.getCenter();
       } else {
         return new google.maps.LatLng(0,0);
       }
-      
     }
     
     

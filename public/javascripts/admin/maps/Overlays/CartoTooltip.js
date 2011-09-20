@@ -27,13 +27,13 @@ CartoTooltip.prototype.draw = function() {
 
         $(div).hover(
             function(){
-                carto_map.over_marker_ = true;
+              carto_map.over_marker_ = true;
             },
             function(){
-                carto_map.over_marker_ = false;
-                setTimeout(function(){
-                    if (!carto_map.over_marker_) me.hide();
-                },100);
+              carto_map.over_marker_ = false;
+              setTimeout(function(){
+                  if (!carto_map.over_marker_) me.hide();
+              },100);
             }
         );
 

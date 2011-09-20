@@ -48,7 +48,7 @@ div.mamufas {position:fixed; display:none; top:0; left:0; height:100%; width:100
 div.mamufas div.create_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-157px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
   -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.create_window.georeferencing {margin:-295px 0 0 -207px;}
-div.mamufas div.create_window a.close_create {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
+div.mamufas div.create_window a.close_create {position:absolute; right:-7px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
 div.mamufas div.create_window a.close_create:hover {background-position:0 -23px;}
 div.mamufas div.create_window a.close_create.last {background-position:0 -46px;}
 div.mamufas div.create_window a.close_create.last:hover {background-position:0 -69px;}
@@ -58,7 +58,7 @@ div.mamufas div.create_window div.inner_ span.loading p {padding:4px 0 0 0; font
 div.mamufas div.create_window div.inner_ span.loading p a {color:#666666; text-decoration:underline; cursor:pointer;}
 div.mamufas div.create_window div.inner_ span.loading p a:hover {color:#333333;}
 div.mamufas div.create_window div.inner_ span.loading.error {background:url('/images/admin/table/stop.png') no-repeat 0 0;}
-div.mamufas div.create_window div.inner_ {float:left; width:414px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+div.mamufas div.create_window div.inner_ {float:left; width:412px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
 div.mamufas div.create_window div.inner_ span.top {float:left; width:394px; padding:15px 10px 10px 10px; border-bottom:1px solid #CCCCCC;}
 div.mamufas div.create_window div.inner_ span.top h4 {font:bold 15px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.create_window div.inner_ span.top p {padding:5px 0 5px 0; font:normal 13px "Helvetica",Arial; color:#999999; text-shadow:0 1px white;}

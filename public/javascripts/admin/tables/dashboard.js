@@ -8,10 +8,11 @@
           var right_column = $('div.tables_list div.right');
           var scrolled = $(window).scrollTop();
           var right_column_height = right_column.height();
-          var list_height = $('div.tables_list').height() + 300 - right_column_height;
-          if (scrolled>336) {
+          var right_column_pos = $('div.tables_list div.left').offset().top;
+          var list_height = $('div.tables_list').height() + right_column_pos - right_column_height;
+          if (scrolled>(right_column_pos-30)) {
             if (scrolled<list_height) {
-              right_column.css({'position':'fixed','margin':'-336px 0 0 20px','display':'inline', 'vertical-align':'top'});
+              right_column.css({'position':'fixed','margin':'-'+(right_column_pos-30)+'px 0 0 20px','display':'inline', 'vertical-align':'top'});
             } else {
               right_column.css({'position':'relative','margin':'0 0 0 16px','display':'inline-block','vertical-align':'bottom'});
             }
@@ -83,9 +84,7 @@
 						$.cookie('flash', 'Table successfully removed');
             window.location.href = "/dashboard";
           },
-          error: function(e) {
-            console.debug(e);
-          }
+          error: function(e) {}
         });
       });
       

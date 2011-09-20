@@ -45,7 +45,7 @@ section#content div.inner_content {width:906px; margin:0 auto; padding:40px 0 0 
 /*Mamufas*/
 div.mamufas {position:fixed; display:none; top:0; left:0; height:100%; width:100%; background:rgba(0,0,0,0.65);}
 
-div.mamufas div.create_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-107px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
+div.mamufas div.create_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-157px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
   -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.create_window.georeferencing {margin:-295px 0 0 -207px;}
 div.mamufas div.create_window a.close_create {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
@@ -59,11 +59,11 @@ div.mamufas div.create_window div.inner_ span.loading p a {color:#666666; text-d
 div.mamufas div.create_window div.inner_ span.loading p a:hover {color:#333333;}
 div.mamufas div.create_window div.inner_ span.loading.error {background:url('/images/admin/table/stop.png') no-repeat 0 0;}
 div.mamufas div.create_window div.inner_ {float:left; width:414px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
-div.mamufas div.create_window div.inner_ span.top {float:left; width:394px; padding:15px 10px 25px 10px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.create_window div.inner_ span.top {float:left; width:394px; padding:15px 10px 10px 10px; border-bottom:1px solid #CCCCCC;}
 div.mamufas div.create_window div.inner_ span.top h4 {font:bold 15px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.create_window div.inner_ span.top p {padding:5px 0 5px 0; font:normal 13px "Helvetica",Arial; color:#999999; text-shadow:0 1px white;}
-div.mamufas div.create_window div.inner_ span.top ul {padding:10px 0 0 0;}
-div.mamufas div.create_window div.inner_ span.top ul li {float:left; width:auto; padding:10px;}
+div.mamufas div.create_window div.inner_ span.top ul {padding:5px 0 0 0;}
+div.mamufas div.create_window div.inner_ span.top ul li {float:left; width:auto; padding:4px 8px;}
 
 div.mamufas div.create_window div.inner_ span.top ul li div.geom_type {display:none;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type {display:block; margin:10px 0 0 0;}
@@ -77,7 +77,7 @@ div.mamufas div.create_window div.inner_ span.top ul li.selected div.geom_type s
 div.mamufas div.create_window div.inner_ span.top ul li ul li.selected a {background-position:0 1px;}
 div.mamufas div.create_window div.inner_ span.top ul li a {padding:0 0 0 18px; font:bold 13px Arial; color:#333333; text-decoration:none; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -28px;}
 div.mamufas div.create_window div.inner_ span.top ul li a:hover {color:#111111; background-position:0 -67px;}
-div.mamufas div.create_window div.inner_ span.top ul li.selected {width:373px!important; padding:10px; background:#2A3857; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
+div.mamufas div.create_window div.inner_ span.top ul li.selected {width:373px!important; padding:10px; margin:7px 0; background:#2A3857; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected a {color:white; background-position:0 1px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected a:hover {color:white; cursor:default; background-position:0 1px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected ul.qq-upload-list {display:none;}

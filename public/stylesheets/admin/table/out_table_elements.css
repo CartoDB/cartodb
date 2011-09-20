@@ -216,9 +216,10 @@ div.sql_window div.inner h3 {display:block; padding:12px 0 0 10px; font:bold 15p
 div.sql_window div.inner p {display:block; padding:3px 0 0 10px; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
 div.sql_window div.inner div.outer_textarea {position:absolute; top:46px; left:9px; right:9px; bottom:50px; margin:10px 0 0 0; padding:5px ; background:white;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD}
 div.sql_window span.bottom {position:absolute; bottom:10px; left:10px; right:10px; height:28px;}
+div.sql_window span.bottom a.reference {float:left; margin:7px 0 0 2px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.sql_window span.bottom a.clear_table {float:right; margin:7px 12px 0 0; font:normal 13px 'Helvetica',Arial; color:#FF6600; text-shadow:0 1px white;}
 div.sql_window span.bottom a.clear_table:hover {color:#FF3300}
-div.sql_window span.bottom a.try_query {float:right; margin:0; height:12px; padding:7px 9px; -webkit-border-radius: 5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999; font:bold 12px Arial; text-shadow:0 1px white;
+div.sql_window span.bottom a.try_query {float:right; margin:0; height:12px; padding:7px 9px 9px 9px; -webkit-border-radius: 5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999; font:bold 12px Arial; text-shadow:0 1px white;
   color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#DEDEDE\9; text-decoration:none}
 div.sql_window span.bottom a.try_query:hover { background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));

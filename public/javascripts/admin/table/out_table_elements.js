@@ -147,6 +147,7 @@
 						'<p>You can free move or close this window to watch the table. Protip: Ctrl+RETURN for lauching your query</p>'+
 		        '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
 		        '<span class="bottom">'+
+		          '<a href="http://www.postgis.org/docs/" target="_blank" class="reference">PostGIS reference</a>'+
 		          '<a href="#apply" class="try_query">Apply query</a>'+
 		          '<a href="#clear" class="clear_table">Clear view</a>'+
 							'<span class="blablabla"></span>'+

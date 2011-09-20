@@ -45,58 +45,70 @@ function CartoMap (latlng,zoom) {
 CartoMap.prototype.createMap = function () {
 
     var mapStyles = [
-        {
-            featureType:"water",
-            stylers: [
-                {hue:"#ECE8E3"},
-                {saturation:-100},
-                {lightness:100}
-            ]
-        },{
-            featureType:"landscape",
-            stylers: [
-                {hue:"#000"},
-                {saturation:-100},
-                {lightness:-5}
-            ]
-        },{
-            featureType:"administrative",
-            stylers: [
-                {visibility:"off"}
-            ]
-        },{
-            featureType:"administrative.country",
-            stylers: [
-                {visibility:"on"},
-                {lightness:50}
-            ]
-        },{
-            featureType:"poi",
-            stylers: [
-                {visibility:"off"}
-            ]
-        },{
-            featureType:"road",
-            stylers: [
-                {visibility:"off"}
-            ]
-        },{
-            featureType:"transit",
-            stylers: [
-                {visibility:"off"}
-            ]
-        },{
-            featureType:"landscape.natural",
-            stylers: [
-                {visibility:"off"}
-            ]
-        },{
-            featureType:"landscape.man_made",
-            stylers: [
-                {visibility:"off"}
-            ]
-        }
-    ];
+  {
+    stylers: [
+      { saturation: -65 },
+      { gamma: 1.52 }
+    ]
+  },{
+    featureType: "administrative",
+    stylers: [
+      { saturation: -95 },
+      { gamma: 2.58 }
+    ]
+  },{
+    featureType: "water",
+    elementType: "labels",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "administrative.locality",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "road",
+    stylers: [
+      { visibility: "simplified" },
+      { saturation: -99 },
+      { gamma: 2.04 }
+    ]
+  },{
+    featureType: "poi",
+    elementType: "labels",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "road.arterial",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "road.local",
+    elementType: "labels",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "transit",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "road",
+    elementType: "labels",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "poi",
+    stylers: [
+      { saturation: -55 }
+    ]
+  }
+];
 
 
     // Generate a google map

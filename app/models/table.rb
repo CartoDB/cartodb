@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file,:import_from_url,
+  attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_table_copy,
                 :importing_SRID, :importing_encoding, :temporal_the_geom_type
 
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
@@ -38,7 +38,7 @@ class Table < Sequel::Model(:user_tables)
     update_updated_at
 
     #import from file
-    if import_from_file.present? or import_from_url.present?
+    if import_from_file.present? or import_from_url.present? or import_from_table_copy.present?
       if import_from_file.present?
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, :logger => ::Rails.logger,
@@ -49,7 +49,7 @@ class Table < Sequel::Model(:user_tables)
         puts hash_in
         
         importer = CartoDB::Importer.new hash_in
-        importer_result = importer.import!
+        importer_result_name = importer.import!.name
       end
     
       #import from URL
@@ -59,10 +59,26 @@ class Table < Sequel::Model(:user_tables)
           "username" => owner.database_username, "password" => owner.database_password,
           :import_from_url => import_from_url, :debug => (Rails.env.development?)
         ).symbolize_keys
-        importer_result = importer.import!
+        importer_result_name = importer.import!.name
+      end
+      
+      if import_from_table_copy.present?
+        existing_names = owner.in_database["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{self.name}%'"].map(:relname)
+        testn = 1
+        uniname = self.name
+        while true==existing_names.include?("#{uniname}")
+          uniname = "#{self.name}_#{testn}"
+          testn = testn + 1
+        end
+
+        owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
+        owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
+        owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
+        
+        importer_result_name = uniname
       end
 
-      self[:name] = importer_result.name
+      self[:name] = importer_result_name
       schema = self.schema(:reload => true)
 
       owner.in_database do |user_database|
@@ -597,6 +613,7 @@ TRIGGER
   def oid
     @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]
   end
+  
 
   private
 

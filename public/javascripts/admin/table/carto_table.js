@@ -1104,8 +1104,7 @@
        		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
-          if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" &&
-            $(target).parent().attr('c')!="updated_at" && $(target).parent().attr('c')!="created_at") {
+          if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" && $(target).parent().attr('c')!="updated_at" && $(target).parent().attr('c')!="created_at") {
 
             if (first_double_click) {
               $('div.explain_tooltip').stop(true).hide();
@@ -1161,6 +1160,7 @@
           		 		headers: {"cartodbclient":"true"},
           		    success: function(data) {
                     $('div.edit_cell textarea').val(data.rows[0].the_geom);
+                    $('div.edit_cell textarea').removeClass('loading');                    
           		    },
           		    error: function(e) {
                     $('div.edit_cell textarea').removeClass('loading').addClass('error');

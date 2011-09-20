@@ -36,7 +36,6 @@ CartoDB::Application.routes.draw do
       get    '/column_types'                         => 'meta#column_types'
       get    '/tables'                               => 'tables#index'
       post   '/tables'                               => 'tables#create'
-      get    '/tables/lala'                          => 'tables#create'
       get    '/tables/tags/:tag_name'                => 'tables#index'
       get    '/tables/tags'                          => 'tags#index'
       get    '/tables/:id'                           => 'tables#show'

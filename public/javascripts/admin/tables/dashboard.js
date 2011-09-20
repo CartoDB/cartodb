@@ -2,6 +2,60 @@
 
     head(function(){
       
+      // Privacy tooltip
+      var p_change;
+      var table_name;
+      $('span.info p.status').click(function(ev){
+        stopPropagation(ev);
+        p_change = $(this);
+        var status = $(this).text().toLowerCase();
+        $('span.privacy_window li').each(function(i,ele){
+          $(ele).removeClass('selected');
+        });
+        table_name = $(this).parent().find('h4').text();
+        $('span.privacy_window li.'+status).addClass('selected');
+        var pos = $(this).position();
+        var offset = $(this).width()/2;
+        $('span.privacy_window').css({top:5+pos.top+'px',left:pos.left-90+offset+'px'}).show();
+        bindESC();
+        $('body').unbind('click');
+        $('body').click(function(event) {
+          if (!$(event.target).closest('span.privacy_window').length) {
+            $('span.privacy_window').fadeOut('fast');
+            $('body').unbind('click');
+          };
+        });
+      });
+      
+      
+      $('span.privacy_window li a').click(function(ev){
+        stopPropagation(ev);
+        if (!$(this).parent().hasClass('selected')) {
+          $('span.privacy_window li').each(function(i,ele){
+            $(ele).removeClass('selected');
+          });
+          $(this).parent().addClass('selected');
+          var status = ($(this).find('strong').text() == "Private")?'PRIVATE':'PUBLIC';
+          p_change.removeClass('public private').addClass(status.toLowerCase());
+          p_change.text(status);
+          $('span.privacy_window').fadeOut('fast');
+
+          var params = {};
+          params['privacy'] = status;
+          
+          $.ajax({
+            dataType: 'json',
+            type: "PUT",
+            url: global_api_url+'tables/'+table_name,
+            data: params,
+            headers: {'cartodbclient':true},
+            success: function(data) {},
+            error: function(e) {}
+          });
+        }
+      });
+
+      
       // Right column floating effect
       $(window).scroll(
         function(ev) {
@@ -56,6 +110,7 @@
           $('div.mamufas div.delete_window').hide();
           $('div.mamufas div.create_window').hide();
           $('div.mamufas div.export_window').hide();
+          resetUploadFile();
         });
         unbindESC();
       });
@@ -121,13 +176,16 @@
       });
       
       $('#export_format').val($('div.mamufas div.export_window form ul li.selected a.option').attr('rel'));
+      
+      
+      $('#hugeUploader').hide();
+  	  //Drop files on the dashboard to import them
+      $(document).bind('dragenter', onDragEnter);
     });
 
 
 
-	  $('#hugeUploader').hide();
-	  //Drop files on the dashboard to import them
-    $(document).bind('dragenter', onDragEnter);
+
     
     function onDragEnter(event){
   		event.stopPropagation();
@@ -158,6 +216,7 @@
             $('div.mamufas div.delete_window').hide();
             $('div.mamufas div.create_window').hide();
             $('div.mamufas div.export_window').hide();
+            $('span.privacy_window').fadeOut('fast');
           });
         }
       });

@@ -1145,11 +1145,29 @@
 
 
               var type = _.detect(headers,function(head,j){return head.name == data.column}).type;
+              
+							//if ((type=="polygon" || type=="line" || type=="multipolygon") && !_.isEmpty(data.value)) {
+							  if (data.value== 'GeoJSON') {
+                  type = 'geojson';
+                  $('div.edit_cell textarea').addClass('loading');
+                  
+                  $.ajax({
+            		    method: "GET",
+            		    url: global_api_url+'queries?sql='+escape('SELECT ST_AsGeoJSON(the_geom,6) as the_geom FROM '+table_name+' WHERE cartodb_id='+data.row),
+            		 		headers: {"cartodbclient":"true"},
+            		    success: function(data) {
+                      console.log(data);
+                      $('div.edit_cell textarea').val(data.rows[0].the_geom);
+            		    },
+            		    error: function(e) {
+                      $('div.edit_cell textarea').removeClass('loading').addClass('error');
+            		    }
+            		  });
 
-							if ((type=="polygon" || type=="line" || type=="multipolygon") && !_.isEmpty(data.value)) {
-							  var json = $.parseJSON(data.value);
-								type = json.type.toLowerCase();
-							}
+
+                }
+
+							//}
 
 							
               $('div.edit_cell div.free').hide();
@@ -1546,7 +1564,7 @@
           if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
             var new_value = $("div.edit_cell textarea").val();
             var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
-            $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
+            $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text((old_value!='GeoJSON')?new_value:'GeoJSON');
           } else {
             methods.closeTablePopups();
             return false;
@@ -1666,6 +1684,7 @@
         $(this).closest('div.month').children('span.bounds').children('a').text($(this).text())
         $(this).closest('div.months_list').hide();
       });     
+      
       
       
       ///////////////////////////////////////
@@ -1902,6 +1921,7 @@
         defaults.order_by = $(this).closest('th').attr('c');
         methods.refreshTable(0);
       })
+      
       
 
       ///////////////////////////////////////

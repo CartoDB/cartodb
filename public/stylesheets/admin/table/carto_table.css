@@ -72,6 +72,7 @@ div.table_position table tbody tr:hover td {background-position:0 -40px;}
 div.table_position table tbody tr td.error {color:#FF9900; text-decoration:underline;}
 div.table_position table tbody tr td.error:hover {background-position:0 -78px;}
 div.table_position table tbody tr td div {display:inline-block; width:75px; height:15px!important; margin:0!important; padding:11px 13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:normal 13px "Helvetica"; line-height:13px; color:#666666; text-shadow:0 1px white; vertical-align:middle;}
+div.table_position table tbody tr td div.italic {font-style:italic}
 div.table_position table tbody tr td.first {position:absolute; left:0; width:40px; height:37px!important; padding:0; margin:0; overflow:visible!important;}
 div.table_position table tbody tr td.first div {position:relative; float:left; width:40px; height:37px; padding:0!important; margin:0!important; overflow:visible;}
 div.table_position table tbody tr td.first div a.options {float:left; height:14px; width:14px; margin:12px 0 0 13px; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px;}

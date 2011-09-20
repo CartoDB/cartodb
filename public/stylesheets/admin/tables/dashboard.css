@@ -43,7 +43,7 @@ background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-line
 
 section#content div.left div.middle_white_medium {float:left; width:620px; min-height:375px; padding:0 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
 section#content div.left div.middle_white_medium div.no_tables {float:left; width:620px; padding:270px 0 75px 0; background:url('/images/admin/public_tables/no_tables.jpg') no-repeat center 70px;}
-section#content div.left div.middle_white_medium div.no_tables h5 {width:100%; text-align:center; font:bold 21px Arial; color:#A4BBC0; letter-spacing:-1px; word-spacing:2px;}
+section#content div.left div.middle_white_medium div.no_tables h5 {width:100%; text-align:center; font:bold 21px Arial; color:#A4BBC0; word-spacing:2px;}
 section#content div.left div.middle_white_medium div.no_tables p {width:100%; padding:4px 0 0 0; text-align:center; font:normal 15px Arial; color:#A4BBC0;}
 section#content div.left div.middle_white_medium div.no_tables p a {color:#666666;}
 section#content div.left div.middle_white_medium div.no_tables p a:hover {color:#333333;}
@@ -54,8 +54,8 @@ section#content div.left div.middle_white_medium ul li:hover {background:#F4F8F8
 section#content div.left div.middle_white_medium ul li div.meta_info {float:left; width:100%;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info {float:left; width:410px; margin:0;}
 
-section#content div.left div.middle_white_medium ul li h4 {float:left; width:auto; max-width:250px; letter-spacing:-1px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
-section#content div.left div.middle_white_medium ul li h4 a {font:bold 21px Arial; color:#333333; letter-spacing:-1px; text-decoration:none; line-height:26px; margin: 0 0 0 0;}
+section#content div.left div.middle_white_medium ul li h4 {float:left; width:auto; max-width:250px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
+section#content div.left div.middle_white_medium ul li h4 a {font:bold 21px Arial; color:#333333; text-decoration:none; line-height:26px; margin: 0 0 0 0;}
 section#content div.left div.middle_white_medium ul li h4 a:hover {color:black;}
 section#content div.left div.middle_white_medium ul li p.status {float:left; width:auto; padding:2px 7px!important; margin:5px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; line-height:11px;}
 section#content div.left div.middle_white_medium ul li p.status.public {color:#6FBE6F; background:#E2F3E1;}
@@ -88,7 +88,7 @@ section#content div.right {display:inline-block; vertical-align:top; width:260px
 section#content div.right div.banner {width:260px;}
 section#content div.right div.banner div.top_white_short {float:left; width:100%; height:10px; background:url('/images/admin/backgrounds/top_white_short.png') no-repeat 0 0;}
 section#content div.right div.banner div.middle_white_short {float:left; width:204px; height:auto; padding:18px 28px 21px; background:url('/images/admin/backgrounds/middle_white_short.png') repeat-y 0 0;}
-section#content div.right div.banner div.middle_white_short h3 {float:left; font:bold 17px Arial; color:#333333; letter-spacing:-1px;}
+section#content div.right div.banner div.middle_white_short h3 {float:left; font:bold 17px Arial; color:#333333; }
 section#content div.right div.banner div.middle_white_short p {float:left; margin:5px 0 0 0; font:normal 13px Arial; color:#999999;}
 section#content div.right div.banner div.middle_white_short a{float:left;margin:14px 0 0 2px;width:197px;height:15px;padding:9px 0 11px;text-align:center;font:bold 15px Arial;color:#305234;text-shadow:0 1px #9ED6A4;text-decoration:none;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;
   border:1px solid #538C55;-moz-box-shadow:0 1px 0 0 white;-webkit-box-shadow:0 1px 0 0 white;box-shadow:0 1px 0 0 white;background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg,#8FD484,#67BA6A);background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear,50% 0%,50% 100%,from(#8FD484),to(#67BA6A));

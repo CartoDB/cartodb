@@ -84,7 +84,7 @@
               '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
               '/javascripts/admin/maps/polygonEdit.js',
               '/javascripts/admin/maps/polylineEdit.js',
-              '/javascripts/admin/maps/polygon_creator.js',
+              '/javascripts/admin/maps/geometryCreator.js',
         function(){
           me.selection_area_  = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
     			me.info_window_     = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);     // InfoWindow for markers
@@ -367,13 +367,13 @@
 		  
 		  // Come from creating polygons or polylines? -> Save
       if (this.status_ == "add_polygon" || this.status_ == "add_polyline") {
-        if (this.polygon_creator_ != null) {
-          var multipolygon = this.polygon_creator_.showGeoJSON();
-          var geojson =  $.parseJSON(multipolygon);
+        if (this.geometry_creator_ != null) {
+          var new_geometry = this.geometry_creator_.showGeoJSON();
+          var geojson =  $.parseJSON(new_geometry);
           if (geojson.coordinates.length>0) {
             var params = {};
-            params.the_geom = multipolygon;
-            this.updateTable('/records',params,multipolygon,null,"add_polygon","POST");
+            params.the_geom = new_geometry;
+            this.updateTable('/records',params,new_geometry,null,"adding","POST");
           }
         }
       }
@@ -385,17 +385,15 @@
 			});
 			$('div.general_options li.map a.'+status).parent().addClass('selected');
 			
-			
-			
-			if (status == "add_polygon") {
-			  this.polygon_creator_ = new PolygonCreator(this.map_);
+			// New special geometry (multipolygon or multipolyline==multilinestring)
+			if (status == "add_polygon" || status == "add_polyline") {
+			  this.geometry_creator_ = new GeometryCreator(this.map_,(status=="add_polygon")?"MultiPolygon":"MultiLineString");
 			} else {
-			  if (this.polygon_creator_!=null) {
-			    this.polygon_creator_.destroy();
-  			  this.polygon_creator_ = null;
+			  if (this.geometry_creator_!=null) {
+			    this.geometry_creator_.destroy();
+  			  this.geometry_creator_ = null;
 			  }
-			}
-			
+			}			
 			
       // if (status=="select_area") {
       //  this.enableSelectionTool()

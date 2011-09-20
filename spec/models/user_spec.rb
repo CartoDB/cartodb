@@ -23,6 +23,14 @@ describe User do
     User.authenticate('admin@example.com', 'admin321').should be_nil
     User.authenticate('', '').should be_nil
   end
+  
+  it "should authenticate with case-insensitive email and username" do
+    user = create_user :email => 'user@example.com', :username => "user", :password => 'user123'
+    User.authenticate('user@example.com', 'user123').should == user
+    User.authenticate('UsEr@eXaMpLe.Com', 'user123').should == user
+    User.authenticate('user', 'user123').should == user
+    User.authenticate('USER', 'user123').should == user
+  end
 
   it "should validate that password is present if record is new and crypted_password or salt are blank" do
     user = User.new

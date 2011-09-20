@@ -20,7 +20,7 @@
             '</li>'+
             '<li>'+
               '<h4>Markers customization css</h4>'+
-              '<p>Default dots</p>'+
+              '<p>Default style</p>'+
             '</li>'+
           '</ul>'+
         '</div>'+

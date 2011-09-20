@@ -62,6 +62,7 @@ class Table < Sequel::Model(:user_tables)
         importer_result_name = importer.import!.name
       end
       
+      #Import from copying another table
       if import_from_table_copy.present?
         existing_names = owner.in_database["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{self.name}%'"].map(:relname)
         testn = 1
@@ -74,7 +75,10 @@ class Table < Sequel::Model(:user_tables)
         owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
-        
+        owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
+        owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
+        owner.in_database.run("ALTER TABLE jamooon ALTER COLUMN created_at SET DEFAULT now()")
+        set_trigger_the_geom_webmercator
         importer_result_name = uniname
       end
 

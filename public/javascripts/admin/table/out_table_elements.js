@@ -223,7 +223,7 @@
 	        '<ul>'+
 	          '<li class="disabled"><a class="import_data">Import data...</a></li>'+
 	          '<li><a class="export_data">Export data...</a></li>'+
-	          '<li><a class="save_table">Save table as...</a></li>'+ //class="save_table"
+	          '<li><a class="save_table">Duplicate table as...</a></li>'+
 	        '</ul>'+
 	      '</span>');
 	

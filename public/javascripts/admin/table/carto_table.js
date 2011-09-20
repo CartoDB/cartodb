@@ -101,7 +101,8 @@
 			    success: function(data) {
 				 		columns = data.schema;
 			      $(document).trigger('arrived');
-			    }
+			    },
+			    error: function(e) {}
 			  });
 
 			  $.ajax({
@@ -363,7 +364,6 @@
           cartodb_id: element['cartodb_id']
         });
 
-
         // Get rest generic td
 				_.eachRow(headers,function(head,x){
 				  var data = element[head.name];
@@ -517,9 +517,6 @@
         '<p>Loading next rows...</p>'+
         '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
       '</div>');
-
-
-
 
       //Edit caption
       $(table).parent().append(

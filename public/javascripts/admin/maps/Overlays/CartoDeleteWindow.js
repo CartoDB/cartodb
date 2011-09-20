@@ -65,7 +65,7 @@
 			$(div).find('a.delete_point').click(function(ev){
 				stopPropagation(ev);
 				me.hide();
-				carto_map.removeMarkers(me.markers_);
+				carto_map.removeGeometries(me.markers_);
 			});
 
 			$(div).css({opacity:0});

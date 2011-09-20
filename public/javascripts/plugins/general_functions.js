@@ -19,15 +19,15 @@
     function sanitizeText(str) {
       return str.replace(/[^a-zA-Z 0-9 _]+/g,'').replace(/ /g,'_').toLowerCase();
     }
-    
-    
-    
+
+
+
     /*============================================================================*/
     /* Convert Date string to Date object  */
     /*============================================================================*/
     function parseDate(str) {
       var date = {};
-      
+  
       if (str=='') {
         date.day = 1;
         date.month = 1;
@@ -61,9 +61,9 @@
       }
       return date;
     }
-    
-    
-    
+
+
+
     /*============================================================================*/
     /* Convert month string to month number  */
     /*============================================================================*/
@@ -83,9 +83,9 @@
         default: return 12;
       }
     }
-    
-    
-    
+
+
+
     /*============================================================================*/
     /* Convert month number to month string  */
     /*============================================================================*/
@@ -105,9 +105,9 @@
         default: return 'December';
       }
     }
-    
-    
-    
+
+
+
     /*============================================================================*/
     /* Stop propagation events  */
     /*============================================================================*/
@@ -115,7 +115,7 @@
       ev.preventDefault();
       ev.stopPropagation();
     }
-    
+
     function stopMapPropagation(ev) {
       try{
         ev.stopPropagation();
@@ -155,43 +155,68 @@
         }
       });
     };
-    
+
     
     /*============================================================================*/
-    /* Get lat&lon from GeoJSON  */
+    /* Convert GeoJSON to coords  */
     /*============================================================================*/
-    function geoPosition(str) {
+    function transformGeoJSON(str) {
+      var paths = [];
+      var bounds = new google.maps.LatLngBounds();
       var json = $.parseJSON(str);
-      if (json.type.toLowerCase()=="point") {
-        return new google.maps.LatLng(json.coordinates[1],json.coordinates[0]);
-      } else if (json.type.toLowerCase()=="polygon" || json.type.toLowerCase()=="multipolygon") {
-        // Get the bounds of the polygon
-        var bounds = new google.maps.LatLngBounds();
-        var coords = json.coordinates;
+      var coords = json.coordinates;
+      var type = json.type.toLowerCase();
+      var center = new google.maps.LatLng();
+      
+      if (type=="point") {
+        paths.push(new google.maps.LatLng(json.coordinates[1],json.coordinates[0]));
+        center = paths[0];
+      } else if (type=="polygon" || type=="multipolygon") {
         for (var i = 0; i < coords.length; i++) {
           for (var j = 0; j < coords[i].length; j++) {
             var path = [];
             for (var k = 0; k < coords[i][j].length; k++) {
               var ll = new google.maps.LatLng(coords[i][j][k][1],coords[i][j][k][0]);
               bounds.extend(ll);
+              path.push(ll);
             }
+            paths.push(path);
           }
         }
-        return bounds.getCenter();
-      } else if (json.type.toLowerCase()=="linestring" || json.type.toLowerCase()=="multilinestring") {
-        // Get the bounds of the polyline
-        var bounds = new google.maps.LatLngBounds();
-        var coords = json.coordinates[0];
-
-        for (var k = 0; k < coords.length; k++) {
-          var ll = new google.maps.LatLng(coords[k][1],coords[k][0]);
-          bounds.extend(ll);
-        }
-        
-        return bounds.getCenter();
+        center = bounds.getCenter();
       } else {
-        return new google.maps.LatLng(0,0);
+        for (var i = 0; i < coords.length; i++) {
+          var path = [];
+          for (var j = 0; j < coords[i].length; j++) {
+            var ll = new google.maps.LatLng(coords[i][j][1],coords[i][j][0]);
+            bounds.extend(ll);
+            path.push(ll);
+          }
+          paths.push(path);
+        }
+        center = bounds.getCenter();
       }
+      
+      return {paths:paths,center:center,type:type}
     }
-    
-    
+
+
+    function transformToGeoJSON(geometries,type) {
+      type = type.toLowerCase();
+      var str = '{"type":"'+((type=="multipolygon")?"MultiPolygon":"MultiLineString")+'","coordinates":[';
+      _.each(geometries,function(pol,i){
+        var points = pol.getPath().getArray();
+        str += (type=="multipolygon")?'[[':'[';
+        _.each(points,function(point,i){
+          str += '['+point.lng()+','+point.lat()+'],'
+        });
+        str += (type=="multipolygon")?'['+points[0].lng()+','+points[0].lat()+'],':'';
+        if (points.length>0) {
+          str = str.substr(0, str.length-1);
+        }
+        str += (type=="multipolygon")?']],':'],';
+      });
+      str = str.substr(0, str.length-1);
+      str += ']}';
+      return str;
+    }

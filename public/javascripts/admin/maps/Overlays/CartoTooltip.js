@@ -22,7 +22,7 @@ CartoTooltip.prototype.draw = function() {
         $(div).find('a.edit').click(function(ev){
             stopPropagation(ev);
             me.hide();
-            carto_map.addFakeMarker(me.markers_);
+            carto_map.createFakeGeometry(me.markers_);
         });
 
         $(div).hover(
@@ -97,7 +97,7 @@ CartoTooltip.prototype.openPolgyon = function(latlng,markers) {
         $(div).find('a.delete').click(function(ev){
             stopPropagation(ev);
             me.hide();
-            carto_map.removeMarkers(me.markers_);
+            carto_map.removeGeometries(me.markers_);
         });
         var p_width = 	$(div).find('p').width();
         div.style.width = 21 + p_width + 'px';

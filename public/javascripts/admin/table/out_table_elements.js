@@ -247,10 +247,27 @@
 	
 	    $('a.save_table').click(function(ev){
 	      stopPropagation(ev);
-        closeOutTableWindows();
-        $('div.mamufas div.save_window').show();
-        $('div.mamufas').fadeIn('fast');
-        bindESC();
+	      
+	      $.ajax({
+			    type: "POST",
+			    url: global_api_url+'tables',
+			    data: {
+			      name: 'jamooon',
+			      table_copy: table_name
+			    },
+			 		headers: {"cartodbclient":"true"},
+			    success: function(result) {
+						console.log(result);
+			    },
+			    error: function(e) {
+			      console.log(e);
+			    }
+			  });
+	
+        // closeOutTableWindows();
+        // $('div.mamufas div.save_window').show();
+        // $('div.mamufas').fadeIn('fast');
+        // bindESC();
 	    });
 
 	    $('a.table_save').click(function(ev){

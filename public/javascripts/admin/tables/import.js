@@ -84,7 +84,6 @@
             createNewToFinish('',$('div.select_file input#url_txt').val(),true);
           }
         }
-
       });
       
       
@@ -173,6 +172,7 @@
       $('div.create_window div.inner_ span.loading').css('opacity',0);
       $('form input[type="submit"]').removeClass('disabled');
       $('span.file').removeClass('uploading');
+      $('div.create_window div.inner_ span.loading').removeClass('error');
       $('span.file input[type="file"]').attr('value','');
       $('div.select_file p').text('You can import .csv, .xls and .zip files');
       $('div.select_file p').removeClass('error');

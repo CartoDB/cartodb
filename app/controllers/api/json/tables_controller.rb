@@ -51,12 +51,13 @@ class Api::Json::TablesController < Api::ApplicationController
   def create
     @table = Table.new
     @table.user_id = current_user.id
-    @table.name = params[:name]                    if params[:name]
-    @table.import_from_file = params[:file]        if params[:file]
-    @table.import_from_url = params[:url]          if params[:url]
+    @table.name = params[:name]                          if params[:name]
+    @table.import_from_file = params[:file]              if params[:file]
+    @table.import_from_url = params[:url]                if params[:url]
+    @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
     @table.importing_SRID = params[:srid] || CartoDB::SRID
-    @table.force_schema   = params[:schema]        if params[:schema]
-    @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
+    @table.force_schema   = params[:schema]              if params[:schema]
+    @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
     if @table.valid? && @table.save
       render :json => { :id => @table.id, :name => @table.name, :schema => @table.schema }.to_json,
              :status => 200,
@@ -141,6 +142,13 @@ class Api::Json::TablesController < Api::ApplicationController
     raise RecordNotFound if @table.nil?
     @table.destroy
     render :nothing => true, :status => 200, :callback => params[:callback]
+  end
+  
+  def duplicate
+    @table = Table.find_by_identifier(current_user.id, params[:id])
+    new_table_name = @table.duplicate!
+    render :json => { :table_name => new_table_name}.to_json, 
+           :status => 200, :callback => params[:callback]
   end
 
   # expects the infowindow data in the infowindow parameter

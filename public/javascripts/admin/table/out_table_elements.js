@@ -94,7 +94,7 @@
                   '</span>'+
                 '</li>'+
                 '<li>'+
-                  '<a href="#">I want to add some data from an URL</a>'+
+                  '<a href="#">I want to add some data from a URL</a>'+
                   '<span class="file">'+
                     '<div class="select_file">'+
                       '<input id="url_txt" type="text" name="url_value" value="Insert a valid URL..."/>'+

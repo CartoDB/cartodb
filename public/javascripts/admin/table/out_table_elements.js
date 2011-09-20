@@ -221,7 +221,7 @@
 	      '<span class="advanced_options">'+
 	        '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
 	        '<ul>'+
-	          '<li><a class="import_data">Import data...</a></li>'+
+	          '<li class="disabled"><a class="import_data">Import data...</a></li>'+
 	          '<li><a class="export_data">Export data...</a></li>'+
 	          '<li><a class="save_table">Save table as...</a></li>'+ //class="save_table"
 	        '</ul>'+

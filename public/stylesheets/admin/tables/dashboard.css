@@ -41,7 +41,7 @@ background:url('/images/front/home/button_border.png') repeat-x 0 -1px #8FD484\9
 section#content div.left div.top_blue_medium a.new_table:hover{background:url('/images/front/home/button_border.png') repeat-x 0 -1px,linear-gradient(-90deg,#67BA6A,#8FD484);background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-webkit-gradient(linear,50% 0%,50% 100%,from(#67BA6A),to(#8FD484));
 background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-moz-linear-gradient(-90deg,#67BA6A,#8FD484);background:url('/images/front/home/button_border.png') repeat-x 0 -1px,-o-linear-gradient(#67BA6A,#8FD484);background:url('/images/front/home/button_border.png') repeat-x 0 -1px #67BA6A\9;}
 
-section#content div.left div.middle_white_medium {float:left; width:620px; min-height:375px; padding:0 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
+section#content div.left div.middle_white_medium {position:relative; float:left; width:620px; min-height:375px; padding:0 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
 section#content div.left div.middle_white_medium div.no_tables {float:left; width:620px; padding:270px 0 75px 0; background:url('/images/admin/public_tables/no_tables.jpg') no-repeat center 70px;}
 section#content div.left div.middle_white_medium div.no_tables h5 {width:100%; text-align:center; font:bold 21px Arial; color:#A4BBC0; word-spacing:2px;}
 section#content div.left div.middle_white_medium div.no_tables p {width:100%; padding:4px 0 0 0; text-align:center; font:normal 15px Arial; color:#A4BBC0;}
@@ -71,6 +71,23 @@ section#content div.left div.middle_white_medium ul li div.meta_info span.tags {
 section#content div.left div.middle_white_medium ul li div.meta_info span.tags p.last_op {float:right; width:224px; margin:4px 0 0 0; padding:0 18px 7px 0; font:normal 13px Arial; color:#999999; background:url('/images/admin/icons/clock.png') no-repeat right 1px; text-align:right; opacity:0.7;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.tags a {float:right; padding:2px 7px; margin:4px 3px 0 0; font:normal 11px Arial; color:#999999; text-decoration:none; background:#D8E7E9; border-radius:2px; -webkit-border-radius:2px; -moz-border-radius:2px;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.tags a:hover {color:#333333!important; background:#C2DADD;}
+
+section#content div.left div.middle_white_medium span.privacy_window {position:absolute; display:none; top:18px; width:216px; height:108px; background:url('/images/admin/table/privacy_options_bkg.png') no-repeat center center;}
+section#content div.left div.middle_white_medium span.privacy_window ul {float:left; width:175px; margin:34px 0 0 20px;}
+section#content div.left div.middle_white_medium span.privacy_window ul li {width:161px; padding:5px 7px 6px; margin:0 0 2px; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; background:none; border:none;}
+section#content div.left div.middle_white_medium span.privacy_window ul li.last {margin:0;}
+section#content div.left div.middle_white_medium span.privacy_window ul li a {padding:0 0 0 16px; font:normal 13px Arial; color:black; background:url('/images/admin/icons/selected_privacy.png') no-repeat 0 -28px; text-decoration:none;}
+section#content div.left div.middle_white_medium span.privacy_window ul li.selected.public {background:#6FBE6F;}
+section#content div.left div.middle_white_medium span.privacy_window ul li.selected.private {background:#FF2F1E;}
+section#content div.left div.middle_white_medium span.privacy_window ul li.selected a {color:white; background-position:0 2px;}
+section#content div.left div.middle_white_medium span.privacy_window ul li.public:hover {background:#6FBE6F;}
+section#content div.left div.middle_white_medium span.privacy_window ul li.private:hover {background:#FF2F1E;}
+section#content div.left div.middle_white_medium span.privacy_window ul li:hover a {color:white; background-position:0 2px;}
+section#content div.left div.middle_white_medium span.privacy_window ul li.disabled {background:none; opacity:0.3;}
+section#content div.left div.middle_white_medium span.privacy_window ul li.disabled:hover {background:none;}
+section#content div.left div.middle_white_medium span.privacy_window ul li.disabled:hover a {color:black; background-position:0 -28px; cursor:default;}
+
+
 
 section#content div.left div.bottom_white_medium {float:left; width:626px; height:10px; padding:0; background:url('/images/admin/backgrounds/bottom_white_medium.png') no-repeat 0 top;}
 section#content div.left div.paginate {display:block; float:left; padding:18px 0 0 0;}

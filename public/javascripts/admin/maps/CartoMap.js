@@ -33,7 +33,7 @@
       this.cache_buster = 0;
 
       this.show();                                    // First step is show the map canvas
-      // this.showLoader();                            // Show loader
+      // this.showLoader();                           // Show loader
       this.createMap();                               // Create the map
     }
 
@@ -46,58 +46,69 @@
 
       var mapStyles = [
           {
-              featureType:"water",
               stylers: [
-                  {hue:"#ECE8E3"},
-                  {saturation:-100},
-                  {lightness:100}
+                  { saturation: -65 },
+                  { gamma: 1.52 }
               ]
           },{
-              featureType:"landscape",
+              featureType: "administrative",
               stylers: [
-                  {hue:"#000"},
-                  {saturation:-100},
-                  {lightness:-5}
+                  { saturation: -95 },
+                  { gamma: 2.26 }
               ]
           },{
-              featureType:"administrative",
+              featureType: "water",
+              elementType: "labels",
               stylers: [
-                  {visibility:"off"}
+                  { visibility: "off" }
               ]
           },{
-              featureType:"administrative.country",
+              featureType: "administrative.locality",
               stylers: [
-                  {visibility:"on"},
-                  {lightness:50}
+                  { visibility: "off" }
               ]
           },{
-              featureType:"poi",
+              featureType: "road",
               stylers: [
-                  {visibility:"off"}
+                  { visibility: "simplified" },
+                  { saturation: -99 },
+                  { gamma: 2.22 }
               ]
           },{
-              featureType:"road",
+              featureType: "poi",
+              elementType: "labels",
               stylers: [
-                  {visibility:"off"}
+                  { visibility: "off" }
               ]
           },{
-              featureType:"transit",
+              featureType: "road.arterial",
               stylers: [
-                  {visibility:"off"}
+                  { visibility: "off" }
               ]
           },{
-              featureType:"landscape.natural",
+              featureType: "road.local",
+              elementType: "labels",
               stylers: [
-                  {visibility:"off"}
+                  { visibility: "off" }
               ]
           },{
-              featureType:"landscape.man_made",
+              featureType: "transit",
               stylers: [
-                  {visibility:"off"}
+                  { visibility: "off" }
+              ]
+          },{
+              featureType: "road",
+              elementType: "labels",
+              stylers: [
+                  { visibility: "off" }
+              ]
+          },{
+              featureType: "poi",
+              stylers: [
+                  { saturation: -55 }
               ]
           }
       ];
-
 
       // Generate a google map
       var myOptions = {

@@ -19,9 +19,9 @@
       </span>
       <%= link_to "Did you forget your password?", forget_password_url, :class => "forget" if forget_password_url.present? %>
       <%= submit_tag 'Log in', :class => "login" %>
-      <% if flash[:alert] %>
+      <% if flash[:alert] || @login_error %>
       <div class="error_content">
-        <p><span><%= flash[:alert] %></span></p>
+        <p><span><%= flash[:alert] || @login_error %></span></p>
       </div>
       <% end %>
     <% end %>

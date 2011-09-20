@@ -257,7 +257,7 @@
       thisObj.coords.push(value.getLatLng());
     });
 
-    this.polylineObj=new google.maps.Polyline({path:this.coords,strokeColor:"#FF6600",strokeOpacity:1.0,strokeWeight:2,map:this.map});
+    this.polylineObj=new google.maps.Polyline({path:this.coords,strokeColor:"#FF6600",strokeOpacity:1.0,strokeWeight:2,map:this.map,clickable:true});
 
     // Now the polylines are clickable
     this.parent.setGeometriesClickable(true);

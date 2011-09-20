@@ -40,11 +40,15 @@ class Table < Sequel::Model(:user_tables)
     #import from file
     if import_from_file.present? or import_from_url.present?
       if import_from_file.present?
-        importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, :logger => ::Rails.logger,
           "username" => owner.database_username, "password" => owner.database_password,
           :import_from_file => import_from_file, :debug => (Rails.env.development?)
         ).symbolize_keys
+        
+        puts hash_in
+        
+        importer = CartoDB::Importer.new hash_in
         importer_result = importer.import!
       end
     

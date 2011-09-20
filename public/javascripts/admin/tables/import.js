@@ -60,17 +60,6 @@
 				} else {
 					$('div.create_window span.bottom input').removeClass('disabled');
 				}
-      
-
-	    
-	    // TODO try to get this working. For any reason the change event is not being triggered.
-	    //      the solution just do the previous code more messy  
-	    // $('div.select_file input#url_txt').change(function(){
-	    //    console.log('hola');
-	    //    if ($(this).val() == ""){
-	    //      $('div.import_window span.bottom input').removeClass('disabled');
-	    //    }
-	    // });
       });
       
 

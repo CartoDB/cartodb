@@ -1210,7 +1210,11 @@
                   $('div.edit_cell textarea').css({'min-height' : '30px','height' : '30px'});
                 }
                 $('div.edit_cell div.free').show();
-                $('div.edit_cell div.free textarea').val(data.value);
+                if (data.value!="GeoJSON...") {
+                  $('div.edit_cell div.free textarea').val(data.value);
+                } else {
+                  $('div.edit_cell div.free textarea').val('');
+                }
               }
 
               $('div.edit_cell a.save').attr('r',data.row);
@@ -1563,7 +1567,7 @@
           if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=$("div.edit_cell textarea").val()) {
             var new_value = $("div.edit_cell textarea").val();
             var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
-            $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text((old_value!='GeoJSON')?new_value:'GeoJSON');
+            $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text((old_value!='GeoJSON...')?new_value:'GeoJSON...');
           } else {
             methods.closeTablePopups();
             return false;

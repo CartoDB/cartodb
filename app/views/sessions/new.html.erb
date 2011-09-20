@@ -12,16 +12,16 @@
     <%= form_tag create_session_path do %>
       <p class="title">Please login</p>
       <%= label_tag :email, 'e-mail' %>
-      <%= text_field_tag :email, '', :class => (flash[:alert] ? 'error' : nil) %>
+      <%= text_field_tag :email, '', :class => (flash[:alert] || @login_error ? 'error' : nil) %>
       <span class="password">
         <%= label_tag :password, 'password' %>
-        <%= password_field_tag :password, '', :class => (flash[:alert] ? 'error' : nil) %>
+        <%= password_field_tag :password, '', :class => (flash[:alert] || @login_error ? 'error' : nil) %>
       </span>
       <%= link_to "Did you forget your password?", forget_password_url, :class => "forget" if forget_password_url.present? %>
       <%= submit_tag 'Log in', :class => "login" %>
-      <% if flash[:alert] %>
+      <% if flash[:alert] || @login_error %>
       <div class="error_content">
-        <p><span><%= flash[:alert] %></span></p>
+        <p><span><%= flash[:alert] || @login_error %></span></p>
       </div>
       <% end %>
     <% end %>

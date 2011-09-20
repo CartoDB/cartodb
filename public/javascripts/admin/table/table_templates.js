@@ -81,5 +81,5 @@
                           '</div>'
                         '</td>';
       var generic_td =  '<td {{#allowed}}class="special"{{/allowed}} r="{{cartodb_id}}" c="{{column}}">'+
-                          '<div title="{{value}}" {{^is_cartodb_id}}style="width:{{cellsize}}px"{{/is_cartodb_id}}>{{value}}</div>'+
+                          '<div class="{{^geojson}}italic{{/geojson}}" title="{{value}}" {{^is_cartodb_id}}style="width:{{cellsize}}px"{{/is_cartodb_id}}>{{value}}</div>'+
                         '</td>';

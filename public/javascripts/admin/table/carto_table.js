@@ -373,12 +373,16 @@
               if (data==null) {
                 return '';
               } else if (j=="the_geom") {
-                var json = $.parseJSON(data);
-                if (json.type=="Point") {
-                  return json.coordinates[0] +', ' + json.coordinates[1];
+                if (data!="GeoJSON") {
+                  var json = $.parseJSON(data);
+                  if (json.type=="Point") {
+                    return json.coordinates[0] +', ' + json.coordinates[1];
+                  } else {
+  									return data;
+  								}
                 } else {
-									return data;
-								}
+                  return data+'...';
+                }
               } else {
                 return data;
               }
@@ -387,7 +391,8 @@
 	           is_cartodb_id:(j=="cartodb_id")?true:false,
 	        	 allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
 	           cellsize: cell_size,
-	           column: j
+	           column: j,
+	           geojson: (data!='GeoJSON')?true:false
 	         });
         });
 
@@ -1146,28 +1151,22 @@
 
               var type = _.detect(headers,function(head,j){return head.name == data.column}).type;
               
-							//if ((type=="polygon" || type=="line" || type=="multipolygon") && !_.isEmpty(data.value)) {
-							  if (data.value== 'GeoJSON') {
-                  type = 'geojson';
-                  $('div.edit_cell textarea').addClass('loading');
-                  
-                  $.ajax({
-            		    method: "GET",
-            		    url: global_api_url+'queries?sql='+escape('SELECT ST_AsGeoJSON(the_geom,6) as the_geom FROM '+table_name+' WHERE cartodb_id='+data.row),
-            		 		headers: {"cartodbclient":"true"},
-            		    success: function(data) {
-                      console.log(data);
-                      $('div.edit_cell textarea').val(data.rows[0].the_geom);
-            		    },
-            		    error: function(e) {
-                      $('div.edit_cell textarea').removeClass('loading').addClass('error');
-            		    }
-            		  });
-
-
-                }
-
-							//}
+						  if (data.value== 'GeoJSON...') {
+                type = 'geojson';
+                $('div.edit_cell textarea').addClass('loading');
+                
+                $.ajax({
+          		    method: "GET",
+          		    url: global_api_url+'queries?sql='+escape('SELECT ST_AsGeoJSON(the_geom,6) as the_geom FROM '+table_name+' WHERE cartodb_id='+data.row),
+          		 		headers: {"cartodbclient":"true"},
+          		    success: function(data) {
+                    $('div.edit_cell textarea').val(data.rows[0].the_geom);
+          		    },
+          		    error: function(e) {
+                    $('div.edit_cell textarea').removeClass('loading').addClass('error');
+          		    }
+          		  });
+              }
 
 							
               $('div.edit_cell div.free').hide();

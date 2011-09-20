@@ -730,7 +730,6 @@ SQL
   end
 
   def update_the_geom!(attributes, primary_key)
-    puts attributes
     return unless attributes[THE_GEOM]
     geo_json = RGeo::GeoJSON.decode(attributes[THE_GEOM], :json_parser => :json).try(:as_text)
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?

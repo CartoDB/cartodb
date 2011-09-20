@@ -70,7 +70,7 @@ class User < Sequel::Model
   end
 
   def self.authenticate(email, password)
-    if candidate = User.filter({:email => email} | {:username => email}).first
+    if candidate = User.filter("email ILIKE ? OR username ILIKE ?", email, email).first
       candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
     else
       nil

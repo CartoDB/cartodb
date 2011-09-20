@@ -23,22 +23,36 @@
 
       //Create new table
       $('a.new_table').click(function(ev){
-         ev.preventDefault();
-         ev.stopPropagation();
+         stopPropagation(ev);
          resetUploadFile();
          $('div.create_window').show();
          $('div.mamufas').fadeIn();
          bindESC();
-       });
+      });
+
+
+      $('div.select_file input#url_txt').focusin(function(){
+         $(this).val('');
+         $('div.create_window span.bottom input').removeClass('disabled');        
+ 	    });
+	    
+      $('div.select_file input#url_txt').focusout(function(){
+   	    if ($(this).val() == ""){
+       	  $(this).val('Insert a valid URL...');  
+           $('div.create_window span.bottom input').addClass('disabled');
+   	    }else{
+     	    $('div.create_window span.bottom input').removeClass('disabled');
+   	    }
+ 	    });
 
 
       $('div.create_window ul li a').click(function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
+        stopPropagation(ev);
+        create_type = $(this).closest('li').index();
+
         if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled') && !$(this).parent().is("span")) {
           $('div.create_window ul li').removeClass('selected');
           $(this).parent().addClass('selected');
-          (create_type==0)?create_type++:create_type--;
         }
 				
 				if (($(this).closest('li').index()==1) || ($(this).closest('li').index()==2) && $('div.select_file input#url_txt').val() == "Insert a valid URL...") {
@@ -47,19 +61,7 @@
 					$('div.create_window span.bottom input').removeClass('disabled');
 				}
       
-      $('div.select_file input#url_txt').focusin(function(){
-        $(this).val('');
-        $('div.create_window span.bottom input').removeClass('disabled');        
-	    });
-	    
-      $('div.select_file input#url_txt').focusout(function(){
-  	    if ($(this).val() == ""){
-      	  $(this).val('Insert a valid URL...');  
-          $('div.create_window span.bottom input').addClass('disabled');
-  	    }else{
-    	    $('div.create_window span.bottom input').removeClass('disabled');
-  	    }
-	    });
+
 	    
 	    // TODO try to get this working. For any reason the change event is not being triggered.
 	    //      the solution just do the previous code more messy  
@@ -69,8 +71,6 @@
 	    //      $('div.import_window span.bottom input').removeClass('disabled');
 	    //    }
 	    // });
-	   
-      
       });
       
 
@@ -82,6 +82,23 @@
         $(document).css('cursor','default');
       });
 
+
+
+      $('form#import_file').submit(function(ev){
+        ev.stopPropagation();
+        ev.preventDefault();
+        if (!$('div.create_window span.bottom input').hasClass('disabled')) {
+          if (create_type==0) {
+            var geom_type = $('div.geom_type span.selected a').text();
+            createNewToFinish(geom_type,'');
+          } else if (create_type==2) {
+            createNewToFinish('',$('div.select_file input#url_txt').val(),true);
+          }
+        }
+
+      });
+      
+      
       //Uploader for the modal window
       var uploader = new qq.FileUploader({
         element: document.getElementById('uploader'),
@@ -91,7 +108,6 @@
         sizeLimit: 0, // max size
         minSizeLimit: 0, // min size
         debug: false,
-
         onSubmit: function(id, fileName){
           $('div.create_window ul li:eq(0)').addClass('disabled');
           $('form input[type="submit"]').addClass('disabled');
@@ -110,56 +126,47 @@
           $('div.select_file p').addClass('error');
         }
       });
+      
+      
+      //Uploader for the whole page (dashboard only)
+      var hugeUploader = new qq.FileUploader({
+      	element: document.getElementById('hugeUploader'),
+      	action: '/upload',
+      	params: {},
+      	allowedExtensions: ['csv', 'xls', 'xlsx', 'zip'],
+      	sizeLimit: 0, // max size
+      	minSizeLimit: 0, // min size
+      	debug: false,
 
-      $('form#import_file').submit(function(ev){
-        ev.stopPropagation();
-        ev.preventDefault();
-        if (create_type==0) {
-          var geom_type = $('div.geom_type span.selected a').text();
-          createNewToFinish(geom_type,'');
-        }else if(create_type==2){
-          // TODO send url to the server
-          console.log('send url');          
-        }
+      	onSubmit: function(id, fileName){
+        	resetUploadFile();
+      		$('div.create_window ul li:eq(0)').addClass('disabled');
+      		$('form input[type="submit"]').addClass('disabled');
+      		$('span.file').addClass('uploading');
+      		$('div.create_window ul li:eq(1) a').click();
+          $('#hugeUploader').hide();
+          $('div.create_window').show();
+          $('div.mamufas').fadeIn();
+          bindESC();		  
+      	},
+      	onProgress: function(id, fileName, loaded, total){
+      		var percentage = loaded / total;
+      		$('span.progress').width((346*percentage)/1);
+      	},
+      	onComplete: function(id, fileName, responseJSON){
+      		createNewToFinish('',responseJSON.file_uri);
+      		$('#hugeUploader').hide();
+      	},
+      	onCancel: function(id, fileName){},
+      	showMessage: function(message){
+      		 $('div.select_file p').html(message);
+      		 $('div.select_file p').addClass('error');
+      	}
       });
     });
     
 
-    //Uploader for the whole page (dashboard only)
-    var hugeUploader = new qq.FileUploader({
-    	element: document.getElementById('hugeUploader'),
-    	action: '/upload',
-    	params: {},
-    	allowedExtensions: ['csv', 'xls', 'xlsx', 'zip'],
-    	sizeLimit: 0, // max size
-    	minSizeLimit: 0, // min size
-    	debug: false,
     
-    	onSubmit: function(id, fileName){
-      	resetUploadFile();
-    		$('div.create_window ul li:eq(0)').addClass('disabled');
-    		$('form input[type="submit"]').addClass('disabled');
-    		$('span.file').addClass('uploading');
-    		$('div.create_window ul li:eq(1) a').click();
-        $('#hugeUploader').hide();
-        $('div.create_window').show();
-        $('div.mamufas').fadeIn();
-        bindESC();		  
-    	},
-    	onProgress: function(id, fileName, loaded, total){
-    		var percentage = loaded / total;
-    		$('span.progress').width((346*percentage)/1);
-    	},
-    	onComplete: function(id, fileName, responseJSON){
-    		createNewToFinish('',responseJSON.file_uri);
-    		$('#hugeUploader').hide();
-    	},
-    	onCancel: function(id, fileName){},
-    	showMessage: function(message){
-    		 $('div.select_file p').html(message);
-    		 $('div.select_file p').addClass('error');
-    	}
-    });
 	   
 
 
@@ -189,7 +196,7 @@
     }
 
 
-    function createNewToFinish (type,url) {
+    function createNewToFinish (type,url,out) {
       $('div.create_window div.inner_').animate({borderColor:'#FFC209', height:'68px'},500);
       $('div.create_window div.inner_ form').animate({opacity:0},300,function(){
         $('div.create_window div.inner_ span.loading').show();
@@ -197,7 +204,11 @@
         $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
           var params = {}
           if (url!='') {
-            params = {file:'http://'+window.location.host + url};
+            if (!out) {
+              params = {file:'http://'+window.location.host + url};
+            } else {
+              params = {file:url};
+            }
           } else {
             params = {the_geom_type:type}
           }

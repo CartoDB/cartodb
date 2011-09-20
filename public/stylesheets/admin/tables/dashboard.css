@@ -130,7 +130,6 @@ filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='
 div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete:hover {background:linear-gradient(-90deg,#CACBCE,#FFFFFF);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#CACBCE),to(#FFFFFF));background:-moz-linear-gradient(-90deg,#CACBCE,#FFFFFF);background:-o-linear-gradient(#CACBCE,#FFFFFF);
   filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE',endColorstr='#FFFFFF');cursor:pointer;}
 
-
 div.mamufas div.export_window {position:absolute; display:none; top:50%; left:50%; width:389px; margin:-150px 0 0 -217px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
   -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.export_window a.close {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/table/export_close.png') no-repeat 0 0;}

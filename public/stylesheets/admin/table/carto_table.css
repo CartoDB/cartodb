@@ -251,7 +251,8 @@ div.table_position div.edit_cell div.date div.hour span.bounds input {float:left
 div.table_position div.edit_cell div.date div.hour span.bounds input:focus {outline:none;}
 div.table_position div.edit_cell div.date div.hour span.bounds input.error {border-color:#C04E03; color:#C04E03;}
 div.table_position div.edit_cell div.free {display:none;}
-div.table_position div.edit_cell textarea {float:left; display:block; min-width:248px; min-height:30px; padding:7px; font:normal 13px "Helvetica",Arial; color:#666666; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; overflow:hidden\9;}
+div.table_position div.edit_cell textarea {float:left; display:block; min-width:248px; min-height:30px; padding:7px; font:normal 13px "Helvetica",Arial; color:#666666; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; overflow:hidden\9; background: white;}
+div.table_position div.edit_cell textarea.loading { background: url('/images/admin/table/ajax-loader.gif') no-repeat 5px 6px white!important;}
 div.table_position div.edit_cell textarea:focus {outline:none; border-color:#666;}
 div.table_position div.edit_cell textarea.error {border-color:#C04E03; color:#C04E03;}
 div.table_position div.edit_cell textarea.error:focus {border-color:#C04E03; color:#C04E03;}

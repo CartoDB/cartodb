@@ -256,10 +256,13 @@
 
           if (type=="point") {
             $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
+            $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
           } else if (type=="polygon" || type=="multipolygon") {
             $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');
+            $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');            
           } else {
             $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
+            $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
           }
 
 		    },

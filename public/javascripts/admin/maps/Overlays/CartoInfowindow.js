@@ -28,7 +28,9 @@
 	    div.setAttribute('class','marker_infowindow');
 	
 			$(div).append('<a href="#close" class="close">x</a>'+
-			              '<div class="top">'+
+			              '<div class="outer_top">'+
+			                '<div class="top">'+
+			                '</div>'+
 			              '</div>'+
 			              '<div class="bottom">'+
 											'<label>cartodb_id:1</label>'+
@@ -44,7 +46,7 @@
 			$(div).find('a.delete_point').click(function(ev){
 				stopPropagation(ev);
 				me.hide();
-				carto_map.delete_window_.open(me.latlng_,[me.marker_]);
+				carto_map.delete_window_.open(me.latlng_,me.marker_);
 			});
       
       google.maps.event.addDomListener(div,'click',function(ev){stopMapPropagation(ev);});
@@ -111,10 +113,9 @@
 	
 	
 	CartoInfowindow.prototype.openWax = function(feature){
-	  // TODO
-	  // Generate loader or something similar
-	  // Errors?
 	  var me = this;
+	  this.marker_ = feature;
+	  
 	  $.ajax({
       method: "GET",
       url:global_api_url + 'tables/'+table_name+'/records/'+feature,
@@ -127,7 +128,6 @@
     
     
     function positionateInfowindow(me,info) {
-
       if (me.div_) {
   	    var div = me.div_;
   	    // Get latlng position
@@ -145,8 +145,6 @@
   	    });
 
   			$(div).find('div.bottom').find('label').html('cartodb_id: <strong>'+info.cartodb_id+'</strong>');
-
-
   	    me.moveMaptoOpen();
   	    me.setPosition();			
   	  }

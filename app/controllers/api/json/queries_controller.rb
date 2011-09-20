@@ -41,7 +41,7 @@ class Api::Json::QueriesController < Api::ApplicationController
     Rails.logger.info "============== exception on queries#run ====================="
     Rails.logger.info $!
     Rails.logger.info "============================================================="
-    render :json => { :errors => [$!] }.to_json, :status => 400,
+    render :json => { :errors => [$!.message] }.to_json, :status => 400,
           :callback => params[:callback]  
   end
 

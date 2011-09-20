@@ -141,7 +141,7 @@ div.mamufas div.create_window div.inner_ span.top ul li.finished span.georeferen
 div.mamufas div.create_window div.inner_ span.top ul li.disabled a {opacity:0.3;}
 div.mamufas div.create_window div.inner_ span.top ul li.disabled a:hover {cursor:default; background-position:0 -28px;}
 div.mamufas div.create_window div.inner_ span.bottom {float:left; width:394px; padding:10px; border-top:1px solid white;}
-div.mamufas div.create_window div.inner_ span.bottom input {float:right; height:26px; padding:7px 10px; border:1px solid #999; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
+div.mamufas div.create_window div.inner_ span.bottom input {float:right; height:26px; padding:6px 10px; border:1px solid #999; font:bold 12px "Helvetica",Arial; color:#333333; text-align:center;
   text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white;
   background:linear-gradient(-90deg, #FFFFFF, #CACBCE);
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));

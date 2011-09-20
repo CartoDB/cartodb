@@ -12,22 +12,7 @@
 
 
     this.showGeoJSON = function() {
-      var me = this;
-      var str = '{"type":"'+((this.type=="MultiPolygon")?"MultiPolygon":"MultiLineString")+'","coordinates":[';
-      _.each(this.geometries,function(pol,i){
-        var points = pol.getPath().getArray();
-        str += (me.type=="MultiPolygon")?'[[':'[';
-        _.each(points,function(point,i){
-          str += '['+point.lng()+','+point.lat()+'],'
-        });
-        if (points.length>0) {
-          str = str.substr(0, str.length-1);
-        }
-        str += (me.type=="MultiPolygon")?']],':'],';
-      });
-      str = str.substr(0, str.length-1);
-      str += ']}';
-      return str;
+      return transformToGeoJSON(this.geometries,this.type);
     }
 
     this.destroy=function() {

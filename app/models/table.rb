@@ -5,7 +5,7 @@ class Table < Sequel::Model(:user_tables)
   # Privacy constants
   PRIVATE = 0
   PUBLIC  = 1
-  
+
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
 
@@ -92,7 +92,7 @@ class Table < Sequel::Model(:user_tables)
            aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
            user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
         end
-        
+
         # When tables are created using ogr2ogr they are added a ogc_fid primary key
         # In that case:
         #  - If cartodb_id already exists, remove ogc_fid
@@ -152,6 +152,15 @@ class Table < Sequel::Model(:user_tables)
       $tables_metadata.del key
       owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
     end
+    Airbrake.notify(
+      :error_class   => "Import Error",
+      :error_message => "Import Error: #{e.message}",
+      :parameters    => {
+        :database => database_name,
+        :username => owner.database_username,
+        :file => import_from_file
+      }
+    )
     raise e
   end
 
@@ -205,7 +214,7 @@ class Table < Sequel::Model(:user_tables)
   def tags=(value)
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
-  
+
   def infowindow=(value)
     $tables_metadata.hset(key, 'infowindow', value)
   end
@@ -257,9 +266,9 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database.schema(self.name, options.slice(:reload)).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
       col_db_type = column[1][:db_type].starts_with?("geometry") ? "geometry" : column[1][:db_type]
-      col = [ column[0], 
-        (options[:cartodb_types] == false) ? col_db_type : col_db_type.convert_to_cartodb_type, 
-        col_db_type == "geometry" ? "geometry" : nil, 
+      col = [ column[0],
+        (options[:cartodb_types] == false) ? col_db_type : col_db_type.convert_to_cartodb_type,
+        col_db_type == "geometry" ? "geometry" : nil,
         col_db_type == "geometry" ? the_geom_type : nil
       ].compact
 
@@ -571,13 +580,13 @@ TRIGGER
     host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
     port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
     username = db_configuration['username']
-    
+
     command = "#{pgsql2shp_bin} #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}"
     system("rm -rf #{all_files_path}")
-    
+
     Rails.logger.info "Executing command: #{command}"
     puts `#{command}`
-    
+
     if $?.success?
       Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
         Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|

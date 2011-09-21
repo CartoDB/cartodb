@@ -22,9 +22,11 @@
 			requests_queue = new loaderQueue();
 
 			// Inits map if map_enabled = true
-			if (map_enabled) initMap();
+			if (map_enabled) {
+			  initMap();
+			}
 
-			// Inits carto table
+      // Inits carto table
 			$("table#carto_table").cDBtable(
         'start',{
           getDataUrl: global_api_url + 'tables/',
@@ -36,6 +38,7 @@
           mode: 'asc'
         }
       );
+
 
 			// Manage tabs with url hash
 			manageHash();
@@ -60,3 +63,4 @@
 			}
 			$('body').attr('query_mode','false');
 		}
+		

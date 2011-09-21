@@ -49,3 +49,7 @@ Warden::Strategies.add(:api_authentication) do
     throw(:warden)
   end
 end
+
+Warden::Manager.after_authentication do |user,auth,opts|
+  user.set_map_key
+end

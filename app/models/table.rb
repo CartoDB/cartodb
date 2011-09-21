@@ -5,7 +5,7 @@ class Table < Sequel::Model(:user_tables)
   # Privacy constants
   PRIVATE = 0
   PUBLIC  = 1
-  
+
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
 
@@ -45,13 +45,13 @@ class Table < Sequel::Model(:user_tables)
           "username" => owner.database_username, "password" => owner.database_password,
           :import_from_file => import_from_file, :debug => (Rails.env.development?)
         ).symbolize_keys
-        
+
         puts hash_in
-        
+
         importer = CartoDB::Importer.new hash_in
         importer_result_name = importer.import!.name
       end
-    
+
       #import from URL
       if import_from_url.present?
         importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -61,7 +61,7 @@ class Table < Sequel::Model(:user_tables)
         ).symbolize_keys
         importer_result_name = importer.import!.name
       end
-      
+
       #Import from copying another table
       if import_from_table_copy.present?
         existing_names = owner.in_database["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{self.name}%'"].map(:relname)
@@ -92,7 +92,7 @@ class Table < Sequel::Model(:user_tables)
            aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
            user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
         end
-        
+
         # When tables are created using ogr2ogr they are added a ogc_fid primary key
         # In that case:
         #  - If cartodb_id already exists, remove ogc_fid
@@ -110,8 +110,8 @@ class Table < Sequel::Model(:user_tables)
           else
             user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
           end
-        end        
-        
+        end
+
         user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
 
         # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
@@ -152,6 +152,27 @@ class Table < Sequel::Model(:user_tables)
       $tables_metadata.del key
       owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
     end
+
+    if @import_from_file
+      @import_from_file = URI.escape(@import_from_file) if @import_from_file =~ /^http/
+      open(@import_from_file) do |res|
+        filename = "#{File.basename(@import_from_file).split('.').first}_#{Time.now.to_i}#{File.extname(@import_from_file)}"
+        @import_from_file = File.new Rails.root.join('public', 'uploads', 'failed_imports', filename), 'w'
+        @import_from_file.write res.read.force_encoding('utf-8')
+        @import_from_file.close
+      end
+
+      Airbrake.notify(
+        :error_class   => "Import Error",
+        :error_message => "Import Error: #{e.message}",
+        :parameters    => {
+          :database  => database_name,
+          :username  => owner.database_username,
+          :temp_file => @import_from_file.path
+        }
+      )
+    end
+
     raise e
   end
 
@@ -205,7 +226,7 @@ class Table < Sequel::Model(:user_tables)
   def tags=(value)
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
-  
+
   def infowindow=(value)
     $tables_metadata.hset(key, 'infowindow', value)
   end
@@ -257,9 +278,9 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database.schema(self.name, options.slice(:reload)).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
       col_db_type = column[1][:db_type].starts_with?("geometry") ? "geometry" : column[1][:db_type]
-      col = [ column[0], 
-        (options[:cartodb_types] == false) ? col_db_type : col_db_type.convert_to_cartodb_type, 
-        col_db_type == "geometry" ? "geometry" : nil, 
+      col = [ column[0],
+        (options[:cartodb_types] == false) ? col_db_type : col_db_type.convert_to_cartodb_type,
+        col_db_type == "geometry" ? "geometry" : nil,
         col_db_type == "geometry" ? the_geom_type : nil
       ].compact
 
@@ -430,7 +451,7 @@ class Table < Sequel::Model(:user_tables)
       if the_geom_index = column_names.index("#{name}.the_geom")
         #if the geometry type of the table is POINT we send the data,
         #if not we will send an string and will have to be requested on demand
-        if user_database["SELECT type from geometry_columns where f_table_name = '#{name}' 
+        if user_database["SELECT type from geometry_columns where f_table_name = '#{name}'
              and f_geometry_column = 'the_geom'"].first[:type] == "POINT"
           column_names[the_geom_index] = "ST_AsGeoJSON(the_geom,6) as the_geom"
         else
@@ -571,13 +592,13 @@ TRIGGER
     host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
     port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
     username = db_configuration['username']
-    
+
     command = "#{pgsql2shp_bin} #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}"
     system("rm -rf #{all_files_path}")
-    
+
     Rails.logger.info "Executing command: #{command}"
     puts `#{command}`
-    
+
     if $?.success?
       Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
         Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|
@@ -617,7 +638,7 @@ TRIGGER
   def oid
     @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]
   end
-  
+
 
   private
 
@@ -641,7 +662,7 @@ TRIGGER
 
     return raw_new_name unless candidates.include?(raw_new_name)
 
-    max_candidate = candidates.max
+    max_candidate = candidates.sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
     if max_candidate =~ /(.+)_(\d+)$/
       return $1 + "_#{$2.to_i +  1}"
     else
@@ -697,7 +718,7 @@ TRIGGER
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM}',#{CartoDB::SRID},'#{type}',2)")
-        user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")                        
+        user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")
       end
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
@@ -706,8 +727,8 @@ TRIGGER
         user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
 
         # Ensure isValid is set for all tables, imported or not
-        # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")        
-      end            
+        # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")
+      end
     end
     self.the_geom_type = type.downcase
     save_changes unless new?

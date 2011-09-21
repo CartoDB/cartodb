@@ -45,13 +45,13 @@ class Table < Sequel::Model(:user_tables)
           "username" => owner.database_username, "password" => owner.database_password,
           :import_from_file => import_from_file, :debug => (Rails.env.development?)
         ).symbolize_keys
-        
+
         puts hash_in
-        
+
         importer = CartoDB::Importer.new hash_in
         importer_result_name = importer.import!.name
       end
-    
+
       #import from URL
       if import_from_url.present?
         importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -61,7 +61,7 @@ class Table < Sequel::Model(:user_tables)
         ).symbolize_keys
         importer_result_name = importer.import!.name
       end
-      
+
       #Import from copying another table
       if import_from_table_copy.present?
         existing_names = owner.in_database["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{self.name}%'"].map(:relname)
@@ -110,8 +110,8 @@ class Table < Sequel::Model(:user_tables)
           else
             user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
           end
-        end        
-        
+        end
+
         user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
 
         # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
@@ -152,13 +152,22 @@ class Table < Sequel::Model(:user_tables)
       $tables_metadata.del key
       owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
     end
+
+    @import_from_file = URI.escape(@import_from_file) if @import_from_file =~ /^http/
+    open(@import_from_file) do |res|
+      filename = "#{File.basename(@import_from_file).split('.').first}_#{Time.now.to_i}#{File.extname(@import_from_file)}"
+      @import_from_file = File.new Rails.root.join('tmp', 'failed_imports', filename), 'w'
+      @import_from_file.write res.read.force_encoding('utf-8')
+      @import_from_file.close
+    end
+
     Airbrake.notify(
       :error_class   => "Import Error",
       :error_message => "Import Error: #{e.message}",
       :parameters    => {
-        :database => database_name,
-        :username => owner.database_username,
-        :file => import_from_file
+        :database  => database_name,
+        :username  => owner.database_username,
+        :temp_file => @import_from_file.path
       }
     )
     raise e
@@ -439,7 +448,7 @@ class Table < Sequel::Model(:user_tables)
       if the_geom_index = column_names.index("#{name}.the_geom")
         #if the geometry type of the table is POINT we send the data,
         #if not we will send an string and will have to be requested on demand
-        if user_database["SELECT type from geometry_columns where f_table_name = '#{name}' 
+        if user_database["SELECT type from geometry_columns where f_table_name = '#{name}'
              and f_geometry_column = 'the_geom'"].first[:type] == "POINT"
           column_names[the_geom_index] = "ST_AsGeoJSON(the_geom,6) as the_geom"
         else
@@ -626,7 +635,7 @@ TRIGGER
   def oid
     @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]
   end
-  
+
 
   private
 
@@ -706,7 +715,7 @@ TRIGGER
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM}',#{CartoDB::SRID},'#{type}',2)")
-        user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")                        
+        user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")
       end
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
@@ -715,8 +724,8 @@ TRIGGER
         user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
 
         # Ensure isValid is set for all tables, imported or not
-        # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")        
-      end            
+        # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")
+      end
     end
     self.the_geom_type = type.downcase
     save_changes unless new?

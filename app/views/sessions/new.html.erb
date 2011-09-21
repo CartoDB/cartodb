@@ -5,25 +5,26 @@
   <% content_for :head do %>
     <%= stylesheet_link_tag('reset.css','front/sessions') %>
   <% end %>
-
-  <div class="section">
-    <h1>Welcome to Carto<strong>DB</strong></h1>
-    <p>Enter your account information to start mapping</p>
-    <%= form_tag create_session_path do %>
-      <p class="title">Please login</p>
-      <%= label_tag :email, 'e-mail' %>
-      <%= text_field_tag :email, '', :class => (flash[:alert] || @login_error ? 'error' : nil) %>
-      <span class="password">
-        <%= label_tag :password, 'password' %>
-        <%= password_field_tag :password, '', :class => (flash[:alert] || @login_error ? 'error' : nil) %>
-      </span>
-      <%= link_to "Did you forget your password?", forget_password_url, :class => "forget" if forget_password_url.present? %>
-      <%= submit_tag 'Log in', :class => "login" %>
-      <% if flash[:alert] || @login_error %>
-      <div class="error_content">
-        <p><span><%= flash[:alert] || @login_error %></span></p>
-      </div>
+  <div class="glow">
+    <div class="section">
+      <h1>Welcome to Carto<strong>DB</strong></h1>
+      <p>Enter your account information to start mapping</p>
+      <%= form_tag create_session_path do %>
+        <p class="title">Please login</p>
+        <%= label_tag :email, 'e-mail' %>
+        <%= text_field_tag :email, '', :class => (flash[:alert] || @login_error ? 'error' : nil) %>
+        <span class="password">
+          <%= label_tag :password, 'password' %>
+          <%= password_field_tag :password, '', :class => (flash[:alert] || @login_error ? 'error' : nil) %>
+        </span>
+        <%= link_to "Did you forget your password?", forget_password_url, :class => "forget" if forget_password_url.present? %>
+        <%= submit_tag 'Log in', :class => "login" %>
+        <% if flash[:alert] || @login_error %>
+        <div class="error_content">
+          <p><span><%= flash[:alert] || @login_error %></span></p>
+        </div>
+        <% end %>
       <% end %>
-    <% end %>
+    </div>
   </div>
-  <div class="footer">CartoDB is a product from <a href="http://www.vizzuality.com" target="_blank">Vizzuality</a></div>
+  <div class="footer">CartoDB is a product from <a href="http://www.vizzuality.com" target="_blank">vizzuality</a> | <a href="http://cartodb.com/terms">Terms of service</a></div>

@@ -135,8 +135,10 @@
 				});
 
 				var time;
-
-				if (new_query!=undefined) {
+				var query = editor.getValue();
+				var is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER).*/i)!=-1;
+				
+				if (new_query!=undefined && !is_write_query) {
 					$.ajax({
 				    method: "GET",
 				    url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+editor.getValue()+') as count'),

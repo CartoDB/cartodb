@@ -177,8 +177,8 @@
         dataType: 'jsonp',
         success: function(result) {
           // Refresh Wax with the new styles
-          console.log('this is the styles: ');
-          console.log(result);
+          // console.log('this is the styles: ');
+          // console.log(result);
         },
         error:function(e) {} 
       });
@@ -376,6 +376,33 @@
       });
     }
 
+    /* Show editing tools */
+    CartoMap.prototype.toggleEditTools = function() {
+      $('.general_options ul').animate({bottom:'-40px'},300,function(){
+        $('.general_options ul li.map').each(function(i,ele){
+          if (!$(ele).hasClass('disabled') && $(ele).hasClass('hidden')) {
+            $(ele).removeClass('hidden');
+            if ($(ele).children('a').hasClass('discard')) {
+              $('.general_options ul li.all a').hide();
+              $('.general_options ul').addClass('edit');
+            }
+            if ($(ele).children('a').hasClass('select')) {
+              $('.general_options ul li.all a').show();
+              $('.general_options ul').removeClass('edit');
+            }
+            return;
+          }
+          
+          if (!$(ele).hasClass('disabled') && !$(ele).hasClass('hidden')) {
+            $(ele).addClass('hidden');
+            return;
+          }
+
+          $('.general_options ul').animate({bottom:'0px'},300);
+        });
+      });
+    }
+
 
 
     ////////////////////////////////////////
@@ -503,27 +530,6 @@
     /* Set map status */
     CartoMap.prototype.setMapStatus = function(status) {
 
-      // Come from creating polygons or polylines? -> Save
-      if (this.status_ == "add_polygon" || this.status_ == "add_polyline") {
-        if (this.geometry_creator_ != null) {
-          var new_geometry = this.geometry_creator_.showGeoJSON();
-          var geojson = $.parseJSON(new_geometry);
-          if (geojson.coordinates.length>0) {
-            var params = {};
-            params.the_geom = new_geometry;
-            this.updateTable('/records',params,new_geometry,null,"adding","POST");
-          }
-        }
-      }
-      
-      // Come from select and editing...
-      if (this.status_ == "select" && this.editing) {
-        this.editing = false;
-        if (this.fakeGeometries_.length>0) {
-          this.updateGeometry(this.fakeGeometries_,this.geometry_type_,this.fakeGeometries_[0].data);
-        }
-      }
-
       this.status_ = status;
 
       $('div.general_options li.map').each(function(i,ele){
@@ -533,12 +539,7 @@
 
       // New special geometry (multipolygon or multipolyline==multilinestring)
       if (status == "add_polygon" || status == "add_polyline") {
-          this.geometry_creator_ = new GeometryCreator(this.map_,(status=="add_polygon")?"MultiPolygon":"MultiLineString");
-      } else {
-          if (this.geometry_creator_!=null) {
-              this.geometry_creator_.destroy();
-              this.geometry_creator_ = null;
-          }
+        this.geometry_creator_ = new GeometryCreator(this.map_,(this.status_=="add_polygon")?"MultiPolygon":"MultiLineString");
       }
 
       // if (status=="select_area") {
@@ -664,7 +665,9 @@
     //  DRAW MARKERS WITH CANVAS ASYNC	  //
     ////////////////////////////////////////
     CartoMap.prototype.createFakeGeometry = function(feature) {
+      var me = this;
       this.removeFakeGeometries();
+      this.toggleEditTools();
       
       if (this.geometry_type_ == 'point') {
         this.addFakeMarker(feature);
@@ -673,6 +676,30 @@
       } else {
         this.addFakePolylines(feature);
       }
+      
+      // Bind edit tools
+      $('.general_options ul li.edit a.complete').unbind('click');
+      $('.general_options ul li.edit a.discard').unbind('click');
+
+      // Bind links
+      $('.general_options ul li.edit a.complete').click(function(ev){
+        stopPropagation(ev);
+        me.editing = false;
+        if (me.fakeGeometries_.length>0) {
+          me.updateGeometry(me.fakeGeometries_,me.geometry_type_,me.fakeGeometries_[0].data);
+        }
+        $('.general_options ul li.map a.select').click();
+        me.toggleEditTools();
+      });
+
+      $('.general_options ul li.edit a.discard').click(function(ev){
+        stopPropagation(ev);
+        me.editing = false;
+        $('.general_options ul li.map a.select').click();
+        me.toggleEditTools();
+        me.removeFakeGeometries();
+        me.refreshWax();
+      });
       
       this.editing = true;
     }

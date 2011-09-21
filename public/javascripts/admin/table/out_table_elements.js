@@ -131,6 +131,8 @@
 	          '<li class="map disabled"><a class="add_polygon">add polygon</a></li>'+
 	          '<li class="map disabled"><a class="add_polyline">add line</a></li>'+
 	          '<li class="map disabled"><a class="select_area">select area</a></li>'+
+	          '<li class="map hidden edit"><a class="discard">discard</a></li>'+
+	          '<li class="map hidden special edit"><a class="complete">complete</a></li>'+
 	        '</ul>'+
 
 	        '<div class="tooltip">'+
@@ -224,7 +226,7 @@
 	        '<ul>'+
 	          '<li class="disabled"><a class="import_data">Import data...</a></li>'+
 	          '<li><a class="export_data">Export data...</a></li>'+
-	          '<li><a class="save_table">Duplicate table as...</a></li>'+
+	          '<li class="disabled"><a>Duplicate table as...</a></li>'+ //class="save_table"
 	        '</ul>'+
 	      '</span>');
 	

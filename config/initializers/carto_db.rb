@@ -33,6 +33,7 @@ module CartoDB
   end
 
   PUBLIC_DB_USER = 'publicuser'
+  TILE_DB_USER      = 'tileuser'
   GOOGLE_SRID = 3857
   SRID        = 4326
   

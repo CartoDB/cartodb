@@ -25,7 +25,7 @@
       '<div class="export_window">'+
         '<a href="#close_window" class="close"></a>'+
         '<div class="inner_">'+
-          '<form action="/tables/'+ table_id +'" method="get">'+
+          '<form action="/tables/'+ table_name +'" method="get">'+
             '<input id="export_format" type="hidden" name="format" />'+
             '<span class="top">'+
               '<h3>Export your data</h3>'+
@@ -130,7 +130,7 @@
 	          '<li class="map disabled"><a class="add_point">add point</a></li>'+
 	          '<li class="map disabled"><a class="add_polygon">add polygon</a></li>'+
 	          '<li class="map disabled"><a class="add_polyline">add line</a></li>'+
-	          '<li class="map"><a class="select_area">select area</a></li>'+
+	          '<li class="map disabled"><a class="select_area">select area</a></li>'+
 	        '</ul>'+
 
 	        '<div class="tooltip">'+

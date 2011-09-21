@@ -662,7 +662,7 @@ TRIGGER
 
     return raw_new_name unless candidates.include?(raw_new_name)
 
-    max_candidate = candidates.max
+    max_candidate = candidates.sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
     if max_candidate =~ /(.+)_(\d+)$/
       return $1 + "_#{$2.to_i +  1}"
     else

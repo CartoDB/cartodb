@@ -62,7 +62,7 @@ class User < Sequel::Model
   def self.make_token
     secure_digest(Time.now, (1..10).map{ rand.to_s })
   end
-
+  
   def password=(value)
     @password = value
     self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
@@ -163,7 +163,15 @@ class User < Sequel::Model
   # save users basic metadata to redis for node sql api to use
   def save_metadata
     $users_metadata.HMSET key, 'id', id, 'database_name', database_name
-  end      
+  end   
+  
+  def set_map_key
+    $users_metadata.HMSET key, 'map_key', self.class.make_token
+  end
+  
+  def get_map_key
+    $users_metadata.HMGET(key, 'map_key').first
+  end     
 
   def reset_client_application!
     if client_application
@@ -250,6 +258,10 @@ class User < Sequel::Model
         user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
         user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
         user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::TILE_DB_USER}")
+        user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::TILE_DB_USER}")
+        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
+        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
         
         yield(user_database) if block_given?
       end  

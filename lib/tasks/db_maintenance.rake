@@ -3,7 +3,7 @@ namespace :cartodb do
     desc "Permissions"
     task :give_permissions => :environment do
       User.all.each do |user|
-        next if !user.respond_to('database_name') || user.database_name.blank?
+        next if !user.respond_to?('database_name') || user.database_name.blank?
         user.in_database(:as => :superuser) do |user_database|
           user_database.run("REVOKE ALL ON DATABASE #{user.database_name} FROM public")
           user_database.run("REVOKE ALL ON SCHEMA public FROM public")

@@ -3,7 +3,7 @@ namespace :cartodb do
     desc "Permissions"
     task :give_permissions => :environment do
       User.all.each do |user|
-        next if user.database_name.blank?
+        next if !user.respond_to('database_name') || user.database_name.blank?
         user.in_database(:as => :superuser) do |user_database|
           user_database.run("REVOKE ALL ON DATABASE #{user.database_name} FROM public")
           user_database.run("REVOKE ALL ON SCHEMA public FROM public")
@@ -14,6 +14,10 @@ namespace :cartodb do
           user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
           user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
           user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+          user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::TILE_DB_USER}")
+          user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::TILE_DB_USER}")
+          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
+          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")          
         end
       end
     end

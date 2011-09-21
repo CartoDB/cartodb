@@ -411,11 +411,17 @@ CartoMap.prototype.showWax = function() {
 CartoMap.prototype.refreshWax = function() {
     // Add again wax layer
     if (this.map_) {
+        // update tilejson with cache buster
         this.cache_buster++;
-        this.map_.overlayMapTypes.clear();
-        this.tilejson.grids = this.tilejson.grids_base + '?cache_buster=' + this.cache_buster;
+        this.tilejson.grids = wax.util.addUrlData(this.tilejson.grids_base,  'cache_buster=' + this.cache_buster);
+        this.tilejson.tiles = wax.util.addUrlData(this.tilejson.tiles_base,  'cache_buster=' + this.cache_buster);
+
+        // add map tiles
         this.wax_tile = new wax.g.connector(this.tilejson);
+        this.map_.overlayMapTypes.clear();
         this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
+
+        // add interaction
         this.interaction.remove();
         this.interaction = wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
     }
@@ -822,20 +828,31 @@ CartoMap.prototype.hideOverlays = function() {
 /* Generate another tilejson */
 CartoMap.prototype.generateTilejson = function() {
     var that = this;
+
+    // Base Tile/Grid URLs
+    var base_url = TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}';
+    var tile_url = base_url + '.png8';
+    var grid_url = base_url + '.grid.json';
+
+    // Add map keys to base urls
+    tile_url = wax.util.addUrlData(tile_url, 'map_key=' + map_key);
+    grid_url = wax.util.addUrlData(grid_url, 'map_key=' + map_key);
+
     // SQL?
-    var query;
     if (this.query_mode) {
-        query = '&sql='+editor.getValue();
-    } else {
-        query = '';
+        var query = 'sql=' + editor.getValue();
+        tile_url = wax.util.addUrlData(tile_url, query);
+        grid_url = wax.util.addUrlData(grid_url, query);
     }
 
+    // Build up the tileJSON
     return {
         tilejson: '1.0.0',
         scheme: 'xyz',
-        tiles: [TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}.png8?cache_buster={cache}'+query],
-        grids: [TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}.grid.json'],
-        grids_base: [TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}.grid.json'],
+        tiles: [tile_url],
+        grids: [grid_url],
+        tiles_base: [_.clone(tile_url)],
+        grids_base: [_.clone(grid_url)],
         formatter: function(options, data) {
             currentCartoDbId = data.cartodb_id;
             return data.cartodb_id;
@@ -843,8 +860,8 @@ CartoMap.prototype.generateTilejson = function() {
         cache_buster: function(){
             return that.cache_buster;
         }
-    }
-}
+    };
+};
 
 
 

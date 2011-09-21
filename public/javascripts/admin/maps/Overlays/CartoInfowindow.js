@@ -131,7 +131,7 @@
       if (me.div_) {
   	    var div = me.div_;
   	    // Get latlng position
-  	    me.latlng_ = geoPosition(info.the_geom);
+  	    me.latlng_ = transformGeoJSON(info.the_geom).center;
   			//this.marker_ = info;  // Create marker?
 
   	    $(div).find('div.top').html('');

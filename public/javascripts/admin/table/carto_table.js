@@ -29,15 +29,15 @@
   var table;
   var loading = false;
   var first_double_click = true;
-  
+
   var headers = {};
-  
+
   var minPage = 0;
   var maxPage = -1;
   var actualPage;
   var total;
 	var query_mode = false;
-  
+
   var previous_scroll = 0;
   var defaults;
   var cell_size = 100;
@@ -93,7 +93,7 @@
 				    startTable();
 				  }
 				});
-				
+
 			  $.ajax({
 			    method: "GET",
 			    url: options.getDataUrl + table_name,
@@ -101,7 +101,8 @@
 			    success: function(data) {
 				 		columns = data.schema;
 			      $(document).trigger('arrived');
-			    }
+			    },
+			    error: function(e) {}
 			  });
 
 			  $.ajax({
@@ -123,7 +124,7 @@
 			  });
 			} else {
 				setAppStatus(); // Change app status depending on query mode
-				
+
 				$(document).bind('arrived',function(){
 				  count++;
 				  if (count==2) {
@@ -132,10 +133,12 @@
 			      methods.drawQueryRows(rows,direction,actualPage);
 				  }
 				});
-				
-				var time;
 
-				if (new_query!=undefined) {
+				var time;
+				var query = editor.getValue();
+				var is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER).*/i)!=-1;
+				
+				if (new_query!=undefined && !is_write_query) {
 					$.ajax({
 				    method: "GET",
 				    url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+editor.getValue()+') as count'),
@@ -154,7 +157,7 @@
 					$(document).trigger('arrived');
 				}
 
-				
+
 			  $.ajax({
 			    method: "POST",
 			    url: global_api_url+'queries?sql='+escape(editor.getValue()),
@@ -191,7 +194,7 @@
 			}
 
 
-     
+
       function startTable() {
         if (total_rows==0) {
           //Start new table
@@ -217,7 +220,7 @@
               }
               methods.drawColumns(columns,rows,direction,actualPage,options);
             } else {
-              methods.drawRows(options,rows,direction,actualPage);              
+              methods.drawRows(options,rows,direction,actualPage);
             }
           } else {
             methods.hideLoader();
@@ -241,7 +244,7 @@
       //Draw the columns headers
       var thead = '<thead><tr><th class="first"><div></div></th>';
 
-      
+
       _.each(data,function(element,index){
         //Get type of table -> Point or Polygon
         if (element[3]!=undefined) {
@@ -263,12 +266,12 @@
 				}
 
       });
-      
-      
+
+
       thead += "</thead></tr>";
       $(table).append(thead);
 
-            
+
       if (first) {
         first = false;
         //Print correct column types
@@ -283,7 +286,7 @@
         //Create elements
         methods.createElements();
       }
-      
+
       methods.drawRows(options,rows,direction,actualPage);
     },
 
@@ -293,7 +296,7 @@
     //  DRAW COLUMNS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawQueryColumns: function(data,total,time,new_query) {
-			
+
       if (data.length>0) {
 				if (new_query) {
 					//Draw the columns headers
@@ -357,12 +360,11 @@
 
       //Loop all the data
       _.each(data, function(element,i){
-        
+
         // Get first td
         tbody += Mustache.to_html(first_td,{
           cartodb_id: element['cartodb_id']
         });
-
 
         // Get rest generic td
 				_.eachRow(headers,function(head,x){
@@ -399,7 +401,7 @@
         var start = tbody.lastIndexOf('"width:');
         var end = tbody.lastIndexOf('px"');
         tbody = tbody.substring(0,start) + '"width:' + last_cell_size + tbody.substring(end);
-        
+
         tbody += '</tr>';
       });
 
@@ -412,7 +414,7 @@
       } else {
         (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
       }
-      
+
       // If there was a previous action
       if (direction!='') {
         methods.checkReuse(direction);
@@ -421,9 +423,9 @@
       }
 
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW QUERY ROWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -452,7 +454,7 @@
       } else {
         (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
       }
-      
+
       if (direction!='') {
         methods.checkReuse(direction);
       } else {
@@ -464,10 +466,10 @@
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  GET COLUMN TYPES AND PRINT THEM
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     getColumnTypes: function() {
 			var types = ["Number","String","Date","Boolean"];
-			
+
       $('span.col_types').each(function(index,element){
         $(element).children('ul').children('li').remove();
         for (var i = 0; i<types.length; i++) {
@@ -517,9 +519,6 @@
         '<p>Loading next rows...</p>'+
         '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
       '</div>');
-
-
-
 
       //Edit caption
       $(table).parent().append(
@@ -600,7 +599,7 @@
             '<a class="save" href="#">Save changes</a>'+
           '</span>'+
         '</div>');
-      
+
 
       //Row delete tooltip
       $(table).parent().append(
@@ -609,8 +608,8 @@
           '<a class="cancel_delete" href="#cancel_delete">cancel</a>'+
           '<a class="button" href="#delete_row">Yes, delete it</a>'+
         '</div>');
-      
-      
+
+
       //Column delete tooltip
       $(table).parent().append(
         '<div class="delete_column">'+
@@ -618,8 +617,8 @@
           '<a class="cancel_delete" href="#cancel_delete">cancel</a>'+
           '<a class="button" href="#delete_column">Yes, delete it</a>'+
         '</div>');
-       
-        
+
+
       //Change column type tooltip
       $(table).parent().append(
         '<div class="change_type_column">'+
@@ -627,15 +626,15 @@
           '<a class="cancel_change" href="#cancel_delete">cancel</a>'+
           '<a class="button" href="#change_type">Yes, do it</a>'+
         '</div>');
-        
-      
+
+
       $(table).parent().append(
         '<div class="explain_tooltip">'+
           '<p>Double-click for editing any cell</p>'+
           '<span class="arrow"></span>'+
-        '</div>'); 
-    
-      
+        '</div>');
+
+
       //Mamufas elements belong to the carto table
       $('div.mamufas').append(
         '<div class="georeference_window">'+
@@ -645,7 +644,7 @@
                '<h5>We are georeferencing your columns...</h5>'+
                '<p>Just some seconds, ok?</p>'+
              '</span>'+
-          
+
             '<span class="top">'+
               '<h3>Choose your geocoding method for this column</h3>'+
               '<p>Please select the columns for the lat/lon fields</p>'+
@@ -785,14 +784,14 @@
     startTable: function() {
       enabled = false;
       $(table).append('<span class="full_table" style="float:left; width:'+$(table).children('thead').width()+'px; height:1px"></span>');
-      
+
       $(table).parent().append(
         '<div class="empty_table">'+
           '<h5>Add some rows to your table</h5>'+
           '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a class="import_data" href="#import_data">import data</a></p>'+
         '</div>'
       );
-      
+
       enabled = true;
       methods.resizeTable();
     },
@@ -803,13 +802,13 @@
     //  CREATE NEW ROW
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addRow: function() {
-      
+
       enabled = false;
       if (total==undefined) {
         total = 0;
-      } 
+      }
       var end = total <= ((actualPage+1)*defaults.resultsPerPage);
-       
+
    		if (end || $('div.empty_table').length>0) {
         if ($('div.empty_table').length>0) {
           $('div.empty_table').remove();
@@ -822,7 +821,7 @@
       } else {
         $('div.lastpage_window').show();
         $('div.mamufas').fadeIn();
-        
+
         maxPage = Math.ceil(total / defaults.resultsPerPage) - 1;
         minPage = maxPage-1;
         actualPage = maxPage;
@@ -846,18 +845,18 @@
           }
         });
       }
-      
-      
+
+
       function addSingleRow(type) {
         var requestId = createUniqueId();
         requests_queue.newRequest(requestId,'add_row');
-                
+
         $.ajax({
            type: "POST",
            url: defaults.getDataUrl+table_name+'/records',
            headers: {"cartodbclient": true},
            success: function(data) {
-             
+
              row_id = data.id;
              $.ajax({
                 method: "GET",
@@ -869,14 +868,14 @@
                   var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row(s)</a></li><li><a href="#delete_row" class="delete_row">Delete row(s)</a></li></ul>' +
                                       '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#add_row" class="add_row">Add new row</a></li>' +
                                       '</ul></span>';
-                                  
+
                   if (type==0) {
                     var row = '<tbody style="padding-top:52px"><tr class="editing" r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
                   } else {
                     var row = '<tr class="editing" r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
                   }
-                               
-    
+
+
                   for (var i = 0; i<data.length; i++) {
                     var text = '';
                     if (data[i][0]=="cartodb_id") {
@@ -885,18 +884,18 @@
                       var date = new Date();
                       var test = new Date();
                       var offset = -test.getTimezoneOffset()/60;
-                      
+
                       text = date.getFullYear()+'-'+(zeroPad(date.getMonth()+1,2))+'-'+zeroPad(date.getDate(),2)+'T'+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+'+'+zeroPad(offset,2)+':00';
                     } else {
                       text = '';
                     }
                  		row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+text+'</div></td>';
                   }
-              
+
                   var start = row.lastIndexOf('"width:');
                   var end = row.lastIndexOf('px"');
                   row = row.substring(0,start) + '"width:' + last_cell_size + row.substring(end);
-              
+
                   if (type==0) {
                     row += '</tr></tbody>';
                     $(table).append(row);
@@ -904,12 +903,12 @@
                     row += '</tr>';
                     $(table).find('tbody').append(row);
                   }
-                  
-              
+
+
                   if (type==2) {
                     $('div.table_position').addClass('end');
                   }
-                  
+
                   //Si hay más filas de las permitidas por el reuso, borramos las '50' primeras, sumamos una a la página max, min y actual
                   total = total + 1;
                   if ($(table).children('tbody').children('tr').size()>defaults.reuseResults) {
@@ -920,7 +919,7 @@
                       maxPage++; actualPage++;
                     }
                   }
-                  
+
                   $(window).scrollTo('100%',500, {onAfter: function(){methods.closeTablePopups(); enabled = true;}});
                   $('div.empty_table').remove();
                   methods.resizeTable();
@@ -934,9 +933,9 @@
         });
       }
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  CREATE NEW COLUMN
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -947,14 +946,14 @@
 
       methods.updateTable('/columns',params,params.column,null,"new_column","POST");
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  ADD SCROLL PAGINATE BINDING
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addScroll: function() {
-      
+
       $(document).scroll(function(ev) {
         stopPropagation(ev);
 
@@ -976,7 +975,7 @@
           $(table).children('thead').css('top',160-$(document).scrollTop()+'px');
         }
 
-        
+
         $('div.delete_column').fadeOut();
         $('div.change_type_column').fadeOut();
 
@@ -1009,18 +1008,18 @@
           $('div.general_options').removeClass('end');
           $('div.sql_console').removeClass('end');
         }
-        
+
         if ($('div.delete_row').is(':visible')) {
           $('div.delete_row').fadeOut();
         }
-        
+
         //For moving table paginator loaders
         $('div.table_position div.loading_next').css('margin-left',$('div.table_position').scrollLeft()+'px');
         //For moving first table column
         $(table).children('tbody').children('tr').children('td.first').css('left',$('div.table_position').scrollLeft()+'px');
         $(table).children('thead').children('tr').children('th.first').css('left',$('div.table_position').scrollLeft()+'px');
         $(table).children('thead').css('left',-$('div.table_position').scrollLeft()+'px');
-        
+
         methods.paginateControls();
       });
     },
@@ -1030,7 +1029,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  SHOW PAGINATE LOADER
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    showLoader: function(kind){	
+    showLoader: function(kind){
       if (minPage==0) {
         var range = (maxPage - minPage + 1)*defaults.resultsPerPage;
       } else {
@@ -1056,7 +1055,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     hideLoader: function() {
 			loading = false;
-      
+
       $('div.loading_next').hide();
       $('div.loading_previous').hide();
 			if (query_mode) {
@@ -1113,11 +1112,11 @@
 
             methods.closeTablePopups();
             methods.bindESCkey();
-            
+
             var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
             var geo_column = $('p.geo').closest('th').attr('c');
-            
-            
+
+
             if (geolocating && data.column==geo_column) {
               $('p.geo').click();
             } else {
@@ -1149,18 +1148,18 @@
 
 
               var type = _.detect(headers,function(head,j){return head.name == data.column}).type;
-              
+
 						  if (data.value== 'GeoJSON...') {
                 type = 'geojson';
                 $('div.edit_cell textarea').addClass('loading');
-                
+
                 $.ajax({
           		    method: "GET",
           		    url: global_api_url+'queries?sql='+escape('SELECT ST_AsGeoJSON(the_geom,6) as the_geom FROM '+table_name+' WHERE cartodb_id='+data.row),
           		 		headers: {"cartodbclient":"true"},
           		    success: function(data) {
                     $('div.edit_cell textarea').val(data.rows[0].the_geom);
-                    $('div.edit_cell textarea').removeClass('loading');                    
+                    $('div.edit_cell textarea').removeClass('loading');
           		    },
           		    error: function(e) {
                     $('div.edit_cell textarea').removeClass('loading').addClass('error');
@@ -1168,7 +1167,7 @@
           		  });
               }
 
-							
+
               $('div.edit_cell div.free').hide();
               $('div.edit_cell div.boolean').hide();
               $('div.edit_cell div.date').hide();
@@ -1259,13 +1258,13 @@
           //Clicking in first column element + Key
        		if ((targetElement == "div" && event.ctrlKey) || (targetElement == "div" && event.metaKey)) {
             methods.closeTablePopups();
-            
+
             if ($(target).closest('tr').hasClass('selecting')) {
               $(target).closest('tr').removeClass('selecting selecting_first selecting_last border');
             } else {
               $(target).closest('tr').addClass('selecting selecting_first selecting_last border');
             }
-            
+
             // Check rows where
             $('table tbody tr.selecting').each(function(i,ele){
               if ($(ele).prev().hasClass('selecting')) {
@@ -1273,14 +1272,14 @@
               } else {
                 $(ele).addClass('selecting_first border');
               }
-              
+
               if ($(ele).next().hasClass('selecting')) {
                 $(ele).removeClass('selecting_last');
               } else {
                 $(ele).addClass('selecting_last border');
               }
             });
-            
+
 
             if (event.preventDefault) {
               event.preventDefault();
@@ -1295,7 +1294,7 @@
           if (targetElement == "a" && $(target).closest('td').hasClass('first')) {
             if (!$(target).closest('tr').hasClass('selecting_first')) {
               methods.closeTablePopups();
-              
+
               if (!$(target).closest('tr').hasClass('selected')) {
                 $(target).closest('tr').addClass('editing');
               }
@@ -1309,7 +1308,7 @@
             if (!$(target).hasClass('selected')) {
               methods.closeTablePopups();
               methods.bindESCkey();
-              
+
               $(target).parent().children('span').show();
               $(target).addClass('selected');
 
@@ -1319,7 +1318,7 @@
                 };
               });
             }
-            
+
             if (event.preventDefault) {
               event.preventDefault();
               event.stopPropagation();
@@ -1328,7 +1327,7 @@
               event.returnValue = false;
             }
           }
-        } 
+        }
       });
 
 
@@ -1339,9 +1338,9 @@
         if (enabled && !query_mode) {
        		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
-      
+
           if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
-            
+
             $('table tbody tr td.first div span').hide();
             $('table tbody tr td.first div a.options').removeClass('selected');
             $('tbody tr').removeClass('editing');
@@ -1353,21 +1352,21 @@
             var first_row = $(target).closest('tr');
             first_row.addClass('selecting_first');
             var initial_x = first_row.position().top;
-            
+
             //Show tooltip about editing cell
             if (first_double_click) {
 							var initial_top = $(target).closest('tr').position().top;
               var initial_left = $(target).closest('td').position().left;
               var cell_width = $(target).closest('td').width();
               // If click on the first or second row
-							if (initial_top<100) { 
+							if (initial_top<100) {
 								$('div.explain_tooltip').addClass('down').css({top:initial_x+45+'px',left:initial_left+(cell_width/2)-55+'px'});
               } else {
 								$('div.explain_tooltip').removeClass('down').css({top:initial_x-45+'px',left:initial_left+(cell_width/2)-55+'px'});
 							}
 							$('div.explain_tooltip').hide().stop(true).fadeIn().delay(4000).fadeOut();
             }
-            
+
             if (event.preventDefault) {
               event.preventDefault();
               event.stopPropagation();
@@ -1376,22 +1375,22 @@
               event.returnValue = false;
             }
           }
-      
+
           $(document).mousemove(function(event){
          		var target = event.target || event.srcElement;
             var targetElement = target.nodeName.toLowerCase();
-        
-            if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {  
+
+            if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
               $('div.explain_tooltip').hide();
               var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
               var current_row = $(target).closest('tr');
               var current_x = current_row.position().top;
               $(table).children('tbody').children('tr').removeClass('selecting');
               current_row.addClass('selecting');
-							
+
               var find = false;
               var cursor = first_row;
-      
+
               while (!find) {
                 if (initial_x<current_x) {
                   first_row.removeClass('selecting_last').addClass('selecting_first');
@@ -1420,7 +1419,7 @@
                   return false;
                 }
               }
-      
+
             } else {
             }
             if (event.preventDefault) {
@@ -1437,7 +1436,7 @@
         if (enabled && !query_mode) {
        		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
-      
+
           if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
             var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
             if ($('tbody tr').hasClass('selecting_last')) {
@@ -1448,7 +1447,7 @@
               $('tbody tr[r="'+data.row+'"]').addClass('selecting_last').addClass('border');
               $('tbody tr.selecting_first').addClass('border');
             }
-      
+
             if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_last') && $('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
               $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
               $('tbody tr[r="'+data.row+'"]').removeClass('selecting_last');
@@ -1475,15 +1474,15 @@
       ///////////////////////////////////////
       $("div.edit_cell a.save").livequery('click',function(ev){
         stopPropagation(ev);
-        
+
         var row = $(this).attr('r');
         var column = $(this).attr('c');
         var type = $(this).attr('type');
         var params = {};
         params['column_id'] = column;
         params["row_id"] = row;
-        
-        
+
+
         if (type == "boolean") {
           if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text().toLowerCase()!=$("div.edit_cell div.boolean ul li.selected a").text().toLowerCase()) {
             var new_value = $("div.edit_cell div.boolean ul li.selected a").text().toLowerCase();
@@ -1546,7 +1545,7 @@
             } else {
               $('input#latitude_value').removeClass('error');
             }
-            
+
             if (errors=='') {
               var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
               $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
@@ -1573,11 +1572,11 @@
             return false;
           }
         }
-        
+
         $('tbody tr td[r="'+row+'"][c="'+column+'"] div').attr('title',new_value);
         params[column] = new_value;
         methods.updateTable("/records/"+row,params,new_value,old_value,'update_cell',"PUT");
-        
+
         $("div.edit_cell").hide();
         $("div.edit_cell textarea").css('width','262px');
         $("div.edit_cell textarea").css('height','30px');
@@ -1586,18 +1585,18 @@
       $("div.edit_cell a.cancel,div.edit_cell a.close").livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-        
+
         var row = $('div.edit_cell a.save').attr('r');
         $("div.edit_cell textarea").css('width','262px');
         $("div.edit_cell textarea").css('height','30px');
       });
       $("div.edit_cell div.boolean ul li a").livequery('click',function(ev){
         stopPropagation(ev);
-        
+
         $("div.edit_cell div.boolean ul li").removeClass('selected');
         $(this).parent().addClass('selected');
       });
-      
+
       $('div.edit_cell div.date div.day input').livequery('keyup',function(){
         var value=$(this).val();
         var orignalValue=value;
@@ -1610,7 +1609,7 @@
       });
       $("div.edit_cell div.date div.day a.up").livequery('click',function(ev){
         stopPropagation(ev);
-        
+
         var input_value = $(this).parent().find('input').val();
         if (input_value < 31) {
           $('div.edit_cell div.date div.day input').val(parseInt(input_value)+1);
@@ -1618,13 +1617,13 @@
       });
       $("div.edit_cell div.date div.day a.down").livequery('click',function(ev){
         stopPropagation(ev);
-        
+
         var input_value = $(this).parent().find('input').val();
         if (input_value > 1) {
           $('div.edit_cell div.date div.day input').val(parseInt(input_value)-1);
         }
       });
-      
+
       $('div.edit_cell div.date div.year input').livequery('keyup',function(){
         var value=$(this).val();
         var orignalValue=value;
@@ -1637,7 +1636,7 @@
       });
       $("div.edit_cell div.date div.year a.up").livequery('click',function(ev){
         stopPropagation(ev);
-        
+
         var input_value = $(this).parent().find('input').val();
         if (input_value < 9999) {
           $('div.edit_cell div.date div.year input').val(parseInt(input_value)+1);
@@ -1645,7 +1644,7 @@
       });
       $("div.edit_cell div.date div.year a.down").livequery('click',function(ev){
         stopPropagation(ev);
-        
+
         var input_value = $(this).parent().find('input').val();
         if (input_value > 1) {
           $('div.edit_cell div.date div.year input').val(parseInt(input_value)-1);
@@ -1660,10 +1659,10 @@
             $(this).addClass('error');
           }
       });
-      
+
       $("div.edit_cell div.date div.month span.bounds a").livequery('click',function(ev){
         stopPropagation(ev);
-        
+
         $('div.months_list').css('display','block');
         var custom_scrolls = [];
         $('.scrollPane').each(function(){
@@ -1673,7 +1672,7 @@
           this.destroy();
         });
         $("ul.scroll-pane").jScrollPane();
-        
+
         $('body').click(function(event) {
           if (!$(event.target).closest('div.months_list').length) {
             $('div.months_list').hide();
@@ -1683,13 +1682,13 @@
       });
       $("div.months_list ul li a").livequery('click',function(ev){
         stopPropagation(ev);
-        
+
         $(this).closest('div.month').children('span.bounds').children('a').text($(this).text())
         $(this).closest('div.months_list').hide();
-      });     
-      
-      
-      
+      });
+
+
+
       ///////////////////////////////////////
       //  Header options events            //
       ///////////////////////////////////////
@@ -1727,7 +1726,7 @@
         stopPropagation(ev);
         methods.closeTablePopups();
         methods.bindESCkey();
-        
+
         if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
           $('p.geo').click();
         } else {
@@ -1750,17 +1749,17 @@
       $('span.col_types ul li a').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-        
+
         var parent_element = $(this).closest('span.col_types').parent().children('p.long').children('a');
 
         if ($(this).text().toLowerCase()!=parent_element.text()) {
           var old_value = parent_element.text();
           var new_value = $(this).text().toLowerCase();
           var column = $(this).closest('th').attr('c');
-          
+
           if (new_value!='string') {
             methods.bindESCkey();
-            
+
             $('div.change_type_column a.button').unbind('click');
             $('div.change_type_column a.button').click(function(ev){
               stopPropagation(ev);
@@ -1787,9 +1786,9 @@
           } else {
             changeColumnType(old_value,new_value,column,parent_element);
           }
-          
+
         }
-        
+
         function changeColumnType(old_value,new_value,column,parent_element) {
           parent_element.text(new_value);
           var params = {};
@@ -1805,7 +1804,7 @@
       });
       $('thead tr th div h3').livequery('dblclick',function(){
         methods.closeTablePopups();
-        
+
         if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
           $('p.geo').click();
         } else {
@@ -1874,7 +1873,7 @@
         stopPropagation(ev);
         methods.closeTablePopups();
         methods.bindESCkey();
-        
+
         if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
           $('p.geo').trigger('click');
         } else {
@@ -1924,8 +1923,8 @@
         defaults.order_by = $(this).closest('th').attr('c');
         methods.refreshTable(0);
       })
-      
-      
+
+
 
       ///////////////////////////////////////
       //  Georeference window events       //
@@ -1946,9 +1945,9 @@
 
 	        resetProperties();
 	        getColumns();
-				} 
+				}
 
-        
+
         function resetProperties() {
           $('div.georeference_window div.inner_ span.top').css('opacity',1).show();
           $('div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
@@ -1963,7 +1962,7 @@
           $('div.georeference_window a.confirm_georeference').addClass('disabled');
           $('div.georeference_window span.select').removeClass('clicked');
           $('div.georeference_window').css('overflow','visible');
-          
+
           //Reset second item of the main_list (compont geo)
           $('div.second_column_address').hide();
           $('div.third_column_address').hide();
@@ -1971,22 +1970,22 @@
           $('div.first_column_address a.combine').hide();
           $('div.first_column_address').show();
 
-          
+
           // Remove selected li class before know where geo column is.
           $('div.georeference_window ul.main_list li').removeClass('selected');
-          
+
           // Remove all ScrollPane and lists items //
           var custom_scrolls = [];
           $('.scrollPane').each(function(){
        		  custom_scrolls.push($(this).jScrollPane().data().jsp);
        		});
-       		
+
           _.each(custom_scrolls,function(ele,i) {
             ele.destroy();
           });
           $('div.georeference_window span.select ul li').remove();
         }
-                    
+
         function getColumns() {
           $.ajax({
              method: "GET",
@@ -2025,7 +2024,7 @@
                    }
                  }
                }
-               
+
                $('div.georeference_window span.select:eq(1) ul').append('<li><a href="#no_geo">Empty</a></li>');
                $('div.georeference_window span.select:eq(0) ul').append('<li><a href="#no_geo">Empty</a></li>');
                $('div.georeference_window span.select').removeClass('disabled');
@@ -2080,7 +2079,7 @@
           var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
           if (index == 0) {
             var other_index = 1;
-            var other_value = $('span.select:eq(1) a.option').text(); 
+            var other_value = $('span.select:eq(1) a.option').text();
           } else {
             var other_index = 0;
             var other_value = $('span.select:eq(0) a.option').text();
@@ -2096,7 +2095,7 @@
         $(this).closest('span.select').children('a.option').text($(this).text());
         $(this).closest('span.select').children('a.option').attr('c',$(this).text());
         $('span.select').removeClass('clicked');
-        
+
         var block_class = $(this).closest('div.block');
         if (block_class.hasClass('first_column_address')) {
           if (!$('div.second_column_address').is(':visible')) {
@@ -2118,7 +2117,7 @@
         $(this).closest('div.block').children('span.select').children('a.option').text('Select a column');
         $(this).closest('div.block').children('span.select').children('a.option').attr('c','');
         $('span.select').removeClass('clicked');
-        
+
         var block_class = $(this).closest('div.block');
         if (block_class.hasClass('first_column_address')) {
           $('div.georeference_window div.first_column_address a.remove_column').hide();
@@ -2141,12 +2140,12 @@
       });
       $('a.confirm_georeference').livequery('click',function(ev){
         stopPropagation(ev);
-        
+
         if (!$(this).hasClass('disabled')) {
           if ($('div.georeference_window ul.main_list li.first_list:eq(1)').hasClass('selected')) {
             var params = {};
             var address = '';
-            
+
             $('div.georeference_window ul.main_list li.first_list:eq(1) a.option').each(function(index,element){
               if ($(element).attr('c')!='') {
                 address += $(element).attr('c') + ',';
@@ -2185,8 +2184,8 @@
             }
           }
         }
-        
-        
+
+
         function loadingState() {
           methods.unbindESCkey();
           $('div.georeference_window').css('overflow','hidden');
@@ -2201,7 +2200,7 @@
             $(this).hide();
           });
           $('div.georeference_window div.inner_').animate({height:'74px'},400);
-          
+
         }
       });
       $('div.georeference_window a.close_geo,div.georeference_window a.cancel').livequery('click',function(ev){
@@ -2219,8 +2218,8 @@
         stopPropagation(ev);
         methods.closeTablePopups();
       });
-      
-      
+
+
       ///////////////////////////////////////
       //  Add - remove row events          //
       ///////////////////////////////////////
@@ -2234,14 +2233,14 @@
         stopPropagation(ev);
         methods.closeTablePopups();
         methods.bindESCkey();
-        
+
         if (geolocating) {
           $('p.geo').trigger('click');
         } else {
           var cartodb_id = $(this).closest('tr').attr('r');
           var top_position = $(table).find('tr[r="'+cartodb_id+'"]').position().top;
           var rows_involved = $('table tbody tr.selecting').size();
-          
+
           // Several rows involved or only one?
           if (rows_involved>1) {
             $('div.delete_row p').text('You are about to delete these rows. Are you sure?');
@@ -2272,15 +2271,15 @@
       $('div.delete_row a.button').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-        
+
         var row = $(this).attr('r');
         var params = {};
         params.primary_key = row;
-        
+
         methods.updateTable('/records/'+row,params,null,null,"delete_row","DELETE");
       });
-      
-      
+
+
       ///////////////////////////////////////
       //  Add - remove column events       //
       ///////////////////////////////////////
@@ -2298,7 +2297,7 @@
 	        $('div.column_window span.select a:eq(0)').text('Retreiving types...').attr('type','');
 	        $('div.column_window a.column_add').addClass('disabled');
 	        $('div.column_window span.select').removeClass('clicked');
-	        
+
 	        $.ajax({
 	           method: "GET",
 	           url: global_api_url + 'column_types',
@@ -2331,7 +2330,7 @@
 	                }
 	             });
 	             $('div.column_window a.column_add').removeClass('disabled');
-	             
+
 	             //This adds the needed code for adding the column when pushing enter
 				 $(document).keydown(function(event){
 				 	if (event.which == '13') {
@@ -2362,7 +2361,7 @@
 				        }
 			      	}
 			     });
-				 //End of the controller for the enter key			 
+				 //End of the controller for the enter key
 	           },
 	           error: function(e) {
 	              $('div.column_window span.select a.option').text('Error retrieving types').attr('type','');
@@ -2399,7 +2398,7 @@
       $('a.column_add').livequery('click',function(ev){
         stopPropagation(ev);
         $('div.column_window span.select').removeClass('clicked');
-        
+
         if ($('div.column_window input').attr('value')!='' && $('div.column_window a.option').attr('type')!='') {
           methods.addColumn($('div.column_window input').attr('value'),$('div.column_window a.option').attr('type'));
           $('div.column_window input').attr('value','');
@@ -2430,8 +2429,8 @@
         enabled = true;
         methods.closeTablePopups();
       });
-      
-      
+
+
       ///////////////////////////////////////
       //  SQL Editor                       //
       ///////////////////////////////////////
@@ -2453,7 +2452,7 @@
       $('span.paginate a.next').click(function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-                  
+
         try {
           var scrollable = $('div.table_position').scrollLeft();
           var window_width = $(window).width();
@@ -2461,7 +2460,7 @@
           var test_1 = $('table thead tr th:eq(3)').position().left;
           var test_2 = $('table thead tr th:eq(4)').position().left;
           var length = test_2 - test_1;
-          
+
           var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+3;
           var position = $('table thead tr th:eq('+column_position+')').offset().left;
           $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
@@ -2469,11 +2468,11 @@
           $('div.table_position').scrollTo({top:'0',left:'100%'},200);
         }
         methods.paginateControls();
-      }); 
+      });
       $('span.paginate a.previous').click(function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-      
+
         try {
           var scrollable = $('div.table_position').scrollLeft();
           var window_width = $(window).width();
@@ -2494,8 +2493,8 @@
 
         methods.paginateControls();
       });
-    
-    
+
+
       ///////////////////////////////////////
       //  Filter by this column            //
       ///////////////////////////////////////
@@ -2519,11 +2518,11 @@
         alert('paco');
         stopPropagation(ev);
       });
-    
+
     },
 
-    
-    
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  KEEP SIZE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2549,7 +2548,7 @@
       var scrollable = $('div.table_position').scrollLeft();
       var window_width = $(window).width();
       var table_width = $(table).width();
-      
+
    		if (window_width==table_width || (window_width-2)>=table_width || $('table tbody').length==0) {
         $('span.paginate a#previousButton').addClass('disabled');
         $('span.paginate a#nextButton').addClass('disabled');
@@ -2566,7 +2565,7 @@
         }
       }
     },
-    
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2587,16 +2586,16 @@
           last_cell_size = parent_width-width_table_content + cell_size;
         });
       }
-      
+
       // HEIGTH
       var parent_height = $(window).height();
       // Reset before height
       $('div.table_position').css('height','auto');
-      
+
       if ((parent_height-162)>($('div.table_position').height())) {
         $('div.table_position').height(parent_height-162);
       }
-      
+
       //Control pagination
       methods.paginateControls();
     },
@@ -2646,11 +2645,7 @@
                                 headers[new_value] = type;
                                 $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
                                 break;
-        case "column_type":     if (params.type!="string") {
-                                  // $('tbody tr td[c="'+params.name+'"] div').text('');
-                                  // $('tbody tr td[c="'+params.name+'"] div').attr('title','');
-																	methods.refreshTable('');
-                                }
+        case "column_type":     methods.refreshTable('');
                                 headers[params.name] = params.type;
                                 break;
         case "update_geometry": methods.refreshTable('');
@@ -2680,9 +2675,9 @@
                                 break;
         case "delete_column":   delete headers[params.name];
                                 methods.refreshTable('');
-                                break;                                
+                                break;
         case "delete_row":      methods.refreshTable('');
-                                break;                        
+                                break;
         default:                break;
       }
     },
@@ -2711,7 +2706,7 @@
                               break;
         case "update_geometry": methods.closeTablePopups();
                               break;
-        
+
         case "column_type":   var element = $('th[c="'+params.name+'"]').find('p.long').children('a');
                               element.text(old_value);
                               element.animate({color:'#FF3300'},300,function(){
@@ -2722,9 +2717,9 @@
         default:              break;
       }
     },
-  
-  
-  
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  REFRESH TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2752,9 +2747,9 @@
       methods.getData(defaults, position, new_query);
       enabled = true;
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  CLOSE ALL POPUPS WINDOWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2762,7 +2757,7 @@
       methods.unbindESCkey();
       $('body').unbind('click');
       enabled = true;
-      
+
       //Column row popup
       $('div.delete_row').hide();
       //Column delete popup
@@ -2780,7 +2775,7 @@
       $('thead tr span.col_types').hide();
       $('thead tr a.options').removeClass('selected');
       $('thead tr span.col_ops_list').hide();
-      
+
       //popup windows
       $('div.mamufas').fadeOut('fast',function(){
         $('div.mamufas div.georeference_window').hide();
@@ -2788,12 +2783,12 @@
         $('div.mamufas div.lastpage_window').hide();
         $('div.mamufas div.stopgeo_window').hide();
       });
-      
+
       closeOutTableWindows();
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  BIND ESC KEY PRESS EVENT
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2804,9 +2799,9 @@
         }
       });
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  UNBIND ESC KEY PRESS EVENT
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

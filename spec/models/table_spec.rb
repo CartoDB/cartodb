@@ -1049,6 +1049,19 @@ describe Table do
     table6 = create_table :name => nil, :user_id => user.id
   end
   
+  it "should allow creating multiple tables with the same name by adding a number at the and and incrementing it" do
+    user = create_user
+    table = create_table :name => 'Wadus The Table', :user_id => user.id
+    table.name.should == "wadus_the_table"
+    
+    # Renaming starts at 2
+    2.upto(25) do |n|
+      table = create_table :name => 'Wadus The Table', :user_id => user.id
+      table.name.should == "wadus_the_table_#{n}"
+      puts table.name
+    end
+  end
+  
   it "should import a CSV file with a the_geom column in GeoJSON format" do
     user = create_user
     table = new_table

@@ -5,7 +5,6 @@ namespace :cartodb do
       User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.in_database(:as => :superuser) do |user_database|
-          Rails.logger.warn user.database_name
           user_database.run("REVOKE ALL ON DATABASE #{user.database_name} FROM public")
           user_database.run("REVOKE ALL ON SCHEMA public FROM public")
           user_database.run("GRANT ALL ON DATABASE #{user.database_name} TO #{user.database_username}")

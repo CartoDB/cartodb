@@ -24,7 +24,7 @@ if Rails.env.development?
 
   ## Development demo data for admin@example.com
 
-  user = admin
+  user = User[:email => 'admin@example.com']
 
   2.times do
     t = Table.new :name => "Table #{rand(1000)}"

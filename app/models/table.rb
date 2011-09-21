@@ -156,7 +156,7 @@ class Table < Sequel::Model(:user_tables)
     @import_from_file = URI.escape(@import_from_file) if @import_from_file =~ /^http/
     open(@import_from_file) do |res|
       filename = "#{File.basename(@import_from_file).split('.').first}_#{Time.now.to_i}#{File.extname(@import_from_file)}"
-      @import_from_file = File.new Rails.root.join('tmp', 'failed_imports', filename), 'w'
+      @import_from_file = File.new Rails.root.join('public', 'uploads', 'failed_imports', filename), 'w'
       @import_from_file.write res.read.force_encoding('utf-8')
       @import_from_file.close
     end

@@ -185,6 +185,7 @@ class Table < Sequel::Model(:user_tables)
   def after_create
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
+    owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
     set_trigger_update_updated_at
     @force_schema = nil
     $tables_metadata.multi do
@@ -687,7 +688,7 @@ TRIGGER
 TRIGGER
     )
   end
-
+  
   def get_new_column_type(invalid_column)
     flatten_cartodb_schema = schema.flatten
     cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]

@@ -117,7 +117,7 @@ module ApplicationHelper
   
   def account_url
     if APP_CONFIG[:account_host]
-      request.protocol + CartoDB.account_host
+      request.protocol + CartoDB.account_host + CartoDB.account_path
     end
   end
 

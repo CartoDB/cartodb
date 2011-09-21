@@ -4,16 +4,49 @@
     this.type = type;
     this.pen = new Pen(this.map,this);
     this.geometries = new Array();
-
+    
     var thisOjb = this;
     this.event = google.maps.event.addListener(thisOjb.map,'click',function(event) {
       thisOjb.pen.draw(event.latLng);
     });
 
-
+    
+    // Show edit tools
+    carto_map.toggleEditTools();
+    
+    // Reset previous links
+    $('.general_options ul li.edit a.complete').unbind('click');
+    $('.general_options ul li.edit a.discard').unbind('click');
+        
+    // Bind links
+    $('.general_options ul li.edit a.complete').click(function(ev){
+      stopPropagation(ev);
+      var new_geometry = transformToGeoJSON(thisOjb.geometries,thisOjb.type);
+      var geojson = $.parseJSON(new_geometry);
+      if (geojson.coordinates.length>0) {
+        var params = {};
+        params.the_geom = new_geometry;
+        carto_map.updateTable('/records',params,new_geometry,null,"adding","POST");
+      }
+      $('.general_options ul li.map a.select').click();
+      carto_map.toggleEditTools();
+      thisOjb.destroy();
+      carto_map.geometry_creator_ = null;
+    });
+    
+    $('.general_options ul li.edit a.discard').click(function(ev){
+      stopPropagation(ev);
+      $('.general_options ul li.map a.select').click();
+      carto_map.toggleEditTools();
+      thisOjb.destroy();
+      carto_map.geometry_creator_ = null;
+    });
+    
+    
     this.showGeoJSON = function() {
       return transformToGeoJSON(this.geometries,this.type);
     }
+
 
     this.destroy=function() {
       this.pen.deleteMis();

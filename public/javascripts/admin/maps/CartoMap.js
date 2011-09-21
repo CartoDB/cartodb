@@ -134,7 +134,7 @@ CartoMap.prototype.createMap = function () {
   this.setTools();
   
   // Get the styles predefine for this table
-  this.getStyles();
+  // this.getStyles();
   
   // BBox in the map
   this.zoomToBBox();
@@ -453,12 +453,12 @@ CartoMap.prototype.refreshWax = function() {
     if (this.map_) {
         // update tilejson with cache buster
         this.cache_buster++;
+        this.map_.overlayMapTypes.clear();
+
         this.tilejson.grids = wax.util.addUrlData(this.tilejson.grids_base,  'cache_buster=' + this.cache_buster);
-        this.tilejson.tiles = wax.util.addUrlData(this.tilejson.tiles_base,  'cache_buster=' + this.cache_buster);
 
         // add map tiles
         this.wax_tile = new wax.g.connector(this.tilejson);
-        this.map_.overlayMapTypes.clear();
         this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
 
         // add interaction
@@ -480,7 +480,7 @@ CartoMap.prototype.generateTilejson = function() {
 
     // Base Tile/Grid URLs
     var base_url = TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}';
-    var tile_url = base_url + '.png8';
+    var tile_url = base_url + '.png8?cache_buster={cache}';  //gotta do cache bust in wax for this
     var grid_url = base_url + '.grid.json';
 
     // Add map keys to base urls
@@ -500,8 +500,8 @@ CartoMap.prototype.generateTilejson = function() {
         scheme: 'xyz',
         tiles: [tile_url],
         grids: [grid_url],
-        tiles_base: [_.clone(tile_url)],
-        grids_base: [_.clone(grid_url)],
+        tiles_base: tile_url,
+        grids_base: grid_url,
         formatter: function(options, data) {
             currentCartoDbId = data.cartodb_id;
             return data.cartodb_id;

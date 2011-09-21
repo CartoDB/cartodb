@@ -36,3 +36,13 @@ production:
   superadmin:
     username: ""
     password: ""
+  airbrake_api_key: ''
+  action_mailer:
+    delivery_method: smtp
+    smtp_settings:
+      address: "your-smtp-server.com"
+      port: 25
+      user_name: 'username'
+      password: 'password'
+      authentication: 'plain'
+      enable_starttls_auto: false

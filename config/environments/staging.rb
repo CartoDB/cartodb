@@ -38,7 +38,7 @@ CartoDB::Application.configure do
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.delivery_method = :ses
+  # config.action_mailer.delivery_method = :smtp
 
   # Enable threaded mode
   # config.threadsafe!
@@ -50,8 +50,4 @@ CartoDB::Application.configure do
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
 
-  config.middleware.use ExceptionNotifier,
-    :email_prefix => "[CartoDB - STAGING] ",
-    :sender_address => %{"CartoDB Notifier" <wadus@cartodb.com>},
-    :exception_recipients => %w{ notifications@vizzuality.com }
 end

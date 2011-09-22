@@ -355,24 +355,22 @@ describe Table do
     table = new_table
     table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    schema_differences = (table.schema(:cartodb_types => false) - [
+    check_schema(table, [
       [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
       [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
       [:kind, "character varying(10)"]
     ])
-    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
   end
 
   it "should sanitize columns from a given schema" do
     table = new_table
     table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
     table.save
-    schema_differences = (table.schema(:cartodb_types => false) - [
+    check_schema(table, [
       [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
       [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
       [:kind, "character varying(10)"]
     ])
-    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
   end
 
   it "should import file twitters.csv" do
@@ -382,12 +380,12 @@ describe Table do
     table.name.should match(/^twitters/)
     table.rows_counted.should == 7
 
-    schema_differences = (table.schema(:cartodb_types => false) - [
+    check_schema(table, [
       [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
       [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
-      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+      [:the_geom, "geometry", "geometry", "point"]
     ])
-    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     row = table.records[:rows][0]
     row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
     row[:login].should == "vzlaturistica "
@@ -526,7 +524,7 @@ describe Table do
     table.reload
     table.name.should == 'ngos'
 
-    schema_differences = (table.schema(:cartodb_types => false) - [
+    check_schema(table, [
       [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"],
       [:organization_s_work_in_haiti, "character varying"], [:calculation_of_number_of_people_reached, "character varying"],
       [:private_funding, "character varying"], [:relief, "character varying"], [:reconstruction, "character varying"],
@@ -537,9 +535,9 @@ describe Table do
       [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"],
       [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"],
       [:city, "character varying"], [:state, "character varying"], [:zip_code, "character varying"], [:donation_website, "character varying"], 
-      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"]
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+      [:the_geom, "geometry", "geometry", "point"]
     ])
-    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     table.rows_counted.should == 76
   end
   
@@ -762,11 +760,10 @@ describe Table do
     table.reload
     # Check if the schema stored in memory is fresh and does not contain
     # latitude and longitude columns
-    schema_differences = (table.schema - [
+    check_schema(table, [
       [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
       [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"]
-    ])
-    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
+    ], :cartodb_types => true)
     record = table.record(pk)
     RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{-3.699732.round(6)} #{40.423012.round(6)})"
   end
@@ -795,6 +792,26 @@ describe Table do
     
     table.name.should == 'reserved_names'
     table.rows_counted.should == 2
+  end
+  
+  it "should add a point the_geom column after importing a CSV" do
+    table = new_table :name => nil
+    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+    table.save.reload
+    table.name.should match(/^twitters/)
+    table.rows_counted.should == 7
+
+    check_schema(table, [
+      [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
+      [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]
+    ])
+    
+    row = table.records[:rows][0]
+    row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+    row[:login].should == "vzlaturistica "
+    row[:country].should == " Venezuela "
+    row[:followers_count].should == "211"
   end
   
   it "should not drop a table that exists when upload fails" do
@@ -970,16 +987,16 @@ describe Table do
     table = new_table :user_id => user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
     table.save.reload
-    schema_differences = (table.schema -  [
-      [:cartodb_id, "number"], [:gid, "string"], [:id_0, "string"], [:iso, "string"], 
+    check_schema(table, [
+      [:cartodb_id, "number"], [:id_0, "string"], [:iso, "string"], 
       [:name_0, "string"], [:id_1, "string"], [:name_1, "string"], [:id_2, "string"], 
       [:name_2, "string"], [:id_3, "string"], [:name_3, "string"], [:id_4, "string"], 
       [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], 
       [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "string"], 
       [:shape_area, "string"], [:latitude, "string"], [:longitude, "string"], [:center_latitude, "string"], 
-      [:center_longitude, "string"], [:created_at, "string"], [:updated_at, "string"]
-    ])
-    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
+      [:the_geom, "geometry", "geometry", "point"], [:center_longitude, "string"], 
+      [:created_at, "string"], [:updated_at, "string"]
+    ], :cartodb_types => true)
   end
   
   it "should be able to find a table by name or by identifier" do
@@ -1094,11 +1111,10 @@ describe Table do
     table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
     table.save.reload
     
-    schema_differences = (table.schema -  [
+    check_schema(table, [
       [:cartodb_id, "number"], [:name, "string"], [:the_geom_str, "string"], 
       [:created_at, "string"], [:updated_at, "string"]
-    ])
-    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
+    ], :cartodb_types => true)
     
     user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
     table_schema = user.in_database.schema(table.name)
@@ -1143,4 +1159,9 @@ describe Table do
     table.infowindow.should == "id, name, description"
   end
   
+  def check_schema(table, expected_schema, options={})
+    table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
+    schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
+    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
+  end
 end

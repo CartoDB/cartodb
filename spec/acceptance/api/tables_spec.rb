@@ -283,7 +283,8 @@ feature "API 1.0 tables management" do
       response.body[:name].should == "twitters"
       schema_differences = (response.body[:schema] - [
         ["cartodb_id", "number"], ["url", "string"], ["login", "string"], ["country", "string"], ["followers_count", "string"], 
-        ["field_5", "string"], ["created_at", "date"], ["updated_at", "date"]
+        ["field_5", "string"], ["created_at", "date"], ["updated_at", "date"],
+        ["the_geom", "geometry", "geometry", "point"]
        ])
        schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     end
@@ -304,7 +305,8 @@ feature "API 1.0 tables management" do
         ["usg_funding_spent", "string"], ["other_funding", "string"], ["other_funding_spent", "string"], ["international_staff", "string"], ["national_staff", "string"], 
         ["us_contact_name", "string"], ["us_contact_title", "string"], ["us_contact_phone", "string"], ["us_contact_e_mail", "string"], ["media_contact_name", "string"], 
         ["media_contact_title", "string"], ["media_contact_phone", "string"], ["media_contact_e_mail", "string"], ["donation_phone_number", "string"], ["donation_address_line_1", "string"], 
-        ["address_line_2", "string"], ["city", "string"], ["state", "string"], ["zip_code", "string"], ["donation_website", "string"], ["created_at", "date"], ["updated_at", "date"]
+        ["address_line_2", "string"], ["city", "string"], ["state", "string"], ["zip_code", "string"], ["donation_website", "string"], ["created_at", "date"], ["updated_at", "date"],
+        ["the_geom", "geometry", "geometry", "point"]
       ])
       schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     end

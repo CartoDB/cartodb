@@ -7,6 +7,10 @@ class OauthController < ApplicationController
   
   ssl_required :authorize, :request_token, :access_token, :token, :test_request
   
+  prepend_before_filter do
+    warden.custom_failure!
+  end
+  
   layout 'front_layout'
 
   # 1) call request_token wiht consumer key and secret
@@ -20,7 +24,6 @@ class OauthController < ApplicationController
   # 5) call access_token with the authorized request token, HTTP cycle, returns access token and access secret.
 
   def access_token_with_xauth
-    warden.custom_failure!
     if params[:x_auth_mode] == 'client_auth'
       if user = User.authenticate(params[:x_auth_username], params[:x_auth_password])
         @token = AccessToken.filter(:user => user, :client_application => current_client_application, :invalidated_at => nil).limit(1).first

@@ -1058,7 +1058,6 @@ describe Table do
     2.upto(25) do |n|
       table = create_table :name => 'Wadus The Table', :user_id => user.id
       table.name.should == "wadus_the_table_#{n}"
-      puts table.name
     end
   end
   

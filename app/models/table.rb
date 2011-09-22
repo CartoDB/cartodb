@@ -46,8 +46,6 @@ class Table < Sequel::Model(:user_tables)
           :import_from_file => import_from_file, :debug => (Rails.env.development?)
         ).symbolize_keys
 
-        puts hash_in
-
         importer = CartoDB::Importer.new hash_in
         importer_result_name = importer.import!.name
       end
@@ -707,6 +705,8 @@ TRIGGER
         else
           owner.in_database.rename_column(self.name.to_sym, THE_GEOM, :the_geom_str)
         end
+      else # Ensure a the_geom column, of type point by default
+        type = "point"
       end
     end
     return if type.nil?

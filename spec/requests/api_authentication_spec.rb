@@ -42,6 +42,11 @@ describe "API Authentication" do
       @xauth_params = { :x_auth_username => @user.email, :x_auth_password => "clientex", :x_auth_mode => 'client_auth' }
     end
     
+    it "should return 401 if request is not signed" do
+      post @request_url, @xauth_params
+      status.should == 401
+    end
+    
     it "should not return an access token with invalid xAuth params" do
       @xauth_params.merge!(:x_auth_password => "invalid")
       req = prepare_oauth_request(@oauth_consumer, @request_url, :form_data => @xauth_params)

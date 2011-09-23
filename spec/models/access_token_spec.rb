@@ -19,4 +19,16 @@ describe AccessToken do
     $api_credentials.hget(base_key, "time").should == access_token.authorized_at.to_s
   end
   
+  it "should remove tokens from redis when it is destroyed" do
+    user = create_user
+    client_application = user.client_application
+    
+    access_token = AccessToken.create(:user => user, :client_application => client_application)
+    access_token.exists?
+    base_key = "rails:oauth_access_tokens:#{access_token.token}"
+    $api_credentials.keys.should include(base_key)
+    access_token.destroy
+    $api_credentials.keys.should_not include(base_key)
+  end
+  
 end

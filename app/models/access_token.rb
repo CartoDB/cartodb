@@ -15,15 +15,24 @@ class AccessToken < OauthToken
     store_api_credentials
   end
   
+  def after_destroy
+    $api_credentials.del metadata_key
+    super
+  end
+  
   def store_api_credentials
-    base_key = "rails:oauth_access_tokens:#{token}"
-
-    $api_credentials.hset base_key, "consumer_key", client_application.key
-    $api_credentials.hset base_key, "consumer_secret", client_application.secret
-    $api_credentials.hset base_key, "access_token_token", token
-    $api_credentials.hset base_key, "access_token_secret", secret
-    $api_credentials.hset base_key, "user_id", user_id
-    $api_credentials.hset base_key, "time", authorized_at
+    $api_credentials.hset metadata_key, "consumer_key", client_application.key
+    $api_credentials.hset metadata_key, "consumer_secret", client_application.secret
+    $api_credentials.hset metadata_key, "access_token_token", token
+    $api_credentials.hset metadata_key, "access_token_secret", secret
+    $api_credentials.hset metadata_key, "user_id", user_id
+    $api_credentials.hset metadata_key, "time", authorized_at
+  end
+  
+  private
+  
+  def metadata_key
+    "rails:oauth_access_tokens:#{token}"
   end
   
 end

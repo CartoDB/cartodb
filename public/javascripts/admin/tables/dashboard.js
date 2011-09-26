@@ -90,15 +90,17 @@
       $('div.notification').delay(5000).fadeOut();
 
       $('ul.your_tables li.last').hover(function(){
-        $('div.tables_list div.left div.bottom_white_medium').css('background-position','0 -11px');
+        $('div.tables_list div.left div.bottom_white_medium').css('background-position','0 -5px');
       }, function(){
-        $('div.tables_list div.left div.bottom_white_medium').css('background-position','0 0');
+        $('div.tables_list div.left div.bottom_white_medium').css('background-position','0 bottom');
       });
       
       
       //Function for doing the whole cell on the tables list clickable
       $('ul.your_tables li').click(function() {
-        window.location.href = $(this).find("h4 > a.tableTitle").attr("href");
+        if (!$(this).hasClass('raster')) {
+          $(this).find("h4 > a.tableTitle").click();
+        }
       });
 
       //Close all modal windows

@@ -14,6 +14,7 @@ class Admin::TablesController < ApplicationController
     else
       Table.filter({:user_id => current_user.id}).order(:id).reverse.paginate(current_page, per_page)
     end
+    @tables_count = @tables.count
   end
 
   def show

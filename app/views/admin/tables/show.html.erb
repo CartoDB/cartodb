@@ -36,8 +36,8 @@
       var user_id = "<%= current_user.id %>";
       var user_name = "<%= current_user.username %>";
       var map_enabled = <%= current_user.map_enabled.to_s %>;
-      var map_key = "<%= current_user.get_map_key %>"; 
-      
+      var map_key = "<%= current_user.get_map_key %>";
+
       <% if flash[:alert] %>
       var error_message = '<%= flash[:alert] %>';
       <% end %>
@@ -83,7 +83,7 @@
         </div>
         <div class="right">
           <p class="settings">
-            <a class="delete" table-id="<%= @table.id %>" href="#delete_table">delete table</a> | <a class="georeference_global" href="#show_georeference_window">georeference</a> | <a class="settings selected" href="#show_advanced_options">advanced</a>
+            <a class="delete" table-id="<%= @table.id %>" href="#delete_table">delete table</a> | <a class="open_georeference" href="#show_georeference_window">georeference</a> | <a class="settings selected" href="#show_advanced_options">advanced</a>
           </p>
           <span class="paginate">
             <a id="nextButton"class="next" href="#next_column">Next column</a>

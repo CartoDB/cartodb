@@ -1,5 +1,4 @@
     var requests_queue;
-    var geolocating = false;
 
 
     head.ready(function(){

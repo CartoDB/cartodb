@@ -226,57 +226,56 @@
 
       // Map tools
       $('div.general_options ul li.map a').hover(function(){
-          if (!$(this).parent().hasClass('disabled')) {
-              // Change text
-              var text = $(this).text().replace('_',' ');
-              $('div.general_options div.tooltip p').text(text);
-              // Check position
-              var right = -($(this).offset().left-$(window).width());
-              var offset = $('div.general_options div.tooltip').width()/2;
-              // near right edge
-              if (right-13-offset<0) {
-                  right = 16 + offset;
-                  $('div.general_options div.tooltip span.arrow').css({left:'83%'});
-              } else {
-                  $('div.general_options div.tooltip span.arrow').css({left:'50%'});
-              }
-              $('div.general_options div.tooltip').css({right:right-13-offset+'px'});
-              // Show
-              $('div.general_options div.tooltip').show();
+        if (!$(this).parent().hasClass('disabled')) {
+          // Change text
+          var text = $(this).text().replace('_',' ');
+          $('div.general_options div.tooltip p').text(text);
+          // Check position
+          var right = -($(this).offset().left-$(window).width());
+          var offset = $('div.general_options div.tooltip').width()/2;
+          // near right edge
+          if (right-13-offset<0) {
+              right = 16 + offset;
+              $('div.general_options div.tooltip span.arrow').css({left:'83%'});
           } else {
-              $('div.general_options div.tooltip').hide();
+              $('div.general_options div.tooltip span.arrow').css({left:'50%'});
           }
-
-      },function(){
+          $('div.general_options div.tooltip').css({right:right-13-offset+'px'});
+          // Show
+          $('div.general_options div.tooltip').show();
+        } else {
           $('div.general_options div.tooltip').hide();
+        }
+      },function(){
+        $('div.general_options div.tooltip').hide();
       });
 
       // Change map status
       $('div.general_options ul li.map a').click(function(ev){
-          stopPropagation(ev);
-          if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
-              var status = $(this).attr('class');
-              me.setMapStatus(status);
-          }
+        stopPropagation(ev);
+        if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
+          var status = $(this).attr('class');
+          me.setMapStatus(status);
+        }
       });
 
 
       //Zooms
       $('a.zoom_in').click(function(ev){
-          stopPropagation(ev);
-          var new_zoom = me.map_.getZoom()+1;
-          if (new_zoom<=20) {
-              me.map_.setZoom(new_zoom);
-              $('span.slider').slider('value',new_zoom);
-          }
+        stopPropagation(ev);
+        var new_zoom = me.map_.getZoom()+1;
+        if (new_zoom<=20) {
+          me.map_.setZoom(new_zoom);
+          $('span.slider').slider('value',new_zoom);
+        }
       });
       $('a.zoom_out').click(function(ev){
-          stopPropagation(ev);
-          var new_zoom = me.map_.getZoom()-1;
-          if (new_zoom>=0) {
-              me.map_.setZoom(new_zoom);
-              $('span.slider').slider('value',new_zoom);
-          }
+        stopPropagation(ev);
+        var new_zoom = me.map_.getZoom()-1;
+        if (new_zoom>=0) {
+          me.map_.setZoom(new_zoom);
+          $('span.slider').slider('value',new_zoom);
+        }
       });
 
       // Zoom slider
@@ -302,27 +301,32 @@
       });
       // Try query
       $('div.sql_window a.try_query').livequery('click',function(ev){
-          var map_status = ($('body').attr('view_mode') == "map");
-          if (map_status) {
-              stopPropagation(ev);
-              $('body').attr('query_mode','true');
-              me.query_mode = true;
-              setAppStatus();
-              me.refresh();
+        var map_status = ($('body').attr('view_mode') == "map");
+        if (map_status) {
+          stopPropagation(ev);
+          $('body').attr('query_mode','true');
+          me.query_mode = true;
+          setAppStatus();
+          me.refresh();
 
-
-              // Get results from api
-              $.ajax({
-                  method: "GET",
-                  url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+escape(editor.getValue().replace('/\n/g'," "))+') as count'),
-                  headers: {"cartodbclient":"true"},
-                  success: function(data) {
-                      $('span.query h3').html(data.rows[0].count + ' row' + ((data.rows[0].count>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-                  },
-                  error: function(e) {
-                  }
-              });
-          }
+          // Get results from api
+          $.ajax({
+            method: "GET",
+            url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+escape(editor.getValue().replace('/\n/g'," "))+') as count'),
+            headers: {"cartodbclient":"true"},
+            success: function(data) {
+                $('span.query h3').html(data.rows[0].count + ' row' + ((data.rows[0].count>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+            },
+            error: function(e) {}
+          });
+        }
+      });
+      
+      $(document).bind('update_geometry',function(ev){
+        var map_mode = ($('body').attr('view_mode') == "map");
+        if (map_mode && !$(this).hasClass('disabled')) {
+          me.refreshWax();
+				}
       });
     }
 

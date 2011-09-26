@@ -56,5 +56,4 @@ if Rails.env.development?
   table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
   table.reload
   table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
-
 end

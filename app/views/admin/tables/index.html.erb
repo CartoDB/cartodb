@@ -8,11 +8,8 @@
   <%= render 'admin/shared/subheader' %>
 
   <section id="content">
-  
-  	<div id="hugeUploader"></div>
-
+    <div id="hugeUploader"></div>
     <div class="inner_content">
-
       <div class="requests_info section">
         <div class="top_white"></div>
         <div class="middle_white">
@@ -61,6 +58,12 @@
           <div class="middle_white_medium">
             <ul class="your_tables">
               <% @tables.each_with_index do |table, i| %>
+
+              <!-- TODO: Add class 'raster' to the li which table is block... -->
+              <!-- <li class="raster">
+                   </li> -->
+              <!-- end... -->
+
               <li<%= ' class="last"'.html_safe if i == (@tables.count - 1) && i>2%>>
                 <div class="meta_info">
                   <span class="info">
@@ -81,6 +84,12 @@
                     <% end %>
                   </span>
                 </div>
+
+                <!-- TODO: Add raster span only when the table is from raster... -->
+                <!-- <% if (i==(@tables.count - 1) && i>2) %>
+                  <span class="raster"></span>
+                <% end %> -->
+                <!-- end... -->
               </li>
               <% end %>
             </ul>
@@ -95,14 +104,13 @@
                 <% end %>
               </div>
             <% end %>
-            
+
             <span class="privacy_window">
-    	        <ul>
-    	          <li class="public"><a href="#public"><strong>Public</strong> (visible to others)</a></li>
-    	          <li class="private"><a href="#private"><strong>Private</strong> (visible to you)</a></li>
-    	        </ul>
-    	      </span>
-            
+              <ul>
+                <li class="public"><a href="#public"><strong>Public</strong> (visible to others)</a></li>
+                <li class="private"><a href="#private"><strong>Private</strong> (visible to you)</a></li>
+              </ul>
+            </span>
           </div>
           <div class="bottom_white_medium"></div>
           <%= paginate(@tables) %>
@@ -229,5 +237,5 @@
         </div>
       </div>
     </div>
-	
+
   <% end %>

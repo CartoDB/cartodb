@@ -25,8 +25,8 @@ body.query section.subheader span.query {display:block}
 section.subheader {position:fixed; top:58px; left:0; width:100%; min-width:880px; height:103px; background:url('/images/admin/common/new_header.png') repeat-x center -58px #2D3451; z-index:100;}
 section.subheader div.outer {float:left; width:100%; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
 body.query section.subheader div.outer {background:url('/images/admin/table/sql_border.png') repeat-x 0 0}
-section.subheader div.left {position:relative; float:left; width:600px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
-section.subheader h2 {float:left; width:auto; font:bold 21px Arial; color:white;}
+section.subheader div.left {position:relative; float:left; width:500px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
+section.subheader h2 {float:left; width:auto; max-width:500px; font:bold 21px Arial; color:white; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 section.subheader h2 a {color:white; text-decoration:none;}
 section.subheader h2 a:hover {}
 section.subheader h3 {float:left; width:auto; font:bold 21px Arial; color:white; letter-spacing:-1px}

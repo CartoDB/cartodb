@@ -1,28 +1,3 @@
-
-// FUNCIONALITIES
-// - Editing table data with events - OK
-// - Resize columns -- KO
-// - Pagination with ajax --- OK
-// - Custom style --- OK
-// - jScrollPane --- OK
-// - Update table (remove columns and rows, add columns and rows, move columns, sort columns) - OK
-// - Validate fields --- OK
-// - Rows selection for multiple edition --- OK
-// - Floating tHead  --- OK
-// - Floating first column --- OK
-
-// OUT FUNCTIONS
-// - setAppStatus function
-
-// Elements out of the plugin (Be careful with this!)
-// - header
-// - div.table_position
-// - section div.subheader
-// - div.mamufas
-// - div.general_options
-
-// We are playing with these containers but they don't belong to the plugin
-
 ;(function($){
 
   var first = true;
@@ -44,6 +19,8 @@
   var last_cell_size = 100;
 
   var enabled = true;
+  
+  
   var methods = {
 
 
@@ -258,6 +235,7 @@
 	        thead += Mustache.to_html(th,{
 	          allowed:(element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?true:false,
 	          type:element[1],
+	          number: element[1]=="number",
 	          name:element[0],
 	          cartodb_id: (element[0]!="cartodb_id")?false:true,
 	          cellsize: cell_size,
@@ -637,85 +615,6 @@
 
       //Mamufas elements belong to the carto table
       $('div.mamufas').append(
-        '<div class="georeference_window">'+
-          '<a href="#close_window" class="close_geo"></a>'+
-          '<div class="inner_">'+
-            '<span class="loading">'+
-               '<h5>We are georeferencing your columns...</h5>'+
-               '<p>Just some seconds, ok?</p>'+
-             '</span>'+
-
-            '<span class="top">'+
-              '<h3>Choose your geocoding method for this column</h3>'+
-              '<p>Please select the columns for the lat/lon fields</p>'+
-              '<ul class="main_list">'+
-                '<li class="first_list selected">'+
-                  '<a class="first_ul" href="#lat_lng_column">This is a lat/lon column</a>'+
-                  '<div class="select">'+
-                    '<label>LATITUDE COLUMN</label>'+
-                    '<span class="select latitude">'+
-                      '<a id="latitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
-                      '<div class="select_content">'+
-                        '<ul class="scrollPane"></ul>'+
-                      '</div>'+
-                    '</span>'+
-                  '</div>'+
-                  '<div class="select longitude last">'+
-                    '<label>LONGITUDE COLUMN</label>'+
-                    '<span class="select longitude">'+
-                      '<a id="longitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
-                      '<div class="select_content">'+
-                        '<ul class="scrollPane"></ul>'+
-                      '</div>'+
-                    '</span>'+
-                  '</div>'+
-                '</li>'+
-                '<li class="first_list">'+
-                  '<a class="first_ul" href="#choose_address">Choose or create an address column</a>'+
-                  '<div class="address_option">'+
-                    '<p>Choose the column you want to combine for georeferencing your data.</p>'+
-                    '<div class="first_column_address block">'+
-                      '<label>SELECTED COLUMN 1</label>'+
-                      '<span class="select address">'+
-                        '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
-                        '<div class="select_content">'+
-                          '<ul class="scrollPane"></ul>'+
-                        '</div>'+
-                      '</span>'+
-                      '<a class="remove_column" href="#remove_column"></a>'+
-                    '</div>'+
-                    '<div class="second_column_address block">'+
-                      '<label>SELECTED COLUMN 2</label>'+
-                      '<span class="select address">'+
-                        '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
-                        '<div class="select_content">'+
-                          '<ul class="scrollPane"></ul>'+
-                        '</div>'+
-                      '</span>'+
-                      '<a class="remove_column" href="#remove_column"></a>'+
-                    '</div>'+
-                    '<div class="third_column_address block">'+
-                      '<label>SELECTED COLUMN 3</label>'+
-                      '<span class="select address">'+
-                        '<a class="option" href="#column_name" c="">Retrieving columns...</a>'+
-                        '<div class="select_content">'+
-                          '<ul class="scrollPane"></ul>'+
-                        '</div>'+
-                      '</span>'+
-                      '<a class="remove_column" href="#remove_column"></a>'+
-                    '</div>'+
-                  '</div>'+
-                '</li>'+
-                '<li class="first_list disabled"><a>KML or PostGIS geometry</a></li>'+
-              '</ul>'+
-              '<p class="error">You have to select latitude and longitude</p>'+
-            '</span>'+
-            '<span class="bottom">'+
-              '<a href="#close_window" class="cancel">cancel</a>'+
-              '<a href="#confirm_georeference" class="confirm_georeference">Georeference</a>'+
-            '</span>'+
-          '</div>'+
-        '</div>'+
         '<div class="column_window">'+
           '<a href="#close_window" class="close_create"></a>'+
           '<div class="inner_">'+
@@ -1117,129 +1016,125 @@
             var geo_column = $('p.geo').closest('th').attr('c');
 
 
-            if (geolocating && data.column==geo_column) {
-              $('p.geo').click();
+            $('div.edit_cell p.error').hide();
+            $('div.edit_cell div.months_list').hide();
+            $('div.edit_cell input').removeClass('error');
+            $('div.edit_cell textarea').removeClass('error');
+
+            var target_position = $(target).parent().offset();
+            $('tbody tr[r="'+data.row+'"]').addClass('editing');
+
+            //Check if first row or last row
+            if ($(target).parent().offset().top<260) {
+              $('div.edit_cell').css('top','90px');
+            } else if ($(target).parent().offset().top>$(document).height()-60) {
+              $('div.edit_cell').css('top',target_position.top-230+'px');
             } else {
-              $('div.edit_cell p.error').hide();
-              $('div.edit_cell div.months_list').hide();
-              $('div.edit_cell input').removeClass('error');
-              $('div.edit_cell textarea').removeClass('error');
+              $('div.edit_cell').css('top',target_position.top-192+'px');
+            }
 
-              var target_position = $(target).parent().offset();
-              $('tbody tr[r="'+data.row+'"]').addClass('editing');
+            //Check if first column or last column
+            if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {
+              $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-215+($(target).width()/2)+'px');
+            } else if (($(target).parent().offset().left+cell_size+28)<170) {
+               $('div.edit_cell').css('left','0px');
+            } else {
+              $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
+            }
 
-              //Check if first row or last row
-              if ($(target).parent().offset().top<260) {
-                $('div.edit_cell').css('top','90px');
-              } else if ($(target).parent().offset().top>$(document).height()-60) {
-                $('div.edit_cell').css('top',target_position.top-230+'px');
+
+            var type = _.detect(headers,function(head,j){return head.name == data.column}).type;
+
+					  if (data.value== 'GeoJSON...') {
+              type = 'geojson';
+              $('div.edit_cell textarea').addClass('loading');
+
+              $.ajax({
+        		    method: "GET",
+        		    url: global_api_url+'queries?sql='+escape('SELECT ST_AsGeoJSON(the_geom,6) as the_geom FROM '+table_name+' WHERE cartodb_id='+data.row),
+        		 		headers: {"cartodbclient":"true"},
+        		    success: function(data) {
+                  $('div.edit_cell textarea').val(data.rows[0].the_geom);
+                  $('div.edit_cell textarea').removeClass('loading');
+        		    },
+        		    error: function(e) {
+                  $('div.edit_cell textarea').removeClass('loading').addClass('error');
+        		    }
+        		  });
+            }
+
+
+            $('div.edit_cell div.free').hide();
+            $('div.edit_cell div.boolean').hide();
+            $('div.edit_cell div.date').hide();
+            $('div.edit_cell div.point').hide();
+            $('div.table_position div.edit_cell div.boolean ul li').removeClass('selected');
+
+
+            if (type=="date") {
+              var date = parseDate(data.value);
+              $('div.edit_cell div.date div.day input').val(date.day);
+              $('div.edit_cell div.date div.month span.bounds a').text(date.month_text);
+              $('div.edit_cell div.date div.year input').val(date.year);
+              $('div.edit_cell div.date div.hour input').val(date.time);
+              $('div.edit_cell div.date').show();
+            } else if (type=="boolean") {
+              if (data.value == "true") {
+                $('div.table_position div.edit_cell div.boolean ul li a:contains("True")').parent().addClass('selected');
+              } else if (data.value == "false") {
+                $('div.table_position div.edit_cell div.boolean ul li a:contains("False")').parent().addClass('selected');
               } else {
-                $('div.edit_cell').css('top',target_position.top-192+'px');
+                $('div.table_position div.edit_cell div.boolean ul li a:contains("Null")').parent().addClass('selected');
               }
-
-              //Check if first column or last column
-              if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {
-                $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-215+($(target).width()/2)+'px');
-              } else if (($(target).parent().offset().left+cell_size+28)<170) {
-                 $('div.edit_cell').css('left','0px');
+              $('div.edit_cell div.boolean').show();
+            } else if (type=="point") {
+              if (data.value=="") {
+                $('div.table_position div.edit_cell div.point span input#latitude_value').val('0');
+                $('div.table_position div.edit_cell div.point span input#longitude_value').val('0');
               } else {
-                $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
+                var point_values = data.value.replace(' ','').split(',');
+                $('div.table_position div.edit_cell div.point span input#latitude_value').val(point_values[1]);
+                $('div.table_position div.edit_cell div.point span input#longitude_value').val(point_values[0]);
               }
-
-
-              var type = _.detect(headers,function(head,j){return head.name == data.column}).type;
-
-						  if (data.value== 'GeoJSON...') {
-                type = 'geojson';
-                $('div.edit_cell textarea').addClass('loading');
-
-                $.ajax({
-          		    method: "GET",
-          		    url: global_api_url+'queries?sql='+escape('SELECT ST_AsGeoJSON(the_geom,6) as the_geom FROM '+table_name+' WHERE cartodb_id='+data.row),
-          		 		headers: {"cartodbclient":"true"},
-          		    success: function(data) {
-                    $('div.edit_cell textarea').val(data.rows[0].the_geom);
-                    $('div.edit_cell textarea').removeClass('loading');
-          		    },
-          		    error: function(e) {
-                    $('div.edit_cell textarea').removeClass('loading').addClass('error');
-          		    }
-          		  });
+              $('div.edit_cell div.point').show();
+              var len = $('div.table_position div.edit_cell div.point span input#longitude_value').text().length;
+            } else {
+              if (type=="number"){
+                $('div.edit_cell textarea').css({'min-height' : '16px','height' : '16px' });
+              }else{
+                $('div.edit_cell textarea').css({'min-height' : '30px','height' : '30px'});
               }
-
-
-              $('div.edit_cell div.free').hide();
-              $('div.edit_cell div.boolean').hide();
-              $('div.edit_cell div.date').hide();
-              $('div.edit_cell div.point').hide();
-              $('div.table_position div.edit_cell div.boolean ul li').removeClass('selected');
-
-
-              if (type=="date") {
-                var date = parseDate(data.value);
-                $('div.edit_cell div.date div.day input').val(date.day);
-                $('div.edit_cell div.date div.month span.bounds a').text(date.month_text);
-                $('div.edit_cell div.date div.year input').val(date.year);
-                $('div.edit_cell div.date div.hour input').val(date.time);
-                $('div.edit_cell div.date').show();
-              } else if (type=="boolean") {
-                if (data.value == "true") {
-                  $('div.table_position div.edit_cell div.boolean ul li a:contains("True")').parent().addClass('selected');
-                } else if (data.value == "false") {
-                  $('div.table_position div.edit_cell div.boolean ul li a:contains("False")').parent().addClass('selected');
-                } else {
-                  $('div.table_position div.edit_cell div.boolean ul li a:contains("Null")').parent().addClass('selected');
-                }
-                $('div.edit_cell div.boolean').show();
-              } else if (type=="point") {
-                if (data.value=="") {
-                  $('div.table_position div.edit_cell div.point span input#latitude_value').val('0');
-                  $('div.table_position div.edit_cell div.point span input#longitude_value').val('0');
-                } else {
-                  var point_values = data.value.replace(' ','').split(',');
-                  $('div.table_position div.edit_cell div.point span input#latitude_value').val(point_values[1]);
-                  $('div.table_position div.edit_cell div.point span input#longitude_value').val(point_values[0]);
-                }
-                $('div.edit_cell div.point').show();
-                var len = $('div.table_position div.edit_cell div.point span input#longitude_value').text().length;
+              $('div.edit_cell div.free').show();
+              if (data.value!="GeoJSON...") {
+                $('div.edit_cell div.free textarea').val(data.value);
               } else {
-                if (type=="number"){
-                  $('div.edit_cell textarea').css({'min-height' : '16px','height' : '16px' });
-                }else{
-                  $('div.edit_cell textarea').css({'min-height' : '30px','height' : '30px'});
-                }
-                $('div.edit_cell div.free').show();
-                if (data.value!="GeoJSON...") {
-                  $('div.edit_cell div.free textarea').val(data.value);
-                } else {
-                  $('div.edit_cell div.free textarea').val('');
-                }
+                $('div.edit_cell div.free textarea').val('');
               }
+            }
 
-              $('div.edit_cell a.save').attr('r',data.row);
-              $('div.edit_cell a.save').attr('c',data.column);
-              $('div.edit_cell a.save').attr('type',type);
-              $('div.edit_cell').show();
+            $('div.edit_cell a.save').attr('r',data.row);
+            $('div.edit_cell a.save').attr('c',data.column);
+            $('div.edit_cell a.save').attr('type',type);
+            $('div.edit_cell').show();
 
-              if (type!='date' && type!='boolean' && type!='point') {
-                var len = $('div.edit_cell div.free textarea').val().length;
-                $('div.edit_cell div.free textarea').selectRange(0,len);
-              }
+            if (type!='date' && type!='boolean' && type!='point') {
+              var len = $('div.edit_cell div.free textarea').val().length;
+              $('div.edit_cell div.free textarea').selectRange(0,len);
+            }
 
-              $('body').bind('click',function(ev){
-                if (!$(ev.target).closest('div.edit_cell').length) {
-                  methods.closeTablePopups();
-                  $('tbody tr').removeClass('editing');
-                };
-              });
+            $('body').bind('click',function(ev){
+              if (!$(ev.target).closest('div.edit_cell').length) {
+                methods.closeTablePopups();
+                $('tbody tr').removeClass('editing');
+              };
+            });
 
-              if (event.preventDefault) {
-                event.preventDefault();
-                event.stopPropagation();
-              } else {
-                event.stopPropagation();
-                event.returnValue = false;
-              }
+            if (event.preventDefault) {
+              event.preventDefault();
+              event.stopPropagation();
+            } else {
+              event.stopPropagation();
+              event.returnValue = false;
             }
           }
         }
@@ -1727,24 +1622,20 @@
         methods.closeTablePopups();
         methods.bindESCkey();
 
-        if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
-          $('p.geo').click();
-        } else {
-          var position = $(this).position();
-          var parent_div = $(this).closest('div');
-          parent_div.children('span.col_types').find('li').removeClass('selected');
-          var column_type = parent_div.children('p.long').children('a').text();
-          column_type = column_type.charAt(0).toUpperCase() + column_type.slice(1);
-          parent_div.children('span.col_types').children('p').text(column_type);
-          parent_div.children('span.col_types').children('ul').children('li').children('a:contains("'+column_type+'")').parent().addClass('selected');
-          parent_div.children('span.col_types').css('top',position.top-4+'px');
-          parent_div.children('span.col_types').show();
-          $('body').click(function(event) {
-           if (!$(event.target).closest('thead tr span.col_types').length) {
-             methods.closeTablePopups();
-           };
-          });
-        }
+        var position = $(this).position();
+        var parent_div = $(this).closest('div');
+        parent_div.children('span.col_types').find('li').removeClass('selected');
+        var column_type = parent_div.children('p.long').children('a').text();
+        column_type = column_type.charAt(0).toUpperCase() + column_type.slice(1);
+        parent_div.children('span.col_types').children('p').text(column_type);
+        parent_div.children('span.col_types').children('ul').children('li').children('a:contains("'+column_type+'")').parent().addClass('selected');
+        parent_div.children('span.col_types').css('top',position.top-4+'px');
+        parent_div.children('span.col_types').show();
+        $('body').click(function(event) {
+         if (!$(event.target).closest('thead tr span.col_types').length) {
+           methods.closeTablePopups();
+         };
+        });
       });
       $('span.col_types ul li a').livequery('click',function(ev){
         stopPropagation(ev);
@@ -1805,100 +1696,84 @@
       $('thead tr th div h3').livequery('dblclick',function(){
         methods.closeTablePopups();
 
-        if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
-          $('p.geo').click();
-        } else {
-          var title = $(this);
-          var input = $(this).parent().children('input');
-          input.attr('value',title.text());
+        var title = $(this);
+        var input = $(this).parent().children('input');
+        input.attr('value',title.text());
 
-          function updateColumnName() {
-            var old_value = title.text();
-            var new_value = sanitizeText(input.attr('value'));
+        function updateColumnName() {
+          var old_value = title.text();
+          var new_value = sanitizeText(input.attr('value'));
 
-            if (old_value!=new_value && new_value.length>0) {
-              var params = {};
-              params["new_name"] = new_value;
-              params["index"] = title.closest('th').index();
-              methods.updateTable("/columns/"+old_value,params,new_value,old_value,'rename_column',"PUT");
-              input.parent().children('h3').text(new_value);
-              input.closest('th').attr('c',new_value);
-              input.hide();
-              input.unbind('focusout');
-              input.unbind('keydown');
-            } else {
-              input.hide();
-              input.unbind('focusout');
-              input.unbind('keydown');
-            }
+          if (old_value!=new_value && new_value.length>0) {
+            var params = {};
+            params["new_name"] = new_value;
+            params["index"] = title.closest('th').index();
+            methods.updateTable("/columns/"+old_value,params,new_value,old_value,'rename_column',"PUT");
+            input.parent().children('h3').text(new_value);
+            input.closest('th').attr('c',new_value);
+            input.hide();
+            input.unbind('focusout');
+            input.unbind('keydown');
+          } else {
+            input.hide();
+            input.unbind('focusout');
+            input.unbind('keydown');
           }
-
-
-          input.show().focus();
-          input.keydown(function(ev){
-            if (ev.which == 13) {
-              stopPropagation(ev);
-              updateColumnName();
-            }
-          });
-          input.focusout(function(){
-            updateColumnName();
-          });
         }
+
+
+        input.show().focus();
+        input.keydown(function(ev){
+          if (ev.which == 13) {
+            stopPropagation(ev);
+            updateColumnName();
+          }
+        });
+        input.focusout(function(){
+          updateColumnName();
+        });
 
       });
       $('thead a.rename_column').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-        if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
-          $('p.geo').click();
-        } else {
-          $(this).closest('div').find('a.options').removeClass('selected');
-          $(this).closest('div').find('span.col_ops_list').hide();
-          $(this).closest('div').find('h3').trigger('dblclick');
-        }
+
+        $(this).closest('div').find('a.options').removeClass('selected');
+        $(this).closest('div').find('span.col_ops_list').hide();
+        $(this).closest('div').find('h3').trigger('dblclick');
       });
       $('thead a.change_data_type').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
-        if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
-          $('p.geo').trigger('click');
-        } else {
-          $(this).closest('div').find('a.options').removeClass('selected');
-          $(this).closest('div').find('span.col_ops_list').hide();
-          $(this).closest('div').find('a.column_type').trigger('click');
-        }
+        $(this).closest('div').find('a.options').removeClass('selected');
+        $(this).closest('div').find('span.col_ops_list').hide();
+        $(this).closest('div').find('a.column_type').trigger('click');
       });
       $('thead a.delete_column').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
         methods.bindESCkey();
 
-        if ($(this).closest('th').find('p.geo').hasClass('loading') && geolocating) {
-          $('p.geo').trigger('click');
+        $(this).closest('div').find('a.options').removeClass('selected');
+        $(this).closest('div').find('span.col_ops_list').hide();
+        var column = $(this).closest('th').attr('c');
+        var left_position = $(table).find('th[c="'+column+'"]').position().left;
+        var options_position = $(table).find('th[c="'+column+'"]').find('a.options').position().left;
+
+        $('div.delete_column a.button').attr('c',column);
+        if ($(document).scrollTop()>58) {
+          $('div.delete_column').css('top',$(document).scrollTop()-50+'px');
         } else {
-          $(this).closest('div').find('a.options').removeClass('selected');
-          $(this).closest('div').find('span.col_ops_list').hide();
-          var column = $(this).closest('th').attr('c');
-          var left_position = $(table).find('th[c="'+column+'"]').position().left;
-          var options_position = $(table).find('th[c="'+column+'"]').find('a.options').position().left;
-
-          $('div.delete_column a.button').attr('c',column);
-          if ($(document).scrollTop()>58) {
-            $('div.delete_column').css('top',$(document).scrollTop()-50+'px');
-          } else {
-            $('div.delete_column').css('top','15px');
-          }
-          $('div.delete_column').css('left',left_position+options_position-97+'px');
-          $('div.delete_column').show();
-
-          $('body').click(function(event) {
-           if (!$(event.target).closest('div.delete_column').length) {
-             methods.closeTablePopups();
-           };
-          });
+          $('div.delete_column').css('top','15px');
         }
+        $('div.delete_column').css('left',left_position+options_position-97+'px');
+        $('div.delete_column').show();
 
+        $('body').click(function(event) {
+         if (!$(event.target).closest('div.delete_column').length) {
+           methods.closeTablePopups();
+         };
+        });
       });
       $('div.delete_column a.cancel_delete, div.delete_row a.cancel_delete, div.change_type_column a.cancel_change').livequery('click',function(ev){
         stopPropagation(ev);
@@ -1927,298 +1802,15 @@
 
 
       ///////////////////////////////////////
-      //  Georeference window events       //
+      //  Georeference action if...        //
       ///////////////////////////////////////
-      $('a.open_georeference,p.geo,a.georeference_global').livequery('click',function(ev){
-        stopPropagation(ev);
-				if (enabled && !query_mode) {
-					methods.closeTablePopups();
-	        methods.bindESCkey();
-	        enabled = false;
-	        var me = this;
-
-	        if (geolocating) {
-	          $('div.mamufas div.stopgeo_window').show();
-	          $('div.mamufas').fadeIn();
-	          return false;
-	        }
-
-	        resetProperties();
-	        getColumns();
+      $(document).bind('update_geometry',function(ev){
+        var table_mode = ($('body').attr('view_mode') == "table");
+        if (enabled && table_mode && !$(this).hasClass('disabled')) {
+          methods.refreshTable(0);
 				}
-
-
-        function resetProperties() {
-          $('div.georeference_window div.inner_ span.top').css('opacity',1).show();
-          $('div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
-          $('div.georeference_window a.close_geo').show();
-          $('div.georeference_window').css('height','auto');
-          $('div.georeference_window div.inner_').css('height','auto');
-          $('div.georeference_window').removeClass('loading');
-          $('div.georeference_window span.select').addClass('disabled');
-          $('div.georeference_window span.select a.option').each(function(i,ele){
-            $(ele).text('Retrieving columns...').attr('c','');
-          });
-          $('div.georeference_window a.confirm_georeference').addClass('disabled');
-          $('div.georeference_window span.select').removeClass('clicked');
-          $('div.georeference_window').css('overflow','visible');
-
-          //Reset second item of the main_list (compont geo)
-          $('div.second_column_address').hide();
-          $('div.third_column_address').hide();
-          $('div.first_column_address a.remove_column').hide();
-          $('div.first_column_address a.combine').hide();
-          $('div.first_column_address').show();
-
-
-          // Remove selected li class before know where geo column is.
-          $('div.georeference_window ul.main_list li').removeClass('selected');
-
-          // Remove all ScrollPane and lists items //
-          var custom_scrolls = [];
-          $('.scrollPane').each(function(){
-       		  custom_scrolls.push($(this).jScrollPane().data().jsp);
-       		});
-
-          _.each(custom_scrolls,function(ele,i) {
-            ele.destroy();
-          });
-          $('div.georeference_window span.select ul li').remove();
-        }
-
-        function getColumns() {
-          $.ajax({
-             method: "GET",
-             url: defaults.getDataUrl+table_name,
-      			 headers: {"cartodbclient":"true"},
-             success: function(data) {
-               data = data.schema;
-               // Select item depending on the kind of referenciation before
-               var geo_col_type = '';
-               if ($('p.geo').length==0) {
-                 $('div.georeference_window ul.main_list li.first_list:eq(0)').addClass('selected');
-                 geo_col_type = '';
-               } else if ($('p.geo').hasClass('latitude')) {
-                 $('div.georeference_window ul.main_list li.first_list:eq(0)').addClass('selected');
-                 geo_col_type = 'latlng';
-               } else {
-                 $('div.georeference_window ul.main_list li.first_list:eq(1)').addClass('selected');
-                 geo_col_type = 'address';
-               }
-
-               for (var i = 0; i<data.length; i++) {
-              if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at" && (data[i][1]=="number" || data[i][1]=="string")) {
-                   if (data[i][2]==undefined) {
-                     $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                   } else {
-                     $('div.georeference_window div.block span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                     if (data[i][2]=="longitude") {
-                       $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                       $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                       $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
-                     } else if (data[i][2]=="latitude") {
-                       $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                       $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                       $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
-                     }
-                   }
-                 }
-               }
-
-               $('div.georeference_window span.select:eq(1) ul').append('<li><a href="#no_geo">Empty</a></li>');
-               $('div.georeference_window span.select:eq(0) ul').append('<li><a href="#no_geo">Empty</a></li>');
-               $('div.georeference_window span.select').removeClass('disabled');
-
-               $('div.georeference_window span.select a.option').each(function(i,ele){
-                 if ($(ele).text()=="Retrieving columns...") {
-                    $(ele).text('Select a column').attr('c','');
-                  }
-               });
-               $('div.georeference_window a.confirm_georeference').removeClass('disabled');
-               $(me).closest('div').find('a.options').removeClass('selected');
-               $(me).closest('div').find('span.col_ops_list').hide();
-               $('div.mamufas div.georeference_window').show();
-               $('div.mamufas').fadeIn();
-             },
-             error: function(e) {
-               $('div.georeference_window span.select:eq(0) a:eq(0)').text('Error retrieving cols').attr('c','');
-               $('div.georeference_window span.select:eq(1) a:eq(0)').text('Error retrieving cols').attr('c','');
-             }
-          });
-        }
       });
-      $('div.georeference_window span.select a.option').livequery('click',function(ev){
-        stopPropagation(ev);
-        if (!$(this).parent().hasClass('disabled')) {
-          if ($(this).parent().hasClass('clicked')) {
-            $(this).parent().removeClass('clicked');
-          } else {
-            $('span.select').removeClass('clicked');
-            $('body').bind('click',function(ev){
-              if (!$(ev.target).closest('span.select').length) {
-                $('span.select').removeClass('clicked');
-              };
-            });
-            $(this).parent().addClass('clicked');
-            $(this).parent().find('ul').jScrollPane();
-          }
-        }
-      });
-      $('div.georeference_window span.latitude ul li a,div.georeference_window span.longitude ul li a').livequery('click',function(ev){
-        stopPropagation(ev);
-        $(this).closest('span.select').children('a.option').text($(this).text());
-        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
-        $('span.select').removeClass('clicked');
-
-        if ($(this).text()=="Empty") {
-          $(this).parent().parent().children('li').removeClass('choosen');
-          $(this).parent().addClass('choosen');
-        } else {
-          $(this).parent().parent().children('li').removeClass('choosen');
-          $(this).parent().addClass('choosen');
-          var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
-          if (index == 0) {
-            var other_index = 1;
-            var other_value = $('span.select:eq(1) a.option').text();
-          } else {
-            var other_index = 0;
-            var other_value = $('span.select:eq(0) a.option').text();
-          }
-          $('span.select:eq('+index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
-          $('span.select:eq('+other_index+') ul li').removeClass('choosen');
-          $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
-          $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
-        }
-      });
-      $('div.georeference_window span.address ul li a').livequery('click',function(ev){
-        stopPropagation(ev);
-        $(this).closest('span.select').children('a.option').text($(this).text());
-        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
-        $('span.select').removeClass('clicked');
-
-        var block_class = $(this).closest('div.block');
-        if (block_class.hasClass('first_column_address')) {
-          if (!$('div.second_column_address').is(':visible')) {
-            $('div.georeference_window div.second_column_address').show();
-            $('div.georeference_window div.second_column_address a.remove_column').show();
-          }
-        } else if (block_class.hasClass('second_column_address')) {
-          if (!$('div.third_column_address').is(':visible')) {
-            $('div.georeference_window div.second_column_address a.remove_column').hide();
-            $('div.georeference_window div.third_column_address').show();
-            $('div.georeference_window div.third_column_address a.remove_column').show();
-          }
-        } else {
-          $('div.georeference_window div.third_column_address a.remove_column').show();
-        }
-      });
-      $('div.georeference_window a.remove_column').livequery('click',function(ev){
-        stopPropagation(ev);
-        $(this).closest('div.block').children('span.select').children('a.option').text('Select a column');
-        $(this).closest('div.block').children('span.select').children('a.option').attr('c','');
-        $('span.select').removeClass('clicked');
-
-        var block_class = $(this).closest('div.block');
-        if (block_class.hasClass('first_column_address')) {
-          $('div.georeference_window div.first_column_address a.remove_column').hide();
-        } else if (block_class.hasClass('second_column_address')) {
-          $('div.georeference_window div.first_column_address a.remove_column').show();
-          $('div.georeference_window div.second_column_address').hide();
-          $('div.georeference_window div.second_column_address a.remove_column').hide();
-        } else {
-          $('div.georeference_window div.second_column_address a.remove_column').show();
-          $('div.georeference_window div.third_column_address').hide();
-          $('div.georeference_window div.third_column_address a.remove_column').show();
-        }
-      });
-      $('div.georeference_window div.inner_ span.top ul li a.first_ul').livequery('click',function(ev){
-        stopPropagation(ev);
-        if (!$(this).parent().hasClass("disabled")) {
-          $('div.georeference_window div.inner_ span.top ul:eq(0) li').removeClass('selected');
-          $(this).parent().addClass('selected');
-        }
-      });
-      $('a.confirm_georeference').livequery('click',function(ev){
-        stopPropagation(ev);
-
-        if (!$(this).hasClass('disabled')) {
-          if ($('div.georeference_window ul.main_list li.first_list:eq(1)').hasClass('selected')) {
-            var params = {};
-            var address = '';
-
-            $('div.georeference_window ul.main_list li.first_list:eq(1) a.option').each(function(index,element){
-              if ($(element).attr('c')!='') {
-                address += $(element).attr('c') + ',';
-              }
-            });
-            address = address.substr(0,address.length-1);
-            if (address!='') {
-              loadingState();
-              params['address_column'] = address;
-              setTimeout(function(){methods.updateTable("",params,null,null,'update_geometry',"PUT");},1000);
-            } else {
-              $('div.georeference_window p.error').text('You have to select at least one column');
-              $('div.georeference_window p.error').css('opacity',0);
-              $('div.georeference_window p.error').css('display','block');
-              $('div.georeference_window p.error').fadeTo(300,1);
-              $('div.georeference_window p.error').delay(3000).fadeTo(300,0,function(){
-                $('div.georeference_window p.error').css('display','none');
-              });
-            }
-          } else {
-            var latitude = $('a#latitude').attr('c');
-            var longitude = $('a#longitude').attr('c');
-            if (!(latitude=='' && longitude=='')) {
-              var params = {};
-              params['latitude_column'] = (latitude=="Empty")? "nil" : latitude;
-              params['longitude_column'] = (longitude=="Empty")? "nil" : longitude;
-              methods.updateTable("",params,null,null,'update_geometry',"PUT");
-            } else {
-              $('div.georeference_window p.error').text('You have to select latitude and longitude');
-              $('div.georeference_window p.error').css('opacity',0);
-              $('div.georeference_window p.error').css('display','block');
-              $('div.georeference_window p.error').fadeTo(300,1);
-              $('div.georeference_window p.error').delay(3000).fadeTo(300,0,function(){
-                $('div.georeference_window p.error').css('display','none');
-              });
-            }
-          }
-        }
-
-
-        function loadingState() {
-          methods.unbindESCkey();
-          $('div.georeference_window').css('overflow','hidden');
-          $('div.georeference_window div.inner_ span.top').animate({opacity:0},200,function(){
-            $(this).hide();
-            $('div.georeference_window a.close_geo').hide();
-            $('div.georeference_window span.loading').css('opacity','0');
-            $('div.georeference_window').addClass('loading');
-            $('div.georeference_window div.inner_ span.loading').animate({opacity:1},200);
-          });
-          $('div.georeference_window div.inner_ span.bottom').animate({opacity:0},200,function(){
-            $(this).hide();
-          });
-          $('div.georeference_window div.inner_').animate({height:'74px'},400);
-
-        }
-      });
-      $('div.georeference_window a.close_geo,div.georeference_window a.cancel').livequery('click',function(ev){
-        stopPropagation(ev);
-        enabled = true;
-        methods.closeTablePopups();
-      });
-      $('a.cancel_geo').livequery('click',function(ev){
-        stopPropagation(ev);
-        methods.closeTablePopups();
-        $(window).trigger('stopGeo');
-        enabled = true;
-      });
-      $('a.close').livequery('click',function(ev){
-        stopPropagation(ev);
-        methods.closeTablePopups();
-      });
-
+      
 
       ///////////////////////////////////////
       //  Add - remove row events          //
@@ -2234,39 +1826,35 @@
         methods.closeTablePopups();
         methods.bindESCkey();
 
-        if (geolocating) {
-          $('p.geo').trigger('click');
-        } else {
-          var cartodb_id = $(this).closest('tr').attr('r');
-          var top_position = $(table).find('tr[r="'+cartodb_id+'"]').position().top;
-          var rows_involved = $('table tbody tr.selecting').size();
+        var cartodb_id = $(this).closest('tr').attr('r');
+        var top_position = $(table).find('tr[r="'+cartodb_id+'"]').position().top;
+        var rows_involved = $('table tbody tr.selecting').size();
 
-          // Several rows involved or only one?
-          if (rows_involved>1) {
-            $('div.delete_row p').text('You are about to delete these rows. Are you sure?');
-            $('div.delete_row a.button').text('Yes, delete them');
-            var rows_involved_ids = '';
-            $('table tbody tr.selecting').each(function(i,ele){
-              rows_involved_ids += $(ele).attr('r') + ',';
-            });
-            rows_involved_ids = rows_involved_ids.substr(0,rows_involved_ids.length-1);
-            $('div.delete_row a.button').attr('r',rows_involved_ids);
-          } else {
-            $('div.delete_row p').text('You are about to delete this row. Are you sure?');
-            $('div.delete_row a.button').text('Yes, delete it');
-            $('div.delete_row a.button').attr('r',cartodb_id);
-          }
-
-          $('div.delete_row').css('top',top_position-7+'px');
-          $('div.delete_row').css('left',$('div.table_position').scrollLeft()+10+'px');
-          $('div.delete_row').show();
-
-          $('body').click(function(event) {
-           if (!$(event.target).closest('div.delete_row').length) {
-             methods.closeTablePopups();
-           };
+        // Several rows involved or only one?
+        if (rows_involved>1) {
+          $('div.delete_row p').text('You are about to delete these rows. Are you sure?');
+          $('div.delete_row a.button').text('Yes, delete them');
+          var rows_involved_ids = '';
+          $('table tbody tr.selecting').each(function(i,ele){
+            rows_involved_ids += $(ele).attr('r') + ',';
           });
+          rows_involved_ids = rows_involved_ids.substr(0,rows_involved_ids.length-1);
+          $('div.delete_row a.button').attr('r',rows_involved_ids);
+        } else {
+          $('div.delete_row p').text('You are about to delete this row. Are you sure?');
+          $('div.delete_row a.button').text('Yes, delete it');
+          $('div.delete_row a.button').attr('r',cartodb_id);
         }
+
+        $('div.delete_row').css('top',top_position-7+'px');
+        $('div.delete_row').css('left',$('div.table_position').scrollLeft()+10+'px');
+        $('div.delete_row').show();
+
+        $('body').click(function(event) {
+         if (!$(event.target).closest('div.delete_row').length) {
+           methods.closeTablePopups();
+         };
+        });
       });
       $('div.delete_row a.button').livequery('click',function(ev){
         stopPropagation(ev);
@@ -2647,27 +2235,6 @@
                                 break;
         case "column_type":     methods.refreshTable('');
                                 headers[params.name] = params.type;
-                                break;
-        case "update_geometry": methods.refreshTable('');
-                                // $('p.geo').remove();
-                                // if (params.address_column != undefined && params.address_column != '') {
-                                //   var address_cols = params.address_column.split(',');
-                                //   if (address_cols.length==1) {
-                                //     $('thead tr th[c='+address_cols[0]+'] h3').parent().append('<p class="geo address loading">geo</p>');
-                                //   } else {
-                                //     methods.refreshTable('');
-                                //     setTimeout(function(){
-                                //       geolocating = true;
-                                //       var place = $('p.geo').offset();
-                                //       $('div.table_position').scrollTo({top:'0',left:place.left},300);
-                                //     },1000);
-                                //   }
-                                //   var geo_address = new Geocoding(params.address_column,table_id);
-                                // } else {
-                                //   $('thead tr th h3:contains('+params.latitude_column+')').parent().append('<p class="geo latitude">geo</p>');
-                                //   $('thead tr th h3:contains('+params.longitude_column+')').parent().append('<p class="geo longitude">geo</p>');
-                                // }
-                                methods.closeTablePopups();
                                 break;
         case "new_column":      methods.closeTablePopups();
                                 headers[params.name] = params.type;

@@ -294,11 +294,21 @@ div.mamufas div.save_window {position:absolute; display:none; top:50%; left:50%;
 div.mamufas div.save_window a.close {position:absolute; right:-9px; top:-7px; width:24px; height:24px; background:url('/images/admin/table/close_georeference.png') no-repeat 0 0;}
 div.mamufas div.save_window a.close:hover {background-position:0 -24px;}
 div.mamufas div.save_window div.inner_ {float:left; width:387px; border:2px solid #FFC209; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+
+div.mamufas div.save_window div.inner_ span.loading {display:none;}
+div.mamufas div.save_window.loading div.inner_ span.loading {float:left; display:block; opacity:0; width:317px; height:40px; padding:0 0 10px 47px; margin:10px; background:url('/images/admin/icons/loading.gif') no-repeat 0 7px;}
+div.mamufas div.save_window.loading div.inner_ span.loading h5 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.save_window.loading div.inner_ span.loading p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
+
 div.mamufas div.save_window div.inner_ span.top {float:left; width:357px; padding:14px; border-bottom:1px solid #CCCCCC;}
 div.mamufas div.save_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.save_window div.inner_ span.top input {width:341px; height:13px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat 1px 0; border:1px solid #999999; webkit-border-radius:4px;
 border-radius:4px; -moz-border-radius:4px; font:normal 13px Arial; color:#333333; line-height:13px;}
 div.mamufas div.save_window div.inner_ span.top input:focus {outline:none;}
+div.mamufas div.save_window div.inner_ span.top input.error {border-color:#C04E03}
+div.mamufas div.save_window div.inner_ span.top div.error_content {position:absolute; z-index:10; right:22px; top:14px; display:none; width:auto}
+div.mamufas div.save_window div.inner_ span.top div.error_content p {float:left; height:52px; padding:0 0 0 19px!important; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
+div.mamufas div.save_window div.inner_ span.top div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}
 div.mamufas div.save_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; padding:0 0 18px 0; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.save_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
 div.mamufas div.save_window div.inner_ span.bottom a.table_save {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;

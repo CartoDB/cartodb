@@ -414,7 +414,6 @@
             $(this).hide();
           });
           $('div.georeference_window div.inner_').animate({height:'74px'},400);
-
         }
       });
       $('div.georeference_window a.close_geo,div.georeference_window a.cancel').livequery('click',function(ev){
@@ -436,9 +435,14 @@
 		    '<div class="save_window">'+
           '<a href="#close_window" class="close"></a>'+
           '<div class="inner_">'+
+            '<span class="loading">'+
+              '<h5>We are duplicating your table...</h5>'+
+              '<p>Just some seconds, ok?</p>'+
+            '</span>'+
             '<span class="top">'+
               '<h3>Insert a name for your copy of this table</h3>'+
               '<input type="text"/>'+
+              '<div class="error_content"><p><span>Provide a name for your new table</span></p></div>'+
             '</span>'+
             '<span class="bottom">'+
               '<a href="#close_window" class="cancel">cancel</a>'+
@@ -454,7 +458,7 @@
 	        '<ul>'+
 	          '<li class="disabled"><a class="import_data">Import data...</a></li>'+
 	          '<li><a class="export_data">Export data...</a></li>'+
-	          '<li class="disabled"><a>Duplicate table as...</a></li>'+ //class="save_table"
+	          '<li><a class="save_table">Duplicate table as...</a></li>'+
 	        '</ul>'+
 	      '</span>');
 	
@@ -478,32 +482,58 @@
 	
 	    $('a.save_table').click(function(ev){
 	      stopPropagation(ev);
-	      
-	      $.ajax({
-			    type: "POST",
-			    url: global_api_url+'tables',
-			    data: {
-			      name: 'jamooon',
-			      table_copy: table_name
-			    },
-			 		headers: {"cartodbclient":"true"},
-			    success: function(result) {
-						console.log(result);
-			    },
-			    error: function(e) {
-			      console.log(e);
-			    }
-			  });
-	
-        // closeOutTableWindows();
-        // $('div.mamufas div.save_window').show();
-        // $('div.mamufas').fadeIn('fast');
-        // bindESC();
+	      resetSaveWindow();
+        closeOutTableWindows();
+        $('div.mamufas div.save_window').show();
+        $('div.mamufas').fadeIn('fast');
+        $('div.save_window span.top input').focus();
+        
+        $(document).keydown(function(event){
+          if (event.which == '13') {
+            $('a.table_save').click();
+            unbindESC();
+          }
+        });
+
+        bindESC();
 	    });
 
 	    $('a.table_save').click(function(ev){
 	      stopPropagation(ev);
-	      closeOutTableWindows();
+	      unbindESC();
+	      var new_table = $('div.save_window span.top input').val();
+	      
+	      if (new_table!="") {
+	        $('div.save_window span.top input').removeClass('error');
+	        loadingState();
+	        
+	        // Send request, only if there is an error...
+	        var requestId = createUniqueId();
+          requests_queue.newRequest(requestId,'duplicate_table');
+	        
+	        $.ajax({
+            type: "POST",
+            url: global_api_url+'tables',
+            data: {
+              name: new_table,
+              table_copy: table_name
+            },
+            headers: {"cartodbclient":"true"},
+            success: function(result) {
+              window.location.href = '/tables/'+ new_table;
+            },
+            error: function(e) {
+              var msg = e.responseText
+              closeOutTableWindows();
+              requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).message);
+            }
+          });
+	      } else {
+	        $('div.save_window span.top input').addClass('error');
+	        $('div.save_window span.top div.error_content').fadeIn().delay(3000).fadeOut();
+	      }
+	      
+
 	    });
 	
 	    $('a.export_data').click(function(ev){
@@ -518,6 +548,36 @@
 	        bindESC();
 	      }
 	    });
+			
+			
+			function resetSaveWindow() {
+			  $('div.save_window').css('overflow','visible');
+        $('div.save_window div.inner_ span.top').css({opacity:1,display:'block'});
+        $('div.save_window a.close').show();
+        $('div.save_window').removeClass('loading');
+        $('div.save_window div.inner_ span.loading').css({opacity:0});
+        $('div.save_window div.inner_ span.bottom').css({opacity:1,display:'block'});
+        $('div.save_window div.inner_').css({height:'auto'});
+        $('div.save_window span.top input').val('');
+			}
+			
+			
+		  function loadingState() {
+        unbindESC();
+        $('div.save_window').css('overflow','hidden');
+        $('div.save_window div.inner_ span.top').animate({opacity:0},200,function(){
+          $(this).hide();
+          $('div.save_window a.close').hide();
+          $('div.save_window span.loading').css('opacity','0');
+          $('div.save_window').addClass('loading');
+          $('div.save_window div.inner_ span.loading').animate({opacity:1},200);
+        });
+        $('div.save_window div.inner_ span.bottom').animate({opacity:0},200,function(){
+          $(this).hide();
+        });
+        $('div.save_window div.inner_').animate({height:'74px'},400);
+      }
+			
 			
 			return {}
 		}());
@@ -779,7 +839,7 @@
         ev.stopPropagation();
         ev.preventDefault();
         if(create_type==1){
-          console.log('send url');
+          // console.log('send url');
           // TODO send url to the server
         }
       });
@@ -1154,7 +1214,6 @@
     }
   }
 
-
 	// If the request fails
   function errorActionPerforming(param, old_value,error_text) {
     switch (param) {
@@ -1213,7 +1272,7 @@
       $('div.mamufas div.save_window').hide();
       $('div.mamufas div.warning_window').hide();
       $('div.mamufas div.import_window').hide();
-      $('div.mamufas div.georeference_window');
+      $('div.mamufas div.georeference_window').hide();
       $(document).unbind('keydown');
       $('body').unbind('click');
     });

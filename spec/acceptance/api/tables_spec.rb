@@ -80,7 +80,7 @@ feature "API 1.0 tables management" do
     post_json api_tables_url do |response|
       response.status.should be_success
       response.body[:id].should == response.headers['Location'].match(/\/(\d+)$/)[1].to_i
-      response.body[:name].should match(/^untitle/)
+      response.body[:name].should match(/^untitled/)
       (response.body[:schema] - default_schema).should be_empty
     end
   end

@@ -181,13 +181,13 @@
             cell_size = ((window_width-150)/(columns.length-1))-27;
             last_cell_size = cell_size;
           }
-
           maxPage = -1;
           if ($(table).children('thead').length==0) {methods.drawColumns(columns);}
           methods.startTable();
         } else {
           total = total_rows;
           if (rows.length>0) {
+            $('div.empty_table').remove();
             if ($(table).children('thead').length==0) {
               //Calculate width of th on header
               var window_width = $(window).width();

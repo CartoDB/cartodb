@@ -14,9 +14,10 @@
         });
         table_name = $(this).parent().find('h4').text();
         $('span.privacy_window li.'+status).addClass('selected');
-        var pos = $(this).position();
+        var pos = $(this).closest('li').position();
+        pos.left = $(this).position().left;
         var offset = $(this).width()/2;
-        $('span.privacy_window').css({top:5+pos.top+'px',left:pos.left-90+offset+'px'}).show();
+        $('span.privacy_window').css({top:31+pos.top+'px',left:pos.left-90+offset+'px'}).show();
         bindESC();
         $('body').unbind('click');
         $('body').click(function(event) {

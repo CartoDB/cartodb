@@ -1,28 +1,3 @@
-
-// FUNCIONALITIES
-// - Editing table data with events - OK
-// - Resize columns -- KO
-// - Pagination with ajax --- OK
-// - Custom style --- OK
-// - jScrollPane --- OK
-// - Update table (remove columns and rows, add columns and rows, move columns, sort columns) - OK
-// - Validate fields --- OK
-// - Rows selection for multiple edition --- OK
-// - Floating tHead  --- OK
-// - Floating first column --- OK
-
-// OUT FUNCTIONS
-// - setAppStatus function
-
-// Elements out of the plugin (Be careful with this!)
-// - header
-// - div.table_position
-// - section div.subheader
-// - div.mamufas
-// - div.general_options
-
-// We are playing with these containers but they don't belong to the plugin
-
 ;(function($){
 
   var first = true;
@@ -44,6 +19,8 @@
   var last_cell_size = 100;
 
   var enabled = true;
+  
+  
   var methods = {
 
 

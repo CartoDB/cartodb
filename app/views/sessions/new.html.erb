@@ -5,13 +5,14 @@
   <% content_for :head do %>
     <%= stylesheet_link_tag('reset.css','front/sessions') %>
   <% end %>
+
   <div class="glow">
     <div class="section">
-      <h1>Welcome to Carto<strong>DB</strong></h1>
+      <h1>Welcome to CartoDB</h1>
       <p>Enter your account information to start mapping</p>
       <%= form_tag create_session_path do %>
         <p class="title">Please login</p>
-        <%= label_tag :email, 'e-mail' %>
+        <%= label_tag :email, 'e-mail or username' %>
         <%= text_field_tag :email, '', :class => (flash[:alert] || @login_error ? 'error' : nil) %>
         <span class="password">
           <%= label_tag :password, 'password' %>

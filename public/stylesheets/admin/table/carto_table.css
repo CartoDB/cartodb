@@ -10,7 +10,7 @@ div.table_position table thead tr th div {position:relative!important; padding:1
 div.table_position table thead tr th.first {position:absolute; top:0; left:0; width:41px; height:100%; z-index:30; overflow:hidden; border:none; border-right:1px solid #E2E3E7;}
 div.table_position table thead tr th.first div {position:relative; width:41px; height:100px; padding:0!important; margin:0!important;}
 div.table_position table thead tr th span.long {float:left; width:100%;}
-div.table_position table thead tr th h3 {float:left; width:auto; max-width:57%; margin:3px 0 3px 4px; font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
+div.table_position table thead tr th h3 {float:left; width:auto; max-width:90%; margin:3px 0 3px 4px; font:bold 11px "Helvetica"; color:#727272; text-align:left; text-shadow:0 1px white; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 div.table_position table thead tr th h3:hover {cursor:pointer; color:#444444;}
 div.table_position table thead tr th h3.static {color:#bbb; max-width:90%;}
 div.table_position table thead tr th h3.static:hover {cursor:default; color:#bbb;}
@@ -143,7 +143,7 @@ div.table_position div.loading {position:relative!important; display:none; float
 div.table_position div.loading.loading_previous {margin:59px 0 0 0; border-bottom:none;}
 div.table_position div.loading p {width:100%; text-align:center; font:bold 13px "Helvetica"; color:#666666;}
 div.table_position div.loading p.count {width:100%; padding:2px 0 0 0; text-align:center; font:normal 11px "Helvetica"; color:#B3B3B3;}
-div.table_position div.loading.loading_previous p {width:auto;} 
+div.table_position div.loading.loading_previous p {width:auto;}
 div.table_position div.loading img {position:absolute; width:25; height:25px ; margin:0 0 0 -13px; top:12px; left:50%;}
 
 

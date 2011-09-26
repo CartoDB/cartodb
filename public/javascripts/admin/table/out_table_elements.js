@@ -120,8 +120,8 @@
 					setAppStatus();	// Out function to change app to SQL or NORMAL
 			  }
 			});
-			
-			$('div.sql_window a.close_sql').livequery('click',function(ev){
+						
+			$('div.sql_window a.close_sql,div.sql_window a.close').livequery('click',function(ev){
 	    	stopPropagation(ev);
 	      closeOutTableWindows();
 	    });
@@ -635,9 +635,7 @@
 						$.cookie('flash', 'Table successfully removed');
 	          window.location.href = '/dashboard';
 	        },
-	        error: function(e) {
-	          console.debug(e);
-	        }
+	        error: function(e) {}
 	      });
 	    });
 	
@@ -682,6 +680,11 @@
 		      $(this).parent().addClass('selected');
 		      $('#export_format').val(format);
 				}
+	    });
+	    
+	    $('div.mamufas div.export_window a.close').click(function(ev){
+	      stopPropagation(ev);
+	      closeOutTableWindows();
 	    });
 	
 	    $('div.mamufas div.export_window form').submit(function(ev){

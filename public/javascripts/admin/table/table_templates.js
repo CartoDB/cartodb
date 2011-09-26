@@ -6,7 +6,6 @@
                   '<div {{#cartodb_id}}style="width:75px"{{/cartodb_id}}  {{^cartodb_id}}style="width:{{cellsize}}px"{{/cartodb_id}}>'+
                     '<span class="long">'+
                       '<h3 {{^allowed}}class="static"{{/allowed}}>{{name}}</h3>'+
-                      
                       '{{#geo}}<p class="geo {{value}} {{#loading}}loading{{/loading}}">geo</p>{{/geo}}'+
                       '{{#allowed}}<input type="text" value="{{name}}"/>{{/allowed}}'+
                     '</span>'+
@@ -29,11 +28,13 @@
                           '<li><a class="change_data_type" href="#change_data_type">Change data type</a></li>' +
                           '<li><a class="delete_column" href="#delete_column">Delete column</a></li>' +
                         '</ul>' +
-                        '<div class="line geo_line"></div>' +
-                        '<h5>GEOREFERENCE</h5>' +
-                        '<ul class="geo_list">' +
-                          '<li><a href="#" class="open_georeference">Georeference with...</a></li>' +
-                        '</ul>' +
+                        '{{#number}}'+
+                          '<div class="line geo_line"></div>' +
+                          '<h5>GEOREFERENCE</h5>' +
+                          '<ul class="geo_list">' +
+                            '<li><a href="#" class="open_georeference">Georeference with...</a></li>' +
+                          '</ul>' +
+                        '{{/number}}'+
                         '<div class="line"></div>'+
                       '{{/allowed}}'+
                       '<h5>FILTER</h5>' +

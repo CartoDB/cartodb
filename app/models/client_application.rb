@@ -5,6 +5,9 @@ class ClientApplication < Sequel::Model
   one_to_many :tokens, :class_name => :OauthToken
   one_to_many :access_tokens
   one_to_many :oauth_tokens
+  
+  plugin :association_dependencies
+  add_association_dependencies :oauth_tokens => :destroy
 
   attr_accessor :token_callback_url
 

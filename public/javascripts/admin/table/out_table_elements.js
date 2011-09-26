@@ -981,7 +981,7 @@
 	          $('span.title_window span').fadeOut();
 	        },1500);
 	      } else {
-	        // If the name of the table is Untitle_table... - not show warning
+	        // If the name of the table is Untitled_table... - not show warning
 	        if ((old_value.name).search('untitled_table')==-1) {
 	          closeOutTableWindows();
 	          $('div.mamufas div.warning_window a.continue').unbind('click');

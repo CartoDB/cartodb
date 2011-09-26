@@ -9,12 +9,12 @@ describe Table do
     table = Table.new
     table.user_id = user.id
     table.save.reload
-    table.name.should == "untitle_table"
+    table.name.should == "untitled_table"
 
     table2 = Table.new
     table2.user_id = user.id
     table2.save.reload
-    table2.name.should == "untitle_table_2"
+    table2.name.should == "untitled_table_2"
   end
 
   it "should have a privacy associated and it should be private by default" do

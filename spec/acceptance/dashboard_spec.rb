@@ -202,7 +202,7 @@ feature "Dashboard", %q{
     page.find('a.new_table').click
     page.find('div.create_window span.bottom input#create_table').click
 
-    page.should have_css("h2 a", :text => 'untitle_table')
+    page.should have_css("h2 a", :text => 'untitled_table')
   end
 
   scenario "Get OAuth credentials" do

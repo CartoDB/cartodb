@@ -982,7 +982,7 @@
 	        },1500);
 	      } else {
 	        // If the name of the table is Untitle_table... - not show warning
-	        if ((old_value.name).search('untitle_table')==-1) {
+	        if ((old_value.name).search('untitled_table')==-1) {
 	          closeOutTableWindows();
 	          $('div.mamufas div.warning_window a.continue').unbind('click');
 	          $('div.mamufas div.warning_window a.continue').click(function(ev){

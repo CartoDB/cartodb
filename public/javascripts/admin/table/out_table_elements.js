@@ -6,113 +6,28 @@
   head(function(){
 	
 		///////////////////////////////////////
-    //  Mamufas addition                 //
+    //  Warning window                   //
     ///////////////////////////////////////
-		var mamufas = $('div.mamufas').append(
-      '<div class="delete_window">'+
-        '<a href="#close_window" class="close"></a>'+
-        '<div class="inner_">'+
-          '<span class="top">'+
-            '<h3>You are about to delete this table</h3>'+
-            '<p>You will not be able to recover this information. We really recommend to <a class="export_data" href="#export_data">export the data</a> before deleting it.</p>'+
-          '</span>'+
-          '<span class="bottom">'+
-            '<a href="#close_window" class="cancel">cancel</a>'+
-            '<a href="#confirm_delete" class="confirm_delete">Delete this table</a>'+
-          '</span>'+
-        '</div>'+
-      '</div>'+
-      '<div class="export_window">'+
-        '<a href="#close_window" class="close"></a>'+
-        '<div class="inner_">'+
-          '<form action="/tables/'+ table_name +'" method="get">'+
-            '<input id="export_format" type="hidden" name="format" />'+
+		var warning_window = (function() {
+		  // Just the html for warning window
+		  $('div.mamufas').append(
+        '<div class="warning_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
             '<span class="top">'+
-              '<h3>Export your data</h3>'+
-              '<p>Select your desired format for downloading the data</p>'+
-              '<ul>'+
-                '<li class="selected"><a class="option" href="#CSV" rel="csv">CSV (Comma separated values)</a></li>'+
-                '<li class="disabled"><a class="option" href="#KML" rel="kml">KML</a></li>'+
-                '<li><a class="option" href="#SHP" rel="shp">SHP</a></li>'+
-              '</ul>'+
+              '<h3>This change will affect your API calls</h3>'+
+              '<p>If you are accesing to this table via API don’t forget to update the name in the API calls after changing the name.</p>'+
             '</span>'+
             '<span class="bottom">'+
               '<a href="#close_window" class="cancel">cancel</a>'+
-              '<input type="submit" class="download" value="Download" />'+
+              '<a href="#confirm_delete" class="continue">Ok, continue</a>'+
             '</span>'+
-        '</div>'+
-      '</div>'+
-      '<div class="save_window">'+
-        '<a href="#close_window" class="close"></a>'+
-        '<div class="inner_">'+
-          '<span class="top">'+
-            '<h3>Insert a name for your copy of this table</h3>'+
-            '<input type="text"/>'+
-          '</span>'+
-          '<span class="bottom">'+
-            '<a href="#close_window" class="cancel">cancel</a>'+
-            '<a href="#save_table" class="table_save" >Save table</a>'+
-          '</span>'+
-        '</div>'+
-      '</div>'+
-      '<div class="warning_window">'+
-        '<a href="#close_window" class="close"></a>'+
-        '<div class="inner_">'+
-          '<span class="top">'+
-            '<h3>This change will affect your API calls</h3>'+
-            '<p>If you are accesing to this table via API don’t forget to update the name in the API calls after changing the name.</p>'+
-          '</span>'+
-          '<span class="bottom">'+
-            '<a href="#close_window" class="cancel">cancel</a>'+
-            '<a href="#confirm_delete" class="continue">Ok, continue</a>'+
-          '</span>'+
-        '</div>'+
-      '</div>'+
-      '<div class="import_window">'+
-        '<a href="#close_window" class="close"></a>'+
-        '<div class="inner_">'+
-          '<span class="loading">'+
-            '<h5>We are importing your data...</h5>'+
-            "<p>It shouldn't take long, just a few more seconds ok?</p>"+
-          '</span>'+
-          '<form action="#import_file" id="import_file" enctype="multipart/form-data" method="post">'+
-            '<span class="top">'+
-              '<h4>Do you want to import some data to this table now?</h4>'+
-              '<p>Be sure your data has the same schema</p>'+
-              '<ul>'+
-                '<li class="selected">'+
-                  '<a href="#">I want to add some data from a file</a>'+
-                  '<span class="file">'+
-                    '<div class="select_file">'+
-                      '<div id="uploader"></div>'+
-                      '<p>You can import .csv, .xls or .zip files</p>'+
-                    '</div>'+
-                    '<div class="progress">'+
-                      '<p>Uploading your file...</p>'+
-                      '<span class="progress"></span>'+
-                    '</div>'+
-                  '</span>'+
-                '</li>'+
-                '<li>'+
-                  '<a href="#">I want to add some data from a URL</a>'+
-                  '<span class="file">'+
-                    '<div class="select_file">'+
-                      '<input id="url_txt" type="text" name="url_value" value="Insert a valid URL..."/>'+
-                    '</div>'+
-                  '</span>'+
-                '</li>'+
-              '</ul>'+
-            '</span>'+
-            '<span class="bottom">'+
-              '<a href="#" class="cancel">cancel</a>'+
-              '<input id="create_table" type="submit" name="submit" value="Create table"/>'+
-            '</span>'+
-          '</form>'+
-        '</div>'+
-      '</div>'
-      );
-	
-	
+          '</div>'+
+        '</div>');
+	    return {}
+		}());
+		
+
     
     ///////////////////////////////////////
     //  Bottom bar with tools (SQL,...)  //
@@ -157,6 +72,7 @@
 		        '</span>'+
 					'</div>'+
 	      '</div>');
+	
 	
 			/*******************/
 			/* Event listeners */
@@ -215,10 +131,322 @@
 
 
 
+    ///////////////////////////////////////
+    //  Bottom bar with tools (SQL,...)  //
+    ///////////////////////////////////////
+		var georeference_window = (function() {
+			
+			//Append georeference html to the document
+			$('div.mamufas').append(
+	      '<div class="georeference_window">'+
+          '<a href="#close_window" class="close_geo"></a>'+
+          '<div class="inner_">'+
+            '<span class="loading">'+
+               '<h5>We are georeferencing your columns...</h5>'+
+               '<p>Just some seconds, ok?</p>'+
+             '</span>'+
+            '<span class="top">'+
+              '<h3>Choose your geocoding method for this column</h3>'+
+              '<p>Please select the columns for the lat/lon fields</p>'+
+              '<div class="georef_options">'+
+                '<div class="select">'+
+                  '<label>LATITUDE COLUMN</label>'+
+                  '<span class="select latitude">'+
+                    '<a id="latitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
+                    '<div class="select_content">'+
+                      '<ul class="scrollPane"></ul>'+
+                    '</div>'+
+                  '</span>'+
+                '</div>'+
+                '<div class="select longitude last">'+
+                  '<label>LONGITUDE COLUMN</label>'+
+                  '<span class="select longitude">'+
+                    '<a id="longitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
+                    '<div class="select_content">'+
+                      '<ul class="scrollPane"></ul>'+
+                    '</div>'+
+                  '</span>'+
+                '</div>'+
+              '</div>'+
+              '<div class="error_content"><p><span>You have to select latitude and longitude</span></p></div>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#close_window" class="cancel">cancel</a>'+
+              '<a href="#confirm_georeference" class="confirm_georeference">Georeference</a>'+
+            '</span>'+
+          '</div>'+
+        '</div>');
+
+      
+      // Now the listeners
+      $('a.open_georeference,p.geo').livequery('click',function(ev){
+        
+        var init_lat = $(this).closest('th').attr('c') || '';
+        
+        // Remove selected list in header th
+        $('thead tr th a.options').removeClass('selected');
+        $('span.col_ops_list').hide();
+        
+        stopPropagation(ev);
+        closeOutTableWindows();
+        // SQL mode? you can't georeference
+        var query_mode = ($('body').attr('query_mode') === "true");
+    		if (!query_mode) {
+				  $('div.mamufas div.georeference_window').show();
+  	      $('div.mamufas').fadeIn('fast');
+  	      bindESC();
+
+	        resetProperties();
+	        getColumns();
+				}
+
+        function resetProperties() {
+          $('div.georeference_window div.inner_ span.top').css('opacity',1).show();
+          $('div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
+          $('div.georeference_window a.close_geo').show();
+          $('div.georeference_window').css('height','auto');
+          $('div.georeference_window div.inner_').css('height','auto');
+          $('div.georeference_window').removeClass('loading');
+          
+          $('div.georeference_window span.select').each(function(i,ele){
+            $(ele).addClass('disabled').removeClass('error');
+          });
+          
+          $('div.georeference_window span.select a.option').each(function(i,ele){
+            $(ele).text('Retrieving columns...').attr('c','');
+          });
+          $('div.georeference_window a.confirm_georeference').addClass('disabled');
+          $('div.georeference_window span.select').removeClass('clicked');
+          $('div.georeference_window').css('overflow','visible');
+
+
+          // Remove selected li class before know where geo column is.
+          $('div.georeference_window ul.main_list li').removeClass('selected');
+
+          // Remove all ScrollPane and lists items //
+          var custom_scrolls = [];
+          $('.scrollPane').each(function(){
+       		  custom_scrolls.push($(this).jScrollPane().data().jsp);
+       		});
+
+          _.each(custom_scrolls,function(ele,i) {
+            ele.destroy();
+          });
+          $('div.georeference_window span.select ul li').remove();
+        }
+
+        function getColumns() {
+          $.ajax({
+            method: "GET",
+            url: global_api_url + 'tables/' + table_name,
+      			headers: {"cartodbclient":"true"},
+            success: function(data) {
+              data = data.schema;
+
+              for (var i = 0; i<data.length; i++) {
+                if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at" && (data[i][1]=="number")) {
+                   if (data[i][2]==undefined) {
+                     $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                   } else {
+                     $('div.georeference_window div.block span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                     if (data[i][2]=="longitude") {
+                       $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                       $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                       $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
+                     } else if (data[i][2]=="latitude") {
+                       $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                       $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                       $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
+                     }
+                   }
+                 }
+               }
+
+               // If the list is empty...
+               if ($('div.georeference_window span.select:eq(1) ul li').size()==0) {
+                 $('div.georeference_window span.select:eq(1) ul').append('<li class="empty">Empty</li>');
+                 $('div.georeference_window span.select:eq(0) ul').append('<li class="empty">Empty</li>');
+               } else {
+                 // If it comes from one column...
+                 if (init_lat != '') {
+                   $('a#latitude').text(init_lat);
+                   $('a#latitude').attr('c',init_lat);
+                 }
+               }
+
+               $('div.georeference_window span.select').removeClass('disabled');
+               $('div.georeference_window span.select a.option').each(function(i,ele){
+                 if ($(ele).text()=="Retrieving columns...") {
+                    $(ele).text('Select a column').attr('c','');
+                  }
+               });
+               $('div.georeference_window a.confirm_georeference').removeClass('disabled');
+             },
+             error: function(e) {
+               $('div.georeference_window span.select:eq(0) a:eq(0)').text('Error retrieving cols').attr('c','');
+               $('div.georeference_window span.select:eq(1) a:eq(0)').text('Error retrieving cols').attr('c','');
+             }
+          });
+        }
+      });
+      $('div.georeference_window span.select a.option').livequery('click',function(ev){
+        stopPropagation(ev);
+        if (!$(this).parent().hasClass('disabled')) {
+          if ($(this).parent().hasClass('clicked')) {
+            $(this).parent().removeClass('clicked');
+          } else {
+            $('span.select').removeClass('clicked');
+            $('body').bind('click',function(ev){
+              if (!$(ev.target).closest('span.select').length) {
+                $('span.select').removeClass('clicked');
+              };
+            });
+            $(this).parent().addClass('clicked');
+            $(this).parent().find('ul').jScrollPane();
+          }
+        }
+      });
+      $('div.georeference_window span.latitude ul li a,div.georeference_window span.longitude ul li a').livequery('click',function(ev){
+        stopPropagation(ev);
+        $(this).closest('span.select').children('a.option').text($(this).text());
+        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
+        $('span.select').removeClass('clicked');
+
+        $(this).parent().parent().children('li').removeClass('choosen');
+        $(this).parent().addClass('choosen');
+        var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
+        if (index == 0) {
+          var other_index = 1;
+          var other_value = $('span.select:eq(1) a.option').text();
+        } else {
+          var other_index = 0;
+          var other_value = $('span.select:eq(0) a.option').text();
+        }
+        $('span.select:eq('+index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
+        $('span.select:eq('+other_index+') ul li').removeClass('choosen');
+        $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
+        $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
+      });
+      $('div.georeference_window span.address ul li a').livequery('click',function(ev){
+        stopPropagation(ev);
+        $(this).closest('span.select').children('a.option').text($(this).text());
+        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
+        $('span.select').removeClass('clicked');
+
+        var block_class = $(this).closest('div.block');
+        if (block_class.hasClass('first_column_address')) {
+          if (!$('div.second_column_address').is(':visible')) {
+            $('div.georeference_window div.second_column_address').show();
+            $('div.georeference_window div.second_column_address a.remove_column').show();
+          }
+        } else if (block_class.hasClass('second_column_address')) {
+          if (!$('div.third_column_address').is(':visible')) {
+            $('div.georeference_window div.second_column_address a.remove_column').hide();
+            $('div.georeference_window div.third_column_address').show();
+            $('div.georeference_window div.third_column_address a.remove_column').show();
+          }
+        } else {
+          $('div.georeference_window div.third_column_address a.remove_column').show();
+        }
+      });
+      $('div.georeference_window a.remove_column').livequery('click',function(ev){
+        stopPropagation(ev);
+        $(this).closest('div.block').children('span.select').children('a.option').text('Select a column');
+        $(this).closest('div.block').children('span.select').children('a.option').attr('c','');
+        $('span.select').removeClass('clicked');
+
+        var block_class = $(this).closest('div.block');
+        if (block_class.hasClass('first_column_address')) {
+          $('div.georeference_window div.first_column_address a.remove_column').hide();
+        } else if (block_class.hasClass('second_column_address')) {
+          $('div.georeference_window div.first_column_address a.remove_column').show();
+          $('div.georeference_window div.second_column_address').hide();
+          $('div.georeference_window div.second_column_address a.remove_column').hide();
+        } else {
+          $('div.georeference_window div.second_column_address a.remove_column').show();
+          $('div.georeference_window div.third_column_address').hide();
+          $('div.georeference_window div.third_column_address a.remove_column').show();
+        }
+      });
+      $('div.georeference_window div.inner_ span.top ul li a.first_ul').livequery('click',function(ev){
+        stopPropagation(ev);
+        if (!$(this).parent().hasClass("disabled")) {
+          $('div.georeference_window div.inner_ span.top ul:eq(0) li').removeClass('selected');
+          $(this).parent().addClass('selected');
+        }
+      });
+      $('a.confirm_georeference').livequery('click',function(ev){
+        stopPropagation(ev);
+
+        if (!$(this).hasClass('disabled')) {
+          var latitude = $('a#latitude').attr('c');
+          var longitude = $('a#longitude').attr('c');
+          if (!(latitude=='' && longitude=='')) {
+            var params = {};
+            params['latitude_column'] = (latitude=="Empty")? "nil" : latitude;
+            params['longitude_column'] = (longitude=="Empty")? "nil" : longitude;
+            changesRequest('update_geometry',params,null);
+            loadingState();
+          } else {
+            if (latitude=='') {
+              $('span.select.latitude').addClass('error');
+            }
+            if (longitude=='') {
+              $('span.select.longitude').addClass('error');              
+            }
+            
+            $('div.georeference_window div.error_content').fadeIn().delay(3000).fadeOut();
+          }
+        }
+
+
+        function loadingState() {
+          unbindESC();
+          $('div.georeference_window').css('overflow','hidden');
+          $('div.georeference_window div.inner_ span.top').animate({opacity:0},200,function(){
+            $(this).hide();
+            $('div.georeference_window a.close_geo').hide();
+            $('div.georeference_window span.loading').css('opacity','0');
+            $('div.georeference_window').addClass('loading');
+            $('div.georeference_window div.inner_ span.loading').animate({opacity:1},200);
+          });
+          $('div.georeference_window div.inner_ span.bottom').animate({opacity:0},200,function(){
+            $(this).hide();
+          });
+          $('div.georeference_window div.inner_').animate({height:'74px'},400);
+
+        }
+      });
+      $('div.georeference_window a.close_geo,div.georeference_window a.cancel').livequery('click',function(ev){
+        stopPropagation(ev);
+        closeOutTableWindows();
+        unbindESC();
+      });
+			return {}
+		}());
+    
+    
+
 	  ///////////////////////////////////////
     //  Advanced options                 //
     ///////////////////////////////////////
 		var advanced_options = (function() {
+		  
+		  $('div.mamufas').append(
+		    '<div class="save_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="top">'+
+              '<h3>Insert a name for your copy of this table</h3>'+
+              '<input type="text"/>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#close_window" class="cancel">cancel</a>'+
+              '<a href="#save_table" class="table_save" >Save table</a>'+
+            '</span>'+
+          '</div>'+
+        '</div>'
+		  );
 			
 			$('div.inner_subheader div.right').append(
 	      '<span class="advanced_options">'+
@@ -297,9 +525,27 @@
 		
 
     ///////////////////////////////////////
-    //  Delete table                     //
+    //  Delete window                    //
     ///////////////////////////////////////
 		var delete_table = (function() {
+		  
+		  $('div.mamufas').append(
+		    '<div class="delete_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="top">'+
+              '<h3>You are about to delete this table</h3>'+
+              '<p>You will not be able to recover this information. We really recommend to <a class="export_data" href="#export_data">export the data</a> before deleting it.</p>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#close_window" class="cancel">cancel</a>'+
+              '<a href="#confirm_delete" class="confirm_delete">Delete this table</a>'+
+            '</span>'+
+          '</div>'+
+        '</div>'
+		  );
+		  
+		  
 			$('a.delete').livequery('click',function(ev){
 	      stopPropagation(ev);
 	      closeOutTableWindows();
@@ -341,9 +587,32 @@
 
 
     ///////////////////////////////////////
-    //  Export table                     //
+    //  Export window                    //
     ///////////////////////////////////////
 		var export_table = (function() {
+		  
+		  $('div.mamufas').append(
+		    '<div class="export_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<form action="/tables/'+ table_name +'" method="get">'+
+              '<input id="export_format" type="hidden" name="format" />'+
+              '<span class="top">'+
+                '<h3>Export your data</h3>'+
+                '<p>Select your desired format for downloading the data</p>'+
+                '<ul>'+
+                  '<li class="selected"><a class="option" href="#CSV" rel="csv">CSV (Comma separated values)</a></li>'+
+                  '<li class="disabled"><a class="option" href="#KML" rel="kml">KML</a></li>'+
+                  '<li><a class="option" href="#SHP" rel="shp">SHP</a></li>'+
+                '</ul>'+
+              '</span>'+
+              '<span class="bottom">'+
+                '<a href="#close_window" class="cancel">cancel</a>'+
+                '<input type="submit" class="download" value="Download" />'+
+              '</span>'+
+          '</div>'+
+        '</div>'
+		  );
 			
 	    $('div.mamufas div.export_window form a.option').click(function(ev){
 	      stopPropagation(ev);
@@ -370,6 +639,51 @@
     //  Import data window               //
     ///////////////////////////////////////
 		var import_window = (function(){
+		  
+		  $('div.mamufas').append(
+		    '<div class="import_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="loading">'+
+              '<h5>We are importing your data...</h5>'+
+              "<p>It shouldn't take long, just a few more seconds ok?</p>"+
+            '</span>'+
+            '<form action="#import_file" id="import_file" enctype="multipart/form-data" method="post">'+
+              '<span class="top">'+
+                '<h4>Do you want to import some data to this table now?</h4>'+
+                '<p>Be sure your data has the same schema</p>'+
+                '<ul>'+
+                  '<li class="selected">'+
+                    '<a href="#">I want to add some data from a file</a>'+
+                    '<span class="file">'+
+                      '<div class="select_file">'+
+                        '<div id="uploader"></div>'+
+                        '<p>You can import .csv, .xls or .zip files</p>'+
+                      '</div>'+
+                      '<div class="progress">'+
+                        '<p>Uploading your file...</p>'+
+                        '<span class="progress"></span>'+
+                      '</div>'+
+                    '</span>'+
+                  '</li>'+
+                  '<li>'+
+                    '<a href="#">I want to add some data from a URL</a>'+
+                    '<span class="file">'+
+                      '<div class="select_file">'+
+                        '<input id="url_txt" type="text" name="url_value" value="Insert a valid URL..."/>'+
+                      '</div>'+
+                    '</span>'+
+                  '</li>'+
+                '</ul>'+
+              '</span>'+
+              '<span class="bottom">'+
+                '<a href="#" class="cancel">cancel</a>'+
+                '<input id="create_table" type="submit" name="submit" value="Create table"/>'+
+              '</span>'+
+            '</form>'+
+          '</div>'+
+        '</div>'
+		  );
 			
 		  $('div.import_window span.bottom input').addClass('disabled');
 			
@@ -642,6 +956,7 @@
 		}());
 
 
+
     ///////////////////////////////////////
     //  Change table status              //
     ///////////////////////////////////////
@@ -695,6 +1010,7 @@
 	
 			return {}
 		}());
+
 
 
     ///////////////////////////////////////
@@ -759,6 +1075,7 @@
 		}());
 		
 
+
     ///////////////////////////////////////
     //  Application tabs menu            //
     ///////////////////////////////////////
@@ -779,28 +1096,23 @@
           hideMap();
         } else {
  					window.location.hash = "#map";
-          if (geolocating) {
-            $('p.geo').trigger('click');
-          } else {
-            $('section.subheader ul.tab_menu li').removeClass('selected');
-            $('div.general_options').removeClass('table end').addClass('map');
-            $(this).parent().addClass('selected');
-            $('div.table_position').hide();
-						$('body').attr('view_mode','map');
-            $(document).trigger('click');
-            $('body').trigger('enabled',[false]);
-            showMap();
-          }
+          $('section.subheader ul.tab_menu li').removeClass('selected');
+          $('div.general_options').removeClass('table end').addClass('map');
+          $(this).parent().addClass('selected');
+          $('div.table_position').hide();
+					$('body').attr('view_mode','map');
+          $(document).trigger('click');
+          $('body').trigger('enabled',[false]);
+          showMap();
         }
       }
     });
-        
   });
 
 
 
 	////////////////////////////////////////
-  //  CLOSE OUT TABLE WINDOWS && ESC 	  //
+  //  REQUEST OUT OF THE TABLE       	  //
   ////////////////////////////////////////
 	// Send request to server about element out of the table
   function changesRequest(param,value,old_value) {
@@ -819,9 +1131,7 @@
       headers: {'cartodbclient':true},
       success: function(data) {
         requests_queue.responseRequest(requestId,'ok','');
-        if (param=="name") {
-          table_name = value;
-        }
+        successActionPerforming(param,value,old_value);
       },
       error: function(e) {
         requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText));
@@ -829,6 +1139,21 @@
       }
     });
   }
+  
+  // If the request is ok
+  function successActionPerforming(param,new_value,old_value) {
+    switch (param) {
+      case 'update_geometry': $(document).trigger('update_geometry');
+                              closeOutTableWindows();
+                              break;
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      case 'name':            table_name = new_value;
+                              break;
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      default:                break;
+    }
+  }
+
 
 	// If the request fails
   function errorActionPerforming(param, old_value,error_text) {
@@ -888,6 +1213,7 @@
       $('div.mamufas div.save_window').hide();
       $('div.mamufas div.warning_window').hide();
       $('div.mamufas div.import_window').hide();
+      $('div.mamufas div.georeference_window');
       $(document).unbind('keydown');
       $('body').unbind('click');
     });
@@ -902,6 +1228,7 @@
 	function setAppStatus() {
 		var query_mode = ($('body').attr('query_mode') === "true");
 		if (query_mode) {
+		  $('a.open_georeference').css({opacity:0.5});
 			$.favicon('/favicon/black_32x32.png');
 			var html = $('p.settings').html();
 			$('p.settings').html(html.replace(/\|/gi,''));
@@ -911,6 +1238,7 @@
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
 		} else {
+		  $('a.open_georeference').css({opacity:1});
 			$.favicon('/favicon/blue_32x32.png');
 			$('body').removeClass('query');
 			$('p.settings a:last').before(' | ');

@@ -75,7 +75,7 @@ class Table < Sequel::Model(:user_tables)
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
         owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
         owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
-        owner.in_database.run("ALTER TABLE jamooon ALTER COLUMN created_at SET DEFAULT now()")
+        owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
         set_trigger_the_geom_webmercator
         importer_result_name = uniname
       end

@@ -181,13 +181,13 @@
             cell_size = ((window_width-150)/(columns.length-1))-27;
             last_cell_size = cell_size;
           }
-
           maxPage = -1;
           if ($(table).children('thead').length==0) {methods.drawColumns(columns);}
           methods.startTable();
         } else {
           total = total_rows;
           if (rows.length>0) {
+            $('div.empty_table').remove();
             if ($(table).children('thead').length==0) {
               //Calculate width of th on header
               var window_width = $(window).width();
@@ -2026,6 +2026,7 @@
       $('div.sql_window a.try_query').livequery('click',function(ev){
         var table_mode = ($('body').attr('view_mode') == "table");
         if (enabled && table_mode) {
+          ev.preventDefault();
 					$('body').attr('query_mode',"true");
           query_mode = true;
           methods.refreshTable(0);

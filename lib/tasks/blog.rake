@@ -23,7 +23,7 @@ namespace :cartodb do
       content = ""
       items = doc.search('item')
       i = 0
-      items.each do |item|
+      items[0..2].each do |item|
         text = item.search('description').first.inner_text.strip_tags.gsub(/^(.{150}[^\s]*)(.*)/m) {$2.empty? ? $1 : $1 + "... <a href=\"#{item.search('guid').first.inner_text}\">Read more</a>"}
         content += <<-HTML
 <div class="block#{i == 2 ? ' last' : ''}">

@@ -7,9 +7,9 @@ class Api::Json::RecordsController < Api::ApplicationController
 
   before_filter :load_table, :set_start_time
   after_filter :record_query_threshold
-  
+
   def index
-    render :json => Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode))),
+    render :json => Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode, :filter_column, :filter_value))),
            :callback => params[:callback]
   rescue => e
     puts $!
@@ -87,13 +87,13 @@ class Api::Json::RecordsController < Api::ApplicationController
     render :json => {params[:id] => params[:value]}.to_json,
            :status => 200
   end
-  
+
   def pending_addresses
     records = @table.get_records_with_pending_addresses(:page => params[:page], :rows_per_page => params[:rows_per_page])
     render :json => records.to_json,
            :status => 200
   end
-  
+
   protected
 
   def load_table

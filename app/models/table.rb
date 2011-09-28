@@ -436,6 +436,8 @@ class Table < Sequel::Model(:user_tables)
     page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
     order_by_column = options[:order_by] || "cartodb_id"
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'asc' : 'desc'
+    filters = options.slice(:filter_column, :filter_value).values
+    where = Hash[filters.first.to_sym, filters.second] if filters.present?
 
     owner.in_database do |user_database|
       columns_sql_builder = <<-SQL
@@ -461,7 +463,14 @@ class Table < Sequel::Model(:user_tables)
 
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      rows = user_database["SELECT #{select_columns} FROM #{name} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
+
+      query = user_database["SELECT #{select_columns} FROM #{name}"]
+      query = query.limit(per_page, page)
+      # order needs to be the last clause, if not sequel will ignore it
+      query = query.order(order_by_column.to_sym)
+
+      query = query.reverse if mode.present? && mode.downcase == 'desc'
+      rows = if where.present? then query.filter(where) else query.all end
     end
     {
       :id         => id,
@@ -686,7 +695,7 @@ TRIGGER
 TRIGGER
     )
   end
-  
+
   def get_new_column_type(invalid_column)
     flatten_cartodb_schema = schema.flatten
     cartodb_column_type = flatten_cartodb_schema[flatten_cartodb_schema.index(invalid_column.to_sym) + 1]

@@ -139,12 +139,14 @@ div.table_position div.empty_table p a.disabled:hover {color:#CCC}
 
 /*LOADINGS*/
 /*pagination*/
-div.table_position div.loading {position:relative!important; display:none; float:left; width:100%; height:45px; padding:45px 0 0; margin:1px 0 0 0; border:none; background:url('/images/admin/table/loading_bkg.jpg') repeat-x 0 top white;}
+div.table_position div.loading {position:relative!important; display:none; float:left; width:100%; height:45px; padding:45px 0 0; margin:1px 0 0 0; border:none; background:url('/images/admin/table/loading_bkg.jpg') repeat-x 0 top white; overflow:hidden}
 div.table_position div.loading.loading_previous {margin:59px 0 0 0; border-bottom:none;}
-div.table_position div.loading p {width:100%; text-align:center; font:bold 13px "Helvetica"; color:#666666;}
-div.table_position div.loading p.count {width:100%; padding:2px 0 0 0; text-align:center; font:normal 11px "Helvetica"; color:#B3B3B3;}
-div.table_position div.loading.loading_previous p {width:auto;}
-div.table_position div.loading img {position:absolute; width:25; height:25px ; margin:0 0 0 -13px; top:12px; left:50%;}
+div.table_position div.loading.loading_next {z-index:-1}
+div.table_position div.loading span {position:fixed; display:inline; left:50%; width:300px; margin:0 0 0 -150px; vertical-align:top;}
+div.table_position div.loading.loading_next span {display:inline-block; vertical-align:bottom; bottom:30px; z-index:-1}
+div.table_position div.loading span p {width:100%; text-align:center; font:bold 13px "Helvetica"; color:#666666;}
+div.table_position div.loading span p.count {width:100%; padding:2px 0 0 0; text-align:center; font:normal 11px "Helvetica"; color:#B3B3B3;}
+div.table_position div.loading span img {position:absolute; width:25; height:25px ; margin:0 0 0 -13px; top:-32px; left:50%;}
 
 
 /*DELETE ROW AND COLUMN*/
@@ -152,7 +154,7 @@ div.table_position div.delete_row {position:absolute; display:none; top:60px; le
 div.table_position div.delete_row p {font:normal 13px Arial; color:#333333; text-shadow:0 1px white;}
 div.table_position div.delete_row a {float:left; margin:20px 0 0 0; font:normal 13px Arial; color:#666666; text-shadow:none;}
 div.table_position div.delete_row a:hover {color:#333333;}
-div.table_position div.delete_row a.button {float:right; height:14px; margin:15px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+div.table_position div.delete_row a.button {float:radiusight; height:14px; margin:15px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
 div.table_position div.delete_row a.button:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
@@ -186,6 +188,30 @@ div.table_position div.explain_tooltip p {position:relative; width:90px; padding
 div.table_position div.explain_tooltip span.arrow {position:absolute; bottom:-10px; left:46px; width:0; height:0; margin:20px 0 0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:10px solid rgba(0,0,0,0.7);}
 div.table_position div.explain_tooltip.down p {margin:0!important;}
 div.table_position div.explain_tooltip.down span.arrow {top:-30px!important; border-top:0; border-bottom:10px solid rgba(0,0,0,0.7)}
+
+
+/*Filter window*/
+div.filter_window {position:fixed; display:none; top:50%; left:50%; width:343px; margin:-120px 0 0 -171px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 20px 3px rgba(0,0,0,0.5);
+  -moz-box-shadow:0 0 20px 3px rgba(0,0,0,0.5); box-shadow:0 0 20px 3px rgba(0,0,0,0.5); z-index:10}
+div.filter_window a.close {position:absolute; right:-9px; top:-7px; width:24px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
+div.filter_window a.close:hover {background-position:0 -23px;}
+div.filter_window div.inner_ {float:left; width:341px; height:151px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+div.filter_window div.inner_ span.top {float:left; width:313px; padding:14px 14px 3px;}
+div.filter_window div.inner_ span.top h3 {width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
+div.filter_window div.inner_ span.top p {padding:3px 0 0 0; font:normal 11px Helvetica,Arial; color:#999999; text-shadow:0 1px white}
+div.filter_window div.inner_ span.top label {display:block; padding:11px 0 0 0; font:bold 10px Helvetica,Arial; color:#999999; text-shadow:0 1px white}
+div.filter_window div.inner_ span.top input {width:298px; height:13px; padding:6px 7px!important; margin:5px 0 0 0; border:1px solid #999999; webkit-border-radius:4px;
+border-radius:4px; -moz-border-radius:4px; font:normal 13px Arial; color:#333333; line-height:13px;}
+div.filter_window div.inner_ span.top input:focus {outline:none;}
+div.filter_window div.inner_ span.bottom {width:313px; padding:6px 14px; margin:0}
+div.filter_window div.inner_ span.bottom a.clear_filter {float:right; margin:15px 10px 0 0; padding:0 0 18px 0; font:normal 13px "Helvetica",Arial; color:#FF6600;}
+div.filter_window div.inner_ span.bottom a.clear_filter:hover {color:#FF3300;}
+div.filter_window div.inner_ span.bottom input.apply_query {float:right; height:26px; margin:10px 14px 0 0; padding:6px 9px; font:bold 11px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.filter_window div.inner_ span.bottom input.apply_query:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
+
 
 
 /************************************EDIT FIELDS************************************/
@@ -333,28 +359,6 @@ div.mamufas div.stopgeo_window div.inner_ span.stop h5 {margin:5px 0 0 0; font:b
 div.mamufas div.stopgeo_window div.inner_ span.stop p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
 div.mamufas div.stopgeo_window div.inner_ span.stop p a {color:#666666;}
 div.mamufas div.stopgeo_window div.inner_ span.stop p a:hover {color:#333333;}
-
-/*Filter window*/
-div.mamufas div.filter_window {position:absolute; display:none; top:50%; left:50%; width:343px; margin:-120px 0 0 -171px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111;
-  -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
-div.mamufas div.filter_window a.close {position:absolute; right:-9px; top:-7px; width:24px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
-div.mamufas div.filter_window a.close:hover {background-position:0 -23px;}
-div.mamufas div.filter_window div.inner_ {float:left; width:341px; height:151px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
-div.mamufas div.filter_window div.inner_ span.top {float:left; width:313px; padding:14px 14px 3px;}
-div.mamufas div.filter_window div.inner_ span.top h3 {width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
-div.mamufas div.filter_window div.inner_ span.top p {padding:3px 0 0 0; font:normal 11px Helvetica,Arial; color:#999999; text-shadow:0 1px white}
-div.mamufas div.filter_window div.inner_ span.top label {display:block; padding:11px 0 0 0; font:bold 10px Helvetica,Arial; color:#999999; text-shadow:0 1px white}
-div.mamufas div.filter_window div.inner_ span.top input {width:298px; height:13px; padding:6px 7px!important; margin:5px 0 0 0; border:1px solid #999999; webkit-border-radius:4px;
-border-radius:4px; -moz-border-radius:4px; font:normal 13px Arial; color:#333333; line-height:13px;}
-div.mamufas div.filter_window div.inner_ span.top input:focus {outline:none;}
-div.mamufas div.filter_window div.inner_ span.bottom {width:313px; padding:6px 14px; margin:0}
-div.mamufas div.filter_window div.inner_ span.bottom a.clear_filter {float:right; margin:15px 10px 0 0; padding:0 0 18px 0; font:normal 13px "Helvetica",Arial; color:#FF6600;}
-div.mamufas div.filter_window div.inner_ span.bottom a.clear_filter:hover {color:#FF3300;}
-div.mamufas div.filter_window div.inner_ span.bottom a.apply_query {float:right; height:12px; margin:10px 14px 0 0; padding:6px 9px; font:bold 11px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
-  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
-  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
-div.mamufas div.filter_window div.inner_ span.bottom a.apply_query:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
-  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 
 
 /*jScrollPane CSS*/

@@ -308,16 +308,43 @@
           me.query_mode = true;
           setAppStatus();
           me.refresh();
+          
+          var requestId = createUniqueId();
+          requests_queue.newRequest(requestId,'load_table');
 
           // Get results from api
           $.ajax({
             method: "GET",
-            url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+escape(editor.getValue().replace('/\n/g'," "))+') as count'),
+            url: global_api_url+'queries?sql='+escape(editor.getValue().replace('/\n/g'," ")),
             headers: {"cartodbclient":"true"},
             success: function(data) {
-                $('span.query h3').html(data.rows[0].count + ' row' + ((data.rows[0].count>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-            },
-            error: function(e) {}
+  			      // Remove error content
+  						$('div.sql_window span.errors').hide();
+  						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
+  						$('div.sql_window').css({'min-height':'199px'});
+  						
+  						$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+  						requests_queue.responseRequest(requestId,'ok','');
+  			    },
+  			    error: function(e) {
+              requests_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
+  			      $(document).unbind('arrived');
+
+  			      var errors = $.parseJSON(e.responseText).errors;
+  			      $('div.sql_window span.errors p').text('');
+  			      _.each(errors,function(error,i){
+  			        $('div.sql_window span.errors p').append(' '+error+'.');
+  			      });
+
+  			      var new_bottom = 65 + $('div.sql_window span.errors').height();
+  			      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
+
+  			      var new_height = 199 + $('div.sql_window span.errors').height();
+  			      $('div.sql_window').css({'min-height':new_height+'px'});
+  			      $('div.sql_window span.errors').show();
+  			      
+  			      $('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+  			    }
           });
         }
       });
@@ -362,9 +389,10 @@
           url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
           headers: {"cartodbclient":"true"},
           success: function(data) {
+            if (data.rows.length>0) {
               var type = me.geometry_type_ = data.rows[0].type.toLowerCase();
 
-              if (type=="point") {
+              if (type=="point" || type=="multipoint") {
                   $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
                   $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
               } else if (type=="polygon" || type=="multipolygon") {
@@ -374,6 +402,7 @@
                   $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
                   $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
               }
+            }
 
           },
           error: function(e) {}

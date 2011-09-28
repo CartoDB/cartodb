@@ -436,7 +436,7 @@ class Table < Sequel::Model(:user_tables)
     page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
     order_by_column = options[:order_by] || "cartodb_id"
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'asc' : 'desc'
-    filters = options.slice(:filter_column, :filter_value).values
+    filters = options.slice(:filter_column, :filter_value).reject{|k,v| v.blank?}.values
     where = Hash[filters.first.to_sym, filters.second] if filters.present?
 
     owner.in_database do |user_database|

@@ -433,11 +433,12 @@ class Table < Sequel::Model(:user_tables)
 
   def records(options = {})
     rows  = []
+    records_count = rows_counted
     page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
     order_by_column = options[:order_by] || "cartodb_id"
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'asc' : 'desc'
     filters = options.slice(:filter_column, :filter_value).reject{|k,v| v.blank?}.values
-    where = Hash[filters.first.to_sym, filters.second] if filters.present?
+    where = "WHERE (#{filters.first})|| '' ILIKE '%#{filters.second}%'" if filters.present?
 
     owner.in_database do |user_database|
       columns_sql_builder = <<-SQL
@@ -463,19 +464,13 @@ class Table < Sequel::Model(:user_tables)
 
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-
-      query = user_database["SELECT #{select_columns} FROM #{name}"]
-      query = query.limit(per_page, page)
-      # order needs to be the last clause, if not sequel will ignore it
-      query = query.order(order_by_column.to_sym)
-
-      query = query.reverse if mode.present? && mode.downcase == 'desc'
-      rows = if where.present? then query.filter(where.first[0].to_sym.ilike("%#{where.first[1]}%")) else query.all end
+      rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
+      records_count = rows.count
     end
     {
       :id         => id,
       :name       => name,
-      :total_rows => rows_counted,
+      :total_rows => records_count,
       :rows       => rows
     }
   end

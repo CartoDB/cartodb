@@ -465,7 +465,7 @@ class Table < Sequel::Model(:user_tables)
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
       rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
-      records_count = rows.count
+      records_count = user_database["SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "].get(:total_rows)
     end
     {
       :id         => id,

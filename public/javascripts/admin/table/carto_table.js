@@ -27,13 +27,10 @@
 
 
   // TODOS
-
-  // Yellow stickie move 
   // Remove georeferencing when the table is not point geom_type
-  // Review bugs again and again
-  
   // New loader with georeferencing and previous errors... plof
   
+  // Review bugs again and again
   
   // QUESTIONS
   // If you have filtered something - add new row? - go to normal mode and add new row...

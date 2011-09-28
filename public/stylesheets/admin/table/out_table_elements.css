@@ -67,6 +67,8 @@ section.subheader ul.tab_menu {position:absolute; bottom:0; left:0; height:auto;
 section.subheader ul.tab_menu li {float:left; width:auto; height:auto; margin:0 3px 0 0; padding:0;}
 section.subheader ul.tab_menu li a {float:left; padding:7px 15px; color:white; font:bold 13px Arial; text-decoration:underline; background-color:rgba(256,256,256,0.1); -webkit-border-top-left-radius:5px; -webkit-border-top-right-radius:5px; -moz-border-radius-topleft:5px; -moz-border-radius-topright:5px; border-top-left-radius:5px; border-top-right-radius:5px;
   text-decoration:none}
+section.subheader ul.tab_menu li a.share {margin:5px 0 0 6px; padding:3px 8px; background:#131723; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; font:bold 11px Arial;}
+
 section.subheader ul.tab_menu li a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
 section.subheader ul.tab_menu li.selected a {background-color:rgba(256,256,256,1); color:#272E48; text-decoration:none;}
 section.subheader ul.tab_menu li.selected a:hover {color:#272E48; text-decoration:none;}
@@ -77,7 +79,7 @@ section.subheader div.right p.settings {float:right; font:normal 15px Arial; col
 section.subheader div.right p.settings a {font:normal 13px Arial; text-shadow:0 1px black;}
 section.subheader div.right p.settings a.delete {padding:0 3px 0 0; color:#FF3300;}
 section.subheader div.right p.settings a.delete:hover {color:#FF4400;}
-body.query section.subheader div.right p.settings a.delete {display:none}
+body.query section.subheader div.right p.settings a.delete, body.query section.subheader div.right p.settings a.open_georeference{display:none}
 section.subheader div.right p.settings a.settings {padding:0 20px 0 3px; color:white; background:url('/images/admin/icons/settings.png') no-repeat right 1px;}
 section.subheader div.right p.settings a.open_georeference, section.subheader div.right p.settings a.georeference_global:visited {font:normal 13px Arial; text-shadow:0 1px black; color: white;}
 
@@ -415,7 +417,7 @@ div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.s
   text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.select_file div#uploader .qq-upload-button:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
-      background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
+  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.select_file p {float:left; margin:1px 0 0 5px; font:normal 13px "Helvetica",Arial; color:#B3B3B3;}
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.select_file p.error {color:#FF6600;}
 div.mamufas div.import_window div.inner_ span.top ul li.selected span.file div.select_file input {position:absolute; top:0; left:0; width:350px; height:30px; opacity:0;}
@@ -441,32 +443,35 @@ div.mamufas div.import_window div.inner_ span.top ul li.disabled a:hover {cursor
 div.mamufas div.import_window div.inner_ span.bottom {float:left; width:394px; padding:10px; border-top:1px solid white;}
 div.mamufas div.import_window div.inner_ span.bottom a.cancel {float:left; margin:7px 0 0 0; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.import_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
-div.mamufas div.import_window div.inner_ span.bottom input {float:right; height:26px; padding:6px 10px; border:1px solid #999; font:bold 12px "Helvetica",Arial; color:#333333; text-align:center;
-  text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white;
-  background:linear-gradient(-90deg, #FFFFFF, #CACBCE);
-  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
-  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE);
-  background: -o-linear-gradient(#FFFFFF,#CACBCE);
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');
-}
-div.mamufas div.import_window div.inner_ span.bottom input:focus {outline:none;}
-div.mamufas div.import_window div.inner_ span.bottom input:hover {
-  background:linear-gradient(-90deg, #CACBCE, #FFFFFF);
-  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
-  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF);
-  background: -o-linear-gradient(#CACBCE,#FFFFFF);
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF');
-  cursor:pointer;
-}
-div.mamufas div.import_window div.inner_ span.bottom input.disabled {opacity:0.5;}
-div.mamufas div.import_window div.inner_ span.bottom input.disabled:hover {
-  background:linear-gradient(-90deg, #FFFFFF, #CACBCE);
-  background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
-  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE);
-  background: -o-linear-gradient(#FFFFFF,#CACBCE);
-  filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');
-  cursor:default;
-}
+div.mamufas div.import_window div.inner_ span.bottom input{float:right;height:26px;padding:6px 10px;border:1px solid #999;font:bold 12px "Helvetica",Arial;color:#333333;text-align:center;text-decoration:none; -webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;text-shadow:0 1px white;
+  background:linear-gradient(-90deg,#FFFFFF,#CACBCE);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#FFFFFF),to(#CACBCE));background:-moz-linear-gradient(-90deg,#FFFFFF,#CACBCE);background:-o-linear-gradient(#FFFFFF,#CACBCE);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF',endColorstr='#CACBCE');}
+div.mamufas div.import_window div.inner_ span.bottom input:focus{outline:none;}
+div.mamufas div.import_window div.inner_ span.bottom input:hover{background:linear-gradient(-90deg,#CACBCE,#FFFFFF);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#CACBCE),to(#FFFFFF));background:-moz-linear-gradient(-90deg,#CACBCE,#FFFFFF);
+  background:-o-linear-gradient(#CACBCE,#FFFFFF);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE',endColorstr='#FFFFFF');cursor:pointer;}
+div.mamufas div.import_window div.inner_ span.bottom input.disabled{opacity:0.5;}
+div.mamufas div.import_window div.inner_ span.bottom input.disabled:hover{background:linear-gradient(-90deg,#FFFFFF,#CACBCE);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#FFFFFF),to(#CACBCE));background:-moz-linear-gradient(-90deg,#FFFFFF,#CACBCE);background:-o-linear-gradient(#FFFFFF,#CACBCE);
+  filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF',endColorstr='#CACBCE');cursor:default;}
+
+
+
+
+/*Embed window mamufas*/
+div.mamufas div.embed_window {position:absolute; display:none; top:180px; left:50%; width:603px; margin:0 0 0 -310px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px rgba(0,0,0,0.5); box-shadow:0 0 50px 3px rgba(0,0,0,0.5);
+  -moz-box-shadow:0 0 50px 3px rgba(0,0,0,0.5);}
+div.mamufas div.embed_window a.close {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
+div.mamufas div.embed_window a.close:hover {background-position:0 -23px;}
+
+div.mamufas div.embed_window div.inner_ {float:left; width:601px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+div.mamufas div.embed_window div.inner_ span.top {float:left; width:573px; padding:14px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.embed_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.embed_window div.inner_ span.top p {position:relative; float:left!important; height:auto; width:100%; padding:8px 0 0 0!important; margin:0!important; font:normal 11px Helvetica,Arial; color:#999999; text-shadow:0 1px white;}
+div.mamufas div.embed_window div.inner_ span.bottom {float:left; width:573px; padding:0 14px 10px; border-top:1px solid white;}
+div.mamufas div.embed_window div.inner_ span.bottom a.cancel {float:right; height:12px; margin:10px 0 0 0; padding:7px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;  line-height:12px;  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.mamufas div.embed_window div.inner_ span.bottom a.cancel:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
+
 
 
 /*Geo window mamufas*/

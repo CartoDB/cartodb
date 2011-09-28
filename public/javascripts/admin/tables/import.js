@@ -79,6 +79,15 @@
         if (!$('div.create_window span.bottom input').hasClass('disabled')) {
           if (create_type==0) {
             var geom_type = $('div.geom_type span.selected a').text();
+            
+            if (geom_type=="point") {
+              geom_type="multipoint";              
+            } else if (geom_type=="polygon") {
+              geom_type="multipolygon";
+            } else {
+              geom_type="multilinestring";
+            }
+            
             createNewToFinish(geom_type,'');
           } else if (create_type==2) {
             createNewToFinish('',$('div.select_file input#url_txt').val(),true);

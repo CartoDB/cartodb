@@ -56,8 +56,10 @@
       	/*  Change the request to "arrive" and change the status  */
       	/*========================================================================================================================*/
       	loaderQueue.prototype.responseRequest = function(requestId, status, error) {
-      	  this.pendingOperations[requestId].status = status;
-      	  this.pendingOperations[requestId].error = error;
+      	  if (requestId!=undefined) {
+      	    this.pendingOperations[requestId].status = status;
+        	  this.pendingOperations[requestId].error = error;
+      	  }
       	}
       	
       	

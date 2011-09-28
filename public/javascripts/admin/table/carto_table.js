@@ -27,8 +27,8 @@
 
 
   // TODOS
-  // Draw query columns first and then draw query rows -- REVIEW Query stuff
 
+  // Yellow stickie move 
   // Remove georeferencing when the table is not point geom_type
   // Review bugs again and again
   
@@ -123,6 +123,7 @@
 			    },
 			    error: function(e) {
 			      requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
+			      
 			      $(document).unbind('arrived');
 			    }
 			  });
@@ -142,12 +143,14 @@
 				 	headers: {"cartodbclient":"true"},
 			    success: function(data) {
 			      rows = data.rows;
-			      table.total_r = data.rows.length;
+			      table.total_r = data.total_rows;
 			      $(document).trigger('arrived');
 			    },
 			    error: function(e) {
   			    requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
 			      $(document).unbind('arrived');
+			      table.total_r = 0;
+			      startTable();
 			    }
 			  });
 
@@ -304,8 +307,6 @@
       
       if (table.mode!="normal") {
         table.e.find('thead').append('<div class="stickies"><p><strong>'+table.total_r+' result'+((table.total_r>1)?'s':'')+'</strong> for your filter - <a class="remove_filter" href="#disabled_filter">remove your filter</a></p></div>');
-				var p_left = ($(window).width() - $('div.stickies p').width())/2;
-				$('div.stickies p').css({'margin-left':p_left+'px'});
       } else {
         table.e.find('thead div.stickies').remove();
       }
@@ -370,8 +371,6 @@
 					table.e.append(thead);
 
 					table.e.find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear</a></p></div>');
-					var p_left = ($(window).width() - $('div.stickies p').width())/2;
-					$('div.stickies p').css({'margin-left':p_left+'px'});
 				}
       } else {
 				$('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
@@ -968,7 +967,7 @@
 
         //For paginating data
         var end = table.total_r <= ((table.actual_p + 1) * defaults.resultsPerPage);
-
+        
         if (!table.loading && table.enabled) {
           var difference = $(document).height() - $(window).height();
           if ($(window).scrollTop()==difference && !end && table.max_p!=-1) {

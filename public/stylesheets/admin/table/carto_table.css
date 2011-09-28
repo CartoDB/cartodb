@@ -34,7 +34,7 @@ div.table_position table thead tr th a.options.disabled:hover {background-positi
 div.table_position table thead tr th a.static {float:left; margin:0 0 0 4px; font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white; text-transform:capitalize;}
 div.table_position table thead tr th div a.column_type {float:left; max-width:60px; margin:0 0 0 4px; padding:0; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#B4B4B4; text-decoration:none; text-transform:capitalize;}
 div.table_position table thead tr th div a.column_type:hover {color:#666666; padding:0 7px 0 0; background:url('/images/admin/icons/grey_down_arrow.png') no-repeat right 6px;}
-div.table_position table thead tr th div span.col_types {position:absolute; display:none; left:7px; background:none; width:82px; height:auto; padding:19px 0 0 0;}
+div.table_position table thead tr th div span.col_types {position:absolute; display:none; left:7px; background:none; width:82px; height:auto; padding:19px 0 0 0; z-index:10}
 div.table_position table thead tr th div span.col_types p {position:absolute; max-width:60px; height:15px; left:0; top:0; margin:0; padding:4px 14px 0 4px; border:1px solid #A7A7A7; border-bottom:none; z-index:10; background:url('/images/admin/icons/grey_up_arrow.png') no-repeat right 9px #F7f8f8;
   font:normal 11px "Helvetica",Arial; color:#666666; text-transform:capitalize; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; line-height:11px;}
 div.table_position table thead tr th div span.col_types ul {float:left; width:82px; margin:0; padding:5px 0 3px; border:1px solid #A7A7A7; -webkit-border-radius: 3px; -webkit-border-top-left-radius: 0; -moz-border-radius: 3px; -moz-border-radius-topleft: 0; border-radius: 3px; border-top-left-radius: 0;
@@ -57,8 +57,8 @@ div.table_position table thead tr th span.col_ops_list li.last a:hover {color:#F
 div.table_position table thead tr th span.col_ops_list h5 {padding:8px 0 0 7px; font:bold 10px Helvetica; color:#53596B; text-shadow:0 -1px #1E2A40; text-align:left;}
 div.table_position table thead tr th span.col_ops_list div.line {float:left; width:124px; min-height:1px; height:1px!important; padding:0; margin:0 0 8px 3px; background:#393F55;}
 div.table_position table thead div.stickies {position:absolute; display:block; bottom:0; right:0; left:0; width:100%; height:37px; background:linear-gradient(-90deg, #FFFFE2, #F6F5D9); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFE2), to(#F6F5D9));
-  background:-moz-linear-gradient(-90deg, #FFFFE2, #F6F5D9); background: -o-linear-gradient(#FFFFE2,#F6F5D9); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFE2', endColorstr='#F6F5D9'); z-index:10; border-bottom:1px solid #E9EACE}
-div.table_position table thead div.stickies p {display:inline-block; width:auto; margin:12px 0 0 0; font:normal 13px Helvetica,Arial; color:#333333}
+  background:-moz-linear-gradient(-90deg, #FFFFE2, #F6F5D9); background: -o-linear-gradient(#FFFFE2,#F6F5D9); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFE2', endColorstr='#F6F5D9'); z-index:2; border-bottom:1px solid #E9EACE}
+div.table_position table thead div.stickies p {position:fixed; display:inline; left:50%; width:600px; margin:12px 0 0 -300px; font:normal 13px Helvetica,Arial; color:#333333; text-align:center}
 div.table_position table thead div.stickies p strong {color:black; font-weight:normal}
 div.table_position table thead div.stickies p a {color:#333333;}
 div.table_position table thead div.stickies p a:hover {color:black}

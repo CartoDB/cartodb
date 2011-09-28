@@ -33,7 +33,6 @@
       this.cache_buster = 0;
 
       this.show();                                    // First step is show the map canvas
-      // this.showLoader();                           // Show loader
       this.createMap();                               // Create the map
     }
 
@@ -402,6 +401,9 @@
                   $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
                   $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
               }
+            } else {
+              $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
+              $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
             }
 
           },

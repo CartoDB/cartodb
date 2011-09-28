@@ -1,5 +1,6 @@
   
   var loadingMessages = [];
+    loadingMessages["load_table"] = "table loaded";
     loadingMessages["tags"] = "table tags updated";
     loadingMessages["name"] = "table name updated";
     loadingMessages["privacy"] = "table privacy updated";

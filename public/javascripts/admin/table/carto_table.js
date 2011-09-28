@@ -1,24 +1,42 @@
 ;(function($){
-
-  var first = true;
-  var table;
-  var loading = false;
-  var first_double_click = true;
-
-  var headers = {};
-
-  var minPage = 0;
-  var maxPage = -1;
-  var actualPage;
-  var total;
-	var query_mode = false;
-
-  var previous_scroll = 0;
+  
   var defaults;
-  var cell_size = 100;
-  var last_cell_size = 100;
+  var table = {
+    // DOM element
+    e: null,
+    // Table headers
+    h:[],
+    // Pages stuff
+    min_p: 0,
+    max_p: -1,
+    actual_p:0,
+    total_r:0,
+    // Flags
+    loading: false,
+    edited: false,
+    enabled: true,
+    loaded: false,
+    // Cell sizes stuff
+    cell_s: 100,
+    last_cell_s: 100,
+    // Scroll stuff
+    scroll:0,
+    // Table mode (normal, query or filter)
+    mode: 'normal'
+  }
 
-  var enabled = true;
+
+  // TODOS
+  // Draw query columns first and then draw query rows -- REVIEW Query stuff
+
+  // Remove georeferencing when the table is not point geom_type
+  // Review bugs again and again
+  
+  // New loader with georeferencing and previous errors... plof
+  
+  
+  // QUESTIONS
+  // If you have filtered something - add new row? - go to normal mode and add new row...
   
   
   var methods = {
@@ -29,9 +47,10 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     init : function() {
       return this.each(function(){
-        if (first) !first;
-        table = $(this)[0];
-        methods.getData(defaults, 'next');
+        table.e = $(this);
+        if (defaults.enabled) {
+          methods.getData(defaults, 'next');
+        }
         methods.keepSize();
       });
     },
@@ -41,36 +60,59 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  GET DATA
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    getData : function(options, direction, new_query) {
+    getData : function(options, direction, new_query, refresh) {
+      
+      // Show loader
+      if (!table.loaded || refresh) {
+        var requestId = createUniqueId();
+        requests_queue.newRequest(requestId,'load_table');
+      } 
+
+      
 			//Pagination AJAX adding rows
-			var petition_pages;
+			var request_pages;
 			if (direction=="next") {
-			  maxPage++;
-			  actualPage = maxPage;
-			  petition_pages = actualPage;
+			  table.max_p++;
+			  table.actual_p = table.max_p;
+			  request_pages = table.actual_p;
 			} else if (direction=="previous") {
-			  minPage--;
-			  actualPage = minPage;
-			  petition_pages = actualPage;
+			  table.min_p--;
+			  table.actual_p = table.min_p;
+			  request_pages = table.actual_p;
 			} else {
-			  enabled = false;
-			  petition_pages = minPage +'..'+ maxPage;
+			  table.enabled = false;
+			  request_pages = table.min_p +'..'+ table.max_p;
 			}
 
+      
+      // New table mode: normal, query or filter
+			var columns,
+			    rows,
+			    count = 0;
 
-			var columns,total_rows,rows;
-			var count = 0;
-
-
-			if (!query_mode) {
-				$(document).bind('arrived',function(){
-				  count++;
-				  if (count==2) {
-				    $(document).unbind('arrived');
-				    startTable();
-				  }
-				});
-
+      // When ajax calls are loaded 
+  		$(document).bind('arrived',function(){
+			  count++;
+			  if (count==2) {
+			    if (table.mode!='query') {
+  			    $(document).unbind('arrived');
+  			    startTable();
+			    } else {
+  				  $(document).unbind('arrived');
+  				  methods.drawQueryColumns(rows,table.total_r,time,new_query);
+  			    methods.drawQueryRows(rows,direction,table.actual_p);
+			    }
+			    
+			    // Remove loader
+			    requests_queue.responseRequest(requestId,'ok','');
+			  }
+			});
+      
+ 
+			if (table.mode!='query') {
+        // FILTER OR NORMAL MODE
+        
+        // Request schema
 			  $.ajax({
 			    method: "GET",
 			    url: options.getDataUrl + table_name,
@@ -79,54 +121,58 @@
 				 		columns = data.schema;
 			      $(document).trigger('arrived');
 			    },
-			    error: function(e) {}
+			    error: function(e) {
+			      requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
+			      $(document).unbind('arrived');
+			    }
 			  });
 
+        // Request rows
 			  $.ajax({
 			     method: "GET",
 			     url: options.getDataUrl + table_name +'/records',
 			     data: {
 			       rows_per_page: options.resultsPerPage,
-			       page: petition_pages,
+			       page: request_pages,
 			       mode: defaults.mode,
-			       order_by: defaults.order_by
+			       order_by: defaults.order_by,
+			       filter_column: (table.mode=="filter")?options.filter_column:'',
+			       filter_value: (table.mode=="filter")?options.filter_value:'',
 			     },
 				 	headers: {"cartodbclient":"true"},
 			    success: function(data) {
 			      rows = data.rows;
-			      total_rows = data.total_rows;
-						defaults.total = total_rows;
+			      table.total_r = data.rows.length;
 			      $(document).trigger('arrived');
+			    },
+			    error: function(e) {
+  			    requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
+			      $(document).unbind('arrived');
 			    }
 			  });
-			} else {
-				setAppStatus(); // Change app status depending on query mode
 
-				$(document).bind('arrived',function(){
-				  count++;
-				  if (count==2) {
-				    $(document).unbind('arrived');
-				    methods.drawQueryColumns(rows,total,time,new_query);
-			      methods.drawQueryRows(rows,direction,actualPage);
-				  }
-				});
+			} else {
+			  
+			  // QUERY MODE
+				setAppStatus(); // Change app status depending on query mode
 
 				var time;
 				var query = editor.getValue();
 				var is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER).*/i)!=-1;
 				
+				// Get the total rows of the query
 				if (new_query!=undefined && !is_write_query) {
 					$.ajax({
 				    method: "GET",
-				    url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+editor.getValue()+') as count'),
+				    url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+query+') as count'),
 				 		headers: {"cartodbclient":"true"},
 				    success: function(data) {
-							total = data.rows[0].count;
-							defaults.total_rows = data.rows[0].count;
-							$('div.sql_console span h3').html('<strong>'+total+' results</strong>');
+							table.total_r = data.rows[0].count;
+							$('div.sql_console span h3').html('<strong>'+table.total_r+' results</strong>');
 							$(document).trigger('arrived');
 				    },
 				    error: function(e) {
+				      requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
 				      $(document).unbind('arrived');
 				    }
 				  });
@@ -140,32 +186,37 @@
 			    url: global_api_url+'queries?sql='+escape(editor.getValue()),
 			    data: {
 			      rows_per_page: options.resultsPerPage,
-			      page: petition_pages
+			      page: request_pages
 			    },
 			 		headers: {"cartodbclient":"true"},
 			    success: function(data) {
-						$('span.blablabla').hide();
-			      $('div.sql_console p.errors').fadeOut();
+			      // Remove error content
+						$('div.sql_window span.errors').hide();
+						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
+						$('div.sql_window').css({'min-height':'199px'});
+						
 						time = data.time.toFixed(3);
 			      rows = data.rows;
 			      $(document).trigger('arrived');
 			    },
 			    error: function(e) {
-						try {
-							var json = $.parseJSON(e.responseText);
-				      var msg = '';
-
-				      _.each(json.errors,function(text,pos){
-				        msg += text + ', ';
-				      });
-				      msg = msg.substr(0,msg.length-2);
-						} catch(e) {
-				      msg = "Internal server error";
-							$('span.blablabla').fadeIn().delay(10000).fadeOut();
-						}
-						$('div.sql_window p.errors').html(msg).stop().fadeIn().delay(10000).fadeOut();
-			      methods.drawQueryColumns([]);
+            requests_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
 			      $(document).unbind('arrived');
+			      
+			      var errors = $.parseJSON(e.responseText).errors;
+			      $('div.sql_window span.errors p').text('');
+			      _.each(errors,function(error,i){
+			        $('div.sql_window span.errors p').append(' '+error+'.');
+			      });
+			      
+			      var new_bottom = 65 + $('div.sql_window span.errors').height();
+			      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
+			      
+			      var new_height = 199 + $('div.sql_window span.errors').height();
+			      $('div.sql_window').css({'min-height':new_height+'px'});
+			      $('div.sql_window span.errors').show();
+			      
+			      methods.drawQueryColumns([]);
 			    }
 			  });
 			}
@@ -173,38 +224,39 @@
 
 
       function startTable() {
-        if (total_rows==0) {
+        if (table.total_r==0) {
           //Start new table
           //Calculate width of th on header
           var window_width = $(window).width();
           if (window_width>((columns.length*113)+42)) {
-            cell_size = ((window_width-150)/(columns.length-1))-27;
-            last_cell_size = cell_size;
+            table.cell_s = ((window_width-150)/(columns.length-1))-27;
+            table.last_cell_s = table.cell_s;
           }
-          maxPage = -1;
-          if ($(table).children('thead').length==0) {methods.drawColumns(columns);}
-          methods.startTable();
+          table.max_p = -1;
+          if (table.e.children('thead').length==0) 
+            methods.drawColumns(columns);
+          if (table.mode=="normal")
+            methods.startTable();
         } else {
-          total = total_rows;
           if (rows.length>0) {
             $('div.empty_table').remove();
-            if ($(table).children('thead').length==0) {
+            if (table.e.children('thead').length==0) {
               //Calculate width of th on header
               var window_width = $(window).width();
               if (window_width>((columns.length*113)+42)) {
-                cell_size = ((window_width-150)/(columns.length-1))-27;
-                last_cell_size = cell_size;
+                table.cell_s = ((window_width-150)/(columns.length-1))-27;
+                table.last_cell_s = table.cell_s;
               }
-              methods.drawColumns(columns,rows,direction,actualPage,options);
+              methods.drawColumns(columns,rows,direction,table.actual_p,options);
             } else {
-              methods.drawRows(options,rows,direction,actualPage);
+              methods.drawRows(options,rows,direction,table.actual_p);
             }
           } else {
             methods.hideLoader();
             if (direction=="next") {
-               maxPage--;
+              table.max_p--;
             } else {
-               minPage++;
+              table.min_p++;
             }
           }
         }
@@ -217,19 +269,19 @@
     //  DRAW COLUMNS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawColumns: function(data,rows,direction,actualPage,options) {
-      headers = [];
+      table.h = [];
       //Draw the columns headers
-      var thead = '<thead><tr><th class="first"><div></div></th>';
+      var thead = '<thead style="'+((table.mode!="normal")?'height:91px':'')+'"><tr><th class="first"><div></div></th>';
 
 
       _.each(data,function(element,index){
-        //Get type of table -> Point or Polygon
+        //Get type of table -> Points, polygons or lines
         if (element[3]!=undefined) {
           map_type = element[3];
         }
         if (element[1]!="length") {
 	        // Save column headers
-	        headers.push({name:element[0],type:element[3] || element[1]});
+	        table.h.push({name:element[0],type:element[3] || element[1]});
 
 	        // Playing with templates (table_templates.js - Mustache.js)
 	        thead += Mustache.to_html(th,{
@@ -238,7 +290,7 @@
 	          number: element[1]=="number",
 	          name:element[0],
 	          cartodb_id: (element[0]!="cartodb_id")?false:true,
-	          cellsize: cell_size,
+	          cellsize: table.cell_s,
 	          geo: (element[3]==undefined)?false:true
 	        });
 				}
@@ -247,11 +299,20 @@
 
 
       thead += "</thead></tr>";
-      $(table).append(thead);
+      table.e.append(thead);
+      
+      
+      if (table.mode!="normal") {
+        table.e.find('thead').append('<div class="stickies"><p><strong>'+table.total_r+' result'+((table.total_r>1)?'s':'')+'</strong> for your filter - <a class="remove_filter" href="#disabled_filter">remove your filter</a></p></div>');
+				var p_left = ($(window).width() - $('div.stickies p').width())/2;
+				$('div.stickies p').css({'margin-left':p_left+'px'});
+      } else {
+        table.e.find('thead div.stickies').remove();
+      }
 
 
-      if (first) {
-        first = false;
+      if (!table.loaded) {
+        table.loaded = true;
         //Print correct column types
         methods.getColumnTypes();
 
@@ -273,17 +334,16 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW COLUMNS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    drawQueryColumns: function(data,total,time,new_query) {
-
-      if (data.length>0) {
+    drawQueryColumns: function(rows,total,time,new_query) {
+      if (rows.length>0) {
 				if (new_query) {
 					//Draw the columns headers
 		      var thead = '<thead style="height:91px"><tr><th class="first"><div></div></th>';
-		      headers = {};
+		      table.h = [];
 
 					$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
 					$('span.query p').text('This query took '+time+' seconds');
-					_.eachRow(data[0],function(ele,i){
+					_.eachRow(rows[0],function(ele,i){
 						switch (i) {
 							case "the_geom": type = 'Geometry'; break;
 							case "created_at": type = 'Date'; break;
@@ -293,7 +353,7 @@
 						}
 
 	          thead += 	'<th>'+
-	                     	'<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+cell_size+'px"') + '>'+
+	                     	'<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+table.cell_s+'px"') + '>'+
 	                      	'<span class="long">'+
 	                     			'<h3 class="static">'+i+'</h3>'+
 														((i=="the_geom")?'<p class="geo disabled">geo</p':'')+
@@ -307,9 +367,9 @@
 					});
 
 					thead += "</tr></thead>";
-					$(table).append(thead);
+					table.e.append(thead);
 
-					$(table).find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear</a></p></div>');
+					table.e.find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear</a></p></div>');
 					var p_left = ($(window).width() - $('div.stickies p').width())/2;
 					$('div.stickies p').css({'margin-left':p_left+'px'});
 				}
@@ -317,9 +377,9 @@
 				$('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
 				$('span.query p').text('');
 				var thead = '<thead><tr><th class="first"><div></div></th><th><div></div></th></tr></thead>';
-				$(table).append(thead);
+				table.e.append(thead);
 			}
-
+      
 			methods.resizeTable();
     },
 
@@ -329,9 +389,13 @@
     //  DRAW ROWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawRows: function(options,data,direction,page) {
-
-      if ($(table).children('tbody').length==0) {
-        var tbody = '<tbody style="padding-top:53px;">';
+      
+      if (table.e.children('tbody').length==0) {
+        if (table.mode == "filter") {
+          var tbody = '<tbody style="padding-top:89px;">';
+        } else {
+          var tbody = '<tbody style="padding-top:53px;">';
+        }
       } else {
         var tbody = '';
       }
@@ -345,7 +409,7 @@
         });
 
         // Get rest generic td
-				_.eachRow(headers,function(head,x){
+				_.eachRow(table.h,function(head,x){
 				  var data = element[head.name];
 				  var j = head.name;
 		      tbody += Mustache.to_html(generic_td,{
@@ -370,7 +434,7 @@
 	           cartodb_id: element['cartodb_id'],
 	           is_cartodb_id:(j=="cartodb_id")?true:false,
 	        	 allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
-	           cellsize: cell_size,
+	           cellsize: table.cell_s,
 	           column: j,
 	           geojson: (data!='GeoJSON')?true:false
 	         });
@@ -378,28 +442,29 @@
 
         var start = tbody.lastIndexOf('"width:');
         var end = tbody.lastIndexOf('px"');
-        tbody = tbody.substring(0,start) + '"width:' + last_cell_size + tbody.substring(end);
+        tbody = tbody.substring(0,start) + '"width:' + table.last_cell_s + tbody.substring(end);
 
         tbody += '</tr>';
       });
 
 
       // If the table is empty or not
-      if ($(table).children('tbody').length==0) {
+      if (table.e.children('tbody').length==0) {
         tbody += '</tbody>';
-        $(table).append(tbody);
+        table.e.append(tbody);
         methods.resizeTable();
       } else {
-        (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
+        (direction=="previous")?table.e.children('tbody').prepend(tbody):table.e.children('tbody').append(tbody);
       }
 
       // If there was a previous action
       if (direction!='') {
         methods.checkReuse(direction);
       } else {
-        $(window).scrollTo({top:previous_scroll+'px',left:'0'},300,{onAfter: function() {loading = false; enabled = true;}});
+        $('body').animate({scrollTop:table.scroll},300,function() {
+          table.loading = false; table.enabled = true;
+        });
       }
-
     },
 
 
@@ -407,36 +472,38 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW QUERY ROWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    drawQueryRows: function(data,direction,page) {
+    drawQueryRows: function(rows,direction,page) {
 
-      if ($(table).children('tbody').length==0) {
+      if (table.e.children('tbody').length==0) {
         var tbody = '<tbody style="padding-top:89px;">';
       } else {
         var tbody = '';
       }
 
-      _.each(data, function(element,i){
+      _.each(rows, function(element,i){
         tbody += '<tr><td class="first"><div></div></td>';
     		_.eachRow(element,function(ele,j){
     			tbody += 	'<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+
-									 	' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+cell_size+'px"') +
+									 	' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+table.cell_s+'px"') +
 									 	'>'+((element[j]==null)?'':element[j])+'</div></td>';
     		});
         tbody += '</tr>';
       });
 
-      if ($(table).children('tbody').length==0) {
+      if (table.e.children('tbody').length==0) {
         tbody += '</tbody>';
-        $(table).append(tbody);
+        table.e.append(tbody);
         methods.resizeTable();
       } else {
-        (direction=="previous")?$(table).children('tbody').prepend(tbody):$(table).children('tbody').append(tbody);
+        (direction=="previous")?table.e.children('tbody').prepend(tbody):table.e.children('tbody').append(tbody);
       }
 
       if (direction!='') {
         methods.checkReuse(direction);
       } else {
-        $(window).scrollTo({top:previous_scroll+'px',left:'0'},300,{onAfter: function() {loading = false; enabled = true;}});
+        $('body').animate({scrollTop:table.scroll},300,function() {
+          table.loading = false; table.enabled = true;
+        });
       }
     },
 
@@ -463,13 +530,13 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     checkReuse: function(direction) {
 
-      if ((((maxPage - minPage)+1)*defaults.resultsPerPage>defaults.reuseResults)) {
+      if ((((table.max_p - table.min_p)+1)*defaults.resultsPerPage>defaults.reuseResults)) {
         if (direction=="next") {
-          minPage++;
-          $(table).children('tbody').children('tr:lt('+defaults.resultsPerPage+')').remove();
+          table.min_p++;
+          table.e.children('tbody').children('tr:lt('+defaults.resultsPerPage+')').remove();
         } else {
-          maxPage--;
-          $(table).children('tbody').children('tr:gt('+(defaults.reuseResults-1)+')').remove();
+          table.max_p--;
+          table.e.children('tbody').children('tr:gt('+(defaults.reuseResults-1)+')').remove();
         }
       }
 
@@ -484,22 +551,27 @@
     createElements: function() {
 
       //Paginate loaders
-      $(table).prepend(
+      table.e.prepend(
       '<div class="loading_previous loading">' +
-        '<img src="/images/admin/table/activity_indicator.gif" alt="Loading..." title="Loading" />'+
-        '<p>Loading previous rows...</p>'+
-        '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
+        '<span>'+
+          '<img src="/images/admin/table/activity_indicator.gif" alt="Loading..." title="Loading" />'+
+          '<p>Loading previous rows...</p>'+
+          '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
+        '</span>'+
       '</div>');
 
-      $(table).parent().append(
+      table.e.parent().append(
       '<div class="loading_next loading">' +
-        '<img src="/images/admin/table/activity_indicator.gif" alt="Loading..." title="Loading" />'+
-        '<p>Loading next rows...</p>'+
-        '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
+        '<span>'+
+          '<img src="/images/admin/table/activity_indicator.gif" alt="Loading..." title="Loading" />'+
+          '<p>Loading next rows...</p>'+
+          '<p class="count">Now vizzualizing 50 of X,XXX</p>'+
+        '</span>'+
       '</div>');
+
 
       //Edit caption
-      $(table).parent().append(
+      table.e.parent().append(
         '<div class="edit_cell">'+
           '<a class="close" href="#">X</a>'+
           '<div class="inner">'+
@@ -580,7 +652,7 @@
 
 
       //Row delete tooltip
-      $(table).parent().append(
+      table.e.parent().append(
         '<div class="delete_row">'+
           '<p>You are about to delete this row. Are you sure?</p>'+
           '<a class="cancel_delete" href="#cancel_delete">cancel</a>'+
@@ -589,7 +661,7 @@
 
 
       //Column delete tooltip
-      $(table).parent().append(
+      table.e.parent().append(
         '<div class="delete_column">'+
           '<p>You are about to delete this column. Are you sure?</p>'+
           '<a class="cancel_delete" href="#cancel_delete">cancel</a>'+
@@ -598,20 +670,43 @@
 
 
       //Change column type tooltip
-      $(table).parent().append(
+      table.e.parent().append(
         '<div class="change_type_column">'+
           '<p>Likely you will lose all this column data. Are you sure?</p>'+
           '<a class="cancel_change" href="#cancel_delete">cancel</a>'+
           '<a class="button" href="#change_type">Yes, do it</a>'+
         '</div>');
 
-
-      $(table).parent().append(
+      
+      // Explain tooltip
+      table.e.parent().append(
         '<div class="explain_tooltip">'+
           '<p>Double-click for editing any cell</p>'+
           '<span class="arrow"></span>'+
         '</div>');
-
+        
+        
+      // Filter table
+      table.e.parent().append(
+        '<div class="filter_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<form>'+
+              '<span class="top">'+
+                '<h3>Filter by a column</h3>'+
+                '<p>This helps you to find something in your table</p>'+
+                '<label>TEXT FILTER</label>'+
+                '<input type="text" value=""/>'+
+              '</span>'+
+              '<span class="bottom">'+
+                '<input type="submit" class="apply_query" value="Apply query"/>'+
+                '<a href="#clear_filter" class="clear_filter">Clear filter</a>'+
+              '</span>'+
+            '</form>'+
+          '</div>'+
+        '</div>'
+      );
+      $('div.filter_window').draggable();
 
       //Mamufas elements belong to the carto table
       $('div.mamufas').append(
@@ -656,21 +751,6 @@
               '<p>If you don\'t want to wait, <a href="#cancel_geo" class="cancel_geo">cancel de process</a> in progress.</p>'+
             '</span>'+
           '</div>'+
-        '</div>'+
-        '<div class="filter_window">'+
-          '<a href="#close_window" class="close"></a>'+
-          '<div class="inner_">'+
-            '<span class="top">'+
-              '<h3>Filter by a column</h3>'+
-              '<p>This helps you to find something in your table</p>'+
-              '<label>TEXT FILTER</label>'+
-              '<input type="text" value=""/>'+
-            '</span>'+
-            '<span class="bottom">'+
-              '<a href="#apply_query" class="apply_query">Apply query</a>'+
-              '<a href="#clear_filter" class="clear_filter">Clear filter</a>'+
-            '</span>'+
-          '</div>'+
         '</div>'
         );
     },
@@ -681,17 +761,16 @@
     //  NEW TABLE (EMPTY)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     startTable: function() {
-      enabled = false;
-      $(table).append('<span class="full_table" style="float:left; width:'+$(table).children('thead').width()+'px; height:1px"></span>');
+      table.e.append('<span class="full_table" style="float:left; width:'+table.e.children('thead').width()+'px; height:1px"></span>');
 
-      $(table).parent().append(
+      table.e.parent().append(
         '<div class="empty_table">'+
           '<h5>Add some rows to your table</h5>'+
           '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a class="import_data" href="#import_data">import data</a></p>'+
         '</div>'
       );
 
-      enabled = true;
+      table.enabled = true;
       methods.resizeTable();
     },
 
@@ -702,16 +781,14 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addRow: function() {
 
-      enabled = false;
-      if (total==undefined) {
-        total = 0;
-      }
-      var end = total <= ((actualPage+1)*defaults.resultsPerPage);
+      table.enabled = false;
+
+      var end = table.total_r <= ((table.actual_p+1)*defaults.resultsPerPage);
 
    		if (end || $('div.empty_table').length>0) {
         if ($('div.empty_table').length>0) {
           $('div.empty_table').remove();
-          $(table).find('tbody').remove();
+          table.e.find('tbody').remove();
           $('span.full_table').remove();
           addSingleRow(0);
         } else {
@@ -721,25 +798,31 @@
         $('div.lastpage_window').show();
         $('div.mamufas').fadeIn();
 
-        maxPage = Math.ceil(total / defaults.resultsPerPage) - 1;
-        minPage = maxPage-1;
-        actualPage = maxPage;
+        table.max_p = Math.ceil(table.total_r / defaults.resultsPerPage) - 1;
+        table.min_p = table.max_p-1;
+        actualPage = table.max_p;
 				defaults.mode = "asc";
   			defaults.order_by = 'cartodb_id';
+  			
+  			//If you are viewing a filter view, it goes to normal mode
+  			table.mode = 'normal';
+  			$('div.stickies').remove();
+  			table.e.find('thead').css({height:''});
+
 
         $.ajax({
           method: "GET",
           url: defaults.getDataUrl+table_name+'/records',
           data: {
             rows_per_page: defaults.resultsPerPage,
-            page: minPage+'..'+maxPage,
+            page: table.min_p+'..'+table.max_p,
 						mode: defaults.mode,
 						order_by: defaults.order_by
           },
           headers: {"cartodbclient": true},
           success: function(data) {
-            $(table).children('tbody').remove();
-            methods.drawRows(defaults,data.rows,'next',actualPage);
+            table.e.children('tbody').remove();
+            methods.drawRows(defaults,data.rows,'next',table.actual_p);
             addSingleRow(2);
           }
         });
@@ -788,44 +871,48 @@
                     } else {
                       text = '';
                     }
-                 		row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+cell_size+'px"') + '>'+text+'</div></td>';
+                 		row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+table.cell_s+'px"') + '>'+text+'</div></td>';
                   }
 
                   var start = row.lastIndexOf('"width:');
                   var end = row.lastIndexOf('px"');
-                  row = row.substring(0,start) + '"width:' + last_cell_size + row.substring(end);
+                  row = row.substring(0,start) + '"width:' + table.last_cell_s + row.substring(end);
 
                   if (type==0) {
                     row += '</tr></tbody>';
-                    $(table).append(row);
+                    table.e.append(row);
                   } else {
                     row += '</tr>';
-                    $(table).find('tbody').append(row);
+                    table.e.find('tbody').append(row);
                   }
 
 
                   if (type==2) {
-                    $('div.table_position').addClass('end');
+                    table.e.parent().addClass('end');
                   }
 
                   //Si hay más filas de las permitidas por el reuso, borramos las '50' primeras, sumamos una a la página max, min y actual
-                  total = total + 1;
-                  if ($(table).children('tbody').children('tr').size()>defaults.reuseResults) {
-                    maxPage++; minPage++; actualPage++;
-                    $(table).children('tbody').children('tr:lt('+defaults.resultsPerPage+')').remove();
+                  table.total_r++;
+                  if (table.e.children('tbody').children('tr').size()>defaults.reuseResults) {
+                    table.max_p++; table.min_p++; table.actual_p++;
+                    table.e.children('tbody').children('tr:lt('+defaults.resultsPerPage+')').remove();
                   } else {
-                    if ($(table).children('tbody').children('tr').size()>defaults.resultsPerPage) {
-                      maxPage++; actualPage++;
+                    if (table.e.children('tbody').children('tr').size()>defaults.resultsPerPage) {
+                      table.max_p++; table.actual_p++;
                     }
                   }
 
-                  $(window).scrollTo('100%',500, {onAfter: function(){methods.closeTablePopups(); enabled = true;}});
+                  $('body').animate({scrollTop:$('div.table_position').height()+'px'},500,function(){
+                    methods.closeTablePopups();
+                    table.enabled = true;
+                  });
+                  
                   $('div.empty_table').remove();
                   methods.resizeTable();
                 },
                 error: function(e) {
                   requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
-                  enabled = true;
+                  table.enabled = true;
                 }
              });
            }
@@ -852,15 +939,15 @@
     //  ADD SCROLL PAGINATE BINDING
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addScroll: function() {
-
+      
       $(document).scroll(function(ev) {
         stopPropagation(ev);
 
         //For moving thead when scrolling
         if ($(document).scrollTop()>58) {
           $('section.subheader').css('top','-3px');
-          $(table).children('thead').css('top','99px');
-          if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && $('div.table_position').scrollLeft()>0) {
+          table.e.children('thead').css('top','99px');
+          if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && table.e.parent().scrollLeft()>0) {
             $('div.general_options').addClass('end');
             $('div.sql_console').addClass('end');
           } else {
@@ -871,7 +958,7 @@
           $('div.general_options').removeClass('end');
           $('div.sql_console').removeClass('end');
           $('section.subheader').css('top',58-$(document).scrollTop()+'px');
-          $(table).children('thead').css('top',160-$(document).scrollTop()+'px');
+          table.e.children('thead').css('top',160-$(document).scrollTop()+'px');
         }
 
 
@@ -880,27 +967,28 @@
 
 
         //For paginating data
-        var end = total <= ((actualPage+1)*defaults.resultsPerPage);
+        var end = table.total_r <= ((table.actual_p + 1) * defaults.resultsPerPage);
 
-        if (!loading && enabled) {
+        if (!table.loading && table.enabled) {
           var difference = $(document).height() - $(window).height();
-          if ($(window).scrollTop()==difference && !end && maxPage!=-1) {
-            loading = true;
+          if ($(window).scrollTop()==difference && !end && table.max_p!=-1) {
+            table.loading = true;
             methods.showLoader('next');
             setTimeout(function(){methods.getData(defaults,'next')},500);
-          } else if ($(window).scrollTop()==0 && minPage!=0) {
-            loading = true;
-            $('div.table_position').removeClass('end');
+          } else if ($(window).scrollTop()==0 && table.min_p!=0) {
+            table.loading = true;
+            table.e.parent().removeClass('end');
             methods.showLoader('previous');
             setTimeout(function(){methods.getData(defaults,'previous')},500);
-          } else if (end && actualPage!=0) {
-            $('div.table_position').addClass('end');
+          } else if (end && table.actual_p!=0) {
+            table.e.parent().addClass('end');
           }
         }
       });
 
-      $('div.table_position').scroll(function(ev){
-        if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && $('div.table_position').scrollLeft()>0) {
+
+      table.e.parent().scroll(function(ev){
+        if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && table.e.parent().scrollLeft()>0) {
           $('div.general_options').addClass('end');
           $('div.sql_console').addClass('end');
         } else {
@@ -912,12 +1000,10 @@
           $('div.delete_row').fadeOut();
         }
 
-        //For moving table paginator loaders
-        $('div.table_position div.loading_next').css('margin-left',$('div.table_position').scrollLeft()+'px');
         //For moving first table column
-        $(table).children('tbody').children('tr').children('td.first').css('left',$('div.table_position').scrollLeft()+'px');
-        $(table).children('thead').children('tr').children('th.first').css('left',$('div.table_position').scrollLeft()+'px');
-        $(table).children('thead').css('left',-$('div.table_position').scrollLeft()+'px');
+        table.e.children('tbody').children('tr').children('td.first').css('left',table.e.parent().scrollLeft()+'px');
+        table.e.children('thead').children('tr').children('th.first').css('left',table.e.parent().scrollLeft()+'px');
+        table.e.children('thead').css('left', -table.e.parent().scrollLeft()+'px');
 
         methods.paginateControls();
       });
@@ -929,21 +1015,26 @@
     //  SHOW PAGINATE LOADER
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     showLoader: function(kind){
-      if (minPage==0) {
-        var range = (maxPage - minPage + 1)*defaults.resultsPerPage;
+      if (table.min_p==0) {
+        var range = (table.max_p - table.min_p + 1) * defaults.resultsPerPage;
       } else {
-        var range = minPage*defaults.resultsPerPage+'-'+((maxPage+1)*defaults.resultsPerPage);
+        var range = table.min_p * defaults.resultsPerPage + '-' + ((table.max_p + 1) * defaults.resultsPerPage);
       }
 
       if (kind=="previous") {
-        $('div.loading_previous p').css({display:'block',padding:$('div.table_position').scrollLeft()+'px'});
-        $('div.loading_previous p.count').text('Now vizzualizing '+range+' of '+ defaults.total);
-				$(table).children('tbody').css('padding','0');
-				$(table).children('tbody').css('margin','0');
+        $('div.loading_previous p.count').text('Now vizzualizing '+range+' of '+ table.total_r);
+				table.e.children('tbody').css('padding','0');
+				table.e.children('tbody').css('margin','0');
+				// If table is filter or query mode
+				var margin = '53px 0 0 0';
+				if (table.mode != 'normal') {
+				  margin = '93px 0 0 0';
+				}
+				$('div.loading_previous').css('margin',margin);
         $('div.loading_previous').show();
       } else {
-        $('div.loading_next p.count').text('Now vizzualizing '+range+' of '+ defaults.total);
-        $('div.loading_next').show();
+        $('div.loading_next p.count').text('Now vizzualizing '+range+' of '+ table.total_r);
+        $('div.loading_next').css({display:'inline',width: table.e.width() +'px'});
       }
     },
 
@@ -953,16 +1044,15 @@
     //  HIDE PAGINATE LOADER
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     hideLoader: function() {
-			loading = false;
+			table.loading = false;
 
       $('div.loading_next').hide();
       $('div.loading_previous').hide();
-			if (query_mode) {
-				$(table).children('tbody').css('padding','89px 0 0 0');
+			if (table.mode!="normal") {
+				table.e.children('tbody').css('padding','86px 0 0 0');
 			} else {
-				$(table).children('tbody').css('padding','53px 0 0 0');
+				table.e.children('tbody').css('padding','54px 0 0 0');
 			}
-      $(table).children('tbody').css('margin','5px 0 0 0');
     },
 
 
@@ -972,41 +1062,18 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     bindEvents: function() {
       ///////////////////////////////////////
-      //  TABLE REFRESH OR ENABLED         //
-      ///////////////////////////////////////
-      $('body').livequery('enabled',function(event,status){
-        if (!status) {
-          $('span.paginate').fadeOut();
-        } else {
-          $('span.paginate').fadeIn();
-        }
-        enabled = status;
-      });
-      $('body').livequery('refresh',function(event){
-        methods.refreshTable('');
-      });
-      $('body').livequery('query_refresh',function(ev){
-				var view_table = ($('body').attr('view_mode') == 'table');
-			  if (view_table) {
-					query_mode = false;
-        	methods.refreshTable('');
-				}
-      });
-
-
-      ///////////////////////////////////////
       //  DOUBLE CLICK -> Open cell editor //
       ///////////////////////////////////////
       $(document).dblclick(function(event){
-        if (enabled && !query_mode) {
+        if (table.enabled && table.mode!='query') {
        		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
           if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" && $(target).parent().attr('c')!="updated_at" && $(target).parent().attr('c')!="created_at") {
 
-            if (first_double_click) {
+            if (!table.edited) {
               $('div.explain_tooltip').stop(true).hide();
-              first_double_click = false;
+              table.edited = false;
             }
 
             methods.closeTablePopups();
@@ -1034,16 +1101,16 @@
             }
 
             //Check if first column or last column
-            if ($("div.table_position").width()<=($(target).parent().offset().left+cell_size+28)) {
-              $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-215+($(target).width()/2)+'px');
-            } else if (($(target).parent().offset().left+cell_size+28)<170) {
+            if ($("div.table_position").width()<=($(target).parent().offset().left+table.cell_s+28)) {
+              $('div.edit_cell').css('left',table.e.parent().scrollLeft()+target_position.left-215+($(target).width()/2)+'px');
+            } else if (($(target).parent().offset().left+table.cell_s+28)<170) {
                $('div.edit_cell').css('left','0px');
             } else {
-              $('div.edit_cell').css('left',$('div.table_position').scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
+              $('div.edit_cell').css('left',table.e.parent().scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
             }
 
 
-            var type = _.detect(headers,function(head,j){return head.name == data.column}).type;
+            var type = _.detect(table.h,function(head,j){return head.name == data.column}).type;
 
 					  if (data.value== 'GeoJSON...') {
               type = 'geojson';
@@ -1146,7 +1213,7 @@
       //  SIMPLE CLICK -> Open editor      //
       ///////////////////////////////////////
       $(document).click(function(event){
-        if (enabled && !query_mode) {
+        if (table.enabled && table.mode!='query') {
        		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
@@ -1161,7 +1228,7 @@
             }
 
             // Check rows where
-            $('table tbody tr.selecting').each(function(i,ele){
+            table.e.find('tbody tr.selecting').each(function(i,ele){
               if ($(ele).prev().hasClass('selecting')) {
                 $(ele).removeClass('selecting_first');
               } else {
@@ -1193,6 +1260,7 @@
               if (!$(target).closest('tr').hasClass('selected')) {
                 $(target).closest('tr').addClass('editing');
               }
+              
               $('body').click(function(event) {
                 if (!$(event.target).closest('tbody tr td div span').length) {
                   methods.closeTablePopups();
@@ -1230,26 +1298,26 @@
       //  Editing selected rows            //
       ///////////////////////////////////////
       $(document).mousedown(function(event){
-        if (enabled && !query_mode) {
+        if (table.enabled && table.mode!='query') {
        		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
           if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
 
-            $('table tbody tr td.first div span').hide();
-            $('table tbody tr td.first div a.options').removeClass('selected');
-            $('tbody tr').removeClass('editing');
-            $('tbody tr').removeClass('selecting_first').removeClass('border');
-            $('tbody tr').removeClass('selecting');
-            $('tbody tr').removeClass('selecting_last');
-            $('tbody tr').removeClass('selected');
+            table.e.find('tbody tr td.first div span').hide();
+            table.e.find('tbody tr td.first div a.options').removeClass('selected');
+            table.e.find('tbody tr').removeClass('editing');
+            table.e.find('tbody tr').removeClass('selecting_first').removeClass('border');
+            table.e.find('tbody tr').removeClass('selecting');
+            table.e.find('tbody tr').removeClass('selecting_last');
+            table.e.find('tbody tr').removeClass('selected');
 
             var first_row = $(target).closest('tr');
             first_row.addClass('selecting_first');
             var initial_x = first_row.position().top;
 
             //Show tooltip about editing cell
-            if (first_double_click) {
+            if (table.edited) {
 							var initial_top = $(target).closest('tr').position().top;
               var initial_left = $(target).closest('td').position().left;
               var cell_width = $(target).closest('td').width();
@@ -1280,7 +1348,7 @@
               var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
               var current_row = $(target).closest('tr');
               var current_x = current_row.position().top;
-              $(table).children('tbody').children('tr').removeClass('selecting');
+              table.e.children('tbody').children('tr').removeClass('selecting');
               current_row.addClass('selecting');
 
               var find = false;
@@ -1328,7 +1396,7 @@
         }
       });
       $(document).mouseup(function(event){
-        if (enabled && !query_mode) {
+        if (table.enabled && table.mode!='query') {
        		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
 
@@ -1590,7 +1658,7 @@
       //Head options even
       $('thead tr a.options').livequery('click',function(ev){
         stopPropagation(ev);
-				if (enabled && !query_mode) {
+				if (table.enabled && table.mode!='query') {
 					if (!$(this).hasClass('selected')) {
 	          methods.closeTablePopups();
 	          methods.bindESCkey();
@@ -1659,7 +1727,7 @@
             });
 
             //Positionate warning tooltip
-            var left_position = $(table).find('th[c="'+column+'"]').position().left;
+            var left_position = table.e.find('th[c="'+column+'"]').position().left;
             if ($(document).scrollTop()>58) {
               $('div.change_type_column').css('top',$(document).scrollTop()-20+'px');
             } else {
@@ -1757,8 +1825,8 @@
         $(this).closest('div').find('a.options').removeClass('selected');
         $(this).closest('div').find('span.col_ops_list').hide();
         var column = $(this).closest('th').attr('c');
-        var left_position = $(table).find('th[c="'+column+'"]').position().left;
-        var options_position = $(table).find('th[c="'+column+'"]').find('a.options').position().left;
+        var left_position = table.e.find('th[c="'+column+'"]').position().left;
+        var options_position = table.e.find('th[c="'+column+'"]').find('a.options').position().left;
 
         $('div.delete_column a.button').attr('c',column);
         if ($(document).scrollTop()>58) {
@@ -1806,7 +1874,7 @@
       ///////////////////////////////////////
       $(document).bind('update_geometry',function(ev){
         var table_mode = ($('body').attr('view_mode') == "table");
-        if (enabled && table_mode && !$(this).hasClass('disabled')) {
+        if (table.enabled && table_mode && !$(this).hasClass('disabled')) {
           methods.refreshTable(0);
 				}
       });
@@ -1817,7 +1885,7 @@
       ///////////////////////////////////////
       $('a.add_row').livequery('click',function(ev){
         stopPropagation(ev);
-        if (enabled && !query_mode){
+        if (table.enabled && table.mode!='query'){
           methods.addRow();
         }
       });
@@ -1827,7 +1895,7 @@
         methods.bindESCkey();
 
         var cartodb_id = $(this).closest('tr').attr('r');
-        var top_position = $(table).find('tr[r="'+cartodb_id+'"]').position().top;
+        var top_position = table.e.find('tr[r="'+cartodb_id+'"]').position().top;
         var rows_involved = $('table tbody tr.selecting').size();
 
         // Several rows involved or only one?
@@ -1847,7 +1915,7 @@
         }
 
         $('div.delete_row').css('top',top_position-7+'px');
-        $('div.delete_row').css('left',$('div.table_position').scrollLeft()+10+'px');
+        $('div.delete_row').css('left',table.e.parent().scrollLeft()+10+'px');
         $('div.delete_row').show();
 
         $('body').click(function(event) {
@@ -1873,10 +1941,10 @@
       ///////////////////////////////////////
       $('a.add_column').livequery('click',function(ev){
         stopPropagation(ev);
-				if (enabled && !query_mode) {
+				if (table.enabled && table.mode!='query') {
 					methods.closeTablePopups();
 	        methods.bindESCkey();
-	        enabled = false;
+	        table.enabled = false;
 
 	        $('div.column_window p.error').hide();
 	        $('div.column_window span.select').removeClass('error');
@@ -1887,73 +1955,77 @@
 	        $('div.column_window span.select').removeClass('clicked');
 
 	        $.ajax({
-	           method: "GET",
-	           url: global_api_url + 'column_types',
-	           headers: {"cartodbclient": true},
-	           success: function(data) {
-				 //Saves the position of the String type for setting it as type per default
-				 var defaultTypeIndex = undefined;
-				 //Remove ScrollPane
-	             var custom_scrolls = [];
-	             $('.scrollPane').each(function(){
-	               custom_scrolls.push($(this).jScrollPane().data().jsp);
-	             });
-	             $.each(custom_scrolls,function(i) {
-	              this.destroy();
-	              });
-	             $('div.column_window span.select ul li').remove();
-	             for (var i = 0; i<data.length; i++) {
-	               $('div.column_window span.select ul').append('<li><a href="#'+data[i]+'">'+data[i]+'</a></li>');
-	               //It looks for the index in data for the string type
-	               if (defaultTypeIndex == undefined && data[i] == 'String'){
-		               defaultTypeIndex = i;
+	          method: "GET",
+	          url: global_api_url + 'column_types',
+	          headers: {"cartodbclient": true},
+	          success: function(data) {
+				      //Saves the position of the String type for setting it as type per default
+				      var defaultTypeIndex = undefined;
+				      
+				      //Remove ScrollPane
+	            var custom_scrolls = [];
+	            $('.scrollPane').each(function(){
+	              custom_scrolls.push($(this).jScrollPane().data().jsp);
+	            });
+	            
+	            $.each(custom_scrolls,function(i) {
+	             this.destroy();
+	            });
+	            
+	            $('div.column_window span.select ul li').remove();
+	            for (var i = 0; i<data.length; i++) {
+	              $('div.column_window span.select ul').append('<li><a href="#'+data[i]+'">'+data[i]+'</a></li>');
+	              //It looks for the index in data for the string type
+	              if (defaultTypeIndex == undefined && data[i] == 'String'){
+		              defaultTypeIndex = i;
+	              }
+	            }
+	            $('div.column_window span.select').removeClass('disabled');
+              
+	            $('div.column_window span.select a.option').each(function(i,ele){
+	              if ($(ele).text()=="Retreiving types...") {
+		             //For getting the string type by default
+	                 $(ele).text(data[defaultTypeIndex].toString()).attr('type',data[defaultTypeIndex]);
 	               }
-	             }
-	             $('div.column_window span.select').removeClass('disabled');
-
-	             $('div.column_window span.select a.option').each(function(i,ele){
-	               if ($(ele).text()=="Retreiving types...") {
-		              //For getting the string type by default
-	                  $(ele).text(data[defaultTypeIndex].toString()).attr('type',data[defaultTypeIndex]);
-	                }
-	             });
-	             $('div.column_window a.column_add').removeClass('disabled');
-
-	             //This adds the needed code for adding the column when pushing enter
-				 $(document).keydown(function(event){
-				 	if (event.which == '13') {
-						stopPropagation(event);
-        				if ($('div.column_window input').attr('value')!='' && $('div.column_window a.option').attr('type')!='') {
-				          methods.addColumn($('div.column_window input').attr('value'),$('div.column_window a.option').attr('type'));
-				          $('div.column_window input').attr('value','');
-				        } else {
-				          if ($('div.column_window input').attr('value')=='' && $('div.column_window a.option').attr('type')=='') {
-				            $('div.column_window span.select,div.column_window input').addClass('error');
-				            var position = $('div.column_window input').position().top;
-				            $('div.column_window p.error').css('top',position-32+'px');
-				            $('div.column_window p.error span').text('Choose a name and type');
+	            });
+	            $('div.column_window a.column_add').removeClass('disabled');
+              
+	            //This adds the needed code for adding the column when pushing enter
+				      $(document).keydown(function(event){
+				 	      if (event.which == '13') {
+						      stopPropagation(event);
+        				  if ($('div.column_window input').attr('value')!='' && $('div.column_window a.option').attr('type')!='') {
+        				    $(document).unbind('keydown');
+				            methods.addColumn($('div.column_window input').attr('value'),$('div.column_window a.option').attr('type'));
+				            $('div.column_window input').attr('value','');
 				          } else {
-				            if ($('div.column_window input').attr('value')=='') {
-				              $('div.column_window input').addClass('error');
+				            if ($('div.column_window input').attr('value')=='' && $('div.column_window a.option').attr('type')=='') {
+				              $('div.column_window span.select,div.column_window input').addClass('error');
 				              var position = $('div.column_window input').position().top;
 				              $('div.column_window p.error').css('top',position-32+'px');
-				              $('div.column_window p.error span').text('Choose a name');
+				              $('div.column_window p.error span').text('Choose a name and type');
 				            } else {
-				              var position = $('div.column_window span.select').position().top;
-				              $('div.column_window p.error').css('top',position-32+'px');
-				              $('div.column_window span.select').addClass('error');
-				              $('div.column_window p.error span').text('Choose a type');
+				              if ($('div.column_window input').attr('value')=='') {
+				                $('div.column_window input').addClass('error');
+				                var position = $('div.column_window input').position().top;
+				                $('div.column_window p.error').css('top',position-32+'px');
+				                $('div.column_window p.error span').text('Choose a name');
+				              } else {
+				                var position = $('div.column_window span.select').position().top;
+				                $('div.column_window p.error').css('top',position-32+'px');
+				                $('div.column_window span.select').addClass('error');
+				                $('div.column_window p.error span').text('Choose a type');
+				              }
 				            }
+				            $('div.column_window p.error').fadeIn().delay(2000).fadeOut();
 				          }
-				          $('div.column_window p.error').fadeIn().delay(2000).fadeOut();
-				        }
-			      	}
-			     });
-				 //End of the controller for the enter key
-	           },
-	           error: function(e) {
-	              $('div.column_window span.select a.option').text('Error retrieving types').attr('type','');
-	           }
+			      	  }
+			        });
+				      //End of the controller for the enter key
+	          },
+	          error: function(e) {
+	            $('div.column_window span.select a.option').text('Error retrieving types').attr('type','');
+	          }
 	        });
 
 	        $('div.mamufas div.column_window').show();
@@ -2014,7 +2086,7 @@
       });
       $('div.column_window a.close_create,div.column_window a.cancel').livequery('click',function(ev){
         stopPropagation(ev);
-        enabled = true;
+        table.enabled = true;
         methods.closeTablePopups();
       });
 
@@ -2025,10 +2097,10 @@
       // General options
       $('div.sql_window a.try_query').livequery('click',function(ev){
         var table_mode = ($('body').attr('view_mode') == "table");
-        if (enabled && table_mode) {
+        if (table.enabled && table_mode) {
           ev.preventDefault();
 					$('body').attr('query_mode',"true");
-          query_mode = true;
+          table.mode = 'query';
           methods.refreshTable(0);
         	setAppStatus();
 				}
@@ -2043,18 +2115,18 @@
         methods.closeTablePopups();
 
         try {
-          var scrollable = $('div.table_position').scrollLeft();
+          var scrollable = table.e.parent().scrollLeft();
           var window_width = $(window).width();
-          var second = $('table thead tr th:eq(2)').position().left;
-          var test_1 = $('table thead tr th:eq(3)').position().left;
-          var test_2 = $('table thead tr th:eq(4)').position().left;
+          var second = table.e.find('thead tr th:eq(2)').position().left;
+          var test_1 = table.e.find('thead tr th:eq(3)').position().left;
+          var test_2 = table.e.find('thead tr th:eq(4)').position().left;
           var length = test_2 - test_1;
 
           var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+3;
-          var position = $('table thead tr th:eq('+column_position+')').offset().left;
-          $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
+          var position = table.e.find('thead tr th:eq('+column_position+')').offset().left;
+          table.e.parent().animate({scrollLeft:scrollable+position-window_width},200);
         } catch (e) {
-          $('div.table_position').scrollTo({top:'0',left:'100%'},200);
+          table.e.parent().animate({scrollLeft:table.e.parent().width()},200);
         }
         methods.paginateControls();
       });
@@ -2063,21 +2135,21 @@
         methods.closeTablePopups();
 
         try {
-          var scrollable = $('div.table_position').scrollLeft();
+          var scrollable = table.e.parent().scrollLeft();
           var window_width = $(window).width();
-          var second = $('table thead tr th:eq(2)').position().left;
-          var test_1 = $('table thead tr th:eq(3)').position().left;
-          var test_2 = $('table thead tr th:eq(4)').position().left;
+          var second = table.e.find('thead tr th:eq(2)').position().left;
+          var test_1 = table.e.find('thead tr th:eq(3)').position().left;
+          var test_2 = table.e.find('thead tr th:eq(4)').position().left;
           var length = test_2 - test_1;
 
           var column_position = Math.floor(($(window).width()-second+scrollable)/(length))+1;
-          if (column_position>$('thead tr th').size()) {
-            column_position = $('thead tr th').size()-1;
+          if (column_position > table.e.find('thead tr th').size()) {
+            column_position = table.e.find('thead tr th').size()-1;
           }
           var position = $('table thead tr th:eq('+column_position+')').offset().left;
-          $('div.table_position').scrollTo({top:'0',left:scrollable+position-window_width+'px'},200);
+          table.e.parent().animate({scrollLeft:scrollable+position-window_width},200);
         } catch (e) {
-          $('div.table_position').scrollTo({top:'0',left:'0px'},200);
+          table.e.parent().scrollLeft(0);
         }
 
         methods.paginateControls();
@@ -2089,25 +2161,44 @@
       ///////////////////////////////////////
       $('a.filter_column').livequery('click',function(ev){
         stopPropagation(ev);
-        // if (enabled && !query_mode) {
-        //  methods.closeTablePopups();
-        //          methods.bindESCkey();
-        //          enabled = false;
-        //          $('div.mamufas div.filter_window').show();
-        //          $('div.mamufas').fadeIn(function(ev){
-        //            $('div.filter_window input').focus();
-        //          });
-        //        }
+        if (table.enabled && table.mode!='query') {
+          methods.closeTablePopups();
+          methods.bindESCkey();
+          
+          // Reset input
+          $('div.filter_window form input[type="text"]').val('');
+          
+          // Get the column
+          var column_name = $(this).closest('th').attr('c');
+          $('div.filter_window').attr('c',column_name);
+          $('div.filter_window h3').text('Filter by '+column_name+' column');
+          
+          // Set filter column for the request
+          defaults.filter_column = column_name;
+           
+          // Show filter window
+          $('div.filter_window').fadeIn(function(ev){
+            $('div.filter_window input[type="text"]').focus();
+          });
+        }
       });
-      $('div.mamufas div.filter_window a.apply_query').click(function(ev){
-        alert('jamon');
+      $('div.filter_window form').livequery('submit',function(ev){
         stopPropagation(ev);
+        table.mode = 'filter';
+        // Set filter column for the request
+        defaults.filter_value = $('div.filter_window form input[type="text"]').val();
+        methods.refreshTable();
       });
-      $('div.mamufas div.filter_window a.clear_filter').click(function(ev){
-        alert('paco');
+      $('div.filter_window a.clear_filter,div.stickies a.remove_filter').livequery('click',function(ev){
         stopPropagation(ev);
+        $('body').attr('query_mode','false');
+        table.mode = 'normal';
+        methods.refreshTable('');
       });
-
+      $('div.filter_window a.close').livequery('click',function(ev){
+        stopPropagation(ev);
+        methods.closeTablePopups();
+      });
     },
 
 
@@ -2117,7 +2208,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     keepSize: function(){
       //Keep the parent table div with the correct width, onresize window as well
-      if ($(window).width() != $('div.table_position').width()) {
+      if ($(window).width() != table.e.parent().width()) {
         setTimeout(function(){
           methods.resizeTable();
         },500);
@@ -2134,9 +2225,9 @@
     //  PAGINATE CONTROLS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     paginateControls: function(){
-      var scrollable = $('div.table_position').scrollLeft();
+      var scrollable = table.e.parent().scrollLeft();
       var window_width = $(window).width();
-      var table_width = $(table).width();
+      var table_width = table.e.width();
 
    		if (window_width==table_width || (window_width-2)>=table_width || $('table tbody').length==0) {
         $('span.paginate a#previousButton').addClass('disabled');
@@ -2145,7 +2236,7 @@
         if (scrollable<1) {
           $('span.paginate a#previousButton').addClass('disabled');
           $('span.paginate a#nextButton').removeClass('disabled');
-     		} else if ((window_width+scrollable)==$(table).width() || ($(table).width()-window_width-scrollable)<(last_cell_size+28)) {
+     		} else if ((window_width+scrollable)==table.e.width() || (table.e.width()-window_width-scrollable)<(table.last_cell_s+28)) {
           $('span.paginate a#nextButton').addClass('disabled');
           $('span.paginate a#previousButton').removeClass('disabled');
         } else {
@@ -2161,28 +2252,28 @@
     //  RESIZE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     resizeTable: function() {
-      $('div.table_position').width($(window).width());
       var parent_width = $(window).width();
-      var width_table_content = (($(table).children('thead').children('tr').children('th').size()-2)*(cell_size+27)) + 143;
-      var head_element = $(table).children('thead').children('tr').children('th:last').children('div');
-      var body_element = $(table).children('tbody').children('tr');
+      table.e.parent().width(parent_width);
+      var width_table_content = ((table.e.children('thead').children('tr').children('th').size()-2)*(table.cell_s+27)) + 143;
+      var head_element = table.e.children('thead').children('tr').children('th:last').children('div');
+      var body_element = table.e.children('tbody').children('tr');
 
       //WIDTH
       if (parent_width>width_table_content) {
-        $(head_element).width(parent_width - width_table_content + cell_size);
+        $(head_element).width(parent_width - width_table_content + table.cell_s);
         $(body_element).each(function(index,element){
-          $(element).children('td:last').children('div').width(parent_width-width_table_content + cell_size);
-          last_cell_size = parent_width-width_table_content + cell_size;
+          $(element).children('td:last').children('div').width(parent_width - width_table_content + table.cell_s);
+          table.last_cell_s = parent_width - width_table_content + table.cell_s;
         });
       }
 
       // HEIGTH
       var parent_height = $(window).height();
       // Reset before height
-      $('div.table_position').css('height','auto');
+      table.e.parent().css('height','auto');
 
-      if ((parent_height-162)>($('div.table_position').height())) {
-        $('div.table_position').height(parent_height-162);
+      if ((parent_height-162) > (table.e.parent().height())) {
+        table.e.parent().height(parent_height-162);
       }
 
       //Control pagination
@@ -2205,7 +2296,7 @@
         type: request_type,
         dataType: "text",
         headers: {"cartodbclient": true},
-        url: defaults.getDataUrl+table_name+url_change,
+        url: defaults.getDataUrl + table_name + url_change,
         data: params,
         success: function(data) {
           requests_queue.responseRequest(requestId,'ok','');
@@ -2229,19 +2320,19 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     successRequest: function(params,new_value,old_value,type) {
       switch (type) {
-        case "rename_column":   var type  = headers[old_value];
-                                delete headers[old_value];
-                                headers[new_value] = type;
+        case "rename_column":   var type  = table.h[old_value];
+                                delete table.h[old_value];
+                                table.h[new_value] = type;
                                 $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
                                 break;
         case "column_type":     methods.refreshTable('');
-                                headers[params.name] = params.type;
+                                table.h[params.name] = params.type;
                                 break;
         case "new_column":      methods.closeTablePopups();
-                                headers[params.name] = params.type;
+                                table.h[params.name] = params.type;
                                 methods.refreshTable('next');
                                 break;
-        case "delete_column":   delete headers[params.name];
+        case "delete_column":   delete table.h[params.name];
                                 methods.refreshTable('');
                                 break;
         case "delete_row":      methods.refreshTable('');
@@ -2257,7 +2348,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     errorRequest: function(params,new_value,old_value,type) {
       switch (type) {
-        case "update_cell":   var element = $('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div');
+        case "update_cell":   var element = table.e.find('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div');
                               element.text(old_value);
                               element.attr('title',old_value);
                               element.animate({color:'#FF3300'},300,function(){
@@ -2275,7 +2366,7 @@
         case "update_geometry": methods.closeTablePopups();
                               break;
 
-        case "column_type":   var element = $('th[c="'+params.name+'"]').find('p.long').children('a');
+        case "column_type":   var element = table.e.find('th[c="'+params.name+'"] p.long a');
                               element.text(old_value);
                               element.animate({color:'#FF3300'},300,function(){
                                 setTimeout(function(){element.animate({color:'#b4b4b4'},300);},1000);
@@ -2289,31 +2380,50 @@
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  RESTORE TABLE
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    restoreTable : function() {
+      table.mode = 'normal';
+      $('body').attr('query_mode',"false");
+      methods.refreshTable();
+    },
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  REFRESH TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     refreshTable: function(position) {
-			query_mode = ($('body').attr('query_mode') === "true");
+      // If it comes from a query (from the map)
+      var table_mode = ($('body').attr('query_mode') == "true");
+      if (table_mode) {
+        table.mode = 'query';
+      }
+      
 			$('body').attr('view_mode','table');
 			var new_query = undefined;
-      loading = true;
+      table.loading = true;
 
       if (position!='') {
         // Reset pages position
-        minPage = 0;
-        maxPage = -1;
+        table.min_p = 0;
+        table.max_p = -1;
+        if (position==undefined)
+          position = 'next';
       } else {
         //Hide scroll loaders
         $('div.loading_previous').hide();
         $('div.loading_next').hide();
-        previous_scroll = $(document).scrollTop();
+        table.scroll = $(document).scrollTop();
 				new_query = true;
       }
-      $(table).children('thead').remove();
-      $(table).children('tbody').remove();
+      
+      table.e.children('thead').remove();
+      table.e.children('tbody').remove();
       $(document).scrollTop(0);
-      $('div.table_position').removeClass('end');
-      methods.getData(defaults, position, new_query);
-      enabled = true;
+      table.e.parent().removeClass('end');
+      methods.getData(defaults, position, new_query, true);
+      table.enabled = true;
     },
 
 
@@ -2324,8 +2434,10 @@
     closeTablePopups: function() {
       methods.unbindESCkey();
       $('body').unbind('click');
-      enabled = true;
-
+      table.enabled = true;
+      
+      // Filter window
+      $('div.filter_window').hide();
       //Column row popup
       $('div.delete_row').hide();
       //Column delete popup
@@ -2346,10 +2458,8 @@
 
       //popup windows
       $('div.mamufas').fadeOut('fast',function(){
-        $('div.mamufas div.georeference_window').hide();
         $('div.mamufas div.column_window').hide();
         $('div.mamufas div.lastpage_window').hide();
-        $('div.mamufas div.stopgeo_window').hide();
       });
 
       closeOutTableWindows();
@@ -2384,9 +2494,13 @@
   /////////////////////////////
   //  START PLUGIN           //
   /////////////////////////////
-  $.fn.cDBtable = function(method,options) {
-    defaults = options;
-
+  $.fn.cartoDBtable = function(method,options) {
+        
+    if (options!=undefined && options!=null) {
+      defaults = options;
+      table.enabled = defaults.enabled;
+    }
+    
     if (methods[method]) {
       return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
  		} else if ( typeof method === 'object' || ! method ) {
@@ -2395,4 +2509,4 @@
       return methods.init.apply( this, arguments );
     }
   };
-})( jQuery );
+})(jQuery);

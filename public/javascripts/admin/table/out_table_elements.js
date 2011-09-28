@@ -1112,13 +1112,75 @@
 
 
     ///////////////////////////////////////
+    //  Share embed map                  //
+    ///////////////////////////////////////
+		var embed_window = (function() {
+		  var embed_map;
+		  
+		  //Append georeference html to the document
+			$('div.mamufas').append(
+	      '<div class="embed_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="top">'+
+              '<h3>Embed this map in your website</h3>'+
+              '<p>It’s just copy and paste!</p>'+
+              '<div class="html_code">'+
+                '<h4>HTML CODE</h4>'+
+                '<span class="copy_code">'+
+                  '<p>añsdjf jasñ dlfjñasld kfjañ sdfkjas ñdflj</p>'+
+                  '<a class="copy" href="#copy">Copy</a>'+
+                '</span>'+
+                '<span class="outer_map">'+
+                  '<div class="embed_map"></div>'+
+                '</span>'+
+              '</div>'+
+              '<div class="tiles_code">'+
+                '<h4>OR TILES URL</h4>'+
+                '<span class="copy_code">'+
+                  '<p>añsdjf jasñ dlfjñasld kfjañ sdfkjas ñdflj</p>'+
+                  '<a class="copy" href="#copy">Copy</a>'+
+                '</span>'+
+              '</div>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#close_window" class="cancel">Close</a>'+
+            '</span>'+
+          '</div>'+
+        '</div>');
+		  
+		  
+		  // Init map
+		  
+		  
+		  // Bindings
+		  $('ul.tab_menu li a.share').click(function(ev){
+		    stopPropagation(ev);
+		    closeOutTableWindows();
+	      $('div.embed_window').show();
+	      $('div.mamufas').fadeIn('fast');
+	      bindESC();
+		  });
+		  
+		  $('div.embed_window a.close, div.embed_window a.cancel').click(function(ev){
+		    stopPropagation(ev);
+		    closeOutTableWindows();
+		    unbindESC();
+		  });
+		  
+		  return {}
+		}());
+
+
+
+    ///////////////////////////////////////
     //  Application tabs menu            //
     ///////////////////////////////////////
     $('section.subheader ul.tab_menu li a').click(function(ev){
-      stopPropagation(ev);
-      closeOutTableWindows();
       if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
         if ($(this).text()=="Table") {
+          stopPropagation(ev);
+          closeOutTableWindows();
  					window.location.hash = "#table";
           $('section.subheader ul.tab_menu li').removeClass('selected');
           $(this).parent().addClass('selected');
@@ -1128,7 +1190,9 @@
           $('div.general_options').removeClass('map').addClass('table');
           $('div.table_position').show();
           hideMap();
-        } else {
+        } else if ($(this).text()=="Map") {
+          stopPropagation(ev);
+          closeOutTableWindows();
  					window.location.hash = "#map";
           $('section.subheader ul.tab_menu li').removeClass('selected');
           $('div.general_options').removeClass('table end').addClass('map');
@@ -1139,6 +1203,8 @@
           $('body').trigger('enabled',[false]);
           showMap();
         }
+      } else {
+        stopPropagation(ev);
       }
     });
   });
@@ -1250,6 +1316,7 @@
       $('div.mamufas div.warning_window').hide();
       $('div.mamufas div.import_window').hide();
       $('div.mamufas div.georeference_window').hide();
+      $('div.mamufas div.embed_window').hide();
       $(document).unbind('keydown');
       $('body').unbind('click');
     });
@@ -1278,6 +1345,7 @@
 			$.favicon('/favicon/blue_32x32.png');
 			$('body').removeClass('query');
 			$('p.settings a:last').before(' | ');
+			$('p.settings a:eq(1)').before(' | ');
 			$('body').animate({backgroundColor:'#2D3451'},500);
 			setTimeout(function(){$('body').css('background-position','0 0');},300);
 			$('section.subheader').animate({backgroundColor:'#2D3451'},500);

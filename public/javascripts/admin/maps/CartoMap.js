@@ -364,15 +364,18 @@
           url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
           headers: {"cartodbclient":"true"},
           success: function(data) {
-              if (data.rows[0].st_extent!=null) {
-                  var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-                  var coor1 = coordinates[0].split(' ');
-                  var coor2 = coordinates[1].split(' ');
-                  var bounds = new google.maps.LatLngBounds();
-                  bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
-                  bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
-                  me.map_.fitBounds(bounds);
-              }
+            if (data.rows[0].st_extent!=null) {
+              var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+              
+              var coor1 = coordinates[0].split(' ');
+              var coor2 = coordinates[1].split(' ');
+              var bounds = new google.maps.LatLngBounds();
+              
+              bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
+              bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+                              
+              me.map_.fitBounds(bounds);
+            }
 
           },
           error: function(e) {

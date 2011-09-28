@@ -38,7 +38,7 @@
       var map_key = "<%= current_user.get_map_key %>";
 
       <% if flash[:alert] %>
-      var error_message = '<%= flash[:alert] %>';
+        var error_message = '<%= flash[:alert] %>';
       <% end %>
     </script>
   <% end %>
@@ -78,6 +78,7 @@
           <ul class="tab_menu">
             <li class="selected"><a href="#view_table">Table</a></li>
             <li class="<%= ((!current_user.map_enabled)?'disabled':'') %>"><a href="#view_map">Map</a></li>
+            <li><a href="#share_this_map" class="share">SHARE THIS MAP</a></li>
           </ul>
         </div>
         <div class="right">

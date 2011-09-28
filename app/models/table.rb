@@ -470,7 +470,7 @@ class Table < Sequel::Model(:user_tables)
       query = query.order(order_by_column.to_sym)
 
       query = query.reverse if mode.present? && mode.downcase == 'desc'
-      rows = if where.present? then query.filter(where) else query.all end
+      rows = if where.present? then query.filter(where.first[0].to_sym.ilike("%#{where.first[1]}%")) else query.all end
     end
     {
       :id         => id,

@@ -64,11 +64,10 @@
 						'<p>You can free move or close this window to watch the table. Protip: Ctrl+RETURN for lauching your query</p>'+
 		        '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
 		        '<span class="bottom">'+
+		          '<span class="errors"><p>Your query is not correct, try again with another ;)</p></span>'+
 		          '<a href="http://www.postgis.org/docs/" target="_blank" class="reference">PostGIS reference</a>'+
 		          '<a href="#apply" class="try_query">Apply query</a>'+
 		          '<a href="#clear" class="clear_table">Clear view</a>'+
-							'<span class="blablabla"></span>'+
-		          '<p class="errors">Your query is not correct, try again with another ;)</p>'+
 		        '</span>'+
 					'</div>'+
 	      '</div>');
@@ -98,6 +97,8 @@
 				if ($('div.sql_window').is(':visible')) {
 					closeOutTableWindows();
 				} else {
+				  $('div.sql_window span.errors').hide();
+				  
           if (editor.getValue()=='') {
             editor.setValue('SELECT * FROM ' + table_name);
           }
@@ -115,8 +116,8 @@
 				var query_mode = ($('body').attr('query_mode') === "true");
 			  if (query_mode) {
 					$('body').attr('query_mode','false');
-					// Send trigger to refresh app
-			    $('body').trigger('query_refresh');
+					// Refresh table
+			    $('table').cartoDBtable('restoreTable');
 					setAppStatus();	// Out function to change app to SQL or NORMAL
 			  }
 			});
@@ -177,16 +178,16 @@
           '</div>'+
         '</div>');
 
+
       
       // Now the listeners
       $('a.open_georeference,p.geo').livequery('click',function(ev){
-        
         var init_lat = $(this).closest('th').attr('c') || '';
-        
+
         // Remove selected list in header th
         $('thead tr th a.options').removeClass('selected');
         $('span.col_ops_list').hide();
-        
+
         stopPropagation(ev);
         closeOutTableWindows();
         // SQL mode? you can't georeference
@@ -199,6 +200,7 @@
 	        resetProperties();
 	        getColumns();
 				}
+
 
         function resetProperties() {
           $('div.georeference_window div.inner_ span.top').css('opacity',1).show();
@@ -327,54 +329,6 @@
         $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
         $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
       });
-      $('div.georeference_window span.address ul li a').livequery('click',function(ev){
-        stopPropagation(ev);
-        $(this).closest('span.select').children('a.option').text($(this).text());
-        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
-        $('span.select').removeClass('clicked');
-
-        var block_class = $(this).closest('div.block');
-        if (block_class.hasClass('first_column_address')) {
-          if (!$('div.second_column_address').is(':visible')) {
-            $('div.georeference_window div.second_column_address').show();
-            $('div.georeference_window div.second_column_address a.remove_column').show();
-          }
-        } else if (block_class.hasClass('second_column_address')) {
-          if (!$('div.third_column_address').is(':visible')) {
-            $('div.georeference_window div.second_column_address a.remove_column').hide();
-            $('div.georeference_window div.third_column_address').show();
-            $('div.georeference_window div.third_column_address a.remove_column').show();
-          }
-        } else {
-          $('div.georeference_window div.third_column_address a.remove_column').show();
-        }
-      });
-      $('div.georeference_window a.remove_column').livequery('click',function(ev){
-        stopPropagation(ev);
-        $(this).closest('div.block').children('span.select').children('a.option').text('Select a column');
-        $(this).closest('div.block').children('span.select').children('a.option').attr('c','');
-        $('span.select').removeClass('clicked');
-
-        var block_class = $(this).closest('div.block');
-        if (block_class.hasClass('first_column_address')) {
-          $('div.georeference_window div.first_column_address a.remove_column').hide();
-        } else if (block_class.hasClass('second_column_address')) {
-          $('div.georeference_window div.first_column_address a.remove_column').show();
-          $('div.georeference_window div.second_column_address').hide();
-          $('div.georeference_window div.second_column_address a.remove_column').hide();
-        } else {
-          $('div.georeference_window div.second_column_address a.remove_column').show();
-          $('div.georeference_window div.third_column_address').hide();
-          $('div.georeference_window div.third_column_address a.remove_column').show();
-        }
-      });
-      $('div.georeference_window div.inner_ span.top ul li a.first_ul').livequery('click',function(ev){
-        stopPropagation(ev);
-        if (!$(this).parent().hasClass("disabled")) {
-          $('div.georeference_window div.inner_ span.top ul:eq(0) li').removeClass('selected');
-          $(this).parent().addClass('selected');
-        }
-      });
       $('a.confirm_georeference').livequery('click',function(ev){
         stopPropagation(ev);
 
@@ -383,9 +337,27 @@
           var longitude = $('a#longitude').attr('c');
           if (!(latitude=='' && longitude=='')) {
             var params = {};
-            params['latitude_column'] = (latitude=="Empty")? "nil" : latitude;
-            params['longitude_column'] = (longitude=="Empty")? "nil" : longitude;
-            changesRequest('update_geometry',params,null);
+            params['latitude_column'] = latitude;
+            params['longitude_column'] = longitude;
+            
+            var requestId = createUniqueId();
+            requests_queue.newRequest(requestId,'update_geometry');
+
+            $.ajax({
+                method: "POST",
+                //UPDATE test_points SET the_geom = ST_GeomFromText('MULTIPOINT(('||longitude||' '|| latitude||'))',4326)
+                url: global_api_url+'queries?sql='+escape("UPDATE "+table_name+" SET the_geom = ST_GeomFromText('MULTIPOINT(('||"+longitude+"||' '|| "+latitude+"||'))',4326)"),
+                headers: {"cartodbclient":"true"},
+                success: function(data) {
+                  requests_queue.responseRequest(requestId,'ok','');
+                  successActionPerforming('update_geometry',null,null);
+                },
+                error: function(e) {
+                  requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors);
+                  errorActionPerforming('update_geometry',null,$.parseJSON(e.responseText).errors);
+                }
+            });
+
             loadingState();
           } else {
             if (latitude=='') {
@@ -1151,8 +1123,7 @@
           $('section.subheader ul.tab_menu li').removeClass('selected');
           $(this).parent().addClass('selected');
           $(document).trigger('click');
-          $('body').trigger('refresh');
-          $('body').trigger('enabled',[true]);
+          $('table').cartoDBtable('refreshTable');
 					$('body').attr('view_mode','table');
           $('div.general_options').removeClass('map').addClass('table');
           $('div.table_position').show();
@@ -1206,7 +1177,7 @@
   // If the request is ok
   function successActionPerforming(param,new_value,old_value) {
     switch (param) {
-      case 'update_geometry': $(document).trigger('update_geometry');
+      case 'update_geometry': $('table').cartoDBtable('refreshTable');
                               closeOutTableWindows();
                               break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1220,6 +1191,9 @@
 	// If the request fails
   function errorActionPerforming(param, old_value,error_text) {
     switch (param) {
+      case 'update_geometry': closeOutTableWindows();
+                              break;
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       case 'privacy': $('span.privacy_window ul li.'+old_value).addClass('selected');
                       $('p.status a').removeClass('public private').addClass(old_value).text(old_value);
                       break;

@@ -47,7 +47,9 @@
       	      $(this).css('borderBottom','1px solid #D0C090');
       	    });
       	    this.checking = true;
-      	    this.loopPendingOperations();
+      	    if (this.count==1) {
+        	    this.loopPendingOperations();
+      	    }
       	  }
       	}
       	

@@ -43,6 +43,7 @@
       var map_enabled = <%= current_user.map_enabled.to_s %>;
       var map_key = "<%= current_user.get_map_key %>";
 
+      var error_message = "asjdfñlasfsadfasdf";
       <% if flash[:alert] %>
         var error_message = '<%= flash[:alert] %>';
       <% end %>

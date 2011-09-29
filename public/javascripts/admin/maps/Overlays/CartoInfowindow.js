@@ -34,7 +34,8 @@
 			              '</div>'+
 			              '<div class="bottom">'+
 											'<label>cartodb_id:1</label>'+
-											'<a class="delete_point" href="#delete">Delete</a>'+
+											'<a class="edit_point" href="#edit">edit</a>'+
+											'<a class="delete_point" href="#delete">delete</a>'+
 		                '</div>');
 		
 
@@ -47,6 +48,12 @@
 				stopPropagation(ev);
 				me.hide();
 				carto_map.delete_window_.open(me.latlng_,me.marker_);
+			});
+			
+			$(div).find('a.edit_point').click(function(ev){
+				stopPropagation(ev);
+				me.hide();
+				carto_map.createFakeGeometry(me.marker_);
 			});
       
       google.maps.event.addDomListener(div,'click',function(ev){stopMapPropagation(ev);});

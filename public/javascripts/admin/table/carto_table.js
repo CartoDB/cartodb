@@ -62,7 +62,7 @@
       // Show loader
       if (!table.loaded || refresh) {
         var requestId = createUniqueId();
-        requests_queue.newRequest(requestId,'load_table');
+        requests_queue.newRequest(requestId,table.mode+'_table');
       } 
 
       

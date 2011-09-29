@@ -65,6 +65,7 @@
         requests_queue.newRequest(requestId,table.mode+'_table');
       } 
 
+
       
 			//Pagination AJAX adding rows
 			var request_pages;
@@ -2389,14 +2390,16 @@
     //  REFRESH TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     refreshTable: function(position) {
+      var new_query = undefined;
+      
       // If it comes from a query (from the map)
       var table_mode = ($('body').attr('query_mode') == "true");
       if (table_mode) {
         table.mode = 'query';
+        new_query = true;
       }
       
 			$('body').attr('view_mode','table');
-			var new_query = undefined;
       table.loading = true;
 
       if (position!='') {

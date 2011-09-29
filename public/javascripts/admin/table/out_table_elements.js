@@ -1014,6 +1014,13 @@
 	          var new_value = $('span.privacy_window ul li.selected a strong').text().toLowerCase();
 	          $('span.privacy_window').hide();
 	          $('p.status a').removeClass('public private').addClass(new_value).text(new_value);
+	          
+	          if (new_value=='public') {
+	            $('ul.tab_menu').append('<li><a href="#share_this_map" class="share">SHARE THIS MAP</a></li>');
+	          } else {
+	            $('ul.tab_menu').find('a.share').parent().remove();
+	          }
+	          
 	          changesRequest('privacy',new_value.toUpperCase(),old_value);
 	        }
 	      }
@@ -1154,12 +1161,12 @@
 		  
 
 		  // Bindings
-		  $('ul.tab_menu li a.share').click(function(ev){
+		  $('ul.tab_menu li a.share').livequery('click',function(ev){
 		    stopPropagation(ev);
 		    closeOutTableWindows();
 		    
 		    // Change values of the inputs
-		    
+
 	      $('div.embed_window').show();
 	      $('div.mamufas').fadeIn('fast',function(){
 	        if (!embed_map)
@@ -1336,6 +1343,11 @@
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       case 'privacy': $('span.privacy_window ul li.'+old_value).addClass('selected');
                       $('p.status a').removeClass('public private').addClass(old_value).text(old_value);
+                      if (old_value=='public') {
+          	            $('ul.tab_menu').append('<li><a href="#share_this_map" class="share">SHARE THIS MAP</a></li>');
+          	          } else {
+          	            $('ul.tab_menu').find('a.share').parent().remove();
+          	          }
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       case 'name':    $('section.subheader h2 a').text(old_value.name);

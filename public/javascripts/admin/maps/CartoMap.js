@@ -473,14 +473,7 @@
                           headers: {"cartodbclient":"true"},
                           success: function(data) {
                               var type = (data.rows[0].st_geometrytype).toLowerCase();
-                              if (type == "st_point") {
-                                  me.info_window_.openWax(feature);
-                              } else if (type=="st_multipolygon" || type=="st_polygon") {
-                                  // bla bla
-                              } else {
-                                  // bla bla
-                              }
-
+                              me.info_window_.openWax(feature);
                           },
                           error: function(e) {
                           }

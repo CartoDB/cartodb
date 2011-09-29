@@ -366,7 +366,8 @@
 
     /* Set the tools due to geom_type... */
     CartoMap.prototype.setTools = function(geom_type,layers_style,map_style) {
-      var map = this.map_;
+      var me = this;
+      var map = me.map_;
       
       /*Geometry tools*/
       if (geom_type=="point" || geom_type=="multipoint") {
@@ -384,8 +385,40 @@
       
       /*Map type - header*/
       var map_customization = (function(){
+        //me.map_style = map_style;
         map.setOptions({styles:map_style});
- 
+  
+        // Get saturation, labels on/off, roads on/off
+  
+        $('.map_header ul.map_type li a').livequery('click',function(ev){
+          stopPropagation(ev);
+          var parent = $(this).parent();
+          if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
+            if (parent.find('div.suboptions').length>0) {
+              parent.addClass('special selected');
+              return false;
+            }
+            // Get value
+            var map_type = $(this).text();
+
+            // Remove selected
+            $('.map_header ul.map_type li').each(function(i,li){$(li).removeClass('selected special')});
+            
+            // Add selected to the parent (special?)
+            parent.addClass('selected');
+                     
+            // TODOOOOO Save the value in the server!!!!!
+            
+            // Do action
+            if (map_type=="Roadmap") {
+              map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+            } else if (map_type=="Satellite") {
+              map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+            } else {
+              map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+            }
+          }
+        });
         
         return {}
   		}());
@@ -393,19 +426,71 @@
       
       /*Geometry customization - header*/
       var geometry_customization = (function(){
+        
+        $('.map_header ul.geometry_customization li a').livequery('click',function(ev){
+          stopPropagation(ev);
+          var parent = $(this).parent();
+          if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
+          }
+        });
+        
+        
+        // Remove the customization that doesn't belong to the geom_type
+        if (geom_type == 'multipoint') {
+          $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
+          $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+        } else if (geom_type == 'multipolygon') {
+          $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+          $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+        } else {
+          $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
+          $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+        }
+
         return {}
   		}());
       
       
       /*Infowindow customization - header*/
       var infowindow_customization = (function(){
+         $('.map_header ul.infowindow_customization li a').livequery('click',function(ev){
+           stopPropagation(ev);
+           var parent = $(this).parent();
+           if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
+
+           }
+         });
+
         return {}
   		}());
-      
-      
-      
+
+ 
+      /* Bind event for open any tool */
+      $('.map_header a.open').livequery('click',function(ev){
+        stopPropagation(ev);
+        var options = $(this).parent().find('div.options');
+        if (!options.is(':visible')) {
+          me.closeMapWindows();
+          me.bindMapESC();
+          //If clicks out of the div...
+          $('body').click(function(event) {
+            if (!$(event.target).closest(options).length) {
+              options.hide();
+              me.bindMapESC();
+            };
+          });
+          options.show();
+        } else {
+         me.unbindMapESC();
+         $('body').unbind('click');
+
+         options.hide();
+        }
+      });
+
+
       // All loaded? Ok -> Let's show options...
-      if (false && geom_type!=undefined) {
+      if (geom_type!=undefined) {
         $('.map_header a.open').fadeIn();
       }
     }
@@ -852,19 +937,37 @@
     }
 
 
-
     
     ////////////////////////////////////////
-    //  BIND KEYBOARD ACTIONS (ESC)       //
+    //  CLOSE OUT TABLE WINDOWS && ESC    //
     ////////////////////////////////////////
-    /* Bind ESC */
-    CartoMap.prototype.bindESCMap = function(sql) {
-    
+    // Bind ESC key
+  	CartoMap.prototype.bindMapESC = function() {
+  	  var me = this;
+      $(document).keydown(function(event){
+        if (event.which == '27') {
+          me.closeMapWindows();
+        }
+      });
     }
 
-    /* Unbind ESC */
-    CartoMap.prototype.unBindESCMap = function(sql) {
+    // Unind ESC key
+    CartoMap.prototype.unbindMapESC = function() {
+      $(document).unbind('keydown');
+      $('body').unbind('click');
+    }
     
+  	// Close all map elements
+    CartoMap.prototype.closeMapWindows = function() {
+      $('.map_header div.options').hide();
+      this.info_window_.hide();
+
+      //popup windows
+      $('div.mamufas').fadeOut('fast',function(){
+
+        $(document).unbind('keydown');
+        $('body').unbind('click');
+      });
     }
 
 

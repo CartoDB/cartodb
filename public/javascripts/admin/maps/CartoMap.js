@@ -594,12 +594,6 @@
         this.geometry_creator_ = new GeometryCreator(this.map_,(this.status_=="add_polygon")?"MultiPolygon":"MultiLineString");
       }
 
-      // if (status=="select_area") {
-      //  this.enableSelectionTool()
-      // } else {
-      //  this.disableSelectionTool()
-      // }
-
       this.hideOverlays()
     }
 
@@ -910,6 +904,15 @@
     //  HIDE OR SHOW MAP				  //
     ////////////////////////////////////////
     CartoMap.prototype.hide = function() {
+      // Remove all things
+      if (this.editing) {
+        this.editing = false;
+        this.toggleEditTools();
+        this.removeFakeGeometries();
+        if (this.geometry_creator_!=null)
+          this.geometry_creator_.destroy();
+      }
+      
       $('div.map_window div.map_curtain').show();
     }
 

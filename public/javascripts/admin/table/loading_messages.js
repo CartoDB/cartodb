@@ -1,8 +1,8 @@
   
   var loadingMessages = [];
-    loadingMessages["normal_table"] = "table loaded";
+    loadingMessages["normal_table"] = "records loaded";
     loadingMessages["query_table"] = "query results";
-    loadingMessages["filter_table"] = "filter results";
+    loadingMessages["filter_table"] = "records filtered";
     loadingMessages["tags"] = "table tags updated";
     loadingMessages["name"] = "table name updated";
     loadingMessages["privacy"] = "table privacy updated";

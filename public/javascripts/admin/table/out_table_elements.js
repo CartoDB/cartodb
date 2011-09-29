@@ -1245,6 +1245,7 @@
           stopPropagation(ev);
           closeOutTableWindows();
  					window.location.hash = "#table";
+ 					$('span.paginate').show();
           $('section.subheader ul.tab_menu li').removeClass('selected');
           $(this).parent().addClass('selected');
           $(document).trigger('click');
@@ -1257,6 +1258,7 @@
           stopPropagation(ev);
           closeOutTableWindows();
  					window.location.hash = "#map";
+ 					$('span.paginate').hide();
           $('section.subheader ul.tab_menu li').removeClass('selected');
           $('div.general_options').removeClass('table end').addClass('map');
           $(this).parent().addClass('selected');

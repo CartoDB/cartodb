@@ -1241,28 +1241,40 @@
         if ($(this).text()=="Table") {
           stopPropagation(ev);
           closeOutTableWindows();
+          
  					window.location.hash = "#table";
  					$('span.paginate').show();
+ 					
+ 					// Change list and tools selected
           $('section.subheader ul.tab_menu li').removeClass('selected');
-          $(this).parent().addClass('selected');
-          $(document).trigger('click');
-          $('table').cartoDBtable('refreshTable');
-					$('body').attr('view_mode','table');
           $('div.general_options').removeClass('map').addClass('table');
+          $(this).parent().addClass('selected');
+          
+          // Refresh & show the table
+          $('table').cartoDBtable('refreshTable');
+          
+          // Hide map
+					$('body').attr('view_mode','table');
           $('div.table_position').show();
           hideMap();
         } else if ($(this).text()=="Map") {
           stopPropagation(ev);
           closeOutTableWindows();
+          
  					window.location.hash = "#map";
  					$('span.paginate').hide();
+ 					 					
+ 					// Change list and tools selected
           $('section.subheader ul.tab_menu li').removeClass('selected');
           $('div.general_options').removeClass('table end').addClass('map');
           $(this).parent().addClass('selected');
+          
+          // Disable the table
+ 					$('table').cartoDBtable('disableTable');
+          
+          // Show map
           $('div.table_position').hide();
 					$('body').attr('view_mode','map');
-          $(document).trigger('click');
-          $('body').trigger('enabled',[false]);
           showMap();
         }
       } else {

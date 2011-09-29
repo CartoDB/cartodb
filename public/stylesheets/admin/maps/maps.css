@@ -33,13 +33,11 @@ div.marker_tooltip a.margin:hover {background-position:-14px -14px}
 div.marker_tooltip a.edit {background-position:right 0}
 div.marker_tooltip a.edit:hover {background-position:right -14px}
 
-
 /*Marker infowindow*/
 div.marker_infowindow {position:absolute; display:block; width:214px; padding:0;}
 div.marker_infowindow a.close {position:absolute; right:3px; top:3px; width:22px; height:15px; padding:4px 0 3px 0; text-align:center; font:bold 15px "Helvetica",Arial; color:#666666; text-decoration:none; line-height:15px}
 div.marker_infowindow a.close:hover {color:#333333}
 div.marker_infowindow div.outer_top {width:186px; padding:25px 18px 5px 10px; background:url('/images/admin/map/infowindow_top.png') 0 top;}
-
 div.marker_infowindow div.top {width:186px; max-height:200px; overflow-y:scroll; overflow-x:hidden}
 div.marker_infowindow div.top label {display:block; width:auto; padding:0 0 0 5px; font:normal 11px Arial; color:#B3B3B3; text-shadow:0 1px white}
 div.marker_infowindow div.top p {display:block; width:170px; max-height:20px; padding:2px 4px; margin:2px 0 7px; font:bold 11px 'Helvetica',Arial; color:#666666; border:none; background:none; text-shadow:0 1px white;
@@ -75,8 +73,10 @@ div.map_window div.map_header ul li {position:relative; float:left; width:auto; 
 div.map_window div.map_header ul li h4 {font:normal 11px "Helvetica",Arial; color:#B4B4B4; text-shadow:0 1px white;}
 div.map_window div.map_header ul li h4 a {font:normal 11px "Helvetica",Arial; color:#B4B4B4; text-shadow:0 1px white; text-decoration:none;}
 div.map_window div.map_header ul li p {padding:3px 0 0 0; font:bold 11px "Helvetica",Arial; color:#666666; text-shadow:0 1px white; text-transform:capitalize;}
-div.map_window div.map_header ul li a.open {position:absolute; right:7px; top:13px; height:26px; width:26px; background:url('/images/admin/map/open_bkg.png') no-repeat 0 0; text-indent:-9999px;}
+div.map_window div.map_header ul li a.open {position:absolute; display:none; right:7px; top:13px; height:26px; width:26px; background:url('/images/admin/map/open_bkg.png') no-repeat 0 0; text-indent:-9999px;}
 div.map_window div.map_header ul li a.open:hover {background-position:0 -26px;}
+
+
 
 /*MARKERS CUSTOMIZATION*/
 div.map_window div.map_header ul li span.marker_customization {position:absolute; display:none; top:19px; right:13px; width:163px; height:auto; background:url('/images/admin/map/combo_bkg.png') no-repeat right 0;}
@@ -103,7 +103,6 @@ div.map_window div.map_header ul li span.marker_customization ul li.selected div
 div.map_window div.map_header ul li span.marker_customization ul li.selected div.options span.size a.less {position:absolute; bottom:0; right:0; width:14px!important; height:11px; padding:0; text-indent:-9999px!important; overflow:hidden; background:url('/images/admin/map/value_down.png') no-repeat 0 0;}
 div.map_window div.map_header ul li span.marker_customization ul li.disabled {opacity:0.3;}
 div.map_window div.map_header ul li span.marker_customization ul li.disabled a:hover {background-position:0 -188px; cursor:default; text-decoration:none;}
-
 
 div.map_window div.map_header ul li.query  {height:41px; padding:6px 55px 8px 6px;}
 div.map_window div.map_header ul li input[type="text"] {width:320px; height:19px; padding:3px 5px; border:1px solid #CCCCCC; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:italic 13px Arial; color:#bbbbbb; line-height:13px;}

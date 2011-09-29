@@ -1,4 +1,7 @@
   <% content_for(:js) do %>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>
+
+
     <%= headjs_include_tag(
       # PLUGINS
       "plugins/jquery.min",
@@ -18,14 +21,17 @@
       "plugins/jquery.cookie",
       "plugins/jquery.favicon",
       # OWN MADE
+      "admin/table/out_table_elements",
       "admin/table/loading_messages",
       "admin/table/loader_queue",
       "admin/table/carto_table",
-      "admin/table/out_table_elements",
-      "admin/table/geocoding",
-      "admin/table/worker_geocoding",
+      "admin/table/table_templates",
       "admin/table/table",
-      "admin/table/table_templates"
+      # MAPS
+      "admin/maps/map",
+      "admin/maps/map_elements",
+      "admin/maps/CartoMap",
+      "admin/maps/wax.g"
     )%>
 
     <script type="text/javascript">

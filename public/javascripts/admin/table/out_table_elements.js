@@ -1135,7 +1135,7 @@
                 '<h4>HTML CODE</h4>'+
                 '<span class="copy_code">'+
                   '<input type="text" disabled="disabled" value="asdfasdfasfsadfasdfsadfasdfasdfasdfasdfasfasdsadfasdfasdfasdfasdfasdf" />'+
-                  '<a class="copy" href="#copy">Copy</a>'+
+                  '<a id="test" class="copy">Copy</a>'+
                 '</span>'+
                 '<span class="outer_map">'+
                   '<div id="embed_map" class="embed_map"></div>'+
@@ -1145,7 +1145,7 @@
                 '<h4>OR TILES URL</h4>'+
                 '<span class="copy_code">'+
                   '<input type="text" disabled="disabled" value="asdfasdfasfsadfasdfsadfasdfasdfasdfasdfasfasdsadfasdfasdfasdfasdfasdf" />'+
-                  '<a class="copy" href="#copy">Copy</a>'+
+                  '<a class="copy">Copy</a>'+
                 '</span>'+
               '</div>'+
             '</span>'+
@@ -1160,12 +1160,15 @@
 		  $('ul.tab_menu li a.share').click(function(ev){
 		    stopPropagation(ev);
 		    closeOutTableWindows();
+		    
+		    // Change values of the inputs
+		    
 	      $('div.embed_window').show();
 	      $('div.mamufas').fadeIn('fast',function(){
-	        if (!embed_map) {
+	        if (!embed_map)
 	          createMap();
-	        }
-	        prepareMap();
+	        toggleLayer();
+	        zoomToBBox();
 	      });
 	      bindESC();
 		  });
@@ -1176,14 +1179,57 @@
 		    unbindESC();
 		  });
 		  
+
+      $('div.embed_window .inner_ span.top div span a').click(function(ev){
+        stopPropagation(ev);
+        var text = $(this).parent().find('input').val();
+        //$.copy('asdfasfasdfasdfadsasdfasdfsafsadfadsfdsaf');
+      });
 		  
 		  function createMap() {
 		    embed_map = new google.maps.Map(document.getElementById("embed_map"),embedOptions);
 		  }
 		  
-		  function prepareMap() {
+		  function toggleLayer() {
+		    // Remove previous layers
+		    if (embed_map!=null)
+		      embed_map.overlayMapTypes.clear();
 		    
+	      var cartodb_layer = {
+          getTileUrl: function(coord, zoom) {
+            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8?map_key='+map_key;
+          },
+          tileSize: new google.maps.Size(256, 256)
+        };
+        var cartodb_imagemaptype = new google.maps.ImageMapType(cartodb_layer);
+        embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
 		  }
+		  
+		  function zoomToBBox() {
+        var me = this;
+        $.ajax({
+            method: "GET",
+            url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
+            headers: {"cartodbclient":"true"},
+            success: function(data) {
+              if (data.rows[0].st_extent!=null) {
+                var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+
+                var coor1 = coordinates[0].split(' ');
+                var coor2 = coordinates[1].split(' ');
+                var bounds = new google.maps.LatLngBounds();
+
+                bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
+                bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+
+                embed_map.fitBounds(bounds);
+              }
+
+            },
+            error: function(e) {
+            }
+        });
+      }
 		  
 		  return {}
 		}());

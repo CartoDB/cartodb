@@ -439,7 +439,6 @@
 
     
 
-
     ////////////////////////////////////////
     //  WAX AND TOOLS LISTENERS			      //
     ////////////////////////////////////////
@@ -850,6 +849,22 @@
       var params = {};
       params.cartodb_ids = cartodb_ids;
       this.updateTable('/records/'+cartodb_ids,params,null,null,"remove_points","DELETE");
+    }
+
+
+
+    
+    ////////////////////////////////////////
+    //  BIND KEYBOARD ACTIONS (ESC)       //
+    ////////////////////////////////////////
+    /* Bind ESC */
+    CartoMap.prototype.bindESCMap = function(sql) {
+    
+    }
+
+    /* Unbind ESC */
+    CartoMap.prototype.unBindESCMap = function(sql) {
+    
     }
 
 

@@ -405,7 +405,7 @@
       
       
       // All loaded? Ok -> Let's show options...
-      if (geom_type!=undefined) {
+      if (false && geom_type!=undefined) {
         $('.map_header a.open').fadeIn();
       }
     }
@@ -767,6 +767,7 @@
           var poly_obj = transformGeoJSON(data.the_geom);
           
           _.each(poly_obj.paths,function(path,i){
+            path.pop();
             var polygon = new google.maps.Polygon({paths:path,strokeColor:"#FFFFFF",strokeOpacity:1,strokeWeight:2,fillColor:"#FF6600",fillOpacity:0.5,map:me.map_,clickable:false,data:feature});
             me.fakeGeometries_.push(polygon);
             polygon.runEdit();

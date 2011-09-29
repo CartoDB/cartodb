@@ -183,6 +183,9 @@ if (typeof(google.maps.Polygon.prototype.runEdit) === "undefined") {
       }
     };
     var vertexRightClick = function () {
+      if (self.getPath().length<=3) {
+        return false;
+      }
       if (flag) {
         var Vertex = self.getPath().getAt(this.inex);
         if (this.inex === 0) {

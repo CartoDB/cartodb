@@ -1116,6 +1116,12 @@
     ///////////////////////////////////////
 		var embed_window = (function() {
 		  var embed_map;
+		  var embedOptions = {
+        zoom: 2,
+        center: new google.maps.LatLng(0,0),
+        disableDefaultUI: true,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      }
 		  
 		  //Append georeference html to the document
 			$('div.mamufas').append(
@@ -1128,17 +1134,17 @@
               '<div class="html_code">'+
                 '<h4>HTML CODE</h4>'+
                 '<span class="copy_code">'+
-                  '<p>añsdjf jasñ dlfjñasld kfjañ sdfkjas ñdflj</p>'+
+                  '<input type="text" disabled="disabled" value="asdfasdfasfsadfasdfsadfasdfasdfasdfasdfasfasdsadfasdfasdfasdfasdfasdf" />'+
                   '<a class="copy" href="#copy">Copy</a>'+
                 '</span>'+
                 '<span class="outer_map">'+
-                  '<div class="embed_map"></div>'+
+                  '<div id="embed_map" class="embed_map"></div>'+
                 '</span>'+
               '</div>'+
               '<div class="tiles_code">'+
                 '<h4>OR TILES URL</h4>'+
                 '<span class="copy_code">'+
-                  '<p>añsdjf jasñ dlfjñasld kfjañ sdfkjas ñdflj</p>'+
+                  '<input type="text" disabled="disabled" value="asdfasdfasfsadfasdfsadfasdfasdfasdfasdfasfasdsadfasdfasdfasdfasdfasdf" />'+
                   '<a class="copy" href="#copy">Copy</a>'+
                 '</span>'+
               '</div>'+
@@ -1149,16 +1155,18 @@
           '</div>'+
         '</div>');
 		  
-		  
-		  // Init map
-		  
-		  
+
 		  // Bindings
 		  $('ul.tab_menu li a.share').click(function(ev){
 		    stopPropagation(ev);
 		    closeOutTableWindows();
 	      $('div.embed_window').show();
-	      $('div.mamufas').fadeIn('fast');
+	      $('div.mamufas').fadeIn('fast',function(){
+	        if (!embed_map) {
+	          createMap();
+	        }
+	        prepareMap();
+	      });
 	      bindESC();
 		  });
 		  
@@ -1167,6 +1175,15 @@
 		    closeOutTableWindows();
 		    unbindESC();
 		  });
+		  
+		  
+		  function createMap() {
+		    embed_map = new google.maps.Map(document.getElementById("embed_map"),embedOptions);
+		  }
+		  
+		  function prepareMap() {
+		    
+		  }
 		  
 		  return {}
 		}());

@@ -78,7 +78,7 @@
         ev.preventDefault();
         if (!$('div.create_window span.bottom input').hasClass('disabled')) {
           if (create_type==0) {
-            var geom_type = $('div.geom_type span.selected a').text();
+            var geom_type = $('div.geom_type span.selected a').text().toLowerCase();
             
             if (geom_type=="point") {
               geom_type="multipoint";              

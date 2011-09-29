@@ -13,14 +13,21 @@
             '<li class="first">'+
               '<h4>Map type</h4>'+
               '<p>Roadmap</p>'+
+              '<a class="open" href="#map_customization"></a>'+
             '</li>'+
             '<li>'+
               '<h4>Visualization type</h4>'+
               '<p>Features visualization</p>'+
             '</li>'+
             '<li>'+
-              '<h4>Markers customization css</h4>'+
+              '<h4>Geometry customization</h4>'+
               '<p>Default style</p>'+
+              '<a class="open" href="#geometry_customization"></a>'+
+            '</li>'+
+            '<li>'+
+              '<h4>Infowindow customization</h4>'+
+              '<p>Default</p>'+
+              '<a class="open" href="#infowindow_customization"></a>'+
             '</li>'+
           '</ul>'+
         '</div>'+

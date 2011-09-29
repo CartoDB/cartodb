@@ -62,8 +62,9 @@
       // Show loader
       if (!table.loaded || refresh) {
         var requestId = createUniqueId();
-        requests_queue.newRequest(requestId,'load_table');
+        requests_queue.newRequest(requestId,table.mode+'_table');
       } 
+
 
       
 			//Pagination AJAX adding rows
@@ -108,7 +109,6 @@
  
 			if (table.mode!='query') {
         // FILTER OR NORMAL MODE
-        
         // Request schema
 			  $.ajax({
 			    method: "GET",
@@ -120,7 +120,6 @@
 			    },
 			    error: function(e) {
 			      requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
-			      
 			      $(document).unbind('arrived');
 			    }
 			  });
@@ -303,7 +302,8 @@
       
       
       if (table.mode!="normal") {
-        table.e.find('thead').append('<div class="stickies"><p><strong>'+table.total_r+' result'+((table.total_r>1)?'s':'')+'</strong> for your filter - <a class="remove_filter" href="#disabled_filter">remove your filter</a></p></div>');
+        table.e.find('thead').append('<div class="stickies"><p><strong>'+table.total_r+' result'+((table.total_r>1)?'s':'')+'</strong> for your filter in column "'+defaults.filter_column+'"  with value "'+defaults.filter_value+
+          '" - <a class="remove_filter" href="#disabled_filter">remove your filter</a></p></div>');
       } else {
         table.e.find('thead div.stickies').remove();
       }
@@ -2101,7 +2101,13 @@
         	setAppStatus();
 				}
       });
-
+			$('span.query h3 a.clear_table').livequery('click',function(ev){
+				var view_mode = ($('body').attr('view_mode') === "table");
+			  if (view_mode) {
+			    stopPropagation(ev);
+			    methods.restoreTable();
+			  }
+			});
 
       ///////////////////////////////////////
       //  Move table -> left/right         //
@@ -2383,6 +2389,15 @@
       $('body').attr('query_mode',"false");
       methods.refreshTable();
     },
+    
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  DISABELD TABLE
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    disableTable : function() {
+      table.enabled = false;
+    },
 
 
 
@@ -2390,14 +2405,16 @@
     //  REFRESH TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     refreshTable: function(position) {
+      var new_query = undefined;
+      
       // If it comes from a query (from the map)
       var table_mode = ($('body').attr('query_mode') == "true");
       if (table_mode) {
         table.mode = 'query';
+        new_query = true;
       }
       
 			$('body').attr('view_mode','table');
-			var new_query = undefined;
       table.loading = true;
 
       if (position!='') {

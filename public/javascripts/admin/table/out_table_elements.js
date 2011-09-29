@@ -111,13 +111,10 @@
 			
 			// Clear sql mode and back to normal state
 			$('a.clear_table').livequery('click',function(ev){
-				stopPropagation(ev);
 			  closeOutTableWindows();
 				var query_mode = ($('body').attr('query_mode') === "true");
 			  if (query_mode) {
 					$('body').attr('query_mode','false');
-					// Refresh table
-			    $('table').cartoDBtable('restoreTable');
 					setAppStatus();	// Out function to change app to SQL or NORMAL
 			  }
 			});
@@ -1116,6 +1113,12 @@
     ///////////////////////////////////////
 		var embed_window = (function() {
 		  var embed_map;
+		  var embedOptions = {
+        zoom: 2,
+        center: new google.maps.LatLng(0,0),
+        disableDefaultUI: true,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      }
 		  
 		  //Append georeference html to the document
 			$('div.mamufas').append(
@@ -1128,18 +1131,18 @@
               '<div class="html_code">'+
                 '<h4>HTML CODE</h4>'+
                 '<span class="copy_code">'+
-                  '<p>añsdjf jasñ dlfjñasld kfjañ sdfkjas ñdflj</p>'+
-                  '<a class="copy" href="#copy">Copy</a>'+
+                  '<input type="text" disabled="disabled" value="asdfasdfasfsadfasdfsadfasdfasdfasdfasdfasfasdsadfasdfasdfasdfasdfasdf" />'+
+                  '<a id="test" class="copy">Copy</a>'+
                 '</span>'+
                 '<span class="outer_map">'+
-                  '<div class="embed_map"></div>'+
+                  '<div id="embed_map" class="embed_map"></div>'+
                 '</span>'+
               '</div>'+
               '<div class="tiles_code">'+
                 '<h4>OR TILES URL</h4>'+
                 '<span class="copy_code">'+
-                  '<p>añsdjf jasñ dlfjñasld kfjañ sdfkjas ñdflj</p>'+
-                  '<a class="copy" href="#copy">Copy</a>'+
+                  '<input type="text" disabled="disabled" value="asdfasdfasfsadfasdfsadfasdfasdfasdfasdfasfasdsadfasdfasdfasdfasdfasdf" />'+
+                  '<a class="copy">Copy</a>'+
                 '</span>'+
               '</div>'+
             '</span>'+
@@ -1149,16 +1152,21 @@
           '</div>'+
         '</div>');
 		  
-		  
-		  // Init map
-		  
-		  
+
 		  // Bindings
 		  $('ul.tab_menu li a.share').click(function(ev){
 		    stopPropagation(ev);
 		    closeOutTableWindows();
+		    
+		    // Change values of the inputs
+		    
 	      $('div.embed_window').show();
-	      $('div.mamufas').fadeIn('fast');
+	      $('div.mamufas').fadeIn('fast',function(){
+	        if (!embed_map)
+	          createMap();
+	        toggleLayer();
+	        zoomToBBox();
+	      });
 	      bindESC();
 		  });
 		  
@@ -1167,6 +1175,58 @@
 		    closeOutTableWindows();
 		    unbindESC();
 		  });
+		  
+
+      $('div.embed_window .inner_ span.top div span a').click(function(ev){
+        stopPropagation(ev);
+        var text = $(this).parent().find('input').val();
+        //$.copy('asdfasfasdfasdfadsasdfasdfsafsadfadsfdsaf');
+      });
+		  
+		  function createMap() {
+		    embed_map = new google.maps.Map(document.getElementById("embed_map"),embedOptions);
+		  }
+		  
+		  function toggleLayer() {
+		    // Remove previous layers
+		    if (embed_map!=null)
+		      embed_map.overlayMapTypes.clear();
+		    
+	      var cartodb_layer = {
+          getTileUrl: function(coord, zoom) {
+            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8?map_key='+map_key;
+          },
+          tileSize: new google.maps.Size(256, 256)
+        };
+        var cartodb_imagemaptype = new google.maps.ImageMapType(cartodb_layer);
+        embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
+		  }
+		  
+		  function zoomToBBox() {
+        var me = this;
+        $.ajax({
+            method: "GET",
+            url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
+            headers: {"cartodbclient":"true"},
+            success: function(data) {
+              if (data.rows[0].st_extent!=null) {
+                var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+
+                var coor1 = coordinates[0].split(' ');
+                var coor2 = coordinates[1].split(' ');
+                var bounds = new google.maps.LatLngBounds();
+
+                bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
+                bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+
+                embed_map.fitBounds(bounds);
+              }
+
+            },
+            error: function(e) {
+            }
+        });
+      }
 		  
 		  return {}
 		}());
@@ -1181,26 +1241,40 @@
         if ($(this).text()=="Table") {
           stopPropagation(ev);
           closeOutTableWindows();
+          
  					window.location.hash = "#table";
+ 					$('span.paginate').show();
+ 					
+ 					// Change list and tools selected
           $('section.subheader ul.tab_menu li').removeClass('selected');
-          $(this).parent().addClass('selected');
-          $(document).trigger('click');
-          $('table').cartoDBtable('refreshTable');
-					$('body').attr('view_mode','table');
           $('div.general_options').removeClass('map').addClass('table');
+          $(this).parent().addClass('selected');
+          
+          // Refresh & show the table
+          $('table').cartoDBtable('refreshTable');
+          
+          // Hide map
+					$('body').attr('view_mode','table');
           $('div.table_position').show();
           hideMap();
         } else if ($(this).text()=="Map") {
           stopPropagation(ev);
           closeOutTableWindows();
+          
  					window.location.hash = "#map";
+ 					$('span.paginate').hide();
+ 					 					
+ 					// Change list and tools selected
           $('section.subheader ul.tab_menu li').removeClass('selected');
           $('div.general_options').removeClass('table end').addClass('map');
           $(this).parent().addClass('selected');
+          
+          // Disable the table
+ 					$('table').cartoDBtable('disableTable');
+          
+          // Show map
           $('div.table_position').hide();
 					$('body').attr('view_mode','map');
-          $(document).trigger('click');
-          $('body').trigger('enabled',[false]);
           showMap();
         }
       } else {

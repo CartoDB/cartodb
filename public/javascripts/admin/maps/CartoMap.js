@@ -111,11 +111,11 @@
 
       // Generate a google map
       var myOptions = {
-          zoom: this.zoom_,
-          center: this.center_,
-          disableDefaultUI: true,
-          styles: mapStyles,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
+        zoom: this.zoom_,
+        center: this.center_,
+        disableDefaultUI: true,
+        styles: mapStyles,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
       }
 
       this.map_ = new google.maps.Map(document.getElementById("map"),myOptions);

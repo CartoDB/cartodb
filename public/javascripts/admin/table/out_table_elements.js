@@ -189,7 +189,7 @@
         closeOutTableWindows();
         // SQL mode? you can't georeference
         var query_mode = ($('body').attr('query_mode') === "true");
-    		if (!query_mode) {
+    		if (!query_mode && !$(this).parent().hasClass('disabled')) {
 				  $('div.mamufas div.georeference_window').show();
   	      $('div.mamufas').fadeIn('fast');
   	      bindESC();

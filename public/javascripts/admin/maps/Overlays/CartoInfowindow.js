@@ -41,6 +41,7 @@
 
 			$(div).find('a.close').click(function(ev){
 				stopPropagation(ev);
+				carto_map.unbindMapESC();
 				me.hide();
 			});
 
@@ -136,6 +137,9 @@
     
     function positionateInfowindow(me,info) {
       if (me.div_) {
+        // Set ESC binding
+        carto_map.bindMapESC();
+        
   	    var div = me.div_;
   	    // Get latlng position
   	    me.latlng_ = transformGeoJSON(info.the_geom).center;

@@ -14,6 +14,25 @@
               '<h4>Map type</h4>'+
               '<p>Roadmap</p>'+
               '<a class="open" href="#map_customization"></a>'+
+              '<div class="options short">'+
+                '<span class="tick"></span>'+
+                '<ul class="map_type">'+
+                  '<li class="selected">'+
+                    '<a href="#">Roadmap</a>'+
+                  '</li>'+
+                  '<li>'+
+                    '<a href="#">Satellite</a>'+
+                  '</li>'+
+                  '<li>'+
+                    '<a href="#">Terrain</a>'+
+                  '</li>'+
+                  '<li class="disabled">'+
+                    '<a href="#">Custom tiles</a>'+
+                    '<div class="suboptions">'+
+                    '</div>'+
+                  '</li>'+
+                '</ul>'+
+              '</div>'+
             '</li>'+
             '<li>'+
               '<h4>Visualization type</h4>'+
@@ -23,11 +42,42 @@
               '<h4>Geometry customization</h4>'+
               '<p>Default style</p>'+
               '<a class="open" href="#geometry_customization"></a>'+
+              '<div class="options">'+
+                '<span class="tick"></span>'+
+                '<ul class="geometry_customization">'+
+                  '<li class="selected">'+
+                    '<a href="#default">Default</a>'+
+                  '</li>'+
+                  '<li class="disabled points">'+
+                    '<a href="#custom_points">Custom points</a>'+
+                    '<div></div>'+
+                  '</li>'+
+                  '<li class="disabled polygons">'+
+                    '<a href="#custom_polygons">Custom polygons</a>'+
+                    '<div></div>'+
+                  '</li>'+
+                  '<li class="disabled lines">'+
+                    '<a href="#custom_lines">Custom lines</a>'+
+                    '<div></div>'+
+                  '</li>'+
+                '</ul>'+
+              '</div>'+
             '</li>'+
             '<li>'+
               '<h4>Infowindow customization</h4>'+
               '<p>Default</p>'+
               '<a class="open" href="#infowindow_customization"></a>'+
+              '<div class="short options">'+
+                '<span class="tick"></span>'+
+                '<ul class="infowindow_customization">'+
+                  '<li class="selected">'+
+                    '<a href="#default">Default</a>'+
+                  '</li>'+
+                  '<li class="disabled">'+
+                    '<a href="#custom">Custom</a>'+
+                  '</li>'+
+                '</ul>'+
+              '</div>'+
             '</li>'+
           '</ul>'+
         '</div>'+

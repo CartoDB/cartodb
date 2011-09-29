@@ -2101,7 +2101,13 @@
         	setAppStatus();
 				}
       });
-
+			$('span.query h3 a.clear_table').livequery('click',function(ev){
+				var view_mode = ($('body').attr('view_mode') === "table");
+			  if (view_mode) {
+			    stopPropagation(ev);
+			    methods.restoreTable();
+			  }
+			});
 
       ///////////////////////////////////////
       //  Move table -> left/right         //

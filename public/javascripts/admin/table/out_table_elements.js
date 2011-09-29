@@ -111,13 +111,10 @@
 			
 			// Clear sql mode and back to normal state
 			$('a.clear_table').livequery('click',function(ev){
-				stopPropagation(ev);
 			  closeOutTableWindows();
 				var query_mode = ($('body').attr('query_mode') === "true");
 			  if (query_mode) {
 					$('body').attr('query_mode','false');
-					// Refresh table
-			    $('table').cartoDBtable('restoreTable');
 					setAppStatus();	// Out function to change app to SQL or NORMAL
 			  }
 			});

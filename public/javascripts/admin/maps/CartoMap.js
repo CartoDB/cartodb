@@ -393,6 +393,7 @@
           success: function(data) {
             if (data.rows.length>0) {
               var type = me.geometry_type_ = data.rows[0].type.toLowerCase();
+              console.log(type);
 
               if (type=="point" || type=="multipoint") {
                   $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');

@@ -94,6 +94,9 @@ section#content div.left div.middle_white_medium a.submit.orange:hover {
 
 section#content div.left div.middle_white_medium div.end_oauth {width:576px; margin:0; padding:22px 22px 0;}
 section#content div.left div.middle_white_medium div.end_oauth p {margin:0; padding:0; font:normal 15px Arial; color:#333333;}
+section#content div.left div.middle_white_medium div.end_oauth p.margin {padding:15px 0 0 0;}
+section#content div.left div.middle_white_medium div.end_oauth p a {color:#FF9900; text-decoration:none}
+section#content div.left div.middle_white_medium div.end_oauth p a:hover {color:#FF6600; text-decoration:underline}
 section#content div.left div.middle_white_medium div.end_oauth span.form_block {display:inline-block; width:275px; margin:5px 20px 0 0!important; padding:0; vertical-align:top;}
 section#content div.left div.middle_white_medium div.end_oauth span.form_block.last {margin:5px 0 0 0!important;}
 section#content div.left div.middle_white_medium div.end_oauth span.form_block label {font:bold 10px "Helvetica",Arial; color:#999999;}

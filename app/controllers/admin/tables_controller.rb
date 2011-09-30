@@ -1,9 +1,9 @@
 # coding: UTF-8
 
 class Admin::TablesController < ApplicationController
-  ssl_required :index, :show
+  ssl_required :index, :show, :embed_map
 
-  before_filter :login_required
+  before_filter :login_required, :except => [:embed_map]
 
   def index
     current_page = params[:page].nil? ? 1 : params[:page].to_i
@@ -38,5 +38,14 @@ class Admin::TablesController < ApplicationController
       end
     end
   end
-
+  
+  def embed_map
+    subdomain = request.subdomain
+    @table = Table.find_by_subdomain(subdomain, params[:id])    
+    if @table.blank? || @table.private?
+      head :forbidden
+    else
+      render :layout => false        
+    end
+  end
 end

@@ -12,7 +12,9 @@ CartoDB::Application.routes.draw do
 
   scope :module => "admin" do
     match '/dashboard'        => 'tables#index', :as => :dashboard
-    resources :tables, :only => [:show]
+    resources :tables, :only => [:show] do
+      get 'embed_map', :on => :member
+    end      
     match '/your_apps/oauth' => 'client_applications#oauth', :as => :oauth_credentials
     match '/your_apps/jsonp' => 'client_applications#jsonp', :as => :jsonp_credentials
     post  '/your_apps/jsonp/:id/destroy' => 'client_applications#remove_api_key', :as => :destroy_api_key

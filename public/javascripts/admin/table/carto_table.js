@@ -29,8 +29,7 @@
   // TODOS
   // Remove georeferencing when the table is not point geom_type
   // New loader with georeferencing and previous errors... plof
-  
-  // Review bugs again and again
+  // Back import data being into a table (remember startTable import text)
   
   // QUESTIONS
   // If you have filtered something - add new row? - go to normal mode and add new row...
@@ -938,21 +937,23 @@
       
       $(document).scroll(function(ev) {
         stopPropagation(ev);
-
+        
+        //For paginating data
+        var end = table.total_r <= ((table.actual_p + 1) * defaults.resultsPerPage);
+        console.log(end);
+        
         //For moving thead when scrolling
         if ($(document).scrollTop()>58) {
           $('section.subheader').css('top','-3px');
           table.e.children('thead').css('top','99px');
-          if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && table.e.parent().scrollLeft()>0) {
+          if (!end && ($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && table.e.parent().scrollLeft()>0) {
             $('div.general_options').addClass('end');
-            $('div.sql_console').addClass('end');
           } else {
+            console.log('eyyy');
             $('div.general_options').removeClass('end');
-            $('div.sql_console').removeClass('end');
           }
         } else {
           $('div.general_options').removeClass('end');
-          $('div.sql_console').removeClass('end');
           $('section.subheader').css('top',58-$(document).scrollTop()+'px');
           table.e.children('thead').css('top',160-$(document).scrollTop()+'px');
         }
@@ -962,8 +963,6 @@
         $('div.change_type_column').fadeOut();
 
 
-        //For paginating data
-        var end = table.total_r <= ((table.actual_p + 1) * defaults.resultsPerPage);
         
         if (!table.loading && table.enabled) {
           var difference = $(document).height() - $(window).height();
@@ -976,7 +975,7 @@
             table.e.parent().removeClass('end');
             methods.showLoader('previous');
             setTimeout(function(){methods.getData(defaults,'previous')},500);
-          } else if (end && table.actual_p!=0) {
+          } else if (end) {
             table.e.parent().addClass('end');
           }
         }
@@ -984,14 +983,6 @@
 
 
       table.e.parent().scroll(function(ev){
-        if (($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && table.e.parent().scrollLeft()>0) {
-          $('div.general_options').addClass('end');
-          $('div.sql_console').addClass('end');
-        } else {
-          $('div.general_options').removeClass('end');
-          $('div.sql_console').removeClass('end');
-        }
-
         if ($('div.delete_row').is(':visible')) {
           $('div.delete_row').fadeOut();
         }
@@ -2109,6 +2100,7 @@
 			  }
 			});
 
+
       ///////////////////////////////////////
       //  Move table -> left/right         //
       ///////////////////////////////////////
@@ -2128,7 +2120,7 @@
           var position = table.e.find('thead tr th:eq('+column_position+')').offset().left;
           table.e.parent().animate({scrollLeft:scrollable+position-window_width},200);
         } catch (e) {
-          table.e.parent().animate({scrollLeft:table.e.parent().width()},200);
+          table.e.parent().animate({scrollLeft:table.e.width() - $(window).width()},200);
         }
         methods.paginateControls();
       });
@@ -2254,11 +2246,13 @@
     //  RESIZE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     resizeTable: function() {
+      
       var parent_width = $(window).width();
       table.e.parent().width(parent_width);
       var width_table_content = ((table.e.children('thead').children('tr').children('th').size()-2)*(table.cell_s+27)) + 143;
       var head_element = table.e.children('thead').children('tr').children('th:last').children('div');
       var body_element = table.e.children('tbody').children('tr');
+
 
       //WIDTH
       if (parent_width>width_table_content) {
@@ -2268,7 +2262,7 @@
           table.last_cell_s = parent_width - width_table_content + table.cell_s;
         });
       }
-
+      
       // HEIGTH
       var parent_height = $(window).height();
       // Reset before height
@@ -2276,7 +2270,12 @@
 
       if ((parent_height-162) > (table.e.parent().height())) {
         table.e.parent().height(parent_height-162);
+        table.e.parent().addClass('end');
+      } else {
+        table.e.parent().removeClass('end');
       }
+
+
 
       //Control pagination
       methods.paginateControls();

@@ -8,8 +8,13 @@
       body {width:100%; height:100%; padding:0; margin:0; background:none;}
       div#outer_map_cartodb_container {position:relative; width:100%; height:100%; background:white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
       div#map_cartodb_container {position:absolute; top:5px; left:5px; right:5px; bottom:5px;}
-      a.cartodb_logo {position:absolute; bottom:10px; left:80px; display:block; width:70px; height:15px; background:url('http://www.cartodb.com/admin/common/logo.png') no-repeat 0 0;}
-      span.map_controls {position:absolute; top:10px; left:10px;}
+      a.cartodb_logo {position:absolute; bottom:14px; left:75px; display:block; width:70px; height:15px; background:url('http://vizzuality.s3.amazonaws.com/cartodb_tumblr_files/logo.png') no-repeat 0 0;
+        text-indent:-9999px; line-height:0; font-size:0;}
+      span.map_controls {position:absolute; top:10px; left:10px; width:26px; height:auto;}
+      span.map_controls a.zoom_in {width:26px; height:26px; background:url('/images/admin/map/zoomin.png') no-repeat 0 0;}
+      span.map_controls a.zoom_in:hover {background-position:0 -26px; cursor:pointer;}
+      span.map_controls a.zoom_out {width:26px; height:26px; margin:5px 0 0 0; background:url('/images/admin/map/zoomout.png') no-repeat 0 0;}
+      span.map_controls a.zoom_out:hover {background-position:0 -26px; cursor:pointer;}
     </style>
 
     <% if @table.public? %>
@@ -19,7 +24,7 @@
             map_key = "<%= @table.name %>";
             user_name = "<%= @table.name %>";
       </script>
-    
+
       <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
       <script type="text/javascript">
@@ -43,8 +48,8 @@
           // };
           // var cartodb_imagemaptype = new google.maps.ImageMapType(cartodb_layer);
           // carto_embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
-          
-          
+
+
           //
           //
           //         var me = this;

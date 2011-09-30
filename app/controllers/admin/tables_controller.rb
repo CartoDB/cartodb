@@ -40,8 +40,8 @@ class Admin::TablesController < ApplicationController
   end
   
   def embed_map
-    subdomain = request.subdomain
-    @table = Table.find_by_subdomain(subdomain, params[:id])    
+    @subdomain = request.subdomain
+    @table = Table.find_by_subdomain(@subdomain, params[:id])    
     if @table.blank? || @table.private?
       head :forbidden
     else

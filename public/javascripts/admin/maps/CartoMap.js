@@ -268,9 +268,10 @@
 
       // SQL Map console
       // Clear
-      $('span.query h3 a.clear_table').livequery('click',function(ev){
+      $('a.clear_table').livequery('click',function(ev){
         var view_map = ($('body').attr('view_mode') == 'map');
-        if (view_map ) {
+        if (view_map) {
+          			    console.log('map');
           stopPropagation(ev);
           me.query_mode = false;
           me.refresh();
@@ -323,18 +324,13 @@
   			      $('div.sql_window').css({'min-height':new_height+'px'});
   			      $('div.sql_window span.errors').show();
   			      
-  			      $('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+  			      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+      				$('span.query p').text('');
   			    }
           });
         }
       });
-      
-      $(document).bind('update_geometry',function(ev){
-        var map_mode = ($('body').attr('view_mode') == "map");
-        if (map_mode && !$(this).hasClass('disabled')) {
-          me.refreshWax();
-				}
-      });
+  
     }
 
     /* Set bbox for the map */

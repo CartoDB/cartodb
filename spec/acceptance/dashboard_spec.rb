@@ -35,7 +35,7 @@ feature "Dashboard", %q{
     Timecop.travel(t + 6.minutes)
 
     log_in_as user
-    
+
     within(:css, "header") do
       page.should have_link("CartoDB")
       page.should have_content(user.email)
@@ -46,7 +46,7 @@ feature "Dashboard", %q{
     page.should have_css("ul.tables_list li.selected a", :text => "Your tables")
 
     page.should have_content("22 tables in your account")
-    
+
     within("ul.your_tables li:eq(1)") do
       page.should have_link("downloaded_movies")
       page.should have_content("PRIVATE")
@@ -78,7 +78,7 @@ feature "Dashboard", %q{
     end
 
     page.should have_content("BROWSE BY TAGS")
-    
+
     page.should have_css("ul li:eq(1) a span", :text => "personal")
     page.should have_css("ul li a span", :text => "4sq")
     page.should have_css("ul li a span", :text => "feed aggregator")
@@ -94,12 +94,12 @@ feature "Dashboard", %q{
     end
 
     page.should have_no_selector("footer")
-    
+
     visit '/dashboard'
     click_link_or_button('close session')
     page.current_path.should == '/login'
   end
-  
+
   scenario "Browse by tags" do
     user = create_user
     the_other = create_user
@@ -132,9 +132,9 @@ feature "Dashboard", %q{
       page.should have_link("CartoDB")
       page.should have_content(user.email)
     end
-    
+
     page.find("ul li a span", :text => "4sq").click
-        
+
     page.should have_content("1 table in your account")
 
     page.should have_css("ul li:eq(1) a", :text => "view all tables")
@@ -142,7 +142,7 @@ feature "Dashboard", %q{
     page.should have_css("ul li a span", :text => "4sq")
     page.should have_css("ul li a span", :text => "feed aggregator")
     page.should have_css("ul li a span", :text => "movies")
-    
+
     within("ul.your_tables li:eq(1)") do
       page.should have_link("my_check_ins")
       page.should have_content("PRIVATE")
@@ -150,11 +150,11 @@ feature "Dashboard", %q{
         page.should have_content("4sq")
       end
     end
-    
+
     page.find("ul li a span", :text => "personal").click
-    
+
     page.should have_content("21 tables in your account")
-    
+
     within("ul.your_tables li:eq(1)") do
       page.should have_link("my_check_ins")
       page.should have_content("PRIVATE")
@@ -170,7 +170,7 @@ feature "Dashboard", %q{
       page.should have_link("table_1")
       page.should have_content("PRIVATE")
     end
-    
+
   end
 
   # TODO: implement it
@@ -214,12 +214,12 @@ feature "Dashboard", %q{
     page.should have_content("Using the key and secret you can access CartoDB from external applications.")
 
     within("span.form_block") do
-      page.should have_content("YOUR KEY")
+      page.should have_content("CONSUMER KEY")
       page.should have_css("input[@value='#{user.client_application.key}']")
     end
 
     within("span.form_block.last") do
-      page.should have_content("YOUR SECRET")
+      page.should have_content("CONSUMER SECRET")
       page.should have_css("input[@value='#{user.client_application.secret}']")
     end
 

@@ -221,10 +221,10 @@
             error: function(e) {
 							var json = $.parseJSON(e.responseText);
               $('div.create_window div.inner_ span.loading').addClass('error');
-              $('div.create_window div.inner_ span.loading p').html(json.hint);
+              $('div.create_window div.inner_ span.loading p').html(json.raw_error +'<br/><br/>'+json.hint);
               $('div.create_window div.inner_ span.loading h5').text(json.message);
 							$('div.create_window a.close_create').show().addClass('last');
-              $('div.create_window div.inner_').height(98);
+              $('div.create_window div.inner_').height($('div.create_window div.inner_ span.loading').height() + 30);
             }
           });
         });

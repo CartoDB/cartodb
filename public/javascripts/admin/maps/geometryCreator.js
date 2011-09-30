@@ -228,7 +228,6 @@
       thisObj.coords.push(value.getLatLng());
     });
 
-    console.log(this.coords);
     
     this.polygonObj=new google.maps.Polygon({paths:this.coords,strokeColor:"#FFFFFF",strokeOpacity:1,strokeWeight:2,fillColor:"#FF6600",fillOpacity:0.5,map:this.map,clickable:true});
 

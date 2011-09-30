@@ -32,7 +32,7 @@ end
 
 tab "cartodb sql api" do
   run "cd $CARTODB_SQL_PATH"
-  run "node cluster development"
+  run "node app.js development"
 end
 
 tab "cartodb tiler" do

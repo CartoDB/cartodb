@@ -9,8 +9,8 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 Capybara.default_driver    = :selenium
 Capybara.default_wait_time = 10
-Capybara.default_host      = CartoDB.hostname
-Capybara.app_host          = CartoDB.hostname
+Capybara.default_host      = "http://admin.localhost.lan:53716"
+Capybara.app_host          = "http://admin.localhost.lan:53716"
 Capybara.server_port       = 53716
 # Capybara.register_driver :selenium do |app|
 #   Capybara::Driver::Selenium.new(app, :browser => :chrome)

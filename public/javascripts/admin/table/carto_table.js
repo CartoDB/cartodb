@@ -762,7 +762,7 @@
       table.e.parent().append(
         '<div class="empty_table">'+
           '<h5>Add some rows to your table</h5>'+
-          '<p>You can <a class="add_row" href="#add_row">add it manually</a> or <a class="import_data" href="#import_data">import data</a></p>'+
+          '<p>You can <a class="add_row" href="#add_row">add it manually</a></p>'+ //or <a class="import_data" href="#import_data">import data</a>
         '</div>'
       );
 

@@ -97,12 +97,6 @@
       });
       
       
-      //Function for doing the whole cell on the tables list clickable
-      $('ul.your_tables li').click(function() {
-        if (!$(this).hasClass('raster')) {
-          $(this).find("h4 > a.tableTitle").click();
-        }
-      });
 
       //Close all modal windows
       $('div.mamufas a.cancel, div.mamufas a.close_delete, div.mamufas a.close_settings, div.mamufas a.close_create, div.mamufas a.close').click(function(ev){
@@ -223,10 +217,10 @@
           });
         }
       });
-    }
+    };
 
     function unbindESC() {
       $(document).unbind('keydown');
-    }
+    };
 
 

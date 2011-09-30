@@ -154,7 +154,7 @@ div.table_position div.delete_row {position:absolute; display:none; top:60px; le
 div.table_position div.delete_row p {font:normal 13px Arial; color:#333333; text-shadow:0 1px white;}
 div.table_position div.delete_row a {float:left; margin:20px 0 0 0; font:normal 13px Arial; color:#666666; text-shadow:none;}
 div.table_position div.delete_row a:hover {color:#333333;}
-div.table_position div.delete_row a.button {float:radiusight; height:14px; margin:15px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+div.table_position div.delete_row a.button {float:right; height:14px; margin:15px 0 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
 div.table_position div.delete_row a.button:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));

@@ -1138,17 +1138,20 @@
               '<div class="html_code">'+
                 '<h4>HTML CODE</h4>'+
                 '<span class="copy_code">'+
-                  '<input type="text" disabled="disabled" value="<iframe src=\'http://'+user_name+'.cartodb.com/tables/'+table_name+'/embed\' width=\'300\' height=\'200\'></iframe>" />'+
+                  '<input type="text" disabled="disabled" value="<iframe src=\'http://'+user_name+'.cartodb.com/tables/'+table_name+'/embed\' width=\'572\' height=\'220\'></iframe>" />'+
                   '<a id="test" class="copy">Copy</a>'+
                 '</span>'+
                 '<span class="outer_map">'+
                   '<div id="embed_map" class="embed_map"></div>'+
+                  '<a href="#zoom_in" class="embed_zoom_in">+</a>'+
+                  '<a href="#zoom_out" class="embed_zoom_out">-</a>'+
+                  '<a href="http://cartodb.com" class="cartodb_logo" target="_blank">CartoDB</a>'+
                 '</span>'+
               '</div>'+
               '<div class="tiles_code">'+
                 '<h4>OR TILES URL</h4>'+
                 '<span class="copy_code">'+
-                  '<input type="text" disabled="disabled" value="asdfasdfasfsadfasdfsadfasdfasdfasdfasdfasfasdsadfasdfasdfasdfasdfasdf" />'+
+                  '<input type="text" disabled="disabled" value="'+TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}'+'.png8'+'" />'+
                   '<a class="copy">Copy</a>'+
                 '</span>'+
               '</div>'+
@@ -1173,6 +1176,14 @@
 	          createMap();
 	        toggleLayer();
 	        zoomToBBox();
+	        
+	        // Start zclip
+	        $("div.embed_window .inner_ span.top div span a.copy").zclip({
+              path: "/javascripts/plugins/ZeroClipboard.swf",
+              copy: function(){
+                return $(this).parent().find('input').val();
+              }
+          });
 	      });
 	      bindESC();
 		  });
@@ -1180,14 +1191,21 @@
 		  $('div.embed_window a.close, div.embed_window a.cancel').click(function(ev){
 		    stopPropagation(ev);
 		    closeOutTableWindows();
+		    $("div.embed_window .inner_ span.top div span a.copy").zclip('remove');
 		    unbindESC();
 		  });
 		  
-
-      $('div.embed_window .inner_ span.top div span a').click(function(ev){
-        stopPropagation(ev);
-        var text = $(this).parent().find('input').val();
-        //$.copy('asdfasfasdfasdfadsasdfasdfsafsadfadsfdsaf');
+      
+      
+		  
+		  // Zooms
+		  $('a.embed_zoom_in').click(function(ev){
+        ev.preventDefault();
+        embed_map.setZoom(embed_map.getZoom()+1);
+      });
+      $('a.embed_zoom_out').click(function(ev){
+        ev.preventDefault();
+        embed_map.setZoom(embed_map.getZoom()-1);
       });
 		  
 		  function createMap() {
@@ -1201,7 +1219,7 @@
 		    
 	      var cartodb_layer = {
           getTileUrl: function(coord, zoom) {
-            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8?map_key='+map_key;
+            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8';
           },
           tileSize: new google.maps.Size(256, 256)
         };
@@ -1392,7 +1410,8 @@
     $('span.title_window').hide();
     $('span.advanced_options').hide();
     $('span.tags_window').hide();
-		$('div.sql_window').hide()
+		$('div.sql_window').hide();
+		$("div.embed_window .inner_ span.top div span a.copy").zclip('remove');
 
     //popup windows
     $('div.mamufas').fadeOut('fast',function(){

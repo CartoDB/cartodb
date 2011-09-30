@@ -1164,4 +1164,26 @@ describe Table do
     schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
     schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
   end
+  
+  it "should be able to be found from username and id" do
+    user = create_user
+    table = new_table :user_id => user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+    table.save.reload
+    
+    new_table = Table.find_by_subdomain(user.username, table.id)
+    
+    new_table.id.should == table.id
+  end  
+  
+  it "should not be able to be found from blank subdomain and id" do
+    user = create_user
+    table = new_table :user_id => user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+    table.save.reload
+    
+    new_table = Table.find_by_subdomain(nil, table.id)
+
+    new_table.should == nil
+  end  
 end

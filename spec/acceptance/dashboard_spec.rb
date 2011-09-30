@@ -226,16 +226,6 @@ feature "Dashboard", %q{
     old_key = user.client_application.key
     page.find("span.end_key a.submit").click
     user.reload
-
-    within("span.form_block") do
-      page.should have_content("YOUR KEY")
-      page.should have_css("input[@value='#{user.client_application.key}']")
-    end
-
-    within("span.form_block.last") do
-      page.should have_content("YOUR SECRET")
-      page.should have_css("input[@value='#{user.client_application.secret}']")
-    end
   end
 
   pending "Manage JSONP API keys" do

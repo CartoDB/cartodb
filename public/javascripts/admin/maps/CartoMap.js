@@ -271,7 +271,6 @@
       $('a.clear_table').livequery('click',function(ev){
         var view_map = ($('body').attr('view_mode') == 'map');
         if (view_map) {
-          			    console.log('map');
           stopPropagation(ev);
           me.query_mode = false;
           me.refresh();
@@ -353,8 +352,8 @@
                               
               me.map_.fitBounds(bounds);
               
-              if (map.getZoom()<2) {
-                map.setZoom(2);
+              if (me.map_.getZoom()<2) {
+                me.map_.setZoom(2);
               }
             }
 

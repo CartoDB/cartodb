@@ -7,21 +7,37 @@
       html {width:100%; height:100%; padding:0; margin:0; border:none;}
       body {width:100%; height:100%; padding:0; margin:0; background:none;}
       div#outer_map_cartodb_container {position:relative; width:100%; height:100%; background:white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
-      div#map_cartodb_container {position:absolute; top:5px; left:5px; right:5px; bottom:5px;}
-      a.cartodb_logo {position:absolute; bottom:14px; left:75px; display:block; width:70px; height:15px; background:url('http://vizzuality.s3.amazonaws.com/cartodb_tumblr_files/logo.png') no-repeat 0 0;
+      div#map_cartodb_container {position:absolute; top:5px; left:5px; right:5px; bottom:5px; z-index:0;}
+      a.cartodb_logo {position:absolute; bottom:13px; left:75px; display:block; width:72px; height:17px; background:url('http://cartodb.s3.amazonaws.com/static/logo.png') no-repeat 0 0;
         text-indent:-9999px; line-height:0; font-size:0;}
-      span.map_controls {position:absolute; top:10px; left:10px; width:26px; height:auto;}
-      span.map_controls a.zoom_in {width:26px; height:26px; background:url('/images/admin/map/zoomin.png') no-repeat 0 0;}
-      span.map_controls a.zoom_in:hover {background-position:0 -26px; cursor:pointer;}
-      span.map_controls a.zoom_out {width:26px; height:26px; margin:5px 0 0 0; background:url('/images/admin/map/zoomout.png') no-repeat 0 0;}
-      span.map_controls a.zoom_out:hover {background-position:0 -26px; cursor:pointer;}
+      span.cartodb_map_controls {position:absolute; top:10px; left:10px; width:26px; height:100px; z-index:10;}
+      span.cartodb_map_controls a.cartodb_map_embed_zoom_in {display:block; width:30px; height:32px; text-indent:-9999px; line-height:0; font-size:0; background:url('http://cartodb.s3.amazonaws.com/static/maps_sprite.png') no-repeat 0 0;}
+      span.cartodb_map_controls a.cartodb_map_embed_zoom_in:hover {background-position:-31px 0; cursor:pointer;}
+      span.cartodb_map_controls a.cartodb_map_embed_zoom_out {display:block; width:30px; height:32px; text-indent:-9999px; line-height:0; font-size:0; background:url('http://cartodb.s3.amazonaws.com/static/maps_sprite.png') no-repeat 0 -32px;}
+      span.cartodb_map_controls a.cartodb_map_embed_zoom_out:hover {background-position:-31px -32px; cursor:pointer;}
     </style>
+
 
     <% if @table.public? %>
       <script type="text/javascript">
         var table_name = "<%= @table.name %>",
             table_id = "<%= @table.id %>",
-            user_name = "<%= @subdomain %>";
+            user_name = "<%= @subdomain %>",
+            <% if Rails.env == "development" %>
+              TILEHTTP = "http",
+              TILESERVER = "localhost.lan:8181",
+              SQL_SERVER = 'localhost.lan:8080',
+              global_api_url = '/api/v1/';
+            <% elsif Rails.env == "staging" || Rails.env == "test" %>
+              TILEHTTP = "http",
+              TILESERVER = "ec2-50-16-103-51.compute-1.amazonaws.com",
+              global_api_url = '/api/v1/';
+            <% else %>
+              TILEHTTP = "https",
+              TILESERVER = "cartodb.com",
+              SQL_SERVER = 'cartodb.com',
+              global_api_url = '/api/v1/';           
+            <% end %>
       </script>
 
       <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>
@@ -41,7 +57,7 @@
 
           var cartodb_layer = {
             getTileUrl: function(coord, zoom) {
-              return 'http' + '://' + user_name + '.cartodb.com/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8?map_key=';
+              return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8';
             },
             tileSize: new google.maps.Size(256, 256)
           };
@@ -49,31 +65,37 @@
           carto_embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
 
 
-          //
-          //
-          //         var me = this;
-          //         $.ajax({
-          //             method: "GET",
-          //             url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
-          //             headers: {"cartodbclient":"true"},
-          //             success: function(data) {
-          //               if (data.rows[0].st_extent!=null) {
-          //                 var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-          //
-          //                 var coor1 = coordinates[0].split(' ');
-          //                 var coor2 = coordinates[1].split(' ');
-          //                 var bounds = new google.maps.LatLngBounds();
-          //
-          //                 bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
-          //                 bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
-          //
-          //                 embed_map.fitBounds(bounds);
-          //               }
-          //
-          //             },
-          //             error: function(e) {
-          //             }
-          //         });
+          $.ajax({
+            method: "GET",
+            url: 'http://'+user_name+'.'+SQL_SERVER+global_api_url+'/sql/?q='+escape('select ST_Extent(the_geom) from '+ table_name),
+            dataType: 'jsonp',
+            success: function(data) {
+              if (data.rows[0].st_extent!=null) {
+                var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+          
+                var coor1 = coordinates[0].split(' ');
+                var coor2 = coordinates[1].split(' ');
+                var bounds = new google.maps.LatLngBounds();
+          
+                bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
+                bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+          
+                carto_embed_map.fitBounds(bounds);
+              }
+          
+            },
+            error: function(e) {}
+          });
+
+
+          $('a.cartodb_map_embed_zoom_in').click(function(ev){
+            ev.preventDefault();
+            carto_embed_map.setZoom(carto_embed_map.getZoom()+1);
+          });
+          $('a.cartodb_map_embed_zoom_out').click(function(ev){
+            ev.preventDefault();
+            carto_embed_map.setZoom(carto_embed_map.getZoom()-1);
+          });
         });
 
       </script>
@@ -85,13 +107,11 @@
       <div id="outer_map_cartodb_container">
         <div id="map_cartodb_container"></div>
       </div>
-      <span class="map_controls">
-        <a href="#zoom_in" class="zoom_in">+</a>
-        <a href="#zoom_out" class="zoom_out">-</a>
+      <span class="cartodb_map_controls">
+        <a href="#zoom_in" class="cartodb_map_embed_zoom_in">+</a>
+        <a href="#zoom_out" class="cartodb_map_embed_zoom_out">-</a>
       </span>
       <a href="http://cartodb.com" class="cartodb_logo" target="_blank">CartoDB</a>
-    <% else %>
-      This table is private...
     <% end %>
   </body>
 </html>

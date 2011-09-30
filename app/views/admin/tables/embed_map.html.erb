@@ -1,5 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset=utf-8 />
+    <title>CartoDB  Embed Map</title>
+    <style type="text/css">
+      html {width:100%; height:100%; padding:0; margin:0; border:none;}
+      body {width:100%; height:100%; padding:0; margin:0; background:none;}
+      div#outer_map_cartodb_container {position:relative; width:100%; height:100%; background:white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
+      div#map_cartodb_container {position:absolute; top:5px; left:5px; right:5px; bottom:5px;}
+      a.cartodb_logo {position:absolute; bottom:10px; left:80px; display:block; width:70px; height:15px; background:url('http://www.cartodb.com/admin/common/logo.png') no-repeat 0 0;}
+      span.map_controls {position:absolute; top:10px; left:10px;}
+    </style>
+
+    <% if @table.public? %>
+      <script type="text/javascript">
+        var table_name = "<%= @table.name %>",
+            table_id = "<%= @table.id %>",
+            map_key = "<%= @table.name %>";
+            user_name = "<%= @table.name %>";
+      </script>
+    
+      <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+      <script type="text/javascript">
+
+        $(function() {
+          var cartodbMapOptions = {
+            zoom: 2,
+            center: new google.maps.LatLng(0,0),
+            disableDefaultUI: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+          }
+
+          var carto_embed_map = new google.maps.Map(document.getElementById("map_cartodb_container"),cartodbMapOptions);
 
 
-<h3>Table is public: <%= @table.public? %></h3>
+          // var cartodb_layer = {
+          //   getTileUrl: function(coord, zoom) {
+          //     return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + 'afds' + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8?map_key='+map_key;
+          //   },
+          //   tileSize: new google.maps.Size(256, 256)
+          // };
+          // var cartodb_imagemaptype = new google.maps.ImageMapType(cartodb_layer);
+          // carto_embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
+          
+          
+          //
+          //
+          //         var me = this;
+          //         $.ajax({
+          //             method: "GET",
+          //             url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
+          //             headers: {"cartodbclient":"true"},
+          //             success: function(data) {
+          //               if (data.rows[0].st_extent!=null) {
+          //                 var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+          //
+          //                 var coor1 = coordinates[0].split(' ');
+          //                 var coor2 = coordinates[1].split(' ');
+          //                 var bounds = new google.maps.LatLngBounds();
+          //
+          //                 bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
+          //                 bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+          //
+          //                 embed_map.fitBounds(bounds);
+          //               }
+          //
+          //             },
+          //             error: function(e) {
+          //             }
+          //         });
+        });
 
-<p>all code for embedded maps goes here</p>
+      </script>
+    <% end %>
+    <noscript><meta http-equiv="refresh" content="0;url=http://cartodb.com/no_javascript.html"></noscript>
+  </head>
+  <body>
+    <% if @table.public? %>
+      <div id="outer_map_cartodb_container">
+        <div id="map_cartodb_container"></div>
+      </div>
+      <span class="map_controls">
+        <a href="#zoom_in" class="zoom_in">+</a>
+        <a href="#zoom_out" class="zoom_out">-</a>
+      </span>
+      <a href="http://cartodb.com" class="cartodb_logo" target="_blank">CartoDB</a>
+    <% else %>
+      This table is private...
+    <% end %>
+  </body>
+</html>

@@ -352,6 +352,10 @@
               bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
                               
               me.map_.fitBounds(bounds);
+              
+              if (map.getZoom()<2) {
+                map.setZoom(2);
+              }
             }
 
           },

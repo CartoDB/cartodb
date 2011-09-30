@@ -940,7 +940,6 @@
         
         //For paginating data
         var end = table.total_r <= ((table.actual_p + 1) * defaults.resultsPerPage);
-        console.log(end);
         
         //For moving thead when scrolling
         if ($(document).scrollTop()>58) {
@@ -949,7 +948,6 @@
           if (!end && ($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && table.e.parent().scrollLeft()>0) {
             $('div.general_options').addClass('end');
           } else {
-            console.log('eyyy');
             $('div.general_options').removeClass('end');
           }
         } else {

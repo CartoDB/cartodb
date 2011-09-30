@@ -39,14 +39,14 @@
           var carto_embed_map = new google.maps.Map(document.getElementById("map_cartodb_container"),cartodbMapOptions);
 
 
-          // var cartodb_layer = {
-          //   getTileUrl: function(coord, zoom) {
-          //     return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + 'afds' + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8?map_key='+map_key;
-          //   },
-          //   tileSize: new google.maps.Size(256, 256)
-          // };
-          // var cartodb_imagemaptype = new google.maps.ImageMapType(cartodb_layer);
-          // carto_embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
+          var cartodb_layer = {
+            getTileUrl: function(coord, zoom) {
+              return 'http' + '://' + user_name + '.cartodb.com/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8?map_key=';
+            },
+            tileSize: new google.maps.Size(256, 256)
+          };
+          var cartodb_imagemaptype = new google.maps.ImageMapType(cartodb_layer);
+          carto_embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
 
 
           //

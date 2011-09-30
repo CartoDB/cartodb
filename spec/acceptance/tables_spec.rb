@@ -14,6 +14,17 @@ feature "Tables" do
     click_link_or_button("twitter_followers")
   end
 
+  scenario "can access embedded map if public" do 
+    click_link_or_button("PRIVATE")
+    page.find(".privacy_window .public a").click
+    visit "#{page.current_path}/embed_map"    
+  end
+
+  pending "cannot access embedded map if private" do 
+    visit "#{page.current_path}/embed_map"    
+  end
+
+
   # By the moment threre is no privacy in the table
   pending "Toggle the privacy of a table" do
     # Toggle to private

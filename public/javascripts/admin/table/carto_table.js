@@ -374,6 +374,21 @@
 				var thead = '<thead><tr><th class="first"><div></div></th><th><div></div></th></tr></thead>';
 				table.e.append(thead);
 			}
+			
+			if (!table.loaded) {
+        table.loaded = true;
+        //Print correct column types
+        methods.getColumnTypes();
+
+        //Scroll event
+        methods.addScroll();
+
+        //Cell click event
+        methods.bindEvents();
+
+        //Create elements
+        methods.createElements();
+      }
       
 			methods.resizeTable();
     },
@@ -945,7 +960,7 @@
         if ($(document).scrollTop()>58) {
           $('section.subheader').css('top','-3px');
           table.e.children('thead').css('top','99px');
-          if (!end && ($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && table.e.parent().scrollLeft()>0) {
+          if ((table.total_r!=0) && !end && ($(document).scrollTop() + $(window).height())==$(document).height() || ($(document).scrollTop() + $(window).height())>$(document).height() && table.e.parent().scrollLeft()>0) {
             $('div.general_options').addClass('end');
           } else {
             $('div.general_options').removeClass('end');
@@ -1852,17 +1867,6 @@
         methods.refreshTable(0);
       })
 
-
-
-      ///////////////////////////////////////
-      //  Georeference action if...        //
-      ///////////////////////////////////////
-      $(document).bind('update_geometry',function(ev){
-        var table_mode = ($('body').attr('view_mode') == "table");
-        if (table.enabled && table_mode && !$(this).hasClass('disabled')) {
-          methods.refreshTable(0);
-				}
-      });
       
 
       ///////////////////////////////////////
@@ -2090,7 +2094,7 @@
         	setAppStatus();
 				}
       });
-			$('span.query h3 a.clear_table').livequery('click',function(ev){
+			$('a.clear_table').livequery('click',function(ev){
 				var view_mode = ($('body').attr('view_mode') === "table");
 			  if (view_mode) {
 			    stopPropagation(ev);
@@ -2268,7 +2272,9 @@
 
       if ((parent_height-162) > (table.e.parent().height())) {
         table.e.parent().height(parent_height-162);
-        table.e.parent().addClass('end');
+        if (table.total_r>10) {
+          table.e.parent().addClass('end');
+        }
       } else {
         table.e.parent().removeClass('end');
       }
@@ -2384,7 +2390,7 @@
     restoreTable : function() {
       table.mode = 'normal';
       $('body').attr('query_mode',"false");
-      methods.refreshTable();
+      methods.refreshTable('');
     },
     
     

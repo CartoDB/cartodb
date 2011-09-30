@@ -637,6 +637,13 @@ TRIGGER
     raise RecordNotFound if table.nil?
     table
   end
+  
+  def self.find_by_subdomain(subdomain, identifier)
+    user = User.find(:username => subdomain)
+    if user
+      Table.find_by_identifier(user.id, identifier)
+    end
+  end
 
   def oid
     @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]

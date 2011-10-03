@@ -1,8 +1,8 @@
 cartodb_errors:
   unknown_error:
     code: 0
-    message: Some error we don't recognize has happen
-    hint: "We would really apreciate if you <a href='mailto:wadus@cartodb.com'>send us</a> a detailed e-mail with all the information you can, in order we can fix it as soon as possible"
+    message: An error has occurred
+    hint: "To help us investigate, please <a href='http://support.cartodb.com/discussion/new'>submit</a> a detailed description of your actions that lead to this message. Thank you for your help!"
   empty_file:
     code: 1
     message: The file you have tried to upload has no data
@@ -13,5 +13,5 @@ cartodb_errors:
     hint: "Supported formats are: CSV, XLS, SHP, ZIP"
   geometries_error:
     code: 3
-    message: An error has happened when trying to import the geometry
+    message: An error has occurred when importing geometry
     hint: ""

@@ -18,7 +18,8 @@
 
     // TODO
     // - If a style is default or customized (must)
-    // - Border color and width have set from the begging (say to Simon)
+    // - Border color and width have set from the begging [polygons mainly] (say to Simon)
+
 
 
     function CartoMap (latlng,zoom) {
@@ -82,19 +83,19 @@
       var me = this;
 
       head.js('/javascripts/admin/maps/Overlays/mapCanvasStub.js',
-          '/javascripts/admin/maps/Overlays/CartoTooltip.js',
-          '/javascripts/admin/maps/Overlays/CartoInfowindow.js',
-          '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
-          '/javascripts/admin/maps/polygonEdit.js',
-          '/javascripts/admin/maps/polylineEdit.js',
-          '/javascripts/admin/maps/geometryCreator.js',
-          function(){
-              me.selection_area_    = new google.maps.Polygon({strokeWeight:1});                            // Selection polygon area
-              me.info_window_       = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);       // InfoWindow for markers
-              me.tooltip_           = new CartoTooltip(new google.maps.LatLng(-260,-260),me.map_);		    // Over tooltip for markers and selection area
-              me.delete_window_     = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_);    // Delete window to confirm remove one/several markers
-              me.map_canvas_ 	    = new mapCanvasStub(me.map_);                                           // Canvas to control the coordinates
-          }
+        '/javascripts/admin/maps/Overlays/CartoTooltip.js',
+        '/javascripts/admin/maps/Overlays/CartoInfowindow.js',
+        '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
+        '/javascripts/admin/maps/polygonEdit.js',
+        '/javascripts/admin/maps/polylineEdit.js',
+        '/javascripts/admin/maps/geometryCreator.js',
+        function(){
+          me.selection_area_    = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
+          me.info_window_       = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);     // InfoWindow for markers
+          me.tooltip_           = new CartoTooltip(new google.maps.LatLng(-260,-260),me.map_);		    // Over tooltip for markers and selection area
+          me.delete_window_     = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_);  // Delete window to confirm remove one/several markers
+          me.map_canvas_ 	    = new mapCanvasStub(me.map_);                                           // Canvas to control the coordinates
+        }
       );
     }
 
@@ -377,14 +378,12 @@
     CartoMap.prototype.setTools = function(geom_type,geom_styles,map_style) {
       var me = this;
       var map = me.map_;
-      
-      console.log(geom_styles);
-            
+                  
       /*Geometry tools*/
-      if (geom_type=="point" || geom_type=="multipoint") {
+     if (geom_type=="point" || geom_type=="multipoint") {
           $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
           $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
-      } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+     } else if (geom_type=="polygon" || geom_type=="multipolygon") {
           $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');
           $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
       } else {
@@ -485,7 +484,7 @@
           var old_value = $(this).parent().find('input').val();
           var add = ($(this).text()=="+")?true:false;
           
-          if (add || old_value>0) {
+         if (add || old_value>0) {
             $(this).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
 
             var css_ = $(this).closest('span').attr('css');
@@ -502,7 +501,7 @@
         function setupStyles(styles) {
           
           // Remove the customization that doesn't belong to the geom_type
-          if (geom_type == 'multipoint' || geom_type == 'point') {
+         if (geom_type == 'multipoint' || geom_type == 'point') {
             $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
             $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
             
@@ -518,7 +517,7 @@
               'marker-allow-overlap':true
             };
             
-          } else if (geom_type == 'multipolygon' || geom_type == 'polygon') {
+         } else if (geom_type == 'multipolygon' || geom_type == 'polygon') {
             $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
             $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
             
@@ -630,6 +629,8 @@
         return {}
   		}());
 
+ 
+ 
  
       /* Bind event for open any tool */
       $('.map_header a.open').livequery('click',function(ev){
@@ -832,7 +833,7 @@
       $('div.general_options li.map a.'+status).parent().addClass('selected');
 
       // New special geometry (multipolygon or multipolyline==multilinestring)
-      if (status == "add_polygon" || status == "add_polyline") {
+     if (status == "add_polygon" || status == "add_polyline") {
         this.geometry_creator_ = new GeometryCreator(this.map_,(this.status_=="add_polygon")?"MultiPolygon":"MultiLineString");
       }
 
@@ -851,7 +852,7 @@
       
       if (this.geometry_type_ == 'point') {
         this.addFakeMarker(feature);
-      } else if (this.geometry_type_ == 'multipolygon' || this.geometry_type_ == 'polygon') {
+     } else if (this.geometry_type_ == 'multipolygon' || this.geometry_type_ == 'polygon') {
         this.addFakePolygons(feature);
       } else {
         this.addFakePolylines(feature);

@@ -102,8 +102,9 @@ div.map_window div.map_header div.suboptions label {display:block; margin:9px 0 
 div.map_window div.map_header div.suboptions div.long {width:100%; margin:2px 0 0 0;}
 div.map_window div.map_header div.suboptions div.long span.color {display:inline-block; vertical-align:top; width:77px; height:20px; border:1px solid #999999; background:white; box-shadow:0 1px 0 0 white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
 div.map_window div.map_header div.suboptions div.long span.color a.control {display:inline-block; vertical-align:top; width:17px; height:16px; margin:2px 0 0 2px; padding:0; background:url('/images/admin/map/color_control_bkg.png') no-repeat 0 0 #FF6600; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
+div.map_window div.map_header div.suboptions div.long span.color a.control.error {background-position:0 -16px; background-color:white;}
 div.map_window div.map_header div.suboptions div.long span.color a.control:hover {cursor:pointer}
-div.map_window div.map_header div.suboptions div.long span.color input {display:inline-block; vertical-align:top; width:50px; height:12px; padding:0; margin:5px 0 0 4px; font:normal 11px "Helvetica",Arial; color:#666666; border:none;}
+div.map_window div.map_header div.suboptions div.long span.color input {display:inline-block; vertical-align:top; width:50px; height:12px; padding:0; margin:5px 0 0 4px; font:normal 11px "Helvetica",Arial; color:#666666; border:none; line-height:11px}
 div.map_window div.map_header div.suboptions div.long span.numeric {position:relative; display:inline-block; vertical-align:top; width:35px; height:20px; margin:0 0 0 5px; border:1px solid #999999; background:white; box-shadow:0 1px 0 0 white; border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px;}
 div.map_window div.map_header div.suboptions div.long span.numeric input {display:inline-block; vertical-align:top; width:15px; height:12px; padding:0; margin:5px 0 0 4px; font:normal 11px "Helvetica",Arial; color:#666666; border:none; text-align:center}
 div.map_window div.map_header div.suboptions div.long span.numeric input[disabled="disabled"] {color:#333333}

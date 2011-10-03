@@ -270,7 +270,7 @@
           max:20,
           value:1,
           stop: function(event,ui){
-              me.map_.setZoom(ui.value);
+            me.map_.setZoom(ui.value);
           }
       });
 

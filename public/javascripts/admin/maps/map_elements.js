@@ -18,16 +18,16 @@
                 '<span class="tick"></span>'+
                 '<ul class="map_type">'+
                   '<li class="selected">'+
-                    '<a href="#">Roadmap</a>'+
+                    '<a class="option" href="#">Roadmap</a>'+
                   '</li>'+
                   '<li>'+
-                    '<a href="#">Satellite</a>'+
+                    '<a class="option" href="#">Satellite</a>'+
                   '</li>'+
                   '<li>'+
-                    '<a href="#">Terrain</a>'+
+                    '<a class="option" href="#">Terrain</a>'+
                   '</li>'+
                   '<li class="disabled">'+
-                    '<a href="#">Custom tiles</a>'+
+                    '<a class="option" href="#">Custom tiles</a>'+
                     '<div class="suboptions">'+
                     '</div>'+
                   '</li>'+
@@ -46,19 +46,77 @@
                 '<span class="tick"></span>'+
                 '<ul class="geometry_customization">'+
                   '<li class="selected">'+
-                    '<a href="#default">Default</a>'+
+                    '<a class="option" href="#default">Default</a>'+
                   '</li>'+
-                  '<li class="disabled points">'+
-                    '<a href="#custom_points">Custom points</a>'+
-                    '<div></div>'+
+                  '<li class="points">'+
+                    '<a class="option" href="#custom_points">Custom points</a>'+
+                    '<div class="suboptions">'+
+                      '<label>Fill</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="marker-fill">'+
+                          '<a href="#change_fill_color" class="control"></a>'+
+                          '<input type="text" value="#FF6600"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="marker-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="8"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Border</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="marker-line-color">'+
+                          '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
+                          '<input type="text" value="#FFFFFF"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="marker-line-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                    '</div>'+
                   '</li>'+
-                  '<li class="disabled polygons">'+
-                    '<a href="#custom_polygons">Custom polygons</a>'+
-                    '<div></div>'+
+                  '<li class="polygons">'+
+                    '<a class="option" href="#custom_polygons">Custom polygons</a>'+
+                    '<div class="suboptions">'+
+                      '<label>Fill</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="polygon-fill">'+
+                          '<a href="#change_fill_color" class="control"></a>'+
+                          '<input type="text" value="#FF6600"/>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Border</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="polygon-border-color">'+
+                          '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
+                          '<input type="text" value="#FFFFFF"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="polygon-border-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                    '</div>'+
                   '</li>'+
-                  '<li class="disabled lines">'+
-                    '<a href="#custom_lines">Custom lines</a>'+
-                    '<div></div>'+
+                  '<li class="lines">'+
+                    '<a class="option" href="#custom_lines">Custom lines</a>'+
+                    '<div class="suboptions">'+
+                      '<label>Line</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="line-color">'+
+                          '<a href="#change_fill_color" class="control"></a>'+
+                          '<input type="text" value="#FF6600"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="line-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="8"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                    '</div>'+
                   '</li>'+
                 '</ul>'+
               '</div>'+

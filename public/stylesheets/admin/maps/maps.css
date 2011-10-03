@@ -89,15 +89,28 @@ div.map_window div.map_header div.options ul li a {margin:0; padding:0 0 0 15px;
 div.map_window div.map_header div.options ul li a:hover {background-position:0 0}
 div.map_window div.map_header div.options ul li.selected a {background-position:0 0}
 div.map_window div.map_header div.options ul li.selected a:hover {background-position:0 0; cursor:default}
-
 div.map_window div.map_header div.options ul li.selected.special a {background-position:0 -159px; color:#272E48; text-shadow:0 1px white}
 div.map_window div.map_header div.options ul li.selected.special a:hover {background-position:0 -159px; cursor:default}
-
 div.map_window div.map_header div.options ul li div.suboptions {display:none}
-div.map_window div.map_header div.options ul li.selected.special div.suboptions {display:block}
-
+div.map_window div.map_header div.options ul li.selected.special div.suboptions {display:block; padding:0 0 3px}
 div.map_window div.map_header div.options ul li.disabled a {opacity:0.5}
 div.map_window div.map_header div.options ul li.disabled a:hover {cursor:default; background-position:0 -188px}
+
+/*suboptions*/
+
+div.map_window div.map_header div.suboptions label {display:block; margin:9px 0 0 2px; font:normal 11px "Helvetica",Arial; color:#A5A5A5; text-shadow:0 1px white}
+div.map_window div.map_header div.suboptions div.long {width:100%; margin:2px 0 0 0;}
+div.map_window div.map_header div.suboptions div.long span.color {display:inline-block; vertical-align:top; width:77px; height:20px; border:1px solid #999999; background:white; box-shadow:0 1px 0 0 white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
+div.map_window div.map_header div.suboptions div.long span.color a.control {display:inline-block; vertical-align:top; width:17px; height:16px; margin:2px 0 0 2px; padding:0; background:url('/images/admin/map/color_control_bkg.png') no-repeat 0 0 #FF6600; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
+div.map_window div.map_header div.suboptions div.long span.color a.control:hover {cursor:pointer}
+div.map_window div.map_header div.suboptions div.long span.color input {display:inline-block; vertical-align:top; width:50px; height:12px; padding:0; margin:5px 0 0 4px; font:normal 11px "Helvetica",Arial; color:#666666; border:none;}
+div.map_window div.map_header div.suboptions div.long span.numeric {position:relative; display:inline-block; vertical-align:top; width:35px; height:20px; margin:0 0 0 5px; border:1px solid #999999; background:white; box-shadow:0 1px 0 0 white; border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px;}
+div.map_window div.map_header div.suboptions div.long span.numeric input {display:inline-block; vertical-align:top; width:15px; height:12px; padding:0; margin:5px 0 0 4px; font:normal 11px "Helvetica",Arial; color:#666666; border:none; text-align:center}
+div.map_window div.map_header div.suboptions div.long span.numeric input[disabled="disabled"] {color:#333333}
+div.map_window div.map_header div.suboptions div.long span.numeric a {position:absolute; right:-1px; top:-1px; width:14px; height:12px; margin:0; padding:0; text-indent:-9999px; background:url('/images/admin/map/range_values.png') no-repeat 0 0}
+div.map_window div.map_header div.suboptions div.long span.numeric a:hover {background-position:0 0; cursor:pointer;}
+div.map_window div.map_header div.suboptions div.long span.numeric a.range_down {top:11px; height:11px; background-position:0 -12px}
+div.map_window div.map_header div.suboptions div.long span.numeric a.range_down:hover {background-position:0 -12px; cursor:pointer;}
 
 
 

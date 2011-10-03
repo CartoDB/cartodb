@@ -1,8 +1,8 @@
 cartodb_errors:
   unknown_error:
     code: 0
-    message: An error has occurred
-    hint: "To help us investigate, please <a href='http://support.cartodb.com/discussion/new'>submit</a> a detailed description of your actions that lead to this message. Thank you for your help!"
+    message: "We're sorry, an error has occurred"
+    hint: "For help, please <a href='http://support.cartodb.com/discussion/new'>contact our support team</a> who will be happy to assist."
   empty_file:
     code: 1
     message: The file you have tried to upload has no data
@@ -10,8 +10,12 @@ cartodb_errors:
   unrecognized_format:
     code: 2
     message: The file you are trying to upload has an invalid format
-    hint: "Supported formats are: CSV, XLS, SHP, ZIP"
+    hint: "Please note that supported formats are: CSV, XLS, SHP & ZIP"
   geometries_error:
     code: 3
     message: An error has occurred when importing geometry
     hint: ""
+  url_error:
+    code: 4
+    message: An error has occurred when importing a URL
+    hint: "Please note that supported formats are: CSV, XLS, SHP & ZIP "    

@@ -90,6 +90,8 @@ class ApplicationController < ActionController::Base
     case exception
       when CartoDB::EmptyFile
         ERROR_CODES[:empty_file]
+      when CartoDB::InvalidUrl
+        ERROR_CODES[:url_error]  
       when Sequel::DatabaseError
         if exception.message.include?("transform: couldn't project")
           ERROR_CODES[:geometries_error].merge(:raw_error => exception.message)

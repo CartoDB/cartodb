@@ -73,6 +73,11 @@ class Api::Json::TablesController < Api::ApplicationController
     Rails.logger.info "============== exception on tables#create ====================="
     Rails.logger.info "#{translate_error(e).inspect}"
     Rails.logger.info "==============================================================="
+    
+    # Intercept the error and add more meaning based on the users create type. 
+    # This should ultimately be moved to the importer code as only import exceptions reach here.
+    e = CartoDB::InvalidUrl.new if params[:url]
+      
     render :json => translate_error(e),
            :status => 400, :callback => params[:callback] and return
   end

@@ -161,19 +161,28 @@
     }
     
     CartoMap.prototype.setStyles = function(obj) {
-        // var me = this;
-        // 
-        // // TODO -> generate the cartocss json
-        // 
-        // $.ajax({
-        //     url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style',
-        //     type: 'POST',
-        //     success: function(result) {
-        //         // Refresh Wax with the new styles
-        //         me.refreshWax();
-        //     },
-        //     error:function(e) {}
-        // });
+      var me = this;
+      //console.log(obj);
+      // TODO -> generate the cartocss json
+      // Convert style object to string?
+      var str = '#untitled_table_7{';
+      _.each(obj,function(property,i){
+        str += i+':'+property+';';
+      });
+      str += '}'
+      
+      
+      $.ajax({
+        type: 'POST',
+        url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style',
+        data: {style:str},
+        success: function(result) {
+          me.refreshWax();
+        },
+        error:function(e) {
+          console.debug(e);
+        }
+      });
     }
 
 
@@ -364,10 +373,10 @@
     }
 
     /* Set the tools due to geom_type... */
-    CartoMap.prototype.setTools = function(geom_type,layers_style,map_style) {
+    CartoMap.prototype.setTools = function(geom_type,geom_styles,map_style) {
       var me = this;
       var map = me.map_;
-      
+            
       /*Geometry tools*/
       if (geom_type=="point" || geom_type=="multipoint") {
           $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
@@ -389,7 +398,7 @@
   
         // Get saturation, labels on/off, roads on/off
   
-        $('.map_header ul.map_type li a').livequery('click',function(ev){
+        $('.map_header ul.map_type li a.option').livequery('click',function(ev){
           stopPropagation(ev);
           var parent = $(this).parent();
           if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
@@ -426,25 +435,98 @@
       /*Geometry customization - header*/
       var geometry_customization = (function(){
         
-        $('.map_header ul.geometry_customization li a').livequery('click',function(ev){
+        var geometry_style = {};
+        
+        $('.map_header ul.geometry_customization li a.option').click(function(ev){
           stopPropagation(ev);
           var parent = $(this).parent();
           if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
+            // Remove selected
+            $('.map_header ul.geometry_customization li').each(function(i,li){$(li).removeClass('selected special')});
+            
+            // Add selected to the parent (special?)
+            if (parent.find('div.suboptions').length>0) {
+              parent.addClass('selected special');
+            } else {
+              parent.addClass('selected');
+            }
           }
         });
         
         
-        // Remove the customization that doesn't belong to the geom_type
-        if (geom_type == 'multipoint') {
-          $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
-          $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
-        } else if (geom_type == 'multipolygon') {
-          $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
-          $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
-        } else {
-          $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
-          $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+        
+        $('.map_header ul.geometry_customization div.suboptions span.color input').change(function(ev){
+          stopPropagation(ev);
+          
+          var color = new RGBColor($(this).val());
+          if (color.ok) { // 'ok' is true when the parsing was a success
+
+            
+            geometry_style[css_] = color.toHex();
+            me.setStyles(geometry_style);
+            
+          } else {
+            
+          }
+          
+        });
+        
+        $('.map_header ul.geometry_customization div.suboptions span.numeric a').livequery('click',function(ev){
+          stopPropagation(ev);
+          var old_value = $(this).parent().find('input').val();
+          var add = ($(this).text()=="+")?true:false;
+          $(this).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
+          
+          var css_ = $(this).closest('span').attr('css');
+          var value_ = $(this).parent().find('input').val();
+          
+          geometry_style[css_] = value_;
+          me.setStyles(geometry_style);
+        });
+        
+        
+        
+        function setupStyles(styles) {
+          // Remove the customization that doesn't belong to the geom_type
+          if (geom_type == 'multipoint' || geom_type == 'point') {
+            $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
+            $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+          } else if (geom_type == 'multipolygon' || geom_type == 'polygon') {
+            $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+            $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+          } else {
+            $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
+            $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+          }
+          
+          
+          // Get all the styles and save them in geometry_style object
+          var styles_ = styles;
+          
+          // Remove table_name
+          styles_ = styles_.split('{');
+          
+          // Split properties
+          styles_ = styles_[1].split(';');
+          
+          // Save each property removing white-spaces
+          _.each(styles_,function(property,i){
+            if (property!="}") {
+              var split_property = property.split(':');
+              geometry_style[split_property[0].replace(/ /g,'')] = split_property[1].replace(/ /g,'');
+            }
+          });
+          
+          
+          // Change tools, we have to know if this styles have been edited or not...  TODO
+          // Save the default styles                                                  TODO
         }
+        
+
+        
+        
+        setupStyles(geom_styles);
+        
 
         return {}
   		}());
@@ -480,10 +562,9 @@
           });
           options.show();
         } else {
-         me.unbindMapESC();
-         $('body').unbind('click');
-
-         options.hide();
+          me.unbindMapESC();
+          $('body').unbind('click');
+          options.hide();
         }
       });
 

@@ -101,7 +101,7 @@
         element: document.getElementById('uploader'),
         action: '/upload',
         params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'js', 'ods', 'kmz'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz'],
         sizeLimit: 0, // max size
         minSizeLimit: 0, // min size
         debug: false,

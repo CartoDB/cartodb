@@ -101,7 +101,7 @@ section#content div.left div.middle_white_medium div.end_oauth span.form_block {
 section#content div.left div.middle_white_medium div.end_oauth span.form_block.last {margin:5px 0 0 0!important;}
 section#content div.left div.middle_white_medium div.end_oauth span.form_block label {font:bold 10px "Helvetica",Arial; color:#999999;}
 section#content div.left div.middle_white_medium div.end_oauth span.form_block input {width:253px; height:15px; padding:9px 10px!important; margin:5px 0 0 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
-  font:normal 15px Arial; color:#333333; line-height:15px; vertical-align:top;
+  font:bold 13px Arial; color:#333333; line-height:15px; vertical-align:top;
   background-image:linear-gradient(-90deg, #eeeeee, #ffffff);
   background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#eeeeee), to(#ffffff));
   background-image:-moz-linear-gradient(-90deg, #eeeeee, #ffffff);
@@ -114,8 +114,19 @@ section#content div.left div.middle_white_medium div.error_content p {float:left
 section#content div.left div.middle_white_medium div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial;
  color:white; text-shadow:0 -1px #C55B14;}
 
+section#content div.left div.middle_white_medium div.urls_block {width:100%; margin:10px 0 0 0; padding:5px 0 0 0; border-top:1px solid #e0e0e0}
+section#content div.left div.middle_white_medium div.urls_block label {display:block; margin:20px 0 0 3px; font:bold 10px "Helvetica",Arial; color:#999999;}
+section#content div.left div.middle_white_medium div.urls_block input {width:554px; height:15px; padding:9px 10px!important; margin:5px 0 0 0; border:1px solid #CCCCCC; webkit-border-radius:4px; border-radius:4px; -moz-border-radius:4px;
+  font:normal 15px Arial; color:#999999; line-height:15px; vertical-align:top;
+  background-image:linear-gradient(-90deg, #E5E5E5, #EDEDED);
+  background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#E5E5E5), to(#EDEDED));
+  background-image:-moz-linear-gradient(-90deg, #E5E5E5, #EDEDED);
+  background-image: -o-linear-gradient(#E5E5E5,#EDEDED);
+  background:#EDEDED\9;
+}
 
-section#content div.left div.middle_white_medium div.end_oauth span.end_key {width:100%; padding:0;}
+
+section#content div.left div.middle_white_medium div.end_oauth span.end_key {display:block; width:100%; margin:25px 0 0 0; padding:0;}
 section#content div.left div.middle_white_medium div.end_oauth span.end_key a.orange {margin-left:0;}
 section#content div.left div.middle_white_medium div.end_oauth span.end_key p {display:inline-block; padding:0 0 10px 10px; margin:0; font:normal 13px Arial; color:#666666; vertical-align:middle;}
 section#content div.left div.middle_white_medium div.end_oauth span.end_key p a {color:#FF9900;}

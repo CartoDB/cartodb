@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   before_filter :browser_is_html5_compliant?
   before_filter :check_domain
   after_filter :remove_flash_cookie
+  before_filter :allow_cross_domain_access
 
   class NoHTML5Compliant < Exception; end;
 
@@ -25,6 +26,13 @@ class ApplicationController < ActionController::Base
   end
   
   protected
+
+  def allow_cross_domain_access
+    unless Rails.env.production?
+      response.headers["Access-Control-Allow-Origin"] = "*"
+      response.headers["Access-Control-Allow-Methods"] = "*"
+    end  
+  end  
   
   def render_404
     respond_to do |format|

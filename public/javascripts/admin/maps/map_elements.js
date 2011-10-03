@@ -9,7 +9,7 @@
       $('div.map_window').append(
         '<div class="map_curtain"></div>'+
         '<div class="map_header">'+
-          '<ul>'+
+          '<ul class="main">'+
             '<li class="first">'+
               '<h4>Map type</h4>'+
               '<p>Roadmap</p>'+

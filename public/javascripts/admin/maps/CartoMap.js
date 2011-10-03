@@ -16,6 +16,10 @@
     ////////////////////////////////////////////////////////////////////////////////
 
 
+    // TODO
+    // - If a style is default or customized (must)
+    // - Border color and width have set from the begging (say to Simon)
+
 
     function CartoMap (latlng,zoom) {
       this.center_ = latlng;                          // Center of the map at the beginning
@@ -162,16 +166,12 @@
     
     CartoMap.prototype.setStyles = function(obj) {
       var me = this;
-      // TODO -> generate the cartocss json
-      // Convert style object to string?
+
       var str = '#'+table_name+' {';
       _.each(obj,function(property,i){
         str += i+':'+property+'; ';
       });
       str += '}';
-      
-      console.log(str);
-      
       
       $.ajax({
         type: 'POST',
@@ -441,6 +441,7 @@
         var geometry_style = {};
         var default_style = {};
         
+        /* change between list options */
         $('.map_header ul.geometry_customization li a.option').click(function(ev){
           stopPropagation(ev);
           var parent = $(this).parent();
@@ -451,14 +452,15 @@
             // Add selected to the parent (special?)
             if (parent.find('div.suboptions').length>0) {
               parent.addClass('selected special');
+              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
             } else {
               parent.addClass('selected');
+              resetStyles();
             }
           }
         });
-        
-        
-        
+              
+        /* color input */
         $('.map_header ul.geometry_customization div.suboptions span.color input').change(function(ev){
           stopPropagation(ev);
           
@@ -477,20 +479,26 @@
           
         });
         
+        /* width range */
         $('.map_header ul.geometry_customization div.suboptions span.numeric a').livequery('click',function(ev){
           stopPropagation(ev);
           var old_value = $(this).parent().find('input').val();
           var add = ($(this).text()=="+")?true:false;
-          $(this).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
           
-          var css_ = $(this).closest('span').attr('css');
-          var value_ = $(this).parent().find('input').val();
-          
-          geometry_style[css_] = value_;
-          me.setStyles(geometry_style);
+          if (add || old_value>0) {
+            $(this).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
+
+            var css_ = $(this).closest('span').attr('css');
+            var value_ = $(this).parent().find('input').val();
+
+            geometry_style[css_] = value_;
+            me.setStyles(geometry_style);
+          }
+
         });
         
         
+        /* setup enter styles */
         function setupStyles(styles) {
           
           // Remove the customization that doesn't belong to the geom_type
@@ -523,10 +531,14 @@
             $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
             $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
             
-            default_style = {};
+            default_style = {
+              'line-color':'#FF6600',
+              'line-width': 1,
+              'line-opacity': 0.7
+            };
           }
           
-          
+
           // Get all the styles and save them in geometry_style object
           var styles_ = styles.replace(/ /gi,'');
           
@@ -545,29 +557,62 @@
           });
           
           
-          // Change tools, we have to know if this styles have been edited or not...  TODO
-          // Save the default styles                                                  TODO
+          // Change tools, we have to know if this styles have been edited or not...
+          _.each(geometry_style,function(value,type){
+            $('span[css="'+type+'"]').find('input').val(value);
+            
+            var color = new RGBColor(value);
+            if (color.ok) {
+              $('span[css="'+type+'"] a.control').css({'background-color':value});
+            }
+          });
+          
+          
+          // Determinate if it is a customized style or default
+          var is_default = true;
+          _.each(geometry_style,function(value,type){
+            
+            if (default_style[type]!=undefined && geometry_style[type] != default_style[type]) {
+              is_default = false;
+              return;
+            } 
+          });
+          
+          // if it is not default, select second option in the list, custom geometry style
+          if (!is_default) {
+            $('.map_header ul.geometry_customization li').removeClass('selected');
+            $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
+            $('.map_header ul li:eq(2) p:eq(1)').text('Custom Style');
+          }
         }
         
         
-        
+        /* reset styles to default */
         function resetStyles() {
           // Geom_types now is default_styles
-          geometry_style = default_styles;
+          geometry_style = default_style;
           
           // Come back to defaults in the tools
-          _.each(default_styles,function(value,type){
+          _.each(default_style,function(value,type){
+            $('span[css="'+type+'"]').find('input').val(value);
             
+            if (isNaN(value)) {
+              var color = new RGBColor(value);
+              if (color.ok) {
+                $('span[css="'+type+'"] a.control').css({'background-color':value});
+              }
+            }
           });
           
+          $('.map_header ul.geometry_customization').closest('li').find('p').text('Default Style');
+          
           // RefreshStyles
-          me.refreshWax();
+          me.setStyles(geometry_style);
         }
         
         
         setupStyles(geom_styles);
         
-
         return {}
   		}());
       

@@ -436,6 +436,7 @@
       var geometry_customization = (function(){
         
         var geometry_style = {};
+        var default_style = {};
         
         $('.map_header ul.geometry_customization li a.option').click(function(ev){
           stopPropagation(ev);
@@ -459,14 +460,16 @@
           stopPropagation(ev);
           
           var color = new RGBColor($(this).val());
-          if (color.ok) { // 'ok' is true when the parsing was a success
-
+          if (color.ok) {
+            var new_color = color.toHex();
+            var css_ = $(this).closest('span').attr('css');
+            $(this).parent().find('a.control').removeClass('error').css({'background-color':new_color});
             
-            geometry_style[css_] = color.toHex();
+            geometry_style[css_] = new_color;
             me.setStyles(geometry_style);
             
-          } else {
-            
+          } else {            
+            $(this).parent().find('a.control').removeAttr('style').addClass('error');
           }
           
         });
@@ -485,18 +488,41 @@
         });
         
         
-        
         function setupStyles(styles) {
+          
+          console.log(styles);
+          
           // Remove the customization that doesn't belong to the geom_type
           if (geom_type == 'multipoint' || geom_type == 'point') {
             $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
             $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+            
+            default_style = {
+              'marker-fill':'#00ffff',
+              'marker-opacity':1,
+              'marker-width':9,
+              'marker-line-color':'white',
+              'marker-line-width':3,
+              'marker-line-opacity':0.9,
+              'marker-placement':'point',
+              'marker-type':'ellipse',
+              'marker-allow-overlap':true
+            };
+            
           } else if (geom_type == 'multipolygon' || geom_type == 'polygon') {
             $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
             $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+            
+            default_style = {
+              'polygon-fill':'#FF6600',
+              'polygon-opacity': 0.7
+            };
+            
           } else {
             $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
             $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+            
+            default_style = {};
           }
           
           
@@ -522,7 +548,20 @@
           // Save the default styles                                                  TODO
         }
         
-
+        
+        
+        function resetStyles() {
+          // Geom_types now is default_styles
+          geometry_style = default_styles;
+          
+          // Come back to defaults in the tools
+          _.each(default_styles,function(value,type){
+            
+          });
+          
+          // RefreshStyles
+          me.refreshWax();
+        }
         
         
         setupStyles(geom_styles);
@@ -981,30 +1020,30 @@
     /* Generate canvas image to fill marker */
     CartoMap.prototype.generateDot = function(color) {
       if (this[color]==null) {
-          var radius = 8;
-          var el = document.createElement('canvas');
-          el.width = (radius * 2) + 2;
-          el.height = (radius * 2) + 2;
+        var radius = 8;
+        var el = document.createElement('canvas');
+        el.width = (radius * 2) + 2;
+        el.height = (radius * 2) + 2;
 
-          var ctx = el.getContext('2d');
-          ctx.fillStyle = '#FFFFFF';
-          ctx.beginPath();
-          ctx.arc(radius+1, radius+1, radius, 0, Math.PI * 2, true);
-          ctx.closePath();
-          ctx.fill();
+        var ctx = el.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(radius+1, radius+1, radius, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
 
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = "#000000";
-          ctx.stroke();
-          ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#000000";
+        ctx.stroke();
+        ctx.fill();
 
-          ctx.fillStyle = color;
-          ctx.beginPath();
-          ctx.arc(radius+1, radius+1, radius-2, 0, Math.PI * 2, true);
-          ctx.closePath();
-          ctx.fill();
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(radius+1, radius+1, radius-2, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
 
-          this[color] = el.toDataURL();
+        this[color] = el.toDataURL();
       }
       return this[color];
     }

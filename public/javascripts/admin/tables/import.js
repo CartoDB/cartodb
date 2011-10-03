@@ -130,7 +130,7 @@
       	element: document.getElementById('hugeUploader'),
       	action: '/upload',
       	params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'js', 'ods', 'kmz'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz'],
       	sizeLimit: 0,
       	minSizeLimit: 0,
       	debug: false,

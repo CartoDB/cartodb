@@ -41,7 +41,7 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (~> 2.0)
       xpath (~> 0.1.4)
-    cartodb-importer (0.2.13)
+    cartodb-importer (0.2.14)
       builder
       google-spreadsheet-ruby
       pg (~> 0.11)
@@ -187,7 +187,7 @@ PLATFORMS
 DEPENDENCIES
   airbrake (~> 3.0.4)
   capybara (~> 1.1.1)
-  cartodb-importer (~> 0.2.13)
+  cartodb-importer (~> 0.2.14)
   email_spec
   htmlentities
   launchy

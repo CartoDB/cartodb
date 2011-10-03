@@ -174,7 +174,7 @@
       
       $.ajax({
         type: 'POST',
-        url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style',
+        url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
         data: {style:str},
         success: function(result) {
           me.refreshWax();

@@ -75,6 +75,13 @@
                           '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
                         '</span>'+
                       '</div>'+
+                      '<label>Alpha</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="marker-opacity marker-line-opacity">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
+                        '</span>'+
+                      '</div>'+
                     '</div>'+
                   '</li>'+
                   '<li class="polygons">'+
@@ -99,6 +106,13 @@
                           '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
                         '</span>'+
                       '</div>'+
+                      '<label>Alpha</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="polygon-opacity line-opacity">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
+                        '</span>'+
+                      '</div>'+
                     '</div>'+
                   '</li>'+
                   '<li class="lines">'+
@@ -114,6 +128,13 @@
                           '<input disabled="disabled" class="range_value" type="text" value="8"/>'+
                           '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
                           '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Alpha</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="line-opacity">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
                         '</span>'+
                       '</div>'+
                     '</div>'+

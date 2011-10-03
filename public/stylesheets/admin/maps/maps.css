@@ -112,6 +112,15 @@ div.map_window div.map_header div.suboptions div.long span.numeric a {position:a
 div.map_window div.map_header div.suboptions div.long span.numeric a:hover {background-position:0 0; cursor:pointer;}
 div.map_window div.map_header div.suboptions div.long span.numeric a.range_down {top:11px; height:11px; background-position:0 -12px}
 div.map_window div.map_header div.suboptions div.long span.numeric a.range_down:hover {background-position:0 -12px; cursor:pointer;}
+div.map_window div.map_header div.suboptions div.long span.alpha {position:relative; display:inline-block; width:100%; height:13px;}
+div.map_window div.map_header div.suboptions div.long span.alpha div.slider {width:100%; height:4px; margin:5px 0 0 0; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; border-top:1px solid #A5A5A5; border-bottom:1px solid white}
+div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider {position: relative; text-align: left; }
+div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider .ui-slider-handle { position: absolute; z-index:2; width:9px; height:9px; padding:0; cursor: default; background:#E7E7E7; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; border:1px solid #999999; box-shadow:0 0 2px 2px rgba(0,0,0,0.1)}
+div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider-horizontal .ui-slider-handle { top:-4px; margin-left:0; margin-left:-4px; }
+div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider .ui-state-hover {cursor:pointer; background-image:-moz-linear-gradient(100% 100% 90deg, #C3C3C3, #ffffff); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#C3C3C3), to(#ffffff));}
+div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider .ui-slider-range-min {height:4px; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; background:linear-gradient(-90deg, #99CC00, #7BA600); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#99CC00), to(#7BA600));
+background:-moz-linear-gradient(-90deg, #99CC00, #7BA600); background: -o-linear-gradient(#99CC00,#7BA600); background:#7BA600\9;}
+div.map_window div.map_header div.suboptions div.long span.alpha span.tooltip {position:absolute; display:none; top:-14px; width:30px; height:18px; margin:0 0 0 -12px; background:url('/images/admin/map/range_tooltip.png') no-repeat 0 0; font:normal 10px "Helvetica",Arial; color:white; text-align:center}
 
 
 

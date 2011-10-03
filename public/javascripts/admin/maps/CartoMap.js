@@ -117,7 +117,7 @@
 			  count++;
 			  if (count==3) {
   			  $(document).unbind('arrived');
-  			  me.setTools(geom_type,layers_style,map_style);
+  			  me.setupTools(geom_type,layers_style,map_style);
 			  }
 			});
       
@@ -165,7 +165,7 @@
       });
     }
     
-    CartoMap.prototype.setStyles = function(obj) {
+    CartoMap.prototype.setTilesStyles = function(obj) {
       var me = this;
 
       var str = '#'+table_name+' {';
@@ -187,6 +187,10 @@
       });
     }
 
+    CartoMap.prototype.setMapStyle = function(obj) {
+      
+    }
+    
 
 
     ////////////////////////////////////////
@@ -375,22 +379,21 @@
     }
 
     /* Set the tools due to geom_type... */
-    CartoMap.prototype.setTools = function(geom_type,geom_styles,map_style) {
+    CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style) {
       var me = this;
       var map = me.map_;
                   
       /*Geometry tools*/
-     if (geom_type=="point" || geom_type=="multipoint") {
-          $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
-          $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
-     } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-          $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');
-          $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
+      if (geom_type=="point" || geom_type=="multipoint") {
+        $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
+        $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
+      } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+        $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');
+        $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
       } else {
-          $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
-          $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
+        $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
+        $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
       }
-      
       
       
       /*Map type - header*/
@@ -439,62 +442,6 @@
         
         var geometry_style = {};
         var default_style = {};
-        
-        /* change between list options */
-        $('.map_header ul.geometry_customization li a.option').click(function(ev){
-          stopPropagation(ev);
-          var parent = $(this).parent();
-          if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
-            // Remove selected
-            $('.map_header ul.geometry_customization li').each(function(i,li){$(li).removeClass('selected special')});
-            
-            // Add selected to the parent (special?)
-            if (parent.find('div.suboptions').length>0) {
-              parent.addClass('selected special');
-              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
-            } else {
-              parent.addClass('selected');
-              resetStyles();
-            }
-          }
-        });
-              
-        /* color input */
-        $('.map_header ul.geometry_customization div.suboptions span.color input').change(function(ev){
-          stopPropagation(ev);
-          
-          var color = new RGBColor($(this).val());
-          if (color.ok) {
-            var new_color = color.toHex();
-            var css_ = $(this).closest('span').attr('css');
-            $(this).parent().find('a.control').removeClass('error').css({'background-color':new_color});
-            
-            geometry_style[css_] = new_color;
-            me.setStyles(geometry_style);
-            
-          } else {            
-            $(this).parent().find('a.control').removeAttr('style').addClass('error');
-          }
-          
-        });
-        
-        /* width range */
-        $('.map_header ul.geometry_customization div.suboptions span.numeric a').livequery('click',function(ev){
-          stopPropagation(ev);
-          var old_value = $(this).parent().find('input').val();
-          var add = ($(this).text()=="+")?true:false;
-          
-         if (add || old_value>0) {
-            $(this).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
-
-            var css_ = $(this).closest('span').attr('css');
-            var value_ = $(this).parent().find('input').val();
-
-            geometry_style[css_] = value_;
-            me.setStyles(geometry_style);
-          }
-
-        });
         
         
         /* setup enter styles */
@@ -581,10 +528,10 @@
           if (!is_default) {
             $('.map_header ul.geometry_customization li').removeClass('selected');
             $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
-            $('.map_header ul li:eq(2) p:eq(1)').text('Custom Style');
+            $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
           }
         }
-        
+     
         
         /* reset styles to default */
         function resetStyles() {
@@ -598,19 +545,113 @@
             if (isNaN(value)) {
               var color = new RGBColor(value);
               if (color.ok) {
-                $('span[css="'+type+'"] a.control').css({'background-color':value});
+                $('span[css="'+type+'"] a.control').removeClass('error').css({'background-color':value});
               }
             }
           });
           
+          // Reset slider
+          var css_prop = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ')[0];
+          $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider('value',default_style[css_prop]*100);
+          
+          // Change the text to "Default Style"
           $('.map_header ul.geometry_customization').closest('li').find('p').text('Default Style');
           
           // RefreshStyles
-          me.setStyles(geometry_style);
+          me.setTilesStyles(geometry_style);
         }
         
         
         setupStyles(geom_styles);
+        
+        
+        
+        // BINDINGS
+        
+        /* change between list options */
+        $('.map_header ul.geometry_customization li a.option').click(function(ev){
+          stopPropagation(ev);
+          var parent = $(this).parent();
+          if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
+            // Remove selected
+            $('.map_header ul.geometry_customization li').each(function(i,li){$(li).removeClass('selected special')});
+            
+            // Add selected to the parent (special?)
+            if (parent.find('div.suboptions').length>0) {
+              parent.addClass('selected special');
+              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+            } else {
+              parent.addClass('selected');
+              resetStyles();
+            }
+          }
+        });
+              
+        /* color input */
+        $('.map_header ul.geometry_customization div.suboptions span.color input').change(function(ev){
+          stopPropagation(ev);
+          
+          var color = new RGBColor($(this).val());
+          if (color.ok) {
+            var new_color = color.toHex();
+            var css_ = $(this).closest('span').attr('css');
+            $(this).parent().find('a.control').removeClass('error').css({'background-color':new_color});
+            
+            geometry_style[css_] = new_color;
+            me.setTilesStyles(geometry_style);
+            
+          } else {            
+            $(this).parent().find('a.control').removeAttr('style').addClass('error');
+          }
+          
+        });
+        
+        /* width range */
+        $('.map_header ul.geometry_customization div.suboptions span.numeric a').livequery('click',function(ev){
+          stopPropagation(ev);
+          var old_value = $(this).parent().find('input').val();
+          var add = ($(this).text()=="+")?true:false;
+          
+         if (add || old_value>0) {
+            $(this).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
+
+            var css_ = $(this).closest('span').attr('css');
+            var value_ = $(this).parent().find('input').val();
+
+            geometry_style[css_] = value_;
+            me.setTilesStyles(geometry_style);
+          }
+        });
+        
+        
+        /* alpha slider */
+        var slider_value = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ');
+        slider_value = geometry_style[slider_value[0]]*100;
+        
+        $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider({
+          max:100,
+          min:0,
+          range: "min",
+          value: slider_value,
+          slide: function(event,ui) {
+            $(ui.handle).closest('span.alpha').find('span.tooltip')
+              .css({left:$(ui.handle).css('left')})
+              .text(ui.value+'%')
+              .show();
+          },
+          stop: function(event,ui) {
+            $(ui.handle).closest('span.alpha').find('span.tooltip').hide();
+            
+            // Save the values in the geom_style object
+            var css_props = $(ui.handle).closest('span.alpha').attr('css').split(' ');
+            _.each(css_props,function(value,i){
+              geometry_style[value] = ui.value/100;
+            });
+
+            // Set style in the tiles finally
+            me.setTilesStyles(geometry_style);
+          }
+        });
         
         return {}
   		}());
@@ -911,82 +952,82 @@
           url:global_api_url + 'tables/'+table_name+'/records/'+feature,
           headers: {"cartodbclient": true},
           success:function(data){
-              me.removeWax();
+            me.removeWax();
 
-              var coordinates = $.parseJSON(data.the_geom).coordinates;
-              var latlng = new google.maps.LatLng(coordinates[1],coordinates[0]);
+            var coordinates = $.parseJSON(data.the_geom).coordinates;
+            var latlng = new google.maps.LatLng(coordinates[1],coordinates[0]);
 
-              var image = new google.maps.MarkerImage(me.generateDot('#FF6600'),
-                  new google.maps.Size(20, 20),
-                  new google.maps.Point(0,0),
-                  new google.maps.Point(10, 10));
+            var image = new google.maps.MarkerImage(me.generateDot('#FF6600'),
+                new google.maps.Size(20, 20),
+                new google.maps.Point(0,0),
+                new google.maps.Point(10, 10));
 
-              var marker = new google.maps.Marker({
-                  position: latlng,
-                  icon: image,
-                  flat: true,
-                  clickable: true,
-                  draggable: true,
-                  raiseOnDrag: false,
-                  animation: false,
-                  map: me.map_,
-                  data: data
-              });
-
-
-              google.maps.event.addListener(marker,'mouseover',function(){
-                  me.over_marker_ = true;
-                  if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
-                      var latlng = this.getPosition();
-                      me.tooltip_.open(latlng,[this]);
-                  } else {
-                      me.tooltip_.hide();
-                  }
-              });
-
-              google.maps.event.addListener(marker,'mouseout',function(){
-                  me.over_marker_ = false;
-                  setTimeout(function(){
-                      if (!me.over_marker_) me.tooltip_.hide();
-                  },100);
-              });
-
-              google.maps.event.addListener(marker,'dragstart',function(ev){
-                  me.marker_dragging_ = true;
-                  this.data.init_latlng = ev.latLng;
-
-                  // Hide all floating map windows
-                  me.hideOverlays();
-              });
-
-              google.maps.event.addListener(marker,'dragend',function(ev){
-                  me.marker_dragging_ = false;
-                  var occ_id = this.data.cartodb_id;
-                  var params = {};
-                  params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
-                  params.cartodb_id = occ_id;
-                  me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"update_geometry","PUT");
-              });
+            var marker = new google.maps.Marker({
+                position: latlng,
+                icon: image,
+                flat: true,
+                clickable: true,
+                draggable: true,
+                raiseOnDrag: false,
+                animation: false,
+                map: me.map_,
+                data: data
+            });
 
 
-              google.maps.event.addListener(marker,'click',function(ev){
-                  ev.stopPropagation();
-                  if (me.status_=="select") {
-                      me.info_window_.open(this);
-                  }
-              });
+            google.maps.event.addListener(marker,'mouseover',function(){
+                me.over_marker_ = true;
+                if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
+                    var latlng = this.getPosition();
+                    me.tooltip_.open(latlng,[this]);
+                } else {
+                    me.tooltip_.hide();
+                }
+            });
+
+            google.maps.event.addListener(marker,'mouseout',function(){
+                me.over_marker_ = false;
+                setTimeout(function(){
+                    if (!me.over_marker_) me.tooltip_.hide();
+                },100);
+            });
+
+            google.maps.event.addListener(marker,'dragstart',function(ev){
+                me.marker_dragging_ = true;
+                this.data.init_latlng = ev.latLng;
+
+                // Hide all floating map windows
+                me.hideOverlays();
+            });
+
+            google.maps.event.addListener(marker,'dragend',function(ev){
+                me.marker_dragging_ = false;
+                var occ_id = this.data.cartodb_id;
+                var params = {};
+                params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
+                params.cartodb_id = occ_id;
+                me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"update_geometry","PUT");
+            });
 
 
-              // Click on map to recover wax layer and remove marker
-              google.maps.event.addListener(map,'click',function(ev){
-                  me.fakeMarker_.setMap(null);
-                  me.fakeMarker_ = null;
+            google.maps.event.addListener(marker,'click',function(ev){
+                ev.stopPropagation();
+                if (me.status_=="select") {
+                    me.info_window_.open(this);
+                }
+            });
 
-                  // Refresh tiles
-                  me.refreshWax();
-              });
 
-              me.fakeMarker_ = marker;
+            // Click on map to recover wax layer and remove marker
+            google.maps.event.addListener(map,'click',function(ev){
+                me.fakeMarker_.setMap(null);
+                me.fakeMarker_ = null;
+
+                // Refresh tiles
+                me.refreshWax();
+            });
+
+            me.fakeMarker_ = marker;
           },
           error:function(e){}
       });

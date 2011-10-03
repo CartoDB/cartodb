@@ -8,7 +8,7 @@
       body {width:100%; height:100%; padding:0; margin:0; background:none;}
       div#outer_map_cartodb_container {position:relative; width:100%; height:100%; background:white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
       div#map_cartodb_container {position:absolute; top:5px; left:5px; right:5px; bottom:5px; z-index:0;}
-      a.cartodb_logo {position:absolute; bottom:13px; left:75px; display:block; width:72px; height:17px; background:url('http://cartodb.s3.amazonaws.com/static/logo.png') no-repeat 0 0;
+      a.cartodb_logo {position:absolute; bottom:13px; left:75px; display:block; width:69px; height:27px; background:url('http://cartodb.s3.amazonaws.com/static/logo.png') no-repeat 0 0;
         text-indent:-9999px; line-height:0; font-size:0;}
       span.cartodb_map_controls {position:absolute; top:10px; left:10px; width:26px; height:100px; z-index:10;}
       span.cartodb_map_controls a.cartodb_map_embed_zoom_in {display:block; width:30px; height:32px; text-indent:-9999px; line-height:0; font-size:0; background:url('http://cartodb.s3.amazonaws.com/static/maps_sprite.png') no-repeat 0 0;}
@@ -36,7 +36,7 @@
               TILEHTTP = "https",
               TILESERVER = "cartodb.com",
               SQL_SERVER = 'cartodb.com',
-              global_api_url = '/api/v1/';           
+              global_api_url = '/api/v1/';
             <% end %>
       </script>
 
@@ -72,17 +72,17 @@
             success: function(data) {
               if (data.rows[0].st_extent!=null) {
                 var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-          
+
                 var coor1 = coordinates[0].split(' ');
                 var coor2 = coordinates[1].split(' ');
                 var bounds = new google.maps.LatLngBounds();
-          
+
                 bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
                 bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
-          
+
                 carto_embed_map.fitBounds(bounds);
               }
-          
+
             },
             error: function(e) {}
           });

@@ -18,13 +18,13 @@ module ApplicationHelper
   end
 
   def tag_width(count, min, max)
-		if count >= max
+    if count >= max
       "-100"
     elsif count <= min
       "-250"
     else
       rangeUnit = 130 / (max)
-      -100 - (count * rangeUnit) 
+      -100 - (count * rangeUnit)
     end
   end
 
@@ -80,7 +80,7 @@ module ApplicationHelper
 
   def max_request_in_a_day
     max = 0
-    Time.now.day.downto(0) do |days|
+    20.downto(0) do |days|
       date = (Date.today - days.days).strftime("%Y-%m-%d")
       day_request = CartoDB::QueriesThreshold.get(current_user.id, date)
       if day_request>max
@@ -114,7 +114,7 @@ module ApplicationHelper
       File.read(CartoDB::LAST_BLOG_POSTS_FILE_PATH).html_safe
     end
   end
-  
+
   def account_url
     if APP_CONFIG[:account_host]
       request.protocol + CartoDB.account_host + CartoDB.account_path

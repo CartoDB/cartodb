@@ -17,8 +17,8 @@
 
 
     // TODO
-    // - If a style is default or customized (must)
-    // - Border color and width have set from the begging [polygons mainly] (say to Simon)
+    // - Border color, border and opacity have set from the begging [polygons mainly] (say to Simon)
+    // - Add possibility to change color from a palette
 
 
 

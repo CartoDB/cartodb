@@ -6,7 +6,7 @@ feature "Sessions" do
     user = create_user
 
     visit login_path
-    fill_in 'e-mail or username', :with => user.email
+    fill_in 'email', :with => user.email
     fill_in 'password', :with => 'blablapassword'
     click_link_or_button 'Log in'
 

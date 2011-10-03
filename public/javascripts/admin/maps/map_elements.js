@@ -89,11 +89,11 @@
                       '</div>'+
                       '<label>Border</label>'+
                       '<div class="long">'+
-                        '<span class="color" css="polygon-border-color">'+
-                          '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
+                        '<span class="color" css="line-color">'+
+                          '<a href="#change_line_color" class="control"></a>'+
                           '<input type="text" value="#FFFFFF"/>'+
                         '</span>'+
-                        '<span class="numeric" css="polygon-border-width">'+
+                        '<span class="numeric" css="line-width">'+
                           '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
                           '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
                           '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+

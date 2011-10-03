@@ -162,14 +162,15 @@
     
     CartoMap.prototype.setStyles = function(obj) {
       var me = this;
-      //console.log(obj);
       // TODO -> generate the cartocss json
       // Convert style object to string?
-      var str = '#untitled_table_7{';
+      var str = '#'+table_name+' {';
       _.each(obj,function(property,i){
-        str += i+':'+property+';';
+        str += i+':'+property+'; ';
       });
-      str += '}'
+      str += '}';
+      
+      console.log(str);
       
       
       $.ajax({
@@ -376,6 +377,8 @@
     CartoMap.prototype.setTools = function(geom_type,geom_styles,map_style) {
       var me = this;
       var map = me.map_;
+      
+      console.log(geom_styles);
             
       /*Geometry tools*/
       if (geom_type=="point" || geom_type=="multipoint") {
@@ -490,8 +493,6 @@
         
         function setupStyles(styles) {
           
-          console.log(styles);
-          
           // Remove the customization that doesn't belong to the geom_type
           if (geom_type == 'multipoint' || geom_type == 'point') {
             $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
@@ -527,7 +528,7 @@
           
           
           // Get all the styles and save them in geometry_style object
-          var styles_ = styles;
+          var styles_ = styles.replace(/ /gi,'');
           
           // Remove table_name
           styles_ = styles_.split('{');
@@ -1214,15 +1215,15 @@
     /* If request fails */
     CartoMap.prototype.errorRequest = function(params,new_value,old_value,type) {
       switch (type) {
-          case "change_latlng":   var occ_id = params.cartodb_id;
-                                  (this.points_[occ_id]).setPosition(old_value);
-                                  break;
-          case "remove_row":      var array = (params.cartodb_ids).split(',');
-                                  var me = this;
-                                  _.each(array,function(ele,i){
-                                      me.points_[ele].setMap(me.map_);
-                                  });
-                                  break;
-          default:                break;
+        case "change_latlng":   var occ_id = params.cartodb_id;
+                                (this.points_[occ_id]).setPosition(old_value);
+                                break;
+        case "remove_row":      var array = (params.cartodb_ids).split(',');
+                                var me = this;
+                                _.each(array,function(ele,i){
+                                    me.points_[ele].setMap(me.map_);
+                                });
+                                break;
+        default:                break;
       }
     }

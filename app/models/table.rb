@@ -114,7 +114,8 @@ class Table < Sequel::Model(:user_tables)
           cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
           max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max] 
           
-          # only reset the sequence on real imports. not applicable for duplicate tables         
+          # only reset the sequence on real imports. 
+          # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns         
           if max_cartodb_id
             user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
           end  
@@ -544,14 +545,14 @@ TRIGGER
 
   def to_csv
     csv_zipped = nil
-    owner.in_database do |user_database|
-      table_name = "csv_export_temp_#{self.name}"
-      file_name = "#{self.name}_export"
-      csv_file_path = Rails.root.join('tmp', "#{file_name}.csv")
-      zip_file_path  = Rails.root.join('tmp', "#{file_name}.zip")
-      FileUtils.rm_rf(zip_file_path)
-      FileUtils.rm_rf(csv_file_path)
-      
+    table_name = "csv_export_temp_#{self.name}"
+    file_name = "#{self.name}_export"
+    csv_file_path = Rails.root.join('tmp', "#{file_name}.csv")
+    zip_file_path  = Rails.root.join('tmp', "#{file_name}.zip")
+    FileUtils.rm_rf(Dir.glob(csv_file_path))
+    FileUtils.rm_rf(Dir.glob(zip_file_path))      
+        
+    owner.in_database do |user_database|      
       # Setup data export table
       user_database.run("DROP TABLE IF EXISTS #{table_name}")
       export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
@@ -570,6 +571,9 @@ TRIGGER
       system cmd
       CartoDB::Logger.info "Converted #{table_name} to CSV", cmd            
       
+      # remove table whatever happened
+      user_database.run("DROP TABLE #{table_name}")
+      
       # Compress output
       # TODO: Move to ZLib, this is silly
       # http://jimneath.org/2010/01/04/cryptic-ruby-global-variables-and-their-meanings.html
@@ -581,10 +585,9 @@ TRIGGER
       end  
     end
   ensure
-    # Always cleanup files and tables
-    user_database.run("DROP TABLE #{table_name}")
-    FileUtils.rm_rf(csv_file_path)
-    FileUtils.rm_rf(zip_file_path)      
+    # Always cleanup files    
+    FileUtils.rm_rf(Dir.glob(csv_file_path))
+    FileUtils.rm_rf(Dir.glob(zip_file_path))      
   end
 
   def to_shp
@@ -593,8 +596,8 @@ TRIGGER
     shp_file_path  = Rails.root.join('tmp', "#{shp_files_name}.shp")
     zip_file_path  = Rails.root.join('tmp', "#{shp_files_name}.zip")
     pgsql2shp_bin  = `which pgsql2shp`.strip
-    FileUtils.rm_rf(all_files_path)
-
+    FileUtils.rm_rf(Dir.glob(all_files_path))
+    
     # Configure pgsql to shp arguments
     db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
     host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
@@ -604,13 +607,14 @@ TRIGGER
     # build command and execute
     cmd = "#{pgsql2shp_bin} #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}"    
     system cmd
-    CartoDB::Logger.info "Converted #{table_name} to SHP", cmd            
+    CartoDB::Logger.info "Converted #{self.name} to SHP", cmd            
 
     # Compress output
     # TODO: Move to ZLib, this is silly
     # http://jimneath.org/2010/01/04/cryptic-ruby-global-variables-and-their-meanings.html
     if $?.success?
       Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+        CartoDB::Logger.info "trying to pack:", Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s)
         Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|
           zipfile.add(File.basename(f), f)
         end
@@ -619,7 +623,7 @@ TRIGGER
     end
   ensure
     # Always cleanup
-    FileUtils.rm_rf(all_files_path)
+    FileUtils.rm_rf(Dir.glob(all_files_path))
   end
 
   def self.find_all_by_user_id_and_tag(user_id, tag_name)
@@ -757,7 +761,7 @@ TRIGGER
         user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
 
         # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")        
-      end
+      end      
     end
     self.the_geom_type = type.downcase
     save_changes unless new?

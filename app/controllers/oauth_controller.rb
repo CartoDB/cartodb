@@ -1,8 +1,8 @@
 # coding: UTF-8
-
 require 'oauth/controllers/provider_controller'
 
 class OauthController < ApplicationController
+  layout 'front_layout'  
   include OAuth::Controllers::ProviderController
   
   ssl_required :authorize, :request_token, :access_token, :token, :test_request
@@ -11,18 +11,7 @@ class OauthController < ApplicationController
     warden.custom_failure!
   end
   
-  layout 'front_layout'
-
-  # 1) call request_token wiht consumer key and secret
-  
-  # 2) returns request token and secret
-  
-  # 3) call authorize (this is on twitter for example). #here we mark the request token as authorized against and account.
-  
-  # 4) redirects you with a url you specify.  
-
-  # 5) call access_token with the authorized request token, HTTP cycle, returns access token and access secret.
-
+  # XAuth ref: https://dev.twitter.com/docs/oauth/xauth
   def access_token_with_xauth
     if params[:x_auth_mode] == 'client_auth'
       if user = User.authenticate(params[:x_auth_username], params[:x_auth_password])
@@ -43,9 +32,10 @@ class OauthController < ApplicationController
   end
   alias_method_chain :access_token, :xauth
 
+
   protected
 
   def render_unauthorized
-    render :nothing => true, :status => 401
+    head :unauthorized
   end
 end

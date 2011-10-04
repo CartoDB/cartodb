@@ -18,4 +18,8 @@ class Api::ApplicationController < ApplicationController
     @time_start = Time.now
   end
 
+  # dry up the jsonp output
+  def render_jsonp obj, status = 200
+    render :json => obj, :status => status, :callback => params[:callback] 
+  end  
 end

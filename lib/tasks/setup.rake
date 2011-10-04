@@ -37,6 +37,7 @@ DESC
       end  
     end
     
+    # TODO: remove text bit and just use env
     desc "Create an admin account with a default user password unless ADMIN_PASSWORD environment variable is set"
     task :create_admin => :environment do
       password = ENV['ADMIN_PASSWORD'] || "SS6vhd0u6q9MJx3d"

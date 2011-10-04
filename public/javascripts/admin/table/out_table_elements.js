@@ -513,10 +513,9 @@
             },
             headers: {"cartodbclient":"true"},
             success: function(result) {
-              window.location.href = '/tables/'+ new_table;
+              window.location.href = '/tables/'+ result.name;
             },
             error: function(e) {
-              var msg = e.responseText
               closeOutTableWindows();
               requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).message);
             }

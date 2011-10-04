@@ -51,8 +51,10 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     respond_with(:superadmin, @user)
   end
 
+
+  private
+
   def get_user
     @user = User[params[:id]] if params[:id]
   end
-  private :get_user
 end

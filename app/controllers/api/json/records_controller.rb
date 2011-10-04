@@ -9,33 +9,24 @@ class Api::Json::RecordsController < Api::ApplicationController
   after_filter :record_query_threshold
 
   def index
-    render :json => Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode, :filter_column, :filter_value))),
-           :callback => params[:callback]
+    render_jsonp(Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode, :filter_column, :filter_value))))
   rescue => e
-    puts $!
-    render :json => { :errors => [$!] }.to_json, :status => 400,
-           :callback => params[:callback]
+    CartoDB::Logger.info "exception on records#index", e.inspect
+    render_jsonp({ :errors => [e] }, 400)
   end
 
   def create
     primary_key = @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
-    respond_to do |format|
-      format.json do
-        render :json => {:id => primary_key}.to_json, :status => 200, :callback => params[:callback]
-      end
-    end
+    render_jsonp({:id => primary_key})
   rescue => e
-    puts $!
-    render :json => { :errors => [$!] }.to_json, :status => 400,
-           :callback => params[:callback]
+    CartoDB::Logger.info "exception on records#create", e.inspect
+    render_jsonp({ :errors => [e] }, 400)
   end
 
   def show
-    render :json => @table.record(params[:id]).to_json,
-           :callback => params[:callback]
+    render_jsonp(@table.record(params[:id]))
   rescue => e
-    render :json => { :errors => ["Record #{params[:id]} not found"] }.to_json, :status => 404,
-           :callback => params[:callback]
+    render_jsonp({ :errors => ["Record #{params[:id]} not found"] }, 404)
   end
 
   def update
@@ -43,18 +34,15 @@ class Api::Json::RecordsController < Api::ApplicationController
       begin
         resp = @table.update_row!(params[:id], params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
         if resp > 0
-          render :nothing => true, :status => 200
+          head :ok
         else
-          render :json => { :errors => ["row identified with #{params[:id]} not found"] }.to_json,
-                 :status => 404, :callback => params[:callback] and return
+          render_jsonp({ :errors => ["row identified with #{params[:id]} not found"] }, 404) and return
         end
       rescue => e
-        render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json, :status => 400,
-               :callback => params[:callback] and return
+        render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
       end
     else
-      render :json => { :errors => ["id can't be blank"] }.to_json,
-             :status => 404, :callback => params[:callback] and return
+      render_jsonp({ :errors => ["id can't be blank"] }, 404) and return
     end
   end
 
@@ -69,29 +57,24 @@ class Api::Json::RecordsController < Api::ApplicationController
           end
         end
       end
-      render :nothing => true,
-             :callback => params[:callback], :status => 200
+      head :ok
     else
-      render :json => { :errors => ["row identified with #{params[:id]} not found"] }.to_json,
-             :status => 404, :callback => params[:callback] and return
+      render_jsonp({ :errors => ["row identified with #{params[:id]} not found"] }, 404) and return
     end
   end
 
   def show_column
-    render :json => current_user.run_query("select #{params[:id].sanitize_sql} from #{@table.name} where cartodb_id = #{params[:record_id].sanitize_sql}")[:rows].first.to_json,
-           :status => 200
+    render_jsonp(current_user.run_query("select #{params[:id].sanitize_sql} from #{@table.name} where cartodb_id = #{params[:record_id].sanitize_sql}")[:rows].first)
   end
 
   def update_column
     @table.update_row!(params[:record_id], {params[:id].to_sym => params[:value]})
-    render :json => {params[:id] => params[:value]}.to_json,
-           :status => 200
+    render_jsonp({ params[:id] => params[:value] })
   end
 
   def pending_addresses
     records = @table.get_records_with_pending_addresses(:page => params[:page], :rows_per_page => params[:rows_per_page])
-    render :json => records.to_json,
-           :status => 200
+    render_jsonp(records)
   end
 
   protected

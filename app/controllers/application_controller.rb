@@ -1,7 +1,9 @@
 # coding: UTF-8
 
 class ApplicationController < ActionController::Base
+  include SslRequirement
   protect_from_forgery
+  
   helper :all
 
   before_filter :browser_is_html5_compliant?
@@ -9,13 +11,10 @@ class ApplicationController < ActionController::Base
   after_filter :remove_flash_cookie
   before_filter :allow_cross_domain_access
 
-  class NoHTML5Compliant < Exception; end;
-
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
-  rescue_from RecordNotFound, :with => :render_404
+  rescue_from RecordNotFound,   :with => :render_404
 
-  include SslRequirement
-
+  # this disables SSL requirement in non-production environments
   unless Rails.env.production?
     def self.ssl_required(*splat)
       false
@@ -25,6 +24,7 @@ class ApplicationController < ActionController::Base
     end
   end
   
+
   protected
 
   def allow_cross_domain_access
@@ -40,17 +40,13 @@ class ApplicationController < ActionController::Base
         render :file => "public/404.html", :status => 404, :layout => false
       end
       format.json do
-        render :nothing => true, :status => 404
+        head :not_found
       end
     end
   end
   
   def render_500
-    respond_to do |format|
-      format.html do
-        render :file => "public/500.html", :status => 500, :layout => false
-      end
-    end
+    render :file => "public/500.html", :status => 500, :layout => false
   end
   
   def login_required
@@ -68,7 +64,7 @@ class ApplicationController < ActionController::Base
         redirect_to login_path and return
       end
       format.json do
-        render :nothing => true, :status => 401
+        head :unauthorized
       end
     end
   end
@@ -92,13 +88,16 @@ class ApplicationController < ActionController::Base
   helper_method :table_privacy_text
 
   def translate_error(exception)
-    if exception.is_a?(String)
-      return exception
-    end
+    return exception if exception.is_a? String
+      
     case exception
-      when CartoDB::EmptyFile
-        ERROR_CODES[:empty_file]
+      when CartoDB::EmptyFile 
+      when CartoDB::InvalidUrl
+      when CartoDB::InvalidFile
+      when CartoDB::TableCopyError  
+        exception.detail    
       when Sequel::DatabaseError
+        # TODO: rationalise these error codes
         if exception.message.include?("transform: couldn't project")
           ERROR_CODES[:geometries_error].merge(:raw_error => exception.message)
         else
@@ -115,13 +114,18 @@ class ApplicationController < ActionController::Base
   end
 
   def api_request?
-    request.subdomain.eql?('api')
+    request.subdomain == 'api'
+  end
+    
+  # In some cases the flash message is going to be set in the fronted with js after making a request to the API
+  # We use this filter to ensure it disappears in the very first request
+  def remove_flash_cookie
+    cookies.delete(:flash) if cookies[:flash]
   end
   
   def browser_is_html5_compliant?
-    return true if Rails.env.test? || api_request?
-    user_agent = request.user_agent.try(:downcase)
-    return true if user_agent.nil?
+    user_agent = request.user_agent.try(:downcase)    
+    return true if Rails.env.test? || api_request? || user_agent.nil?
     
     #IE 6 
     # mozilla/4.0 (compatible; msie 8.0; windows nt 6.1; wow64; trident/4.0; slcc2; .net clr 2.0.50727; .net clr 3.5.30729; .net clr 3.0.30729; media center pc 6.0)
@@ -171,12 +175,5 @@ class ApplicationController < ActionController::Base
     #ANDROID
     # Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3
     # Checked in safari
-  end
-  
-  # In some cases the flash message is going to be set in the fronted with js after making a request to the API
-  # We use this filter to ensure it disappears in the very first request
-  def remove_flash_cookie
-    cookies.delete(:flash) if cookies[:flash]
-  end
-  
+  end  
 end

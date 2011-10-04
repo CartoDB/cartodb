@@ -229,6 +229,14 @@ class Table < Sequel::Model(:user_tables)
   def infowindow
     $tables_metadata.hget(key, 'infowindow')
   end
+  
+  def map_metadata=(value)
+    $tables_metadata.hset(key, 'map_metadata', value)
+  end
+
+  def map_metadata
+    $tables_metadata.hget(key, 'map_metadata')
+  end  
 
   def private?
     $tables_metadata.hget(key, "privacy").to_i == PRIVATE

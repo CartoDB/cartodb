@@ -389,4 +389,13 @@ feature "API 1.0 tables management" do
       response.status.should == 200
     end
   end
+
+  scenario "save a map_metadata for a table" do
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
+
+    post_json v1_api_tables_map_metadata_url({:id => table1.id}), {:map_metadata => "some_metadata"} do |response|
+      response.status.should == 200
+    end
+  end
+
 end

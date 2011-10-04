@@ -32,24 +32,23 @@ class Api::Json::TablesController < Api::ApplicationController
                           limit ? offset ?", current_user.id, limit, offset).all
     end
     
-    render_jsonp {
-      :total_entries => params[:tag_name] ? tables_count : current_user.tables_count,
-      :tables => @tables.map { |table|
-          { :id => table.id,            
-            :name => table.name,
-            :privacy => table_privacy_text(table),
-            :tags => table[:tags_names],
-            :schema => table.schema,
-            :updated_at => table.updated_at,
-            :rows_counted => table.rows_counted }
-        }
-      }
+    render_jsonp({ :total_entries => params[:tag_name] ? tables_count : current_user.tables_count,
+                    :tables => @tables.map { |table|
+                        { :id => table.id,            
+                          :name => table.name,
+                          :privacy => table_privacy_text(table),
+                          :tags => table[:tags_names],
+                          :schema => table.schema,
+                          :updated_at => table.updated_at,
+                          :rows_counted => table.rows_counted }
+                      }
+                    })
   end
 
   def create
     @table = Table.new
     @table.user_id = current_user.id
-    @table.name = params[:name]                          if params[:name]
+    @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
     @table.import_from_file = params[:file]              if params[:file]
     @table.import_from_url = params[:url]                if params[:url]
     @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
@@ -57,10 +56,10 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.force_schema   = params[:schema]              if params[:schema]
     @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
     if @table.valid? && @table.save      
-      render_jsonp { :id => @table.id, :name => @table.name, :schema => @table.schema }
+      render_jsonp({ :id => @table.id, :name => @table.name, :schema => @table.schema }, 200, :location => table_path(@table))
     else
       CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
-      render_jsonp { :errors => @table.errors.full_messages }, 400
+      render_jsonp({ :errors => @table.errors.full_messages }, 400)
     end
   rescue => e
     # Intercept the error and add more meaning based on the users create type. 
@@ -69,7 +68,7 @@ class Api::Json::TablesController < Api::ApplicationController
     e = CartoDB::InvalidFile.new    e.message    if params[:file]    
     e = CartoDB::TableCopyError.new e.message    if params[:table_copy]    
     
-    CartoDB::Logger.info "Errors on tables#create", translate_error(e).inspect
+    CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     render_jsonp(translate_error(e), 400) and return  
   end
 
@@ -86,11 +85,11 @@ class Api::Json::TablesController < Api::ApplicationController
           :disposition => "attachment; filename=#{@table.name}.zip"
       end
       format.json do
-        render_jsonp { :id => @table.id,
+        render_jsonp({ :id => @table.id,
                        :name => @table.name,
                        :privacy => table_privacy_text(@table),
                        :tags => @table[:tags_names],
-                       :schema => @table.schema(:reload => true) }
+                       :schema => @table.schema(:reload => true) })
       end
     end
   end
@@ -112,13 +111,13 @@ class Api::Json::TablesController < Api::ApplicationController
                             from user_tables
                             where id=?",@table.id).first
                             
-      render_jsonp { :id => @table.id,                 
+      render_jsonp({ :id => @table.id,                 
                      :name => @table.name,
                      :privacy => table_privacy_text(@table),
                      :tags => @table[:tags_names],
-                     :schema => @table.schema }
+                     :schema => @table.schema })
     else
-      render_jsonp { :errors => @table.errors.full_messages}, 400
+      render_jsonp({ :errors => @table.errors.full_messages}, 400)
     end
   rescue => e
     CartoDB::Logger.info e.class.name, e.message
@@ -130,11 +129,6 @@ class Api::Json::TablesController < Api::ApplicationController
     head :ok
   end
   
-  def duplicate
-    new_table_name = @table.duplicate!    
-    render_jsonp { :table_name => new_table_name}
-  end
-
   # expects the infowindow data in the infowindow parameter
   def set_infowindow
     @table.infowindow = params[:infowindow]

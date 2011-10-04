@@ -63,14 +63,15 @@ class Table < Sequel::Model(:user_tables)
       #Import from copying another table
       if import_from_table_copy.present?
         # ensure unique name
-        uniname = get_valid_name(self.name)
-        # existing_names = owner.in_database["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{self.name}%'"].map(:relname)
-        # testn = 1
-        # uniname = self.name
-        # while true==existing_names.include?("#{uniname}")
-        #   uniname = "#{self.name}_#{testn}"
-        #   testn = testn + 1
-        # end
+        #uniname = get_valid_name(self.name)
+        existing_names = owner.in_database["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{self.name}%'"].map(:relname)
+        testn = 1
+        uniname = self.name
+        while true==existing_names.include?("#{uniname}")
+          uniname = "#{self.name}_#{testn}"
+          testn = testn + 1
+        end
+        CartoDB::Logger.info 'unique name', uniname
 
         owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")

@@ -9,24 +9,24 @@ class Api::Json::RecordsController < Api::ApplicationController
   after_filter :record_query_threshold
 
   def index
-    render_jsonp Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode, :filter_column, :filter_value)))
+    render_jsonp(Yajl::Encoder.encode(@table.records(params.slice(:page, :rows_per_page, :order_by, :mode, :filter_column, :filter_value))))
   rescue => e
     CartoDB::Logger.info "exception on records#index", e.inspect
-    render_jsonp { :errors => [e] }, 400
+    render_jsonp({ :errors => [e] }, 400)
   end
 
   def create
     primary_key = @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
-    render_jsonp {:id => primary_key}
+    render_jsonp({:id => primary_key})
   rescue => e
     CartoDB::Logger.info "exception on records#create", e.inspect
-    render_jsonp { :errors => [e] }, 400
+    render_jsonp({ :errors => [e] }, 400)
   end
 
   def show
-    render_jsonp @table.record(params[:id])
+    render_jsonp(@table.record(params[:id]))
   rescue => e
-    render_jsonp { :errors => ["Record #{params[:id]} not found"] }, 404
+    render_jsonp({ :errors => ["Record #{params[:id]} not found"] }, 404)
   end
 
   def update
@@ -64,17 +64,17 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   def show_column
-    render_jsonp current_user.run_query("select #{params[:id].sanitize_sql} from #{@table.name} where cartodb_id = #{params[:record_id].sanitize_sql}")[:rows].first
+    render_jsonp(current_user.run_query("select #{params[:id].sanitize_sql} from #{@table.name} where cartodb_id = #{params[:record_id].sanitize_sql}")[:rows].first)
   end
 
   def update_column
     @table.update_row!(params[:record_id], {params[:id].to_sym => params[:value]})
-    render_jsonp { params[:id] => params[:value] }
+    render_jsonp({ params[:id] => params[:value] })
   end
 
   def pending_addresses
     records = @table.get_records_with_pending_addresses(:page => params[:page], :rows_per_page => params[:rows_per_page])
-    render_jsonp records
+    render_jsonp(records)
   end
 
   protected

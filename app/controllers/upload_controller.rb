@@ -1,14 +1,12 @@
 # coding: UTF-8
 
 class UploadController < ApplicationController
-
+  ssl_required :create
   skip_before_filter :verify_authenticity_token
   before_filter :login_required
-  
-  ssl_required :create
 
   def create
-    render :nothing => true and return if params[:qqfile].blank? || request.body.blank?
+    head(400) and return if params[:qqfile].blank? || request.body.blank?
     
     upload_path  = Rails.root.join('public', 'uploads', current_user.id.to_s)
     file_path    = upload_path.join(params[:qqfile])

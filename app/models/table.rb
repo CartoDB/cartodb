@@ -685,7 +685,11 @@ TRIGGER
     end  
     
     # check for dupes
-    candidates = owner.in_database.tables.map{ |t| t.to_s }.select{ |t| t.match(/^#{raw_new_name}/) }
+    tables = owner.in_database.tables
+    candidates = tables.map{ |t| t.to_s }.select{ |t| t.match(/^#{raw_new_name}/) }
+    
+    CartoDB::Logger.info "logging candidates for #{raw_new_name}", candidates
+    CartoDB::Logger.info "tables owned by user", tables
 
     # return if no dupe
     return raw_new_name unless candidates.include?(raw_new_name)

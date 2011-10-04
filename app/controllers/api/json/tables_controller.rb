@@ -142,7 +142,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
   #todo: replace with windshaft
   def get_map_metadata
-    render_jsonp @table.map_metadata
+    render_jsonp({:map_metadata => @table.map_metadata})
   end
 
 

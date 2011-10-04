@@ -7,58 +7,42 @@ class Api::Json::ColumnsController < Api::ApplicationController
   after_filter :record_query_threshold
 
   def index
-    render :json => @table.schema(:cartodb_types => true).to_json,
-           :callback => params[:callback]
+    render_jsonp(@table.schema(:cartodb_types => true))
   end
 
   def create
-    resp = @table.add_column!(params.slice(:type, :name))
-    render :json => resp.to_json, :status => 200, :callback => params[:callback]
+    render_jsonp(@table.add_column!(params.slice(:type, :name)))
   rescue => e
-    errors = if e.is_a?(CartoDB::InvalidType)
-      [e.db_message]
-    else
-      [translate_error(e.message.split("\n").first)]
-    end
-    render :json => { :errors => errors }.to_json, :status => 400,
-           :callback => params[:callback] and return
+    errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
+    render_jsonp({:errors => errors}, 400) and return
   end
 
   def show
-    render :json => {:type => @table.schema(:cartodb_types => true).
-                    select{|e| e[0] == params[:id].to_sym}.
-                    first.last}.to_json,
-           :callback => params[:callback]
-  rescue
-    render :json => { :errors => "Column #{params[:id]} doesn't exist" }.to_json, :status => 404,
-           :callback => params[:callback] and return
+    resp = @table.schema(:cartodb_types => true).select{|e| e[0] == params[:id].to_sym}.first.last
+    render_jsonp({ :type => resp })
+  rescue => e
+    render_jsonp({:errors => "Column #{params[:id]} doesn't exist"}, 404) and return
   end
 
   def update
-    resp = @table.modify_column!(:name => params[:id], :type => params[:type], :old_name => params[:id], :new_name => params[:new_name])
-    render :json => resp.to_json, :status => 200, :callback => params[:callback]
+    render_jsonp(@table.modify_column!(:name => params[:id], 
+                                       :type => params[:type], 
+                                       :old_name => params[:id], 
+                                       :new_name => params[:new_name]))
   rescue => e
-    errors = if e.is_a?(CartoDB::InvalidType)
-      [e.db_message]
-    else
-      [translate_error(e.message.split("\n").first)]
-    end
-    render :json => { :errors => errors }.to_json, :status => 400,
-           :callback => params[:callback] and return
+    errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
+    render_jsonp({:errors => errors}, 400) and return
   end
 
   def delete
     @table.drop_column!(:name => params[:id])
-    render :nothing => true, :status => 200, :callback => params[:callback]
+    head :ok
   rescue => e
-    errors = if e.is_a?(CartoDB::InvalidType)
-      [e.db_message]
-    else
-      [translate_error(e.message.split("\n").first)]
-    end
-    render :json => { :errors => errors }.to_json, :status => 400,
-           :callback => params[:callback] and return
+    errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
+    render_jsonp({:errors => errors}, 400) and return
   end
+
+
 
   protected
 
@@ -75,5 +59,4 @@ class Api::Json::ColumnsController < Api::ApplicationController
       end
     end
   end
-
 end

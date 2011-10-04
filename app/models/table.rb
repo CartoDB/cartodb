@@ -569,7 +569,7 @@ TRIGGER
       # Execute CSV dump and log
       cmd = "#{`which psql`.strip} #{host} #{port} -U#{username} -w #{database_name} -c\"#{command}\" > #{csv_file_path}"      
       system cmd
-      CartoDB::Logger.info "Converted #{table_name} to CSV", cmd            
+      #CartoDB::Logger.info "Converted #{table_name} to CSV", cmd            
       
       # remove table whatever happened
       user_database.run("DROP TABLE #{table_name}")
@@ -607,14 +607,13 @@ TRIGGER
     # build command and execute
     cmd = "#{pgsql2shp_bin} #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}"    
     system cmd
-    CartoDB::Logger.info "Converted #{self.name} to SHP", cmd            
+    #CartoDB::Logger.info "Converted #{self.name} to SHP", cmd            
 
     # Compress output
     # TODO: Move to ZLib, this is silly
     # http://jimneath.org/2010/01/04/cryptic-ruby-global-variables-and-their-meanings.html
     if $?.success?
       Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
-        CartoDB::Logger.info "trying to pack:", Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s)
         Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|
           zipfile.add(File.basename(f), f)
         end

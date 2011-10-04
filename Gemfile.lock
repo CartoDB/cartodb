@@ -41,14 +41,16 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (~> 2.0)
       xpath (~> 0.1.4)
-    cartodb-importer (0.2.14)
+    cartodb-importer (0.2.16)
       builder
-      google-spreadsheet-ruby
+      google-spreadsheet-ruby (~> 0.1.5)
       pg (~> 0.11)
-      roo
-      rubyzip
-      sequel
-      spreadsheet
+      rgeo (~> 0.3.2)
+      rgeo-geojson (~> 0.2.1)
+      roo (~> 1.9.7)
+      rubyzip (~> 0.9.4)
+      sequel (~> 3.28.0)
+      spreadsheet (~> 0.6.5.9)
     childprocess (0.2.2)
       ffi (~> 1.0.6)
     choice (0.1.4)
@@ -64,7 +66,7 @@ GEM
       oauth (>= 0.3.6)
     htmlentities (4.3.0)
     i18n (0.5.0)
-    json_pure (1.6.0)
+    json_pure (1.6.1)
     launchy (2.0.5)
       addressable (~> 2.2.6)
     log4r (1.1.9)
@@ -143,21 +145,21 @@ GEM
       rspec (~> 2.6.0)
     ruby-ole (1.2.11.2)
     rubyzip (0.9.4)
-    selenium-webdriver (2.5.0)
+    selenium-webdriver (2.7.0)
       childprocess (>= 0.2.1)
       ffi (>= 1.0.7)
       json_pure
       rubyzip
-    sequel (3.26.0)
+    sequel (3.28.0)
     sequel-rails (0.1.8)
       actionpack (~> 3.0.0)
       activesupport (~> 3.0.0)
       railties (~> 3.0.0)
       sequel (~> 3.13)
     sequel_column_type_array (0.0.2)
-    sinatra (1.2.6)
+    sinatra (1.2.7)
       rack (~> 1.1)
-      tilt (< 2.0, >= 1.2.2)
+      tilt (>= 1.2.2, < 2.0)
     spreadsheet (0.6.5.9)
       ruby-ole (>= 1.0)
     steak (2.0.0)
@@ -172,14 +174,14 @@ GEM
     treetop (1.4.10)
       polyglot
       polyglot (>= 0.3.1)
-    tzinfo (0.3.29)
+    tzinfo (0.3.30)
     vegas (0.1.8)
       rack (>= 1.0.0)
     warden (1.0.5)
       rack (>= 1.0)
     xpath (0.1.4)
       nokogiri (~> 1.3)
-    yajl-ruby (0.8.3)
+    yajl-ruby (1.0.0)
 
 PLATFORMS
   ruby
@@ -187,7 +189,7 @@ PLATFORMS
 DEPENDENCIES
   airbrake (~> 3.0.4)
   capybara (~> 1.1.1)
-  cartodb-importer (~> 0.2.14)
+  cartodb-importer (~> 0.2.16)
   email_spec
   htmlentities
   launchy
@@ -205,7 +207,7 @@ DEPENDENCIES
   rgeo
   rgeo-geojson
   rspec-rails
-  sequel (= 3.26.0)
+  sequel (= 3.28.0)
   sequel-rails (~> 0.1.8)
   sequel_column_type_array (~> 0.0.2)
   steak (= 2.0.0)

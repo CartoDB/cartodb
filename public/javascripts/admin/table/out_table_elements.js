@@ -1196,7 +1196,7 @@
 	          createMap();
 	        toggleLayer();
 	        zoomToBBox();
-	        //addCustomStyles();
+	        addCustomStyles();
 	        
 	        // Start zclip
 	        $("div.embed_window .inner_ span.top div span a.copy").zclip({
@@ -1248,21 +1248,26 @@
 		  
 		  function addCustomStyles() {
 		    $.ajax({
-          url:'',
-          dataType: 'jsonp',
+          url: global_api_url + 'tables/' + table_id + '/map_metadata',
           type: "GET",
+          dataType: 'jsonp',
+          headers: {"cartodbclient":"true"},
           success:function(result){
-            // Map type
-            if (result.google_maps_base_type=="roadmap") {
+            map_style = $.parseJSON(result.map_metadata);
+
+            if (map_style.google_maps_base_type=="roadmap") {
               embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-            } else if (result.google_maps_base_type=="satellite") {
+            } else if (map_style.google_maps_base_type=="satellite") {
               embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
             } else {
               embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
             }
             
             // Custom tiles
-            embed_map.setOptions({styles: result.google_maps_customization_style})
+            embed_map.setOptions({styles: map_style.google_maps_customization_style})
+          },
+          error: function(e){
+             console.debug(e);
           }
         });
 		  }

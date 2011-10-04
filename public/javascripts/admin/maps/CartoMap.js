@@ -124,28 +124,29 @@
       
       
       // Get map style
-      // TODO map style
-      // Manage errors if they happen
-      // $.ajax({
-      //   url:,
-      //   type: "GET",
-      //   success:function(result){
-      //     map_style = result;
-      //     $(document).trigger('arrived');
-      //   },
-      //   error: function(e){
-      //      console.debug(e);
-      //   }
-      // });
+      $.ajax({
+        url: global_api_url + 'tables/' + table_id + '/map_metadata',
+        type: "GET",
+        dataType: 'jsonp',
+        headers: {"cartodbclient":"true"},
+        success:function(result){
+          map_style = result.map_metadata;
+          $(document).trigger('arrived');
+        },
+        error: function(e){
+           console.debug(e);
+        }
+      });
       
-      map_style = {basemap_provider: 'google_maps',google_maps_base_type:'roadmap',google_maps_customization_style: []};
-      $(document).trigger('arrived');
+      // map_style = {basemap_provider: 'google_maps',google_maps_base_type:'roadmap',google_maps_customization_style: []};
+      // $(document).trigger('arrived');
 
 
 
       // Get geom type
       $.ajax({
-        method: "GET",
+        type: "GET",
+        dataType: 'jsonp',
         url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
         headers: {"cartodbclient":"true"},
         success: function(data) {
@@ -222,7 +223,7 @@
         type: "POST",
         headers: {"cartodbclient": true},
         url: global_api_url + 'tables/' + table_id + '/map_metadata',
-        data: {basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles}
+        data: {map_metadata: {basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles}}
       });
     }
     

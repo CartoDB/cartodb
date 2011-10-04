@@ -4,36 +4,32 @@ class User < Sequel::Model
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
 
-  plugin :validation_helpers
-  
-  # Make to_json use just the values attributes, otherwise we will return
-  # a json with a representation of the whole dataset
-  plugin :json_serializer
-  @json_serializer_opts = { 
-    :except => [ :crypted_password, :salt, :invite_token,
-      :invite_token_date, :admin, :enabled, :map_enabled ],
-    :naked => true # To avoid it adding a json_class value to the result
-  }
-
-  self.raise_on_save_failure = false
+  # Sequel setup & plugins
   set_allowed_columns :email, :map_enabled, :password_confirmation
   plugin :validation_helpers
-
-  attr_reader :password
-  attr_accessor :password_confirmation
+  plugin :json_serializer
+  
+  # Restrict to_json attributes
+  @json_serializer_opts = { 
+    :except => [ :crypted_password, :salt, :invite_token, :invite_token_date, :admin, :enabled, :map_enabled ],
+    :naked => true # avoid adding json_class to result
+  }
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
-
+  
   ## Validations
   def validate
     super
     validates_presence :username
     validates_presence :email
-    validates_unique :email, :message => 'is already taken'
+    validates_unique   :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
     validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
-    errors.add(:password, "doesn't match confirmation") if password.present? && ( password_confirmation.blank? || password != password_confirmation )
+
+    if password.present? && ( password_confirmation.blank? || password != password_confirmation )
+      errors.add(:password, "doesn't match confirmation") 
+    end  
   end
 
   ## Callbacks
@@ -42,10 +38,13 @@ class User < Sequel::Model
     setup_user
     save_metadata
   end
-  #### End of Callbacks
   
-  ## Authentication methods
+  ## Authentication
   AUTH_DIGEST = '47f940ec20a0993b5e9e4310461cc8a6a7fb84e3'
+  
+  # allow extra vars for auth
+  attr_reader :password
+  attr_accessor :password_confirmation  
 
   def self.password_digest(password, salt)
     digest = AUTH_DIGEST
@@ -77,7 +76,7 @@ class User < Sequel::Model
     end
   end
 
-  #### End of Authentication methods
+  # Database configuration setup
 
   def database_username
     if Rails.env.production?
@@ -136,9 +135,13 @@ class User < Sequel::Model
   rescue => e
     if e.message =~ /^PGError/
       if e.message.include?("does not exist")
-        raise (e.message.include?("column") ? CartoDB::ColumnNotExists.new(e.message) : CartoDB::TableNotExists.new(e.message))
+        if e.message.include?("column") 
+          raise CartoDB::ColumnNotExists, e.message 
+        else
+          raise CartoDB::TableNotExists, e.message
+        end  
       else
-        raise CartoDB::ErrorRunningQuery.new(e.message)
+        raise CartoDB::ErrorRunningQuery, e.message
       end
     else
       raise e
@@ -149,6 +152,7 @@ class User < Sequel::Model
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
+  # TODO: update without a domain
   def create_key(domain)
     raise "domain argument can't be blank" if domain.blank?
     key = self.class.secure_digest(domain)
@@ -203,10 +207,9 @@ class User < Sequel::Model
   private :database_exists?
   
   def database_size
-    res = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(table_name))
+    in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(table_name))
       FROM information_schema.tables
-      WHERE table_catalog = '#{database_name}' AND table_schema = 'public'")
-    res.first[:sum]
+      WHERE table_catalog = '#{database_name}' AND table_schema = 'public'").first[:sum]
   end
   
   ## User's databases setup methods
@@ -268,6 +271,7 @@ class User < Sequel::Model
     end
   end
   
+  # Utility methods
   def fix_permissions
     set_database_permissions do |user_database|
       tables.each do |table|
@@ -296,5 +300,4 @@ class User < Sequel::Model
     puts "total queries: #{CartoDB::QueriesThreshold.get(self.id, "total")}"
     puts "==========================================="
   end
-  
 end

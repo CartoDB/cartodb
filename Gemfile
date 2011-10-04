@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 gem "rails", "3.0.10"
 
 gem "pg", "0.11"
-gem "sequel", "3.26.0"
+gem "sequel", "3.28.0"
 gem "sequel-rails", "~> 0.1.8"
 gem "nofxx-georuby", "~> 1.9.2", :require => "geo_ruby"
 gem "rails_warden", "0.5.2"
@@ -17,7 +17,7 @@ gem "rgeo-geojson", :require => "rgeo/geo_json"
 gem "redis", "~> 2.2.2"
 gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
-gem "cartodb-importer", "~> 0.2.14"
+gem "cartodb-importer", "~> 0.2.16"
 gem "airbrake", '~> 3.0.4'
 
 group :test, :development do

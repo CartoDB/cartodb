@@ -1,5 +1,5 @@
 # coding: UTF-8
-
+# NOTE: Deprecated. Not currently used
 module CartoDB
   class SqlParser
     def self.update_schema

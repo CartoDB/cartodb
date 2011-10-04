@@ -2,9 +2,13 @@
 
 class Table < Sequel::Model(:user_tables)
 
-  # Privacy constants
+  # App constants
   PRIVATE = 0
   PUBLIC  = 1
+  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
+  THE_GEOM_WEBMERCATOR = :the_geom_webmercator
+  THE_GEOM = :the_geom
+  RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
 
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
@@ -15,10 +19,6 @@ class Table < Sequel::Model(:user_tables)
   attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_table_copy,
                 :importing_SRID, :importing_encoding, :temporal_the_geom_type
 
-  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
-  THE_GEOM_WEBMERCATOR = :the_geom_webmercator
-  THE_GEOM = :the_geom
-  RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
 
   ## Callbacks
   def validate
@@ -62,13 +62,15 @@ class Table < Sequel::Model(:user_tables)
 
       #Import from copying another table
       if import_from_table_copy.present?
-        existing_names = owner.in_database["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{self.name}%'"].map(:relname)
-        testn = 1
-        uniname = self.name
-        while true==existing_names.include?("#{uniname}")
-          uniname = "#{self.name}_#{testn}"
-          testn = testn + 1
-        end
+        # ensure unique name
+        uniname = get_valid_name(self.name)
+        # existing_names = owner.in_database["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{self.name}%'"].map(:relname)
+        # testn = 1
+        # uniname = self.name
+        # while true==existing_names.include?("#{uniname}")
+        #   uniname = "#{self.name}_#{testn}"
+        #   testn = testn + 1
+        # end
 
         owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
@@ -113,7 +115,7 @@ class Table < Sequel::Model(:user_tables)
         user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
 
         # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
-        # IMPORTANT: Do this before adding constraints cause otherwise we can have duplicate key errors
+        # Do this before adding constraints cause otherwise we can have duplicate key errors
         if aux_cartodb_id_column.present?
           user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
           user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
@@ -143,9 +145,7 @@ class Table < Sequel::Model(:user_tables)
 
     super
   rescue => e
-    puts "======================"
-    puts e.backtrace
-    puts "======================"
+    CartoDB::Logger.info "table#create error", e.inspect      
     unless self.name.blank?
       $tables_metadata.del key
       owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
@@ -203,8 +203,8 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database(:as => :superuser) do |user_database|
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
-      rescue
-        Rails.logger.info "[Exception captured] Table#after_destroy: maybe table #{self.name} doesn't exist"
+      rescue => e
+        CartoDB::Logger.info "Table#after_destroy error", "maybe table #{self.name} doesn't exist: #{e.inspect}"      
       end
       user_database.run("DROP TABLE IF EXISTS #{self.name}")
     end
@@ -214,9 +214,8 @@ class Table < Sequel::Model(:user_tables)
   def name=(value)
     return if value == self[:name] || value.blank?
     new_name = get_valid_name(value)
-    unless new?
-      owner.in_database.rename_table name, new_name
-    end
+    owner.in_database.rename_table(name, new_name) unless new?
+
     # Do not keep track of name changes until table has been saved
     @name_changed_from = self.name if !new? && self.name.present?
     self[:name] = new_name
@@ -272,6 +271,7 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database[name.to_sym].count
   end
 
+  # TODO: make predictable. Alphabetical would be better
   def schema(options = {})
     temporal_schema = []
     owner.in_database.schema(self.name, options.slice(:reload)).each do |column|
@@ -283,7 +283,7 @@ class Table < Sequel::Model(:user_tables)
         col_db_type == "geometry" ? the_geom_type : nil
       ].compact
 
-      # Make sensible sorting for jamon
+      # Make sensible sorting for UI
       case column[0]
         when :cartodb_id
           temporal_schema.insert(0,col)
@@ -302,18 +302,15 @@ class Table < Sequel::Model(:user_tables)
       schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
-        raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
+        raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
       end
       begin
         primary_key = user_database[name.to_sym].insert(attributes.except(THE_GEOM).convert_nulls)
-      rescue Sequel::DatabaseError => e
-        # If the type don't match the schema of the table is modified for the next valid type
+      rescue Sequel::DatabaseError => e        
         message = e.message.split("\n")[0]
-        invalid_value = if m = message.match(/"([^"]+)"$/)
-          m[1]
-        else
-          nil
-        end
+        
+        # If the type don't match the schema of the table is modified for the next valid type
+        invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
         invalid_column = if invalid_value
           attributes.invert[invalid_value] # which is the column of the name that raises error
         else
@@ -323,6 +320,7 @@ class Table < Sequel::Model(:user_tables)
             end
           end
         end
+        
         if new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
           retry
@@ -332,7 +330,7 @@ class Table < Sequel::Model(:user_tables)
       end
     end
     update_the_geom!(raw_attributes, primary_key)
-    return primary_key
+    primary_key
   end
 
   def update_row!(row_id, raw_attributes)
@@ -341,7 +339,7 @@ class Table < Sequel::Model(:user_tables)
       schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
-        raise CartoDB::InvalidAttributes.new("Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}")
+        raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
       end
       if !attributes.except(THE_GEOM).empty?
         begin
@@ -376,7 +374,7 @@ class Table < Sequel::Model(:user_tables)
     return {:name => options[:name].to_s.sanitize, :type => type, :cartodb_type => cartodb_type}
   rescue => e
     if e.message =~ /^PGError/
-      raise CartoDB::InvalidType.new(e.message)
+      raise CartoDB::InvalidType, e.message
     else
       raise e
     end
@@ -391,6 +389,7 @@ class Table < Sequel::Model(:user_tables)
     new_name = options[:name] || options[:old_name]
     new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema(:cartodb_types => false).select{ |c| c[0] == new_name.to_sym }.first[1]
     cartodb_type = new_type.try(:convert_to_cartodb_type)
+    
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
         raise CartoDB::InvalidColumnName if options[:new_name] =~ /^[0-9_]/ || RESERVED_COLUMN_NAMES.include?(options[:new_name])
@@ -556,32 +555,40 @@ TRIGGER
       zip_file_path  = Rails.root.join('tmp', "#{file_name}.zip")
       FileUtils.rm_rf(zip_file_path)
       FileUtils.rm_rf(csv_file_path)
-
+      
+      # Setup data export table
       user_database.run("DROP TABLE IF EXISTS #{table_name}")
-
       export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
       export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
       user_database.run("CREATE TABLE #{table_name} AS SELECT #{export_schema.join(',')} FROM #{self.name}")
 
+      # Configure Postgres COPY command for dumping to CSV
       db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
       host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
       port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
       username = db_configuration['username']
       command  = "COPY (SELECT * FROM #{table_name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '\\\"' HEADER"
-      Rails.logger.info "Executing command: #{%Q{`which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}" > #{csv_file_path};}}"
-      system <<-CMD
-        `which psql` #{host} #{port} -U#{username} -w #{database_name} -c"#{command}" > #{csv_file_path}
-      CMD
-      user_database.run("DROP TABLE #{table_name}")
-
-      Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
-        zipfile.add(File.basename(csv_file_path), csv_file_path)
-      end
-      csv_zipped = File.read(zip_file_path)
-      FileUtils.rm_rf(csv_file_path)
-      FileUtils.rm_rf(zip_file_path)
+      
+      # Execute CSV dump and log
+      cmd = "#{`which psql`.strip} #{host} #{port} -U#{username} -w #{database_name} -c\"#{command}\" > #{csv_file_path}"      
+      system cmd
+      CartoDB::Logger.info "Converted #{table_name} to CSV", cmd            
+      
+      # Compress output
+      # TODO: Move to ZLib, this is silly
+      # http://jimneath.org/2010/01/04/cryptic-ruby-global-variables-and-their-meanings.html
+      if $?.success?
+        Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+          zipfile.add(File.basename(csv_file_path), csv_file_path)
+        end
+        return File.read(zip_file_path)      
+      end  
     end
-    csv_zipped
+  ensure
+    # Always cleanup files and tables
+    user_database.run("DROP TABLE #{table_name}")
+    FileUtils.rm_rf(csv_file_path)
+    FileUtils.rm_rf(zip_file_path)      
   end
 
   def to_shp
@@ -590,29 +597,33 @@ TRIGGER
     shp_file_path  = Rails.root.join('tmp', "#{shp_files_name}.shp")
     zip_file_path  = Rails.root.join('tmp', "#{shp_files_name}.zip")
     pgsql2shp_bin  = `which pgsql2shp`.strip
+    FileUtils.rm_rf(all_files_path)
 
+    # Configure pgsql to shp arguments
     db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
     host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
     port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
     username = db_configuration['username']
 
-    command = "#{pgsql2shp_bin} #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}"
-    system("rm -rf #{all_files_path}")
+    # build command and execute
+    cmd = "#{pgsql2shp_bin} #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}"    
+    system cmd
+    CartoDB::Logger.info "Converted #{table_name} to SHP", cmd            
 
-    Rails.logger.info "Executing command: #{command}"
-    puts `#{command}`
-
+    # Compress output
+    # TODO: Move to ZLib, this is silly
+    # http://jimneath.org/2010/01/04/cryptic-ruby-global-variables-and-their-meanings.html
     if $?.success?
       Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
         Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|
           zipfile.add(File.basename(f), f)
         end
       end
-      response = File.read(zip_file_path)
-      FileUtils.rm_rf(shp_file_path)
-      FileUtils.rm_rf(zip_file_path)
-      response
+      return File.read(zip_file_path)      
     end
+  ensure
+    # Always cleanup
+    FileUtils.rm_rf(all_files_path)
   end
 
   def self.find_all_by_user_id_and_tag(user_id, tag_name)
@@ -626,23 +637,17 @@ TRIGGER
   end
 
   def self.find_by_identifier(user_id, identifier)
-    table = if identifier =~ /\A\d+\Z/ || identifier.is_a?(Fixnum)
-      Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
-                          from user_tables
-                          where user_tables.user_id = ? and user_tables.id = ?", user_id, identifier).all.first
-    else
-      Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id order by tags.id),',') as tags_names
-                          from user_tables
-                          where user_tables.user_id = ? and user_tables.name = ?", user_id, identifier).all.first    end
+    col = (identifier =~ /\A\d+\Z/ || identifier.is_a?(Fixnum)) ? 'id' : 'name'
+    
+    table = fetch("SELECT *, array_to_string(array(
+                     SELECT tags.name FROM tags WHERE tags.table_id = user_tables.id ORDER BY tags.id),',') AS tags_names
+                   FROM user_tables WHERE user_tables.user_id = ? AND user_tables.#{col} = ?", user_id, identifier).first
     raise RecordNotFound if table.nil?
     table
   end
   
   def self.find_by_subdomain(subdomain, identifier)
-    user = User.find(:username => subdomain)
-    if user
-      Table.find_by_identifier(user.id, identifier)
-    end
+    Table.find_by_identifier(user.id, identifier) if User.find(:username => subdomain)
   end
 
   def oid
@@ -665,16 +670,24 @@ TRIGGER
   end
 
   def get_valid_name(raw_new_name = nil)
+    
+    # set defaults and sanity check
     raw_new_name = (raw_new_name || "Untitled table").sanitize
+    
+    # tables cannot start with numbers or underscore
     raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
-    raw_new_name = "table#{raw_new_name}" if raw_new_name =~ /^_/
+    raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
+    
+    # check for dupes
     candidates = owner.in_database.tables.map{ |t| t.to_s }.select{ |t| t.match(/^#{raw_new_name}/) }
 
+    # return if no dupe
     return raw_new_name unless candidates.include?(raw_new_name)
 
+    # increment trailing number (max+1) if dupe
     max_candidate = candidates.sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
     if max_candidate =~ /(.+)_(\d+)$/
-      return $1 + "_#{$2.to_i +  1}"
+      return $1 + "_#{$2.to_i + 1}"
     else
       return max_candidate + "_2"
     end
@@ -706,6 +719,9 @@ TRIGGER
     CartoDB::NEXT_TYPE[cartodb_column_type]
   end
 
+  # REVIEW
+  # TODO: run STMakeValid.
+  # TODO: Ensure isValid is set for all tables, imported or not
   def set_the_geom_column!(type = nil)
     if type.nil?
       if self.schema(:reload => true).flatten.include?(THE_GEOM)
@@ -726,7 +742,6 @@ TRIGGER
     type = type.to_s.upcase
     owner.in_database do |user_database|
       return if !force_schema.blank? && !user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM)
-      # REVIEW
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM}',#{CartoDB::SRID},'#{type}',2)")
@@ -738,8 +753,7 @@ TRIGGER
         user_database.run("UPDATE #{self.name} SET #{THE_GEOM_WEBMERCATOR}=ST_Transform(#{THE_GEOM},#{CartoDB::GOOGLE_SRID}) WHERE #{THE_GEOM} IS NOT NULL")
         user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
 
-        # Ensure isValid is set for all tables, imported or not
-        # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")
+        # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")        
       end
     end
     self.the_geom_type = type.downcase

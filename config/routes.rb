@@ -45,6 +45,7 @@ CartoDB::Application.routes.draw do
       delete '/tables/:id'                           => 'tables#destroy'
       post   '/tables/:id/infowindow'                => 'tables#set_infowindow', :as => "api_tables_info_window"
       post   '/tables/:id/map_metadata'              => 'tables#set_map_metadata', :as => "api_tables_map_metadata"
+      get    '/tables/:id/map_metadata'              => 'tables#get_map_metadata'
       get    '/tables/:table_id/export/csv'          => 'export_tables#show', :format => :csv
       get    '/tables/:table_id/export/shp'          => 'export_tables#show', :format => :shp
       get    '/tables/:table_id/records'             => 'records#index'

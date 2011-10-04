@@ -12,9 +12,10 @@ class Admin::ClientApplicationsController < ApplicationController
     redirect_to oauth_credentials_path, :flash => {:success => "Your OAuth credentials have been updated successuflly"}
   end
 
+  # TODO: implement in UI properly
   def jsonp
     @api_keys = APIKey.filter(:user_id => current_user.id).all
-    @api_key = APIKey.new :user_id => current_user.id
+    @api_key  = APIKey.new :user_id => current_user.id
     return if request.get?
     @api_key.domain = params[:api_key][:domain]
     if @api_key.save

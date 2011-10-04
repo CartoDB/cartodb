@@ -22,7 +22,7 @@ class Api::Json::QueriesController < Api::ApplicationController
     end
     
     # Return to client as JSONP        
-    render_jsonp Yajl::Encoder.encode(query_result)
+    render_jsonp(Yajl::Encoder.encode(query_result))
   rescue => e
     errors = e.is_a?(CartoDB::ErrorRunningQuery) ? [e.db_message, e.syntax_message] : [e.message]
     CartoDB::Logger.info "exception on queries#run", errors

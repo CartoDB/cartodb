@@ -63,7 +63,7 @@ class Table < Sequel::Model(:user_tables)
       #Import from copying another table
       if import_from_table_copy.present?
         # ensure unique name
-        uniname = get_valid_name(self.import_from_table_copy)
+        uniname = get_valid_name(self.name)
         owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
@@ -661,14 +661,15 @@ TRIGGER
     User.select(:id,:database_name,:crypted_password).filter(:id => self.user_id).first
   end
 
-  def get_valid_name(raw_new_name = nil)
+  def get_valid_name(raw_new_name = "untitled_table")
     
     # set defaults and sanity check
-    raw_new_name = (raw_new_name || "Untitled table").sanitize
+    raw_new_name = raw_new_name.sanitize
     
-    # tables cannot start with numbers or underscore
+    # tables cannot be blank, start with numbers or underscore
     raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
     raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
+    raw_new_name = "untitled_table"        if raw_new_name.blank?
     
     # we should be getting cadidates from the base name
     # eg: "simon_24" => "simon"

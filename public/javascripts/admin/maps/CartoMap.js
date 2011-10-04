@@ -217,8 +217,13 @@
       this.map_.setOptions({styles:styles});
       
       
-      // Save this object in the table! TODODODODOODODODODO
-      
+      // Save this object in the table
+      $.ajax({
+        type: "POST",
+        headers: {"cartodbclient": true},
+        url: global_api_url + 'tables/' + table_id + '/map_metadata',
+        data: {basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles}
+      });
     }
     
 

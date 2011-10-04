@@ -20,6 +20,7 @@
     // - Border color, border and opacity have set from the begging [polygons mainly] (say to Simon)
     // - Add possibility to change color from a palette
     // - Custom map style
+    // - Embed map custom tiles (important)
 
 
     function CartoMap (latlng,zoom) {
@@ -125,7 +126,19 @@
       // Get map style
       // TODO map style
       // Manage errors if they happen
-      map_style = [{featureType: "road", stylers: [{visibility: "on"}]},{featureType: "administrative", stylers: [{visibility: "on"}]},{ stylers: [{saturation: -68}]}];
+      // $.ajax({
+      //   url:,
+      //   type: "GET",
+      //   success:function(result){
+      //     map_style = result;
+      //     $(document).trigger('arrived');
+      //   },
+      //   error: function(e){
+      //      console.debug(e);
+      //   }
+      // });
+      
+      map_style = {basemap_provider: 'google_maps',google_maps_base_type:'roadmap',google_maps_customization_style: []};
       $(document).trigger('arrived');
 
 
@@ -187,7 +200,24 @@
       });
     }
 
-    CartoMap.prototype.setMapStyle = function(obj) {
+    CartoMap.prototype.setMapStyle = function(map_styles) {
+      // Compose array for map style      
+      var styles = [];
+      var type = '';
+      
+      _.each(map_styles,function(value,style){
+        if (style=="roads" || style=="labels") {
+          styles.push({featureType:((style=="roads")?'road':'administrative'),stylers:[{visibility:((value)?'on':'off')}]});
+        } else if (style=="saturation") {
+          styles.push({stylers:[{saturation:value}]});
+        } else {
+          type = value;
+        }
+      });
+      this.map_.setOptions({styles:styles});
+      
+      
+      // Save this object in the table! TODODODODOODODODODO
       
     }
     
@@ -382,6 +412,7 @@
     CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style) {
       var me = this;
       var map = me.map_;
+
                   
       /*Geometry tools*/
       if (geom_type=="point" || geom_type=="multipoint") {
@@ -398,10 +429,15 @@
       
       /*Map type - header*/
       var map_customization = (function(){
-        //me.map_style = map_style;
-        map.setOptions({styles:map_style});
+        var custom_map_style = {};
+        map.setOptions({styles:map_style.google_maps_customization_style});
   
-        // Get saturation, labels on/off, roads on/off
+        // Parse the styles of the map
+        custom_map_style = parseMapStyle(map_style.google_maps_customization_style);
+        
+        // Initialize radiobuttons and map type
+        initializeMapOptions(custom_map_style,map_style.google_maps_base_type);
+
   
         $('.map_header ul.map_type li a.option').livequery('click',function(ev){
           stopPropagation(ev);
@@ -430,38 +466,110 @@
             } else {
               map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
             }
+            
+            custom_map_style.maptype = map_type.toLowerCase();
+            me.setMapStyle(custom_map_style);
           }
         });
         
         
         /* saturation slider */
-        //var slider_value = $('.map_header ul.map_type div.suboptions span.alpha').attr('css').split(' ');
-        //slider_value = geometry_style[slider_value[0]]*100;
-        
         $('.map_header ul.map_type div.suboptions span.alpha div.slider').slider({
           max:100,
           min:-100,
           range: "min",
-          value: 0,
+          value: custom_map_style.saturation,
           slide: function(event,ui) {
             $(ui.handle).closest('span.alpha').find('span.tooltip')
               .css({left:$(ui.handle).css('left')})
-              .text(ui.value+'%')
+              .text(ui.value)
               .show();
           },
           stop: function(event,ui) {
             $(ui.handle).closest('span.alpha').find('span.tooltip').hide();
-            
-            // Save the values in the geom_style object
-            // var css_props = $(ui.handle).closest('span.alpha').attr('css').split(' ');
-            // _.each(css_props,function(value,i){
-            //   geometry_style[value] = ui.value/100;
-            // });
-
-            // Set style in the tiles finally
-            //me.setTilesStyles(geometry_style);
+            // Save the saturation value
+            custom_map_style['saturation'] = ui.value;
+            // Set the custom map styles
+            me.setMapStyle(custom_map_style);
           }
         });
+        
+        
+        /* roads/labels -> on/off*/
+        $('.map_header ul.map_type div.suboptions span.radio a').click(function(ev) {
+          stopPropagation(ev);
+          
+          if (!$(this).hasClass('clicked')) {
+            // Change clicked class
+            $(this).parent().find('a.clicked').removeClass('clicked');
+            $(this).addClass('clicked');
+
+            // Get the value
+            var value = $(this).text().toLowerCase() == "yes";
+
+            // Get the map css type
+            var style = $(this).closest('span').attr('css');
+
+            // Set value in the obj
+            custom_map_style[style] = value;
+
+            // Perform in the map
+            me.setMapStyle(custom_map_style);
+          }
+        });
+        
+        
+        
+        // Setup custom map properties (roads, labels, saturation...)
+        function parseMapStyle(map_style_) {
+          var obj = {};
+          
+          // Gets road on/off
+          var roads = _.detect(map_style_,function(ele,i){return ele.featureType == "road"});
+          if (roads != undefined) {
+            obj.roads = roads.stylers[0].visibility == "on";
+          } else {
+            obj.roads = true;
+          }
+          
+          // Gets labels on/off
+          var labels = _.detect(map_style_,function(ele,i){return ele.featureType == "administrative"});
+          if (labels != undefined) {
+            obj.labels = labels.stylers[0].visibility == "on";
+          } else {
+            obj.labels = true;
+          }
+          
+          // Saturation value
+          var saturation = _.detect(map_style_,function(ele,i){return ele.stylers[0].saturation != undefined});
+          if (saturation != undefined) {
+            obj.saturation = saturation.stylers[0].saturation;
+          } else {
+            obj.saturation = 0;
+          }
+          
+          return obj;
+        }
+        
+        
+        function initializeMapOptions(map_style, map_type) {
+          // select map type
+          if (map_type=="terrain") {
+            $('.map_header ul.map_type li a.option:contains("Terrain")').parent().addClass('selected');
+            map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+          } else if (map_type=="satellite") {
+            $('.map_header ul.map_type li a.option:contains("Satellite")').parent().addClass('selected');
+            map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+          } else {
+            $('.map_header ul.map_type li a.option:contains("Roadmap")').parent().addClass('selected');
+            map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+          }
+          
+          
+          // change radio buttons
+          $('.map_header ul.map_type div.suboptions span.radio[css="roads"]').find('a:contains('+((map_style.roads)?'YES':'NO')+')').addClass('clicked');
+          $('.map_header ul.map_type div.suboptions span.radio[css="labels"]').find('a:contains('+((map_style.labels)?'YES':'NO')+')').addClass('clicked');
+        }
         
         
         return {}
@@ -473,132 +581,10 @@
         
         var geometry_style = {};
         var default_style = {};
-        
-        
-        /* setup enter styles */
-        function setupStyles(styles) {
-          
-          // Remove the customization that doesn't belong to the geom_type
-         if (geom_type == 'multipoint' || geom_type == 'point') {
-            $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
-            $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
-            
-            default_style = {
-              'marker-fill':'#00ffff',
-              'marker-opacity':1,
-              'marker-width':9,
-              'marker-line-color':'white',
-              'marker-line-width':3,
-              'marker-line-opacity':0.9,
-              'marker-placement':'point',
-              'marker-type':'ellipse',
-              'marker-allow-overlap':true
-            };
-            
-         } else if (geom_type == 'multipolygon' || geom_type == 'polygon') {
-            $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
-            $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
-            
-            default_style = {
-              'polygon-fill':'#FF6600',
-              'polygon-opacity': 0.7
-            };
-            
-          } else {
-            $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
-            $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
-            
-            default_style = {
-              'line-color':'#FF6600',
-              'line-width': 1,
-              'line-opacity': 0.7
-            };
-          }
-          
 
-          // Get all the styles and save them in geometry_style object
-          var styles_ = styles.replace(/ /gi,'');
-          
-          // Remove table_name
-          styles_ = styles_.split('{');
-          
-          // Split properties
-          styles_ = styles_[1].split(';');
-          
-          // Save each property removing white-spaces
-          _.each(styles_,function(property,i){
-            if (property!="}") {
-              var split_property = property.split(':');
-              geometry_style[split_property[0].replace(/ /g,'')] = split_property[1].replace(/ /g,'');
-            }
-          });
-          
-          
-          // Change tools, we have to know if this styles have been edited or not...
-          _.each(geometry_style,function(value,type){
-            $('span[css="'+type+'"]').find('input').val(value);
-            
-            var color = new RGBColor(value);
-            if (color.ok) {
-              $('span[css="'+type+'"] a.control').css({'background-color':value});
-            }
-          });
-          
-          
-          // Determinate if it is a customized style or default
-          var is_default = true;
-          _.each(geometry_style,function(value,type){
-            
-            if (default_style[type]!=undefined && geometry_style[type] != default_style[type]) {
-              is_default = false;
-              return;
-            } 
-          });
-          
-          // if it is not default, select second option in the list, custom geometry style
-          if (!is_default) {
-            $('.map_header ul.geometry_customization li').removeClass('selected');
-            $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
-            $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
-          }
-        }
-     
-        
-        /* reset styles to default */
-        function resetStyles() {
-          // Geom_types now is default_styles
-          geometry_style = default_style;
-          
-          // Come back to defaults in the tools
-          _.each(default_style,function(value,type){
-            $('span[css="'+type+'"]').find('input').val(value);
-            
-            if (isNaN(value)) {
-              var color = new RGBColor(value);
-              if (color.ok) {
-                $('span[css="'+type+'"] a.control').removeClass('error').css({'background-color':value});
-              }
-            }
-          });
-          
-          // Reset slider
-          var css_prop = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ')[0];
-          $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider('value',default_style[css_prop]*100);
-          
-          // Change the text to "Default Style"
-          $('.map_header ul.geometry_customization').closest('li').find('p').text('Default Style');
-          
-          // RefreshStyles
-          me.setTilesStyles(geometry_style);
-        }
-        
-        
         setupStyles(geom_styles);
         
-        
-        
         // BINDINGS
-        
         /* change between list options */
         $('.map_header ul.geometry_customization li a.option').click(function(ev){
           stopPropagation(ev);
@@ -654,11 +640,9 @@
           }
         });
         
-        
         /* alpha slider */
         var slider_value = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ');
         slider_value = geometry_style[slider_value[0]]*100;
-        
         $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider({
           max:100,
           min:0,
@@ -684,6 +668,125 @@
           }
         });
         
+        
+        /* setup enter styles */
+        function setupStyles(styles) {
+
+          // Remove the customization that doesn't belong to the geom_type
+         if (geom_type == 'multipoint' || geom_type == 'point') {
+            $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
+            $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+
+            default_style = {
+              'marker-fill':'#00ffff',
+              'marker-opacity':1,
+              'marker-width':9,
+              'marker-line-color':'white',
+              'marker-line-width':3,
+              'marker-line-opacity':0.9,
+              'marker-placement':'point',
+              'marker-type':'ellipse',
+              'marker-allow-overlap':true
+            };
+
+         } else if (geom_type == 'multipolygon' || geom_type == 'polygon') {
+            $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+            $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+
+            default_style = {
+              'polygon-fill':'#FF6600',
+              'polygon-opacity': 0.7
+            };
+
+          } else {
+            $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
+            $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+
+            default_style = {
+              'line-color':'#FF6600',
+              'line-width': 1,
+              'line-opacity': 0.7
+            };
+          }
+
+
+          // Get all the styles and save them in geometry_style object
+          var styles_ = styles.replace(/ /gi,'');
+
+          // Remove table_name
+          styles_ = styles_.split('{');
+
+          // Split properties
+          styles_ = styles_[1].split(';');
+
+          // Save each property removing white-spaces
+          _.each(styles_,function(property,i){
+            if (property!="}") {
+              var split_property = property.split(':');
+              geometry_style[split_property[0].replace(/ /g,'')] = split_property[1].replace(/ /g,'');
+            }
+          });
+
+
+          // Change tools, we have to know if this styles have been edited or not...
+          _.each(geometry_style,function(value,type){
+            $('span[css="'+type+'"]').find('input').val(value);
+
+            var color = new RGBColor(value);
+            if (color.ok) {
+              $('span[css="'+type+'"] a.control').css({'background-color':value});
+            }
+          });
+
+
+          // Determinate if it is a customized style or default
+          var is_default = true;
+          _.each(geometry_style,function(value,type){
+
+            if (default_style[type]!=undefined && geometry_style[type] != default_style[type]) {
+              is_default = false;
+              return;
+            } 
+          });
+
+          // if it is not default, select second option in the list, custom geometry style
+          if (!is_default) {
+            $('.map_header ul.geometry_customization li').removeClass('selected');
+            $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
+            $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+          }
+        }
+
+
+        /* reset styles to default */
+        function resetStyles() {
+          // Geom_types now is default_styles
+          geometry_style = default_style;
+
+          // Come back to defaults in the tools
+          _.each(default_style,function(value,type){
+            $('span[css="'+type+'"]').find('input').val(value);
+
+            if (isNaN(value)) {
+              var color = new RGBColor(value);
+              if (color.ok) {
+                $('span[css="'+type+'"] a.control').removeClass('error').css({'background-color':value});
+              }
+            }
+          });
+
+          // Reset slider
+          var css_prop = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ')[0];
+          $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider('value',default_style[css_prop]*100);
+
+          // Change the text to "Default Style"
+          $('.map_header ul.geometry_customization').closest('li').find('p').text('Default Style');
+
+          // RefreshStyles
+          me.setTilesStyles(geometry_style);
+        }
+        
+        
         return {}
   		}());
       
@@ -701,7 +804,6 @@
         return {}
   		}());
 
- 
  
  
       /* Bind event for open any tool */

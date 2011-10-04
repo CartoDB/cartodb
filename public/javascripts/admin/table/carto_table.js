@@ -752,15 +752,6 @@
               '<p>Is not gonna be a lot of time. Just some seconds, right?</p>'+
             '</span>'+
           '</div>'+
-        '</div>'+
-        '<div class="stopgeo_window">'+
-          '<a href="#close_window" class="close"></a>'+
-          '<div class="inner_">'+
-            '<span class="stop">'+
-              '<h5>Sorry, but we are georeferencing a column...</h5>'+
-              '<p>If you don\'t want to wait, <a href="#cancel_geo" class="cancel_geo">cancel de process</a> in progress.</p>'+
-            '</span>'+
-          '</div>'+
         '</div>'
         );
     },

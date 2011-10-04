@@ -95,32 +95,7 @@
 	}
 	
 	
-	CartoInfowindow.prototype.open = function(marker){
-	  
-	  if (this.div_) {
-	    var div = this.div_;
-	    this.latlng_ = marker.getPosition();
-			this.marker_ = marker;
-	
-	    $(div).find('div.top').html('');
-	    
-	    var marker_data = marker.data;
-	    
-	    _.each(this.columns_,function(label){
-				var value = ((marker.data[label]!=null)?(marker.data[label]):'&lt;&lt;Empty field&gt;&gt;');
-				$(div).find('div.top').append('<label>'+label+'</label><p class="'+((marker.data[label]!=null)?'':'empty')+'">'+value+'</p>');
-	    });
-	
-			$(div).find('div.bottom').find('label').html('cartodb_id: <strong>'+marker.data.cartodb_id+'</strong>');
-	
-	    
-	    this.moveMaptoOpen();
-	    this.setPosition();			
-	  }
-	}
-	
-	
-	CartoInfowindow.prototype.openWax = function(feature){
+	CartoInfowindow.prototype.open = function(feature){
 	  var me = this;
 	  this.marker_ = feature;
 	  
@@ -154,6 +129,15 @@
     				$(div).find('div.top').append('<label>'+label+'</label><p class="'+((info[label]!=null)?'':'empty')+'">'+value+'</p>');
   	      }
   	    });
+  	    
+  	    // If app in query mode?
+  	    if ($('body').attr('query_mode') === 'true') {
+  	      $(div).find('a.delete_point').hide();
+    			$(div).find('a.edit_point').hide();
+  	    } else {
+  	      $(div).find('a.delete_point').show();
+    			$(div).find('a.edit_point').show();
+  	    }
 
   			$(div).find('div.bottom').find('label').html('cartodb_id: <strong>'+info.cartodb_id+'</strong>');
   	    me.moveMaptoOpen();

@@ -97,7 +97,6 @@ div.map_window div.map_header div.options ul li.disabled a {opacity:0.5}
 div.map_window div.map_header div.options ul li.disabled a:hover {cursor:default; background-position:0 -188px}
 
 /*suboptions*/
-
 div.map_window div.map_header div.suboptions label {display:block; margin:9px 0 0 2px; font:normal 11px "Helvetica",Arial; color:#A5A5A5; text-shadow:0 1px white}
 div.map_window div.map_header div.suboptions div.long {width:100%; margin:2px 0 0 0;}
 div.map_window div.map_header div.suboptions div.long span.color {display:inline-block; vertical-align:top; width:77px; height:20px; border:1px solid #999999; background:white; box-shadow:0 1px 0 0 white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}

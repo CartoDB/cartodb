@@ -69,44 +69,18 @@ module ApplicationHelper
     end
   end
 
-  def requests_number_in_the_last_20_days
-    result = []
-    20.downto(0) do |days|
-      date = (Date.today - days.days).strftime("%Y-%m-%d")
-      result << CartoDB::QueriesThreshold.get(current_user.id, date)
+
+  def disk_usage_class(usage)
+    result = ''
+    result << if usage < 74
+      "fine"
+    elsif usage >= 74 && usage < 95
+      "be_careful"
+    else
+      "boom"
     end
-    result.join(',')
   end
 
-  def max_request_in_a_day
-    max = 0
-    20.downto(0) do |days|
-      date = (Date.today - days.days).strftime("%Y-%m-%d")
-      day_request = CartoDB::QueriesThreshold.get(current_user.id, date)
-      if day_request>max
-        max = day_request
-      end
-    end
-    max
-  end
-
-  def colors_series_in_the_last_20_days
-    result = []
-    20.downto(0) do |days|
-      date = (Date.today - days.days).strftime("%Y-%m-%d")
-      n = CartoDB::QueriesThreshold.get(current_user.id, date).to_i
-      result << if n == 0
-        "FFFFFF"
-      elsif n < 1000
-        "D7E6E8"
-      elsif n < 5000
-        "BFD6D9"
-      else
-        "9CC0C4"
-      end
-    end
-    result.join('|')
-  end
 
   def last_blog_posts
     # Data generated from Rake task in lib/tasks/blog.rake

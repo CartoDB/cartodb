@@ -7,11 +7,11 @@ class Api::Json::ColumnsController < Api::ApplicationController
   after_filter :record_query_threshold
 
   def index
-    render_jsonp @table.schema(:cartodb_types => true)
+    render_jsonp(@table.schema(:cartodb_types => true))
   end
 
   def create
-    render_jsonp @table.add_column!(params.slice(:type, :name))
+    render_jsonp(@table.add_column!(params.slice(:type, :name)))
   rescue => e
     errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
     render_jsonp({:errors => errors}, 400) and return
@@ -19,16 +19,16 @@ class Api::Json::ColumnsController < Api::ApplicationController
 
   def show
     resp = @table.schema(:cartodb_types => true).select{|e| e[0] == params[:id].to_sym}.first.last
-    render_jsonp { :type => resp }
+    render_jsonp({ :type => resp })
   rescue => e
     render_jsonp({:errors => "Column #{params[:id]} doesn't exist"}, 404) and return
   end
 
   def update
-    render_jsonp @table.modify_column!(:name => params[:id], 
+    render_jsonp(@table.modify_column!(:name => params[:id], 
                                        :type => params[:type], 
                                        :old_name => params[:id], 
-                                       :new_name => params[:new_name])
+                                       :new_name => params[:new_name]))
   rescue => e
     errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
     render_jsonp({:errors => errors}, 400) and return

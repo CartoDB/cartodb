@@ -139,6 +139,7 @@ class User < Sequel::Model
           raise CartoDB::ColumnNotExists, e.message 
         else
           raise CartoDB::TableNotExists, e.message
+        end  
       else
         raise CartoDB::ErrorRunningQuery, e.message
       end

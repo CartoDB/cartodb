@@ -25,19 +25,9 @@
     mode: 'normal'
   }
 
-
-  // TODOS
-  // Remove georeferencing when the table is not point geom_type
-  // New loader with georeferencing and previous errors... plof
-  // Back import data being into a table (remember startTable import text)
-  
-  // QUESTIONS
-  // If you have filtered something - add new row? - go to normal mode and add new row...
-  
   
   var methods = {
-
-
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  INIT PLUGIN
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

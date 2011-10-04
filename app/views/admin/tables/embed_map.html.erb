@@ -51,10 +51,33 @@
             disableDefaultUI: true,
             mapTypeId: google.maps.MapTypeId.ROADMAP
           }
-
+          
+          // Init the map
           var carto_embed_map = new google.maps.Map(document.getElementById("map_cartodb_container"),cartodbMapOptions);
+          
+          
+          // Setup your map styles
+          // $.ajax({
+          //   url:,
+          //   dataType: 'jsonp',
+          //   type: "GET",
+          //   success:function(result){
+          //     // Map type
+          //     if (result.google_maps_base_type=="roadmap") {
+          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+          //     } else if (result.google_maps_base_type=="satellite") {
+          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+          //     } else {
+          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+          //     }
+          //     
+          //     // Custom tiles
+          //     carto_embed_map.setOptions({styles: result.google_maps_customization_style})
+          //   }
+          // });
+          
 
-
+          // Add the cartodb tiles
           var cartodb_layer = {
             getTileUrl: function(coord, zoom) {
               return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8';
@@ -64,7 +87,7 @@
           var cartodb_imagemaptype = new google.maps.ImageMapType(cartodb_layer);
           carto_embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
 
-
+          // Zoom to your geometries
           $.ajax({
             method: "GET",
             url: 'http://'+user_name+'.'+SQL_SERVER+global_api_url+'/sql/?q='+escape('select ST_Extent(the_geom) from '+ table_name),
@@ -87,6 +110,8 @@
             error: function(e) {}
           });
 
+
+          
 
           $('a.cartodb_map_embed_zoom_in').click(function(ev){
             ev.preventDefault();

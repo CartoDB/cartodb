@@ -58,6 +58,8 @@ module ApplicationHelper
     end
   end
 
+
+  # TODO: remove
   def database_time_usage(user_id)
     time = CartoDB::QueriesThreshold.get(user_id, Date.today.strftime("%Y-%m-%d"), "time").to_f
     if time < 120
@@ -69,6 +71,7 @@ module ApplicationHelper
     end
   end
 
+  # TODO: remove
   def requests_number_in_the_last_20_days
     result = []
     20.downto(0) do |days|
@@ -78,6 +81,7 @@ module ApplicationHelper
     result.join(',')
   end
 
+  # TODO: remove
   def max_request_in_a_day
     max = 0
     Time.now.day.downto(0) do |days|
@@ -90,6 +94,7 @@ module ApplicationHelper
     max
   end
 
+  # TODO: remove
   def colors_series_in_the_last_20_days
     result = []
     20.downto(0) do |days|

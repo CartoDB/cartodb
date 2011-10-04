@@ -18,4 +18,9 @@ class Api::ApplicationController < ApplicationController
     @time_start = Time.now
   end
 
+  # dry up the jsonp output
+  def render_jsonp obj, status = 200, options = {}
+    options.reverse_merge! :json => obj, :status => status, :callback => params[:callback]    
+    render options
+  end  
 end

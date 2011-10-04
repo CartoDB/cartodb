@@ -1159,6 +1159,18 @@ describe Table do
     table.infowindow.should == "id, name, description"
   end
   
+  it "should let a user save map_metadata and retrieve it" do
+    user = create_user
+    table = new_table :user_id => user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+    table.save.reload
+    
+    table.map_metadata = "something"
+    
+    table.map_metadata.should == "something"
+  end
+  
+  
   def check_schema(table, expected_schema, options={})
     table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
     schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)

@@ -134,6 +134,11 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.infowindow = params[:infowindow]
     head :ok
   end
+  
+  def set_map_metadata
+    @table.map_metadata = params[:map_metadata]
+    head :ok
+  end
 
   protected
 

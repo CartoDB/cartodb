@@ -17,7 +17,7 @@
               '<div class="options short">'+
                 '<span class="tick"></span>'+
                 '<ul class="map_type">'+
-                  '<li class="selected">'+
+                  '<li>'+
                     '<a class="option" href="#">Roadmap</a>'+
                   '</li>'+
                   '<li>'+
@@ -32,14 +32,14 @@
                       '<label>Labels</label>'+
                       '<div class="long">'+
                         '<span class="radio" css="labels">'+
-                          '<a class="clicked" href="#yes">YES</a>'+
+                          '<a href="#yes">YES</a>'+
                           '<a href="#no">NO</a>'+
                         '</span>'+
                       '</div>'+
                       '<label>Roads</label>'+
                       '<div class="long">'+
                         '<span class="radio" css="roads">'+
-                          '<a class="clicked" href="#yes">YES</a>'+
+                          '<a href="#yes">YES</a>'+
                           '<a href="#no">NO</a>'+
                         '</span>'+
                       '</div>'+

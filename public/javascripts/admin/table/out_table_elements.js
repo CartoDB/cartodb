@@ -1197,27 +1197,26 @@
 	          createMap();
 	        toggleLayer();
 	        zoomToBBox();
+	        //addCustomStyles();
 	        
 	        // Start zclip
 	        $("div.embed_window .inner_ span.top div span a.copy").zclip({
-              path: "/javascripts/plugins/ZeroClipboard.swf",
-              copy: function(){
-                return $(this).parent().find('input').val();
-              }
+            path: "/javascripts/plugins/ZeroClipboard.swf",
+            copy: function(){
+              return $(this).parent().find('input').val();
+            }
           });
 	      });
 	      bindESC();
 		  });
 		  
+		  // Close embed
 		  $('div.embed_window a.close, div.embed_window a.cancel').click(function(ev){
 		    stopPropagation(ev);
 		    closeOutTableWindows();
 		    $("div.embed_window .inner_ span.top div span a.copy").zclip('remove');
 		    unbindESC();
 		  });
-		  
-      
-      
 		  
 		  // Zooms
 		  $('a.embed_zoom_in').click(function(ev){
@@ -1246,6 +1245,27 @@
         };
         var cartodb_imagemaptype = new google.maps.ImageMapType(cartodb_layer);
         embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
+		  }
+		  
+		  function addCustomStyles() {
+		    $.ajax({
+          url:'',
+          dataType: 'jsonp',
+          type: "GET",
+          success:function(result){
+            // Map type
+            if (result.google_maps_base_type=="roadmap") {
+              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+            } else if (result.google_maps_base_type=="satellite") {
+              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+            } else {
+              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+            }
+            
+            // Custom tiles
+            embed_map.setOptions({styles: result.google_maps_customization_style})
+          }
+        });
 		  }
 		  
 		  function zoomToBBox() {

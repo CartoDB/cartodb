@@ -111,6 +111,11 @@ div.map_window div.map_header div.suboptions div.long span.numeric a {position:a
 div.map_window div.map_header div.suboptions div.long span.numeric a:hover {background-position:0 0; cursor:pointer;}
 div.map_window div.map_header div.suboptions div.long span.numeric a.range_down {top:11px; height:11px; background-position:0 -12px}
 div.map_window div.map_header div.suboptions div.long span.numeric a.range_down:hover {background-position:0 -12px; cursor:pointer;}
+div.map_window div.map_header div.suboptions div.long span.radio a {padding-left:12px; margin-right:10px; font:bold 11px "Helvetica",Arial; color:#666666; text-shadow:0 1px white; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -239px}
+div.map_window div.map_header div.suboptions div.long span.radio a:hover {background-position:0 -215px; cursor:pointer;}
+div.map_window div.map_header div.suboptions div.long span.radio a.clicked {background-position:0 -215px}
+div.map_window div.map_header div.suboptions div.long span.radio a.clicked:hover {cursor:default; background-position:0 -215px}
+
 div.map_window div.map_header div.suboptions div.long span.alpha {position:relative; display:inline-block; width:100%; height:13px;}
 div.map_window div.map_header div.suboptions div.long span.alpha div.slider {width:100%; height:4px; margin:5px 0 0 0; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; border-top:1px solid #A5A5A5; border-bottom:1px solid white}
 div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider {position: relative; text-align: left; }

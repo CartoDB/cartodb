@@ -125,7 +125,7 @@
       // Get map style
       // TODO map style
       // Manage errors if they happen
-      map_style = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
+      map_style = [{featureType: "road", stylers: [{visibility: "on"}]},{featureType: "administrative", stylers: [{visibility: "on"}]},{ stylers: [{saturation: -68}]}];
       $(document).trigger('arrived');
 
 
@@ -432,6 +432,37 @@
             }
           }
         });
+        
+        
+        /* saturation slider */
+        //var slider_value = $('.map_header ul.map_type div.suboptions span.alpha').attr('css').split(' ');
+        //slider_value = geometry_style[slider_value[0]]*100;
+        
+        $('.map_header ul.map_type div.suboptions span.alpha div.slider').slider({
+          max:100,
+          min:-100,
+          range: "min",
+          value: 0,
+          slide: function(event,ui) {
+            $(ui.handle).closest('span.alpha').find('span.tooltip')
+              .css({left:$(ui.handle).css('left')})
+              .text(ui.value+'%')
+              .show();
+          },
+          stop: function(event,ui) {
+            $(ui.handle).closest('span.alpha').find('span.tooltip').hide();
+            
+            // Save the values in the geom_style object
+            // var css_props = $(ui.handle).closest('span.alpha').attr('css').split(' ');
+            // _.each(css_props,function(value,i){
+            //   geometry_style[value] = ui.value/100;
+            // });
+
+            // Set style in the tiles finally
+            //me.setTilesStyles(geometry_style);
+          }
+        });
+        
         
         return {}
   		}());
@@ -1040,7 +1071,7 @@
             count = _.size(path) + count;
           });
           
-          if (count>3) {
+          if (count>200) {
             me.showBigBang();
           } else {
             // Draw the polygon
@@ -1277,29 +1308,29 @@
       requests_queue.newRequest(requestId,type);
 
       $.ajax({
-          dataType: 'json',
-          type: request_type,
-          dataType: "text",
-          headers: {"cartodbclient": true},
-          url: global_api_url+'tables/'+table_name+url_change,
-          data: params,
-          success: function(data) {
-              requests_queue.responseRequest(requestId,'ok','');
-              me.successRequest(params,new_value,old_value,type,data);
-          },
-          error: function(e, textStatus) {
-              try {
-                  var msg = $.parseJSON(e.responseText).errors[0].error_message;
-                  if (msg == "Invalid rows: the_geom") {
-                      requests_queue.responseRequest(requestId,'error','First georeference your table');
-                  } else {
-                      requests_queue.responseRequest(requestId,'error',msg);
-                  }
-              } catch (e) {
-                  requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
-              }
-              me.errorRequest(params,new_value,old_value,type);
+        dataType: 'json',
+        type: request_type,
+        dataType: "text",
+        headers: {"cartodbclient": true},
+        url: global_api_url+'tables/'+table_name+url_change,
+        data: params,
+        success: function(data) {
+            requests_queue.responseRequest(requestId,'ok','');
+            me.successRequest(params,new_value,old_value,type,data);
+        },
+        error: function(e, textStatus) {
+          try {
+            var msg = $.parseJSON(e.responseText).errors[0].error_message;
+            if (msg == "Invalid rows: the_geom") {
+              requests_queue.responseRequest(requestId,'error','First georeference your table');
+            } else {
+              requests_queue.responseRequest(requestId,'error',msg);
+            }
+          } catch (e) {
+            requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
           }
+          me.errorRequest(params,new_value,old_value,type);
+        }
       });
 
     }

@@ -26,9 +26,30 @@
                   '<li>'+
                     '<a class="option" href="#">Terrain</a>'+
                   '</li>'+
-                  '<li class="disabled">'+
+                  '<li>'+
                     '<a class="option" href="#">Custom tiles</a>'+
                     '<div class="suboptions">'+
+                      '<label>Labels</label>'+
+                      '<div class="long">'+
+                        '<span class="radio" css="labels">'+
+                          '<a class="clicked" href="#yes">YES</a>'+
+                          '<a href="#no">NO</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Roads</label>'+
+                      '<div class="long">'+
+                        '<span class="radio" css="roads">'+
+                          '<a class="clicked" href="#yes">YES</a>'+
+                          '<a href="#no">NO</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Saturation</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="saturation">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
+                        '</span>'+
+                      '</div>'+
                     '</div>'+
                   '</li>'+
                 '</ul>'+

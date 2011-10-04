@@ -1,11 +1,10 @@
 # coding: UTF-8
 
 class SessionsController < ApplicationController
+  layout 'front_layout'
   ssl_required :new, :create, :destroy, :show, :unauthenticated
 
   before_filter :api_authorization_required, :only => :show
-
-  layout 'front_layout'
 
   def new
     if logged_in?
@@ -24,11 +23,7 @@ class SessionsController < ApplicationController
   end
 
   def show
-    respond_to do |format|
-      format.json do
-        render :json => {:email => current_user.email, :uid => current_user.id, :username => current_user.username}.to_json, :status => 200
-      end
-    end
+    render :json => {:email => current_user.email, :uid => current_user.id, :username => current_user.username}
   end
 
   def unauthenticated
@@ -38,13 +33,13 @@ class SessionsController < ApplicationController
     respond_to do |format|
       format.html do
         if api_request?
-          render :nothing => true, :status => 401
+          head :unauthorized
         else
           render :action => 'new' and return
         end
       end
       format.json do
-        render :nothing => true, :status => 401
+        head :unauthorized
       end
     end
   end

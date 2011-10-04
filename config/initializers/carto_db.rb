@@ -36,11 +36,10 @@ module CartoDB
     VERSION_1 = "v1"
   end
 
-  PUBLIC_DB_USER = 'publicuser'
-  TILE_DB_USER      = 'tileuser'
-  GOOGLE_SRID = 3857
-  SRID        = 4326
-  
+  PUBLIC_DB_USER  = 'publicuser'
+  TILE_DB_USER    = 'tileuser'
+  GOOGLE_SRID     = 3857
+  SRID            = 4326
   USER_REQUESTS_PER_DAY = 10000
 
   TYPES = {

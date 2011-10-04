@@ -1,11 +1,11 @@
 # coding: UTF-8
 
 class Api::Json::TablesController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :destroy, :set_infowindow
+  ssl_required :index, :show, :create, :update, :destroy, :set_infowindow, :duplicate
 
-  before_filter :load_table, :only => [:show, :update, :destroy, :set_infowindow]
+  before_filter :load_table, :except => [:index, :create]
   before_filter :set_start_time
-  after_filter :record_query_threshold
+  after_filter  :record_query_threshold
 
   def index
     limit  = params[:per_page].nil? || params[:per_page].to_i > 100 ? 100 : params[:per_page].to_i
@@ -31,50 +31,45 @@ class Api::Json::TablesController < Api::ApplicationController
                           where user_tables.user_id = ? order by id DESC
                           limit ? offset ?", current_user.id, limit, offset).all
     end
-    render :json => {
-      :total_entries => params[:tag_name] ? tables_count : current_user.tables_count,
-      :tables => @tables.map{ |table|
-              {
-                :id => table.id,
-                :name => table.name,
-                :privacy => table_privacy_text(table),
-                :tags => table[:tags_names],
-                :schema => table.schema,
-                :updated_at => table.updated_at,
-                :rows_counted => table.rows_counted
-              }
-            }
-      }.to_json,
-      :callback => params[:callback]
+    
+    render_jsonp({ :total_entries => params[:tag_name] ? tables_count : current_user.tables_count,
+                    :tables => @tables.map { |table|
+                        { :id => table.id,            
+                          :name => table.name,
+                          :privacy => table_privacy_text(table),
+                          :tags => table[:tags_names],
+                          :schema => table.schema,
+                          :updated_at => table.updated_at,
+                          :rows_counted => table.rows_counted }
+                      }
+                    })
   end
 
   def create
     @table = Table.new
     @table.user_id = current_user.id
-    @table.name = params[:name]                          if params[:name]
+    @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
     @table.import_from_file = params[:file]              if params[:file]
     @table.import_from_url = params[:url]                if params[:url]
     @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
     @table.importing_SRID = params[:srid] || CartoDB::SRID
     @table.force_schema   = params[:schema]              if params[:schema]
     @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
-    if @table.valid? && @table.save
-      render :json => { :id => @table.id, :name => @table.name, :schema => @table.schema }.to_json,
-             :status => 200,
-             :location => table_path(@table),
-             :callback => params[:callback]
+    if @table.valid? && @table.save      
+      render_jsonp({ :id => @table.id, :name => @table.name, :schema => @table.schema }, 200, :location => table_path(@table))
     else
-      Rails.logger.info "============== Errors on table ====================="
-      Rails.logger.info @table.errors.full_messages
-      Rails.logger.info "===================================================="
-      render :json => { :errors => @table.errors.full_messages }.to_json, :status => 400, :callback => params[:callback]
+      CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
+      render_jsonp({ :errors => @table.errors.full_messages }, 400)
     end
   rescue => e
-    Rails.logger.info "============== exception on tables#create ====================="
-    Rails.logger.info "#{translate_error(e).inspect}"
-    Rails.logger.info "==============================================================="
-    render :json => translate_error(e),
-           :status => 400, :callback => params[:callback] and return
+    # Intercept the error and add more meaning based on the users create type. 
+    # TODO: The importer should throw these specific errors
+    e = CartoDB::InvalidUrl.new     e.message    if params[:url]    
+    e = CartoDB::InvalidFile.new    e.message    if params[:file]    
+    e = CartoDB::TableCopyError.new e.message    if params[:table_copy]    
+    
+    CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
+    render_jsonp(translate_error(e), 400) and return  
   end
 
   def show
@@ -90,14 +85,11 @@ class Api::Json::TablesController < Api::ApplicationController
           :disposition => "attachment; filename=#{@table.name}.zip"
       end
       format.json do
-        render :json => {
-                  :id => @table.id,
-                  :name => @table.name,
-                  :privacy => table_privacy_text(@table),
-                  :tags => @table[:tags_names],
-                  :schema => @table.schema(:reload => true)
-                }.to_json,
-               :callback => params[:callback]
+        render_jsonp({ :id => @table.id,
+                       :name => @table.name,
+                       :privacy => table_privacy_text(@table),
+                       :tags => @table[:tags_names],
+                       :schema => @table.schema(:reload => true) })
       end
     end
   end
@@ -106,7 +98,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @table = Table.filter(:user_id => current_user.id, :name => params[:id]).first
     @table.set_all(params)
     if params.keys.include?("latitude_column") && params.keys.include?("longitude_column")
-      latitude_column = params[:latitude_column] == "nil" ? nil : params[:latitude_column].try(:to_sym)
+      latitude_column  = params[:latitude_column]  == "nil" ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == "nil" ? nil : params[:longitude_column].try(:to_sym)
       @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
     # elsif params.keys.include?("address_column")
@@ -118,43 +110,29 @@ class Api::Json::TablesController < Api::ApplicationController
       @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                             from user_tables
                             where id=?",@table.id).first
-      render :json => {
-        :id => @table.id,
-        :name => @table.name,
-        :privacy => table_privacy_text(@table),
-        :tags => @table[:tags_names],
-        :schema => @table.schema
-      }.to_json, :status => 200, :callback => params[:callback]
+                            
+      render_jsonp({ :id => @table.id,                 
+                     :name => @table.name,
+                     :privacy => table_privacy_text(@table),
+                     :tags => @table[:tags_names],
+                     :schema => @table.schema })
     else
-      render :json => { :errors => @table.errors.full_messages}.to_json, :status => 400, :callback => params[:callback]
+      render_jsonp({ :errors => @table.errors.full_messages}, 400)
     end
   rescue => e
-    Rails.logger.info "========== #{e.class.name} ==========="
-    Rails.logger.info $!
-    Rails.logger.info "======================================"
-    render :json => { :errors => [translate_error(e.message.split("\n").first)] }.to_json,
-           :status => 400, :callback => params[:callback] and return
+    CartoDB::Logger.info e.class.name, e.message
+    render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
   end
 
   def destroy
-    @table = Table.fetch("select * from user_tables
-                          where user_tables.user_id = ? and user_tables.name = ?", current_user.id, params[:id]).all.first
-    raise RecordNotFound if @table.nil?
     @table.destroy
-    render :nothing => true, :status => 200, :callback => params[:callback]
+    head :ok
   end
   
-  def duplicate
-    @table = Table.find_by_identifier(current_user.id, params[:id])
-    new_table_name = @table.duplicate!
-    render :json => { :table_name => new_table_name}.to_json, 
-           :status => 200, :callback => params[:callback]
-  end
-
   # expects the infowindow data in the infowindow parameter
   def set_infowindow
     @table.infowindow = params[:infowindow]
-    render :nothing => true, :status => 200, :callback => params[:callback]
+    head :ok
   end
 
   protected

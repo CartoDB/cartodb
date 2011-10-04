@@ -14,11 +14,7 @@ class ClientApplication < Sequel::Model
   def self.find_token(token_key)
     return nil if token_key.nil?
     token = ::RequestToken.first(:token => token_key) || ::AccessToken.first(:token => token_key)
-    if token && token.authorized?
-      token
-    else
-      nil
-    end
+    token && token.authorized? ? token : nil
   end
 
   def self.find_by_key(key)
@@ -60,13 +56,12 @@ class ClientApplication < Sequel::Model
   end
 
   def before_create
-    self.key = OAuth::Helper.generate_key(40)[0,40]
-    self.secret = OAuth::Helper.generate_key(40)[0,40]
+    self.key        = OAuth::Helper.generate_key(40)[0,40]
+    self.secret     = OAuth::Helper.generate_key(40)[0,40]
     self.created_at = Time.now
   end
 
   def before_save
     self.updated_at = Time.now
   end
-
 end

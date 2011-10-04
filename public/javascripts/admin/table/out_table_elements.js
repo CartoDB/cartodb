@@ -587,10 +587,7 @@
 	
 	    $('div.mamufas a.cancel, div.mamufas a.close').click(function(ev){
 	      stopPropagation(ev);
-	      $('div.mamufas').fadeOut('fast',function(){
-	        $('div.mamufas div.delete_window').hide();
-	      });
-	      unbindESC();
+	      closeOutTableWindows();
 	    });
 	
 	    $('a.confirm_delete').click(function(ev){
@@ -1259,6 +1256,32 @@
 
 
     ///////////////////////////////////////
+    //  Stop window                      //
+    ///////////////////////////////////////
+    var stop_window = (function() {
+      
+      $('div.mamufas').append(
+        '<div class="stop_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="stop">'+
+              '<h5>Sorry, this geometry is too big to edit in browser</h5>'+
+              '<p>We\'re working on ways to improve this, but in the meantime you can edit the geometry via our API.</p>'+
+            '</span>'+
+          '</div>'+
+        '</div>');
+        
+      $('div.mamufas div.stop_window a.close').click(function(ev){
+        stopPropagation(ev);
+	      closeOutTableWindows();
+	    });
+
+      return {}
+	  }());
+
+
+
+    ///////////////////////////////////////
     //  Application tabs menu            //
     ///////////////////////////////////////
     $('section.subheader ul.tab_menu li a').click(function(ev){
@@ -1422,6 +1445,7 @@
       $('div.mamufas div.import_window').hide();
       $('div.mamufas div.georeference_window').hide();
       $('div.mamufas div.embed_window').hide();
+      $('div.mamufas div.stop_window').hide();
       $(document).unbind('keydown');
       $('body').unbind('click');
     });

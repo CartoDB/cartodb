@@ -19,7 +19,7 @@
     // TODO
     // - Border color, border and opacity have set from the begging [polygons mainly] (say to Simon)
     // - Add possibility to change color from a palette
-
+    // - Custom map style
 
 
     function CartoMap (latlng,zoom) {
@@ -741,41 +741,24 @@
       this.tilejson = this.generateTilejson();
             
       this.waxOptions = {
-          callbacks: {
-              out: function(){
-                  me.over_marker_ = false;
-                  me.map_.setOptions({ draggableCursor: 'default' });
-              },
-              over: function(feature, div, opt3, evt){
-                  if (me.status_ == "select" && !me.query_mode) {
-                      me.over_marker_ = true;
-                      me.map_.setOptions({ draggableCursor: 'pointer' });
-                      me.tooltip_.open(evt.latLng,feature);
-                  }
-              },
-              click: function(feature, div, opt3, evt){
-
-                  // click, load information - show geometry - hide layers
-                  // Get results from api
-                  if (me.status_ == "select" && !me.query_mode) {
-                      $.ajax({
-                          method: "GET",
-                          url: global_api_url+'queries?sql='+escape('SELECT ST_GeometryType(the_geom) FROM '+table_name+' WHERE cartodb_id = ' + feature),
-                          headers: {"cartodbclient":"true"},
-                          success: function(data) {
-                              var type = (data.rows[0].st_geometrytype).toLowerCase();
-                              me.info_window_.openWax(feature);
-                          },
-                          error: function(e) {
-                          }
-                      });
-
-                      me.hideOverlays();
-                  }
-
-              }
+        callbacks: {
+          out: function(){
+            me.over_marker_ = false;
+            me.map_.setOptions({ draggableCursor: 'default' });
           },
-          clickAction: 'full'
+          over: function(feature, div, opt3, evt){
+            if (me.status_ == "select" && !me.query_mode) {
+              me.over_marker_ = true;
+              me.map_.setOptions({ draggableCursor: 'pointer' });
+              me.tooltip_.open(evt.latLng,feature);
+            }
+          },
+          click: function(feature, div, opt3, evt){
+            me.info_window_.open(feature);
+            me.hideOverlays();
+          }
+        },
+        clickAction: 'full'
       };
 
       this.wax_tile = new wax.g.connector(this.tilejson);
@@ -1050,13 +1033,24 @@
           // Get polygons coordinates
           var poly_obj = transformGeoJSON(data.the_geom);
           
+          
+          // Count the markers -> too many? uff...
+          var count = 0;
           _.each(poly_obj.paths,function(path,i){
-            path.pop();
-            var polygon = new google.maps.Polygon({paths:path,strokeColor:"#FFFFFF",strokeOpacity:1,strokeWeight:2,fillColor:"#FF6600",fillOpacity:0.5,map:me.map_,clickable:false,data:feature});
-            me.fakeGeometries_.push(polygon);
-            polygon.runEdit();
+            count = _.size(path) + count;
           });
           
+          if (count>3) {
+            me.showBigBang();
+          } else {
+            // Draw the polygon
+            _.each(poly_obj.paths,function(path,i){
+              path.pop();
+              var polygon = new google.maps.Polygon({paths:path,strokeColor:"#FFFFFF",strokeOpacity:1,strokeWeight:2,fillColor:"#FF6600",fillOpacity:0.5,map:me.map_,clickable:false,data:feature});
+              me.fakeGeometries_.push(polygon);
+              polygon.runEdit();
+            });
+          }
         },
         error:function(e){}
       });
@@ -1073,15 +1067,25 @@
         headers: {"cartodbclient": true},
         success:function(data){
           me.removeWax();
-
+          
           // Get polygons coordinates and data
           var poly_obj = transformGeoJSON(data.the_geom);
           
+          // Count the markers -> too many? uff...
+          var count = 0;
           _.each(poly_obj.paths,function(path,i){
-            var polyline = new google.maps.Polyline({path:path,strokeColor:"#FF6600",strokeOpacity:1,strokeWeight:2,map:me.map_,clickable:false,data:feature});
-            me.fakeGeometries_.push(polyline);
-            polyline.runEdit();
+            count = _.size(path) + count;
           });
+          
+          if (count>200) {
+            me.showBigBang();
+          } else {
+            _.each(poly_obj.paths,function(path,i){
+              var polyline = new google.maps.Polyline({path:path,strokeColor:"#FF6600",strokeOpacity:1,strokeWeight:2,map:me.map_,clickable:false,data:feature});
+              me.fakeGeometries_.push(polyline);
+              polyline.runEdit();
+            });
+          }
           
         },
         error:function(e){}
@@ -1143,7 +1147,22 @@
       this.updateTable('/records/'+cartodb_ids,params,null,null,"remove_points","DELETE");
     }
 
-
+    /* Show Big Bang error window due to edition of huge polygon */
+    CartoMap.prototype.showBigBang = function(cartodb_ids) {
+      // Out table&map window binding
+      closeOutTableWindows();
+      $('div.mamufas div.stop_window').show();
+      $('div.mamufas').fadeIn('fast');
+      bindESC();
+      
+      this.editing = false;
+      $('.general_options ul li.map a.select').click();
+      this.toggleEditTools();
+      this.removeFakeGeometries();
+      this.refreshWax();
+    }
+      
+      
     
     ////////////////////////////////////////
     //  CLOSE OUT TABLE WINDOWS && ESC    //
@@ -1162,11 +1181,14 @@
     CartoMap.prototype.unbindMapESC = function() {
       $(document).unbind('keydown');
       $('body').unbind('click');
+      this.closeMapWindows();
     }
     
   	// Close all map elements
     CartoMap.prototype.closeMapWindows = function() {
-      $('.map_header div.options').hide();
+      $('.map_header ul.main li div.options').each(function(i,ele){
+        $(this).hide();
+      });
       this.info_window_.hide();
 
       //popup windows

@@ -26,8 +26,21 @@ section#content div.inner_content div.requests_info div.middle_white span.block 
 section#content div.inner_content div.requests_info div.middle_white span.block p {padding:6px 0 0 0; font:normal 13px Arial; color:#999999;}
 section#content div.inner_content div.requests_info div.middle_white span.block p a {color:#999999; text-decoration:underline;}
 section#content div.inner_content div.requests_info div.middle_white span.block p a:hover {color:#333333;}
-section#content div.inner_content div.requests_info div.middle_white img {margin:15px 0 5px; 0;}
-section#content div.inner_content div.requests_info div.middle_white hr {position: absolute; top: 140px; left: 34px; border: 0; width: 840px; height: 1px; background-color: #BFD6D9; opacity: 0.3; margin: 0px;}
+
+section#content div.inner_content div.requests_info div.middle_white div.info {width:100%; height:40px; margin:5px 0 0 0}
+section#content div.inner_content div.requests_info div.middle_white div.info p {width:auto}
+section#content div.inner_content div.requests_info div.middle_white div.info p a {color:#ff9900; text-decoration:none}
+section#content div.inner_content div.requests_info div.middle_white div.info p a:hover {color:#ff6600; text-decoration:underline}
+section#content div.inner_content div.requests_info div.middle_white div.info p.right {float:right}
+section#content div.inner_content div.requests_info div.middle_white div.info p.left {float:left}
+
+section#content div.inner_content div.requests_info div.middle_white div.progress {position:relative; width:100%; height:45px; background:#F0F5F7; border-radius:4px; -webkit-border-radius:4px; -moz-border-radius:4px;}
+section#content div.inner_content div.requests_info div.middle_white div.progress p {position:absolute; top:17px; right:25px; width:auto; font:bold 11px "Helvetica",Arial; color:#D5D9DB;}
+section#content div.inner_content div.requests_info div.middle_white div.progress span.bar {position:absolute; width:60%; height:45px; border-radius:4px; -webkit-border-radius:4px; -moz-border-radius:4px;
+  background:linear-gradient(-90deg, #99CC00, #7BA600); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#99CC00), to(#7BA600)); background:-moz-linear-gradient(-90deg, #99CC00, #7BA600); background: -o-linear-gradient(#99CC00,#7BA600); background:#7BA600\9;}
+section#content div.inner_content div.requests_info div.middle_white div.progress span.bar p {top:13px; right:11px; height:11px; padding:5px 5px 4px; background:rgba(0,0,0,0.3); border-radius:4px; -webkit-border-radius:4px; -moz-border-radius:4px; font:bold 11px "Helvetica",Arial; color:white; line-height:11px}
+section#content div.inner_content div.requests_info div.middle_white div.progress span.bar.be_careful {background:linear-gradient(-90deg, #FF9900, #BF7201); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FF9900), to(#BF7201)); background:-moz-linear-gradient(-90deg, #FF9900, #BF7201); background: -o-linear-gradient(#FF9900,#BF7201); background:#FF9900\9;}
+section#content div.inner_content div.requests_info div.middle_white div.progress span.bar.boom {background:linear-gradient(-90deg, #FF0000, #CC0000); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FF0000), to(#CC0000)); background:-moz-linear-gradient(-90deg, #FF0000, #CC0000); background: -o-linear-gradient(#FF0000,#CC0000); background:#FF0000\9;}
 section#content div.inner_content div.requests_info div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
 
 

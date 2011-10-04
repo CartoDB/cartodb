@@ -130,16 +130,13 @@
         dataType: 'jsonp',
         headers: {"cartodbclient":"true"},
         success:function(result){
-          map_style = result.map_metadata;
+          map_style = $.parseJSON(result.map_metadata);
           $(document).trigger('arrived');
         },
         error: function(e){
            console.debug(e);
         }
       });
-      
-      // map_style = {basemap_provider: 'google_maps',google_maps_base_type:'roadmap',google_maps_customization_style: []};
-      // $(document).trigger('arrived');
 
 
 
@@ -223,7 +220,7 @@
         type: "POST",
         headers: {"cartodbclient": true},
         url: global_api_url + 'tables/' + table_id + '/map_metadata',
-        data: {map_metadata: {basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles}}
+        data: {map_metadata: JSON.stringify({basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles})}
       });
     }
     
@@ -558,17 +555,21 @@
         }
         
         
+        // Initialize the map controls and the map type
         function initializeMapOptions(map_style, map_type) {
           // select map type
           if (map_type=="terrain") {
             $('.map_header ul.map_type li a.option:contains("Terrain")').parent().addClass('selected');
             map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+            custom_map_style.type = 'terrain';
           } else if (map_type=="satellite") {
             $('.map_header ul.map_type li a.option:contains("Satellite")').parent().addClass('selected');
             map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+            custom_map_style.type = 'satellite';
           } else {
             $('.map_header ul.map_type li a.option:contains("Roadmap")').parent().addClass('selected');
             map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+            custom_map_style.type = 'roadmap';
           }
           
           

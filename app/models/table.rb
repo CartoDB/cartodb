@@ -112,8 +112,12 @@ class Table < Sequel::Model(:user_tables)
           user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
           user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
           cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
-          max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max]
-          user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
+          max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max] 
+          
+          # only reset the sequence on real imports. not applicable for duplicate tables         
+          if max_cartodb_id
+            user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
+          end  
         end
 
         user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
@@ -137,7 +141,7 @@ class Table < Sequel::Model(:user_tables)
 
     super
   rescue => e
-    CartoDB::Logger.info "table#create error", e.inspect      
+    CartoDB::Logger.info "table#create error", "#{e.inspect}"      
     unless self.name.blank?
       $tables_metadata.del key
       owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
@@ -661,10 +665,10 @@ TRIGGER
     User.select(:id,:database_name,:crypted_password).filter(:id => self.user_id).first
   end
 
-  def get_valid_name(raw_new_name = "untitled_table")
+  def get_valid_name(raw_new_name = nil)
     
     # set defaults and sanity check
-    raw_new_name = raw_new_name.sanitize
+    raw_new_name = (raw_new_name || "untitled_table").sanitize
     
     # tables cannot be blank, start with numbers or underscore
     raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/

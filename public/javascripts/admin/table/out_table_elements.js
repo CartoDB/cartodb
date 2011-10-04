@@ -190,18 +190,42 @@
         // SQL mode? you can't georeference
         var query_mode = ($('body').attr('query_mode') === "true");
     		if (!query_mode && !$(this).parent().hasClass('disabled')) {
+    		  resetProperties();
 				  $('div.mamufas div.georeference_window').show();
   	      $('div.mamufas').fadeIn('fast');
   	      bindESC();
-
-	        resetProperties();
-	        getColumns();
+  	      
+  	      // If this table is based on points/multipoint, you will be able to georeference
+  	      checkGeomType();
 				}
-
+        
+        function checkGeomType() {
+          $.ajax({
+            method: "GET",
+            url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
+            headers: {"cartodbclient":"true"},
+            success: function(result) {
+              var geom_type = result.rows[0].type.toLowerCase();
+              if (geom_type=="point" || geom_type=="multipoint") {
+                $('div.mamufas div.georeference_window div.georef_options').show();
+      	        getColumns();      	      
+              } else {
+                $('div.georeference_window h3').text('Sorry, but you cannot georeference this table');
+                $('div.georeference_window span.top p:eq(0)').text('You likely have it already georeferenced.');
+              }
+            },            
+            error: function(e){}
+          });
+        }
 
         function resetProperties() {
           $('div.georeference_window div.inner_ span.top').css('opacity',1).show();
           $('div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
+          $('div.mamufas div.georeference_window div.georef_options').hide();
+          
+          $('div.georeference_window h3').text('Choose your geocoding method for this column');
+          $('div.georeference_window span.top p:eq(0)').text('Please select the columns for the lat/lon fields');
+				  
           $('div.georeference_window a.close_geo').show();
           $('div.georeference_window').css('height','auto');
           $('div.georeference_window div.inner_').css('height','auto');

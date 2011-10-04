@@ -132,20 +132,20 @@
 
       // Get geom type
       $.ajax({
-          method: "GET",
-          url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
-          headers: {"cartodbclient":"true"},
-          success: function(data) {
-            if (data.rows.length>0) {
-              geom_type = me.geometry_type_ = data.rows[0].type.toLowerCase();
-            } else {
-              geom_type = undefined;
-            }
-            $(document).trigger('arrived');
-          },
-          error: function(e) {
-            console.debug(e);
+        method: "GET",
+        url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
+        headers: {"cartodbclient":"true"},
+        success: function(data) {
+          if (data.rows.length>0) {
+            geom_type = me.geometry_type_ = data.rows[0].type.toLowerCase();
+          } else {
+            geom_type = undefined;
           }
+          $(document).trigger('arrived');
+        },
+        error: function(e) {
+          console.debug(e);
+        }
       });
 
 

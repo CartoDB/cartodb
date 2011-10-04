@@ -63,16 +63,7 @@ class Table < Sequel::Model(:user_tables)
       #Import from copying another table
       if import_from_table_copy.present?
         # ensure unique name
-        #uniname = get_valid_name(self.name)
-        existing_names = owner.in_database["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{self.name}%'"].map(:relname)
-        testn = 1
-        uniname = self.name
-        while true==existing_names.include?("#{uniname}")
-          uniname = "#{self.name}_#{testn}"
-          testn = testn + 1
-        end
-        CartoDB::Logger.info 'unique name', uniname
-
+        uniname = get_valid_name(self.import_from_table_copy)
         owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
@@ -678,6 +669,12 @@ TRIGGER
     # tables cannot start with numbers or underscore
     raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
     raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
+    
+    # we should be getting cadidates from the base name
+    # eg: "simon_24" => "simon"
+    if match = /(.+)_\d+$/.match(raw_new_name)
+      raw_new_name = match[1]
+    end  
     
     # check for dupes
     candidates = owner.in_database.tables.map{ |t| t.to_s }.select{ |t| t.match(/^#{raw_new_name}/) }

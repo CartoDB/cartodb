@@ -294,8 +294,10 @@ class Table < Sequel::Model(:user_tables)
           temporal_schema.insert(0,col)
         when :created_at, :updated_at
           temporal_schema.insert(-1,col)
+        when :the_geom
+          temporal_schema.insert(1,col)  
         else
-          temporal_schema.insert(1,col)
+          temporal_schema.insert(2,col)
       end
     end
     temporal_schema.compact

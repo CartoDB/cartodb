@@ -49,7 +49,7 @@
               <p><%= @quota %> MB</p>
               <span class="bar <%= disk_usage_class(current_user.database_size) %>" style="width:<%= number_to_percentage(disk_usage_percent(current_user.database_size, @quota), :precision => 2)%>">
                 <% if disk_usage_percent(current_user.database_size, @quota) > 7 %>
-                  <p><%= number_with_precision(current_user.database_size, :precision => 2) %>%</p>
+                  <p><%= number_with_precision(current_user.database_size, :precision => 2) %> MB</p>
                 <% end %>
               </span>
             </div>

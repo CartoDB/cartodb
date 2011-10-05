@@ -19,7 +19,6 @@
     // TODO
     // - Border color, border and opacity have set from the begging [polygons mainly] (say to Simon)
     // - Add possibility to change color from a palette
-    // - Custom map style
     // - Embed map custom tiles (important)
 
 
@@ -592,7 +591,7 @@
         
         var geometry_style = {};
         var default_style = {};
-
+        
         setupStyles(geom_styles);
         
         // BINDINGS
@@ -622,16 +621,42 @@
           var color = new RGBColor($(this).val());
           if (color.ok) {
             var new_color = color.toHex();
-            var css_ = $(this).closest('span').attr('css');
+            var css_ = $(this).closest('span.color').attr('css');
             $(this).parent().find('a.control').removeClass('error').css({'background-color':new_color});
-            
+            $(this).removeClass('error');
             geometry_style[css_] = new_color;
             me.setTilesStyles(geometry_style);
-            
-          } else {            
+          } else {
+            $(this).addClass('error');
             $(this).parent().find('a.control').removeAttr('style').addClass('error');
           }
+        });
+        
+        /* color open palette */
+        $('.map_header ul.geometry_customization div.suboptions span.color a.control').click(function(ev){
+          stopPropagation(ev);
+          $('.map_header span.color span.palette').each(function(i,palette){
+            $(palette).hide();
+          });
+          $(this).closest('span.color').find('span.palette').show();
+        });
+        
+        /* color palette */
+        $('.map_header ul.geometry_customization div.suboptions span.color span.palette ul li a').click(function(ev){
+          stopPropagation(ev);
+          // Get the value
+          var new_color = $(this).attr('href');
           
+          // Hide the palette
+          $(this).closest('span.palette').hide();
+          
+          // Save the new color
+          $(this).closest('span.color').find('a.control').removeClass('error').css({'background-color':new_color});
+          $(this).closest('span.color').find('input').val(new_color);
+          $(this).removeClass('error');
+          var css_ = $(this).closest('span.color').attr('css');
+          geometry_style[css_] = new_color;
+          me.setTilesStyles(geometry_style);
         });
         
         /* width range */
@@ -651,9 +676,12 @@
           }
         });
         
+        
+        
+        
         /* alpha slider */
         var slider_value = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ');
-        slider_value = geometry_style[slider_value[0]]*100;
+        slider_value = geometry_style[slider_value[0]]*100 || 100;
         $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider({
           max:100,
           min:0,
@@ -706,7 +734,9 @@
 
             default_style = {
               'polygon-fill':'#FF6600',
-              'polygon-opacity': 0.7
+              'polygon-opacity': 0.7,
+              'line-opacity':1,
+              'line-color': '#FFFFFF'
             };
 
           } else {
@@ -753,7 +783,6 @@
           // Determinate if it is a customized style or default
           var is_default = true;
           _.each(geometry_style,function(value,type){
-
             if (default_style[type]!=undefined && geometry_style[type] != default_style[type]) {
               is_default = false;
               return;
@@ -797,7 +826,6 @@
           me.setTilesStyles(geometry_style);
         }
         
-        
         return {}
   		}());
       
@@ -815,7 +843,6 @@
         return {}
   		}());
 
- 
  
       /* Bind event for open any tool */
       $('.map_header a.open').livequery('click',function(ev){
@@ -1330,14 +1357,21 @@
     
   	// Close all map elements
     CartoMap.prototype.closeMapWindows = function() {
+      // Tools windows
       $('.map_header ul.main li div.options').each(function(i,ele){
         $(this).hide();
       });
+      
+      // Close palettes
+      $('.map_header span.palette').each(function(i,ele){
+        $(this).hide();
+      });
+      
+      // Close Infowindow
       this.info_window_.hide();
 
       //popup windows
       $('div.mamufas').fadeOut('fast',function(){
-
         $(document).unbind('keydown');
         $('body').unbind('click');
       });
@@ -1398,6 +1432,7 @@
           this.geometry_creator_.destroy();
       }
       
+      this.closeMapWindows();
       $('div.map_window div.map_curtain').show();
     }
 

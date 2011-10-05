@@ -206,10 +206,20 @@ class User < Sequel::Model
   end
   private :database_exists?
   
+  # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
+  #
+  # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
+  # Needs to go on a background job.
   def database_size
-    in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(table_name))
+    size = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(table_name))
       FROM information_schema.tables
       WHERE table_catalog = '#{database_name}' AND table_schema = 'public'").first[:sum]
+      
+    # hack for the_geom_webmercator
+    size = size / 2  
+    
+    # return bytes in megabytes
+    size / 1024 / 1024
   end
   
   ## User's databases setup methods

@@ -87,7 +87,7 @@
                     <p class="delete"> | <a table-name="<%= table.name %>" href="#delete" class="delete">delete table</a></p>
                     <p class="columns">
                       <strong>
-                        <%= number_to_human_size table.table_size %> / 
+                        <%= number_to_human_size table.table_size %> /
                         <%= pluralize(table.rows_counted,'row','rows') rescue '' %> /
                         <%= table.schema.size rescue '' %> columns:
                       </strong>

@@ -25,19 +25,9 @@
     mode: 'normal'
   }
 
-
-  // TODOS
-  // Remove georeferencing when the table is not point geom_type
-  // New loader with georeferencing and previous errors... plof
-  // Back import data being into a table (remember startTable import text)
-  
-  // QUESTIONS
-  // If you have filtered something - add new row? - go to normal mode and add new row...
-  
   
   var methods = {
-
-
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  INIT PLUGIN
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -750,15 +740,6 @@
             '<span class="loading">'+
               '<h5>We are redirecting you to the end of your table...</h5>'+
               '<p>Is not gonna be a lot of time. Just some seconds, right?</p>'+
-            '</span>'+
-          '</div>'+
-        '</div>'+
-        '<div class="stopgeo_window">'+
-          '<a href="#close_window" class="close"></a>'+
-          '<div class="inner_">'+
-            '<span class="stop">'+
-              '<h5>Sorry, but we are georeferencing a column...</h5>'+
-              '<p>If you don\'t want to wait, <a href="#cancel_geo" class="cancel_geo">cancel de process</a> in progress.</p>'+
             '</span>'+
           '</div>'+
         '</div>'

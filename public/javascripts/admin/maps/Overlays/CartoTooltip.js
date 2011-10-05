@@ -16,7 +16,7 @@ CartoTooltip.prototype.draw = function() {
             stopPropagation(ev);
             me.hide();
             carto_map.over_marker_ = true;
-            carto_map.info_window_.openWax(me.markers_);
+            carto_map.info_window_.open(me.markers_);
         });
 
         $(div).find('a.edit').click(function(ev){

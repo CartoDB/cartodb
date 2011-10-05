@@ -21,8 +21,8 @@ gem "cartodb-importer", "~> 0.2.16"
 gem "airbrake", '~> 3.0.4'
 
 group :test, :development do
-#  gem "ruby-debug-base19x", '~>0.11.30.pre3', :require => "ruby-debug", :platforms => :mri_19
-#  gem "ruby-debug19", :require => "ruby-debug", :platforms => :mri_19
+  gem "ruby-debug-base19x", '~>0.11.30.pre3', :require => "ruby-debug", :platforms => :mri_19
+  gem "ruby-debug19", :require => "ruby-debug", :platforms => :mri_19
   gem "mocha"
   gem "steak", "2.0.0"
   gem "rspec-rails"

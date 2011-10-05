@@ -130,11 +130,15 @@
         dataType: 'jsonp',
         headers: {"cartodbclient":"true"},
         success:function(result){
-          map_style = $.parseJSON(result.map_metadata);
+          if (result.map_metadata != null) {
+            map_style = $.parseJSON(result.map_metadata);
+          } else {
+            map_style = {basemap_provider: 'google_maps',google_maps_customization_style:[],google_maps_base_type:'roadmap'}
+          }
           $(document).trigger('arrived');
         },
         error: function(e){
-           console.debug(e);
+          console.debug(e);
         }
       });
 

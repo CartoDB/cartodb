@@ -7,14 +7,16 @@ class Admin::TablesController < ApplicationController
 
   def index
     current_page = params[:page].nil? ? 1 : params[:page].to_i
-    per_page = 50
+    per_page = 30
     @tags = Tag.load_user_tags(current_user.id, :limit => 10)
     @tables = if !params[:tag_name].blank?
       Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name]).order(:id).reverse.paginate(current_page, per_page)
     else
       Table.filter({:user_id => current_user.id}).order(:id).reverse.paginate(current_page, per_page)
     end
-    @tables_count = @tables.count
+    @tables_count  = @tables.pagination_record_count
+    @quota         = 100  #TODO: make definable
+    @database_size = current_user.database_size
   end
 
   def show

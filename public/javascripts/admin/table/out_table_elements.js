@@ -4,30 +4,7 @@
   
 
   head(function(){
-	
-		///////////////////////////////////////
-    //  Warning window                   //
-    ///////////////////////////////////////
-		var warning_window = (function() {
-		  // Just the html for warning window
-		  $('div.mamufas').append(
-        '<div class="warning_window">'+
-          '<a href="#close_window" class="close"></a>'+
-          '<div class="inner_">'+
-            '<span class="top">'+
-              '<h3>This change will affect your API calls</h3>'+
-              '<p>If you are accesing to this table via API don’t forget to update the name in the API calls after changing the name.</p>'+
-            '</span>'+
-            '<span class="bottom">'+
-              '<a href="#close_window" class="cancel">cancel</a>'+
-              '<a href="#confirm_delete" class="continue">Ok, continue</a>'+
-            '</span>'+
-          '</div>'+
-        '</div>');
-	    return {}
-		}());
 		
-
     
     ///////////////////////////////////////
     //  Bottom bar with tools (SQL,...)  //
@@ -927,7 +904,26 @@
     //  Change title name window         //
     ///////////////////////////////////////
 		var title_name = (function() {
-			
+		  
+		  // Warning window
+		  $('div.mamufas').append(
+        '<div class="warning_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<form>'+
+              '<span class="top">'+
+                '<h3>This change will affect your API calls</h3>'+
+                '<p>If you are accesing to this table via API don’t forget to update the name in the API calls after changing the name.</p>'+
+              '</span>'+
+              '<span class="bottom">'+
+                '<a href="#close_window" class="cancel">cancel</a>'+
+                '<input type="submit" class="continue" value="Ok, continue"/>'+
+              '</span>'+
+            '</form>'+
+          '</div>'+
+        '</div>');
+        
+			// Title window
 	    $('div.inner_subheader div.left').append(
 	      '<span class="title_window">'+
 	        '<p>Pick a name for this table</p>'+
@@ -981,9 +977,10 @@
 	            stopPropagation(ev);
 	            changeTableName(new_value,old_value);
 	          });
-          
 	          $('div.mamufas div.warning_window').show();
-	          $('div.mamufas').fadeIn('fast');
+	          $('div.mamufas').fadeIn('fast',function(){
+	            $('div.mamufas div.warning_window input').focus();
+	          });
 	          bindESC();
 	        } else {
 	          changeTableName(new_value,old_value);

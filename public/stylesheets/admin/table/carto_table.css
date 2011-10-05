@@ -349,17 +349,6 @@ div.mamufas div.lastpage_window div.inner_ span.loading {float:left; display:blo
 div.mamufas div.lastpage_window div.inner_ span.loading h5 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.lastpage_window div.inner_ span.loading p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
 
-div.mamufas div.stopgeo_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-107px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
-  -webkit-box-shadow:0 0 50px 3px #111111; -moz-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;}
-div.mamufas div.stopgeo_window a.close {position:absolute; right:-8px; top:-7px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0px 0;}
-div.mamufas div.stopgeo_window a.close:hover {background-position:0 -24px;}
-div.mamufas div.stopgeo_window div.inner_ {float:left; width:411px; padding:0 0 5px; border:2px solid #FF6600; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
-div.mamufas div.stopgeo_window div.inner_ span.stop {float:left; display:block; opacity:1; width:347px; height:40px; padding:0 0 0 47px; margin:10px; background:url('/images/admin/table/stop.png') no-repeat 2px 7px;}
-div.mamufas div.stopgeo_window div.inner_ span.stop h5 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
-div.mamufas div.stopgeo_window div.inner_ span.stop p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
-div.mamufas div.stopgeo_window div.inner_ span.stop p a {color:#666666;}
-div.mamufas div.stopgeo_window div.inner_ span.stop p a:hover {color:#333333;}
-
 
 /*jScrollPane CSS*/
 .jspContainer{overflow:hidden;position:relative;}

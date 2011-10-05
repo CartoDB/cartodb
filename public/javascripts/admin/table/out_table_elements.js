@@ -190,18 +190,42 @@
         // SQL mode? you can't georeference
         var query_mode = ($('body').attr('query_mode') === "true");
     		if (!query_mode && !$(this).parent().hasClass('disabled')) {
+    		  resetProperties();
 				  $('div.mamufas div.georeference_window').show();
   	      $('div.mamufas').fadeIn('fast');
   	      bindESC();
-
-	        resetProperties();
-	        getColumns();
+  	      
+  	      // If this table is based on points/multipoint, you will be able to georeference
+  	      checkGeomType();
 				}
-
+        
+        function checkGeomType() {
+          $.ajax({
+            method: "GET",
+            url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
+            headers: {"cartodbclient":"true"},
+            success: function(result) {
+              var geom_type = result.rows[0].type.toLowerCase();
+              if (geom_type=="point" || geom_type=="multipoint") {
+                $('div.mamufas div.georeference_window div.georef_options').show();
+      	        getColumns();      	      
+              } else {
+                $('div.georeference_window h3').text('Sorry, but you cannot georeference this table');
+                $('div.georeference_window span.top p:eq(0)').text('You likely have it already georeferenced.');
+              }
+            },            
+            error: function(e){}
+          });
+        }
 
         function resetProperties() {
           $('div.georeference_window div.inner_ span.top').css('opacity',1).show();
           $('div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
+          $('div.mamufas div.georeference_window div.georef_options').hide();
+          
+          $('div.georeference_window h3').text('Choose your geocoding method for this column');
+          $('div.georeference_window span.top p:eq(0)').text('Please select the columns for the lat/lon fields');
+				  
           $('div.georeference_window a.close_geo').show();
           $('div.georeference_window').css('height','auto');
           $('div.georeference_window div.inner_').css('height','auto');
@@ -586,10 +610,7 @@
 	
 	    $('div.mamufas a.cancel, div.mamufas a.close').click(function(ev){
 	      stopPropagation(ev);
-	      $('div.mamufas').fadeOut('fast',function(){
-	        $('div.mamufas div.delete_window').hide();
-	      });
-	      unbindESC();
+	      closeOutTableWindows();
 	    });
 	
 	    $('a.confirm_delete').click(function(ev){
@@ -1175,27 +1196,26 @@
 	          createMap();
 	        toggleLayer();
 	        zoomToBBox();
+	        addCustomStyles();
 	        
 	        // Start zclip
 	        $("div.embed_window .inner_ span.top div span a.copy").zclip({
-              path: "/javascripts/plugins/ZeroClipboard.swf",
-              copy: function(){
-                return $(this).parent().find('input').val();
-              }
+            path: "/javascripts/plugins/ZeroClipboard.swf",
+            copy: function(){
+              return $(this).parent().find('input').val();
+            }
           });
 	      });
 	      bindESC();
 		  });
 		  
+		  // Close embed
 		  $('div.embed_window a.close, div.embed_window a.cancel').click(function(ev){
 		    stopPropagation(ev);
 		    closeOutTableWindows();
 		    $("div.embed_window .inner_ span.top div span a.copy").zclip('remove');
 		    unbindESC();
 		  });
-		  
-      
-      
 		  
 		  // Zooms
 		  $('a.embed_zoom_in').click(function(ev){
@@ -1226,6 +1246,32 @@
         embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
 		  }
 		  
+		  function addCustomStyles() {
+		    $.ajax({
+          url: global_api_url + 'tables/' + table_id + '/map_metadata',
+          type: "GET",
+          dataType: 'jsonp',
+          headers: {"cartodbclient":"true"},
+          success:function(result){
+            map_style = $.parseJSON(result.map_metadata);
+
+            if (map_style.google_maps_base_type=="roadmap") {
+              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+            } else if (map_style.google_maps_base_type=="satellite") {
+              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+            } else {
+              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+            }
+            
+            // Custom tiles
+            embed_map.setOptions({styles: map_style.google_maps_customization_style})
+          },
+          error: function(e){
+             console.debug(e);
+          }
+        });
+		  }
+		  
 		  function zoomToBBox() {
         var me = this;
         $.ajax({
@@ -1254,6 +1300,32 @@
 		  
 		  return {}
 		}());
+
+
+
+    ///////////////////////////////////////
+    //  Stop window                      //
+    ///////////////////////////////////////
+    var stop_window = (function() {
+      
+      $('div.mamufas').append(
+        '<div class="stop_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="stop">'+
+              '<h5>Sorry, this geometry is too big to edit in browser</h5>'+
+              '<p>We\'re working on ways to improve this, but in the meantime you can edit the geometry via our API.</p>'+
+            '</span>'+
+          '</div>'+
+        '</div>');
+        
+      $('div.mamufas div.stop_window a.close').click(function(ev){
+        stopPropagation(ev);
+	      closeOutTableWindows();
+	    });
+
+      return {}
+	  }());
 
 
 
@@ -1421,6 +1493,7 @@
       $('div.mamufas div.import_window').hide();
       $('div.mamufas div.georeference_window').hide();
       $('div.mamufas div.embed_window').hide();
+      $('div.mamufas div.stop_window').hide();
       $(document).unbind('keydown');
       $('body').unbind('click');
     });

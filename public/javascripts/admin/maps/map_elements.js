@@ -9,7 +9,7 @@
       $('div.map_window').append(
         '<div class="map_curtain"></div>'+
         '<div class="map_header">'+
-          '<ul>'+
+          '<ul class="main">'+
             '<li class="first">'+
               '<h4>Map type</h4>'+
               '<p>Roadmap</p>'+
@@ -17,18 +17,39 @@
               '<div class="options short">'+
                 '<span class="tick"></span>'+
                 '<ul class="map_type">'+
-                  '<li class="selected">'+
-                    '<a href="#">Roadmap</a>'+
+                  '<li>'+
+                    '<a class="option" href="#">Roadmap</a>'+
                   '</li>'+
                   '<li>'+
-                    '<a href="#">Satellite</a>'+
+                    '<a class="option" href="#">Satellite</a>'+
                   '</li>'+
                   '<li>'+
-                    '<a href="#">Terrain</a>'+
+                    '<a class="option" href="#">Terrain</a>'+
                   '</li>'+
-                  '<li class="disabled">'+
-                    '<a href="#">Custom tiles</a>'+
+                  '<li>'+
+                    '<a class="option" href="#">Custom tiles</a>'+
                     '<div class="suboptions">'+
+                      '<label>Labels</label>'+
+                      '<div class="long">'+
+                        '<span class="radio" css="labels">'+
+                          '<a href="#yes">YES</a>'+
+                          '<a href="#no">NO</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Roads</label>'+
+                      '<div class="long">'+
+                        '<span class="radio" css="roads">'+
+                          '<a href="#yes">YES</a>'+
+                          '<a href="#no">NO</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Saturation</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="saturation">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
+                        '</span>'+
+                      '</div>'+
                     '</div>'+
                   '</li>'+
                 '</ul>'+
@@ -46,19 +67,98 @@
                 '<span class="tick"></span>'+
                 '<ul class="geometry_customization">'+
                   '<li class="selected">'+
-                    '<a href="#default">Default</a>'+
+                    '<a class="option" href="#default">Default</a>'+
                   '</li>'+
-                  '<li class="disabled points">'+
-                    '<a href="#custom_points">Custom points</a>'+
-                    '<div></div>'+
+                  '<li class="points">'+
+                    '<a class="option" href="#custom_points">Custom points</a>'+
+                    '<div class="suboptions">'+
+                      '<label>Fill</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="marker-fill">'+
+                          '<a href="#change_fill_color" class="control"></a>'+
+                          '<input type="text" value="#FF6600"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="marker-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="8"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Border</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="marker-line-color">'+
+                          '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
+                          '<input type="text" value="#FFFFFF"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="marker-line-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Alpha</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="marker-opacity marker-line-opacity">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
+                        '</span>'+
+                      '</div>'+
+                    '</div>'+
                   '</li>'+
-                  '<li class="disabled polygons">'+
-                    '<a href="#custom_polygons">Custom polygons</a>'+
-                    '<div></div>'+
+                  '<li class="polygons">'+
+                    '<a class="option" href="#custom_polygons">Custom polygons</a>'+
+                    '<div class="suboptions">'+
+                      '<label>Fill</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="polygon-fill">'+
+                          '<a href="#change_fill_color" class="control"></a>'+
+                          '<input type="text" value="#FF6600"/>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Border</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="line-color">'+
+                          '<a href="#change_line_color" class="control"></a>'+
+                          '<input type="text" value="#FFFFFF"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="line-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Alpha</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="polygon-opacity line-opacity">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
+                        '</span>'+
+                      '</div>'+
+                    '</div>'+
                   '</li>'+
-                  '<li class="disabled lines">'+
-                    '<a href="#custom_lines">Custom lines</a>'+
-                    '<div></div>'+
+                  '<li class="lines">'+
+                    '<a class="option" href="#custom_lines">Custom lines</a>'+
+                    '<div class="suboptions">'+
+                      '<label>Line</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="line-color">'+
+                          '<a href="#change_fill_color" class="control"></a>'+
+                          '<input type="text" value="#FF6600"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="line-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="8"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Alpha</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="line-opacity">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
+                        '</span>'+
+                      '</div>'+
+                    '</div>'+
                   '</li>'+
                 '</ul>'+
               '</div>'+

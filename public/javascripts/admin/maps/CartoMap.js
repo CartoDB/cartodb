@@ -16,6 +16,12 @@
     ////////////////////////////////////////////////////////////////////////////////
 
 
+    // TODO
+    // - Border color, border and opacity have set from the begging [polygons mainly] (say to Simon)
+    // - Add possibility to change color from a palette
+    // - Custom map style
+    // - Embed map custom tiles (important)
+
 
     function CartoMap (latlng,zoom) {
       this.center_ = latlng;                          // Center of the map at the beginning
@@ -78,19 +84,19 @@
       var me = this;
 
       head.js('/javascripts/admin/maps/Overlays/mapCanvasStub.js',
-          '/javascripts/admin/maps/Overlays/CartoTooltip.js',
-          '/javascripts/admin/maps/Overlays/CartoInfowindow.js',
-          '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
-          '/javascripts/admin/maps/polygonEdit.js',
-          '/javascripts/admin/maps/polylineEdit.js',
-          '/javascripts/admin/maps/geometryCreator.js',
-          function(){
-              me.selection_area_    = new google.maps.Polygon({strokeWeight:1});                            // Selection polygon area
-              me.info_window_       = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);       // InfoWindow for markers
-              me.tooltip_           = new CartoTooltip(new google.maps.LatLng(-260,-260),me.map_);		    // Over tooltip for markers and selection area
-              me.delete_window_     = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_);    // Delete window to confirm remove one/several markers
-              me.map_canvas_ 	    = new mapCanvasStub(me.map_);                                           // Canvas to control the coordinates
-          }
+        '/javascripts/admin/maps/Overlays/CartoTooltip.js',
+        '/javascripts/admin/maps/Overlays/CartoInfowindow.js',
+        '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
+        '/javascripts/admin/maps/polygonEdit.js',
+        '/javascripts/admin/maps/polylineEdit.js',
+        '/javascripts/admin/maps/geometryCreator.js',
+        function(){
+          me.selection_area_    = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
+          me.info_window_       = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);     // InfoWindow for markers
+          me.tooltip_           = new CartoTooltip(new google.maps.LatLng(-260,-260),me.map_);		    // Over tooltip for markers and selection area
+          me.delete_window_     = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_);  // Delete window to confirm remove one/several markers
+          me.map_canvas_ 	    = new mapCanvasStub(me.map_);                                           // Canvas to control the coordinates
+        }
       );
     }
 
@@ -112,35 +118,45 @@
 			  count++;
 			  if (count==3) {
   			  $(document).unbind('arrived');
-  			  me.setTools(geom_type,layers_style,map_style);
+  			  me.setupTools(geom_type,layers_style,map_style);
 			  }
 			});
       
       
       // Get map style
-      // TODO map style
-      // Manage errors if they happen
-      map_style = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
-      $(document).trigger('arrived');
+      $.ajax({
+        url: global_api_url + 'tables/' + table_id + '/map_metadata',
+        type: "GET",
+        dataType: 'jsonp',
+        headers: {"cartodbclient":"true"},
+        success:function(result){
+          map_style = $.parseJSON(result.map_metadata);
+          $(document).trigger('arrived');
+        },
+        error: function(e){
+           console.debug(e);
+        }
+      });
 
 
 
       // Get geom type
       $.ajax({
-          method: "GET",
-          url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
-          headers: {"cartodbclient":"true"},
-          success: function(data) {
-            if (data.rows.length>0) {
-              geom_type = me.geometry_type_ = data.rows[0].type.toLowerCase();
-            } else {
-              geom_type = undefined;
-            }
-            $(document).trigger('arrived');
-          },
-          error: function(e) {
-            console.debug(e);
+        type: "GET",
+        dataType: 'jsonp',
+        url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
+        headers: {"cartodbclient":"true"},
+        success: function(data) {
+          if (data.rows.length>0) {
+            geom_type = me.geometry_type_ = data.rows[0].type.toLowerCase();
+          } else {
+            geom_type = undefined;
           }
+          $(document).trigger('arrived');
+        },
+        error: function(e) {
+          console.debug(e);
+        }
       });
 
 
@@ -160,22 +176,54 @@
       });
     }
     
-    CartoMap.prototype.setStyles = function(obj) {
-        // var me = this;
-        // 
-        // // TODO -> generate the cartocss json
-        // 
-        // $.ajax({
-        //     url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style',
-        //     type: 'POST',
-        //     success: function(result) {
-        //         // Refresh Wax with the new styles
-        //         me.refreshWax();
-        //     },
-        //     error:function(e) {}
-        // });
+    CartoMap.prototype.setTilesStyles = function(obj) {
+      var me = this;
+
+      var str = '#'+table_name+' {';
+      _.each(obj,function(property,i){
+        str += i+':'+property+'; ';
+      });
+      str += '}';
+      
+      $.ajax({
+        type: 'POST',
+        url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
+        data: {style:str},
+        success: function(result) {
+          me.refreshWax();
+        },
+        error:function(e) {
+          console.debug(e);
+        }
+      });
     }
 
+    CartoMap.prototype.setMapStyle = function(map_styles) {
+      // Compose array for map style      
+      var styles = [];
+      var type = '';
+      
+      _.each(map_styles,function(value,style){
+        if (style=="roads" || style=="labels") {
+          styles.push({featureType:((style=="roads")?'road':'administrative'),stylers:[{visibility:((value)?'on':'off')}]});
+        } else if (style=="saturation") {
+          styles.push({stylers:[{saturation:value}]});
+        } else {
+          type = value;
+        }
+      });
+      this.map_.setOptions({styles:styles});
+      
+      
+      // Save this object in the table
+      $.ajax({
+        type: "POST",
+        headers: {"cartodbclient": true},
+        url: global_api_url + 'tables/' + table_id + '/map_metadata',
+        data: {map_metadata: JSON.stringify({basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles})}
+      });
+    }
+    
 
 
     ////////////////////////////////////////
@@ -364,32 +412,37 @@
     }
 
     /* Set the tools due to geom_type... */
-    CartoMap.prototype.setTools = function(geom_type,layers_style,map_style) {
+    CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style) {
       var me = this;
       var map = me.map_;
-      
+
+                  
       /*Geometry tools*/
       if (geom_type=="point" || geom_type=="multipoint") {
-          $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
-          $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
+        $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
+        $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
       } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-          $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');
-          $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
+        $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');
+        $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
       } else {
-          $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
-          $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
+        $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
+        $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
       }
-      
       
       
       /*Map type - header*/
       var map_customization = (function(){
-        //me.map_style = map_style;
-        map.setOptions({styles:map_style});
+        var custom_map_style = {};
+        map.setOptions({styles:map_style.google_maps_customization_style});
   
-        // Get saturation, labels on/off, roads on/off
+        // Parse the styles of the map
+        custom_map_style = parseMapStyle(map_style.google_maps_customization_style);
+        
+        // Initialize radiobuttons and map type
+        initializeMapOptions(custom_map_style,map_style.google_maps_base_type);
+
   
-        $('.map_header ul.map_type li a').livequery('click',function(ev){
+        $('.map_header ul.map_type li a.option').livequery('click',function(ev){
           stopPropagation(ev);
           var parent = $(this).parent();
           if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
@@ -416,8 +469,115 @@
             } else {
               map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
             }
+            
+            custom_map_style.maptype = map_type.toLowerCase();
+            me.setMapStyle(custom_map_style);
           }
         });
+        
+        
+        /* saturation slider */
+        $('.map_header ul.map_type div.suboptions span.alpha div.slider').slider({
+          max:100,
+          min:-100,
+          range: "min",
+          value: custom_map_style.saturation,
+          slide: function(event,ui) {
+            $(ui.handle).closest('span.alpha').find('span.tooltip')
+              .css({left:$(ui.handle).css('left')})
+              .text(ui.value)
+              .show();
+          },
+          stop: function(event,ui) {
+            $(ui.handle).closest('span.alpha').find('span.tooltip').hide();
+            // Save the saturation value
+            custom_map_style['saturation'] = ui.value;
+            // Set the custom map styles
+            me.setMapStyle(custom_map_style);
+          }
+        });
+        
+        
+        /* roads/labels -> on/off*/
+        $('.map_header ul.map_type div.suboptions span.radio a').click(function(ev) {
+          stopPropagation(ev);
+          
+          if (!$(this).hasClass('clicked')) {
+            // Change clicked class
+            $(this).parent().find('a.clicked').removeClass('clicked');
+            $(this).addClass('clicked');
+
+            // Get the value
+            var value = $(this).text().toLowerCase() == "yes";
+
+            // Get the map css type
+            var style = $(this).closest('span').attr('css');
+
+            // Set value in the obj
+            custom_map_style[style] = value;
+
+            // Perform in the map
+            me.setMapStyle(custom_map_style);
+          }
+        });
+        
+        
+        
+        // Setup custom map properties (roads, labels, saturation...)
+        function parseMapStyle(map_style_) {
+          var obj = {};
+          
+          // Gets road on/off
+          var roads = _.detect(map_style_,function(ele,i){return ele.featureType == "road"});
+          if (roads != undefined) {
+            obj.roads = roads.stylers[0].visibility == "on";
+          } else {
+            obj.roads = true;
+          }
+          
+          // Gets labels on/off
+          var labels = _.detect(map_style_,function(ele,i){return ele.featureType == "administrative"});
+          if (labels != undefined) {
+            obj.labels = labels.stylers[0].visibility == "on";
+          } else {
+            obj.labels = true;
+          }
+          
+          // Saturation value
+          var saturation = _.detect(map_style_,function(ele,i){return ele.stylers[0].saturation != undefined});
+          if (saturation != undefined) {
+            obj.saturation = saturation.stylers[0].saturation;
+          } else {
+            obj.saturation = 0;
+          }
+          
+          return obj;
+        }
+        
+        
+        // Initialize the map controls and the map type
+        function initializeMapOptions(map_style, map_type) {
+          // select map type
+          if (map_type=="terrain") {
+            $('.map_header ul.map_type li a.option:contains("Terrain")').parent().addClass('selected');
+            map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+            custom_map_style.type = 'terrain';
+          } else if (map_type=="satellite") {
+            $('.map_header ul.map_type li a.option:contains("Satellite")').parent().addClass('selected');
+            map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+            custom_map_style.type = 'satellite';
+          } else {
+            $('.map_header ul.map_type li a.option:contains("Roadmap")').parent().addClass('selected');
+            map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+            custom_map_style.type = 'roadmap';
+          }
+          
+          
+          // change radio buttons
+          $('.map_header ul.map_type div.suboptions span.radio[css="roads"]').find('a:contains('+((map_style.roads)?'YES':'NO')+')').addClass('clicked');
+          $('.map_header ul.map_type div.suboptions span.radio[css="labels"]').find('a:contains('+((map_style.labels)?'YES':'NO')+')').addClass('clicked');
+        }
+        
         
         return {}
   		}());
@@ -426,26 +586,214 @@
       /*Geometry customization - header*/
       var geometry_customization = (function(){
         
-        $('.map_header ul.geometry_customization li a').livequery('click',function(ev){
+        var geometry_style = {};
+        var default_style = {};
+
+        setupStyles(geom_styles);
+        
+        // BINDINGS
+        /* change between list options */
+        $('.map_header ul.geometry_customization li a.option').click(function(ev){
           stopPropagation(ev);
           var parent = $(this).parent();
           if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
+            // Remove selected
+            $('.map_header ul.geometry_customization li').each(function(i,li){$(li).removeClass('selected special')});
+            
+            // Add selected to the parent (special?)
+            if (parent.find('div.suboptions').length>0) {
+              parent.addClass('selected special');
+              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+            } else {
+              parent.addClass('selected');
+              resetStyles();
+            }
+          }
+        });
+              
+        /* color input */
+        $('.map_header ul.geometry_customization div.suboptions span.color input').change(function(ev){
+          stopPropagation(ev);
+          
+          var color = new RGBColor($(this).val());
+          if (color.ok) {
+            var new_color = color.toHex();
+            var css_ = $(this).closest('span').attr('css');
+            $(this).parent().find('a.control').removeClass('error').css({'background-color':new_color});
+            
+            geometry_style[css_] = new_color;
+            me.setTilesStyles(geometry_style);
+            
+          } else {            
+            $(this).parent().find('a.control').removeAttr('style').addClass('error');
+          }
+          
+        });
+        
+        /* width range */
+        $('.map_header ul.geometry_customization div.suboptions span.numeric a').livequery('click',function(ev){
+          stopPropagation(ev);
+          var old_value = $(this).parent().find('input').val();
+          var add = ($(this).text()=="+")?true:false;
+          
+         if (add || old_value>0) {
+            $(this).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
+
+            var css_ = $(this).closest('span').attr('css');
+            var value_ = $(this).parent().find('input').val();
+
+            geometry_style[css_] = value_;
+            me.setTilesStyles(geometry_style);
+          }
+        });
+        
+        /* alpha slider */
+        var slider_value = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ');
+        slider_value = geometry_style[slider_value[0]]*100;
+        $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider({
+          max:100,
+          min:0,
+          range: "min",
+          value: slider_value,
+          slide: function(event,ui) {
+            $(ui.handle).closest('span.alpha').find('span.tooltip')
+              .css({left:$(ui.handle).css('left')})
+              .text(ui.value+'%')
+              .show();
+          },
+          stop: function(event,ui) {
+            $(ui.handle).closest('span.alpha').find('span.tooltip').hide();
+            
+            // Save the values in the geom_style object
+            var css_props = $(ui.handle).closest('span.alpha').attr('css').split(' ');
+            _.each(css_props,function(value,i){
+              geometry_style[value] = ui.value/100;
+            });
+
+            // Set style in the tiles finally
+            me.setTilesStyles(geometry_style);
           }
         });
         
         
-        // Remove the customization that doesn't belong to the geom_type
-        if (geom_type == 'multipoint') {
-          $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
-          $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
-        } else if (geom_type == 'multipolygon') {
-          $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
-          $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
-        } else {
-          $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
-          $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+        /* setup enter styles */
+        function setupStyles(styles) {
+
+          // Remove the customization that doesn't belong to the geom_type
+         if (geom_type == 'multipoint' || geom_type == 'point') {
+            $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
+            $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+
+            default_style = {
+              'marker-fill':'#00ffff',
+              'marker-opacity':1,
+              'marker-width':9,
+              'marker-line-color':'white',
+              'marker-line-width':3,
+              'marker-line-opacity':0.9,
+              'marker-placement':'point',
+              'marker-type':'ellipse',
+              'marker-allow-overlap':true
+            };
+
+         } else if (geom_type == 'multipolygon' || geom_type == 'polygon') {
+            $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+            $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+
+            default_style = {
+              'polygon-fill':'#FF6600',
+              'polygon-opacity': 0.7
+            };
+
+          } else {
+            $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
+            $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
+
+            default_style = {
+              'line-color':'#FF6600',
+              'line-width': 1,
+              'line-opacity': 0.7
+            };
+          }
+
+
+          // Get all the styles and save them in geometry_style object
+          var styles_ = styles.replace(/ /gi,'');
+
+          // Remove table_name
+          styles_ = styles_.split('{');
+
+          // Split properties
+          styles_ = styles_[1].split(';');
+
+          // Save each property removing white-spaces
+          _.each(styles_,function(property,i){
+            if (property!="}") {
+              var split_property = property.split(':');
+              geometry_style[split_property[0].replace(/ /g,'')] = split_property[1].replace(/ /g,'');
+            }
+          });
+
+
+          // Change tools, we have to know if this styles have been edited or not...
+          _.each(geometry_style,function(value,type){
+            $('span[css="'+type+'"]').find('input').val(value);
+
+            var color = new RGBColor(value);
+            if (color.ok) {
+              $('span[css="'+type+'"] a.control').css({'background-color':value});
+            }
+          });
+
+
+          // Determinate if it is a customized style or default
+          var is_default = true;
+          _.each(geometry_style,function(value,type){
+
+            if (default_style[type]!=undefined && geometry_style[type] != default_style[type]) {
+              is_default = false;
+              return;
+            } 
+          });
+
+          // if it is not default, select second option in the list, custom geometry style
+          if (!is_default) {
+            $('.map_header ul.geometry_customization li').removeClass('selected');
+            $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
+            $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+          }
         }
 
+
+        /* reset styles to default */
+        function resetStyles() {
+          // Geom_types now is default_styles
+          geometry_style = default_style;
+
+          // Come back to defaults in the tools
+          _.each(default_style,function(value,type){
+            $('span[css="'+type+'"]').find('input').val(value);
+
+            if (isNaN(value)) {
+              var color = new RGBColor(value);
+              if (color.ok) {
+                $('span[css="'+type+'"] a.control').removeClass('error').css({'background-color':value});
+              }
+            }
+          });
+
+          // Reset slider
+          var css_prop = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ')[0];
+          $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider('value',default_style[css_prop]*100);
+
+          // Change the text to "Default Style"
+          $('.map_header ul.geometry_customization').closest('li').find('p').text('Default Style');
+
+          // RefreshStyles
+          me.setTilesStyles(geometry_style);
+        }
+        
+        
         return {}
   		}());
       
@@ -464,6 +812,7 @@
   		}());
 
  
+ 
       /* Bind event for open any tool */
       $('.map_header a.open').livequery('click',function(ev){
         stopPropagation(ev);
@@ -480,10 +829,9 @@
           });
           options.show();
         } else {
-         me.unbindMapESC();
-         $('body').unbind('click');
-
-         options.hide();
+          me.unbindMapESC();
+          $('body').unbind('click');
+          options.hide();
         }
       });
 
@@ -533,41 +881,24 @@
       this.tilejson = this.generateTilejson();
             
       this.waxOptions = {
-          callbacks: {
-              out: function(){
-                  me.over_marker_ = false;
-                  me.map_.setOptions({ draggableCursor: 'default' });
-              },
-              over: function(feature, div, opt3, evt){
-                  if (me.status_ == "select" && !me.query_mode) {
-                      me.over_marker_ = true;
-                      me.map_.setOptions({ draggableCursor: 'pointer' });
-                      me.tooltip_.open(evt.latLng,feature);
-                  }
-              },
-              click: function(feature, div, opt3, evt){
-
-                  // click, load information - show geometry - hide layers
-                  // Get results from api
-                  if (me.status_ == "select" && !me.query_mode) {
-                      $.ajax({
-                          method: "GET",
-                          url: global_api_url+'queries?sql='+escape('SELECT ST_GeometryType(the_geom) FROM '+table_name+' WHERE cartodb_id = ' + feature),
-                          headers: {"cartodbclient":"true"},
-                          success: function(data) {
-                              var type = (data.rows[0].st_geometrytype).toLowerCase();
-                              me.info_window_.openWax(feature);
-                          },
-                          error: function(e) {
-                          }
-                      });
-
-                      me.hideOverlays();
-                  }
-
-              }
+        callbacks: {
+          out: function(){
+            me.over_marker_ = false;
+            me.map_.setOptions({ draggableCursor: 'default' });
           },
-          clickAction: 'full'
+          over: function(feature, div, opt3, evt){
+            if (me.status_ == "select" && !me.query_mode) {
+              me.over_marker_ = true;
+              me.map_.setOptions({ draggableCursor: 'pointer' });
+              me.tooltip_.open(evt.latLng,feature);
+            }
+          },
+          click: function(feature, div, opt3, evt){
+            me.info_window_.open(feature);
+            me.hideOverlays();
+          }
+        },
+        clickAction: 'full'
       };
 
       this.wax_tile = new wax.g.connector(this.tilejson);
@@ -666,7 +997,7 @@
       $('div.general_options li.map a.'+status).parent().addClass('selected');
 
       // New special geometry (multipolygon or multipolyline==multilinestring)
-      if (status == "add_polygon" || status == "add_polyline") {
+     if (status == "add_polygon" || status == "add_polyline") {
         this.geometry_creator_ = new GeometryCreator(this.map_,(this.status_=="add_polygon")?"MultiPolygon":"MultiLineString");
       }
 
@@ -685,7 +1016,7 @@
       
       if (this.geometry_type_ == 'point') {
         this.addFakeMarker(feature);
-      } else if (this.geometry_type_ == 'multipolygon' || this.geometry_type_ == 'polygon') {
+     } else if (this.geometry_type_ == 'multipolygon' || this.geometry_type_ == 'polygon') {
         this.addFakePolygons(feature);
       } else {
         this.addFakePolylines(feature);
@@ -744,82 +1075,82 @@
           url:global_api_url + 'tables/'+table_name+'/records/'+feature,
           headers: {"cartodbclient": true},
           success:function(data){
-              me.removeWax();
+            me.removeWax();
 
-              var coordinates = $.parseJSON(data.the_geom).coordinates;
-              var latlng = new google.maps.LatLng(coordinates[1],coordinates[0]);
+            var coordinates = $.parseJSON(data.the_geom).coordinates;
+            var latlng = new google.maps.LatLng(coordinates[1],coordinates[0]);
 
-              var image = new google.maps.MarkerImage(me.generateDot('#FF6600'),
-                  new google.maps.Size(20, 20),
-                  new google.maps.Point(0,0),
-                  new google.maps.Point(10, 10));
+            var image = new google.maps.MarkerImage(me.generateDot('#FF6600'),
+                new google.maps.Size(20, 20),
+                new google.maps.Point(0,0),
+                new google.maps.Point(10, 10));
 
-              var marker = new google.maps.Marker({
-                  position: latlng,
-                  icon: image,
-                  flat: true,
-                  clickable: true,
-                  draggable: true,
-                  raiseOnDrag: false,
-                  animation: false,
-                  map: me.map_,
-                  data: data
-              });
-
-
-              google.maps.event.addListener(marker,'mouseover',function(){
-                  me.over_marker_ = true;
-                  if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
-                      var latlng = this.getPosition();
-                      me.tooltip_.open(latlng,[this]);
-                  } else {
-                      me.tooltip_.hide();
-                  }
-              });
-
-              google.maps.event.addListener(marker,'mouseout',function(){
-                  me.over_marker_ = false;
-                  setTimeout(function(){
-                      if (!me.over_marker_) me.tooltip_.hide();
-                  },100);
-              });
-
-              google.maps.event.addListener(marker,'dragstart',function(ev){
-                  me.marker_dragging_ = true;
-                  this.data.init_latlng = ev.latLng;
-
-                  // Hide all floating map windows
-                  me.hideOverlays();
-              });
-
-              google.maps.event.addListener(marker,'dragend',function(ev){
-                  me.marker_dragging_ = false;
-                  var occ_id = this.data.cartodb_id;
-                  var params = {};
-                  params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
-                  params.cartodb_id = occ_id;
-                  me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"update_geometry","PUT");
-              });
+            var marker = new google.maps.Marker({
+                position: latlng,
+                icon: image,
+                flat: true,
+                clickable: true,
+                draggable: true,
+                raiseOnDrag: false,
+                animation: false,
+                map: me.map_,
+                data: data
+            });
 
 
-              google.maps.event.addListener(marker,'click',function(ev){
-                  ev.stopPropagation();
-                  if (me.status_=="select") {
-                      me.info_window_.open(this);
-                  }
-              });
+            google.maps.event.addListener(marker,'mouseover',function(){
+                me.over_marker_ = true;
+                if (me.status_ == "select" && !me.marker_dragging_ && !me.info_window_.isVisible(marker.data.cartodb_id) && !me.delete_window_.isVisible(marker.data.cartodb_id)) {
+                    var latlng = this.getPosition();
+                    me.tooltip_.open(latlng,[this]);
+                } else {
+                    me.tooltip_.hide();
+                }
+            });
+
+            google.maps.event.addListener(marker,'mouseout',function(){
+                me.over_marker_ = false;
+                setTimeout(function(){
+                    if (!me.over_marker_) me.tooltip_.hide();
+                },100);
+            });
+
+            google.maps.event.addListener(marker,'dragstart',function(ev){
+                me.marker_dragging_ = true;
+                this.data.init_latlng = ev.latLng;
+
+                // Hide all floating map windows
+                me.hideOverlays();
+            });
+
+            google.maps.event.addListener(marker,'dragend',function(ev){
+                me.marker_dragging_ = false;
+                var occ_id = this.data.cartodb_id;
+                var params = {};
+                params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
+                params.cartodb_id = occ_id;
+                me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"update_geometry","PUT");
+            });
 
 
-              // Click on map to recover wax layer and remove marker
-              google.maps.event.addListener(map,'click',function(ev){
-                  me.fakeMarker_.setMap(null);
-                  me.fakeMarker_ = null;
+            google.maps.event.addListener(marker,'click',function(ev){
+                ev.stopPropagation();
+                if (me.status_=="select") {
+                    me.info_window_.open(this);
+                }
+            });
 
-                  // Refresh tiles
-                  me.refreshWax();
-              });
 
-              me.fakeMarker_ = marker;
+            // Click on map to recover wax layer and remove marker
+            google.maps.event.addListener(map,'click',function(ev){
+                me.fakeMarker_.setMap(null);
+                me.fakeMarker_ = null;
+
+                // Refresh tiles
+                me.refreshWax();
+            });
+
+            me.fakeMarker_ = marker;
           },
           error:function(e){}
       });
@@ -842,13 +1173,24 @@
           // Get polygons coordinates
           var poly_obj = transformGeoJSON(data.the_geom);
           
+          
+          // Count the markers -> too many? uff...
+          var count = 0;
           _.each(poly_obj.paths,function(path,i){
-            path.pop();
-            var polygon = new google.maps.Polygon({paths:path,strokeColor:"#FFFFFF",strokeOpacity:1,strokeWeight:2,fillColor:"#FF6600",fillOpacity:0.5,map:me.map_,clickable:false,data:feature});
-            me.fakeGeometries_.push(polygon);
-            polygon.runEdit();
+            count = _.size(path) + count;
           });
           
+          if (count>200) {
+            me.showBigBang();
+          } else {
+            // Draw the polygon
+            _.each(poly_obj.paths,function(path,i){
+              path.pop();
+              var polygon = new google.maps.Polygon({paths:path,strokeColor:"#FFFFFF",strokeOpacity:1,strokeWeight:2,fillColor:"#FF6600",fillOpacity:0.5,map:me.map_,clickable:false,data:feature});
+              me.fakeGeometries_.push(polygon);
+              polygon.runEdit();
+            });
+          }
         },
         error:function(e){}
       });
@@ -865,15 +1207,25 @@
         headers: {"cartodbclient": true},
         success:function(data){
           me.removeWax();
-
+          
           // Get polygons coordinates and data
           var poly_obj = transformGeoJSON(data.the_geom);
           
+          // Count the markers -> too many? uff...
+          var count = 0;
           _.each(poly_obj.paths,function(path,i){
-            var polyline = new google.maps.Polyline({path:path,strokeColor:"#FF6600",strokeOpacity:1,strokeWeight:2,map:me.map_,clickable:false,data:feature});
-            me.fakeGeometries_.push(polyline);
-            polyline.runEdit();
+            count = _.size(path) + count;
           });
+          
+          if (count>200) {
+            me.showBigBang();
+          } else {
+            _.each(poly_obj.paths,function(path,i){
+              var polyline = new google.maps.Polyline({path:path,strokeColor:"#FF6600",strokeOpacity:1,strokeWeight:2,map:me.map_,clickable:false,data:feature});
+              me.fakeGeometries_.push(polyline);
+              polyline.runEdit();
+            });
+          }
           
         },
         error:function(e){}
@@ -900,30 +1252,30 @@
     /* Generate canvas image to fill marker */
     CartoMap.prototype.generateDot = function(color) {
       if (this[color]==null) {
-          var radius = 8;
-          var el = document.createElement('canvas');
-          el.width = (radius * 2) + 2;
-          el.height = (radius * 2) + 2;
+        var radius = 8;
+        var el = document.createElement('canvas');
+        el.width = (radius * 2) + 2;
+        el.height = (radius * 2) + 2;
 
-          var ctx = el.getContext('2d');
-          ctx.fillStyle = '#FFFFFF';
-          ctx.beginPath();
-          ctx.arc(radius+1, radius+1, radius, 0, Math.PI * 2, true);
-          ctx.closePath();
-          ctx.fill();
+        var ctx = el.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(radius+1, radius+1, radius, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
 
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = "#000000";
-          ctx.stroke();
-          ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#000000";
+        ctx.stroke();
+        ctx.fill();
 
-          ctx.fillStyle = color;
-          ctx.beginPath();
-          ctx.arc(radius+1, radius+1, radius-2, 0, Math.PI * 2, true);
-          ctx.closePath();
-          ctx.fill();
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(radius+1, radius+1, radius-2, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fill();
 
-          this[color] = el.toDataURL();
+        this[color] = el.toDataURL();
       }
       return this[color];
     }
@@ -935,7 +1287,22 @@
       this.updateTable('/records/'+cartodb_ids,params,null,null,"remove_points","DELETE");
     }
 
-
+    /* Show Big Bang error window due to edition of huge polygon */
+    CartoMap.prototype.showBigBang = function(cartodb_ids) {
+      // Out table&map window binding
+      closeOutTableWindows();
+      $('div.mamufas div.stop_window').show();
+      $('div.mamufas').fadeIn('fast');
+      bindESC();
+      
+      this.editing = false;
+      $('.general_options ul li.map a.select').click();
+      this.toggleEditTools();
+      this.removeFakeGeometries();
+      this.refreshWax();
+    }
+      
+      
     
     ////////////////////////////////////////
     //  CLOSE OUT TABLE WINDOWS && ESC    //
@@ -954,11 +1321,14 @@
     CartoMap.prototype.unbindMapESC = function() {
       $(document).unbind('keydown');
       $('body').unbind('click');
+      this.closeMapWindows();
     }
     
   	// Close all map elements
     CartoMap.prototype.closeMapWindows = function() {
-      $('.map_header div.options').hide();
+      $('.map_header ul.main li div.options').each(function(i,ele){
+        $(this).hide();
+      });
       this.info_window_.hide();
 
       //popup windows
@@ -1047,29 +1417,29 @@
       requests_queue.newRequest(requestId,type);
 
       $.ajax({
-          dataType: 'json',
-          type: request_type,
-          dataType: "text",
-          headers: {"cartodbclient": true},
-          url: global_api_url+'tables/'+table_name+url_change,
-          data: params,
-          success: function(data) {
-              requests_queue.responseRequest(requestId,'ok','');
-              me.successRequest(params,new_value,old_value,type,data);
-          },
-          error: function(e, textStatus) {
-              try {
-                  var msg = $.parseJSON(e.responseText).errors[0].error_message;
-                  if (msg == "Invalid rows: the_geom") {
-                      requests_queue.responseRequest(requestId,'error','First georeference your table');
-                  } else {
-                      requests_queue.responseRequest(requestId,'error',msg);
-                  }
-              } catch (e) {
-                  requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
-              }
-              me.errorRequest(params,new_value,old_value,type);
+        dataType: 'json',
+        type: request_type,
+        dataType: "text",
+        headers: {"cartodbclient": true},
+        url: global_api_url+'tables/'+table_name+url_change,
+        data: params,
+        success: function(data) {
+            requests_queue.responseRequest(requestId,'ok','');
+            me.successRequest(params,new_value,old_value,type,data);
+        },
+        error: function(e, textStatus) {
+          try {
+            var msg = $.parseJSON(e.responseText).errors[0].error_message;
+            if (msg == "Invalid rows: the_geom") {
+              requests_queue.responseRequest(requestId,'error','First georeference your table');
+            } else {
+              requests_queue.responseRequest(requestId,'error',msg);
+            }
+          } catch (e) {
+            requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
           }
+          me.errorRequest(params,new_value,old_value,type);
+        }
       });
 
     }
@@ -1094,15 +1464,15 @@
     /* If request fails */
     CartoMap.prototype.errorRequest = function(params,new_value,old_value,type) {
       switch (type) {
-          case "change_latlng":   var occ_id = params.cartodb_id;
-                                  (this.points_[occ_id]).setPosition(old_value);
-                                  break;
-          case "remove_row":      var array = (params.cartodb_ids).split(',');
-                                  var me = this;
-                                  _.each(array,function(ele,i){
-                                      me.points_[ele].setMap(me.map_);
-                                  });
-                                  break;
-          default:                break;
+        case "change_latlng":   var occ_id = params.cartodb_id;
+                                (this.points_[occ_id]).setPosition(old_value);
+                                break;
+        case "remove_row":      var array = (params.cartodb_ids).split(',');
+                                var me = this;
+                                _.each(array,function(ele,i){
+                                    me.points_[ele].setMap(me.map_);
+                                });
+                                break;
+        default:                break;
       }
     }

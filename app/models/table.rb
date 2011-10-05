@@ -276,6 +276,11 @@ class Table < Sequel::Model(:user_tables)
     @rows_counted ||= owner.in_database[name.to_sym].count
   end
   
+  # returns table size in bytes
+  def table_size
+    @table_size ||= owner.in_database["SELECT pg_relation_size('#{self.name}') as size"].first[:size] / 2
+  end  
+  
   # TODO: make predictable. Alphabetical would be better
   def schema(options = {})
     temporal_schema = []
@@ -294,10 +299,8 @@ class Table < Sequel::Model(:user_tables)
           temporal_schema.insert(0,col)
         when :created_at, :updated_at
           temporal_schema.insert(-1,col)
-        when :the_geom
-          temporal_schema.insert(1,col)  
         else
-          temporal_schema.insert(2,col)
+          temporal_schema.insert(1,col)
       end
     end
   end

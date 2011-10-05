@@ -1,4 +1,5 @@
 class Superadmin::SuperadminController < ActionController::Base  
+  include SslRequirement
   before_filter :authenticate
   
   protected

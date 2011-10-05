@@ -75,6 +75,18 @@
                       '<label>Fill</label>'+
                       '<div class="long">'+
                         '<span class="color" css="marker-fill">'+
+                          '<span class="palette">'+
+                            '<ul>'+
+                              '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+                              '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+                              '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+                              '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+                              '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+                              '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+                              '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+                              '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+                            '</ul>'+
+                          '</span>'+
                           '<a href="#change_fill_color" class="control"></a>'+
                           '<input type="text" value="#FF6600"/>'+
                         '</span>'+
@@ -87,6 +99,18 @@
                       '<label>Border</label>'+
                       '<div class="long">'+
                         '<span class="color" css="marker-line-color">'+
+                          '<span class="palette">'+
+                            '<ul>'+
+                              '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+                              '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+                              '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+                              '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+                              '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+                              '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+                              '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+                              '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+                            '</ul>'+
+                          '</span>'+
                           '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
                           '<input type="text" value="#FFFFFF"/>'+
                         '</span>'+
@@ -111,6 +135,18 @@
                       '<label>Fill</label>'+
                       '<div class="long">'+
                         '<span class="color" css="polygon-fill">'+
+                          '<span class="palette">'+
+                            '<ul>'+
+                              '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+                              '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+                              '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+                              '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+                              '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+                              '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+                              '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+                              '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+                            '</ul>'+
+                          '</span>'+
                           '<a href="#change_fill_color" class="control"></a>'+
                           '<input type="text" value="#FF6600"/>'+
                         '</span>'+
@@ -118,6 +154,18 @@
                       '<label>Border</label>'+
                       '<div class="long">'+
                         '<span class="color" css="line-color">'+
+                          '<span class="palette">'+
+                            '<ul>'+
+                              '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+                              '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+                              '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+                              '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+                              '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+                              '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+                              '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+                              '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+                            '</ul>'+
+                          '</span>'+
                           '<a href="#change_line_color" class="control"></a>'+
                           '<input type="text" value="#FFFFFF"/>'+
                         '</span>'+
@@ -142,6 +190,18 @@
                       '<label>Line</label>'+
                       '<div class="long">'+
                         '<span class="color" css="line-color">'+
+                          '<span class="palette">'+
+                            '<ul>'+
+                              '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+                              '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+                              '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+                              '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+                              '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+                              '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+                              '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+                              '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+                            '</ul>'+
+                          '</span>'+
                           '<a href="#change_fill_color" class="control"></a>'+
                           '<input type="text" value="#FF6600"/>'+
                         '</span>'+

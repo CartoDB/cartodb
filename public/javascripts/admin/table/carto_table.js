@@ -261,7 +261,6 @@
       //Draw the columns headers
       var thead = '<thead style="'+((table.mode!="normal")?'height:91px':'')+'"><tr><th class="first"><div></div></th>';
 
-
       _.each(data,function(element,index){
         //Get type of table -> Points, polygons or lines
         if (element[3]!=undefined) {
@@ -282,7 +281,6 @@
 	          geo: (element[3]==undefined)?false:true
 	        });
 				}
-
       });
 
 

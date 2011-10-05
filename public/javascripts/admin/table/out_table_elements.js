@@ -976,8 +976,8 @@
 	        // If the name of the table is Untitled_table... - not show warning
 	        if ((old_value.name).search('untitled_table')==-1) {
 	          closeOutTableWindows();
-	          $('div.mamufas div.warning_window a.continue').unbind('click');
-	          $('div.mamufas div.warning_window a.continue').click(function(ev){
+	          $('div.mamufas div.warning_window form').unbind('submit');
+	          $('div.mamufas div.warning_window form').submit(function(ev){
 	            stopPropagation(ev);
 	            changeTableName(new_value,old_value);
 	          });
@@ -1000,7 +1000,6 @@
 	          changesRequest('name',new_value,old_value);
 	          closeOutTableWindows();
 	        }
-        
 	      }
 	    });
 

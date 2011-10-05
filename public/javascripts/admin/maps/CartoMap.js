@@ -208,7 +208,15 @@
       
       _.each(map_styles,function(value,style){
         if (style=="roads" || style=="labels") {
-          styles.push({featureType:((style=="roads")?'road':'administrative'),stylers:[{visibility:((value)?'on':'off')}]});
+          if (style=="roads") {
+            styles.push({featureType:'road',stylers:[{visibility:((value)?'on':'off')}]});
+          } else {
+            styles.push({featureType:'administrative',stylers:[{visibility:((value)?'on':'off')}]});
+            styles.push({featureType:'poi',elementType:"labels",stylers:[{visibility:((value)?'on':'off')}]});
+            styles.push({featureType:'transit',stylers:[{visibility:((value)?'on':'off')}]});
+            styles.push({featureType:'water',elementType:"labels",stylers:[{visibility:((value)?'on':'off')}]});
+            styles.push({featureType:'landscape',elementType:"labels",stylers:[{visibility:((value)?'on':'off')}]});            
+          }
         } else if (style=="saturation") {
           styles.push({stylers:[{saturation:value}]});
         } else {

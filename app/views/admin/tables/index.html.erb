@@ -15,7 +15,7 @@
         <div class="middle_white">
           <a class="close" href="#close_stats">close</a>
           <h2>Welcome to CartoDB <%= current_user.username %>!</h2>
-          <% if current_user.tables_count == 0 %>
+          <% if @tables_count == 0 %>
           <p>As a beta tester we really appreciate your feedback. Get in touch via <%= link_to "email", "mailto:support@cartodb.com"%> &amp; <%= link_to "twitter", "http://twitter.com/cartodb" %>, or read our <%= link_to "blog", "http://blog.cartodb.com/"%>  for the latest info. Have fun!</p>
           <span class="block">
             <label>1</label>
@@ -32,23 +32,22 @@
             <h3>Give us your feedback</h3>
             <p>Please <a href="mailto:support@cartodb.com">send us</a> your questions or requests!</p>
           </span>
-          <% else %>
-            <% @quota = 100 %>
+          <% else %>            
             <div class="info">
               <p class="left">
                 You are using <strong>
-                <%= number_to_percentage(disk_usage_percent(current_user.database_size, @quota), :precision => 2)%>
+                <%= number_to_percentage(disk_usage_percent(@database_size, @quota), :precision => 2)%>
                 </strong> of your storage limit
               </p>
-              <% if disk_usage_percent(current_user.database_size, @quota) > 74 %>
+              <% if disk_usage_percent(@database_size, @quota) > 74 %>
                 <p class="right">Need more space? <a href="#where?">Upgrade your account</a></p>
               <% end %>
             </div>
 
             <div class="progress">
               <p><%= @quota %> MB</p>
-              <span class="bar <%= disk_usage_class(current_user.database_size) %>" style="width:<%= number_to_percentage(disk_usage_percent(current_user.database_size, @quota), :precision => 2)%>">
-                <p><%= number_with_precision(current_user.database_size, :precision => 2) %> MB</p>
+              <span class="bar <%= disk_usage_class(@database_size) %>" style="width:<%= number_to_percentage(disk_usage_percent(@database_size, @quota), :precision => 2)%>">
+                <p><%= number_with_precision(@database_size, :precision => 2) %> MB</p>
               </span>
             </div>
           <% end %>
@@ -63,7 +62,7 @@
           <div class="top_blue_medium">
             <h3>
               <strong>
-                <%= pluralize(@tables.pagination_record_count, 'table', 'tables') %>
+                <%= pluralize(@tables_count, 'table', 'tables') %>
                 <% if @tag_name %>
                 with the tag <%= @tag_name %>
                 <% end %>
@@ -84,7 +83,13 @@
                     <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
                     <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
                     <p class="delete"> | <a table-name="<%= table.name %>" href="#delete" class="delete">delete table</a></p>
-                    <p class="columns"><strong><%= pluralize(table.rows_counted,'row','rows') rescue '' %> / <%= table.schema.size rescue '' %> columns:</strong>
+                    <p class="columns">
+                      <strong>
+                        <%= pluralize(table.rows_counted,'row','rows') rescue '' %> / 
+                        <%= table.schema.size rescue '' %> columns:
+                      </strong>
+
+
                     <%= table.schema.map{ |e| e.first }[1...4].join(', ') %>...</p>
                   </span>
                   <span class="tags">
@@ -100,7 +105,7 @@
                 </div>
 
                 <!-- TODO: Add raster span only when the table is from raster... -->
-                <!-- <% if (i==(@tables.count - 1) && i>2) %>
+                <!-- <% if (i==(@tables_count - 1) && i>2) %>
                   <span class="raster"></span>
                 <% end %> -->
                 <!-- end... -->

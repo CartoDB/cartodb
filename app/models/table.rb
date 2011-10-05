@@ -273,9 +273,9 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def rows_counted
-    owner.in_database[name.to_sym].count
+    @rows_counted ||= owner.in_database[name.to_sym].count
   end
-
+  
   # TODO: make predictable. Alphabetical would be better
   def schema(options = {})
     temporal_schema = []
@@ -300,7 +300,6 @@ class Table < Sequel::Model(:user_tables)
           temporal_schema.insert(2,col)
       end
     end
-    temporal_schema.compact
   end
 
   def insert_row!(raw_attributes)
@@ -674,8 +673,8 @@ TRIGGER
     update_updated_at && save_changes
   end
 
-  def owner
-    User.select(:id,:database_name,:crypted_password).filter(:id => self.user_id).first
+  def owner    
+    @owner ||= User.select(:id,:database_name,:crypted_password).filter(:id => self.user_id).first
   end
 
   def get_valid_name(raw_new_name = nil)

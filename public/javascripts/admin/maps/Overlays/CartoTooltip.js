@@ -10,7 +10,7 @@ CartoTooltip.prototype.draw = function() {
         div = this.div_ = document.createElement('DIV');
         div.setAttribute('class','marker_tooltip');
 
-        $(div).append('<span><p>1 point</p><a class="info" href="#show_info">i</a><a class="margin edit" href="#edit">e</a><a class="margin delete" href="#delete_marker">x</a></span>');
+        $(div).append('<span><p>1 point</p><a class="info" href="#show_info">i</a><a class="margin edit" href="#edit">e</a><a class="margin delete_geometry" href="#delete_geometry">x</a></span>');
 
         $(div).find('a.info').click(function(ev){
             stopPropagation(ev);
@@ -66,8 +66,8 @@ CartoTooltip.prototype.open = function(latlng,marker) {
         div.style.width = '48px';
         $(div).find('a.info', 'a.edit').show();
         $(div).find('p').hide();
-        $(div).find('a.delete').unbind('click');
-        $(div).find('a.delete').click(function(ev){
+        $(div).find('a.delete_geometry').unbind('click');
+        $(div).find('a.delete_geometry').click(function(ev){
             stopPropagation(ev);
             carto_map.over_marker_ = true;
             me.hide();
@@ -93,11 +93,11 @@ CartoTooltip.prototype.openPolgyon = function(latlng,markers) {
         var total_markers = _.size(markers);
         $(div).find('a.info').hide();
         $(div).find('p').text(total_markers + ((total_markers==1)?' point':' points')).show();
-        $(div).find('a.delete').unbind('click');
-        $(div).find('a.delete').click(function(ev){
-            stopPropagation(ev);
-            me.hide();
-            carto_map.removeGeometries(me.markers_);
+        $(div).find('a.delete_geometry').unbind('click');
+        $(div).find('a.delete_geometry').click(function(ev){
+          stopPropagation(ev);
+          me.hide();
+          carto_map.removeGeometries(me.markers_);
         });
         var p_width = 	$(div).find('p').width();
         div.style.width = 21 + p_width + 'px';

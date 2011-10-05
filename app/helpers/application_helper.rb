@@ -69,6 +69,12 @@ module ApplicationHelper
       "boom"
     end
   end
+  
+  # capped percent indicator
+  def disk_usage_percent(usage, quota)
+    return 100 if usage > quota
+    (usage / quota) * 100    
+  end  
 
 
   def last_blog_posts

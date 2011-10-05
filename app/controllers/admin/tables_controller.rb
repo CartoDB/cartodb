@@ -14,7 +14,9 @@ class Admin::TablesController < ApplicationController
     else
       Table.filter({:user_id => current_user.id}).order(:id).reverse.paginate(current_page, per_page)
     end
-    @tables_count = @tables.count
+    @tables_count  = @tables.pagination_record_count
+    @quota         = 100  #TODO: make definable
+    @database_size = current_user.database_size
   end
 
   def show

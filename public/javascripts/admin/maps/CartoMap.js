@@ -235,6 +235,9 @@
       });
     }
     
+    CartoMap.prototype.setInfowindowVars = function(infowindow_vars) {
+      
+    }
 
 
     ////////////////////////////////////////
@@ -926,7 +929,7 @@
             me.map_.setOptions({ draggableCursor: 'default' });
           },
           over: function(feature, div, opt3, evt){
-            if (me.status_ == "select" && !me.query_mode) {
+            if (me.status_ == "select") {
               me.over_marker_ = true;
               me.map_.setOptions({ draggableCursor: 'pointer' });
               me.tooltip_.open(evt.latLng,feature);

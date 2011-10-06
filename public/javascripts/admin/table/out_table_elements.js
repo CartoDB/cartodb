@@ -225,7 +225,7 @@
 
           // Remove all ScrollPane and lists items //
           var custom_scrolls = [];
-          $('.scrollPane').each(function(){
+          $('div.georeference_window .scrollPane').each(function(){
        		  custom_scrolls.push($(this).jScrollPane().data().jsp);
        		});
 
@@ -299,7 +299,7 @@
             $('body').bind('click',function(ev){
               if (!$(ev.target).closest('span.select').length) {
                 $('span.select').removeClass('clicked');
-              };
+              }
             });
             $(this).parent().addClass('clicked');
             $(this).parent().find('ul').jScrollPane();

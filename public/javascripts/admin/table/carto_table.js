@@ -691,12 +691,16 @@
           '<div class="inner_">'+
             '<form>'+
               '<span class="top">'+
-                '<h3>Filter by a column</h3>'+
+                '<h3>Filter by <a href="#change_column">column</a></h3>'+
                 '<p>This helps you to find something in your table</p>'+
                 '<label>TEXT FILTER</label>'+
                 '<input type="text" value=""/>'+
+                '<div class="select_content">'+
+                  '<ul class="scrollPane"></ul>'+
+                '</div>'+
               '</span>'+
               '<span class="bottom">'+
+                '<a href="#cancel" class="cancel">cancel</a>'+
                 '<input type="submit" class="apply_query" value="Apply query"/>'+
                 '<a href="#clear_filter" class="clear_filter">Clear filter</a>'+
               '</span>'+
@@ -2143,10 +2147,14 @@
           // Reset input
           $('div.filter_window form input[type="text"]').val('');
           
+
           // Get the column
           var column_name = $(this).closest('th').attr('c');
           $('div.filter_window').attr('c',column_name);
-          $('div.filter_window h3').text('Filter by '+column_name+' column');
+          $('div.filter_window h3 a').text(column_name);
+          
+          // Reinitialize jscrollpane and list column names
+          getColumList(column_name);
           
           // Set filter column for the request
           defaults.filter_column = column_name;
@@ -2155,13 +2163,74 @@
           $('div.filter_window').fadeIn(function(ev){
             $('div.filter_window input[type="text"]').focus();
           });
+          
+          
+          function getColumList(current_column) {
+            // Hide list in any case
+            $('div.filter_window div.select_content').hide();
+            
+            // Remove all ScrollPane and lists items
+            var custom_scrolls = [];
+            $('div.filter_window .scrollPane').each(function(){
+         		  custom_scrolls.push($(this).jScrollPane().data().jsp);
+         		});
+            _.each(custom_scrolls,function(ele,i) {
+              ele.destroy();
+            });
+            
+            // Remove the list items
+            $('div.filter_window ul.scrollPane li').remove();
+            
+            // Add new ones
+            _.each(table.h,function(h,i){
+              $('div.filter_window ul.scrollPane').append('<li class="'+((h.name == current_column)?'selected':'')+'"><a href="#'+h.name+'">'+h.name+'</a></li>');              
+            });
+            
+            // Initialize jscrollPane
+             $('div.filter_window ul.scrollPane').jScrollPane({autoReinitialise:true});
+          }
         }
       });
+      $('div.filter_window span.top h3 a').livequery('click',function(ev){
+        stopPropagation(ev);
+        // Positionate correctly
+        $('div.filter_window div.select_content').show();
+        $('body').unbind('click');
+        $('body').click(function(ev){
+          if (!$(ev.target).closest('div.select_content').length) {
+            $('div.filter_window div.select_content').hide();
+          }
+        });
+        
+      });    
+      $('div.filter_window ul.scrollPane li a').livequery('click',function(ev){
+        stopPropagation(ev);
+        
+        if (!$(this).parent().hasClass('selected')) {
+          // close window
+          $(this).closest('div.select_content').hide();
+
+          // Get the new column
+          var column_name = $(this).text();
+          
+          // Change the value for the filter
+          $('div.filter_window').attr('c',column_name);
+          $('div.filter_window h3 a').text(column_name);
+          defaults.filter_column = column_name;
+          
+          // Remove previous selected item and selected this one
+          $('div.filter_window ul.scrollPane li.selected').removeClass('selected');
+          $(this).parent().addClass('selected');
+        } else {
+          $(this).closest('div.select_content').hide();
+        }
+      })     
       $('div.filter_window form').livequery('submit',function(ev){
         stopPropagation(ev);
         table.mode = 'filter';
         // Set filter column for the request
         defaults.filter_value = $('div.filter_window form input[type="text"]').val();
+        $('div.filter_window div.select_content').hide();
         methods.refreshTable();
       });
       $('div.filter_window a.clear_filter,div.stickies a.remove_filter').livequery('click',function(ev){
@@ -2169,10 +2238,12 @@
         $('body').attr('query_mode','false');
         table.mode = 'normal';
         methods.refreshTable('');
+        $('div.filter_window div.select_content').hide();
       });
-      $('div.filter_window a.close').livequery('click',function(ev){
+      $('div.filter_window a.close,div.filter_window a.cancel').livequery('click',function(ev){
         stopPropagation(ev);
         methods.closeTablePopups();
+        $('div.filter_window div.select_content').hide();
       });
     },
 
@@ -2304,20 +2375,19 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     successRequest: function(params,new_value,old_value,type) {
       switch (type) {
-        case "rename_column":   var type  = table.h[old_value];
-                                delete table.h[old_value];
-                                table.h[new_value] = type;
+        case "rename_column":   _.each(table.h,function(h,i){
+                                  if (h.name==old_value) {
+                                    table.h[i].name = new_value;
+                                  }
+                                });
                                 $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
                                 break;
         case "column_type":     methods.refreshTable('');
-                                table.h[params.name] = params.type;
                                 break;
         case "new_column":      methods.closeTablePopups();
-                                table.h[params.name] = params.type;
                                 methods.refreshTable('next');
                                 break;
-        case "delete_column":   delete table.h[params.name];
-                                methods.refreshTable('');
+        case "delete_column":   methods.refreshTable('');
                                 break;
         case "delete_row":      methods.refreshTable('');
                                 break;

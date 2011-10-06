@@ -63,16 +63,29 @@
       if (this.div_) {
         var div = this.div_;
         var me = this;
-        div.style.width = '48px';
-        $(div).find('a.info', 'a.edit').show();
-        $(div).find('p').hide();
-        $(div).find('a.delete_geometry').unbind('click');
-        $(div).find('a.delete_geometry').click(function(ev){
-            ev.preventDefault();
-            carto_map.over_marker_ = true;
-            me.hide();
-            carto_map.delete_window_.open(me.latlng_,marker);
-        });
+        
+        // App status
+        var is_query = $('body').attr('query_mode') === 'true';
+        
+        if (!is_query) {
+          div.style.width = '48px';
+          $(div).find('a.info', 'a.edit').show();
+          $(div).find('p').hide();
+          $(div).find('a.delete_geometry').unbind('click');
+          $(div).find('a.delete_geometry').click(function(ev){
+              ev.preventDefault();
+              carto_map.over_marker_ = true;
+              me.hide();
+              carto_map.delete_window_.open(me.latlng_,marker);
+          });
+        } else {
+          div.style.width = '14px';
+          $(div).find('a.info').show();
+          $(div).find('a.delete_geometry').hide();
+          $(div).find('a.edit').hide();
+        }
+        
+
 
         this.markers_ = marker;
         this.latlng_ = latlng;

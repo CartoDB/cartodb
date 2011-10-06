@@ -13,8 +13,8 @@ div.map_window a.zoom_in:hover {background-position:0 -15px; cursor:pointer;}
 div.map_window a.zoom_out {position:absolute; bottom:7px; left:7px; width:14px; height:15px; background:url('/images/admin/map/zoom_buttons.png') no-repeat -14px 0; z-index:10;}
 div.map_window a.zoom_out:hover {background-position:-14px -15px; cursor:pointer;}
 div.map_window div#zoom_control .ui-slider { position: relative; text-align: left; }
-div.map_window div#zoom_control .ui-slider .ui-slider-handle { position: absolute; z-index:2; width:12px; height:12px; cursor: default; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; background-image:-moz-linear-gradient(100% 100% 90deg, #FFFFFF, #C3C3C3);
-   background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#C3C3C3)); border:1px solid #212635;}
+div.map_window div#zoom_control .ui-slider .ui-slider-handle { position: absolute; z-index:2; width:12px; height:12px; cursor: default; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; border:1px solid #212635;
+  background:-moz-linear-gradient(100% 100% 90deg,#FFFFFF,#C3C3C3);background:-webkit-gradient(linear,0% 0%,0% 100%,from(#FFFFFF),to(#C3C3C3));background:-moz-linear-gradient(-90deg,#FFFFFF,#C3C3C3);background:-o-linear-gradient(#FFFFFF,#C3C3C3);background:linear-gradient(#FFFFFF,#C3C3C3);background:#f5f5f5\9;}
 div.map_window div#zoom_control .ui-slider-vertical .ui-slider-handle { left:-2px; margin-left:0; margin-bottom:-.6em; }
 div.map_window div#zoom_control .ui-slider .ui-state-hover {cursor:pointer; background-image:-moz-linear-gradient(100% 100% 90deg, #C3C3C3, #ffffff); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#C3C3C3), to(#ffffff));}
 div.terms {position:absolute; bottom:5px!important; right:140px!important;}

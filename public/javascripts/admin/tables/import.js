@@ -81,7 +81,7 @@
             var geom_type = $('div.geom_type span.selected a').text().toLowerCase();
             
             if (geom_type=="point") {
-              geom_type="multipoint";              
+              geom_type="point";              
             } else if (geom_type=="polygon") {
               geom_type="multipolygon";
             } else {

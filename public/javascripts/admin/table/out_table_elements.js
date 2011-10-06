@@ -343,8 +343,7 @@
 
             $.ajax({
                 method: "POST",
-                //UPDATE test_points SET the_geom = ST_GeomFromText('MULTIPOINT(('||longitude||' '|| latitude||'))',4326)
-                url: global_api_url+'queries?sql='+escape("UPDATE "+table_name+" SET the_geom = ST_GeomFromText('MULTIPOINT(('||"+longitude+"||' '|| "+latitude+"||'))',4326)"),
+                url: global_api_url+'queries?sql='+escape("UPDATE "+table_name+" SET the_geom = ST_GeomFromText('POINT('||" + longitude + "||' '||" + latitude + "||')',4326)"),
                 headers: {"cartodbclient":"true"},
                 success: function(data) {
                   requests_queue.responseRequest(requestId,'ok','');

@@ -466,7 +466,7 @@ div.mamufas div.embed_window div.inner_ span.top h3 {float:left; width:100%; fon
 div.mamufas div.embed_window div.inner_ span.top p {position:relative; float:left!important; height:auto; width:100%; padding:3px 0 0 0!important; margin:0!important; font:normal 11px Helvetica,Arial; color:#999999; text-shadow:0 1px white;}
 div.mamufas div.embed_window div.inner_ div.html_code {float:left; width:572px; padding:5px; margin:15px 0 0 0; background:#e3e4e5; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px}
 div.mamufas div.embed_window div.inner_ div h4 {display:block; margin:0 0 5px 0; font:bold 11px "Helvetica",Arial; color:#999999;}
-div.mamufas div.embed_window div.inner_ div.tiles_code {float:left; margin:15px 0 0 0}
+div.mamufas div.embed_window div.inner_ div.tiles_code {float:left; width:100%; margin:15px 0 0 0}
 div.mamufas div.embed_window div.inner_ div span.copy_code {display:block; height:28px; border:1px solid #CDCDCD; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; background:white}
 div.mamufas div.embed_window div.inner_ div span.copy_code input {float:left; width:510px; margin:5px 0 0 7px; border:none; font:normal 13px "Helvetica",Arial; color:#999999;}
 div.mamufas div.embed_window div.inner_ div span.copy_code a {float:right; height:12px; margin:3px 3px 0 0; padding:4px 6px; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;

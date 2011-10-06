@@ -517,9 +517,16 @@ class Table < Sequel::Model(:user_tables)
     if !options[:latitude_column].blank? && !options[:longitude_column].blank?
       set_the_geom_column!("point")
       owner.in_database do |user_database|
-        user_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')',#{CartoDB::SRID})")
-        #user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{options[:longitude_column]}")
-        #user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{options[:latitude_column]}")
+        user_database.run(<<-GEOREF
+        UPDATE #{self.name} 
+        SET the_geom = 
+          ST_GeomFromText(
+            'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')',#{CartoDB::SRID}
+        ) 
+        WHERE #{options[:longitude_column]} ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$' 
+        AND   #{options[:latitude_column]}  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+        GEOREF
+        )
       end
       schema(:reload => true)
     else

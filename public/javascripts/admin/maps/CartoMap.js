@@ -1069,8 +1069,11 @@
       $('.general_options ul li.edit a.complete').click(function(ev){
         stopPropagation(ev);
         me.editing = false;
-        if (me.fakeGeometries_.length>0) {
+        if (me.fakeGeometries_ && me.fakeGeometries_.length>0) {
           me.updateGeometry(me.fakeGeometries_,me.geometry_type_,me.fakeGeometries_[0].data);
+        } else {
+          me.removeFakeGeometries();
+          me.refreshWax();
         }
         $('.general_options ul li.map a.select').click();
         me.toggleEditTools();
@@ -1163,12 +1166,13 @@
             });
 
             google.maps.event.addListener(marker,'dragend',function(ev){
-                me.marker_dragging_ = false;
-                var occ_id = this.data.cartodb_id;
-                var params = {};
-                params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
-                params.cartodb_id = occ_id;
-                me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"update_geometry","PUT");
+              me.toggleEditTools();
+              me.marker_dragging_ = false;
+              var occ_id = this.data.cartodb_id;
+              var params = {};
+              params.the_geom = '{"type":"Point","coordinates":['+ev.latLng.lng()+','+ev.latLng.lat()+']}';
+              params.cartodb_id = occ_id;
+              me.updateTable('/records/'+occ_id,params,ev.latLng,this.data.init_latlng,"update_geometry","PUT");
             });
 
 

@@ -244,7 +244,7 @@
               data = data.schema;
 
               for (var i = 0; i<data.length; i++) {
-                if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at" && (data[i][1]=="number")) {
+                if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
                    if (data[i][2]==undefined) {
                      $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                    } else {

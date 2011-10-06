@@ -337,14 +337,17 @@
             var params = {};
             params['latitude_column'] = latitude;
             params['longitude_column'] = longitude;
+            params['_method'] = "PUT"
             
             var requestId = createUniqueId();
             requests_queue.newRequest(requestId,'update_geometry');
-
-            $.ajax({
-                method: "POST",
-                url: global_api_url+'queries?sql='+escape("UPDATE "+table_name+" SET the_geom = ST_GeomFromText('POINT('||" + longitude + "||' '||" + latitude + "||')',4326)"),
-                headers: {"cartodbclient":"true"},
+                        
+            $.ajax({                
+                type: "POST",
+                dataType: 'json',
+                url: global_api_url+'tables/'+ table_name,
+                data: params,
+                headers: {'cartodbclient':true},                                
                 success: function(data) {
                   requests_queue.responseRequest(requestId,'ok','');
                   successActionPerforming('update_geometry',null,null);

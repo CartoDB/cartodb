@@ -1381,7 +1381,7 @@
   //  REQUEST OUT OF THE TABLE       	  //
   ////////////////////////////////////////
 	// Send request to server about element out of the table
-  function changesRequest(param,value,old_value) {
+  function changesRequest(param,value,old_value,table_id) {
     var params = {};
     params[param] = value;
 
@@ -1392,7 +1392,7 @@
     $.ajax({
       dataType: 'json',
       type: "PUT",
-      url: global_api_url+'tables/'+table_name,
+      url: global_api_url+'tables/'+ table_name,
       data: params,
       headers: {'cartodbclient':true},
       success: function(data) {

@@ -1253,7 +1253,6 @@
           headers: {"cartodbclient":"true"},
           success:function(result){
             map_style = $.parseJSON(result.map_metadata);
-            console.log(map_style);
             if (!map_style || map_style.google_maps_base_type=="roadmap") {
               embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
             } else if (map_style.google_maps_base_type=="satellite") {

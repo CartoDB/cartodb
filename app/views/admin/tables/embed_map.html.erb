@@ -56,25 +56,33 @@
           var carto_embed_map = new google.maps.Map(document.getElementById("map_cartodb_container"),cartodbMapOptions);
 
 
-          // //Setup your map styles
-          // $.ajax({
-          //   url:,
-          //   dataType: 'jsonp',
-          //   type: "GET",
-          //   success:function(result){
-          //     // Map type
-          //     if (result.google_maps_base_type=="roadmap") {
-          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-          //     } else if (result.google_maps_base_type=="satellite") {
-          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
-          //     } else {
-          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
-          //     }
-          // 
-          //     // Custom tiles
-          //     carto_embed_map.setOptions({styles: result.google_maps_customization_style})
-          //   }
-          // });
+          // Setup your map styles
+          $.ajax({
+            url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/infowindow',
+            type: 'GET',
+            dataType: 'jsonp',
+            success:function(result){
+              map_style = $.parseJSON(result.infowindow);
+              if (!map_style || map_style.google_maps_base_type=="roadmap") {
+                carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+              } else if (map_style.google_maps_base_type=="satellite") {
+                carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+              } else if (map_style.google_maps_base_type=="terrain") {
+                carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+              } else {
+                var mapStyles = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
+                map_style.google_maps_customization_style = mapStyles;
+                carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+              }
+
+              // Custom tiles
+              if (!map_style) {map_style = {google_maps_customization_style: []}}
+              carto_embed_map.setOptions({styles: map_style.google_maps_customization_style})
+            },
+            error: function(e){}
+          });
+  		  
+
 
 
           // Add the cartodb tiles
@@ -90,7 +98,7 @@
           // Zoom to your geometries
           $.ajax({
             method: "GET",
-            url: 'http://'+user_name+'.'+SQL_SERVER+global_api_url+'/sql/?q='+escape('select ST_Extent(the_geom) from '+ table_name),
+            url: 'http://'+user_name+'.' + SQL_SERVER + global_api_url+'/sql/?q='+escape('select ST_Extent(the_geom) from '+ table_name),
             dataType: 'jsonp',
             success: function(data) {
               if (data.rows[0].st_extent!=null) {

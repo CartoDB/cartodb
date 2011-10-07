@@ -5,7 +5,7 @@
 [CartoDB](http://www.cartodb.com) is a tool for managing PostGIS user dedicated databases. Each CartoDB is owned by its user, and is composed of:
 
   - User Interface: create and manipulate tables and their data, import new ones, or export them to files
-  - PostGIS database: a geospatial database with the full range of Postgres and PostGIS functionality
+  - PostGIS 2 database: a geospatial database with the full range of Postgres and PostGIS functionality
   - Pure SQL API endpoint: run SQL queries and get responses in JSON, geojson and KML format 
   - Map tiler: A SQL configurable map tile generator for quick feedback on your data, allowing you to style and embed maps 
   - Authentication: Read/Write access to datasets over OAuth with user definable public access if required   

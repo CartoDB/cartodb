@@ -27,6 +27,9 @@
                     '<a class="option" href="#">Terrain</a>'+
                   '</li>'+
                   '<li>'+
+                    '<a class="option" href="#">CartoDB</a>'+
+                  '</li>'+                  
+                  '<li>'+
                     '<a class="option" href="#">Custom tiles</a>'+
                     '<div class="suboptions">'+
                       '<label>Labels</label>'+

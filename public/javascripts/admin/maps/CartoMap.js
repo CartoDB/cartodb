@@ -154,7 +154,6 @@
       });
 
 
-
       // Get tiles style
       $.ajax({
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
@@ -1365,27 +1364,38 @@
     CartoMap.prototype.addFakePolygons = function(feature) {
       var me = this;
       this.fakeGeometries_ = new Array();
-
+      
+      
+      // Get number of vertex
       $.ajax({
-        method: "GET",
-        url:global_api_url + 'tables/'+table_name+'/records/'+feature,
-        headers: {"cartodbclient": true},
-        success:function(data){
-          me.removeWax();
-
-          // Get polygons coordinates
-          var poly_obj = transformGeoJSON(data.the_geom);
-          
-          
-          // Count the markers -> too many? uff...
-          var count = 0;
-          _.each(poly_obj.paths,function(path,i){
-            count = _.size(path) + count;
-          });
-          
+        type: "GET",
+        dataType: 'jsonp',
+        url: global_api_url+'queries?sql='+escape('SELECT npoints(the_geom) from '+table_name+' WHERE cartodb_id='+feature),
+        headers: {"cartodbclient":"true"},
+        success: function(data) {
+          var count = data.rows[0].npoints;
           if (count>2000) {
             me.showBigBang();
           } else {
+            getGeometryData(feature);
+          }
+        },
+        error: function(e) {
+          getGeometryData(feature);
+        }
+      });
+      
+      // Draw the geometry 
+      function getGeometryData(feature) {
+        $.ajax({
+          method: "GET",
+          url:global_api_url + 'tables/'+table_name+'/records/'+feature,
+          headers: {"cartodbclient": true},
+          success:function(data){
+            me.removeWax();      
+            // Get polygons coordinates
+            var poly_obj = transformGeoJSON(data.the_geom);
+            
             // Draw the polygon
             _.each(poly_obj.paths,function(path,i){
               path.pop();
@@ -1393,48 +1403,57 @@
               me.fakeGeometries_.push(polygon);
               polygon.runEdit();
             });
-          }
-        },
-        error:function(e){}
-      });
+          },
+          error:function(e){}
+        });
+      }
     }
     
     /* Add fake google polylines to the map */
     CartoMap.prototype.addFakePolylines = function(feature) {     
       var me = this;
       this.fakeGeometries_ = new Array();
-
+      
+      // Get number of vertex
       $.ajax({
-        method: "GET",
-        url:global_api_url + 'tables/'+table_name+'/records/'+feature,
-        headers: {"cartodbclient": true},
-        success:function(data){
-          me.removeWax();
-          
-          // Get polygons coordinates and data
-          var poly_obj = transformGeoJSON(data.the_geom);
-          
-          // Count the markers -> too many? uff...
-          var count = 0;
-          _.each(poly_obj.paths,function(path,i){
-            count = _.size(path) + count;
-          });
-          
+        type: "GET",
+        dataType: 'jsonp',
+        url: global_api_url+'queries?sql='+escape('SELECT npoints(the_geom) from '+table_name+' WHERE cartodb_id='+feature),
+        headers: {"cartodbclient":"true"},
+        success: function(data) {
+          var count = data.rows[0].npoints;
           if (count>2000) {
             me.showBigBang();
           } else {
+            getGeometryData(feature);
+          }
+        },
+        error: function(e) {
+          getGeometryData(feature);
+        }
+      });
+      
+      
+      function getGeometryData(feature) {
+        $.ajax({
+          method: "GET",
+          url:global_api_url + 'tables/'+table_name+'/records/'+feature,
+          headers: {"cartodbclient": true},
+          success:function(data){
+            me.removeWax();
+          
+            // Get polygons coordinates and data
+            var poly_obj = transformGeoJSON(data.the_geom);
             _.each(poly_obj.paths,function(path,i){
               var polyline = new google.maps.Polyline({path:path,strokeColor:"#FF6600",strokeOpacity:1,strokeWeight:2,map:me.map_,clickable:false,data:feature});
               me.fakeGeometries_.push(polyline);
               polyline.runEdit();
             });
-          }
           
-        },
-        error:function(e){}
-      });
-      
-      //strokeColor:"#FF6600",strokeOpacity:1.0,strokeWeight:2,map:this.map,clickable:true
+          },
+          error:function(e){}
+        });
+      }
     }
 
     /* Add record to database */

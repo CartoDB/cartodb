@@ -120,7 +120,7 @@
                           '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
                         '</span>'+
                       '</div>'+
-                      '<label>Alpha</label>'+
+                      '<label>Transparency</label>'+
                       '<div class="long">'+
                         '<span class="alpha" css="marker-opacity marker-line-opacity">'+
                           '<div class="slider"></div>'+
@@ -175,7 +175,7 @@
                           '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
                         '</span>'+
                       '</div>'+
-                      '<label>Alpha</label>'+
+                      '<label>Transparency</label>'+
                       '<div class="long">'+
                         '<span class="alpha" css="polygon-opacity line-opacity">'+
                           '<div class="slider"></div>'+
@@ -211,7 +211,7 @@
                           '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
                         '</span>'+
                       '</div>'+
-                      '<label>Alpha</label>'+
+                      '<label>Transparency</label>'+
                       '<div class="long">'+
                         '<span class="alpha" css="line-opacity">'+
                           '<div class="slider"></div>'+

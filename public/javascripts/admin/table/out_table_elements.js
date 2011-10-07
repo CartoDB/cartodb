@@ -593,7 +593,8 @@
 	    });
 	
 	    $('a.confirm_delete').click(function(ev){
-	      stopPropagation(ev);
+        ev.preventDefault();
+	      ev.stopPropagation();
 	      $.ajax({
 	        type: "DELETE",
 	        url: global_api_url+'tables/'+table_name,
@@ -1156,7 +1157,7 @@
               '<div class="html_code">'+
                 '<h4>HTML CODE</h4>'+
                 '<span class="copy_code">'+
-                  '<input type="text" disabled="disabled" value="<iframe src=\'http://'+user_name+'.cartodb.com/tables/'+table_name+'/embed\' width=\'572\' height=\'220\'></iframe>" />'+
+                  '<input type="text" disabled="disabled" value="<iframe src=\'http://'+user_name+'.cartodb.com/tables/'+table_name+'/embed_map\' width=\'572\' height=\'220\'></iframe>" />'+
                   '<a id="test" class="copy">Copy</a>'+
                 '</span>'+
                 '<span class="outer_map">'+
@@ -1169,7 +1170,7 @@
               '<div class="tiles_code">'+
                 '<h4>OR TILES URL</h4>'+
                 '<span class="copy_code">'+
-                  '<input type="text" disabled="disabled" value="'+TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}'+'.png8'+'" />'+
+                  '<input type="text" disabled="disabled" value="'+TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}'+'.png'+'" />'+
                   '<a class="copy">Copy</a>'+
                 '</span>'+
               '</div>'+
@@ -1236,7 +1237,7 @@
 		    
 	      var cartodb_layer = {
           getTileUrl: function(coord, zoom) {
-            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8';
+            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png';
           },
           tileSize: new google.maps.Size(256, 256)
         };

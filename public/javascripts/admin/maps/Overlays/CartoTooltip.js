@@ -83,6 +83,7 @@
           $(div).find('a.info').show();
           $(div).find('a.delete_geometry').hide();
           $(div).find('a.edit').hide();
+          $(div).find('p').hide();
         }
 
         this.markers_ = marker;

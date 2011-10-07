@@ -56,25 +56,25 @@
           var carto_embed_map = new google.maps.Map(document.getElementById("map_cartodb_container"),cartodbMapOptions);
 
 
-          Setup your map styles
-          $.ajax({
-            url:,
-            dataType: 'jsonp',
-            type: "GET",
-            success:function(result){
-              // Map type
-              if (result.google_maps_base_type=="roadmap") {
-                carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-              } else if (result.google_maps_base_type=="satellite") {
-                carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
-              } else {
-                carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
-              }
-          
-              // Custom tiles
-              carto_embed_map.setOptions({styles: result.google_maps_customization_style})
-            }
-          });
+          // //Setup your map styles
+          // $.ajax({
+          //   url:,
+          //   dataType: 'jsonp',
+          //   type: "GET",
+          //   success:function(result){
+          //     // Map type
+          //     if (result.google_maps_base_type=="roadmap") {
+          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+          //     } else if (result.google_maps_base_type=="satellite") {
+          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+          //     } else {
+          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+          //     }
+          // 
+          //     // Custom tiles
+          //     carto_embed_map.setOptions({styles: result.google_maps_customization_style})
+          //   }
+          // });
 
 
           // Add the cartodb tiles

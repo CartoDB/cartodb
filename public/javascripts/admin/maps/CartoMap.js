@@ -206,7 +206,7 @@
         type: 'POST',
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
         data: {style:str},
-        success: function(result) {
+        success: function(result) {          
           me.refreshWax();
         },
         error:function(e) {
@@ -1119,7 +1119,7 @@
       // Base Tile/Grid URLs
       var core_url = TILEHTTP + '://' + user_name + '.' + TILESERVER 
       var base_url = core_url + '/tiles/' + table_name + '/{z}/{x}/{y}';
-      var tile_url = base_url + '.png8?cache_buster={cache}';  //gotta do cache bust in wax for this
+      var tile_url = base_url + '.png?cache_buster={cache}';  //gotta do cache bust in wax for this
       var grid_url = base_url + '.grid.json';
 
       // Add map keys to base urls

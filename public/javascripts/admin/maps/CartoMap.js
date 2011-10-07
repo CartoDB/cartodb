@@ -1226,7 +1226,7 @@
             count = _.size(path) + count;
           });
           
-          if (count>200) {
+          if (count>2000) {
             me.showBigBang();
           } else {
             // Draw the polygon
@@ -1263,7 +1263,7 @@
             count = _.size(path) + count;
           });
           
-          if (count>200) {
+          if (count>2000) {
             me.showBigBang();
           } else {
             _.each(poly_obj.paths,function(path,i){

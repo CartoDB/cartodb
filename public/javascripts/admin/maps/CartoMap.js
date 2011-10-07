@@ -990,7 +990,8 @@
         var that = this;
 
         // Base Tile/Grid URLs
-        var base_url = TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}';
+        var core_url = TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/'
+        var base_url = core_url +  table_name + '/{z}/{x}/{y}';
         var tile_url = base_url + '.png8?cache_buster={cache}';  //gotta do cache bust in wax for this
         var grid_url = base_url + '.grid.json';
 
@@ -1007,6 +1008,7 @@
 
         // Build up the tileJSON
         return {
+            blankImage: core_url + 'blank_tile.png8' //TODO: make a real 'empty tile' image
             tilejson: '1.0.0',
             scheme: 'xyz',
             tiles: [tile_url],

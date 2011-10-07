@@ -29,7 +29,7 @@
 	
 			$(div).append('<a href="#close" class="close">x</a>'+
 			              '<div class="outer_top">'+
-			                '<div class="top">'+
+			                '<div class="top scrollPane">'+
 			                '</div>'+
 			              '</div>'+
 			              '<div class="bottom">'+
@@ -59,9 +59,6 @@
       
       google.maps.event.addDomListener(div,'click',function(ev){stopMapPropagation(ev);});
       google.maps.event.addDomListener(div,'dblclick',function(ev){stopMapPropagation(ev);});
-      google.maps.event.addDomListener(div,'mousedown',function(ev){stopMapPropagation(ev);});
-      google.maps.event.addDomListener(div,'mouseup',function(ev){stopMapPropagation(ev);});
-      google.maps.event.addDomListener(div,'mousemove',function(ev){stopMapPropagation(ev);});
 			
 	    var panes = this.getPanes();
 	    panes.floatPane.appendChild(div);
@@ -121,14 +118,22 @@
   	    
   	    var query_mode = $('body').attr('query_mode') === 'true';
 
-  	    $(div).find('div.top').html('');
+  	    // Reinitialize jscrollpane in the infowindow
+     		$('div.marker_infowindow div.scrollPane').jScrollPane().data().jsp.destroy();
 
+        // Remove the list items
+  	    $(div).find('div.top').html('');
+        
   	    _.each(info,function(value,label){
   	      if ((label!='cartodb_id' && variables[label]) || (label!='cartodb_id' && query_mode)) {
     				$(div).find('div.top').append('<label>'+label+'</label><p class="'+((info[label]!=null)?'':'empty')+'">'+value+'</p>');
   	      }
   	    });
-  	    
+        
+        // Initialize jscrollPane
+        $('div.marker_infowindow div.scrollPane').jScrollPane({autoReinitialise:true,maintainPosition:false});
+
+
   	    // If app in query mode?
   	    if (query_mode) {
   	      $(div).find('a.delete_point').hide();

@@ -2185,7 +2185,7 @@
             });
             
             // Initialize jscrollPane
-             $('div.filter_window ul.scrollPane').jScrollPane({autoReinitialise:true});
+             $('div.filter_window ul.scrollPane').jScrollPane({autoReinitialise:true,maintainPosition:false});
           }
         }
       });

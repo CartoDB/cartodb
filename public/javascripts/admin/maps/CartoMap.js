@@ -508,9 +508,7 @@
             
             // Add selected to the parent (special?)
             parent.addClass('selected');
-                     
-            // TODOOOOO Save the value in the server!!!!!
-            
+                                 
             // Do action
             if (map_type=="Roadmap") {
               map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
@@ -876,7 +874,7 @@
       
       
       /*Setup infowindow */
-      this.setupInfowindow(infowindow_vars);
+      this.setupInfowindow(infowindow_vars || {});
  
  
       /* Bind event for open any tool */

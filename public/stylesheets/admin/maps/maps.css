@@ -128,7 +128,6 @@ div.map_window div.map_header div.suboptions div.long span.radio a:hover {backgr
 div.map_window div.map_header div.suboptions div.long span.radio a.clicked {background-position:0 -215px}
 div.map_window div.map_header div.suboptions div.long span.radio a.clicked:hover {cursor:default; background-position:0 -215px}
 
-
 div.map_window div.map_header div.suboptions div.long span.alpha {position:relative; display:inline-block; width:100%; height:13px;}
 div.map_window div.map_header div.suboptions div.long span.alpha div.slider {width:100%; height:4px; margin:5px 0 0 0; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; border-top:1px solid #A5A5A5; border-bottom:1px solid white}
 div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider {position: relative; text-align: left; }
@@ -140,6 +139,11 @@ background:-moz-linear-gradient(-90deg, #99CC00, #7BA600); background: -o-linear
 div.map_window div.map_header div.suboptions div.long span.alpha span.tooltip {position:absolute; display:none; top:-14px; width:30px; height:18px; margin:0 0 0 -12px; background:url('/images/admin/map/range_tooltip.png') no-repeat 0 0; font:normal 10px "Helvetica",Arial; color:white; text-align:center}
 
 
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names {width:100%; max-height:160px; padding:0; margin:0; background:none; overflow-y:auto; overflow-x:hidden}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li {padding-left:10px}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a {padding:0 0 0 17px; max-width:95px; background:url('/images/admin/icons/checkbox.png') no-repeat 0 -18px!important; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#999999!important; text-shadow:0 1px white}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a:hover {cursor:pointer!important; color:#666666!important;}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a.on {background-position:0 -1px!important; color:#666666!important; text-shadow:0 1px white}
 
 /*MARKERS CUSTOMIZATION*/
 div.map_window div.map_header ul li span.marker_customization {position:absolute; display:none; top:19px; right:13px; width:163px; height:auto; background:url('/images/admin/map/combo_bkg.png') no-repeat right 0;}

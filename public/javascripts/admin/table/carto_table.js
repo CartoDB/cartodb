@@ -1056,7 +1056,7 @@
 
             if (!table.edited) {
               $('div.explain_tooltip').stop(true).hide();
-              table.edited = false;
+              table.edited = true;
             }
 
             methods.closeTablePopups();

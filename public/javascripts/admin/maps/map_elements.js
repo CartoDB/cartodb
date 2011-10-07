@@ -237,7 +237,7 @@
                     '<a href="#custom">Custom</a>'+
                     '<div class="suboptions">'+
                       '<label>Custom vars</label>'+
-                      '<ul class="column_names">'+
+                      '<ul class="column_names scrollPane">'+
                       '</ul>'+
                     '</div>'+
                   '</li>'+

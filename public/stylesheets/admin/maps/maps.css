@@ -39,6 +39,9 @@ div.marker_infowindow a.close {position:absolute; right:3px; top:3px; width:22px
 div.marker_infowindow a.close:hover {color:#333333}
 div.marker_infowindow div.outer_top {width:186px; padding:25px 18px 5px 10px; background:url('/images/admin/map/infowindow_top.png') 0 top;}
 div.marker_infowindow div.top {width:186px; max-height:200px; overflow-y:auto; overflow-x:hidden}
+div.marker_infowindow div.top .jspTrack {background: #dddddd;}
+div.marker_infowindow div.top .jspDrag {background: #999999;}
+div.marker_infowindow div.top .jspHover, div.marker_infowindow div.top .jspActive {background:#666666}
 div.marker_infowindow div.top label {display:block; width:auto; padding:0 0 0 5px; font:normal 11px Arial; color:#B3B3B3; text-shadow:0 1px white}
 div.marker_infowindow div.top p {display:block; width:170px; max-height:20px; padding:2px 4px; margin:2px 0 7px; font:bold 11px 'Helvetica',Arial; color:#666666; border:none; background:none; text-shadow:0 1px white;
   text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
@@ -139,7 +142,10 @@ background:-moz-linear-gradient(-90deg, #99CC00, #7BA600); background: -o-linear
 div.map_window div.map_header div.suboptions div.long span.alpha span.tooltip {position:absolute; display:none; top:-14px; width:30px; height:18px; margin:0 0 0 -12px; background:url('/images/admin/map/range_tooltip.png') no-repeat 0 0; font:normal 10px "Helvetica",Arial; color:white; text-align:center}
 
 
-div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names {width:100%; max-height:160px; padding:0; margin:0; background:none; overflow-y:auto; overflow-x:hidden}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names {width:100%; min-height:100px; max-height:160px; padding:0; margin:0; background:none; overflow-y:auto; overflow-x:hidden}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspTrack {background: #dddddd;}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspDrag {background: #999999;}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspHover, div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspActive {background:#666666}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li {padding-left:10px}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a {padding:0 0 0 17px; max-width:95px; background:url('/images/admin/icons/checkbox.png') no-repeat 0 -18px!important; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#999999!important; text-shadow:0 1px white}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a:hover {cursor:pointer!important; color:#666666!important;}

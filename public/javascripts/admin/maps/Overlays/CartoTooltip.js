@@ -58,7 +58,6 @@
       }
   };
 
-
   CartoTooltip.prototype.open = function(latlng,marker) {
       if (this.div_) {
         var div = this.div_;
@@ -97,43 +96,12 @@
       }
   }
 
-
-  CartoTooltip.prototype.openPolgyon = function(latlng,markers) {
-      if (this.div_) {
-          var div = this.div_;
-          var me = this;
-          var total_markers = _.size(markers);
-          $(div).find('a.info').hide();
-          $(div).find('p').text(total_markers + ((total_markers==1)?' point':' points')).show();
-          $(div).find('a.delete_geometry').unbind('click');
-          $(div).find('a.delete_geometry').click(function(ev){
-            ev.preventDefault();
-            me.hide();
-            carto_map.removeGeometries(me.markers_);
-          });
-          var p_width = 	$(div).find('p').width();
-          div.style.width = 21 + p_width + 'px';
-
-          this.markers_ = markers;
-          this.latlng_ = latlng;
-          var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
-          if (pixPosition) {
-              div.style.left = (pixPosition.x + this.offsetHorizontal_ - 7) + "px";
-              div.style.top = (pixPosition.y + this.offsetVertical_ + 5) + "px";
-          }
-          this.show();
-      }
-  }
-
-
-
   CartoTooltip.prototype.hide = function() {
       if (this.div_) {
           var div = this.div_;
           div.style.visibility = "hidden";
       }
   }
-
 
   CartoTooltip.prototype.show = function() {
       if (this.div_) {
@@ -142,7 +110,6 @@
           div.style.opacity = 1;
       }
   }
-
 
   CartoTooltip.prototype.isVisible = function() {
       if (this.div_) {

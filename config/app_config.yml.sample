@@ -2,6 +2,7 @@ development:
   account_host: 'localhost.lan:4000'
   account_path: '/account'
   developers_host: 'http://developers.localhost.lan:3000'
+  secret_token: "some_secret"
   session_domain: '.localhost.lan'
   amazon_access_key: ''
   amazon_secret_key: ''
@@ -16,6 +17,7 @@ test:
   account_host: 'testhost.lan'
   account_path: '/account'
   developers_host: 'http://developers.testhost.lan:53716'
+  secret_token: "some_secret"
   session_domain: '.testhost.lan'
   amazon_access_key: ''
   amazon_secret_key: ''
@@ -33,6 +35,7 @@ production:
   session_domain: ''
   amazon_access_key: ''
   amazon_secret_key: ''
+  secret_token: "some_secret"
   redis: 
     host: '127.0.0.1'
     port: 6379

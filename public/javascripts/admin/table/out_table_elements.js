@@ -593,7 +593,8 @@
 	    });
 	
 	    $('a.confirm_delete').click(function(ev){
-	      stopPropagation(ev);
+        ev.preventDefault();
+	      ev.stopPropagation();
 	      $.ajax({
 	        type: "DELETE",
 	        url: global_api_url+'tables/'+table_name,

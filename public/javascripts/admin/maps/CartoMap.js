@@ -1007,8 +1007,9 @@
         }
 
         // Build up the tileJSON
+        // TODO: make a blankImage a real 'empty tile' image
         return {
-            blankImage: core_url + 'blank_tile.png8' //TODO: make a real 'empty tile' image
+            blankImage: core_url + 'blank_tile.png8', 
             tilejson: '1.0.0',
             scheme: 'xyz',
             tiles: [tile_url],

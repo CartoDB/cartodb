@@ -4,6 +4,10 @@ module CartoDB
     APP_CONFIG[:session_domain]
   end
   
+  def self.secret_token
+    APP_CONFIG[:secret_token]
+  end
+  
   def self.domain
     @@domain ||= if Rails.env.production?
       `hostname -f`.strip

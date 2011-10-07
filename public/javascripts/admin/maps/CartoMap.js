@@ -411,10 +411,19 @@
             var bounds = new google.maps.LatLngBounds();
             
             // Check bounds
-            if (coor1[0]>180 || coor1[0]<-180) coor1[0] = 0; 
-            if (coor1[1]>180 || coor1[1]<-180) coor1[1] = 0; 
-            if (coor2[0]>180 || coor2[0]<-180) coor2[0] = 0; 
-            if (coor2[1]>180 || coor2[1]<-180) coor2[1] = 0; 
+            if (coor1[0] >  180 
+             || coor1[0] < -180 
+             || coor1[1] >  90 
+             || coor1[1] < -90 
+             || coor2[0] >  180 
+             || coor2[0] < -180 
+             || coor2[1] >  90  
+             || coor2[1] < -90) {
+              coor1[0] = '-30';
+              coor1[1] = '-50'; 
+              coor2[0] = '110'; 
+              coor2[1] =  '80'; 
+            }
             
             bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
             bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));

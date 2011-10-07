@@ -75,25 +75,23 @@
       // New table mode: normal, query or filter
 			var columns,
 			    rows,
-			    count = 0;
+			    ajax_request = 2;
 
-      // When ajax calls are loaded 
-  		$(document).bind('arrived',function(){
-			  count++;
-			  if (count==2) {
-			    if (table.mode!='query') {
-  			    $(document).unbind('arrived');
-  			    startTable();
-			    } else {
-  				  $(document).unbind('arrived');
-  				  methods.drawQueryColumns(rows,table.total_r,time,new_query);
-  			    methods.drawQueryRows(rows,direction,table.actual_p);
-			    }
-			    
-			    // Remove loader
-			    requests_queue.responseRequest(requestId,'ok','');
-			  }
-			});
+
+
+      // When ajax calls are loaded
+      var requestArrived = _.after(ajax_request,function(){
+        if (table.mode!='query') {
+			    startTable();
+		    } else {
+				  methods.drawQueryColumns(rows,table.total_r,time,new_query);
+			    methods.drawQueryRows(rows,direction,table.actual_p);
+		    }
+		    // Remove loader
+		    requests_queue.responseRequest(requestId,'ok','');
+      });
+      
+      
       
  
 			if (table.mode!='query') {
@@ -105,11 +103,11 @@
 			 		headers: {"cartodbclient":"true"},
 			    success: function(data) {
 				 		columns = data.schema;
-			      $(document).trigger('arrived');
+			      requestArrived();
 			    },
 			    error: function(e) {
 			      requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
-			      $(document).unbind('arrived');
+			      requestArrived();
 			    }
 			  });
 
@@ -129,11 +127,11 @@
 			    success: function(data) {
 			      rows = data.rows;
 			      table.total_r = data.total_rows;
-			      $(document).trigger('arrived');
+			      requestArrived();
 			    },
 			    error: function(e) {
   			    requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
-			      $(document).unbind('arrived');
+			      requestArrived();
 			      table.total_r = 0;
 			      startTable();
 			    }
@@ -157,15 +155,15 @@
 				    success: function(data) {
 							table.total_r = data.rows[0].count;
 							$('div.sql_console span h3').html('<strong>'+table.total_r+' results</strong>');
-							$(document).trigger('arrived');
+							requestArrived();
 				    },
 				    error: function(e) {
 				      requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
-				      $(document).unbind('arrived');
+				      requestArrived();
 				    }
 				  });
 				} else {
-					$(document).trigger('arrived');
+					requestArrived();
 				}
 
 
@@ -185,11 +183,11 @@
 						
 						time = data.time.toFixed(3);
 			      rows = data.rows;
-			      $(document).trigger('arrived');
+			      requestArrived();
 			    },
 			    error: function(e) {
             requests_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
-			      $(document).unbind('arrived');
+			      requestArrived();
 			      
 			      var errors = $.parseJSON(e.responseText).errors;
 			      $('div.sql_window span.errors p').text('');

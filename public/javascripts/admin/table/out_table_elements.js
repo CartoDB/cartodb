@@ -1170,7 +1170,7 @@
               '<div class="tiles_code">'+
                 '<h4>OR TILES URL</h4>'+
                 '<span class="copy_code">'+
-                  '<input type="text" disabled="disabled" value="'+TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}'+'.png8'+'" />'+
+                  '<input type="text" disabled="disabled" value="'+TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}'+'.png'+'" />'+
                   '<a class="copy">Copy</a>'+
                 '</span>'+
               '</div>'+
@@ -1237,7 +1237,7 @@
 		    
 	      var cartodb_layer = {
           getTileUrl: function(coord, zoom) {
-            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8';
+            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png';
           },
           tileSize: new google.maps.Size(256, 256)
         };

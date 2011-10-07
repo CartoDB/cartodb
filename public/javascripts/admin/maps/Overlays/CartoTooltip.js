@@ -73,10 +73,10 @@
           $(div).find('p').hide();
           $(div).find('a.delete_geometry').unbind('click');
           $(div).find('a.delete_geometry').click(function(ev){
-              ev.preventDefault();
-              carto_map.over_marker_ = true;
-              me.hide();
-              carto_map.delete_window_.open(me.latlng_,marker);
+            ev.preventDefault();
+            carto_map.over_marker_ = true;
+            me.hide();
+            carto_map.delete_window_.open(me.latlng_,marker);
           });
         } else {
           div.style.width = '14px';
@@ -84,15 +84,13 @@
           $(div).find('a.delete_geometry').hide();
           $(div).find('a.edit').hide();
         }
-        
-
 
         this.markers_ = marker;
         this.latlng_ = latlng;
         var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
         if (pixPosition) {
-            div.style.left = (pixPosition.x + this.offsetHorizontal_) + "px";
-            div.style.top = (pixPosition.y + this.offsetVertical_ - 7) + "px";
+          div.style.left = (pixPosition.x + this.offsetHorizontal_) + "px";
+          div.style.top = (pixPosition.y + this.offsetVertical_ - 7) + "px";
         }
         this.show();
       }

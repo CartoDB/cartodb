@@ -399,30 +399,36 @@
     CartoMap.prototype.zoomToBBox = function() {
       var me = this;
       $.ajax({
-          method: "GET",
-          url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
-          headers: {"cartodbclient":"true"},
-          success: function(data) {
-            if (data.rows[0].st_extent!=null) {
-              var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-              
-              var coor1 = coordinates[0].split(' ');
-              var coor2 = coordinates[1].split(' ');
-              var bounds = new google.maps.LatLngBounds();
-              
-              bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
-              bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
-                              
-              me.map_.fitBounds(bounds);
-              
-              if (me.map_.getZoom()<2) {
-                me.map_.setZoom(2);
-              }
+        method: "GET",
+        url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
+        headers: {"cartodbclient":"true"},
+        success: function(data) {
+          if (data.rows[0].st_extent!=null) {
+            var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+            
+            var coor1 = coordinates[0].split(' ');
+            var coor2 = coordinates[1].split(' ');
+            var bounds = new google.maps.LatLngBounds();
+            
+            // Check bounds
+            if (coor1[0]>180 || coor1[0]<-180) coor1[0] = 0; 
+            if (coor1[1]>180 || coor1[1]<-180) coor1[1] = 0; 
+            if (coor2[0]>180 || coor2[0]<-180) coor2[0] = 0; 
+            if (coor2[1]>180 || coor2[1]<-180) coor2[1] = 0; 
+            
+            bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
+            bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+                            
+            me.map_.fitBounds(bounds);
+            
+            if (me.map_.getZoom()<2) {
+              me.map_.setZoom(2);
             }
-
-          },
-          error: function(e) {
           }
+
+        },
+        error: function(e) {
+        }
       });
     }
 
@@ -988,43 +994,43 @@
 
     /* Generate another tilejson */
     CartoMap.prototype.generateTilejson = function() {
-        var that = this;
+      var that = this;
 
-        // Base Tile/Grid URLs
-        var core_url = TILEHTTP + '://' + user_name + '.' + TILESERVER 
-        var base_url = core_url + '/tiles/' + table_name + '/{z}/{x}/{y}';
-        var tile_url = base_url + '.png8?cache_buster={cache}';  //gotta do cache bust in wax for this
-        var grid_url = base_url + '.grid.json';
+      // Base Tile/Grid URLs
+      var core_url = TILEHTTP + '://' + user_name + '.' + TILESERVER 
+      var base_url = core_url + '/tiles/' + table_name + '/{z}/{x}/{y}';
+      var tile_url = base_url + '.png8?cache_buster={cache}';  //gotta do cache bust in wax for this
+      var grid_url = base_url + '.grid.json';
 
-        // Add map keys to base urls
-        tile_url = wax.util.addUrlData(tile_url, 'map_key=' + map_key);
-        grid_url = wax.util.addUrlData(grid_url, 'map_key=' + map_key);
+      // Add map keys to base urls
+      tile_url = wax.util.addUrlData(tile_url, 'map_key=' + map_key);
+      grid_url = wax.util.addUrlData(grid_url, 'map_key=' + map_key);
 
-        // SQL?
-        if (this.query_mode) {
-            var query = 'sql=' + editor.getValue();
-            tile_url = wax.util.addUrlData(tile_url, query);
-            grid_url = wax.util.addUrlData(grid_url, query);
-        }
+      // SQL?
+      if (this.query_mode) {
+          var query = 'sql=' + editor.getValue();
+          tile_url = wax.util.addUrlData(tile_url, query);
+          grid_url = wax.util.addUrlData(grid_url, query);
+      }
 
-        // Build up the tileJSON
-        // TODO: make a blankImage a real 'empty tile' image
-        return {
-            blankImage: core_url + '/images/admin/map/blank_tile.png8', 
-            tilejson: '1.0.0',
-            scheme: 'xyz',
-            tiles: [tile_url],
-            grids: [grid_url],
-            tiles_base: tile_url,
-            grids_base: grid_url,
-            formatter: function(options, data) {
-                currentCartoDbId = data.cartodb_id;
-                return data.cartodb_id;
-            },
-            cache_buster: function(){
-                return that.cache_buster;
-            }
-        };
+      // Build up the tileJSON
+      // TODO: make a blankImage a real 'empty tile' image
+      return {
+          blankImage: core_url + '/images/admin/map/blank_tile.png8', 
+          tilejson: '1.0.0',
+          scheme: 'xyz',
+          tiles: [tile_url],
+          grids: [grid_url],
+          tiles_base: tile_url,
+          grids_base: grid_url,
+          formatter: function(options, data) {
+              currentCartoDbId = data.cartodb_id;
+              return data.cartodb_id;
+          },
+          cache_buster: function(){
+              return that.cache_buster;
+          }
+      };
     }
 
 

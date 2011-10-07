@@ -1157,7 +1157,7 @@
               '<div class="html_code">'+
                 '<h4>HTML CODE</h4>'+
                 '<span class="copy_code">'+
-                  '<input type="text" disabled="disabled" value="<iframe src=\'http://'+user_name+'.cartodb.com/tables/'+table_name+'/embed\' width=\'572\' height=\'220\'></iframe>" />'+
+                  '<input type="text" disabled="disabled" value="<iframe src=\'http://'+user_name+'.cartodb.com/tables/'+table_name+'/embed_map\' width=\'572\' height=\'220\'></iframe>" />'+
                   '<a id="test" class="copy">Copy</a>'+
                 '</span>'+
                 '<span class="outer_map">'+

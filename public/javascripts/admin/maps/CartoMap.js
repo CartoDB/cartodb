@@ -17,9 +17,7 @@
 
     
     // TODO
-    // If user adds new column, refresh/change infowindow customization and infowindow_object :S
     // jscrollpane for infowindow_obj and infowindow_custom
-    // in a query.. what show in the infowindow... careful with that.
 
     function CartoMap (latlng,zoom) {
       this.center_ = latlng;                          // Center of the map at the beginning
@@ -944,6 +942,7 @@
           custom_infowindow = infowindow_vars,
           default_infowindow = {};
       
+      
       if (!infowindow_vars && !this.infowindow_vars_) {
         return false;
       } else {
@@ -953,7 +952,6 @@
           return false;
         }
       }
-      
 
       
       $('.map_header ul.infowindow_customization div.suboptions ul.column_names li.vars a').livequery('click',function(ev){
@@ -1007,8 +1005,10 @@
 			      // Select the default or custom
 			      $('.map_header ul.infowindow_customization li').removeClass('selected special');  		
 			      if (_.size(infowindow_vars)==0) {
+			        $('.map_header ul.infowindow_customization').closest('li').find('p').text('Default');
 			        $('.map_header ul.infowindow_customization li:eq(0)').addClass('selected');
 			      } else {
+			        $('.map_header ul.infowindow_customization').closest('li').find('p').text('Custom');
 			        $('.map_header ul.infowindow_customization li:eq(1)').addClass('selected special');  			        
 			      }
 			      

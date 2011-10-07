@@ -678,7 +678,9 @@ TRIGGER
   end
   
   def self.find_by_subdomain(subdomain, identifier)
-    Table.find_by_identifier(user.id, identifier) if User.find(:username => subdomain)
+    if user = User.find(:username => subdomain)      
+      Table.find_by_identifier(user.id, identifier)
+    end  
   end
 
   def oid

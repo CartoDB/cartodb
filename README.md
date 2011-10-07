@@ -2,54 +2,34 @@
 
 ## Introduction ##
 
-[CartoDB](https://github.com/Vizzuality/cartodb) is a HTTP wrapper for a PostgreSQL + PostGIS user dedicated database. Each database / user instance is owned by a  user, and is composed of different components:
+[CartoDB](http://www.cartodb.com) is a tool for managing PostGIS user dedicated databases. Each CartoDB is owned by its user, and is composed of:
 
-  - PostgreSQL + PostGIS database: a dedicated postgresql database with geospatial functionalities
-  - User Interface: allows the user to create and manage tables, and their data, import new ones, or export them to files
-  - Pure SQL API endpoint: JSON API which allow users to run SQL queries and get their response in JSON format 
-
-## Architecture ##
-
-_(under development)_
-
-The architecture behind CartoDB is a Central Server + users instances, which are user dedicated Amazon EC2 instances running CartoDB. 
-
-### Central server
-
-The purposes of Central Server are:
-
-  - manage user accounts: activation, manage payments...
-  - manage user instances: check the status, monit the services...
-  - (maybe) CartoDB documentation
+  - User Interface: create and manipulate tables and their data, import new ones, or export them to files
+  - PostGIS database: a geospatial database with the full range of Postgres and PostGIS functionality
+  - Pure SQL API endpoint: run SQL queries and get responses in JSON, geojson and KML format 
+  - Map tiler: A SQL configurable map tile generator for quick feedback on your data, allowing you to style and embed maps 
+  - Authentication: Read/Write access to datasets over OAuth with user definable public access if required   
   
-### User instances
+To try CartoDB, visit [www.cartodb.com](http://www.cartodb.com).
+  
+  
+## Dependencies ##
 
-Every user instance runs in a subdomain of `cartodb.com`, i.e.: `vizzuality.cartodb.com` and is **totally** isolated from other users. These instances run the next three different components.
+  - Mapnik 2.0
+  - NodeJS 0.4.10+
+  - Ruby 1.9.2+
+  - Postgres 9.1.x
+  - PostGIS 2.0
+  - Redis 2.2+
+  
+## Components of CartoDB ##
 
-#### PostgreSQL + PostGIS database ####
-
-Each CartoDB user has his own postgresql database, totally isolated from the other users databases, which extra geospatial functionalities provided by PostGIS. The users can, basically, do what they want in his database, there are no limitations.
-
-#### User Interface ####
-
-The UI is a front-end layer on the top of the database which helps the users to create new tables, and to manage the data from those tables. Also, the users can get the OAuth tokens to use the API from the interface.
-
-This UI uses internally a REST API, which is only for internal use.
-
-Also, all the import/export functionality has been externalized to a Ruby gem named [cartodb-importer](https://github.com/Vizzuality/cartodb-importer).
-
-Both, UI and REST API, are implemented using Ruby on Rails.
-
-#### Pure SQL API ####
-
-SQL API allows the users to use their databases via HTTP requests and get a response in JSON format. 
-
-This component runs in Node.JS.
+  - Rails application management interface (this repository)
+  - nodejs SQL API (https://github.com/Vizzuality/CartoDB-SQL-API)
+  - nodejs map tile generator (https://github.com/Vizzuality/Windshaft-cartodb)
 
 
 ## Setting-up the environment for developers ##
-
-### First time ###
 
   - Install Ruby 1.9.2
   
@@ -71,12 +51,22 @@ This component runs in Node.JS.
         # CartoDB
         127.0.0.1 vizzuality.localhost.lan vizzuality.testhost.lan
         # # # # #
-        
-      The reason to use `vizzuality` as a subdomain is that the user in development and test environment is `vizzuality`
-        
+                
   - Clone the [Node SQL API](https://github.com/tokumine/cartodb-sql-api) in your projects folder:
   
         git clone git@github.com:Vizzuality/CartoDB-SQL-API.git
+
+  - Install nodejs dependencies
+    
+        npm install
+
+  - Clone the [map tiler](https://github.com/Vizzuality/Windshaft-cartodb) in your projects folder:
+
+        git clone git@github.com:Vizzuality/Windshaft-cartodb.git
+
+  - Install nodejs dependencies
+
+        npm install
   
   - Clone the main repository in your projects folder:
   
@@ -97,7 +87,6 @@ This component runs in Node.JS.
   
   - Run `rake db:create db:migrate cartodb:db:create_publicuser cartodb:db:create_admin` in cartodb folder
   
-  Note: `bin/rake cartodb:db:setup` is now only used to setup private servers
 
 ### Every day usage ###
   
@@ -109,9 +98,16 @@ This component runs in Node.JS.
   
   - Run a Rails server in port 3000: `rails s`
   
-  - In a separate tab change to Node SQL API folder and run node.js: `node cluster developement`
+  - In a separate tab change to Node SQL API and Tiler directories and run node.js: `node app.js developement`
 
   - Open your browser and go to `http://vizzuality.localhost.lan:3000`
   
-  - Enjoy
+  - Enjoy!
   
+
+
+## TODO ##
+
+  - Better installation instructions (esp for Mapnik!)
+  - Simple AMI/Linode images
+  - Examples and usecases

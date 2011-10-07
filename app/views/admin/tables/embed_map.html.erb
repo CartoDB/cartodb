@@ -56,31 +56,31 @@
           var carto_embed_map = new google.maps.Map(document.getElementById("map_cartodb_container"),cartodbMapOptions);
 
 
-          // Setup your map styles
-          // $.ajax({
-          //   url:,
-          //   dataType: 'jsonp',
-          //   type: "GET",
-          //   success:function(result){
-          //     // Map type
-          //     if (result.google_maps_base_type=="roadmap") {
-          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-          //     } else if (result.google_maps_base_type=="satellite") {
-          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
-          //     } else {
-          //       carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
-          //     }
-          //
-          //     // Custom tiles
-          //     carto_embed_map.setOptions({styles: result.google_maps_customization_style})
-          //   }
-          // });
+          Setup your map styles
+          $.ajax({
+            url:,
+            dataType: 'jsonp',
+            type: "GET",
+            success:function(result){
+              // Map type
+              if (result.google_maps_base_type=="roadmap") {
+                carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+              } else if (result.google_maps_base_type=="satellite") {
+                carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+              } else {
+                carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+              }
+          
+              // Custom tiles
+              carto_embed_map.setOptions({styles: result.google_maps_customization_style})
+            }
+          });
 
 
           // Add the cartodb tiles
           var cartodb_layer = {
             getTileUrl: function(coord, zoom) {
-              return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png8';
+              return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png';
             },
             tileSize: new google.maps.Size(256, 256)
           };
@@ -99,6 +99,22 @@
                 var coor1 = coordinates[0].split(' ');
                 var coor2 = coordinates[1].split(' ');
                 var bounds = new google.maps.LatLngBounds();
+
+                // Check bounds
+                if (coor1[0] >  180 
+                 || coor1[0] < -180 
+                 || coor1[1] >  90 
+                 || coor1[1] < -90 
+                 || coor2[0] >  180 
+                 || coor2[0] < -180 
+                 || coor2[1] >  90  
+                 || coor2[1] < -90) {
+                  coor1[0] = '-30';
+                  coor1[1] = '-50'; 
+                  coor2[0] = '110'; 
+                  coor2[1] =  '80'; 
+                }
+
 
                 bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
                 bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));

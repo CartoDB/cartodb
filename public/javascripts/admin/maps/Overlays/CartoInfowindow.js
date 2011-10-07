@@ -11,7 +11,7 @@
 	
 	  this.setMap(map);
 	}
-
+	
 
 	CartoInfowindow.prototype = new google.maps.OverlayView();
 
@@ -104,13 +104,13 @@
       url:global_api_url + 'tables/'+table_name+'/records/'+feature,
       headers: {"cartodbclient": true},
       success:function(data){
-        positionateInfowindow(me,data);
+        positionateInfowindow(me,data,carto_map.infowindow_vars_);
       },
       error:function(e){}
     });
     
     
-    function positionateInfowindow(me,info) {
+    function positionateInfowindow(me,info,variables) {
       if (me.div_) {
         // Set ESC binding
         carto_map.bindMapESC();
@@ -118,20 +118,19 @@
   	    var div = me.div_;
   	    // Get latlng position
   	    me.latlng_ = transformGeoJSON(info.the_geom).center;
-  			//this.marker_ = info;  // Create marker?
+  	    
+  	    var query_mode = $('body').attr('query_mode') === 'true';
 
   	    $(div).find('div.top').html('');
 
-  	    //var marker_data = info;
-
   	    _.each(info,function(value,label){
-  	      if (label!='cartodb_id') {
+  	      if ((label!='cartodb_id' && variables[label]) || (label!='cartodb_id' && query_mode)) {
     				$(div).find('div.top').append('<label>'+label+'</label><p class="'+((info[label]!=null)?'':'empty')+'">'+value+'</p>');
   	      }
   	    });
   	    
   	    // If app in query mode?
-  	    if ($('body').attr('query_mode') === 'true') {
+  	    if (query_mode) {
   	      $(div).find('a.delete_point').hide();
     			$(div).find('a.edit_point').hide();
   	    } else {
@@ -146,7 +145,6 @@
     }
 	}	
 	
-
 
 	CartoInfowindow.prototype.hide = function() {
 	  if (this.div_) {

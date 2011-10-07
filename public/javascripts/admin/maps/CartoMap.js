@@ -15,12 +15,11 @@
     //																			                                      //
     ////////////////////////////////////////////////////////////////////////////////
 
-
+    
     // TODO
-    // - Border color, border and opacity have set from the begging [polygons mainly] (say to Simon)
-    // - Add possibility to change color from a palette
-    // - Embed map custom tiles (important)
-
+    // If user adds new column, refresh/change infowindow customization and infowindow_object :S
+    // jscrollpane for infowindow_obj and infowindow_custom
+    // in a query.. what show in the infowindow... careful with that.
 
     function CartoMap (latlng,zoom) {
       this.center_ = latlng;                          // Center of the map at the beginning
@@ -109,17 +108,11 @@
           map_style,
           layers_style,
           geom_type,
-          count = 0;
+          infowindow_info,
+          ajax_count = 4;
       
       
-      // When all need variables arrived
-  		$(document).bind('arrived',function(){
-			  count++;
-			  if (count==3) {
-  			  $(document).unbind('arrived');
-  			  me.setupTools(geom_type,layers_style,map_style);
-			  }
-			});
+      var setupTools = _.after(ajax_count, function() {me.setupTools(geom_type,layers_style,map_style,infowindow_info)});
       
       
       // Get map style
@@ -134,9 +127,10 @@
           } else {
             map_style = {basemap_provider: 'google_maps',google_maps_customization_style:[],google_maps_base_type:'roadmap'}
           }
-          $(document).trigger('arrived');
+          setupTools();
         },
         error: function(e){
+          setupTools();
           console.debug(e);
         }
       });
@@ -155,9 +149,10 @@
           } else {
             geom_type = undefined;
           }
-          $(document).trigger('arrived');
+          setupTools();
         },
         error: function(e) {
+          setupTools();
           console.debug(e);
         }
       });
@@ -171,12 +166,31 @@
         dataType: 'jsonp',
         success: function(result) {
           layers_style = result.style;
-          $(document).trigger('arrived');
+          setupTools();
         },
         error:function(e) {
+          setupTools();
           console.debug(e);
         } 
       });
+      
+      
+      // Get saved infowindow variables
+      $.ajax({
+        url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/infowindow?map_key='+map_key,
+        type: "GET",
+        dataType: 'jsonp',
+        headers: {"cartodbclient":"true"},
+        success: function(result){
+          infowindow_info = $.parseJSON(result.infowindow);
+          setupTools();
+        },
+        error: function(e) {
+          setupTools();
+          console.debug(e);
+        }
+      });
+      
     }
     
     CartoMap.prototype.setTilesStyles = function(obj) {
@@ -236,7 +250,14 @@
     }
     
     CartoMap.prototype.setInfowindowVars = function(infowindow_vars) {
+      this.infowindow_vars_ = infowindow_vars;
       
+      $.ajax({
+        type: "POST",
+        headers: {"cartodbclient": true},
+        url: global_api_url + 'tables/' + table_id + '/infowindow',
+        data: {infowindow: JSON.stringify(infowindow_vars)}
+      });
     }
 
 
@@ -335,6 +356,7 @@
         var view_map = ($('body').attr('view_mode') == 'map');
         if (view_map) {
           stopPropagation(ev);
+          $('body').removeAttr('query_mode');
           me.query_mode = false;
           me.refresh();
         }
@@ -442,7 +464,7 @@
     }
 
     /* Set the tools due to geom_type... */
-    CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style) {
+    CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style,infowindow_vars) {
       var me = this;
       var map = me.map_;
 
@@ -704,8 +726,6 @@
         });
         
         
-        
-        
         /* alpha slider */
         var slider_value = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ');
         slider_value = geometry_style[slider_value[0]]*100 || 100;
@@ -857,19 +877,9 @@
   		}());
       
       
-      /*Infowindow customization - header*/
-      var infowindow_customization = (function(){
-         $('.map_header ul.infowindow_customization li a').livequery('click',function(ev){
-           stopPropagation(ev);
-           var parent = $(this).parent();
-           if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
-
-           }
-         });
-
-        return {}
-  		}());
-
+      /*Setup infowindow */
+      this.setupInfowindow(infowindow_vars);
+ 
  
       /* Bind event for open any tool */
       $('.map_header a.open').livequery('click',function(ev){
@@ -927,7 +937,108 @@
       });
     }
 
+    /* Refresh infowindow customization due to adding/removing a column */
+    CartoMap.prototype.setupInfowindow = function(infowindow_vars) {
+
+      var me = this,
+          custom_infowindow = infowindow_vars,
+          default_infowindow = {};
+      
+      if (!infowindow_vars && !this.infowindow_vars_) {
+        return false;
+      } else {
+        if (this.infowindow_vars_) {
+          custom_infowindow = this.infowindow_vars_;
+          setupVars(custom_infowindow);
+          return false;
+        }
+      }
+      
+
+      
+      $('.map_header ul.infowindow_customization div.suboptions ul.column_names li.vars a').livequery('click',function(ev){
+        stopPropagation(ev);
+        var value = $(this).text();
+        
+        if ($(this).hasClass('on')) {
+          $(this).removeClass('on');
+          custom_infowindow[value] = false;
+        } else {
+          $(this).addClass('on');
+          custom_infowindow[value] = true;
+        }
+        
+        me.setInfowindowVars(custom_infowindow);
+      });
+      
     
+      $('.map_header ul.infowindow_customization li a').livequery('click',function(ev){
+        stopPropagation(ev);
+        var parent = $(this).parent();
+        if (!parent.hasClass('selected') && !parent.hasClass('disabled') && !parent.hasClass('vars')) {
+          $('.map_header ul.infowindow_customization li').each(function(i,li){$(li).removeClass('selected special')});
+          
+          // Add selected to the parent (special?)
+          if (parent.find('div.suboptions').length>0) {
+            parent.addClass('selected special');
+            $('.map_header ul.infowindow_customization').closest('li').find('p').text('Custom');
+            me.setInfowindowVars(custom_infowindow);
+          } else {
+            $('.map_header ul.infowindow_customization').closest('li').find('p').text('Default');
+            parent.addClass('selected');
+            me.setInfowindowVars(default_infowindow);
+          }
+        }
+      });
+
+
+      // Setup the vars in the infowindow customization tool
+      setupVars(custom_infowindow);
+      
+      
+      function setupVars(infowindow_vars) {
+        // Get the columns
+        $.ajax({
+			    method: "GET",
+			    url: global_api_url + 'tables/' + table_name,
+			 		headers: {"cartodbclient":"true"},
+			    success: function(data) {
+
+			      // Select the default or custom
+			      $('.map_header ul.infowindow_customization li').removeClass('selected special');  		
+			      if (_.size(infowindow_vars)==0) {
+			        $('.map_header ul.infowindow_customization li:eq(0)').addClass('selected');
+			      } else {
+			        $('.map_header ul.infowindow_customization li:eq(1)').addClass('selected special');  			        
+			      }
+			      
+			      // Loop over all columns and saving each value that is not present
+			      //   in the requested infowindow_vars
+			      _.each(data.schema,function(arr,i) {
+			        if (arr[0]!='cartodb_id') {
+			          default_infowindow[arr[0]] = true;
+			          if (infowindow_vars[arr[0]] == undefined) infowindow_vars[arr[0]] = true;
+			        }
+			      });
+			      
+			      $('.map_header ul.infowindow_customization div.suboptions ul.column_names li').remove();
+			      // Print all possible items in the suboptions
+			      _.each(infowindow_vars,function(value,name){
+			        $('.map_header ul.infowindow_customization div.suboptions ul.column_names').append('<li class="vars"><a class="'+(value?'on':'')+'">'+name+'</a</li>');
+			      });
+
+            me.infowindow_vars_ = infowindow_vars;
+			    },
+			    error: function(e) {
+			      console.debug(e);
+			      $('.map_header ul.infowindow_customization li:eq(1)').addClass('disabled');
+			    }
+			  });
+      }
+
+    }
+    
+
 
     ////////////////////////////////////////
     //  WAX AND TOOLS LISTENERS			      //
@@ -997,7 +1108,7 @@
     /* Remove WAX layer */
     CartoMap.prototype.removeWax = function() {
       if (this.map_) {
-          this.map_.overlayMapTypes.clear();
+        this.map_.overlayMapTypes.clear();
       }
     }
 
@@ -1424,6 +1535,17 @@
       // Refresh wax layer
       this.tilejson = this.generateTilejson();
       this.refreshWax();
+      
+      // Check if query and show or not custom tools for geometries
+      if (this.query_mode) {
+        $('.map_header a.open').fadeOut();
+      } else {
+        $('.map_header a.open').fadeIn();
+      }
+      
+      // Check if there was any change in the table to composite 
+      //    the infowindow vars customization properly
+      this.setupInfowindow();
 
       // Remove the fake marker
       if (this.fakeMarker_!=null)

@@ -1252,8 +1252,8 @@
           headers: {"cartodbclient":"true"},
           success:function(result){
             map_style = $.parseJSON(result.map_metadata);
-
-            if (map_style.google_maps_base_type=="roadmap") {
+            console.log(map_style);
+            if (!map_style || map_style.google_maps_base_type=="roadmap") {
               embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
             } else if (map_style.google_maps_base_type=="satellite") {
               embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
@@ -1262,6 +1262,7 @@
             }
             
             // Custom tiles
+            if (!map_style) {map_style = {google_maps_customization_style: []}}
             embed_map.setOptions({styles: map_style.google_maps_customization_style})
           },
           error: function(e){
@@ -1283,6 +1284,21 @@
                 var coor1 = coordinates[0].split(' ');
                 var coor2 = coordinates[1].split(' ');
                 var bounds = new google.maps.LatLngBounds();
+                
+                // Check bounds
+                if (coor1[0] >  180 
+                 || coor1[0] < -180 
+                 || coor1[1] >  90 
+                 || coor1[1] < -90 
+                 || coor2[0] >  180 
+                 || coor2[0] < -180 
+                 || coor2[1] >  90  
+                 || coor2[1] < -90) {
+                  coor1[0] = '-30';
+                  coor1[1] = '-50'; 
+                  coor2[0] = '110'; 
+                  coor2[1] =  '80'; 
+                }
 
                 bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
                 bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));

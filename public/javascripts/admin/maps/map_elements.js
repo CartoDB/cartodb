@@ -227,14 +227,19 @@
               '<h4>Infowindow customization</h4>'+
               '<p>Default</p>'+
               '<a class="open" href="#infowindow_customization"></a>'+
-              '<div class="short options">'+
+              '<div class="options">'+
                 '<span class="tick"></span>'+
                 '<ul class="infowindow_customization">'+
-                  '<li class="selected">'+
+                  '<li>'+
                     '<a href="#default">Default</a>'+
                   '</li>'+
-                  '<li class="disabled">'+
+                  '<li>'+
                     '<a href="#custom">Custom</a>'+
+                    '<div class="suboptions">'+
+                      '<label>Custom vars</label>'+
+                      '<ul class="column_names">'+
+                      '</ul>'+
+                    '</div>'+
                   '</li>'+
                 '</ul>'+
               '</div>'+

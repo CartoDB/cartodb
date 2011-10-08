@@ -49,7 +49,7 @@ To try CartoDB, visit [www.cartodb.com](http://www.cartodb.com).
   - Setup new hosts in `/etc/hosts`:
       
         # CartoDB
-        127.0.0.1 vizzuality.localhost.lan vizzuality.testhost.lan
+        127.0.0.1 admin.localhost.lan admin.testhost.lan
         # # # # #
                 
   - Clone the [Node SQL API](https://github.com/tokumine/cartodb-sql-api) in your projects folder:
@@ -100,7 +100,7 @@ To try CartoDB, visit [www.cartodb.com](http://www.cartodb.com).
   
   - In a separate tab change to Node SQL API and Tiler directories and run node.js: `node app.js developement`
 
-  - Open your browser and go to `http://vizzuality.localhost.lan:3000`
+  - Open your browser and go to `http://admin.localhost.lan:3000`
   
   - Enjoy!
   

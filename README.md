@@ -1,6 +1,6 @@
 # CartoDB #
 
-[CartoDB](http://www.cartodb.com) is a tool for managing your geospatial data in PostGIS. It's similar to Google Fusion Tables, but supercharged and open source! 
+[CartoDB](http://www.cartodb.com) is a tool for analyzing, vizzualising and sharing your geospatial data in PostGIS. It's similar to Google Fusion Tables, but supercharged and open source! 
 
 Each CartoDB is owned by its user, and is composed of:
 

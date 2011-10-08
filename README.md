@@ -24,9 +24,9 @@ To try CartoDB, visit [www.cartodb.com](http://www.cartodb.com).
   
 ## Components of CartoDB ##
 
-  - Rails application management interface (this repository)
-  - nodejs SQL API (https://github.com/Vizzuality/CartoDB-SQL-API)
-  - nodejs map tile generator (https://github.com/Vizzuality/Windshaft-cartodb)
+  - Data analysis and management interface (this repository)
+  - Fully featured SQL API (https://github.com/Vizzuality/CartoDB-SQL-API)
+  - High speed map tile generator (https://github.com/Vizzuality/Windshaft-cartodb)
 
 
 ## Setting-up the environment for developers ##

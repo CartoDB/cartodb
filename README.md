@@ -16,11 +16,11 @@ To try CartoDB, visit [www.cartodb.com](http://www.cartodb.com).
 ## Dependencies ##
 
   - Mapnik 2.0
+  - PostGIS 2.0
+  - Postgres 9.1.x
+  - Redis 2.2+
   - NodeJS 0.4.10+
   - Ruby 1.9.2+
-  - Postgres 9.1.x
-  - PostGIS 2.0
-  - Redis 2.2+
   
 ## Components of CartoDB ##
 

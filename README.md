@@ -106,8 +106,8 @@ To try CartoDB, visit [www.cartodb.com](http://www.cartodb.com).
   
 
 
-## TODO ##
+### Coming soon ###
 
-  - Better installation instructions (esp for Mapnik!)
-  - Simple AMI/Linode images
-  - Examples and usecases
+* Better installation instructions
+* Simple AMI/Linode images
+* Examples and usecases

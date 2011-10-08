@@ -105,7 +105,7 @@
                           '<span class="palette">'+
                             '<ul>'+
                               '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-                              '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+                              '<li><a href="#FFFFFF" style="background-color:#E2DADA">grey</a></li>'+
                               '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
                               '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
                               '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
@@ -141,7 +141,7 @@
                           '<span class="palette">'+
                             '<ul>'+
                               '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-                              '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+                              '<li><a href="#FFFFFF" style="background-color:#E2DADA">grey</a></li>'+
                               '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
                               '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
                               '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+

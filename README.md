@@ -2,7 +2,9 @@
 
 ## Introduction ##
 
-[CartoDB](http://www.cartodb.com) is a tool for managing PostGIS user dedicated databases. Each CartoDB is owned by its user, and is composed of:
+[CartoDB](http://www.cartodb.com) is a tool for managing your geospatial data in PostGIS. It's similar to Google Fusion Tables, but supercharged and open source! 
+
+Each CartoDB is owned by its user, and is composed of:
 
   - User Interface: create and manipulate tables and their data, import new ones, or export them to files
   - PostGIS 2 database: a geospatial database with the full range of Postgres and PostGIS functionality

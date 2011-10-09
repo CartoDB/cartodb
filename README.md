@@ -10,7 +10,8 @@ Each CartoDB is owned by its user, and is composed of:
   - Map tiler: A SQL configurable map tile generator for quick feedback on your data, allowing you to style and embed maps 
   - Authentication: Read/Write access to datasets over OAuth with user definable public access if required   
   
-To try CartoDB, visit [www.cartodb.com](http://www.cartodb.com).
+To try CartoDB, visit [www.cartodb.com](http://www.cartodb.com). 
+
 Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) to learn more.  
   
 ## Dependencies ##

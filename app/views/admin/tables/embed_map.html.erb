@@ -58,11 +58,11 @@
 
           // Setup your map styles
           $.ajax({
-            url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/infowindow',
+            url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/map_metadata',
             type: 'GET',
             dataType: 'jsonp',
             success:function(result){
-              map_style = $.parseJSON(result.infowindow);
+              map_style = $.parseJSON(result.map_metadata);
               if (!map_style || map_style.google_maps_base_type=="roadmap") {
                 carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
               } else if (map_style.google_maps_base_type=="satellite") {

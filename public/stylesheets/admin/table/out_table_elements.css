@@ -60,8 +60,8 @@ section.subheader span.tags {float:left; width:100%;}
 section.subheader span.tags p {float:left; width:auto; padding:3px 7px; margin:4px 4px 0 0; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:normal 11px Arial; color:white; text-decoration:none; background:#121621;}
 section.subheader span.tags p.last {margin:4px 6px 0 0;}
 section.subheader span.tags span.separator {float:left; width:auto; padding:2px; margin: 0; background-color: transparent;}
-section.subheader span.tags a.add {float:left; width:auto; padding:3px 0; margin:4px 0 0 0; background:none; color:#FFCC00; text-shadow:0 1px black; font:normal 11px Arial;}
-section.subheader span.tags a:hover {background:black; text-decoration:underline;}
+section.subheader span.tags a.add {float:left; width:auto; padding:3px 0; margin:4px 0 0 0; background:none; color:white; text-shadow:0 1px black; font:normal 11px Arial;}
+section.subheader span.tags a:hover {text-decoration:underline;}
 section.subheader span.tags a.add:hover {background:none;}
 section.subheader ul.tab_menu {position:absolute; bottom:0; left:0; height:auto; width:100%; padding:0; margin:0;}
 section.subheader ul.tab_menu li {float:left; width:auto; height:auto; margin:0 3px 0 0; padding:0;}

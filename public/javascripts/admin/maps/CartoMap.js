@@ -521,15 +521,19 @@
             if (map_type=="Roadmap") {
               map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
               $('.map_header ul.map_type li a:contains("Custom tiles")').parent().removeClass('disabled');
+              $('.map_header ul.main li.first p').text('Roadmap');
             } else if (map_type=="Satellite") {
               map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
               $('.map_header ul.map_type li a:contains("Custom tiles")').parent().removeClass('disabled');
+              $('.map_header ul.main li.first p').text('Satellite');
             } else if (map_type=="Terrain") {
               map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
               $('.map_header ul.map_type li a:contains("Custom tiles")').parent().removeClass('disabled');
+              $('.map_header ul.main li.first p').text('Terrain');
             } else {
               map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
               $('.map_header ul.map_type li a:contains("Custom tiles")').parent().addClass('disabled');
+              $('.map_header ul.main li.first p').text('CartoDB');
               var mapStyles = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
               map.setOptions({styles: mapStyles});
             }
@@ -624,19 +628,23 @@
           // select map type
           if (map_type=="terrain") {
             $('.map_header ul.map_type li a.option:contains("Terrain")').parent().addClass('selected');
+            $('.map_header ul.main li.first p').text('Terrain');
             map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
             custom_map_style.type = 'terrain';
           } else if (map_type=="satellite") {
             $('.map_header ul.map_type li a.option:contains("Satellite")').parent().addClass('selected');
+            $('.map_header ul.main li.first p').text('Satellite');
             map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
             custom_map_style.type = 'satellite';
           } else if (map_type=="roadmap"){
             $('.map_header ul.map_type li a.option:contains("Roadmap")').parent().addClass('selected');
             map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+            $('.map_header ul.main li.first p').text('Roadmap');
             custom_map_style.type = 'roadmap';
           } else {
             map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
             $('.map_header ul.map_type li a.option:contains("CartoDB")').parent().addClass('selected');
+            $('.map_header ul.main li.first p').text('CartoDB');
             $('.map_header ul.map_type li a:contains("Custom tiles")').parent().addClass('disabled');
             var mapStyles = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
             map.setOptions({styles: mapStyles});

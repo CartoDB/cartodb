@@ -121,7 +121,7 @@
           if (result.map_metadata != null) {
             map_style = $.parseJSON(result.map_metadata);
           } else {
-            map_style = {basemap_provider: 'google_maps',google_maps_customization_style:[],google_maps_base_type:'roadmap'}
+            map_style = {basemap_provider: 'google_maps',google_maps_customization_style:[],google_maps_base_type:'cartodb'}
           }
           setupTools();
         },
@@ -469,22 +469,28 @@
       var map = me.map_;
 
                   
-      /*Geometry tools*/
-      if (geom_type=="point" || geom_type=="multipoint") {
-        $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
-        $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
-      } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-        $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');
-        $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
-      } else {
-        $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
-        $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
-      }
+
       
+      /* Visualization type */
+      var visualization_type = (function(){
+        
+        /*Geometry tools*/
+        if (geom_type=="point" || geom_type=="multipoint") {
+          $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
+        } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+          $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
+        } else {
+          $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
+        }
+        
+        return {}
+  		}());
+         
       
       /*Map type - header*/
       var map_customization = (function(){
         var custom_map_style = {};
+        
         map.setOptions({styles:map_style.google_maps_customization_style});
   
         // Parse the styles of the map
@@ -614,7 +620,7 @@
         
         
         // Initialize the map controls and the map type
-        function initializeMapOptions(map_style, map_type) {
+        function initializeMapOptions(map_style, map_type) {          
           // select map type
           if (map_type=="terrain") {
             $('.map_header ul.map_type li a.option:contains("Terrain")').parent().addClass('selected');
@@ -774,7 +780,8 @@
          if (geom_type == 'multipoint' || geom_type == 'point') {
             $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
             $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
-
+            $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
+            
             default_style = {
               'marker-fill':'#00ffff',
               'marker-opacity':1,
@@ -790,6 +797,7 @@
          } else if (geom_type == 'multipolygon' || geom_type == 'polygon') {
             $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
             $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
+            $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');            
 
             default_style = {
               'polygon-fill':'#FF6600',
@@ -801,7 +809,8 @@
           } else {
             $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
             $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
-
+            $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
+            
             default_style = {
               'line-color':'#FF6600',
               'line-width': 1,

@@ -99,6 +99,7 @@
     ////////////////////////////////////////
     //  GET / SET MAP STYLES    		      //
     ////////////////////////////////////////
+    // Get the styles of the whole map
     CartoMap.prototype.getStyles = function() {
       var me = this,
           map_style,
@@ -188,14 +189,20 @@
       
     }
     
+    // Set new tile styles
     CartoMap.prototype.setTilesStyles = function(obj) {
-      var me = this;
-
-      var str = '#'+table_name+' {';
-      _.each(obj,function(property,i){
-        str += i+':'+property+'; ';
-      });
-      str += '}';
+      var me = this,
+          str = '';
+      
+      if (typeof obj === "string") {
+        str = obj.replace(/ /gi,'').replace(/\n/g,'');;
+      } else {
+        str = '#'+table_name+' {';
+        _.each(obj,function(property,i){
+          str += i+':'+property+'; ';
+        });
+        str += '}';
+      }
       
       $.ajax({
         type: 'POST',
@@ -210,6 +217,7 @@
       });
     }
 
+    // Set new map style
     CartoMap.prototype.setMapStyle = function(map_styles) {
       // Compose array for map style      
       var styles = [];
@@ -248,7 +256,8 @@
         data: {map_metadata: JSON.stringify({basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles})}
       });
     }
-    
+
+    // Set new infowindow vars    
     CartoMap.prototype.setInfowindowVars = function(infowindow_vars) {
       this.infowindow_vars_ = infowindow_vars;
       
@@ -468,10 +477,8 @@
       var me = this;
       var map = me.map_;
 
-                  
 
-      
-      /* Visualization type */
+      /* Visualization type - header*/
       var visualization_type = (function(){
         
         /*Geometry tools*/
@@ -669,11 +676,43 @@
         
         setupStyles(geom_styles);
         
+        /* CARTOCSS WINDOW */
+        // draggable
+        $('div.cartocss_editor').draggable();
+        
+        // editor
+        var cartocss_editor = CodeMirror.fromTextArea(document.getElementById("cartocss_editor"), {
+  	      lineNumbers: false,
+  	      mode: "css",
+  				onKeyEvent: function(editor,event) {
+  					if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
+  						stopPropagation(event);
+  						$('div.cartocss_editor a.try_css').trigger('click');
+  					}
+  				}
+  	    });
+  	    
+  	    // Bindings
+        
+  	    $('div.cartocss_editor a.try_css').click(function(ev){
+  	      stopPropagation(ev);
+  	      me.setTilesStyles(cartocss_editor.getValue());
+  	    });
+  	    $('div.cartocss_editor a.close, div.cartocss_editor a.cancel').click(function(ev){
+  	      stopPropagation(ev);
+  	      $('div.cartocss_editor').fadeOut();
+  	    });
+  	    
+  	    
+  	    /*END CARTOCSS*/
+
+        
         // BINDINGS
         /* change between list options */
         $('.map_header ul.geometry_customization li a.option').click(function(ev){
           stopPropagation(ev);
           var parent = $(this).parent();
+          var type = $(this).text();
           if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
             // Remove selected
             $('.map_header ul.geometry_customization li').each(function(i,li){$(li).removeClass('selected special')});
@@ -681,13 +720,14 @@
             // Add selected to the parent (special?)
             if (parent.find('div.suboptions').length>0) {
               parent.addClass('selected special');
-              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+              $('.map_header ul.geometry_customization').closest('li').find('p').text((type=="CartoCSS")?'CartoCSS':'Custom Style');
             } else {
               parent.addClass('selected');
               resetStyles();
             }
           }
         });
+              
               
         /* color input */
         $('.map_header ul.geometry_customization div.suboptions span.color input').change(function(ev){
@@ -707,6 +747,7 @@
           }
         });
         
+        
         /* color open palette */
         $('.map_header ul.geometry_customization div.suboptions span.color a.control').click(function(ev){
           stopPropagation(ev);
@@ -715,6 +756,7 @@
           });
           $(this).closest('span.color').find('span.palette').show();
         });
+        
         
         /* color palette */
         $('.map_header ul.geometry_customization div.suboptions span.color span.palette ul li a').click(function(ev){
@@ -733,6 +775,7 @@
           geometry_style[css_] = new_color;
           me.setTilesStyles(geometry_style);
         });
+        
         
         /* width range */
         $('.map_header ul.geometry_customization div.suboptions span.numeric a').livequery('click',function(ev){
@@ -779,6 +822,13 @@
             me.setTilesStyles(geometry_style);
           }
         });
+        
+        
+        /* open cartocss editor */
+        // $('button.open_cartocss').click(function(ev){
+        //   stopPropagation(ev);
+        //   $('div.').fadeIn();
+        // });
         
         
         /* setup enter styles */
@@ -828,7 +878,7 @@
 
 
           // Get all the styles and save them in geometry_style object
-          var styles_ = styles.replace(/ /gi,'');
+          var styles_ = styles.replace(/ /gi,'').replace(/\n/g,'');
 
           // Remove table_name
           styles_ = styles_.split('{');
@@ -840,7 +890,7 @@
           _.each(styles_,function(property,i){
             if (property!="}") {
               var split_property = property.split(':');
-              geometry_style[split_property[0].replace(/ /g,'')] = split_property[1].replace(/ /g,'');
+              geometry_style[split_property[0]] = split_property[1];
             }
           });
 
@@ -906,7 +956,7 @@
   		}());
       
       
-      /*Setup infowindow */
+      /*Setup infowindow - header*/
       this.setupInfowindow(infowindow_vars || {});
  
  

@@ -1088,18 +1088,20 @@
         callbacks: {
           out: function(){
             me.over_marker_ = false;
-            me.map_.setOptions({ draggableCursor: 'default' });
+            me.map_.setOptions({draggableCursor: 'default'});
           },
           over: function(feature, div, opt3, evt){
-            if (me.status_ == "select") {
+            if (query_mode || me.status_ == "select") {
               me.over_marker_ = true;
               me.map_.setOptions({ draggableCursor: 'pointer' });
               me.tooltip_.open(evt.latLng,feature);
             }
           },
           click: function(feature, div, opt3, evt){
-            me.info_window_.open(feature);
-            me.hideOverlays();
+            if (query_mode || status_ == "select") {
+              me.info_window_.open(feature);
+              me.hideOverlays();
+            }
           }
         },
         clickAction: 'full'

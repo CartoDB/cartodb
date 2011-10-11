@@ -223,6 +223,12 @@
                       '</div>'+
                     '</div>'+
                   '</li>'+
+                  '<li>'+
+                    '<a class="option" href="#cartoCSS">CartoCSS</a>'+
+                    '<div class="suboptions">'+
+                      '<button type="button">Open CartoCSS</button>'+
+                    '</di>'+
+                  '</li>'+
                 '</ul>'+
               '</div>'+
             '</li>'+
@@ -252,12 +258,12 @@
         '<p class="georeferencing"></p>'+
         '<div id="map"></div>'+
         
-        '<div class="css_editor">'+
+        '<div class="cartocss_editor">'+
           '<a class="close" href="#close">close</a>'+
           '<div class="inner_">'+
             '<span class="top">'+
               '<h3>Edit your tiles</h3>'+
-              '<textarea id="css_editor">#'+ table_name +'{\n marker-fill: #FF6600;\n marker-opacity: 1;\n marker-width: 8;\n marker-line-color: white;\n marker-line-width: 3;\n marker-line-opacity: 0.9;\n marker-placement: point;\n marker-type: ellipse;\n marker-allow-overlap: true;\n}</textarea>'+
+              '<textarea id="cartocss_editor">#'+ table_name +' {\n  marker-fill: #FF6600;\n  marker-opacity: 1;\n  marker-width: 8;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}</textarea>'+
             '</span>'+
             '<span class="bottom">'+
               '<a href="#try" class="try_css">Try CSS</a>'+

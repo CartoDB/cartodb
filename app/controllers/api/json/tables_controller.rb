@@ -64,9 +64,11 @@ class Api::Json::TablesController < Api::ApplicationController
   rescue => e
     # Intercept the error and add more meaning based on the users create type. 
     # TODO: The importer should throw these specific errors
-    e = CartoDB::InvalidUrl.new     e.message    if params[:url]    
-    e = CartoDB::InvalidFile.new    e.message    if params[:file]    
-    e = CartoDB::TableCopyError.new e.message    if params[:table_copy]    
+    if !e.is_a? CartoDB::QuotaExceeded
+      e = CartoDB::InvalidUrl.new     e.message    if params[:url]    
+      e = CartoDB::InvalidFile.new    e.message    if params[:file]    
+      e = CartoDB::TableCopyError.new e.message    if params[:table_copy]    
+    end  
     
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     render_jsonp(translate_error(e), 400) and return  

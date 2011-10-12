@@ -23,3 +23,7 @@ cartodb_errors:
     code: 5
     message: Error while duplicating table
     hint: "Please try again, or <a href='http://support.cartodb.com/discussion/new'>contact our support team</a> who will be happy to assist."
+  quota_error:
+    code: 6
+    message: Disk Quota Exceeded!
+    hint: "Please remove some tables or upgrade your plan"    

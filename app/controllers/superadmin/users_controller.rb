@@ -13,6 +13,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       @user.email                   = attributes[:email]   
       @user.admin                   = attributes[:admin]   
       @user.enabled                 = true
+      @user.quota_in_bytes          = attributes[:quota_in_bytes] if attributes[:quota_in_bytes].present?
+      
       if attributes[:password].present?
         @user.password              = attributes[:password]
         @user.password_confirmation = attributes[:password]
@@ -28,8 +30,13 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def update
     if attributes = params[:user]
-      @user.username = attributes[:username] if attributes.has_key?(:username)
-      @user.email    = attributes[:email] if attributes.has_key?(:email)
+      @user.username        = attributes[:username] if attributes.has_key?(:username)
+      @user.email           = attributes[:email] if attributes.has_key?(:email)
+      @user.quota_in_bytes  = attributes[:quota_in_bytes] if attributes.has_key?(:quota_in_bytes)
+      @user.admin           = attributes[:admin] if attributes.has_key?(:admin)
+      @user.enabled         = attributes[:enabled] if attributes.has_key?(:enabled)
+      @user.map_enabled     = attributes[:map_enabled] if attributes.has_key?(:map_enabled)
+
       if attributes[:password].present?
         @user.password = attributes[:password] 
         @user.password_confirmation = attributes[:password]
@@ -37,9 +44,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         @user.crypted_password      = attributes[:crypted_password] if attributes.has_key?(:crypted_password)
         @user.salt                  = attributes[:salt] if attributes.has_key?(:salt)
       end
-      @user.admin       = attributes[:admin] if attributes.has_key?(:admin)
-      @user.enabled     = attributes[:enabled] if attributes.has_key?(:enabled)
-      @user.map_enabled = attributes[:map_enabled] if attributes.has_key?(:map_enabled)
     end
 
     @user.save

@@ -5,13 +5,13 @@ class User < Sequel::Model
   one_to_many :tokens, :class => :OauthToken
 
   # Sequel setup & plugins
-  set_allowed_columns :email, :map_enabled, :password_confirmation
+  set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes
   plugin :validation_helpers
   plugin :json_serializer
   
   # Restrict to_json attributes
   @json_serializer_opts = { 
-    :except => [ :crypted_password, :salt, :invite_token, :invite_token_date, :admin, :enabled, :map_enabled ],
+    :except => [ :crypted_password, :salt, :invite_token, :invite_token_date, :admin, :enabled, :map_enabled, :quota_in_bytes ],
     :naked => true # avoid adding json_class to result
   }
 
@@ -210,16 +210,25 @@ class User < Sequel::Model
   #
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
-  def database_size
+  def db_size_in_bytes
     size = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(table_name))
       FROM information_schema.tables
       WHERE table_catalog = '#{database_name}' AND table_schema = 'public'").first[:sum]
       
     # hack for the_geom_webmercator
-    size = size / 2  
-    
-    # return bytes in megabytes
-    size / 1024 / 1024
+    size / 2  
+  end
+  
+  def remaining_quota
+    self.quota_in_bytes - self.db_size_in_bytes
+  end  
+  
+  def quota_overspend
+    self.exceeded_quota? ? self.remaining_quota.abs : 0
+  end
+  
+  def exceeded_quota?
+    self.remaining_quota < 0      
   end
   
   ## User's databases setup methods
@@ -261,21 +270,46 @@ class User < Sequel::Model
   
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|
-      user_database.transaction do 
-        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM public")
-        user_database.run("REVOKE ALL ON SCHEMA public FROM public")
+      user_database.transaction do         
+        
+        # remove all public and tile user permissions
+        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM PUBLIC")
+        user_database.run("REVOKE ALL ON SCHEMA public FROM PUBLIC")
+        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM PUBLIC")
+        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC")
+        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM PUBLIC")
+
+        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
+        
+        user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
+        user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
+        
+        # grant core permissions to database user
         user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
         user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{database_username}")
+        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{database_username}")        
         user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
+
+        # grant select permissions to public user
         user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
         user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+        user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
+ 
+        # grant select permissions to tile user
         user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::TILE_DB_USER}")
         user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-        
+        user_database.run("GRANT SELECT ON ALL TABLES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
+        user_database.run("GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
+        user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")        
+                
         yield(user_database) if block_given?
       end  
     end

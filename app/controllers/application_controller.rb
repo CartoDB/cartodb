@@ -94,8 +94,9 @@ class ApplicationController < ActionController::Base
       when CartoDB::EmptyFile 
       when CartoDB::InvalidUrl
       when CartoDB::InvalidFile
-      when CartoDB::TableCopyError  
-        exception.detail    
+      when CartoDB::TableCopyError
+      when CartoDB::QuotaExceeded
+        exception.detail              
       when Sequel::DatabaseError
         # TODO: rationalise these error codes
         if exception.message.include?("transform: couldn't project")

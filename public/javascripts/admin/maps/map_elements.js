@@ -224,7 +224,7 @@
                     '</div>'+
                   '</li>'+
                   '<li>'+
-                    '<a class="option" href="#cartoCSS">CartoCSS</a>'+
+                    '<a class="option" href="#cartoCSS">CartoCSS<sup>(beta)</sup></a>'+
                     '<div class="suboptions">'+
                       '<button type="button">Open CartoCSS</button>'+
                     '</di>'+

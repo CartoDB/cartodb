@@ -89,8 +89,7 @@ div.map_window div.map_header div.options.short ul li {width:82px}
 div.map_window div.map_header div.options ul li.selected.special {padding:7px 10px; margin:3px 0 0 0; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #DBDCDF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#DBDCDF));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #DBDCDF); background: -o-linear-gradient(#FFFFFF,#DBDCDF); background:#DBDCDF\9;}
 div.map_window div.map_header div.options ul li a {margin:0; padding:0 0 0 15px; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -188px; font:normal 11px "Helvetica",Arial; color:#FFFFFF; text-decoration:none}
-div.map_window div.map_header div.options ul li a sup {display:inline-block; vertical-align:top; padding:0 0 0 2px; font:normal 9px Arial; color:#6CBE6C}
-
+div.map_window div.map_header div.options ul li a sup {display:inline-block; vertical-align:top; padding:0 0 0 2px; font:normal 9px Arial; color:#FF9900}
 div.map_window div.map_header div.options ul li a:hover {background-position:0 0}
 div.map_window div.map_header div.options ul li.selected a {background-position:0 0}
 div.map_window div.map_header div.options ul li.selected a:hover {background-position:0 0; cursor:default}

@@ -263,7 +263,7 @@
           '<div class="inner_">'+
             '<span class="top">'+
               '<h3>Edit your tiles</h3>'+
-              '<p>This funcionality is in beta, and it doesn\'t show any error. If you want more information about CartoCSS, go <a target="_blank" href="http://developmentseed.org/blog/2011/feb/09/introducing-carto-css-map-styling-language/">here</a>.</p>'+
+              '<p>This funcionality is in beta, and it doesn\'t show any error. Get <a target="_blank" href="http://developmentseed.org/blog/2011/feb/09/introducing-carto-css-map-styling-language/">more information</a> about CartoCSS.</p>'+
               '<textarea id="cartocss_editor"> </textarea>'+
             '</span>'+
             '<span class="bottom">'+

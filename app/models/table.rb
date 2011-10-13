@@ -33,17 +33,22 @@ class Table < Sequel::Model(:user_tables)
     super
   end
 
-  def before_create
-    self.database_name = owner.database_name
+  def before_create    
     update_updated_at
+    self.database_name = owner.database_name    
 
     #import from file
     if import_from_file.present? or import_from_url.present? or import_from_table_copy.present?
-      if import_from_file.present?
+      
+      if import_from_file.present?        
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          "database" => database_name, :logger => ::Rails.logger,
-          "username" => owner.database_username, "password" => owner.database_password,
-          :import_from_file => import_from_file, :debug => (Rails.env.development?)
+          "database" => database_name, 
+          :logger => ::Rails.logger,
+          "username" => owner.database_username, 
+          "password" => owner.database_password,
+          :import_from_file => import_from_file, 
+          :debug => (Rails.env.development?), 
+          :remaining_quota => owner.remaining_quota
         ).symbolize_keys
 
         importer = CartoDB::Importer.new hash_in
@@ -53,15 +58,21 @@ class Table < Sequel::Model(:user_tables)
       #import from URL
       if import_from_url.present?
         importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          "database" => database_name, :logger => ::Rails.logger,
-          "username" => owner.database_username, "password" => owner.database_password,
-          :import_from_url => import_from_url, :debug => (Rails.env.development?)
+          "database" => database_name, 
+          :logger => ::Rails.logger,
+          "username" => owner.database_username, 
+          "password" => owner.database_password,
+          :import_from_url => import_from_url, 
+          :debug => (Rails.env.development?), 
+          :remaining_quota => owner.remaining_quota
         ).symbolize_keys
+        
         importer_result_name = importer.import!.name
       end
 
       #Import from copying another table
       if import_from_table_copy.present?
+                
         # ensure unique name
         uniname = get_valid_name(self.name)
         owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
@@ -139,6 +150,9 @@ class Table < Sequel::Model(:user_tables)
       end
       set_the_geom_column!(self.the_geom_type)
     end
+    
+    # test for exceeding of quota after creation
+    raise CartoDB::QuotaExceeded, "#{owner.quota_overspend / 1024}KB more space is required" if owner.exceeded_quota?
 
     super
   rescue => e
@@ -181,7 +195,11 @@ class Table < Sequel::Model(:user_tables)
     super
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
+    add_python
     set_trigger_update_updated_at
+    set_trigger_cache_timestamp
+    set_trigger_check_quota
+    
     @force_schema = nil
     $tables_metadata.multi do
       $tables_metadata.hset key, "user_id", user_id
@@ -366,15 +384,18 @@ class Table < Sequel::Model(:user_tables)
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
           message = e.message.split("\n")[0]
-          invalid_value = message.match(/"([^"]+)"$/)[1]
-          invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
-          if new_column_type = get_new_column_type(invalid_column)
-            user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
-            retry
+          
+          invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
+          if invalid_value
+            invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
+            if new_column_type = get_new_column_type(invalid_column)
+              user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
+              retry
+            end
           else
             raise e
-          end
-        end
+          end          
+        end  
       else
         if attributes.size == 1 && attributes.keys == [THE_GEOM]
           rows_updated = 1
@@ -537,22 +558,6 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
-  def set_trigger_the_geom_webmercator
-    owner.in_database(:as => :superuser).run(<<-TRIGGER
-      DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
-      CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
-        BEGIN
-              NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
-              RETURN NEW;
-        END;
-      $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
-
-      CREATE TRIGGER update_the_geom_webmercator_trigger
-      BEFORE INSERT OR UPDATE OF the_geom ON #{self.name}
-         FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
-TRIGGER
-    )
-  end
 
   def the_geom_type
     $tables_metadata.hget(key,"the_geom_type") || "point"
@@ -688,6 +693,107 @@ TRIGGER
   end
 
 
+  # DB Triggers and things
+  def add_python
+    owner.in_database(:as => :superuser).run(<<-SQL
+      CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler; 
+    SQL
+    )
+  end
+  
+  def set_trigger_the_geom_webmercator
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+      DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
+      CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
+        BEGIN
+              NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
+              RETURN NEW;
+        END;
+      $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
+
+      CREATE TRIGGER update_the_geom_webmercator_trigger
+      BEFORE INSERT OR UPDATE OF the_geom ON #{self.name}
+         FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
+TRIGGER
+    )
+  end
+
+  def set_trigger_update_updated_at
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+      DROP TRIGGER IF EXISTS update_updated_at_trigger ON #{self.name};
+
+      CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at_trigger$
+        BEGIN
+               NEW.updated_at := now();
+               RETURN NEW;
+        END;
+      $update_updated_at_trigger$ LANGUAGE plpgsql;
+
+      CREATE TRIGGER update_updated_at_trigger
+      BEFORE UPDATE ON #{self.name}
+        FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
+TRIGGER
+    )
+  end
+
+  # move to C
+  def set_trigger_cache_timestamp
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+    CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
+    $$    
+        if 'redis' not in GD:        
+            import redis   
+            GD['redis'] = redis.Redis();
+
+        if 'time' not in GD:
+            from time import time
+            GD['time'] = time                                
+
+        table_name = TD["table_name"]    
+        db_name    = "#{self.database_name}"
+        cache_key  = ":".join(["cache", db_name, table_name, "last_updated_at"])
+        last_updated_at = GD['time']()
+
+        GD['redis'].set(cache_key, last_updated_at)
+    $$
+    LANGUAGE 'plpythonu' VOLATILE;
+
+    DROP TRIGGER IF EXISTS cache_checkpoint ON #{self.name};
+    CREATE TRIGGER cache_checkpoint BEFORE UPDATE OR INSERT OR DELETE OR TRUNCATE ON #{self.name} EXECUTE PROCEDURE update_timestamp();
+TRIGGER
+    )
+  end
+
+  # move to C
+  def set_trigger_check_quota
+    owner.in_database(:as => :superuser).run(<<-TRIGGER
+    CREATE OR REPLACE FUNCTION check_quota() RETURNS trigger AS
+    $$
+    c = SD.get('quota_counter', 0)
+    m = SD.get('quota_mod', 1000)
+    QUOTA_MAX = #{self.owner.quota_in_bytes}
+    
+    if c%m == 0:
+        s = plpy.execute("SELECT sum(pg_relation_size(table_name)) FROM information_schema.tables WHERE table_catalog = '#{self.database_name}' AND table_schema = 'public'")[0]['sum'] / 2
+        int_s = int(s) 
+        diff = int_s - QUOTA_MAX
+        SD['quota_mod'] = min(1000, max(1, diff))
+        if int_s > QUOTA_MAX:
+            raise Exception("Quota exceeded by %sKB" % (diff/1024))
+    SD['quota_counter'] = c + 1
+    $$
+    LANGUAGE 'plpythonu' VOLATILE;
+    
+    DROP TRIGGER IF EXISTS test_quota ON #{self.name};
+    CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON #{self.name} EXECUTE PROCEDURE check_quota();
+  TRIGGER
+  )  
+  end
+
+  def owner    
+    @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes).filter(:id => self.user_id).first
+  end
+
   private
 
   def update_updated_at
@@ -696,10 +802,6 @@ TRIGGER
 
   def update_updated_at!
     update_updated_at && save_changes
-  end
-
-  def owner    
-    @owner ||= User.select(:id,:database_name,:crypted_password).filter(:id => self.user_id).first
   end
 
   def get_valid_name(raw_new_name = nil)
@@ -734,23 +836,7 @@ TRIGGER
     end
   end
 
-  def set_trigger_update_updated_at
-    owner.in_database(:as => :superuser).run(<<-TRIGGER
-      DROP TRIGGER IF EXISTS update_updated_at_trigger ON #{self.name};
 
-      CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at_trigger$
-        BEGIN
-               NEW.updated_at := now();
-               RETURN NEW;
-        END;
-      $update_updated_at_trigger$ LANGUAGE plpgsql;
-
-      CREATE TRIGGER update_updated_at_trigger
-      BEFORE UPDATE ON #{self.name}
-        FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
-TRIGGER
-    )
-  end
 
   def get_new_column_type(invalid_column)
     flatten_cartodb_schema = schema.flatten

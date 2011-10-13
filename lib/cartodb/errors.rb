@@ -9,7 +9,7 @@ module CartoDB
   class InvalidSRID < StandardError; end
   class InvalidGeoJSONFormat < StandardError; end
   class QueryNotAllowed < StandardError; end
-
+  
   # importer errors
   class EmptyFile < StandardError 
     def detail
@@ -35,6 +35,12 @@ module CartoDB
     end  
   end
   
+  class QuotaExceeded < StandardError
+    def detail
+      ERROR_CODES[:quota_error].merge(:raw_error => self.message)      
+    end  
+  end
+
 
   # database errors
   class DbError < StandardError

@@ -34,7 +34,7 @@ div.marker_tooltip a.edit {background-position:right 0}
 div.marker_tooltip a.edit:hover {background-position:right -14px}
 
 /*Marker infowindow*/
-div.marker_infowindow {position:absolute; display:block; width:214px; padding:0;}
+div.marker_infowindow {position:absolute; display:block; width:214px; padding:0; z-index:10}
 div.marker_infowindow a.close {position:absolute; right:3px; top:3px; width:22px; height:15px; padding:4px 0 3px 0; text-align:center; font:bold 15px "Helvetica",Arial; color:#666666; text-decoration:none; line-height:15px}
 div.marker_infowindow a.close:hover {color:#333333}
 div.marker_infowindow div.outer_top {width:186px; padding:25px 18px 5px 10px; background:url('/images/admin/map/infowindow_top.png') 0 top;}

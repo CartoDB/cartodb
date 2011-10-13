@@ -827,6 +827,7 @@
         /* open cartocss editor */
         $('.map_header ul.geometry_customization button').click(function(ev){
           stopPropagation(ev);
+          $(this).closest('div.options').hide();
           $('div.cartocss_editor').fadeIn(function(){
             cartocss_editor.refresh();
           });

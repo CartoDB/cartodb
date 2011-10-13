@@ -263,7 +263,8 @@
           '<div class="inner_">'+
             '<span class="top">'+
               '<h3>Edit your tiles</h3>'+
-              '<textarea id="cartocss_editor">#'+ table_name +' {\n  marker-fill: #FF6600;\n  marker-opacity: 1;\n  marker-width: 8;\n  marker-line-color: white;\n  marker-line-width: 3;\n  marker-line-opacity: 0.9;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-allow-overlap: true;\n}</textarea>'+
+              '<p>This funcionality is in beta, and it doesn\'t show any error. If you want more information about CartoCSS, go <a target="_blank" href="http://developmentseed.org/blog/2011/feb/09/introducing-carto-css-map-styling-language/">here</a>.</p>'+
+              '<textarea id="cartocss_editor"> </textarea>'+
             '</span>'+
             '<span class="bottom">'+
               '<a href="#try" class="try_css">Try CSS</a>'+

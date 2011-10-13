@@ -476,8 +476,8 @@
     CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style,infowindow_vars) {
       var me = this;
       var map = me.map_;
-
-
+      
+      
       /* Visualization type - header*/
       var visualization_type = (function(){
         
@@ -674,11 +674,10 @@
         var geometry_style = {};
         var default_style = {};
         
-        setupStyles(geom_styles);
         
         /* CARTOCSS WINDOW */
         // draggable
-        $('div.cartocss_editor').draggable();
+        $('div.cartocss_editor').draggable({appendTo:'div.map_window'});
         
         // editor
         var cartocss_editor = CodeMirror.fromTextArea(document.getElementById("cartocss_editor"), {
@@ -702,10 +701,11 @@
   	      stopPropagation(ev);
   	      $('div.cartocss_editor').fadeOut();
   	    });
-  	    
-  	    
   	    /*END CARTOCSS*/
 
+
+        setupStyles(geom_styles);
+        
         
         // BINDINGS
         /* change between list options */
@@ -825,10 +825,12 @@
         
         
         /* open cartocss editor */
-        // $('button.open_cartocss').click(function(ev){
-        //   stopPropagation(ev);
-        //   $('div.').fadeIn();
-        // });
+        $('.map_header ul.geometry_customization button').click(function(ev){
+          stopPropagation(ev);
+          $('div.cartocss_editor').fadeIn(function(){
+            cartocss_editor.refresh();
+          });
+        });
         
         
         /* setup enter styles */
@@ -879,6 +881,9 @@
 
           // Get all the styles and save them in geometry_style object
           var styles_ = styles.replace(/ /gi,'').replace(/\n/g,'');
+          
+          // Setup cartocss editor
+          cartocss_editor.setValue(styles_.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
 
           // Remove table_name
           styles_ = styles_.split('{');
@@ -898,10 +903,12 @@
           // Change tools, we have to know if this styles have been edited or not...
           _.each(geometry_style,function(value,type){
             $('span[css="'+type+'"]').find('input').val(value);
-
-            var color = new RGBColor(value);
-            if (color.ok) {
-              $('span[css="'+type+'"] a.control').css({'background-color':value});
+            
+            if (typeof(value) === "string") {
+              var color = new RGBColor(value);
+              if (color.ok) {
+                $('span[css="'+type+'"] a.control').css({'background-color':value});
+              }
             }
           });
 
@@ -1149,7 +1156,7 @@
             me.map_.setOptions({draggableCursor: 'default'});
           },
           over: function(feature, div, opt3, evt){
-            if (query_mode || me.status_ == "select") {
+            if ((query_mode != undefined && query_mode == true) || me.status_ == "select") {
               me.over_marker_ = true;
               me.map_.setOptions({ draggableCursor: 'pointer' });
               me.tooltip_.open(evt.latLng,feature);
@@ -1223,28 +1230,28 @@
 
       // SQL?
       if (this.query_mode) {
-          var query = 'sql=' + editor.getValue();
-          tile_url = wax.util.addUrlData(tile_url, query);
-          grid_url = wax.util.addUrlData(grid_url, query);
+        var query = 'sql=' + editor.getValue();
+        tile_url = wax.util.addUrlData(tile_url, query);
+        grid_url = wax.util.addUrlData(grid_url, query);
       }
 
       // Build up the tileJSON
       // TODO: make a blankImage a real 'empty tile' image
       return {
-          blankImage: core_url + '/images/admin/map/blank_tile.png8', 
-          tilejson: '1.0.0',
-          scheme: 'xyz',
-          tiles: [tile_url],
-          grids: [grid_url],
-          tiles_base: tile_url,
-          grids_base: grid_url,
-          formatter: function(options, data) {
-              currentCartoDbId = data.cartodb_id;
-              return data.cartodb_id;
-          },
-          cache_buster: function(){
-              return that.cache_buster;
-          }
+        blankImage: core_url + '/images/admin/map/blank_tile.png8', 
+        tilejson: '1.0.0',
+        scheme: 'xyz',
+        tiles: [tile_url],
+        grids: [grid_url],
+        tiles_base: tile_url,
+        grids_base: grid_url,
+        formatter: function(options, data) {
+            currentCartoDbId = data.cartodb_id;
+            return data.cartodb_id;
+        },
+        cache_buster: function(){
+            return that.cache_buster;
+        }
       };
     }
 

@@ -220,6 +220,7 @@
             },
             error: function(e) {
 							var json = $.parseJSON(e.responseText);
+							console.log(json)
               $('div.create_window div.inner_ span.loading').addClass('error');
               $('div.create_window div.inner_ span.loading p').html(json.raw_error +'<br/><br/>'+json.hint);
               $('div.create_window div.inner_ span.loading h5').text(json.message);

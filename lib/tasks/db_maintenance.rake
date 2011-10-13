@@ -1,26 +1,68 @@
 namespace :cartodb do
   namespace :db do
-    desc "Permissions"
-    task :give_permissions => :environment do
+    desc "Set DB Permissions"
+    task :set_permissions => :environment do
       User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
-        user.in_database(:as => :superuser) do |user_database|
-          user_database.run("REVOKE ALL ON DATABASE #{user.database_name} FROM public")
-          user_database.run("REVOKE ALL ON SCHEMA public FROM public")
-          user_database.run("GRANT ALL ON DATABASE #{user.database_name} TO #{user.database_username}")
-          user_database.run("GRANT ALL ON SCHEMA public TO #{user.database_username}")
-          user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{user.database_username}")
-          user_database.run("GRANT CONNECT ON DATABASE #{user.database_name} TO #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
-          user_database.run("GRANT CONNECT ON DATABASE #{user.database_name} TO #{CartoDB::TILE_DB_USER}")
-          user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-          user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-          user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")          
-        end
+
+        # reset perms
+        user.set_database_permissions
+        
+        # rebuild public access perms from redis
+        user.tables.all.each do |table|
+          
+          # reset public
+          if table.public?
+            user.in_database(:as => :superuser).run("GRANT SELECT ON #{table.name} TO #{CartoDB::PUBLIC_DB_USER};")
+          end
+          
+          # reset triggers
+          table.add_python
+          table.set_trigger_update_updated_at
+          table.set_trigger_cache_timestamp
+          table.set_trigger_check_quota
+        end  
       end
     end
+
+    desc "reset Users quota to 100mb or use current setting"
+    task :reset_quotas => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        
+        user.update(:quota_in_bytes => 104857600) if user.quota_in_bytes.blank?
+                
+        # rebuild quota trigger
+        user.tables.all.each do |table|
+        
+          # reset quota trigger
+          table.add_python
+          table.set_trigger_check_quota
+        end  
+      end
+    end
+
+    desc "set users quota to amount in mb"
+    task :set_user_quota, [:username, :quota_in_mb] => :environment do |t, args|
+      usage = "usage: rake cartodb:db:set_user_quota[username,quota_in_mb]"
+      raise usage if args[:username].blank? || args[:quota_in_mb].blank?
+      
+      user  = User.filter(:username => args[:username]).first
+      quota = args[:quota_in_mb].to_i * 1024 * 1024
+      user.update(:quota_in_bytes => quota)
+              
+      # rebuild quota trigger
+      user.tables.all.each do |table|
+      
+        # reset quota trigger
+        table.add_python
+        table.set_trigger_check_quota
+      end  
+      
+      puts "User: #{user.username} quota updated to: #{args[:quota_in_mb]}MB. #{user.tables_count} tables updated."
+    end
+
+
     desc "Add the_geom_webmercator column to every table which needs it"
     task :add_the_geom_webmercator => :environment do
       User.all.each do |user|

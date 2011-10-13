@@ -1157,14 +1157,14 @@
             me.map_.setOptions({draggableCursor: 'default'});
           },
           over: function(feature, div, opt3, evt){
-            if ((query_mode != undefined && query_mode == true) || me.status_ == "select") {
+            if (me.query_mode || me.status_ == "select") {
               me.over_marker_ = true;
               me.map_.setOptions({ draggableCursor: 'pointer' });
               me.tooltip_.open(evt.latLng,feature);
             }
           },
           click: function(feature, div, opt3, evt){
-            if (query_mode || status_ == "select") {
+            if (me.query_mode || me.status_ == "select") {
               me.info_window_.open(feature);
               me.hideOverlays();
             }

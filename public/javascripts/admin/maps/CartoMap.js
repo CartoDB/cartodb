@@ -140,12 +140,13 @@
         dataType: 'jsonp',
         url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
         headers: {"cartodbclient":"true"},
-        success: function(data) {
+        success: function(data) {          
           if (data.rows.length>0) {
             geom_type = me.geometry_type_ = data.rows[0].type.toLowerCase();
           } else {
             geom_type = undefined;
           }
+          
           setupTools();
         },
         error: function(e) {
@@ -279,13 +280,13 @@
       var me = this;
 
       google.maps.event.addListener(this.map_, 'zoom_changed', function() {
-          $('span.slider').slider('value',me.map_.getZoom());
+        $('span.slider').slider('value',me.map_.getZoom());
       });
 
       google.maps.event.addListener(this.map_, 'click', function(ev) {
-          if (me.status_=="add_point") {
-              me.addMarker(ev.latLng, {lat_:ev.latLng.lat(), lon_:ev.latLng.lng()}, true);
-          }
+        if (me.status_=="add_point") {
+          me.addMarker(ev.latLng, {lat_:ev.latLng.lat(), lon_:ev.latLng.lng()}, true);
+        }
       });
     }
 
@@ -387,7 +388,7 @@
           // Get results from api
           $.ajax({
             method: "GET",
-            url: global_api_url+'queries?sql='+escape(editor.getValue().replace('/\n/g'," ")),
+            url: global_api_url+'queries?sql='+escape(editor.getValue().replace('/\n/gi'," ")),
             headers: {"cartodbclient":"true"},
             success: function(data) {
   			      // Remove error content
@@ -864,7 +865,8 @@
               'polygon-fill':'#FF6600',
               'polygon-opacity': 0.7,
               'line-opacity':1,
-              'line-color': '#FFFFFF'
+              'line-color': '#FFFFFF',
+              'line-width': 1
             };
 
           } else {
@@ -992,9 +994,7 @@
 
 
       // All loaded? Ok -> Let's show options...
-      if (geom_type!=undefined) {
-        $('.map_header a.open').fadeIn();
-      }
+      $('.map_header a.open').fadeIn();
     }
 
     /* Show editing tools */
@@ -1658,13 +1658,6 @@
       // Refresh wax layer
       this.tilejson = this.generateTilejson();
       this.refreshWax();
-      
-      // Check if query and show or not custom tools for geometries
-      if (this.query_mode) {
-        $('.map_header a.open').fadeOut();
-      } else {
-        $('.map_header a.open').fadeIn();
-      }
       
       // Check if there was any change in the table to composite 
       //    the infowindow vars customization properly

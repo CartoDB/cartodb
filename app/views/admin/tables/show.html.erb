@@ -52,6 +52,10 @@
     </script>
   <% end %>
 
+  <% content_for(:page_title) do %>
+    - <%= @table.name %>
+  <% end %>  
+
 
   <% content_for(:head) do %>
     <%= stylesheet_link_tag('reset.css','admin/table/out_table_elements','admin/table/carto_table', 'admin/maps/maps' ) %>

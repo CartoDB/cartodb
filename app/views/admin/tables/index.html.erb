@@ -13,26 +13,27 @@
       <div class="requests_info section">
         <div class="top_white"></div>
         <div class="middle_white">
-          <a class="close" href="#close_stats">close</a>
-          <h2>Welcome to CartoDB <%= current_user.username %>!</h2>
           <% if @tables_count == 0 %>
-          <p>As a beta tester we really appreciate your feedback. Get in touch via <%= link_to "email", "mailto:support@cartodb.com"%> &amp; <%= link_to "twitter", "http://twitter.com/cartodb" %>, or read our <%= link_to "blog", "http://blog.cartodb.com/"%>  for the latest info. Have fun!</p>
-          <span class="block">
-            <label>1</label>
-            <h3>Create your first table</h3>
-            <p>You can import data or start from scratch. <a href="#create_table" class="new_table">Create a table</a></p>
-          </span>
-          <span class="block">
-            <label>2</label>
-            <h3>Read the documentation</h3>
-            <p>Take a look at the <a href="<%= APP_CONFIG[:developers_host] %>">developers area</a> to make the most of CartoDB</p>
-          </span>
-          <span class="block last">
-            <label>3</label>
-            <h3>Give us your feedback</h3>
-            <p>Please <a href="mailto:support@cartodb.com">send us</a> your questions or requests!</p>
-          </span>
+            <a class="close" href="#close_stats">close</a>
+            <h2>Welcome to CartoDB <%= current_user.username %>!</h2>
+            <p>As a beta tester we really appreciate your feedback. Get in touch via <%= link_to "email", "mailto:support@cartodb.com"%> &amp; <%= link_to "twitter", "http://twitter.com/cartodb" %>, or read our <%= link_to "blog", "http://blog.cartodb.com/"%>  for the latest info. Have fun!</p>
+            <span class="block">
+              <label>1</label>
+              <h3>Create your first table</h3>
+              <p>You can import data or start from scratch. <a href="#create_table" class="new_table">Create a table</a></p>
+            </span>
+            <span class="block">
+              <label>2</label>
+              <h3>Read the documentation</h3>
+              <p>Take a look at the <a href="<%= APP_CONFIG[:developers_host] %>">developers area</a> to make the most of CartoDB</p>
+            </span>
+            <span class="block last">
+              <label>3</label>
+              <h3>Give us your feedback</h3>
+              <p>Please <a href="mailto:support@cartodb.com">send us</a> your questions or requests!</p>
+            </span>
           <% else %>
+            <h2>Welcome to CartoDB <%= current_user.username %>!</h2>
             <div class="info">
               <p class="left">
                 You are using <strong>
@@ -143,7 +144,7 @@
             <div class="middle_white_short">
               <h3>Wondering how to start with CartoDB?</h3>
               <p>Upload your data to a new table</p>
-              <a href="#create_table" class="new_table">Create a new table</a>
+              <a href="#create_table" class="new_table <%= 'disabled' if disk_usage_percent(@database_size, @quota) > 99 %>">Create a new table</a>
             </div>
             <div class="bottom_white_short"></div>
           </div>

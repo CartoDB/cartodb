@@ -1298,7 +1298,7 @@
             var initial_x = first_row.position().top;
 
             //Show tooltip about editing cell
-            if (table.edited) {
+            if (!table.edited) {
 							var initial_top = $(target).closest('tr').position().top;
               var initial_left = $(target).closest('td').position().left;
               var cell_width = $(target).closest('td').width();

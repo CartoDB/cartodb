@@ -221,7 +221,6 @@
               window.location.href = "/tables/"+data.id;
             },
             error: function(e) {
-              console.log(e);
 							var json = $.parseJSON(e.responseText);
 							if (json) {
                 $('div.create_window div.inner_ span.loading p').html(json.raw_error +'<br/><br/>'+ json.hint);

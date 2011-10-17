@@ -55,14 +55,17 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.importing_SRID = params[:srid] || CartoDB::SRID
     @table.force_schema   = params[:schema]              if params[:schema]
     @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
+        
     if @table.valid? && @table.save      
-      render_jsonp({ :id => @table.id, :name => @table.name, :schema => @table.schema }, 200, :location => table_path(@table))
+      render_jsonp({ :id => @table.id, 
+                     :name => @table.name, 
+                     :schema => @table.schema }, 200, :location => table_path(@table))
     else
       CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
       render_jsonp({ :errors => @table.errors.full_messages }, 400)
     end
   rescue => e
-    # Intercept the error and add more meaning based on the users create type. 
+    # Add semantics based on the users creation method. 
     # TODO: The importer should throw these specific errors
     if !e.is_a? CartoDB::QuotaExceeded
       e = CartoDB::InvalidUrl.new     e.message    if params[:url]    

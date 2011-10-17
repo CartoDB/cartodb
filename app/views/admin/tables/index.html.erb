@@ -92,8 +92,6 @@
                         <%= pluralize(table.rows_counted,'row','rows') rescue '' %> /
                         <%= table.schema.size rescue '' %> columns:
                       </strong>
-
-
                     <%= table.schema.map{ |e| e.first }[1...4].join(', ') %>...</p>
                   </span>
                   <span class="tags">

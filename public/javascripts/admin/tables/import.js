@@ -221,10 +221,16 @@
               window.location.href = "/tables/"+data.id;
             },
             error: function(e) {
+              console.log(e);
 							var json = $.parseJSON(e.responseText);
-              $('div.create_window div.inner_ span.loading').addClass('error');
-              $('div.create_window div.inner_ span.loading p').html(json.raw_error +'<br/><br/>'+json.hint);
-              $('div.create_window div.inner_ span.loading h5').text(json.message);
+							if (json) {
+                $('div.create_window div.inner_ span.loading p').html(json.raw_error +'<br/><br/>'+ json.hint);
+                $('div.create_window div.inner_ span.loading h5').text(json.message);
+							} else {
+                $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:wadus@cartodb.com">contact us</a> explaning what happened. Thanks!');
+                $('div.create_window div.inner_ span.loading h5').text('Ups! Error');
+							}
+						  $('div.create_window div.inner_ span.loading').addClass('error');
 							$('div.create_window a.close_create').show().addClass('last');
               $('div.create_window div.inner_').height($('div.create_window div.inner_ span.loading').height() + 30);
             }

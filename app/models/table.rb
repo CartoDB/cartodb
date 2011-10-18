@@ -135,11 +135,33 @@ class Table < Sequel::Model(:user_tables)
         user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
 
         if schema.nil? || !schema.flatten.include?(:created_at)
-          user_database.run("ALTER TABLE #{self.name} ADD COLUMN created_at timestamp DEFAULT NOW()")
+            user_database.run("ALTER TABLE #{self.name} ADD COLUMN created_at timestamp DEFAULT NOW()")
         end
+
+        # if column already exists, cast to timestamp value and set default
+        if !schema.nil? && schema.flatten.include?(:created_at)
+            user_database.run(<<-ALTERCREATEDAT
+                ALTER TABLE #{self.name} ALTER COLUMN created_at TYPE timestamp without time zone
+                USING to_timestamp(created_at, 'YYYY-MM-DD HH24:MI:SS.MS.US'),
+                ALTER COLUMN created_at SET DEFAULT now();
+            ALTERCREATEDAT
+            )
+        end
+
         if schema.nil? || !schema.flatten.include?(:updated_at)
           user_database.run("ALTER TABLE #{self.name} ADD COLUMN updated_at timestamp DEFAULT NOW()")
         end
+
+        # if column already exists, cast to timestamp value and set default
+        if !schema.nil? && schema.flatten.include?(:updated_at)
+            user_database.run(<<-ALTERUPDATEDAT
+                ALTER TABLE #{self.name} ALTER COLUMN updated_at TYPE timestamp without time zone
+                USING to_timestamp(updated_at, 'YYYY-MM-DD HH24:MI:SS.MS.US'),
+                ALTER COLUMN updated_at SET DEFAULT now();
+            ALTERUPDATEDAT
+            )
+        end
+
       end
       set_the_geom_column!
     else

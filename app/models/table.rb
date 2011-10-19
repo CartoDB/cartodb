@@ -133,13 +133,10 @@ class Table < Sequel::Model(:user_tables)
         end
 
         user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
+      
+        normalize_timestamp_field!(:created_at, user_database)
+        normalize_timestamp_field!(:updated_at, user_database)
 
-        if schema.nil? || !schema.flatten.include?(:created_at)
-          user_database.run("ALTER TABLE #{self.name} ADD COLUMN created_at timestamp DEFAULT NOW()")
-        end
-        if schema.nil? || !schema.flatten.include?(:updated_at)
-          user_database.run("ALTER TABLE #{self.name} ADD COLUMN updated_at timestamp DEFAULT NOW()")
-        end
       end
       set_the_geom_column!
     else
@@ -183,6 +180,29 @@ class Table < Sequel::Model(:user_tables)
     end
 
     raise e
+  end
+
+  # adds the column if not exists or cast it to timestamp field
+  def normalize_timestamp_field!(field, user_database)
+    schema = self.schema(:reload => true)
+    if schema.nil? || !schema.flatten.include?(field)
+        user_database.run("ALTER TABLE #{self.name} ADD COLUMN #{field.to_s} timestamp DEFAULT NOW()")
+    end
+
+    if !schema.nil?
+      field_type = Hash[schema][field]
+      # if column already exists, cast to timestamp value and set default
+      if field_type == 'string' && schema.flatten.include?(field)
+          #TODO: check type
+          sql = <<-ALTERCREATEDAT
+              ALTER TABLE #{self.name} ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
+              USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US'),
+              ALTER COLUMN #{field.to_s} SET DEFAULT now();
+          ALTERCREATEDAT
+          debugger
+          user_database.run(sql)
+      end
+    end
   end
 
   def after_save

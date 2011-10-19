@@ -196,7 +196,7 @@
           str = '';
       
       if (typeof obj === "string") {
-        str = obj.replace(/ /gi,'').replace(/\n/g,'');;
+        str = obj.replace(/\n/g,'');
       } else {
         str = '#'+table_name+' {';
         _.each(obj,function(property,i){

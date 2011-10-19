@@ -25,9 +25,11 @@
       $('a.new_table').click(function(ev){
          stopPropagation(ev);
          resetUploadFile();
-         $('div.create_window').show();
-         $('div.mamufas').fadeIn();
-         bindESC();
+         if (!$(this).hasClass('disabled')) {
+           $('div.create_window').show();
+           $('div.mamufas').fadeIn();
+           bindESC();
+         }
       });
 
 
@@ -101,7 +103,7 @@
         element: document.getElementById('uploader'),
         action: '/upload',
         params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx'],
         sizeLimit: 0, // max size
         minSizeLimit: 0, // min size
         debug: false,
@@ -130,7 +132,7 @@
       	element: document.getElementById('hugeUploader'),
       	action: '/upload',
       	params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx'],
       	sizeLimit: 0,
       	minSizeLimit: 0,
       	debug: false,
@@ -220,10 +222,14 @@
             },
             error: function(e) {
 							var json = $.parseJSON(e.responseText);
-							console.log(json)
-              $('div.create_window div.inner_ span.loading').addClass('error');
-              $('div.create_window div.inner_ span.loading p').html(json.raw_error +'<br/><br/>'+json.hint);
-              $('div.create_window div.inner_ span.loading h5').text(json.message);
+							if (json) {
+                $('div.create_window div.inner_ span.loading p').html(json.raw_error +'<br/><br/>'+ json.hint);
+                $('div.create_window div.inner_ span.loading h5').text(json.message);
+							} else {
+                $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:wadus@cartodb.com">contact us</a> explaning what happened. Thanks!');
+                $('div.create_window div.inner_ span.loading h5').text('Ups! Error');
+							}
+						  $('div.create_window div.inner_ span.loading').addClass('error');
 							$('div.create_window a.close_create').show().addClass('last');
               $('div.create_window div.inner_').height($('div.create_window div.inner_ span.loading').height() + 30);
             }

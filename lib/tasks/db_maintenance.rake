@@ -1,5 +1,6 @@
 namespace :cartodb do
   namespace :db do
+
     desc "Set DB Permissions"
     task :set_permissions => :environment do
       User.all.each do |user|
@@ -112,5 +113,20 @@ namespace :cartodb do
         end
       end
     end
+
+    desc "update created_at and updated_at to correct type and add the default value to now"
+    task :update_timestamp_fields => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        puts "user => " + user.username
+        user.in_database do |user_database|
+          user.tables.all.each do |table|
+            table.normalize_timestamp_field!(:created_at, user_database)
+            table.normalize_timestamp_field!(:updated_at, user_database)
+          end
+        end
+      end
+    end
+
   end
 end

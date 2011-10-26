@@ -789,19 +789,24 @@
         
         
         /* width range */
+        var interval;
         $('.map_header ul.geometry_customization div.suboptions span.numeric a').livequery('click',function(ev){
           stopPropagation(ev);
-          var old_value = $(this).parent().find('input').val();
-          var add = ($(this).text()=="+")?true:false;
+
+          var old_value = $(this).parent().find('input').val(),
+              add = ($(this).text()=="+")?true:false,
+              that = this,
+              css_ = $(that).closest('span').attr('css'),
+              value_ = $(that).parent().find('input').val();
           
-         if (add || old_value>0) {
-            $(this).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
-
-            var css_ = $(this).closest('span').attr('css');
-            var value_ = $(this).parent().find('input').val();
-
-            geometry_style[css_] = value_;
-            me.setTilesStyles(geometry_style);
+          if (add || old_value>0) {
+            $(that).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
+            
+            clearInterval(interval);
+            interval = setTimeout(function(){
+              geometry_style[css_] = value_;
+              me.setTilesStyles(geometry_style);
+            },400);
           }
         });
         
@@ -1728,7 +1733,7 @@
 
 
     ////////////////////////////////////////
-    //  HIDE OR SHOW MAP				  //
+    //  HIDE OR SHOW MAP				          //
     ////////////////////////////////////////
     CartoMap.prototype.hide = function() {
       // Remove all things

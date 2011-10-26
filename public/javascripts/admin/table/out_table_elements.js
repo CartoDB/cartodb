@@ -66,7 +66,7 @@
 	    });
 			
 			// Draggable and resizable capacities to sql window
-	    $('div.sql_window').draggable({appendTo: 'body'}).resizable({maxWidth:800,maxHeight:400});
+	    $('div.sql_window').draggable({appendTo: 'body',containment:'parent'}).resizable({maxWidth:800,maxHeight:400});
 			
 			// Open sql console
 			$('div.general_options a.sql, p a.open_console').livequery('click',function(ev){

@@ -81,6 +81,7 @@ div.map_window div.map_header ul li a.open:hover {background-position:0 -26px;}
 div.map_window div.map_header div.options {position:absolute; display:none; right:13px; top:18px; width:163px; z-index:30}
 div.map_window div.map_header div.options.short {width:122px}
 div.map_window div.map_header div.options span.tick {position:relative; float:right; width:14px; height:25px; background:url('/images/admin/map/combo_bkg.png') no-repeat 0 0}
+div.map_window div.map_header div.options span.tick:hover {cursor:pointer}
 div.map_window div.map_header div.options ul {display:block; height:auto; margin:0; padding:7px 10px; background:linear-gradient(-90deg, #283A5A, #282F49); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#283A5A), to(#282F49));
   background:-moz-linear-gradient(-90deg, #283A5A, #282F49); background: -o-linear-gradient(#283A5A,#282F49); background:#283A5A\9; -webkit-border-radius: 3px; -webkit-border-top-right-radius:0;-moz-border-radius:3px;-moz-border-radius-topright:0;
   border-radius:3px;border-top-right-radius:0; border:none}

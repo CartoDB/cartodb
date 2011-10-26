@@ -979,7 +979,7 @@
       this.setupInfowindow(infowindow_vars || {});
  
  
-      /* Bind event for open any tool */
+      /* Bind events for open and close any tool */
       $('.map_header a.open').livequery('click',function(ev){
         stopPropagation(ev);
         var options = $(this).parent().find('div.options');
@@ -990,16 +990,24 @@
           $('body').click(function(event) {
             if (!$(event.target).closest(options).length) {
               options.hide();
-              me.bindMapESC();
+              me.unbindMapESC();
             };
           });
           options.show();
         } else {
           me.unbindMapESC();
-          $('body').unbind('click');
           options.hide();
         }
       });
+      $('.map_header span.tick').livequery('click',function(ev){
+        stopPropagation(ev);
+        var options = $(this).closest('div.options');
+        if (options.is(':visible')) {
+          me.unbindMapESC();
+          options.hide();
+        }
+      });
+      
 
 
       // All loaded? Ok -> Let's show options...

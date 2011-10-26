@@ -285,8 +285,17 @@
 
       google.maps.event.addListener(this.map_, 'click', function(ev) {
         if (me.status_=="add_point") {
+          // Was a double click?
+          if (me.double_click) {
+            me.double_click = !me.double_click;
+            return false;
+          }
           me.addMarker(ev.latLng, {lat_:ev.latLng.lat(), lon_:ev.latLng.lng()}, true);
         }
+      });
+      
+      google.maps.event.addListener(this.map_, 'dblclick', function(ev) {
+        me.double_click = true;
       });
     }
 
@@ -1164,10 +1173,18 @@
             }
           },
           click: function(feature, div, opt3, evt){
-            if (me.query_mode || me.status_ == "select") {
-              me.info_window_.open(feature);
-              me.hideOverlays();
-            }
+            setTimeout(function(){
+              if (me.query_mode || me.status_ == "select") {
+                // Was a double click?
+                if (me.double_click) {
+                  me.double_click = !me.double_click;
+                  return false;
+                }
+                me.info_window_.open(feature);
+                me.hideOverlays();
+              }
+            },200);
+
           }
         },
         clickAction: 'full'

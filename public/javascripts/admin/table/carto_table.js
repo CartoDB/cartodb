@@ -706,7 +706,7 @@
           '</div>'+
         '</div>'
       );
-      $('div.filter_window').draggable();
+      $('div.filter_window').draggable({containment:'window'});
 
       //Mamufas elements belong to the carto table
       $('div.mamufas').append(

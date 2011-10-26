@@ -200,7 +200,8 @@
       } else {
         str = '#'+table_name+' {';
         _.each(obj,function(property,i){
-          str += i+':'+property+'; ';
+          if (property!=undefined)
+            str += i+':'+property+'; ';
         });
         str += '}';
       }
@@ -687,7 +688,7 @@
         
         /* CARTOCSS WINDOW */
         // draggable
-        $('div.cartocss_editor').draggable({appendTo:'div.map_window'});
+        $('div.cartocss_editor').draggable({containment:'parent'});
         
         // editor
         var cartocss_editor = CodeMirror.fromTextArea(document.getElementById("cartocss_editor"), {
@@ -926,19 +927,29 @@
 
 
           // Determinate if it is a customized style or default
-          var is_default = true;
+          var is_default = true,
+              cartocss = false;
           _.each(geometry_style,function(value,type){
+            if (!cartocss && default_style[type]==undefined) {
+              cartocss = true;
+            }
+            
             if (default_style[type]!=undefined && geometry_style[type] != default_style[type]) {
               is_default = false;
-              return;
             } 
           });
 
           // if it is not default, select second option in the list, custom geometry style
           if (!is_default) {
-            $('.map_header ul.geometry_customization li').removeClass('selected');
-            $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
-            $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+            $('.map_header ul.geometry_customization > li').removeClass('selected');
+            // if it is cartocss
+            if (cartocss) {
+              $('.map_header ul.geometry_customization > li:eq(2)').addClass('selected special');
+              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+            } else {
+              $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
+              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+            }
           }
         }
 

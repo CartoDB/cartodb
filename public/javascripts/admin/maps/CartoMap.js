@@ -1631,6 +1631,8 @@
     CartoMap.prototype.showBigBang = function(cartodb_ids) {
       // Out table&map window binding
       closeOutTableWindows();
+      $('div.mamufas div.stop_window h5').text('Sorry, this geometry is too big to edit in browser');
+      $('div.mamufas div.stop_window p').text('We\'re working on ways to improve this, but in the meantime you can edit the geometry via our API.');
       $('div.mamufas div.stop_window').show();
       $('div.mamufas').fadeIn('fast');
       bindESC();

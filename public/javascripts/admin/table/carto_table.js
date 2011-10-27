@@ -47,14 +47,18 @@
     //  GET DATA
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     getData : function(options, direction, new_query, refresh) {
+      // Check georeferencing loader
+      if (requests_queue.georeferencing && requests_queue.georeferencing.finished) {
+        requests_queue.georeferencing = null;
+        requests_queue.loopPendingOperations();
+      }
+      
       
       // Show loader
       if (!table.loaded || refresh) {
         var requestId = createUniqueId();
         requests_queue.newRequest(requestId,table.mode+'_table');
       } 
-
-
       
 			//Pagination AJAX adding rows
 			var request_pages;
@@ -76,7 +80,6 @@
 			var columns,
 			    rows,
 			    ajax_request = 2;
-
 
 
       // When ajax calls are loaded
@@ -272,7 +275,7 @@
 	        thead += Mustache.to_html(th,{
 	          allowed:(element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?true:false,
 	          type:element[1],
-	          number: element[1]=="number",
+	          geo_allow: element[1]=="number" || element[1]=="string",
 	          name:element[0],
 	          cartodb_id: (element[0]!="cartodb_id")?false:true,
 	          cellsize: table.cell_s,
@@ -969,9 +972,9 @@
             table.e.parent().removeClass('end');
             methods.showLoader('previous');
             setTimeout(function(){methods.getData(defaults,'previous')},500);
-          } else if (end) {
-            table.e.parent().addClass('end');
-          }
+          } //else if (end) {
+            //table.e.parent().addClass('end');
+          //}
         }
       });
 
@@ -2343,7 +2346,7 @@
       var requestId = createUniqueId();
       params.requestId = requestId;
       requests_queue.newRequest(requestId,type);
-
+      
       $.ajax({
         dataType: 'json',
         type: request_type,
@@ -2455,6 +2458,7 @@
     //  REFRESH TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     refreshTable: function(position) {
+      
       var new_query = undefined;
       
       // If it comes from a query (from the map)

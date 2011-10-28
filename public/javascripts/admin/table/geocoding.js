@@ -1,37 +1,45 @@
   
   function Geocoding(column,table) {
-    this.column = column;
-    geolocating = true;
-    this.table = table;
-    this.startGeocoding();
+    if (!georeferencing) {
+      this.column = column;
+      this.table = table_name;
+      this.getRecords();
+      this.page = 0;
+
+      // Request
+      this.requestId = createUniqueId();
+      requests_queue.startGeoreferencing(this.requestId);
+      // End request
+      
+      // Georeferencing state -> true
+      georeferencing = true;
+      $('p.geo').addClass('loading');
+    }
   }
   
   
   /*============================================================================*/
 	/* Start worker geocoding	*/
 	/*============================================================================*/
-	Geocoding.prototype.startGeocoding = function() {
+	Geocoding.prototype.getRecords = function() {
 	  var me = this;
 		$.ajax({
       method: "GET",
-      url: global_api_url+'tables/'+table_name+'/records/pending_addresses',
+      url: global_api_url+'queries?sql='+escape("SELECT cartodb_id,"+this.column+" as address from "+this.table+" where the_geom is null"),
       headers: {'cartodbclient':true},
-      data: {rows_per_page:5000},
-      success: function(data) {
-        var rows = data;
-        var directions = [];
-        for (var i=0; i<rows.length; i++) {
-          var elem = {};
-          $.each(rows[i],function(i,ele){
-            if (i=="cartodb_id") {
-              elem.cartodb_id = ele;
-            } else {
-              elem.address = ele;
-            }
-            directions.push(elem);
-          });
+      dataType:'jsonp',
+      data: {rows_per_page:100,page:me.page},
+      success: function(result) {
+        var rows = result.rows;
+        if (result.rows!=null) {
+          // Update loader
+          requests_queue.updateGeoreferencing(result.total_rows);
+          me.processGeocoding(result.rows);
+        } else {
+          requests_queue.finishGeoreferencing(me.requestId);
+          $('p.geo').removeClass('loading');
+      		georeferencing = false;
         }
-        me.processGeocoding(directions);
        }
     });
 	}
@@ -45,89 +53,55 @@
     var worker = new Worker("/javascripts/admin/table/worker_geocoding.js");
 
     worker.onmessage = function(event){
+      
       if (event.data == "Finish" || event.data == "Stopped") {
+        worker.terminate();
+        delete worker;
+        
         if (event.data == "Finish") {
-          me.finishGeocoding();
-          delete worker;
+          me.page++;
+          me.getRecords();
         } else {
-          me.stoppedGeocoding();
-          delete worker;
+          me.stopGeocoding();
         }
       } else {
+        // Add new one to loader
+        requests_queue.updateGeoreferencing(null);
+        
         var params = {};
         if (event.data.Placemark != undefined) {
           params['the_geom'] = {"type":"Point","coordinates":[event.data.Placemark[0].Point.coordinates[0],event.data.Placemark[0].Point.coordinates[1]]};
-        } else {
-          params['address_geolocated'] = false;
+          $.ajax({
+            dataType: 'json',
+            type: 'PUT',
+            dataType: "text",
+            headers: {"cartodbclient": true},
+            url: '/api/v1/tables/addresses/records/'+event.data.cartodb_id,
+            data: params,
+            success: function(data) {},
+            error: function(e, textStatus) {}
+          });
         }
-                  
-        $.ajax({
-          type: "PUT",
-          url: global_api_url+'tables/'+table_name+'/records/'+event.data.cartodb_id,
-          headers: {'cartodbclient':true},
-          data: params,
-          dataType: 'text',
-          success: function(data) {
-          },
-          error: function(e) {
-            console.debug(e);
-          }
-        });
       }
     };
-
-    worker.postMessage({process: 'start', places: directions});
+    
     $(window).bind('stopGeo',function(ev){
       worker.postMessage({process: 'stop', places: null});
     });
+
+    worker.postMessage({process: 'start', places: directions});
 	}
-	
-	
-	
-	
-  /*============================================================================*/
-	/* Finish geocoding	*/
-	/*============================================================================*/
-	Geocoding.prototype.finishGeocoding = function() {
-	  
-	  var me = this;
-		$.ajax({
-      method: "GET",
-      url: global_api_url+'tables/'+table_name+'/records/pending_addresses',
-      headers: {'cartodbclient':true},
-      success: function(data) {
-        if (data.length==0) {
-          $('p.geo').removeClass('loading');
-      		geolocating = false;
-        } else {
-          var rows = data;
-          var directions = [];
-          for (var i=0; i<rows.length; i++) {
-            var elem = {};
-            $.each(rows[i],function(i,ele){
-              if (i=="cartodb_id") {
-                elem.cartodb_id = ele;
-              } else {
-                elem.address = ele;
-              }
-              directions.push(elem);
-            });
-          }
-          me.processGeocoding(directions);
-        }
-       }
-    });
-	}
-	
 
 
 
 	/*============================================================================*/
 	/* Stop geocoding	*/
 	/*============================================================================*/
-	Geocoding.prototype.stoppedGeocoding = function() {
+	Geocoding.prototype.stopGeocoding = function() {
+	  $(window).unbind('stopGeo');
 	  $('p.geo').removeClass('loading');
-		geolocating = false;
+		georeferencing = false;
+		requests_queue.stopGeoreferencing();
 	}
 	
 	

@@ -117,13 +117,14 @@ body.query section.subheader div.right span.paginate a.disabled:hover {cursor:de
 
 
 
-
 /*Performing operation*/
 section.subheader div.performing_op {position:absolute; display:block; bottom:0; left:50%; width:100px; height:0; margin:0 0 0 -50px; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px; border-top-right-radius: 5px;
   -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; border-top-left-radius: 5px; background-color:#FFEAA4; overflow:hidden; opacity:1; z-index:0;}
-section.subheader div.performing_op p {position:absolute; top:0; left:50%; margin:0 0 0 -50px; padding:8px 12px; font:normal 13px Arial; color:#333333; padding:8px 12px; text-align:center; opacity:1; white-space:nowrap;}
+section.subheader div.performing_op p {position:absolute; top:0; left:50%; margin:0 0 0 -50px; padding:8px 12px; font:normal 13px Arial; color:#333333; text-align:center; opacity:1; white-space:nowrap;}
 section.subheader div.performing_op p.loading {padding:8px 12px 8px 32px; background:url('/images/admin/icons/watch.png') no-repeat 12px 9px;}
-
+section.subheader div.performing_op p a {font-weight:bold; color:#333333}
+section.subheader div.performing_op p.geolocating {padding:8px 12px!important;}
+section.subheader div.performing_op p a:hover {color:black}
 
 /*Change table title*/
 section.subheader span.title_window {position:absolute; display:none; top:22px; left:-22px; width:200px; height:67px; padding:33px 18px 0 18px; background:url('/images/admin/table/save_title_bkg.png') no-repeat 0 0;}
@@ -454,9 +455,8 @@ div.mamufas div.import_window div.inner_ span.bottom input.disabled:hover{backgr
 
 
 
-
 /*Embed window mamufas*/
-div.mamufas div.embed_window {position:absolute; display:none; top:180px; left:50%; width:603px; margin:0 0 0 -310px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px rgba(0,0,0,0.5); box-shadow:0 0 50px 3px rgba(0,0,0,0.5);
+div.mamufas div.embed_window {position:absolute; display:none; top:50%; left:50%; width:603px; margin:-250px 0 0 -310px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px rgba(0,0,0,0.5); box-shadow:0 0 50px 3px rgba(0,0,0,0.5);
   -moz-box-shadow:0 0 50px 3px rgba(0,0,0,0.5);}
 div.mamufas div.embed_window a.close {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
 div.mamufas div.embed_window a.close:hover {background-position:0 -23px;}
@@ -528,7 +528,7 @@ div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.s
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select a:hover {color:#000000;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select select {display:none;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked a {background-position:130px -15px;}
-div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked div.select_content {position:absolute; top:18px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px;
+div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked div.select_content {position:absolute; overflow:hidden; top:18px; left:15px; display:block; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px;
    background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
    border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul {float:left; display:default; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}

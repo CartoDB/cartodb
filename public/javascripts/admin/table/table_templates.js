@@ -31,7 +31,7 @@
                         '<div class="line geo_line"></div>' +
                         '<h5>GEOREFERENCE</h5>' +
                         '<ul class="geo_list">' +
-                          '<li class="{{^number}}disabled{{/number}}"><a href="#" class="open_georeference">Georeference with...</a></li>' +
+                          '<li class="{{^geo_allow}}disabled{{/geo_allow}}"><a href="#" class="open_georeference">Georeference with...</a></li>' +
                         '</ul>' +
                         '<div class="line"></div>'+
                       '{{/allowed}}'+

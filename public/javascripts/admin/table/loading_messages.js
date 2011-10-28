@@ -11,7 +11,7 @@
     loadingMessages["update_geometry"] = "geometry updated";
     loadingMessages["column_type"] = "column type changed";
     loadingMessages["new_column"] = "column added";
-    loadingMessages["georeference_address"] = "address column geocoded";
+    loadingMessages["georeferencing"] = "geolocating done! <a href='#refresh_the_table' class='refresh'>refresh</a> the table to see the results";
     loadingMessages["delete_column"] = "column deleted";
     loadingMessages["delete_row"] = "row deleted";
     loadingMessages["add_row"] = "row added";

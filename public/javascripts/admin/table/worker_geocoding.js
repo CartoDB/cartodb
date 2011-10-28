@@ -2,6 +2,7 @@
     var stop = false;
     var places = [];
     var place = {};
+    var timeout;
 
     self.onmessage = function(event){
       if (event.data.process=="start") {
@@ -15,9 +16,8 @@
     function geocode() {
       if (places.length>0) {
         place = places.shift();
-        place.address = place.address.toLowerCase().replace(/é/g,'e').replace(/á/g,'a').replace(/í/g,'i').replace(/ó/g,'').replace(/ú/g,'u');
-        //importScripts('http://local.yahooapis.com/MapsService/V1/geocode?appid=dj0yJmk9NzhmdUJleDhhZVUxJmQ9WVdrOVNVdFVkR0ZZTkdzbWNHbzlNVEk1TURVNU5qVTJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD0wYg--&output=json&location=1071+Fifth+Avenue&callback=onResultGeocode');
-              importScripts('http://maps.google.com/maps/geo?q='+encodeURIComponent(place.address)+'&sensor=false&output=json&callback=onResultGeocode&key=ABQIAAAAsIunaSEq-72JsQD5i92_2RQOqZTZJp2W5qrc2piUcZdFvKIWlxTz1ttXhbjhedwhPFItME8qyUz-Yw');
+        place.address = place.address.toLowerCase().replace(/é/g,'e').replace(/á/g,'a').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u');
+        importScripts('http://maps.google.com/maps/geo?q='+encodeURIComponent(place.address)+'&sensor=true&output=json&callback=onResultGeocode&key=ABQIAAAAnfs7bKE82qgb3Zc2YyS-oBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSySz_REpPq-4WZA27OwgbtyR3VcA');
       } else {
         self.postMessage("Finish");
       }
@@ -25,10 +25,11 @@
 
 
     function onResultGeocode(event) {
+      clearTimeout(timeout);
       if (!stop) {
         event.cartodb_id = place.cartodb_id;
         self.postMessage(event);
-        setTimeout(function(){geocode()},1000);
+        timeout = setTimeout(function(){geocode()},300);
       } else {
         stop = false;
         self.postMessage("Stopped");

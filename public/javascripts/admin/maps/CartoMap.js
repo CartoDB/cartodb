@@ -200,7 +200,8 @@
       } else {
         str = '#'+table_name+' {';
         _.each(obj,function(property,i){
-          str += i+':'+property+'; ';
+          if (property!=undefined)
+            str += i+':'+property+'; ';
         });
         str += '}';
       }
@@ -285,8 +286,17 @@
 
       google.maps.event.addListener(this.map_, 'click', function(ev) {
         if (me.status_=="add_point") {
+          // Was a double click?
+          if (me.double_click) {
+            me.double_click = !me.double_click;
+            return false;
+          }
           me.addMarker(ev.latLng, {lat_:ev.latLng.lat(), lon_:ev.latLng.lng()}, true);
         }
+      });
+      
+      google.maps.event.addListener(this.map_, 'dblclick', function(ev) {
+        me.double_click = true;
       });
     }
 
@@ -678,7 +688,7 @@
         
         /* CARTOCSS WINDOW */
         // draggable
-        $('div.cartocss_editor').draggable({appendTo:'div.map_window'});
+        $('div.cartocss_editor').draggable({containment:'parent'});
         
         // editor
         var cartocss_editor = CodeMirror.fromTextArea(document.getElementById("cartocss_editor"), {
@@ -779,19 +789,24 @@
         
         
         /* width range */
+        var interval;
         $('.map_header ul.geometry_customization div.suboptions span.numeric a').livequery('click',function(ev){
           stopPropagation(ev);
-          var old_value = $(this).parent().find('input').val();
-          var add = ($(this).text()=="+")?true:false;
+
+          var old_value = $(this).parent().find('input').val(),
+              add = ($(this).text()=="+")?true:false,
+              that = this,
+              css_ = $(that).closest('span').attr('css'),
+              value_ = $(that).parent().find('input').val();
           
-         if (add || old_value>0) {
-            $(this).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
-
-            var css_ = $(this).closest('span').attr('css');
-            var value_ = $(this).parent().find('input').val();
-
-            geometry_style[css_] = value_;
-            me.setTilesStyles(geometry_style);
+          if (add || old_value>0) {
+            $(that).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
+            
+            clearInterval(interval);
+            interval = setTimeout(function(){
+              geometry_style[css_] = value_;
+              me.setTilesStyles(geometry_style);
+            },400);
           }
         });
         
@@ -917,19 +932,29 @@
 
 
           // Determinate if it is a customized style or default
-          var is_default = true;
+          var is_default = true,
+              cartocss = false;
           _.each(geometry_style,function(value,type){
+            if (!cartocss && default_style[type]==undefined) {
+              cartocss = true;
+            }
+            
             if (default_style[type]!=undefined && geometry_style[type] != default_style[type]) {
               is_default = false;
-              return;
             } 
           });
 
           // if it is not default, select second option in the list, custom geometry style
           if (!is_default) {
-            $('.map_header ul.geometry_customization li').removeClass('selected');
-            $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
-            $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+            $('.map_header ul.geometry_customization > li').removeClass('selected');
+            // if it is cartocss
+            if (cartocss) {
+              $('.map_header ul.geometry_customization > li:eq(2)').addClass('selected special');
+              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+            } else {
+              $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
+              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+            }
           }
         }
 
@@ -970,7 +995,7 @@
       this.setupInfowindow(infowindow_vars || {});
  
  
-      /* Bind event for open any tool */
+      /* Bind events for open and close any tool */
       $('.map_header a.open').livequery('click',function(ev){
         stopPropagation(ev);
         var options = $(this).parent().find('div.options');
@@ -981,16 +1006,24 @@
           $('body').click(function(event) {
             if (!$(event.target).closest(options).length) {
               options.hide();
-              me.bindMapESC();
+              me.unbindMapESC();
             };
           });
           options.show();
         } else {
           me.unbindMapESC();
-          $('body').unbind('click');
           options.hide();
         }
       });
+      $('.map_header span.tick').livequery('click',function(ev){
+        stopPropagation(ev);
+        var options = $(this).closest('div.options');
+        if (options.is(':visible')) {
+          me.unbindMapESC();
+          options.hide();
+        }
+      });
+      
 
 
       // All loaded? Ok -> Let's show options...
@@ -1164,10 +1197,18 @@
             }
           },
           click: function(feature, div, opt3, evt){
-            if (me.query_mode || me.status_ == "select") {
-              me.info_window_.open(feature);
-              me.hideOverlays();
-            }
+            setTimeout(function(){
+              if (me.query_mode || me.status_ == "select") {
+                // Was a double click?
+                if (me.double_click) {
+                  me.double_click = !me.double_click;
+                  return false;
+                }
+                me.info_window_.open(feature);
+                me.hideOverlays();
+              }
+            },200);
+
           }
         },
         clickAction: 'full'
@@ -1590,6 +1631,8 @@
     CartoMap.prototype.showBigBang = function(cartodb_ids) {
       // Out table&map window binding
       closeOutTableWindows();
+      $('div.mamufas div.stop_window h5').text('Sorry, this geometry is too big to edit in browser');
+      $('div.mamufas div.stop_window p').text('We\'re working on ways to improve this, but in the meantime you can edit the geometry via our API.');
       $('div.mamufas div.stop_window').show();
       $('div.mamufas').fadeIn('fast');
       bindESC();
@@ -1692,7 +1735,7 @@
 
 
     ////////////////////////////////////////
-    //  HIDE OR SHOW MAP				  //
+    //  HIDE OR SHOW MAP				          //
     ////////////////////////////////////////
     CartoMap.prototype.hide = function() {
       // Remove all things

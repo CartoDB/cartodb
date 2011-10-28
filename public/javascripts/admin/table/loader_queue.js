@@ -9,13 +9,17 @@
       		this.count = 0;
       		this.pendingOperations = [];
       		this.checking = false;
-      		var me = this;
-      		var interval;
-      		var count_interval = 0;
+      		var me = this,
+      		    interval,
+      		    count_interval = 0;
       		
       		//Create the loader element
       		$('section.subheader').append('<div class="performing_op"><p class="loading">Loading...</p></div>');
           this.loader = $('section.subheader div.performing_op');
+          this.loader.delegate('p a.refresh','click',function(ev){
+            ev.preventDefault();
+            $('table').cartoDBtable('refreshTable');
+          });
       	}
 
       	/*========================================================================================================================*/
@@ -28,7 +32,11 @@
       	  this.pendingOperations[requestId].type = type;
       	  if (!this.checking) {
       	    if (this.loader.html()=="") {
-      	      this.loader.append('<p class="loading">Loading...</p>');
+      	      if (this.georeferencing) {
+        	      this.loader.append('<p class="loading">Georeferencing... 0/?</p>');
+      	      } else {
+        	      this.loader.append('<p class="loading">Loading...</p>');
+      	      }
       	    } else {
       	      this.loader.children('p').each(function(index,element){
       	        if (!$(element).hasClass('loading')) {
@@ -36,10 +44,13 @@
       	        }
       	      });
       	    }
+      	    
+      	    var width = this.loader.find('p.loading').width()+34;
       	    this.loader.children('p').show();
-      	    this.loader.css('width','100px');
-            this.loader.css('backgroundColor','#FFEAA4');
-            this.loader.css('margin','0 0 0 -50px');
+      	    this.loader.css('width',width+'px');
+            this.loader.css('backgroundColor',!this.georeferencing?'#FFEAA4':'#FFAA00');
+            this.loader.css('margin','0 0 0 -'+(width/2)+'px');
+            this.loader.find('p.loading').css('margin','0 0 0 -'+(width/2)+'px');
             this.loader.animate({height:30,opacity:1},200,function(){
        	      $(this).css('borderBottom','1px solid #D0C090');
        	    });
@@ -52,6 +63,35 @@
       	    }
       	  }
       	}
+      	
+      	
+      	/*========================================================================================================================*/
+      	/*  Abstract georeferencing  */
+      	/*========================================================================================================================*/
+      	loaderQueue.prototype.startGeoreferencing = function(geo_id) {
+      	  this.georeferencing = {id:geo_id,total:0,actual:0,showed:false,finished:false};
+      	  this.newRequest(geo_id,'georeferencing');
+      	}
+      	
+      	loaderQueue.prototype.updateGeoreferencing = function(total) {
+      	  if (total) {
+            this.georeferencing.total = total || this.georeferencing.total;
+      	  } else {
+            this.georeferencing.actual++;
+      	  }
+          this.loader.find('p.loading').html('Geolocating...'+this.georeferencing.actual+'/'+this.georeferencing.total);
+      	}
+      	
+      	loaderQueue.prototype.finishGeoreferencing = function() {
+      	  this.georeferencing.finished = true;
+          this.responseRequest(this.georeferencing.id,'ok','');
+      	}
+      	
+      	loaderQueue.prototype.stopGeoreferencing = function() {
+          this.responseRequest(this.georeferencing.id,'error','geolocation was stopped');
+          this.georeferencing = null;
+      	}
+ 
       	
       	
       	/*========================================================================================================================*/
@@ -80,8 +120,16 @@
       	      return false;
       	    }
       	  }
+      	        	  
       	  if (this.count == 0) {
-            this.loader.animate({height:0},300,function(){
+      	    var delay = 0;
+      	    if (this.last_action == "georeferencing") {
+      	      this.last_action = '';
+      	      this.georeferencing = null;
+      	      delay = 4000;
+      	    }
+      	    
+            this.loader.delay(delay).animate({height:0},300,function(){
               $(this).css('borderBottom','none');
               $(this).children('p:eq(0)').remove();
               if (me.count>0) {
@@ -98,9 +146,14 @@
                 me.checking = false;
               }
             });
+         
       	  } else {
-            if (!me.loader.children('p').hasClass('loading')) {
-              var element = $('<p class="loading">Loading...</p>');
+            if (me.loader.find('p.loading').length==0) {
+              var loading_text = 'Loading...';
+              if (this.georeferencing!=null) {
+                loading_text = 'Geolocating...'+this.georeferencing.actual+'/'+this.georeferencing.total;
+              }
+              var element = $('<p class="loading">'+loading_text+'</p>');
           	  element.css('top','30px');
           	  element.css('opacity','0');
           	  this.loader.append(element);
@@ -108,8 +161,8 @@
           	  var element_width = element.width();
 
           	  this.loader.animate({
-          	    backgroundColor:'#FFEAA4',
-          	    borderBottomColor:'#D0C090',
+          	    backgroundColor:!me.georeferencing?'#FFEAA4':'#FFAA00',
+          	    borderBottomColor:!me.georeferencing?'#D0C090':'#FF9900',
           	    width: element_width+44+'px',
           	    marginLeft: '-'+(element_width/2)+'px',
           	  },200);
@@ -118,7 +171,7 @@
           	  this.loader.children('p:eq(1)').css("marginLeft",'-'+((element_width+44)/2)+'px');
           	  this.loader.children('p:eq(1)').animate({top:'0',opacity:1},700);
             }
-      	    setTimeout(function(){me.loopPendingOperations()},50);
+      	    setTimeout(function(){me.loopPendingOperations()},(this.georeferencing)?1000:100);
       	  }
       	}
       	
@@ -127,6 +180,7 @@
       	/*  Show the result of the request  */
       	/*========================================================================================================================*/
       	loaderQueue.prototype.showResult = function(data) {
+      	  this.last_action = (data.status=="ok")?data.type:'';
       	  var element = $('<p>'+ ((data.status=="ok")? loadingMessages[data.type] :data.error) +'</p>');
       	  element.css('top','30px');
       	  element.css('opacity','0');

@@ -98,7 +98,7 @@
           // Zoom to your geometries
           $.ajax({
             method: "GET",
-            url: 'http://'+user_name+'.' + SQL_SERVER + global_api_url+'sql/?q='+escape('select ST_Extent(the_geom) from '+ table_name),
+            url: 'http://'+user_name+'.' + SQL_SERVER + global_api_url+ 'sql/?q='+escape('select ST_Extent(the_geom) from '+ table_name),
             dataType: 'jsonp',
             success: function(data) {
               if (data.rows[0].st_extent!=null) {

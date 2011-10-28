@@ -1,6 +1,6 @@
 
   //SUBHEADER EVENTS AND FLOATING WINDOWS+//
-  var editor;
+  var editor,georeferencing;
   
 
   head(function(){
@@ -66,7 +66,7 @@
 	    });
 			
 			// Draggable and resizable capacities to sql window
-	    $('div.sql_window').draggable({appendTo: 'body'}).resizable({maxWidth:800,maxHeight:400});
+	    $('div.sql_window').draggable({appendTo: 'body',containment:'parent'}).resizable({maxWidth:800,maxHeight:400});
 			
 			// Open sql console
 			$('div.general_options a.sql, p a.open_console').livequery('click',function(ev){
@@ -144,6 +144,18 @@
                 '</div>'+
               '</div>'+
               '<div class="error_content"><p><span>You have to select latitude and longitude</span></p></div>'+
+              // TEST - String georeferencing
+              '<div class="georef_options">'+
+                '<div class="select address">'+
+                  '<label>ADDRESS COLUMN</label>'+
+                  '<span class="select address">'+
+                    '<a id="address" class="option" href="#column_name" c="">Retrieving columns...</a>'+
+                    '<div class="select_content">'+
+                      '<ul class="scrollPane"></ul>'+
+                    '</div>'+
+                  '</span>'+
+                '</div>'+
+              '</div>'+
             '</span>'+
             '<span class="bottom">'+
               '<a href="#close_window" class="cancel">cancel</a>'+
@@ -156,25 +168,38 @@
       
       // Now the listeners
       $('a.open_georeference,p.geo').livequery('click',function(ev){
-        var init_lat = $(this).closest('th').attr('c') || '';
+        if (georeferencing) {
+          stopPropagation(ev);
+          closeOutTableWindows();
+          $('div.mamufas div.stop_window h5').text('You are referencing by another column');
+          $('div.mamufas div.stop_window p').html('If you don’t want to wait, <a href="#cancel_geo" class="cancel_geo">cancel the process</a> in progress');
+          $('div.mamufas div.stop_window').show();
+          $('div.mamufas').fadeIn('fast');
+          bindESC();
+        } else {
+          var init_lat = $(this).closest('th').attr('c') || '';
 
-        // Remove selected list in header th
-        $('thead tr th a.options').removeClass('selected');
-        $('span.col_ops_list').hide();
+          // Remove selected list in header th
+          $('thead tr th a.options').removeClass('selected');
+          $('span.col_ops_list').hide();
 
-        stopPropagation(ev);
-        closeOutTableWindows();
-        // SQL mode? you can't georeference
-        var query_mode = ($('body').attr('query_mode') === "true");
-    		if (!query_mode && !$(this).parent().hasClass('disabled')) {
-    		  resetProperties();
-				  $('div.mamufas div.georeference_window').show();
-  	      $('div.mamufas').fadeIn('fast');
-  	      bindESC();
-  	      
-  	      // If this table is based on points/multipoint, you will be able to georeference
-  	      checkGeomType();
-				}
+          stopPropagation(ev);
+          closeOutTableWindows();
+          // SQL mode? you can't georeference
+          var query_mode = ($('body').attr('query_mode') === "true");
+      		if (!query_mode && !$(this).parent().hasClass('disabled')) {
+      		  resetProperties();
+  				  $('div.mamufas div.georeference_window').show();
+    	      $('div.mamufas').fadeIn('fast');
+    	      bindESC();
+
+    	      // If this table is based on points/multipoint, you will be able to georeference
+    	      checkGeomType();
+  				}
+        }
+        
+        
+
         
         function checkGeomType() {
           $.ajax({
@@ -196,43 +221,43 @@
         }
 
         function resetProperties() {
-          $('div.georeference_window div.inner_ span.top').css('opacity',1).show();
-          $('div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
+          $('div.mamufas div.georeference_window div.inner_ span.top').css('opacity',1).show();
+          $('div.mamufas div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
           $('div.mamufas div.georeference_window div.georef_options').hide();
           
-          $('div.georeference_window h3').text('Choose your geocoding method for this column');
-          $('div.georeference_window span.top p:eq(0)').text('Please select the columns for the lat/lon fields');
-				  
-          $('div.georeference_window a.close_geo').show();
-          $('div.georeference_window').css('height','auto');
-          $('div.georeference_window div.inner_').css('height','auto');
-          $('div.georeference_window').removeClass('loading');
+          $('div.mamufas div.georeference_window h3').text('Choose your geocoding method for this column');
+          $('div.mamufas div.georeference_window span.top p:eq(0)').text('Please select the columns for the lat/lon fields');
+
+          $('div.mamufas div.georeference_window a.close_geo').show();
+          $('div.mamufas div.georeference_window').css('height','auto');
+          $('div.mamufas div.georeference_window div.inner_').css('height','auto');
+          $('div.mamufas div.georeference_window').removeClass('loading');
           
-          $('div.georeference_window span.select').each(function(i,ele){
+          $('div.mamufas div.georeference_window span.select').each(function(i,ele){
             $(ele).addClass('disabled').removeClass('error');
           });
           
-          $('div.georeference_window span.select a.option').each(function(i,ele){
+          $('div.mamufas div.georeference_window span.select a.option').each(function(i,ele){
             $(ele).text('Retrieving columns...').attr('c','');
           });
-          $('div.georeference_window a.confirm_georeference').addClass('disabled');
-          $('div.georeference_window span.select').removeClass('clicked');
-          $('div.georeference_window').css('overflow','visible');
+          $('div.mamufas div.georeference_window a.confirm_georeference').addClass('disabled');
+          $('div.mamufas div.georeference_window span.select').removeClass('clicked');
+          $('div.mamufas div.georeference_window').css('overflow','visible');
 
 
           // Remove selected li class before know where geo column is.
-          $('div.georeference_window ul.main_list li').removeClass('selected');
+          $('div.mamufas div.georeference_window ul.main_list li').removeClass('selected');
 
           // Remove all ScrollPane and lists items //
           var custom_scrolls = [];
-          $('div.georeference_window .scrollPane').each(function(){
+          $('div.mamufas div.georeference_window > .scrollPane').each(function(){
        		  custom_scrolls.push($(this).jScrollPane().data().jsp);
        		});
 
           _.each(custom_scrolls,function(ele,i) {
             ele.destroy();
           });
-          $('div.georeference_window span.select ul li').remove();
+          $('div.mamufas div.georeference_window span.select ul li').remove();
         }
 
         function getColumns() {
@@ -295,10 +320,10 @@
           if ($(this).parent().hasClass('clicked')) {
             $(this).parent().removeClass('clicked');
           } else {
-            $('span.select').removeClass('clicked');
+            $('div.georeference_window > span.select').removeClass('clicked');
             $('body').bind('click',function(ev){
               if (!$(ev.target).closest('span.select').length) {
-                $('span.select').removeClass('clicked');
+                $('div.georeference_window > span.select').removeClass('clicked');
               }
             });
             $(this).parent().addClass('clicked');
@@ -306,7 +331,7 @@
           }
         }
       });
-      $('div.georeference_window span.latitude ul li a,div.georeference_window span.longitude ul li a').livequery('click',function(ev){
+      $('div.georeference_window div.select_content ul li a').livequery('click',function(ev){
         stopPropagation(ev);
         $(this).closest('span.select').children('a.option').text($(this).text());
         $(this).closest('span.select').children('a.option').attr('c',$(this).text());
@@ -393,6 +418,12 @@
         closeOutTableWindows();
         unbindESC();
       });
+			$('div.stop_window p a.cancel_geo').livequery('click',function(ev){
+			  stopPropagation(ev);
+			  closeOutTableWindows();
+			  $(window).trigger('stopGeo');
+			});
+			
 			return {}
 		}());
     

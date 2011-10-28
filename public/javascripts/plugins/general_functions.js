@@ -17,7 +17,7 @@
     /* Sanitize texts  */
     /*============================================================================*/
     function sanitizeText(str) {
-      return str.replace(/[^a-zA-Z 0-9 _]+/g,'').replace(/ /g,'_').toLowerCase();
+      return str.replace(/[^a-zA-Z 0-9 _]+/g,'').replace(/ /g,'_').replace(/--/g,'-').toLowerCase();
     }
 
 

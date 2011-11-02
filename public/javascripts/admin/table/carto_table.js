@@ -87,8 +87,13 @@
         if (table.mode!='query') {
 			    startTable();
 		    } else {
-				  methods.drawQueryColumns(rows,table.total_r,time,new_query);
-			    methods.drawQueryRows(rows,direction,table.actual_p);
+					if (is_write_query) {
+						requests_queue.pendingOperations[requestId].type = "query_action";
+						$('a.clear_table').click();
+					} else {
+						methods.drawQueryColumns(rows,table.total_r,time,new_query);
+				    methods.drawQueryRows(rows,direction,table.actual_p);
+					}
 		    }
 		    // Remove loader
 		    requests_queue.responseRequest(requestId,'ok','');

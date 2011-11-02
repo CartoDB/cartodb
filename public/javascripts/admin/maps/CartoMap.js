@@ -388,6 +388,8 @@
         var map_status = ($('body').attr('view_mode') == "map");
         if (map_status) {
           stopPropagation(ev);
+					me.closeMapWindows();
+
           $('body').attr('query_mode','true');
           me.query_mode = true;
           setAppStatus();

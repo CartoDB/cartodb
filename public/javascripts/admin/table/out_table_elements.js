@@ -1066,9 +1066,9 @@
 	          $('p.status a').removeClass('public private').addClass(new_value).text(new_value);
 	          
 	          if (new_value=='public') {
-	            $('ul.tab_menu').append('<li><a href="#share_this_map" class="share">SHARE THIS MAP</a></li>');
+	            $('ul.tab_menu li a.share').removeClass('disabled');
 	          } else {
-	            $('ul.tab_menu').find('a.share').parent().remove();
+	            $('ul.tab_menu li a.share').addClass('disabled');
 	          }
 	          
 	          changesRequest('privacy',new_value.toUpperCase(),old_value);
@@ -1215,8 +1215,10 @@
 
 		  // Bindings
 		  $('ul.tab_menu li a.share').livequery('click',function(ev){
-		    stopPropagation(ev);
-		    closeOutTableWindows();
+		    stopPropagation(ev);		    
+				if ($(this).hasClass('disabled')) {return false}				
+				closeOutTableWindows();
+				
 		    
 		    // Change values of the inputs
 
@@ -1232,6 +1234,7 @@
 	        $("div.embed_window .inner_ span.top div span a.copy").zclip({
             path: "/javascripts/plugins/ZeroClipboard.swf",
             copy: function(){
+							$(this).parent().find('input').select();
               return $(this).parent().find('input').val();
             }
           });
@@ -1383,11 +1386,13 @@
     ///////////////////////////////////////
     $('section.subheader ul.tab_menu li a').click(function(ev){
       if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
-				stopPropagation(ev);
-        closeOutTableWindows();
 				if ($(this).text()=="Table") {
+					stopPropagation(ev);
+	        closeOutTableWindows();
 					$.History.go('/table');
-				} else {
+				} else if ($(this).text()=="Map"){
+					stopPropagation(ev);
+	        closeOutTableWindows();
 					$.History.go('/map');
 				}
       } else {
@@ -1490,9 +1495,9 @@
       case 'privacy': $('span.privacy_window ul li.'+old_value).addClass('selected');
                       $('p.status a').removeClass('public private').addClass(old_value).text(old_value);
                       if (old_value=='public') {
-          	            $('ul.tab_menu').append('<li><a href="#share_this_map" class="share">SHARE THIS MAP</a></li>');
+          	            $('ul.tab_menu li a.share').removeClass('disabled');
           	          } else {
-          	            $('ul.tab_menu').find('a.share').parent().remove();
+          	            $('ul.tab_menu li a.share').addClass('disabled');
           	          }
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1565,6 +1570,7 @@
 	function setAppStatus() {
 		var query_mode = ($('body').attr('query_mode') === "true");
 		if (query_mode) {
+			$('ul.tab_menu li a.share').hide();
 		  $('a.open_georeference').css({opacity:0.5});
 			$.favicon('/favicon/black_32x32.png');
 			var html = $('p.settings').html();
@@ -1575,6 +1581,7 @@
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
 		} else {
+			$('ul.tab_menu li a.share').show();
 		  $('a.open_georeference').css({opacity:1});
 			$.favicon('/favicon/blue_32x32.png');
 			$('body').removeClass('query');

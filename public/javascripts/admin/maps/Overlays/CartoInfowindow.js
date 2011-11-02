@@ -33,7 +33,7 @@
 			                '</div>'+
 			              '</div>'+
 			              '<div class="bottom">'+
-											'<label>cartodb_id:1</label>'+
+											'<label>id:1</label>'+
 											'<a class="edit_point" href="#edit">edit</a>'+
 											'<a class="delete_point" href="#delete">delete</a>'+
 		                '</div>');
@@ -147,7 +147,7 @@
     			$(div).find('a.edit_point').show();
   	    }
 
-  			$(div).find('div.bottom').find('label').html('cartodb_id: <strong>'+info.cartodb_id+'</strong>');
+  			$(div).find('div.bottom').find('label').html('id: <strong>'+info.cartodb_id+'</strong>');
   	    me.moveMaptoOpen();
   	    me.setPosition();			
   	  }

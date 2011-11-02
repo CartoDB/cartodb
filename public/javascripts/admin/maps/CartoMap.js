@@ -89,7 +89,7 @@
           me.info_window_       = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);     // InfoWindow for markers
           me.tooltip_           = new CartoTooltip(new google.maps.LatLng(-260,-260),me.map_);		    // Over tooltip for markers and selection area
           me.delete_window_     = new CartoDeleteWindow(new google.maps.LatLng(-260,-260), me.map_);  // Delete window to confirm remove one/several markers
-          me.map_canvas_ 	    = new mapCanvasStub(me.map_);                                           // Canvas to control the coordinates
+          me.map_canvas_ 	    	= new mapCanvasStub(me.map_);                                        // Canvas to control the coordinates
         }
       );
     }
@@ -298,6 +298,7 @@
       google.maps.event.addListener(this.map_, 'dblclick', function(ev) {
         me.double_click = true;
       });
+
     }
 
     /* Event listeners of the map tools */
@@ -387,6 +388,8 @@
         var map_status = ($('body').attr('view_mode') == "map");
         if (map_status) {
           stopPropagation(ev);
+					me.closeMapWindows();
+
           $('body').attr('query_mode','true');
           me.query_mode = true;
           setAppStatus();
@@ -1182,16 +1185,39 @@
       var me = this;
       var currentCartoDbId;
       this.tilejson = this.generateTilejson();
+			this.current_pos = new google.maps.LatLng(0,0);
             
       this.waxOptions = {
         callbacks: {
           out: function(){
-            me.over_marker_ = false;
+						$('div#map').unbind('mousemove');
+						clearInterval(me.interval);
+						setTimeout(function(){
+							if (!me.over_tooltip) {
+								me.tooltip_.hide();
+							}
+						},100);
+            me.over_marker = false;
             me.map_.setOptions({draggableCursor: 'default'});
           },
           over: function(feature, div, opt3, evt){
             if (me.query_mode || me.status_ == "select") {
-              me.over_marker_ = true;
+		
+							// Reset map events
+							$('div#map').unbind('mousemove');
+							clearInterval(me.interval);
+							
+							// Bind features over events
+					    $('div#map').mousemove(function(ev){
+								me.current_pos = me.map_canvas_.transformCoordinates(new google.maps.Point(ev.pageX,ev.pageY));
+							});
+							me.interval = setInterval(function(){
+								if (!me.over_tooltip) {
+									me.tooltip_.setPosition(me.current_pos,feature);
+								}
+							},150);
+							
+              me.over_marker = true;
               me.map_.setOptions({ draggableCursor: 'pointer' });
               me.tooltip_.open(evt.latLng,feature);
             }

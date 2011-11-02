@@ -80,14 +80,22 @@
                         '<span class="color" css="marker-fill">'+
                           '<span class="palette">'+
                             '<ul>'+
-                              '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-                              '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
-                              '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
-                              '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
-                              '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
-                              '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
-                              '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
-                              '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+	                            '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+	                            '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+	                            '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+	                            '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+	                            '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+	                            '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+	                            '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+	                            '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
+	                            '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
+	                            '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
+	                            '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
+	                            '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
+	                            '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
+	                            '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
                             '</ul>'+
                           '</span>'+
                           '<a href="#change_fill_color" class="control"></a>'+
@@ -104,14 +112,22 @@
                         '<span class="color" css="marker-line-color">'+
                           '<span class="palette">'+
                             '<ul>'+
-                              '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-                              '<li><a href="#FFFFFF" style="background-color:#E2DADA">grey</a></li>'+
-                              '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
-                              '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
-                              '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
-                              '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
-                              '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
-                              '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+	                            '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+	                            '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+	                            '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+	                            '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+	                            '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+	                            '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+	                            '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+	                            '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
+	                            '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
+	                            '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
+	                            '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
+	                            '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
+	                            '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
+	                            '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
                             '</ul>'+
                           '</span>'+
                           '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
@@ -140,14 +156,22 @@
                         '<span class="color" css="polygon-fill">'+
                           '<span class="palette">'+
                             '<ul>'+
-                              '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-                              '<li><a href="#FFFFFF" style="background-color:#E2DADA">grey</a></li>'+
-                              '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
-                              '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
-                              '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
-                              '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
-                              '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
-                              '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+	                            '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+	                            '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+	                            '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+	                            '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+	                            '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+	                            '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+	                            '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+	                            '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
+	                            '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
+	                            '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
+	                            '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
+	                            '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
+	                            '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
+	                            '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
                             '</ul>'+
                           '</span>'+
                           '<a href="#change_fill_color" class="control"></a>'+
@@ -159,14 +183,22 @@
                         '<span class="color" css="line-color">'+
                           '<span class="palette">'+
                             '<ul>'+
-                              '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-                              '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
-                              '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
-                              '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
-                              '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
-                              '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
-                              '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
-                              '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+	                            '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+	                            '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+	                            '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+	                            '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+	                            '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+	                            '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+	                            '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+	                            '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
+	                            '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
+	                            '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
+	                            '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
+	                            '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
+	                            '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
+	                            '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
                             '</ul>'+
                           '</span>'+
                           '<a href="#change_line_color" class="control"></a>'+
@@ -195,14 +227,22 @@
                         '<span class="color" css="line-color">'+
                           '<span class="palette">'+
                             '<ul>'+
-                              '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-                              '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
-                              '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
-                              '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
-                              '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
-                              '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
-                              '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
-                              '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+	                            '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+	                            '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+	                            '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+	                            '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+	                            '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+	                            '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+	                            '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+	                            '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
+	                            '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
+	                            '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
+	                            '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
+	                            '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
+	                            '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
+	                            '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
                             '</ul>'+
                           '</span>'+
                           '<a href="#change_fill_color" class="control"></a>'+

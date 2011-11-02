@@ -87,8 +87,14 @@
         if (table.mode!='query') {
 			    startTable();
 		    } else {
-				  methods.drawQueryColumns(rows,table.total_r,time,new_query);
-			    methods.drawQueryRows(rows,direction,table.actual_p);
+					if (msg) {
+						requests_queue.pendingOperations[requestId].type = "query_action";
+						loadingMessages["query_action"] = msg;
+						$('a.clear_table').click();
+					} else {
+						methods.drawQueryColumns(rows,table.total_r,time,new_query);
+				    methods.drawQueryRows(rows,direction,table.actual_p);
+					}
 		    }
 		    // Remove loader
 		    requests_queue.responseRequest(requestId,'ok','');
@@ -145,9 +151,9 @@
 			  // QUERY MODE
 				setAppStatus(); // Change app status depending on query mode
 
-				var time;
-				var query = editor.getValue();
-				var is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER).*/i)!=-1;
+				var time,
+						query = editor.getValue(),
+						is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER|DROP|DELETE).*/i)!=-1;
 				
 				// Get the total rows of the query
 				if (new_query!=undefined && !is_write_query) {
@@ -161,7 +167,6 @@
 							requestArrived();
 				    },
 				    error: function(e) {
-				      requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
 				      requestArrived();
 				    }
 				  });
@@ -184,6 +189,7 @@
 						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
 						$('div.sql_window').css({'min-height':'199px'});
 						
+						msg = data.message;
 						time = data.time.toFixed(3);
 			      rows = data.rows;
 			      requestArrived();
@@ -321,7 +327,7 @@
     //  DRAW COLUMNS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawQueryColumns: function(rows,total,time,new_query) {
-      if (rows.length>0) {
+      if (rows && rows.length>0) {
 				if (new_query) {
 					//Draw the columns headers
 		      var thead = '<thead style="height:91px"><tr><th class="first"><div></div></th>';
@@ -355,7 +361,7 @@
 					thead += "</tr></thead>";
 					table.e.append(thead);
 
-					table.e.find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear</a></p></div>');
+					table.e.find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
 				}
       } else {
 				$('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');

@@ -45,7 +45,7 @@
       	      });
       	    }
       	    
-      	    var width = this.loader.find('p.loading').width()+34;
+      	    var width = this.loader.find('p.loading').width() + 42;
       	    this.loader.children('p').show();
       	    this.loader.css('width',width+'px');
             this.loader.css('backgroundColor',!this.georeferencing?'#FFEAA4':'#FFAA00');

@@ -124,16 +124,7 @@
               '<h3>Choose your geocoding method for this column</h3>'+
               '<p>Please select the columns for the lat/lon fields</p>'+
               '<div class="georef_options">'+
-                '<div class="select">'+
-                  '<label>LATITUDE COLUMN</label>'+
-                  '<span class="select latitude">'+
-                    '<a id="latitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
-                    '<div class="select_content">'+
-                      '<ul class="scrollPane"></ul>'+
-                    '</div>'+
-                  '</span>'+
-                '</div>'+
-                '<div class="select longitude last">'+
+                '<div class="select longitude">'+
                   '<label>LONGITUDE COLUMN</label>'+
                   '<span class="select longitude">'+
                     '<a id="longitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
@@ -142,20 +133,29 @@
                     '</div>'+
                   '</span>'+
                 '</div>'+
-              '</div>'+
-              '<div class="error_content"><p><span>You have to select latitude and longitude</span></p></div>'+
-              // TEST - String georeferencing
-              '<div class="georef_options">'+
-                '<div class="select address">'+
-                  '<label>ADDRESS COLUMN</label>'+
-                  '<span class="select address">'+
-                    '<a id="address" class="option" href="#column_name" c="">Retrieving columns...</a>'+
+		            '<div class="select latitude last">'+
+                  '<label>LATITUDE COLUMN</label>'+
+                  '<span class="select latitude">'+
+                    '<a id="latitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
                     '<div class="select_content">'+
                       '<ul class="scrollPane"></ul>'+
                     '</div>'+
                   '</span>'+
                 '</div>'+
               '</div>'+
+              '<div class="error_content"><p><span>You have to select latitude and longitude</span></p></div>'+
+              // // TEST - String georeferencing
+              // '<div class="georef_options">'+
+              //   '<div class="select address">'+
+              //     '<label>ADDRESS COLUMN</label>'+
+              //     '<span class="select address">'+
+              //       '<a id="address" class="option" href="#column_name" c="">Retrieving columns...</a>'+
+              //       '<div class="select_content">'+
+              //         '<ul class="scrollPane"></ul>'+
+              //       '</div>'+
+              //     '</span>'+
+              //   '</div>'+
+              // '</div>'+
             '</span>'+
             '<span class="bottom">'+
               '<a href="#close_window" class="cancel">cancel</a>'+
@@ -185,6 +185,7 @@
 
           stopPropagation(ev);
           closeOutTableWindows();
+
           // SQL mode? you can't georeference
           var query_mode = ($('body').attr('query_mode') === "true");
       		if (!query_mode && !$(this).parent().hasClass('disabled')) {
@@ -250,7 +251,7 @@
 
           // Remove all ScrollPane and lists items //
           var custom_scrolls = [];
-          $('div.mamufas div.georeference_window > .scrollPane').each(function(){
+          $('div.mamufas div.georeference_window .scrollPane').each(function(){
        		  custom_scrolls.push($(this).jScrollPane().data().jsp);
        		});
 
@@ -320,7 +321,7 @@
           if ($(this).parent().hasClass('clicked')) {
             $(this).parent().removeClass('clicked');
           } else {
-            $('div.georeference_window > span.select').removeClass('clicked');
+            $('div.georeference_window span.select').removeClass('clicked');
             $('body').bind('click',function(ev){
               if (!$(ev.target).closest('span.select').length) {
                 $('div.georeference_window > span.select').removeClass('clicked');
@@ -682,7 +683,7 @@
 				}
 	    });
 	    
-	    $('div.mamufas div.export_window a.close').click(function(ev){
+	    $('div.mamufas div.export_window a.close,div.mamufas div.export_window a.cancel').click(function(ev){
 	      stopPropagation(ev);
 	      closeOutTableWindows();
 	    });
@@ -901,7 +902,7 @@
 		        //   error: function(e) {
 		            $('div.import_window div.inner_ span.loading').addClass('error');
 		            $('div.import_window div.inner_ span.loading p').html('Something weird has occurred when creating your table. Do you want to <a onclick="retryImportTable()">retry</a>?');
-		            $('div.import_window div.inner_ span.loading h5').text('Ops! There has been an error');
+		            $('div.import_window div.inner_ span.loading h5').text('Ooops! There has been an error');
 		            $('div.import_window div.inner_').height(78);
 		        //   }
 		        // });
@@ -1066,9 +1067,9 @@
 	          $('p.status a').removeClass('public private').addClass(new_value).text(new_value);
 	          
 	          if (new_value=='public') {
-	            $('ul.tab_menu').append('<li><a href="#share_this_map" class="share">SHARE THIS MAP</a></li>');
+	            $('ul.tab_menu li a.share').removeClass('disabled');
 	          } else {
-	            $('ul.tab_menu').find('a.share').parent().remove();
+	            $('ul.tab_menu li a.share').addClass('disabled');
 	          }
 	          
 	          changesRequest('privacy',new_value.toUpperCase(),old_value);
@@ -1215,8 +1216,10 @@
 
 		  // Bindings
 		  $('ul.tab_menu li a.share').livequery('click',function(ev){
-		    stopPropagation(ev);
-		    closeOutTableWindows();
+		    stopPropagation(ev);		    
+				if ($(this).hasClass('disabled')) {return false}				
+				closeOutTableWindows();
+				
 		    
 		    // Change values of the inputs
 
@@ -1232,6 +1235,7 @@
 	        $("div.embed_window .inner_ span.top div span a.copy").zclip({
             path: "/javascripts/plugins/ZeroClipboard.swf",
             copy: function(){
+							$(this).parent().find('input').select();
               return $(this).parent().find('input').val();
             }
           });
@@ -1383,50 +1387,58 @@
     ///////////////////////////////////////
     $('section.subheader ul.tab_menu li a').click(function(ev){
       if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
-        if ($(this).text()=="Table") {
-          stopPropagation(ev);
-          closeOutTableWindows();
-          
- 					window.location.hash = "#table";
- 					$('span.paginate').show();
- 					
- 					// Change list and tools selected
-          $('section.subheader ul.tab_menu li').removeClass('selected');
-          $('div.general_options').removeClass('map').addClass('table');
-          $(this).parent().addClass('selected');
-          
-          // Refresh & show the table
-          $('table').cartoDBtable('refreshTable');
-          
-          // Hide map
-					$('body').attr('view_mode','table');
-          $('div.table_position').show();
-          hideMap();
-        } else if ($(this).text()=="Map") {
-          stopPropagation(ev);
-          closeOutTableWindows();
-          
- 					window.location.hash = "#map";
- 					$('span.paginate').hide();
- 					 					
- 					// Change list and tools selected
-          $('section.subheader ul.tab_menu li').removeClass('selected');
-          $('div.general_options').removeClass('table end').addClass('map');
-          $(this).parent().addClass('selected');
-          
-          // Disable the table
- 					$('table').cartoDBtable('disableTable');
-          
-          // Show map
-          $('div.table_position').hide();
-					$('body').attr('view_mode','map');
-          showMap();
-        }
+				if ($(this).text()=="Table") {
+					stopPropagation(ev);
+	        closeOutTableWindows();
+					$.History.go('/table');
+				} else if ($(this).text()=="Map"){
+					stopPropagation(ev);
+	        closeOutTableWindows();
+					$.History.go('/map');
+				}
       } else {
         stopPropagation(ev);
       }
     });
   });
+
+
+	////////////////////////////////////////
+  //  CHANGE APP STATE				       	  //
+  ////////////////////////////////////////
+	function goToMap() {
+		$('span.paginate').hide();
+		 					
+		// Change list and tools selected
+    $('section.subheader ul.tab_menu li').removeClass('selected');
+    $('div.general_options').removeClass('table end').addClass('map');
+    $('section.subheader ul.tab_menu li a:contains("Map")').parent().addClass('selected');
+    
+    // Disable the table
+		$('table').cartoDBtable('disableTable');
+    
+    // Show map
+    $('div.table_position').hide();
+		$('body').attr('view_mode','map');
+    showMap();
+	}
+	
+	function goToTable() {
+		$('span.paginate').show();
+		
+		// Change list and tools selected
+    $('section.subheader ul.tab_menu li').removeClass('selected');
+    $('div.general_options').removeClass('map').addClass('table');
+    $('section.subheader ul.tab_menu li a:contains("Table")').parent().addClass('selected');
+    
+    // Refresh & show the table
+    $('table').cartoDBtable('refreshTable');
+    
+    // Hide map
+		$('body').attr('view_mode','table');
+    $('div.table_position').show();
+    if (carto_map) {hideMap()}
+	}
 
 
 
@@ -1484,9 +1496,9 @@
       case 'privacy': $('span.privacy_window ul li.'+old_value).addClass('selected');
                       $('p.status a').removeClass('public private').addClass(old_value).text(old_value);
                       if (old_value=='public') {
-          	            $('ul.tab_menu').append('<li><a href="#share_this_map" class="share">SHARE THIS MAP</a></li>');
+          	            $('ul.tab_menu li a.share').removeClass('disabled');
           	          } else {
-          	            $('ul.tab_menu').find('a.share').parent().remove();
+          	            $('ul.tab_menu li a.share').addClass('disabled');
           	          }
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1559,6 +1571,7 @@
 	function setAppStatus() {
 		var query_mode = ($('body').attr('query_mode') === "true");
 		if (query_mode) {
+			$('ul.tab_menu li a.share').hide();
 		  $('a.open_georeference').css({opacity:0.5});
 			$.favicon('/favicon/black_32x32.png');
 			var html = $('p.settings').html();
@@ -1569,6 +1582,7 @@
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
 		} else {
+			$('ul.tab_menu li a.share').show();
 		  $('a.open_georeference').css({opacity:1});
 			$.favicon('/favicon/blue_32x32.png');
 			$('body').removeClass('query');

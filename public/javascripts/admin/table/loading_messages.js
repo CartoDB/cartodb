@@ -2,6 +2,7 @@
   var loadingMessages = [];
     loadingMessages["normal_table"] = "records loaded";
     loadingMessages["query_table"] = "query results";
+		loadingMessages["query_action"] = "command complete";
     loadingMessages["filter_table"] = "records filtered";
     loadingMessages["tags"] = "table tags updated";
     loadingMessages["name"] = "table name updated";

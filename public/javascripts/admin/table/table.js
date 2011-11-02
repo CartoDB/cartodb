@@ -35,7 +35,12 @@
 					$.History.go('/table');					
 				}
 	    });
-
+	
+			
+			// IF there is no hash -> /table
+			if (window.location.hash == "") {
+				$.History.go('/table');	
+			}
 		
 			// Init cartoDB table
 			$("table#carto_table").cartoDBtable(

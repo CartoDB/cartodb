@@ -111,9 +111,9 @@ div.map_window div.map_header div.options ul li button:hover {background:linear-
 div.map_window div.map_header div.suboptions label {display:block; margin:9px 0 0 2px; font:normal 11px "Helvetica",Arial; color:#A5A5A5; text-shadow:0 1px white}
 div.map_window div.map_header div.suboptions div.long {width:100%; margin:2px 0 0 0;}
 div.map_window div.map_header div.suboptions div.long span.color {position:relative; display:inline-block; vertical-align:top; width:77px; height:20px; border:1px solid #999999; background:white; box-shadow:0 1px 0 0 white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
-div.map_window div.map_header div.suboptions div.long span.color span.palette {position:absolute; display:none; top:-24px; left:-58px; width:128px; height:24px; padding:4px 5px; background:url('/images/admin/map/palette_bkg.png') no-repeat 0 0; overflow:hidden; z-index:10}
-div.map_window div.map_header div.suboptions div.long span.color span.palette ul {width:100%; height:18px; margin:0; padding:0; background:none;}
-div.map_window div.map_header div.suboptions div.long span.color span.palette ul li {float:left; width:15px; height:16px; padding:0; margin:0 0 0 -1px; border:1px solid rgba(0,0,0,0.6); background:none; z-index:1}
+div.map_window div.map_header div.suboptions div.long span.color span.palette {position:absolute; display:none; top:-39px; left:-58px; width:128px; height:41px; padding:4px 5px; background:url('/images/admin/map/palette_bkg.png') no-repeat 0 0; overflow:hidden; z-index:10}
+div.map_window div.map_header div.suboptions div.long span.color span.palette ul {width:100%; height:18px; margin:1px 0 0 0; padding:0; background:none;}
+div.map_window div.map_header div.suboptions div.long span.color span.palette ul li {float:left; width:15px; height:16px; padding:0; margin:-1px 0 0 -1px; border:1px solid rgba(0,0,0,0.6); background:none; z-index:1}
 div.map_window div.map_header div.suboptions div.long span.color span.palette ul li:hover {border-color:white; z-index:10}
 div.map_window div.map_header div.suboptions div.long span.color span.palette ul li a {display:block; width:15px; height:16px; padding:0; background:url('/images/admin/map/palette_color_deg.png') repeat-x 0 0; text-indent:-9999px;}
 div.map_window div.map_header div.suboptions div.long span.color span.palette ul li a:hover {cursor:pointer}

@@ -147,7 +147,7 @@
 
 				var time;
 				var query = editor.getValue();
-				var is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER).*/i)!=-1;
+				var is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER|DROP|DELETE).*/i)!=-1;
 				
 				// Get the total rows of the query
 				if (new_query!=undefined && !is_write_query) {
@@ -161,7 +161,6 @@
 							requestArrived();
 				    },
 				    error: function(e) {
-				      requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
 				      requestArrived();
 				    }
 				  });
@@ -321,7 +320,7 @@
     //  DRAW COLUMNS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawQueryColumns: function(rows,total,time,new_query) {
-      if (rows.length>0) {
+      if (rows && rows.length>0) {
 				if (new_query) {
 					//Draw the columns headers
 		      var thead = '<thead style="height:91px"><tr><th class="first"><div></div></th>';

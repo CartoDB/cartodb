@@ -144,18 +144,18 @@
                 '</div>'+
               '</div>'+
               '<div class="error_content"><p><span>You have to select latitude and longitude</span></p></div>'+
-              // TEST - String georeferencing
-              '<div class="georef_options">'+
-                '<div class="select address">'+
-                  '<label>ADDRESS COLUMN</label>'+
-                  '<span class="select address">'+
-                    '<a id="address" class="option" href="#column_name" c="">Retrieving columns...</a>'+
-                    '<div class="select_content">'+
-                      '<ul class="scrollPane"></ul>'+
-                    '</div>'+
-                  '</span>'+
-                '</div>'+
-              '</div>'+
+              // // TEST - String georeferencing
+              // '<div class="georef_options">'+
+              //   '<div class="select address">'+
+              //     '<label>ADDRESS COLUMN</label>'+
+              //     '<span class="select address">'+
+              //       '<a id="address" class="option" href="#column_name" c="">Retrieving columns...</a>'+
+              //       '<div class="select_content">'+
+              //         '<ul class="scrollPane"></ul>'+
+              //       '</div>'+
+              //     '</span>'+
+              //   '</div>'+
+              // '</div>'+
             '</span>'+
             '<span class="bottom">'+
               '<a href="#close_window" class="cancel">cancel</a>'+
@@ -185,6 +185,7 @@
 
           stopPropagation(ev);
           closeOutTableWindows();
+
           // SQL mode? you can't georeference
           var query_mode = ($('body').attr('query_mode') === "true");
       		if (!query_mode && !$(this).parent().hasClass('disabled')) {
@@ -250,7 +251,7 @@
 
           // Remove all ScrollPane and lists items //
           var custom_scrolls = [];
-          $('div.mamufas div.georeference_window > .scrollPane').each(function(){
+          $('div.mamufas div.georeference_window .scrollPane').each(function(){
        		  custom_scrolls.push($(this).jScrollPane().data().jsp);
        		});
 
@@ -320,7 +321,7 @@
           if ($(this).parent().hasClass('clicked')) {
             $(this).parent().removeClass('clicked');
           } else {
-            $('div.georeference_window > span.select').removeClass('clicked');
+            $('div.georeference_window span.select').removeClass('clicked');
             $('body').bind('click',function(ev){
               if (!$(ev.target).closest('span.select').length) {
                 $('div.georeference_window > span.select').removeClass('clicked');

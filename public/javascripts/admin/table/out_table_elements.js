@@ -1383,50 +1383,56 @@
     ///////////////////////////////////////
     $('section.subheader ul.tab_menu li a').click(function(ev){
       if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
-        if ($(this).text()=="Table") {
-          stopPropagation(ev);
-          closeOutTableWindows();
-          
- 					window.location.hash = "#table";
- 					$('span.paginate').show();
- 					
- 					// Change list and tools selected
-          $('section.subheader ul.tab_menu li').removeClass('selected');
-          $('div.general_options').removeClass('map').addClass('table');
-          $(this).parent().addClass('selected');
-          
-          // Refresh & show the table
-          $('table').cartoDBtable('refreshTable');
-          
-          // Hide map
-					$('body').attr('view_mode','table');
-          $('div.table_position').show();
-          hideMap();
-        } else if ($(this).text()=="Map") {
-          stopPropagation(ev);
-          closeOutTableWindows();
-          
- 					window.location.hash = "#map";
- 					$('span.paginate').hide();
- 					 					
- 					// Change list and tools selected
-          $('section.subheader ul.tab_menu li').removeClass('selected');
-          $('div.general_options').removeClass('table end').addClass('map');
-          $(this).parent().addClass('selected');
-          
-          // Disable the table
- 					$('table').cartoDBtable('disableTable');
-          
-          // Show map
-          $('div.table_position').hide();
-					$('body').attr('view_mode','map');
-          showMap();
-        }
+				stopPropagation(ev);
+        closeOutTableWindows();
+				if ($(this).text()=="Table") {
+					$.History.go('/table');
+				} else {
+					$.History.go('/map');
+				}
       } else {
         stopPropagation(ev);
       }
     });
   });
+
+
+	////////////////////////////////////////
+  //  CHANGE APP STATE				       	  //
+  ////////////////////////////////////////
+	function goToMap() {
+		$('span.paginate').hide();
+		 					
+		// Change list and tools selected
+    $('section.subheader ul.tab_menu li').removeClass('selected');
+    $('div.general_options').removeClass('table end').addClass('map');
+    $('section.subheader ul.tab_menu li a:contains("Map")').parent().addClass('selected');
+    
+    // Disable the table
+		$('table').cartoDBtable('disableTable');
+    
+    // Show map
+    $('div.table_position').hide();
+		$('body').attr('view_mode','map');
+    showMap();
+	}
+	
+	function goToTable() {
+		$('span.paginate').show();
+		
+		// Change list and tools selected
+    $('section.subheader ul.tab_menu li').removeClass('selected');
+    $('div.general_options').removeClass('map').addClass('table');
+    $('section.subheader ul.tab_menu li a:contains("Table")').parent().addClass('selected');
+    
+    // Refresh & show the table
+    $('table').cartoDBtable('refreshTable');
+    
+    // Hide map
+		$('body').attr('view_mode','table');
+    $('div.table_position').show();
+    if (carto_map) {hideMap();}
+	}
 
 
 

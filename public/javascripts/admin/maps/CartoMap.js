@@ -298,6 +298,7 @@
       google.maps.event.addListener(this.map_, 'dblclick', function(ev) {
         me.double_click = true;
       });
+
     }
 
     /* Event listeners of the map tools */

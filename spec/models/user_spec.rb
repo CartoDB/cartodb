@@ -1,3 +1,5 @@
+# coding: UTF-8
+
 require 'spec_helper'
 
 describe User do
@@ -30,6 +32,23 @@ describe User do
     User.authenticate('UsEr@eXaMpLe.Com', 'user123').should == user
     User.authenticate('user', 'user123').should == user
     User.authenticate('USER', 'user123').should == user
+  end
+  
+  it "should only allow legal usernames" do
+    illegal_usernames = %w(si$mon 'sergio estella' j@vi sergio£££ simon_tokumine simon.tokumine SIMON Simon)
+    legal_usernames = %w(simon javier-de-la-torre sergio-leiva sergio99)
+    user = create_user :email => 'user@example.com', :username => "user", :password => 'user123'
+    
+    illegal_usernames.each do |name|
+      user.username = name
+      user.valid?.should be_false
+      user.errors[:username].should be_present
+    end
+    
+    legal_usernames.each do |name|
+      user.username = name
+      user.errors[:username].should be_blank
+    end
   end
 
   it "should validate that password is present if record is new and crypted_password or salt are blank" do

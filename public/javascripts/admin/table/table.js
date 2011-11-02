@@ -15,22 +15,33 @@
 
 
 		function manageHash() {
-		  var table_enabled = true;
-		  
-			var hash = window.location.hash;
-			if (hash == "#map") {
-				$('section.subheader ul.tab_menu li a:contains("Map")').click();
-				$('body').attr('view_mode','map');
-				table_enabled = false;
-			} else {
-				$('body').attr('view_mode','table');
-				window.location.hash = "#table";
-			}
+			var table_enabled = true,
+					document_title = document.title;
 
-      // Setup mode of app
-			$('body').attr('query_mode','false');
+
+	    // Bind a handler for state: map
+	    $.History.bind('/map',function(state) {
+				goToMap();
+	    });
+
+	    // Bind a handler for state: table
+	    $.History.bind('/table',function(state){
+				goToTable();
+	    });
+	
+			// Bind a handler for any other state
+			$.History.bind(function(state){
+				if (state!="/table" && state!="/map") {
+					$.History.go('/table');					
+				}
+	    });
+	
 			
-			
+			// IF there is no hash -> /table
+			if (window.location.hash == "") {
+				$.History.go('/table');	
+			}
+		
 			// Init cartoDB table
 			$("table#carto_table").cartoDBtable(
 			  'start',
@@ -42,7 +53,7 @@
           query: "SELECT * FROM "+ table_name,
           order_by: 'cartodb_id',
           mode: 'asc',
-          enabled: table_enabled
+          enabled: false
         }
       );
 		}

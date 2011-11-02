@@ -22,6 +22,7 @@
       "plugins/jquery.cookie",
       "plugins/jquery.favicon",
       "plugins/rgbcolor",
+      "plugins/jquery.history.min",
       # OWN MADE
       "admin/table/out_table_elements",
       "admin/table/loading_messages",
@@ -56,7 +57,7 @@
 
   <% content_for(:page_title) do %>
     <%= @table.name %> -
-  <% end %>  
+  <% end %>
 
 
   <% content_for(:head) do %>
@@ -93,9 +94,7 @@
           <ul class="tab_menu">
             <li class="selected"><a href="#view_table">Table</a></li>
             <li class="<%= ((!current_user.map_enabled)? 'disabled' : '') %>"><a href="#view_map">Map</a></li>
-            <% unless @table.private? %>
-              <li><a href="#share_this_map" class="share">SHARE THIS MAP</a></li>
-            <% end %>
+            <li><a href="#share_this_map" class="share <%= 'disabled' if @table.private? %>">SHARE THIS MAP</a></li>
           </ul>
         </div>
         <div class="right">

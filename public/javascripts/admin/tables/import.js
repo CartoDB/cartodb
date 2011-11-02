@@ -226,8 +226,8 @@
                 $('div.create_window div.inner_ span.loading p').html(json.raw_error +'<br/><br/>'+ json.hint);
                 $('div.create_window div.inner_ span.loading h5').text(json.message);
 							} else {
-                $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:wadus@cartodb.com">contact us</a> explaning what happened. Thanks!');
-                $('div.create_window div.inner_ span.loading h5').text('Ups! Error');
+                $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:wadus@cartodb.com">contact us</a> with a sample of your data if possible. Thanks!');
+                $('div.create_window div.inner_ span.loading h5').text('Oops! Error');
 							}
 						  $('div.create_window div.inner_ span.loading').addClass('error');
 							$('div.create_window a.close_create').show().addClass('last');

@@ -901,7 +901,7 @@
 		        //   error: function(e) {
 		            $('div.import_window div.inner_ span.loading').addClass('error');
 		            $('div.import_window div.inner_ span.loading p').html('Something weird has occurred when creating your table. Do you want to <a onclick="retryImportTable()">retry</a>?');
-		            $('div.import_window div.inner_ span.loading h5').text('Ops! There has been an error');
+		            $('div.import_window div.inner_ span.loading h5').text('Ooops! There has been an error');
 		            $('div.import_window div.inner_').height(78);
 		        //   }
 		        // });

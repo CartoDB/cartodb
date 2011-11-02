@@ -87,8 +87,9 @@
         if (table.mode!='query') {
 			    startTable();
 		    } else {
-					if (is_write_query) {
+					if (msg) {
 						requests_queue.pendingOperations[requestId].type = "query_action";
+						loadingMessages["query_action"] = msg;
 						$('a.clear_table').click();
 					} else {
 						methods.drawQueryColumns(rows,table.total_r,time,new_query);
@@ -150,9 +151,9 @@
 			  // QUERY MODE
 				setAppStatus(); // Change app status depending on query mode
 
-				var time;
-				var query = editor.getValue();
-				var is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER|DROP|DELETE).*/i)!=-1;
+				var time,
+						query = editor.getValue(),
+						is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER|DROP|DELETE).*/i)!=-1;
 				
 				// Get the total rows of the query
 				if (new_query!=undefined && !is_write_query) {
@@ -188,6 +189,7 @@
 						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
 						$('div.sql_window').css({'min-height':'199px'});
 						
+						msg = data.message;
 						time = data.time.toFixed(3);
 			      rows = data.rows;
 			      requestArrived();

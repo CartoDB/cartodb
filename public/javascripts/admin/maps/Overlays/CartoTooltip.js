@@ -4,8 +4,8 @@
 
   CartoTooltip.prototype.draw = function() {
       var me = this;
-
       var div = this.div_;
+
       if (!div) {
           div = this.div_ = document.createElement('DIV');
           div.setAttribute('class','marker_tooltip');
@@ -26,15 +26,19 @@
           });
 
           $(div).hover(
-              function(){
-                carto_map.over_marker_ = true;
-              },
-              function(){
-                carto_map.over_marker_ = false;
-                setTimeout(function(){
-                    if (!carto_map.over_marker_) me.hide();
-                },100);
-              }
+            function(){
+              carto_map.over_tooltip = true;
+            },
+	          function(){
+							carto_map.over_tooltip = false;
+	            setTimeout(function(){
+	            	if (!carto_map.over_marker) {
+									$('div#map').unbind('mousemove');
+									clearInterval(carto_map.interval);
+									me.hide();
+								}
+	            },100);
+	          }
           );
 
           var panes = this.getPanes();
@@ -110,6 +114,25 @@
           div.style.opacity = 1;
       }
   }
+
+	CartoTooltip.prototype.setPosition = function(latlng,feature) {
+		if (this.div_) {
+      var div = this.div_;
+      var me = this;
+    	this.latlng_ = latlng;
+	    var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
+	    if (pixPosition) {
+				if (this.markers_ == feature) {
+					$(div).animate({left:(pixPosition.x + this.offsetHorizontal_) + "px",top:(pixPosition.y + this.offsetVertical_ - 7) - 208 + "px"},{queue:false,duration:150});
+				} else {
+					this.markers_ = feature;
+					div.style.left = (pixPosition.x + this.offsetHorizontal_) + "px";
+		      div.style.top = (pixPosition.y + this.offsetVertical_ - 7) - 208 + "px";
+				}
+	    }
+    	this.show();
+		}
+	}
 
   CartoTooltip.prototype.isVisible = function() {
       if (this.div_) {

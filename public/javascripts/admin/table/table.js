@@ -31,7 +31,6 @@
 	
 			// Bind a handler for any other state
 			$.History.bind(function(state){
-				console.log(state);
 				if (state!="/table" && state!="/map") {
 					$.History.go('/table');					
 				}
@@ -52,23 +51,5 @@
           enabled: false
         }
       );
-		
-		
-		
-		  // Check if it's necessary start table or not!
-			var hash = window.location.hash;
-			
-			if (hash == "#/map") {
-				$('body').attr('view_mode','map');
-			} else if (hash == "#/map") {
-				$('body').attr('view_mode','table');
-			} else {
-				$.History.go('/table');
-				$('body').attr('view_mode','table');
-			}
-			
-			// Setup mode of app
-			$('body').attr('query_mode','false');
-
 		}
 		

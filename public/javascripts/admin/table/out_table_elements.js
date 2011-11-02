@@ -124,19 +124,19 @@
               '<h3>Choose your geocoding method for this column</h3>'+
               '<p>Please select the columns for the lat/lon fields</p>'+
               '<div class="georef_options">'+
-                '<div class="select">'+
-                  '<label>LATITUDE COLUMN</label>'+
-                  '<span class="select latitude">'+
-                    '<a id="latitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
+                '<div class="select longitude">'+
+                  '<label>LONGITUDE COLUMN</label>'+
+                  '<span class="select longitude">'+
+                    '<a id="longitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
                     '<div class="select_content">'+
                       '<ul class="scrollPane"></ul>'+
                     '</div>'+
                   '</span>'+
                 '</div>'+
-                '<div class="select longitude last">'+
-                  '<label>LONGITUDE COLUMN</label>'+
-                  '<span class="select longitude">'+
-                    '<a id="longitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
+		            '<div class="select latitude last">'+
+                  '<label>LATITUDE COLUMN</label>'+
+                  '<span class="select latitude">'+
+                    '<a id="latitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
                     '<div class="select_content">'+
                       '<ul class="scrollPane"></ul>'+
                     '</div>'+
@@ -1431,7 +1431,7 @@
     // Hide map
 		$('body').attr('view_mode','table');
     $('div.table_position').show();
-    if (carto_map) {hideMap();}
+    if (carto_map) {hideMap()}
 	}
 
 

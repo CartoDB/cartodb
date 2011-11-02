@@ -682,7 +682,7 @@
 				}
 	    });
 	    
-	    $('div.mamufas div.export_window a.close').click(function(ev){
+	    $('div.mamufas div.export_window a.close,div.mamufas div.export_window a.cancel').click(function(ev){
 	      stopPropagation(ev);
 	      closeOutTableWindows();
 	    });

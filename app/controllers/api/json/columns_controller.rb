@@ -36,6 +36,10 @@ class Api::Json::ColumnsController < Api::ApplicationController
 
   def delete
     @table.drop_column!(:name => params[:id])
+    
+    # Recompact table on disk
+    current_user.run_query("CLUSTER #{@table.name} USING #{@table.name}_pkey")
+    
     head :ok
   rescue => e
     errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]

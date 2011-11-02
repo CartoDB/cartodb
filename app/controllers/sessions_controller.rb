@@ -19,7 +19,7 @@ class SessionsController < ApplicationController
 
   def destroy
     logout
-    redirect_to root_path
+    redirect_to "http://www.cartodb.com"
   end
 
   def show

@@ -68,8 +68,9 @@ section.subheader ul.tab_menu li {float:left; width:auto; height:auto; margin:0 
 section.subheader ul.tab_menu li a {float:left; padding:7px 15px; color:white; font:bold 13px Arial; text-decoration:underline; background-color:rgba(256,256,256,0.1); -webkit-border-top-left-radius:5px; -webkit-border-top-right-radius:5px; -moz-border-radius-topleft:5px; -moz-border-radius-topright:5px; border-top-left-radius:5px; border-top-right-radius:5px;
   text-decoration:none}
 section.subheader ul.tab_menu li a.share {margin:5px 0 0 6px; padding:3px 8px; background:#131723; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; font:bold 11px Arial;}
-
 section.subheader ul.tab_menu li a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
+section.subheader ul.tab_menu li a.share.disabled {opacity:0.5;}
+section.subheader ul.tab_menu li a.share.disabled:hover {background:#131723; color:white; cursor:default}
 section.subheader ul.tab_menu li.selected a {background-color:rgba(256,256,256,1); color:#272E48; text-decoration:none;}
 section.subheader ul.tab_menu li.selected a:hover {color:#272E48; text-decoration:none;}
 section.subheader ul.tab_menu li.disabled a {text-decoration:none; color:#999999;}

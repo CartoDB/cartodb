@@ -1,4 +1,4 @@
-  function CartoTooltip(latlng, map) { this.latlng_ = latlng; this.markers_; this.offsetVertical_ = -20; this.offsetHorizontal_ = 0; this.height_ = 22; this.setMap(map); }
+  function CartoTooltip(latlng, map) { this.latlng_ = latlng; this.markers_; this.offsetVertical_ = -20; this.offsetHorizontal_ = 0; this.height_ = 22; this.setMap(map);}
 
   CartoTooltip.prototype = new google.maps.OverlayView();
 
@@ -119,6 +119,7 @@
 		if (this.div_) {
       var div = this.div_;
       var me = this;
+
     	this.latlng_ = latlng;
 	    var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
 	    if (pixPosition) {

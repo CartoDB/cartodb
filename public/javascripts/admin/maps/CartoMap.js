@@ -1215,7 +1215,7 @@
 								if (!me.over_tooltip) {
 									me.tooltip_.setPosition(me.current_pos,feature);
 								}
-							},100);
+							},150);
 							
               me.over_marker = true;
               me.map_.setOptions({ draggableCursor: 'pointer' });

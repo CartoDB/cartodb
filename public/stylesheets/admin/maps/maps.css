@@ -107,6 +107,10 @@ div.map_window div.map_header div.options ul li button:hover {background:linear-
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 
 
+body.query
+
+
+
 /*suboptions*/
 div.map_window div.map_header div.suboptions label {display:block; margin:9px 0 0 2px; font:normal 11px "Helvetica",Arial; color:#A5A5A5; text-shadow:0 1px white}
 div.map_window div.map_header div.suboptions div.long {width:100%; margin:2px 0 0 0;}

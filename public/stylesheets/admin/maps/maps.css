@@ -6,7 +6,7 @@ div.map_window div#map div {-webkit-user-select: none; -khtml-user-select: none;
 
 /*Zoom controls*/
 div.map_window div#zoom_control{position:absolute;top:72px;left:10px;width:28px;height:227px;z-index:5;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px; background:linear-gradient(-90deg,rgba(38,44,69,0.9),rgba(23,27,43,0.9));background:-webkit-gradient(linear,50% 0%,50% 100%,from(rgba(38,44,69,0.9)),to(rgba(23,27,43,0.9)));background:-moz-linear-gradient(-90deg,rgba(38,44,69,0.9),rgba(23,27,43,0.9));background:-o-linear-gradient(rgba(38,44,69,0.9),rgba(23,27,43,0.9));background:#282c48\9;}
-body.query div.map_window div#zoom_control {background:linear-gradient(-90deg,rgba(51,51,51,0.9),rgba(10,10,10,0.9));background:-webkit-gradient(linear,50% 0%,50% 100%,from(rgba(51,51,51,0.9)),to(rgba(10,10,10,0.9)));background:-moz-linear-gradient(-90deg,rgba(51,51,51,0.9),rgba(10,10,10,0.9));background:-o-linear-gradient(rgba(51,51,51,0.9),rgba(10,10,10,0.9));background:#515151\9;}
+body.query div.map_window div#zoom_control {top:110px; background:linear-gradient(-90deg,rgba(51,51,51,0.9),rgba(10,10,10,0.9));background:-webkit-gradient(linear,50% 0%,50% 100%,from(rgba(51,51,51,0.9)),to(rgba(10,10,10,0.9)));background:-moz-linear-gradient(-90deg,rgba(51,51,51,0.9),rgba(10,10,10,0.9));background:-o-linear-gradient(rgba(51,51,51,0.9),rgba(10,10,10,0.9));background:#515151\9;}
 div.map_window div#zoom_control span.slider {position:absolute; top:34px; left:9px; height:160px; width:10px; background:url('/images/admin/map/zoom_slider_bkg.png') center center;}
 div.map_window a.zoom_in {position:absolute; top:7px; left:7px; width:14px; height:15px; background:url('/images/admin/map/zoom_buttons.png') no-repeat 0 0; z-index:10;}
 div.map_window a.zoom_in:hover {background-position:0 -15px; cursor:pointer;}
@@ -106,9 +106,13 @@ div.map_window div.map_header div.options ul li button {float:left; width:100%; 
 div.map_window div.map_header div.options ul li button:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 
-
-body.query
-
+div.map_window div.map_header div.stickies {display:none}
+body.query div.map_window div.map_header div.stickies {position:absolute; display:block; top:61px; right:0; left:0; width:100%; height:37px; background:linear-gradient(-90deg, #FFFFE2, #F6F5D9); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFE2), to(#F6F5D9));
+  background:-moz-linear-gradient(-90deg, #FFFFE2, #F6F5D9); background: -o-linear-gradient(#FFFFE2,#F6F5D9); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFE2', endColorstr='#F6F5D9'); z-index:2; border-bottom:1px solid #E9EACE}
+body.query div.map_window div.map_header div.stickies p {position:fixed; display:inline; left:50%; width:600px; margin:12px 0 0 -300px; font:normal 13px Helvetica,Arial; color:#333333; text-align:center}
+body.query div.map_window div.map_header div.stickies p strong {color:black; font-weight:normal}
+body.query div.map_window div.map_header div.stickies p a {color:#333333;}
+body.query div.map_window div.map_header div.stickies p a:hover {color:black}
 
 
 /*suboptions*/

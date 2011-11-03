@@ -434,7 +434,7 @@
   			      var new_height = 199 + $('div.sql_window span.errors').height();
   			      $('div.sql_window').css({'min-height':new_height+'px'});
   			      $('div.sql_window span.errors').show();
-  			      
+  			      $('.map_header div.stickies').remove();
   			      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
       				$('span.query p').text('');
   			    }
@@ -1302,8 +1302,8 @@
       // SQL?
       if (this.query_mode) {
         var query = 'sql=' + editor.getValue();
-        tile_url = wax.util.addUrlData(tile_url, query);
-        grid_url = wax.util.addUrlData(grid_url, query);
+        tile_url = wax.util.addUrlData(tile_url, escape(query));
+        grid_url = wax.util.addUrlData(grid_url, escape(query));
       }
 
       // Build up the tileJSON

@@ -380,6 +380,7 @@
           stopPropagation(ev);
           $('body').removeAttr('query_mode');
           me.query_mode = false;
+					$('.map_header div.stickies').remove();
           me.refresh();
         }
       });
@@ -412,6 +413,8 @@
   						
   						$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
   						$('span.query p').text('This query took '+data.time.toFixed(3)+' seconds');
+							$('.map_header div.stickies').remove();
+							$('div.map_header').append('<div class="stickies"><p><strong>'+data.total_rows+' result'+((data.total_rows>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
   						
   						requests_queue.responseRequest(requestId,'ok','');
   			    },

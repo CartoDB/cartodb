@@ -360,7 +360,6 @@
 
 					thead += "</tr></thead>";
 					table.e.append(thead);
-
 					table.e.find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
 				}
       } else {

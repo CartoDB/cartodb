@@ -2316,7 +2316,7 @@
         $(head_element).width(parent_width - width_table_content + table.cell_s);
         $(body_element).each(function(index,element){
           $(element).children('td:last').children('div').width(parent_width - width_table_content + table.cell_s);
-          table.last_cell_s = parent_width - width_table_content + table.cell_s;
+          table.last_cell_s = parent_width - width_table_content + table.cell_s - 3;
         });
       }
       

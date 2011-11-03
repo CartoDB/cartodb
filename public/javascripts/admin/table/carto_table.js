@@ -885,9 +885,8 @@
                     table.e.find('tbody').append(row);
                   }
 
-
                   if (type==2) {
-                    table.e.parent().addClass('end');
+                    table.e.find('tbody').addClass('end');
                   }
 
                   //Si hay más filas de las permitidas por el reuso, borramos las '50' primeras, sumamos una a la página max, min y actual
@@ -907,7 +906,7 @@
                   });
                   
                   $('div.empty_table').remove();
-                  methods.resizeTable();
+                  //methods.resizeTable();
                 },
                 error: function(e) {
                   requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
@@ -974,12 +973,12 @@
             setTimeout(function(){methods.getData(defaults,'next')},500);
           } else if ($(window).scrollTop()==0 && table.min_p!=0) {
             table.loading = true;
-            table.e.parent().removeClass('end');
+						table.e.find('tbody').removeClass('end');
             methods.showLoader('previous');
             setTimeout(function(){methods.getData(defaults,'previous')},500);
-          } //else if (end) {
-            //table.e.parent().addClass('end');
-          //}
+          } else if (end) {
+						table.e.find('tbody').addClass('end');
+          }
         }
       });
 
@@ -2329,13 +2328,11 @@
       if ((parent_height-162) > (table.e.parent().height())) {
         table.e.parent().height(parent_height-162);
         if (table.total_r>10) {
-          table.e.parent().addClass('end');
+					table.e.find('tbody').addClass('end');
         }
       } else {
-        table.e.parent().removeClass('end');
+				table.e.find('tbody').removeClass('end');
       }
-
-
 
       //Control pagination
       methods.paginateControls();
@@ -2493,7 +2490,7 @@
       table.e.children('thead').remove();
       table.e.children('tbody').remove();
       $(document).scrollTop(0);
-      table.e.parent().removeClass('end');
+			table.e.find('tbody').removeClass('end');
       methods.getData(defaults, position, new_query, true);
       table.enabled = true;
     },

@@ -246,8 +246,9 @@
         this.map_.setOptions({styles:styles});
       } else {
         type = "cartodb";
-        styles = [];
-      }
+				styles = [ { stylers: [ { saturation: map_styles.saturation }, { gamma: 1.52 } ] }, { featureType: "administrative", stylers: [ { saturation: -95 },{ gamma: 2.26 } ] }, { featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "administrative.locality", stylers: [ { visibility: ((map_styles.labels)?'on':'off') } ] }, { featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] }, { featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "road.arterial", stylers: [ { visibility: ((map_styles.roads)?'on':'off') } ] }, { featureType: "road.local", elementType: "labels", stylers: [ { visibility: ((map_styles.roads)?'on':'off') } ] }, { featureType: "transit", stylers: [ { visibility: ((map_styles.roads)?'on':'off') } ] }, { featureType: "road", elementType: "labels", stylers: [ { visibility: ((map_styles.roads)?'on':'off') } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
+      	this.map_.setOptions({styles:styles});
+			}
 
       
       // Save this object in the table
@@ -379,6 +380,7 @@
           stopPropagation(ev);
           $('body').removeAttr('query_mode');
           me.query_mode = false;
+					$('.map_header div.stickies').remove();
           me.refresh();
         }
       });
@@ -411,6 +413,8 @@
   						
   						$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
   						$('span.query p').text('This query took '+data.time.toFixed(3)+' seconds');
+							$('.map_header div.stickies').remove();
+							$('div.map_header').append('<div class="stickies"><p><strong>'+data.total_rows+' result'+((data.total_rows>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
   						
   						requests_queue.responseRequest(requestId,'ok','');
   			    },
@@ -430,7 +434,7 @@
   			      var new_height = 199 + $('div.sql_window span.errors').height();
   			      $('div.sql_window').css({'min-height':new_height+'px'});
   			      $('div.sql_window span.errors').show();
-  			      
+  			      $('.map_header div.stickies').remove();
   			      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
       				$('span.query p').text('');
   			    }
@@ -518,7 +522,7 @@
         custom_map_style = parseMapStyle(map_style.google_maps_customization_style);
         
         // Initialize radiobuttons and map type
-        initializeMapOptions(custom_map_style,map_style.google_maps_base_type);
+        initializeMapOptions(custom_map_style,map_style.google_maps_base_type,map_style.google_maps_customization_style);
 
   
         $('.map_header ul.map_type li a.option').livequery('click',function(ev){
@@ -541,22 +545,16 @@
             // Do action
             if (map_type=="Roadmap") {
               map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-              $('.map_header ul.map_type li a:contains("Custom tiles")').parent().removeClass('disabled');
               $('.map_header ul.main li.first p').text('Roadmap');
             } else if (map_type=="Satellite") {
               map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
-              $('.map_header ul.map_type li a:contains("Custom tiles")').parent().removeClass('disabled');
               $('.map_header ul.main li.first p').text('Satellite');
             } else if (map_type=="Terrain") {
               map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
-              $('.map_header ul.map_type li a:contains("Custom tiles")').parent().removeClass('disabled');
               $('.map_header ul.main li.first p').text('Terrain');
             } else {
               map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-              $('.map_header ul.map_type li a:contains("Custom tiles")').parent().addClass('disabled');
               $('.map_header ul.main li.first p').text('CartoDB');
-              var mapStyles = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
-              map.setOptions({styles: mapStyles});
             }
             
             custom_map_style.type = map_type.toLowerCase();
@@ -617,12 +615,13 @@
           var obj = {};
           
           // Gets road on/off
-          var roads = _.detect(map_style_,function(ele,i){return ele.featureType == "road"});
+          var roads = _.detect(map_style_,function(ele,i){return ele.featureType == "road" && ele.stylers[0].visibility != "simplified"});
           if (roads != undefined) {
-            obj.roads = roads.stylers[0].visibility == "on";
+            obj.roads = roads.stylers[0].visibility == "on" || roads.stylers[0].visibility == "simplified";
           } else {
             obj.roads = true;
           }
+
           
           // Gets labels on/off
           var labels = _.detect(map_style_,function(ele,i){return ele.featureType == "administrative"});
@@ -631,6 +630,14 @@
           } else {
             obj.labels = true;
           }
+
+
+					// Gets labels on/off on cartodb type?
+          var labels = _.detect(map_style_,function(ele,i){return ele.featureType == "administrative.locality"});
+          if (labels != undefined) {
+            obj.labels = labels.stylers[0].visibility == "on";
+          }
+					
           
           // Saturation value
           var saturation = _.detect(map_style_,function(ele,i){return ele.stylers[0].saturation != undefined});
@@ -645,7 +652,7 @@
         
         
         // Initialize the map controls and the map type
-        function initializeMapOptions(map_style, map_type) {          
+        function initializeMapOptions(map_style, map_type, stylers) {
           // select map type
           if (map_type=="terrain") {
             $('.map_header ul.map_type li a.option:contains("Terrain")').parent().addClass('selected');
@@ -666,8 +673,7 @@
             map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
             $('.map_header ul.map_type li a.option:contains("CartoDB")').parent().addClass('selected');
             $('.map_header ul.main li.first p').text('CartoDB');
-            $('.map_header ul.map_type li a:contains("Custom tiles")').parent().addClass('disabled');
-            var mapStyles = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
+            var mapStyles = stylers;
             map.setOptions({styles: mapStyles});
             custom_map_style.type = 'cartodb';
           }
@@ -706,7 +712,6 @@
   	    });
   	    
   	    // Bindings
-        
   	    $('div.cartocss_editor a.try_css').click(function(ev){
   	      stopPropagation(ev);
   	      me.setTilesStyles(cartocss_editor.getValue());
@@ -1027,8 +1032,6 @@
         }
       });
       
-
-
       // All loaded? Ok -> Let's show options...
       $('.map_header a.open').fadeIn();
     }
@@ -1299,8 +1302,8 @@
       // SQL?
       if (this.query_mode) {
         var query = 'sql=' + editor.getValue();
-        tile_url = wax.util.addUrlData(tile_url, query);
-        grid_url = wax.util.addUrlData(grid_url, query);
+        tile_url = wax.util.addUrlData(tile_url, escape(query));
+        grid_url = wax.util.addUrlData(grid_url, escape(query));
       }
 
       // Build up the tileJSON

@@ -37,6 +37,28 @@ DESC
       rescue
       end  
     end
+
+    # TODO: remove text bit and just use env
+    desc "Create a plain user account"
+    task :create_user => :environment do
+      begin
+        raise "You should provide a valid e-mail"    if ENV['EMAIL'].blank?
+        raise "You should provide a valid password"  if ENV['PASSWORD'].blank?
+        raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].blank?
+
+        u = User.new
+        u.email = ENV['EMAIL']
+        u.password = ENV['PASSWORD']
+        u.password_confirmation = ENV['PASSWORD']
+        u.username = ENV['SUBDOMAIN']
+        u.save
+        if u.new?
+          raise u.errors.inspect
+        end
+      rescue => e
+        puts e.inspect
+      end
+    end
     
     # TODO: remove text bit and just use env
     desc "Create an admin account with a password from ENV['ADMIN_PASSWORD'] environment variable"

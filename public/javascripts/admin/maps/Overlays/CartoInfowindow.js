@@ -96,7 +96,7 @@
 	}
 	
 	
-	CartoInfowindow.prototype.open = function(feature){
+	CartoInfowindow.prototype.open = function(feature,pixel){
 	  var me = this;
 	  this.marker_ = feature;
 	  
@@ -105,7 +105,7 @@
       url:global_api_url + 'tables/'+table_name+'/records/'+feature,
       headers: {"cartodbclient": true},
       success:function(data){
-        positionateInfowindow(me,data,carto_map.infowindow_vars_);
+				positionateInfowindow(me,data,carto_map.infowindow_vars_);
       },
       error:function(e){}
     });
@@ -117,8 +117,13 @@
         carto_map.bindMapESC();
         
   	    var div = me.div_;
-  	    // Get latlng position
-  	    me.latlng_ = transformGeoJSON(info.the_geom).center;
+
+  	    // If we dont have the pixel position go and get latlng position
+				if (pixel!=null) {
+	  	    me.latlng_ = carto_map.map_canvas_.transformCoordinates(new google.maps.Point(pixel.x,pixel.y));;
+				} else {
+	  	    me.latlng_ = transformGeoJSON(info.the_geom).center;
+				}
   	    
   	    var query_mode = $('body').attr('query_mode') === 'true';
 

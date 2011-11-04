@@ -1176,7 +1176,18 @@
               var len = $('div.edit_cell div.free textarea').val().length;
               $('div.edit_cell div.free textarea').selectRange(0,len);
             }
+						
+						// If hit ENTER, save inmediately
+						$('div.edit_cell').keydown(function(ev){
+              if (!ev.ctrlKey && (ev.which == 13 || ev.keyCode == 13)) {
+								ev.preventDefault();
+								ev.stopPropagation();
+								$("div.edit_cell a.save").click();
+							}
+            });
 
+						
+						// If click out of edit_cell close it
             $('body').bind('click',function(ev){
               if (!$(ev.target).closest('div.edit_cell').length) {
                 methods.closeTablePopups();
@@ -2503,6 +2514,7 @@
     closeTablePopups: function() {
       methods.unbindESCkey();
       $('body').unbind('click');
+			$('div.edit_cell').unbind('keydown');
       table.enabled = true;
       
       // Filter window

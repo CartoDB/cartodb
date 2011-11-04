@@ -1029,7 +1029,6 @@
 	        if (!embed_map)
 	          createMap();
 	        toggleLayer();
-	        zoomToBBox();
 	        addCustomStyles();
 	        
 	        // Start zclip
@@ -1117,7 +1116,16 @@
 	            } else {
 	              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
 	            }
+	
+							if (map_style.zoom && map_style.longitude && map_style.latitude) {
+                embed_map.setZoom(map_style.zoom);
+                embed_map.setCenter(new google.maps.LatLng(map_style.latitude,map_style.longitude));
+              } else {
+                zoomToBBox();
+              }
+							
 						} else {
+							zoomToBBox();
 							embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
 							map_style = {};
 							map_style.google_maps_customization_style = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] }, { featureType: "administrative", stylers: [ { saturation: -95 },{ gamma: 2.26 } ] }, { featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "administrative.locality", stylers: [ { visibility: 'off' } ] }, { featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] }, { featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "road.arterial", stylers: [ { visibility: 'off' } ] }, { featureType: "road.local", elementType: "labels", stylers: [ { visibility: 'off' } ] }, { featureType: "transit", stylers: [ { visibility: 'off' } ] }, { featureType: "road", elementType: "labels", stylers: [ { visibility: 'off' } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];

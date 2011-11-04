@@ -71,7 +71,16 @@
                 } else {
                   carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
                 }
+                
+                // Get coordinates and zoom
+                if (map_style.zoom && map_style.longitude && map_style.latitude) {
+                  carto_embed_map.setZoom(map_style.zoom);
+                  carto_embed_map.setCenter(new google.maps.LatLng(map_style.latitude,map_style.longitude));
+                } else {
+                  getCartoDBBBox();
+                }
               } else {
+                getCartoDBBBox();
                 carto_embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
                 map_style = {};
                 map_style.google_maps_customization_style = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] }, { featureType: "administrative", stylers: [ { saturation: -95 },{ gamma: 2.26 } ] }, { featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "administrative.locality", stylers: [ { visibility: 'off' } ] }, { featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] }, { featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "road.arterial", stylers: [ { visibility: 'off' } ] }, { featureType: "road.local", elementType: "labels", stylers: [ { visibility: 'off' } ] }, { featureType: "transit", stylers: [ { visibility: 'off' } ] }, { featureType: "road", elementType: "labels", stylers: [ { visibility: 'off' } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
@@ -96,44 +105,48 @@
           var cartodb_imagemaptype = new google.maps.ImageMapType(cartodb_layer);
           carto_embed_map.overlayMapTypes.insertAt(0, cartodb_imagemaptype);
 
+
           // Zoom to your geometries
-          $.ajax({
-            method: "GET",
-            url: 'http://'+user_name+'.' + SQL_SERVER + global_api_url+ 'sql/?q='+escape('select ST_Extent(the_geom) from '+ table_name),
-            dataType: 'jsonp',
-            success: function(data) {
-              if (data.rows[0].st_extent!=null) {
-                var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+          function getCartoDBBBox() {
+            $.ajax({
+              method: "GET",
+              url: 'http://'+user_name+'.' + SQL_SERVER + global_api_url+ 'sql/?q='+escape('select ST_Extent(the_geom) from '+ table_name),
+              dataType: 'jsonp',
+              success: function(data) {
+                if (data.rows[0].st_extent!=null) {
+                  var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
 
-                var coor1 = coordinates[0].split(' ');
-                var coor2 = coordinates[1].split(' ');
-                var bounds = new google.maps.LatLngBounds();
+                  var coor1 = coordinates[0].split(' ');
+                  var coor2 = coordinates[1].split(' ');
+                  var bounds = new google.maps.LatLngBounds();
 
-                // Check bounds
-                if (coor1[0] >  180 
-                 || coor1[0] < -180 
-                 || coor1[1] >  90 
-                 || coor1[1] < -90 
-                 || coor2[0] >  180 
-                 || coor2[0] < -180 
-                 || coor2[1] >  90  
-                 || coor2[1] < -90) {
-                  coor1[0] = '-30';
-                  coor1[1] = '-50'; 
-                  coor2[0] = '110'; 
-                  coor2[1] =  '80'; 
+                  // Check bounds
+                  if (coor1[0] >  180 
+                   || coor1[0] < -180 
+                   || coor1[1] >  90 
+                   || coor1[1] < -90 
+                   || coor2[0] >  180 
+                   || coor2[0] < -180 
+                   || coor2[1] >  90  
+                   || coor2[1] < -90) {
+                    coor1[0] = '-30';
+                    coor1[1] = '-50'; 
+                    coor2[0] = '110'; 
+                    coor2[1] =  '80'; 
+                  }
+
+
+                  bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
+                  bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+
+                  carto_embed_map.fitBounds(bounds);
                 }
 
+              },
+              error: function(e) {}
+            });
+          }
 
-                bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
-                bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
-
-                carto_embed_map.fitBounds(bounds);
-              }
-
-            },
-            error: function(e) {}
-          });
 
 
 

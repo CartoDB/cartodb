@@ -17,18 +17,15 @@
               '<div class="options short">'+
                 '<span class="tick"></span>'+
                 '<ul class="map_type">'+
-                  '<li>'+
-                    '<a class="option" href="#">CartoDB</a>'+
-                  '</li>'+
+									'<li>'+
+	                  '<a class="option" href="#">Roadmap</a>'+
+	                '</li>'+
                   '<li>'+
                     '<a class="option" href="#">Satellite</a>'+
                   '</li>'+
                   '<li>'+
                     '<a class="option" href="#">Terrain</a>'+
                   '</li>'+
-                  '<li>'+
-                    '<a class="option" href="#">Roadmap</a>'+
-                  '</li>'+                  
                   '<li>'+
                     '<a class="option" href="#">Custom tiles</a>'+
                     '<div class="suboptions">'+

@@ -64,9 +64,6 @@
       
       // Get the styles predefine for this table
       this.getStyles();
-      
-      // BBox in the map
-      this.zoomToBBox();
     }
 
 
@@ -220,10 +217,10 @@
     }
 
     // Set new map style
-    CartoMap.prototype.setMapStyle = function(map_styles) {
+    CartoMap.prototype.setMapStyle = function(map_styles,map_properties) {
       // Compose array for map style      
       var styles = [];
-      var type = '';
+      var type = ''
             
       if (map_styles.type!="roadmap") {
         _.each(map_styles,function(value,style){
@@ -255,7 +252,7 @@
         type: "POST",
         headers: {"cartodbclient": true},
         url: global_api_url + 'tables/' + table_id + '/map_metadata',
-        data: {map_metadata: JSON.stringify({basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles})}
+        data: {map_metadata: JSON.stringify({basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles, latitude: map_properties.latitude, longitude:map_properties.longitude, zoom: map_properties.zoom})}
       });
     }
 
@@ -279,10 +276,6 @@
     /* Event listeners of the map */
     CartoMap.prototype.addMapListeners = function() {
       var me = this;
-
-      google.maps.event.addListener(this.map_, 'zoom_changed', function() {
-        $('span.slider').slider('value',me.map_.getZoom());
-      });
 
       google.maps.event.addListener(this.map_, 'click', function(ev) {
         if (me.status_=="add_point") {
@@ -502,8 +495,7 @@
     CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style,infowindow_vars) {
       var me = this;
       var map = me.map_;
-      
-      
+
       /* Visualization type - header*/
       var visualization_type = (function(){
         
@@ -523,7 +515,11 @@
       /*Map type - header*/
       var map_customization = (function(){
         var custom_map_style = {};
+				var custom_map_properties = {};
+	
+	
         
+				// Set map style
         map.setOptions({styles:map_style.google_maps_customization_style});
   
         // Parse the styles of the map
@@ -532,6 +528,32 @@
         // Initialize radiobuttons and map type
         initializeMapOptions(custom_map_style,map_style.google_maps_base_type,map_style.google_maps_customization_style);
 
+
+				/* Set up center and zoom*/
+				if (map_style.zoom && map_style.latitude && map_style.longitude) {
+					custom_map_properties.zoom = map_style.zoom;
+					custom_map_properties.latitude = map_style.latitude;
+					custom_map_properties.longitude = map_style.longitude;
+					map.setCenter(new google.maps.LatLng(map_style.latitude,map_style.longitude));
+					map.setZoom(map_style.zoom);
+				} else {
+					me.zoomToBBox();
+				}
+
+				/* Bind bounds changed on map to cartomap */
+				google.maps.event.addListener(me.map_, 'dragend', function(ev) {
+	        custom_map_properties.latitude = this.getCenter().lat();
+	        custom_map_properties.longitude = this.getCenter().lng();
+					me.setMapStyle(custom_map_style,custom_map_properties);
+	      });
+				google.maps.event.addListener(me.map_, 'zoom_changed', function(ev) {
+	        custom_map_properties.zoom = this.getZoom();
+					me.setMapStyle(custom_map_style,custom_map_properties);
+					// Hack for the zoom slider
+					$('span.slider').slider('value',me.map_.getZoom());
+	      });
+	
+	
   
         $('.map_header ul.map_type li a.option').livequery('click',function(ev){
           stopPropagation(ev);
@@ -563,7 +585,7 @@
             }
             
             custom_map_style.type = map_type.toLowerCase();
-            me.setMapStyle(custom_map_style);
+            me.setMapStyle(custom_map_style,custom_map_properties);
           }
         });
         
@@ -585,7 +607,7 @@
             // Save the saturation value
             custom_map_style['saturation'] = ui.value;
             // Set the custom map styles
-            me.setMapStyle(custom_map_style);
+            me.setMapStyle(custom_map_style,custom_map_properties);
           }
         });
         
@@ -609,7 +631,7 @@
             custom_map_style[style] = value;
 
             // Perform in the map
-            me.setMapStyle(custom_map_style);
+            me.setMapStyle(custom_map_style,custom_map_properties);
           }
         });
         

@@ -3,19 +3,42 @@
     if (!georeferencing) {
       this.address = address;
       this.table = table_name;
-      this.getRecords();
       this.page = 0;
+			
 
-      // Request
-      this.requestId = createUniqueId();
-      requests_queue.startGeoreferencing(this.requestId);
-      // End request
+      // Get the total and start loader
+      this.getTotalRecords();
       
       // Georeferencing state -> true
       georeferencing = true;
       $('p.geo').addClass('loading');
     }
   }
+
+
+
+	/*============================================================================*/
+	/* Start worker geocoding	*/
+	/*============================================================================*/
+	Geocoding.prototype.getTotalRecords = function() {
+	  var me = this;
+
+		$.ajax({
+      method: "GET",
+      url: global_api_url+'queries?sql='+escape("SELECT * from "+this.table+" where the_geom is null"),
+      headers: {'cartodbclient':true},
+      dataType:'jsonp',
+      data: {rows_per_page:100,page:me.page},
+      success: function(result) {
+				me.requestId = createUniqueId();
+		    requests_queue.startGeoreferencing(me.requestId,result.total_rows);
+		    me.getRecords();
+      }
+    });
+	}
+
+
+
   
   
   /*============================================================================*/

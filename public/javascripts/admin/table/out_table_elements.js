@@ -151,16 +151,7 @@
 								'<li class="first_list">'+
 									'<a class="first_ul" href="#choose_address">Choose or create an address column</a>'+
 		              '<div class="georef_options">'+
-										'<p class="info">You can select a column as an address, or you can create it with more columns, just adding them in the input within brackets (eg. {country})</p>'+
-		                '<div class="select address">'+
-		                  '<label>ADDRESS COLUMN</label>'+
-		                  '<span class="select address">'+
-		                    '<a id="address_col" class="option" href="#column_name" c="">Retrieving columns...</a>'+
-		                    '<div class="select_content">'+
-		                      '<ul class="scrollPane"></ul>'+
-		                    '</div>'+
-		                  '</span>'+
-		                '</div>'+
+										'<p class="info">You can create it with columns, text,...  just adding them in the input within brackets (eg. Lafayette Street, {country})</p>'+
 										'<input class="address_input" type="text" value=""/>'+
 		              '</div>'+
 								'</li>'+
@@ -248,7 +239,8 @@
           $('div.mamufas div.georeference_window').css('height','auto');
           $('div.mamufas div.georeference_window div.inner_').css('height','auto');
           $('div.mamufas div.georeference_window').removeClass('loading');
-          
+          $('div.mamufas div.georeference_window input.address_input').val('');
+
           $('div.mamufas div.georeference_window span.select').each(function(i,ele){
             $(ele).addClass('disabled').removeClass('error');
           });
@@ -310,8 +302,6 @@
                  if (init_column != '') {
                    $('a#longitude').text(init_column);
                    $('a#longitude').attr('c',init_column);
-									 $('a#address_col').text(init_column);
-									 $('a#address_col').attr('c',init_column);
 									 $('div.georeference_window div.georef_options input.address_input').val('{'+init_column+'}');
                  }                   
                }
@@ -356,30 +346,20 @@
 				
 				var type = $(this).closest('span.select');
 
-				if (!type.hasClass('address')) {
-					$(this).parent().parent().children('li').removeClass('choosen');
-	        $(this).parent().addClass('choosen');
-	        var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
-	        if (index == 0) {
-	          var other_index = 1;
-	          var other_value = $('span.select:eq(1) a.option').text();
-	        } else {
-	          var other_index = 0;
-	          var other_value = $('span.select:eq(0) a.option').text();
-	        }
-	        $('span.select:eq('+index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
-	        $('span.select:eq('+other_index+') ul li').removeClass('choosen');
-	        $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
-	        $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
-				} else {
-					var input = $('div.georeference_window div.georef_options input.address_input');
-					var value = input.val();
-					input.val('{'+$(this).text()+'}');
-					$('div.georeference_window span.select.address').fadeOut(function(){
-						$('div.georeference_window div.select.address label').text('COMPLETE ADDRESS');
-						input.fadeIn();
-					});
-				}
+				$(this).parent().parent().children('li').removeClass('choosen');
+        $(this).parent().addClass('choosen');
+        var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
+        if (index == 0) {
+          var other_index = 1;
+          var other_value = $('span.select:eq(1) a.option').text();
+        } else {
+          var other_index = 0;
+          var other_value = $('span.select:eq(0) a.option').text();
+        }
+        $('span.select:eq('+index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
+        $('span.select:eq('+other_index+') ul li').removeClass('choosen');
+        $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
+        $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
 
       });
       $('a.confirm_georeference').livequery('click',function(ev){

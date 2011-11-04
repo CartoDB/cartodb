@@ -33,7 +33,7 @@
       	  if (!this.checking) {
       	    if (this.loader.html()=="") {
       	      if (this.georeferencing) {
-        	      this.loader.append('<p class="loading">Georeferencing... 0/?</p>');
+        	      this.loader.append('<p class="loading">Georeferencing...</p>');
       	      } else {
         	      this.loader.append('<p class="loading">Loading...</p>');
       	      }

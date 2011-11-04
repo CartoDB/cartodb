@@ -1230,7 +1230,8 @@
                   me.double_click = !me.double_click;
                   return false;
                 }
-                me.info_window_.open(feature);
+								//console.log(evt.pixel);
+                me.info_window_.open(feature,evt.pixel);
                 me.hideOverlays();
               }
             },200);
@@ -1482,7 +1483,7 @@
             google.maps.event.addListener(marker,'click',function(ev){
               ev.stopPropagation();
               if (me.status_=="select") {
-                  me.info_window_.open(this);
+                  me.info_window_.open(this,null);
               }
             });
 

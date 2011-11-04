@@ -81,7 +81,6 @@
         
         var params = {};
         if (event.data.Placemark != undefined) {
-					console.log(event.data.Placemark[0].Point.coordinates[0],event.data.Placemark[0].Point.coordinates[1]);
           params['the_geom'] = {"type":"Point","coordinates":[event.data.Placemark[0].Point.coordinates[0],event.data.Placemark[0].Point.coordinates[1]]};
           $.ajax({
             dataType: 'json',

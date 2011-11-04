@@ -1008,7 +1008,8 @@
 		  });
 		  
 			//	show embed tooltip
-			$('ul.tab_menu li a.share').mouseenter(function(){
+			$('ul.tab_menu li a.share').click(function(ev){
+				ev.preventDefault();
 				if ($(this).hasClass('disabled')) 
 					$(this).parent().find('span.share_tooltip').show();
 			});

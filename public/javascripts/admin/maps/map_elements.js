@@ -323,7 +323,13 @@
         '</div>'+
         '<div class="loading">'+
           '<span class="loader"></span>'+
-        '</div>'
+        '</div>'+
+				'<form class="map_search">'+
+					'<p>go to</p>'+
+					'<input type="text" value="">'+
+					'<input type="submit">'+
+					'<span class="error">Ooops! Looks like we can\'t find this address</span>'+
+				'</form>'
       );
     }
 

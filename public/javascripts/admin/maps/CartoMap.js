@@ -496,6 +496,10 @@
       var me = this;
       var map = me.map_;
 
+			/* setup search */
+			this.setupSearch();
+
+
       /* Visualization type - header*/
       var visualization_type = (function(){
         
@@ -1206,6 +1210,56 @@
 
     }
     
+		/* Search stuff on map */
+		CartoMap.prototype.setupSearch = function() {
+			var that = this;
+			this.geocoder = new google.maps.Geocoder();
+			
+			$('form.map_search').submit(function(ev){
+				ev.preventDefault();
+				var address = $('form.map_search input[type="text"]').val();
+				
+				if (address.search(/santana/i)!=-1) {
+					that.map_.setCenter(new google.maps.LatLng(41.70124284555466, -4.835700988769531));
+					that.map_.setZoom(16);
+					return false;
+				}
+				
+				if (address.search(/jamon/i)!=-1) {
+					that.map_.setCenter(new google.maps.LatLng(40.37740486883891, -3.7519919872283936));
+					that.map_.setZoom(16);
+					return false;
+				}
+				
+				if (address.search(/vizzuality madrid/i)!=-1) {
+					that.map_.setCenter(new google.maps.LatLng(40.4222095, -3.6996303));
+					that.map_.setZoom(16);
+					return false;
+				}
+				
+				if (address.search(/vizzuality ny/i)!=-1) {
+					that.map_.setCenter(new google.maps.LatLng(40.717147636174424, -74.00177657604218));
+					that.map_.setZoom(16);
+					return false;
+				}
+				
+				if (address.search(/vizzuality/i)!=-1) {
+					that.map_.setCenter(new google.maps.LatLng(40.4222095, -3.6996303));
+					that.map_.setZoom(16);
+					return false;
+				}
+				
+	      that.geocoder.geocode( { 'address': address}, function(results, status) {
+	        if (status == google.maps.GeocoderStatus.OK) {
+	          that.map_.setCenter(results[0].geometry.location);
+	          that.map_.fitBounds(results[0].geometry.bounds);
+						$('form.map_search span.error').fadeOut();
+	        } else {
+	          $('form.map_search span.error').fadeIn(function(){$(this).delay(2000).fadeOut()});
+	        }
+	      });
+			});
+		}
 
 
     ////////////////////////////////////////

@@ -16,10 +16,6 @@
       		//Create the loader element
       		$('section.subheader').append('<div class="performing_op"><p class="loading">Loading...</p></div>');
           this.loader = $('section.subheader div.performing_op');
-          this.loader.delegate('p a.refresh','click',function(ev){
-            ev.preventDefault();
-            $('table').cartoDBtable('refreshTable');
-          });
       	}
 
       	/*========================================================================================================================*/

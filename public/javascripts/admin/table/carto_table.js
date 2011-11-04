@@ -2261,7 +2261,21 @@
         methods.closeTablePopups();
         $('div.filter_window div.select_content').hide();
       });
-    },
+    
+
+			///////////////////////////////////////
+      //  Refresh table after geolocating  //
+      ///////////////////////////////////////
+			$('section.subheader div.performing_op p a.refresh').livequery('click',function(ev){
+        ev.preventDefault();
+				var view_mode = ($('body').attr('view_mode') === "table");
+			  if (view_mode) {
+					ev.stopPropagation();
+	        $('table').cartoDBtable('refreshTable');
+				}
+      });
+
+		},
 
 
 

@@ -441,6 +441,15 @@
         }
       });
   
+			// Refresh after geolocating
+			$('section.subheader div.performing_op p a.refresh').livequery('click',function(ev){
+        ev.preventDefault();
+				var view_mode = ($('body').attr('view_mode') === "map");
+			  if (view_mode) {
+					ev.stopPropagation();
+	        me.refreshWax();
+				}
+      });
     }
 
     /* Set bbox for the map */
@@ -1230,7 +1239,6 @@
                   me.double_click = !me.double_click;
                   return false;
                 }
-								//console.log(evt.pixel);
                 me.info_window_.open(feature,evt.pixel);
                 me.hideOverlays();
               }

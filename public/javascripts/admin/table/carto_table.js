@@ -906,7 +906,7 @@
                   });
                   
                   $('div.empty_table').remove();
-                  //methods.resizeTable();
+                  methods.resizeTable();
                 },
                 error: function(e) {
                   requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);

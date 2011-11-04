@@ -151,7 +151,7 @@
 								'<li class="first_list">'+
 									'<a class="first_ul" href="#choose_address">Choose or create an address column</a>'+
 		              '<div class="georef_options">'+
-										'<p class="info">You can create it with columns, text,...  just adding them in the input within brackets (eg. Lafayette Street, {country})</p>'+
+										'<p class="info">Specify columns to use for geocoding by adding them within brackets. You can also add extra information to make your geocoding more accurate (eg. {school}, New York, USA)</p>'+
 										'<input class="address_input" type="text" value=""/>'+
 		              '</div>'+
 								'</li>'+

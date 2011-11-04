@@ -554,9 +554,9 @@ div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.s
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li a {float:left; width:90px!important; padding:0; background:none; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
   text-shadow:none;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li a:hover {color:#6DBE6D;}
-div.mamufas div.georeference_window div.inner_ span.top div.georef_options input {display:block; float:left; width:310px; padding:5px 7px; margin:5px 0 0 0; border:1px solid #CCCCCC; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
+div.mamufas div.georeference_window div.inner_ span.top div.georef_options input {display:block; float:left; width:310px; padding:5px 7px; margin:10px 0 0 0; border:1px solid #CCCCCC; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
   border:1px solid #999999; font:normal 13px Arial; color:#666666;}
-div.mamufas div.georeference_window div.inner_ span.top div.error_content {position:absolute; z-index:10; right:22px; top:62px; display:none; width:auto}
+div.mamufas div.georeference_window div.inner_ span.top div.error_content {position:absolute; z-index:10; right:22px; top:112px; display:none; width:auto}
 div.mamufas div.georeference_window div.inner_ span.top div.error_content p {float:left; height:52px; padding:0 0 0 19px!important; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
 div.mamufas div.georeference_window div.inner_ span.top div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}
 div.mamufas div.georeference_window div.inner_ span.bottom {float:left; width:404px; padding:0 0 10px; border-top:1px solid white;}

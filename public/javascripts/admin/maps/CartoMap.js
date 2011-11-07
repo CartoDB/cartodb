@@ -207,11 +207,16 @@
         type: 'POST',
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
         data: {style:str},
-        success: function(result) {          
+        success: function(result) {
+	     		$('.cartocss_editor span.errors').hide();
           me.refreshWax();
         },
         error:function(e) {
-          console.debug(e);
+					var errors = JSON.parse(e.responseText);
+					var msg = '';
+					_.each(errors,function(ele,i){msg += ele + ' ';});
+					$('.cartocss_editor span.errors p').text(msg);
+					$('.cartocss_editor span.errors').css({display:'block'});
         }
       });
     }
@@ -357,13 +362,13 @@
 
       // Zoom slider
       $('span.slider').slider({
-          orientation: 'vertical',
-          min:0,
-          max:20,
-          value:1,
-          stop: function(event,ui){
-            me.map_.setZoom(ui.value);
-          }
+	      orientation: 'vertical',
+	      min:0,
+	      max:20,
+	      value:1,
+	      stop: function(event,ui){
+	        me.map_.setZoom(ui.value);
+	      }
       });
 
 
@@ -553,12 +558,9 @@
 	        custom_map_properties.longitude = this.getCenter().lng();
 					me.setMapStyle(custom_map_style,custom_map_properties);
 	      });
-				google.maps.event.clearListeners(me.map_,'zoom_changed');
 				google.maps.event.addListener(me.map_, 'zoom_changed', function(ev) {
 	        custom_map_properties.zoom = this.getZoom();
 					me.setMapStyle(custom_map_style,custom_map_properties);
-					// Hack for the zoom slider
-					$('span.slider').slider('value',me.map_.getZoom());
 	      });
 	
 	
@@ -849,7 +851,6 @@
             
             clearInterval(interval);
             interval = setTimeout(function(){
-							console.log(css_,value_);
               geometry_style[css_] = value_;
               me.setTilesStyles(geometry_style);
             },400);

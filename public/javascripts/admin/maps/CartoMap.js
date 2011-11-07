@@ -553,6 +553,7 @@
 	        custom_map_properties.longitude = this.getCenter().lng();
 					me.setMapStyle(custom_map_style,custom_map_properties);
 	      });
+				google.maps.event.clearListeners(me.map_,'zoom_changed');
 				google.maps.event.addListener(me.map_, 'zoom_changed', function(ev) {
 	        custom_map_properties.zoom = this.getZoom();
 					me.setMapStyle(custom_map_style,custom_map_properties);
@@ -839,14 +840,16 @@
           var old_value = $(this).parent().find('input').val(),
               add = ($(this).text()=="+")?true:false,
               that = this,
-              css_ = $(that).closest('span').attr('css'),
-              value_ = $(that).parent().find('input').val();
+              css_ = $(that).closest('span').attr('css');
+              
           
           if (add || old_value>0) {
-            $(that).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
+						var value_ = parseInt(old_value) + ((add)?1:-1);
+            $(that).parent().find('input').val(value_);
             
             clearInterval(interval);
             interval = setTimeout(function(){
+							console.log(css_,value_);
               geometry_style[css_] = value_;
               me.setTilesStyles(geometry_style);
             },400);

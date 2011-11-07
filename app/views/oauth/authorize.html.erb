@@ -1,22 +1,27 @@
-<% content_for :head do %>
-  <%= stylesheet_link_tag('reset.css','front/oauth') %>
-<% end %>
 
-<div class="section">
-
-  <h1>Authorize access to your account</h1>
-  <% form_tag authorize_url do %>
-    <p>Would you like to authorize <%= link_to @token.client_application.user.username,@token.client_application.url %> (<%= link_to @token.client_application.url,@token.client_application.url %>) to access your account?</p>
-    <%= hidden_field_tag "oauth_token", @token.token %>
-    <%- if params[:oauth_callback] -%>
-    <%= hidden_field_tag "oauth_callback", params[:oauth_callback] %>
-  <%- end -%>
-  <p>
-    <%= check_box_tag 'authorize' %> Authorize access
-  </p>
-  <p>
-    <%= submit_tag "Confirm" %>
-  </p>
+  <% content_for :js do %>
+    <%= headjs_include_tag "plugins/jquery.min", "front/oauth" %>
   <% end %>
-  
-</div>
+
+  <% content_for :head do %>
+    <%= stylesheet_link_tag('reset.css','front/oauth') %>
+  <% end %>
+
+
+  <div class="glow">
+    <div class="section">
+      <h1><strong><%= @token.client_application.user.username %></strong>CartoDB</h1>
+      <% form_tag authorize_url do %>
+        <h3>Allow connection</h3>
+        <p><%= @token.client_application.user.username %> wants to connect to your cartoDB database.
+          This means that <%= @token.client_application.user.username %> will be able to modify, create and delete fields from your database.</p>
+        <%= hidden_field_tag "oauth_token", @token.token %>
+        <%- if params[:oauth_callback] -%>
+          <%= hidden_field_tag "oauth_callback", params[:oauth_callback] %>
+        <%- end -%>
+        <p><%= check_box_tag 'authorize' %> <a href="#authorize">Authorize access</a></p>
+        <%= submit_tag 'Allow connection', :class => "login" %>
+      <% end %>
+    </div>
+  </div>
+  <div class="footer">CartoDB is a product from <a href="http://www.vizzuality.com" target="_blank">vizzuality</a> | <a href="http://cartodb.com/terms">Terms of service</a></div>

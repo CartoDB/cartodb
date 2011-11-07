@@ -82,6 +82,10 @@ div.mamufas div.create_window div.inner_ span.top ul li.selected a {color:white;
 div.mamufas div.create_window div.inner_ span.top ul li.selected a:hover {color:white; cursor:default; background-position:0 1px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected ul.qq-upload-list {display:none;}
 
+div.mamufas div.create_window div.inner_ span.top ul li div.error_url {position:absolute; display:none; z-index:10; right:22px; top:-40px;}
+div.mamufas div.create_window div.inner_ span.top ul li div.error_url p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
+div.mamufas div.create_window div.inner_ span.top ul li div.error_url p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}
+
 div.mamufas div.create_window div.inner_ span.top ul li span.file {display:none;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file {position:relative; display:block; width:348px; height:28px; margin:10px 10px 0 15px; border:1px solid #000000; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
 div.mamufas div.create_window div.inner_ span.top ul li.selected span.file div.select_file {display:block;}

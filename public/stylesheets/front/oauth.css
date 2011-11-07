@@ -24,7 +24,6 @@ div.section form div.error_content {position:absolute; z-index:10; right:22px; t
 div.section form div.error_content p {float:left; height:52px; padding:0 0 0 19px; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
 div.section form div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}
 div.section div.sad_table {width:100%; height:155px; margin:40px 0 0 0; background:url('/images/front/404/no_table.png') no-repeat center center;}
-
 div.footer {position:absolute; left:50%; bottom:15px; width:350px!important; padding:0; margin:0 0 0 -175px; z-index:1; font:normal 13px "Helvetica", Arial; color:white; text-align:center;}
 div.footer a {color:white;}
 div.footer a:hover {color:white;}

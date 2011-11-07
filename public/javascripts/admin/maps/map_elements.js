@@ -282,9 +282,8 @@
                   '<li>'+
                     '<a href="#custom">Custom</a>'+
                     '<div class="suboptions">'+
-                      '<label>Custom vars</label>'+
-                      '<ul class="column_names scrollPane">'+
-                      '</ul>'+
+                      '<span class="info_tools"><a class="mark_all" href="#mark_all">mark all</a><a class="clear_all" href="#clear_all">clear all</a></span>'+
+                      '<ul class="column_names scrollPane"></ul>'+
                     '</div>'+
                   '</li>'+
                 '</ul>'+

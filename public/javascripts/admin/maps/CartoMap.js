@@ -1343,7 +1343,7 @@
                   me.double_click = !me.double_click;
                   return false;
                 }
-                me.info_window_.open(feature,evt.pixel);
+                me.info_window_.open(feature,evt.pixel,null);
                 me.hideOverlays();
               }
             },200);

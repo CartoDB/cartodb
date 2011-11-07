@@ -616,7 +616,7 @@
                 '</span>'+
                 '<div class="months_list">'+
                   '<ul class="scroll-pane">'+
-                    '<li><a href="#January">January</a></li>'+
+                    '<li class="selected"><a href="#January">January</a></li>'+
                     '<li><a href="#February">February</a></li>'+
                     '<li><a href="#March">March</a></li>'+
                     '<li><a href="#April">April</a></li>'+
@@ -702,6 +702,7 @@
                 '<label>TEXT FILTER</label>'+
                 '<input type="text" value=""/>'+
                 '<div class="select_content">'+
+									'<span class="top_end"></span><span class="bottom_end"></span>'+									
                   '<ul class="scrollPane"></ul>'+
                 '</div>'+
               '</span>'+
@@ -1130,6 +1131,8 @@
               var date = parseDate(data.value);
               $('div.edit_cell div.date div.day input').val(date.day);
               $('div.edit_cell div.date div.month span.bounds a').text(date.month_text);
+							$('div.edit_cell div.months_list ul li.selected').removeClass('selected');
+							$('div.edit_cell div.months_list ul li a:contains("'+date.month_text+'")').parent().addClass('selected');
               $('div.edit_cell div.date div.year input').val(date.year);
               $('div.edit_cell div.date div.hour input').val(date.time);
               $('div.edit_cell div.date').show();
@@ -1644,9 +1647,14 @@
       });
       $("div.months_list ul li a").livequery('click',function(ev){
         stopPropagation(ev);
-
-        $(this).closest('div.month').children('span.bounds').children('a').text($(this).text())
-        $(this).closest('div.months_list').hide();
+				if (!$(this).parent().hasClass('selected')) {
+					$(this).closest('ul').find('li.selected').removeClass('selected');
+					$(this).parent().addClass('selected');
+					$(this).closest('div.month').children('span.bounds').children('a').text($(this).text())
+	        $(this).closest('div.months_list').hide();
+				} else {
+					$(this).closest('div.months_list').hide();
+				}
       });
 
 
@@ -1962,7 +1970,7 @@
 	            
 	            $('div.column_window span.select ul li').remove();
 	            for (var i = 0; i<data.length; i++) {
-	              $('div.column_window span.select ul').append('<li><a href="#'+data[i]+'">'+data[i]+'</a></li>');
+	              $('div.column_window span.select ul').append('<li class="'+((data[i]=="String")?'selected':'')+'"><a href="#'+data[i]+'">'+data[i]+'</a></li>');
 	              //It looks for the index in data for the string type
 	              if (defaultTypeIndex == undefined && data[i] == 'String'){
 		              defaultTypeIndex = i;
@@ -2039,9 +2047,16 @@
       });
       $('div.column_window span.select ul li a').livequery('click',function(ev){
         stopPropagation(ev);
-        $(this).closest('span.select').children('a.option').text($(this).text());
-        $(this).closest('span.select').children('a.option').attr('type',$(this).text());
-        $('div.column_window span.select').removeClass('clicked');
+				if (!$(this).parent().hasClass('selected')) {
+					$(this).closest('ul').find('li.selected').removeClass('selected');
+					$(this).parent().addClass('selected');
+					$(this).closest('span.select').children('a.option').text($(this).text());
+	        $(this).closest('span.select').children('a.option').attr('type',$(this).text());
+	        $(this).closest('span.select').removeClass('clicked');
+				} else {
+					$(this).closest('span.select').removeClass('clicked');
+				}
+
       });
       $('a.column_add').livequery('click',function(ev){
         stopPropagation(ev);

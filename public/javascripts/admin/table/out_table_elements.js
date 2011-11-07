@@ -340,26 +340,34 @@
       });
       $('div.georeference_window div.select_content ul li a').livequery('click',function(ev){
         stopPropagation(ev);
-        $(this).closest('span.select').children('a.option').text($(this).text());
-        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
-        $('span.select').removeClass('clicked');
-				
-				var type = $(this).closest('span.select');
+				if (!$(this).parent().hasClass('selected')) {
+					$(this).closest('span.select').children('a.option').text($(this).text());
+	        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
+					$(this).closest('ul').find('li.selected').removeClass('selected');
+					$(this).parent().addClass('selected')
+					
+	        $('span.select').removeClass('clicked');
 
-				$(this).parent().parent().children('li').removeClass('choosen');
-        $(this).parent().addClass('choosen');
-        var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
-        if (index == 0) {
-          var other_index = 1;
-          var other_value = $('span.select:eq(1) a.option').text();
-        } else {
-          var other_index = 0;
-          var other_value = $('span.select:eq(0) a.option').text();
-        }
-        $('span.select:eq('+index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
-        $('span.select:eq('+other_index+') ul li').removeClass('choosen');
-        $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
-        $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
+					var type = $(this).closest('span.select');
+
+					$(this).parent().parent().children('li').removeClass('choosen');
+	        $(this).parent().addClass('choosen');
+	        var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
+	        if (index == 0) {
+	          var other_index = 1;
+	          var other_value = $('span.select:eq(1) a.option').text();
+	        } else {
+	          var other_index = 0;
+	          var other_value = $('span.select:eq(0) a.option').text();
+	        }
+	        $('span.select:eq('+index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
+	        $('span.select:eq('+other_index+') ul li').removeClass('choosen');
+	        $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
+	        $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
+				} else {
+					$('span.select').removeClass('clicked');
+				}
+
 
       });
       $('a.confirm_georeference').livequery('click',function(ev){

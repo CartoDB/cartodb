@@ -1120,6 +1120,26 @@
         }
       }
 
+			
+			$('.map_header ul.infowindow_customization div.suboptions span.info_tools a.mark_all,.map_header ul.infowindow_customization div.suboptions span.info_tools a.clear_all').livequery('click',function(ev){
+        stopPropagation(ev);
+        var bool = $(this).attr('class') === "mark_all";
+
+				$('.map_header ul.infowindow_customization div.suboptions ul.column_names li.vars a').each(function(i,ele){
+					var value = $(this).text();
+					$(this).removeClass('on off');
+					if (bool) {
+						$(this).addClass('on');
+					} else {
+						$(this).addClass('off');
+					}
+					
+					custom_infowindow[value] = bool;
+				});
+
+        me.setInfowindowVars(custom_infowindow);
+      });
+
       
       $('.map_header ul.infowindow_customization div.suboptions ul.column_names li.vars a').livequery('click',function(ev){
         stopPropagation(ev);
@@ -1137,7 +1157,7 @@
       });
       
     
-      $('.map_header ul.infowindow_customization li a').livequery('click',function(ev){
+      $('.map_header ul.infowindow_customization li > a').livequery('click',function(ev){
         stopPropagation(ev);
         var parent = $(this).parent();
         if (!parent.hasClass('selected') && !parent.hasClass('disabled') && !parent.hasClass('vars')) {

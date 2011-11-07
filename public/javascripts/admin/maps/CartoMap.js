@@ -292,6 +292,9 @@
         me.double_click = true;
       });
 
+			google.maps.event.addListener(this.map_, 'zoom_changed', function() {
+        $('span.slider').slider('value',me.map_.getZoom());
+      });
     }
 
     /* Event listeners of the map tools */
@@ -1260,6 +1263,7 @@
 	      });
 			});
 		}
+
 
 
     ////////////////////////////////////////

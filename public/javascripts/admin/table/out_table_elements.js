@@ -811,18 +811,20 @@
 	        }
         
 	        // Function to change the table name final steps
-	        function changeTableName(new_value,old_value) {
-	          if ($('p.status a').hasClass('save')) {
-	            old_value.status = 'save';
-	            $('p.status a').removeClass('save').addClass('public').text('public');
-	          }
-	          $('section.subheader h2 a').text(new_value);
-	          $('span.title_window').hide();
-	          changesRequest('name',new_value,old_value);
-	          closeOutTableWindows();
-	        }
+
 	      }
 	    });
+	
+			function changeTableName(new_value,old_value) {
+        if ($('p.status a').hasClass('save')) {
+          old_value.status = 'save';
+          $('p.status a').removeClass('save').addClass('public').text('public');
+        }
+        $('section.subheader h2 a').text(new_value);
+        $('span.title_window').hide();
+        changesRequest('name',new_value,old_value);
+        closeOutTableWindows();
+      }
 
 			return {}
 		}());

@@ -23,7 +23,7 @@ div.table_position table thead tr th p.geo {float:left; width:22px; height:12px;
 div.table_position table thead tr th p.geo:hover {background-position:0 -12px; cursor:pointer;}
 div.table_position table thead tr th p.geo.disabled {opacity:0.7}
 div.table_position table thead tr th p.geo.disabled:hover {cursor:default; background-position:0 0}
-div.table_position table thead tr th p.geo.loading {height:16px; width:16px; background:url('/images/admin/table/ajax-loader.gif') no-repeat 0 0;}
+div.table_position table thead tr th p.geo.loading {height:16px; width:16px; margin:1px 0 0 5px; background:url('/images/admin/table/ajax-loader.gif') no-repeat 0 0;}
 div.table_position table thead tr th a.options {position:absolute; right:10px; top:12px; height:14px; width:14px; margin:0; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10; overflow:hidden;}
 div.table_position table thead tr th a.options:hover {background-position:0 -14px;}
 div.table_position table thead tr th a.options.selected {height:20px; background-image:url('/images/admin/table/selected_option.png')}

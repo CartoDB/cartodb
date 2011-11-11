@@ -79,7 +79,8 @@
       // New table mode: normal, query or filter
 			var columns,
 			    rows,
-			    ajax_request = 2;
+			    ajax_request = 2,
+					msg;
 
 
       // When ajax calls are loaded

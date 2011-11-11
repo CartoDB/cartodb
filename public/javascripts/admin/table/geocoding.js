@@ -88,7 +88,6 @@
 
         if (result.rows!=null && result.rows.length>0) {
           // Update loader
-          requests_queue.updateGeoreferencing(null);
           me.processGeocoding(addresses);
         } else {
           requests_queue.finishGeoreferencing(me.requestId);

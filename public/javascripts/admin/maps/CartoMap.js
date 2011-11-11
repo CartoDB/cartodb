@@ -1601,7 +1601,7 @@
 
 
             // Click on map to recover wax layer and remove marker
-            google.maps.event.addListener(map,'click',function(ev){
+            google.maps.event.addListener(me.map_,'click',function(ev){
               me.fakeMarker_.setMap(null);
               me.fakeMarker_ = null;
 

@@ -20,6 +20,11 @@
         
     // Bind links
     $('.general_options ul li.edit a.complete').click(function(ev){
+			
+			if (thisOjb.type == "MultiLineString" || thisOjb.type == "LineString") {
+				
+			}
+	
       stopPropagation(ev);
       var new_geometry = transformToGeoJSON(thisOjb.geometries,thisOjb.type);
       var geojson = $.parseJSON(new_geometry);

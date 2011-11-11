@@ -2386,8 +2386,6 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     updateTable: function(url_change,params,new_value,old_value,type,request_type) {
       //Queue loader
-			debugger;
-
       var requestId = createUniqueId();
       params.requestId = requestId;
       requests_queue.newRequest(requestId,type);

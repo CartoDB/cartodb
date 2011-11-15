@@ -906,7 +906,7 @@
                   });
                   
                   $('div.empty_table').remove();
-                  //methods.resizeTable();
+                  methods.resizeTable();
                 },
                 error: function(e) {
                   requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
@@ -1176,7 +1176,18 @@
               var len = $('div.edit_cell div.free textarea').val().length;
               $('div.edit_cell div.free textarea').selectRange(0,len);
             }
+						
+						// If hit ENTER, save inmediately
+						$('div.edit_cell').keydown(function(ev){
+              if (!ev.ctrlKey && (ev.which == 13 || ev.keyCode == 13)) {
+								ev.preventDefault();
+								ev.stopPropagation();
+								$("div.edit_cell a.save").click();
+							}
+            });
 
+						
+						// If click out of edit_cell close it
             $('body').bind('click',function(ev){
               if (!$(ev.target).closest('div.edit_cell').length) {
                 methods.closeTablePopups();
@@ -2250,7 +2261,21 @@
         methods.closeTablePopups();
         $('div.filter_window div.select_content').hide();
       });
-    },
+    
+
+			///////////////////////////////////////
+      //  Refresh table after geolocating  //
+      ///////////////////////////////////////
+			$('section.subheader div.performing_op p a.refresh').livequery('click',function(ev){
+        ev.preventDefault();
+				var view_mode = ($('body').attr('view_mode') === "table");
+			  if (view_mode) {
+					ev.stopPropagation();
+	        $('table').cartoDBtable('refreshTable');
+				}
+      });
+
+		},
 
 
 
@@ -2503,6 +2528,7 @@
     closeTablePopups: function() {
       methods.unbindESCkey();
       $('body').unbind('click');
+			$('div.edit_cell').unbind('keydown');
       table.enabled = true;
       
       // Filter window

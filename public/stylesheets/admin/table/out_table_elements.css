@@ -498,7 +498,7 @@ div.mamufas div.embed_window div.inner_ span.bottom a.cancel:hover {background:l
 
 
 /*Geo window mamufas*/
-div.mamufas div.georeference_window {position:absolute; display:none; top:50%; left:50%; width:379px; margin:-150px 0 0 -198px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;
+div.mamufas div.georeference_window {position:absolute; display:none; top:50%; left:50%; width:408px; margin:-220px 0 0 -212px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;
   -moz-box-shadow:0 0 50px 3px #111111;}
 div.mamufas div.georeference_window a.close_geo {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_georeference.png') no-repeat 0 0;}
 div.mamufas div.georeference_window a.close_geo:hover {background-position:0 -24px;}
@@ -508,20 +508,32 @@ div.mamufas div.georeference_window.loading div.inner_ span.loading {float:left;
 div.mamufas div.georeference_window.loading div.inner_ span.loading h5 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.georeference_window.loading div.inner_ span.loading p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
 
-div.mamufas div.georeference_window div.inner_ {float:left; width:375px; border:2px solid #FFC209; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
-div.mamufas div.georeference_window div.inner_ span.top {float:left; width:347px; padding:14px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.georeference_window div.inner_ {float:left; width:404px; border:2px solid #FFC209; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+div.mamufas div.georeference_window div.inner_ span.top {float:left; width:376px; padding:14px; border-bottom:1px solid #CCCCCC;}
 div.mamufas div.georeference_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.georeference_window div.inner_ span.top p {position:relative; float:left!important; height:auto; width:100%; padding:8px 0 0 0!important; margin:0!important; font:normal 13px Helvetica,Arial; color:#666666; text-shadow:0 1px white;}
 div.mamufas div.georeference_window div.inner_ span.top p a {color:#444444;}
 div.mamufas div.georeference_window div.inner_ span.top p a:hover {color:#222222;}
-div.mamufas div.georeference_window div.inner_ span.top div.georef_options {float:left; margin:10px 0 0 0; background:url('/images/admin/table/arrows.png') no-repeat center 34px}
+div.mamufas div.georeference_window div.inner_ span.top ul {float:left; margin:0; padding:10px 0;}
+div.mamufas div.georeference_window div.inner_ span.top ul li {float:left; width:100%; margin:10px 0 0 0;}
+div.mamufas div.georeference_window div.inner_ span.top ul li a {float:left; margin:0 0 0 10px; padding:0 0 0 15px; background:url('/images/admin/icons/select_geo.png') no-repeat 0 2px; font:normal 13px "Helvetica",Arial; color:#666666; text-shadow:0 1px white; text-decoration:none;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected {padding:12px 0 15px; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; background:white; -webkit-box-shadow:1px 3px 5px 1px #dddddd; -moz-box-shadow:1px 3px 5px 1px #dddddd; box-shadow:1px 3px 5px 1px #dddddd;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected a {width:315px; background-position: 0 -28px; color:#333333;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.disabled {opacity:0.5;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.disabled a:hover {background-position: 0 2px; cursor:default; color:#666666;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.choosen {display:none;}
+div.mamufas div.georeference_window div.inner_ span.top ul li a:hover {background-position:0 -28px; color:#333333;}
+div.mamufas div.georeference_window div.inner_ span.top ul li div.georef_options {display:none;}
+div.mamufas div.georeference_window div.inner_ span.top ul li.selected div.georef_options {display:block}
+div.mamufas div.georeference_window div.inner_ span.top div.georef_options {display:none; float:left; margin:5px 0 0 25px;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options a {float:left; margin:0 0 0 10px; padding:0 0 0 15px; background:url('/images/admin/icons/select_geo.png') no-repeat 0 2px; font:normal 13px "Helvetica",Arial; color:#666666; text-shadow:0 1px white; text-decoration:none;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options a {width:315px; background-position: 0 -28px; color:#333333;}
+div.mamufas div.georeference_window div.inner_ span.top div.georef_options p.info {width:330px; padding:0 0 5px 0; font:normal 11px Arial; color:#999999;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options a:hover {background-position:0 -28px; color:#333333;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select {display:block; float:left; width:153px; margin:10px 0 0 0;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.disabled {opacity:0.5;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.disabled a:hover {color:#333333; cursor:default;}
-div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select.last {margin:10px 0 0 40px;}
+div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select.last {margin:10px 0 0 20px;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select label {float:left; width:100%; text-transform:uppercase; font:normal 10px "Helvetica",Arial; color:#999999;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select {position:relative; float:left; width:137px; height:11px; margin:5px 0 0 0; padding:8px 7px; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999;
   background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
@@ -542,10 +554,12 @@ div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.s
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li a {float:left; width:90px!important; padding:0; background:none; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
   text-shadow:none;}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li a:hover {color:#6DBE6D;}
-div.mamufas div.georeference_window div.inner_ span.top div.error_content {position:absolute; z-index:10; right:22px; top:62px; display:none; width:auto}
+div.mamufas div.georeference_window div.inner_ span.top div.georef_options input {display:block; float:left; width:310px; padding:5px 7px; margin:10px 0 0 0; border:1px solid #CCCCCC; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
+  border:1px solid #999999; font:normal 13px Arial; color:#666666;}
+div.mamufas div.georeference_window div.inner_ span.top div.error_content {position:absolute; z-index:10; right:22px; top:112px; display:none; width:auto}
 div.mamufas div.georeference_window div.inner_ span.top div.error_content p {float:left; height:52px; padding:0 0 0 19px!important; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
 div.mamufas div.georeference_window div.inner_ span.top div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}
-div.mamufas div.georeference_window div.inner_ span.bottom {float:left; width:374px; padding:0 0 10px; border-top:1px solid white;}
+div.mamufas div.georeference_window div.inner_ span.bottom {float:left; width:404px; padding:0 0 10px; border-top:1px solid white;}
 div.mamufas div.georeference_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.georeference_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
 div.mamufas div.georeference_window div.inner_ span.bottom a.confirm_georeference {float:right; height:12px; margin:10px 14px 0 0; padding:7px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;

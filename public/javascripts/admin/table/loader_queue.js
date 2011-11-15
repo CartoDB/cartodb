@@ -16,10 +16,6 @@
       		//Create the loader element
       		$('section.subheader').append('<div class="performing_op"><p class="loading">Loading...</p></div>');
           this.loader = $('section.subheader div.performing_op');
-          this.loader.delegate('p a.refresh','click',function(ev){
-            ev.preventDefault();
-            $('table').cartoDBtable('refreshTable');
-          });
       	}
 
       	/*========================================================================================================================*/
@@ -33,7 +29,7 @@
       	  if (!this.checking) {
       	    if (this.loader.html()=="") {
       	      if (this.georeferencing) {
-        	      this.loader.append('<p class="loading">Georeferencing... 0/?</p>');
+        	      this.loader.append('<p class="loading" style="text-align:center">Georeferencing... <strong style="opacity:0">'+this.georeferencing.total+'</strong>/'+this.georeferencing.total+'</p>');
       	      } else {
         	      this.loader.append('<p class="loading">Loading...</p>');
       	      }
@@ -68,8 +64,8 @@
       	/*========================================================================================================================*/
       	/*  Abstract georeferencing  */
       	/*========================================================================================================================*/
-      	loaderQueue.prototype.startGeoreferencing = function(geo_id) {
-      	  this.georeferencing = {id:geo_id,total:0,actual:0,showed:false,finished:false};
+      	loaderQueue.prototype.startGeoreferencing = function(geo_id,total) {
+      	  this.georeferencing = {id:geo_id,total: total || 0,actual:0,showed:false,finished:false};
       	  this.newRequest(geo_id,'georeferencing');
       	}
       	
@@ -79,7 +75,7 @@
       	  } else {
             this.georeferencing.actual++;
       	  }
-          this.loader.find('p.loading').html('Geolocating...'+this.georeferencing.actual+'/'+this.georeferencing.total);
+          this.loader.find('p.loading').html('Geolocating...  <strong style="text-align:right">'+this.georeferencing.actual+'/'+this.georeferencing.total+'</strong>');
       	}
       	
       	loaderQueue.prototype.finishGeoreferencing = function() {

@@ -38,6 +38,7 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
   
   - Create a `template_postgis` database if one doesn't already exist:
        
+        #!/usr/bin/env bash
         POSTGIS_SQL_PATH='pg_config --sharedir'/contrib/postgis-2.0
         createdb -E UTF8 template_postgis 
         createlang -d template_postgis plpgsql 

@@ -52,4 +52,5 @@ require 'cartodb/sql_parser'
 require 'cartodb/connection_pool'
 require 'cartodb/queries_threshold'
 require 'cartodb/pagination'
+require 'importer/lib/cartodb-importer'
 $pool = CartoDB::ConnectionPool.new

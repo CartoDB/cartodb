@@ -566,9 +566,9 @@ class Table < Sequel::Model(:user_tables)
             'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')',#{CartoDB::SRID}
         ) 
         WHERE 
-        CAST(#{options[:longitude_column]} AS text) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$' 
+        CAST(trim(#{options[:longitude_column]}) AS text) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$' 
         AND   
-        CAST(#{options[:latitude_column]} AS text)  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+        CAST(trim(#{options[:latitude_column]}) AS text)  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
         GEOREF
         )
       end

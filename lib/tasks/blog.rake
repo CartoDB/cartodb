@@ -1,7 +1,7 @@
 namespace :cartodb do
   namespace :blog do
     desc 'Get last posts'
-    task :get_last_posts => :environment do      
+    task :get_last_posts => :environment do
       # <div class="block">
       #   <h3>Latest from the blog</h3>
       #   <h4><a href="#">World Database on Protected Areas</a></h4>
@@ -16,10 +16,10 @@ namespace :cartodb do
       #   <h3></h3>
       #   <h4><a href="#">A new status update on blog.cartodb.com</a></h4>
       #   <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
-      # </div>      
-      
+      # </div>
+
       feed_url = "http://blog.cartodb.com/rss"
-      doc = Nokogiri.parse(open(feed_url))      
+      doc = Nokogiri.parse(open(feed_url))
       content = ""
       items = doc.search('item')
       i = 0
@@ -28,13 +28,13 @@ namespace :cartodb do
         content += <<-HTML
 <div class="block#{i == 2 ? ' last' : ''}">
   <h3>#{i == 0 ? "Latest from the blog" : ''}</h3>
-  <h4><a href="#{item.search('guid').first.inner_text}" >#{item.search('title').first.inner_text}</a></h4>
+  <h4><a href="#{item.search('guid').first.inner_text}" >#{truncate(item.search('title').try(:first).try(:inner_text),:length=>75,:separator=>'...')}</a></h4>
   <p>#{text}</p>
-</div>    
+</div>
 HTML
         i+=1
       end
-      fd = File.open(CartoDB::LAST_BLOG_POSTS_FILE_PATH, 'w+')    
+      fd = File.open(CartoDB::LAST_BLOG_POSTS_FILE_PATH, 'w+')
       fd.write(content)
       fd.close
     end

@@ -8,7 +8,12 @@ module CartoDB
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@path} -nln #{@suggested_name}}
 
-        out = `#{ogr2ogr_command}`
+        out = `#{ogr2ogr_command}`      
+        
+        if $?.exitstatus != 0
+          raise "failed to convert import CSV into postgres"
+        end
+        
         if 0 < out.strip.length
           @runlog.stdout << out
         end
@@ -17,7 +22,7 @@ module CartoDB
         if @db_connection["SELECT * from #{@suggested_name} LIMIT 1"].first.nil?
           @runlog.err << "Empty table"
           raise "Empty table"
-        end
+        end      
 
         # Sanitize column names where needed
         column_names = @db_connection.schema(@suggested_name).map{ |s| s[0].to_s }

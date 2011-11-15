@@ -17,6 +17,10 @@ module CartoDB
        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -fieldTypeToString DateTime -f "ESRI Shapefile" #{shp_file} #{@path}}
        out = `#{ogr2ogr_command}`
 
+       if $?.exitstatus != 0
+         raise "failed to convert gpx to shp"
+       end
+
        track_points = "#{shp_file}/track_points.shp"
        @runlog.stdout << track_points
 

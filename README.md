@@ -37,7 +37,7 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
   - Install PostgreSQL, PostGIS, GDAL, and Geo with postgis_template setup
   
   - Create a `template_postgis` database if one doesn't already exist:
-         
+      ```   
       POSTGIS_SQL_PATH='pg_config --sharedir'/contrib/postgis-2.0
       createdb -E UTF8 template_postgis 
       createlang -d template_postgis plpgsql 
@@ -46,7 +46,8 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
       psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
       psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;" 
       psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
-      
+      ```
+
   - Install Redis from <http://redis.io/download> or using `brew install redis`.
   
   - Python dependencies: 

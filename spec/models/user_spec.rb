@@ -46,7 +46,8 @@ describe User do
     end
     
     legal_usernames.each do |name|
-      user.username = name
+      user.username = name      
+      user.valid?.should be_true
       user.errors[:username].should be_blank
     end
   end
@@ -152,6 +153,7 @@ describe User do
     table = new_table
     table.user_id = user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
+    debugger
     table.save
 
     query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")

@@ -51,6 +51,7 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
       
         # CartoDB
         127.0.0.1 admin.localhost.lan admin.testhost.lan
+        127.0.0.1 my_subdomain.localhost.lan
         # # # # #
                 
   - Clone the [Node SQL API](https://github.com/tokumine/cartodb-sql-api) in your projects folder:
@@ -86,7 +87,9 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
         cd /tmp
         redis-server
   
-  - Run `rake db:create db:migrate cartodb:db:create_publicuser cartodb:db:create_admin` in cartodb folder
+  - Run `rake cartodb:db:setup EMAIL=me@mail.com SUBDOMAIN=my_subdomain PASSWORD=my_pass ADMIN_PASSWORD=my_pass` in cartodb folder
+  
+  - This will configure 2 users. The admin user (admin) and a user of your own.  After spinning up all your processes (cartodb, sql api, tiler), you should be able to login.
   
 
 ### Every day usage ###

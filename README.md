@@ -37,9 +37,8 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
   - Install PostgreSQL, PostGIS, GDAL, and Geo with postgis_template setup
   
   - Create a `template_postgis` database if one doesn't already exist:
-    
-      
-      POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.0
+         
+      POSTGIS_SQL_PATH='pg_config --sharedir'/contrib/postgis-2.0
       createdb -E UTF8 template_postgis 
       createlang -d template_postgis plpgsql 
       psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"

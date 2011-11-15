@@ -35,7 +35,19 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
   - Install Node.JS and Npm, following these steps: <https://github.com/joyent/node/wiki/Installation> (alternatively you can use `brew instrall node``, but npm has to be installed following the wiki instructions`)
 
   - Install PostgreSQL, PostGIS, GDAL, and Geo with postgis_template setup
-
+  
+  - Create a `template_postgis` database if one doesn't already exist:
+    
+      #!/usr/bin/env bash
+      POSTGIS_SQL_PATH=`pg_config --sharedir`/contrib/postgis-2.0
+      createdb -E UTF8 template_postgis 
+      createlang -d template_postgis plpgsql 
+      psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"
+      psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql 
+      psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
+      psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;" 
+      psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+  
   - Install Redis from <http://redis.io/download> or using `brew install redis`.
   
   - Python dependencies: 

@@ -64,9 +64,6 @@
       
       // Get the styles predefine for this table
       this.getStyles();
-      
-      // BBox in the map
-      this.zoomToBBox();
     }
 
 
@@ -220,12 +217,12 @@
     }
 
     // Set new map style
-    CartoMap.prototype.setMapStyle = function(map_styles) {
+    CartoMap.prototype.setMapStyle = function(map_styles,map_properties) {
       // Compose array for map style      
       var styles = [];
-      var type = '';
+      var type = ''
             
-      if (map_styles.type!="cartodb") {
+      if (map_styles.type!="roadmap") {
         _.each(map_styles,function(value,style){
           if (style=="roads" || style=="labels") {
             if (style=="roads") {
@@ -245,7 +242,6 @@
         });
         this.map_.setOptions({styles:styles});
       } else {
-        type = "cartodb";
 				styles = [ { stylers: [ { saturation: map_styles.saturation }, { gamma: 1.52 } ] }, { featureType: "administrative", stylers: [ { saturation: -95 },{ gamma: 2.26 } ] }, { featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "administrative.locality", stylers: [ { visibility: ((map_styles.labels)?'on':'off') } ] }, { featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] }, { featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "road.arterial", stylers: [ { visibility: ((map_styles.roads)?'on':'off') } ] }, { featureType: "road.local", elementType: "labels", stylers: [ { visibility: ((map_styles.roads)?'on':'off') } ] }, { featureType: "transit", stylers: [ { visibility: ((map_styles.roads)?'on':'off') } ] }, { featureType: "road", elementType: "labels", stylers: [ { visibility: ((map_styles.roads)?'on':'off') } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
       	this.map_.setOptions({styles:styles});
 			}
@@ -256,7 +252,7 @@
         type: "POST",
         headers: {"cartodbclient": true},
         url: global_api_url + 'tables/' + table_id + '/map_metadata',
-        data: {map_metadata: JSON.stringify({basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles})}
+        data: {map_metadata: JSON.stringify({basemap_provider: 'google_maps',google_maps_base_type:type,google_maps_customization_style: styles, latitude: map_properties.latitude, longitude:map_properties.longitude, zoom: map_properties.zoom})}
       });
     }
 
@@ -280,10 +276,6 @@
     /* Event listeners of the map */
     CartoMap.prototype.addMapListeners = function() {
       var me = this;
-
-      google.maps.event.addListener(this.map_, 'zoom_changed', function() {
-        $('span.slider').slider('value',me.map_.getZoom());
-      });
 
       google.maps.event.addListener(this.map_, 'click', function(ev) {
         if (me.status_=="add_point") {
@@ -442,6 +434,15 @@
         }
       });
   
+			// Refresh after geolocating
+			$('section.subheader div.performing_op p a.refresh').livequery('click',function(ev){
+        ev.preventDefault();
+				var view_mode = ($('body').attr('view_mode') === "map");
+			  if (view_mode) {
+					ev.stopPropagation();
+	        me.refreshWax();
+				}
+      });
     }
 
     /* Set bbox for the map */
@@ -494,8 +495,11 @@
     CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style,infowindow_vars) {
       var me = this;
       var map = me.map_;
-      
-      
+
+			/* setup search */
+			this.setupSearch();
+
+
       /* Visualization type - header*/
       var visualization_type = (function(){
         
@@ -515,7 +519,11 @@
       /*Map type - header*/
       var map_customization = (function(){
         var custom_map_style = {};
+				var custom_map_properties = {};
+	
+	
         
+				// Set map style
         map.setOptions({styles:map_style.google_maps_customization_style});
   
         // Parse the styles of the map
@@ -524,6 +532,32 @@
         // Initialize radiobuttons and map type
         initializeMapOptions(custom_map_style,map_style.google_maps_base_type,map_style.google_maps_customization_style);
 
+
+				/* Set up center and zoom*/
+				if (map_style.zoom && map_style.latitude && map_style.longitude) {
+					custom_map_properties.zoom = map_style.zoom;
+					custom_map_properties.latitude = map_style.latitude;
+					custom_map_properties.longitude = map_style.longitude;
+					map.setCenter(new google.maps.LatLng(map_style.latitude,map_style.longitude));
+					map.setZoom(map_style.zoom);
+				} else {
+					me.zoomToBBox();
+				}
+
+				/* Bind bounds changed on map to cartomap */
+				google.maps.event.addListener(me.map_, 'dragend', function(ev) {
+	        custom_map_properties.latitude = this.getCenter().lat();
+	        custom_map_properties.longitude = this.getCenter().lng();
+					me.setMapStyle(custom_map_style,custom_map_properties);
+	      });
+				google.maps.event.addListener(me.map_, 'zoom_changed', function(ev) {
+	        custom_map_properties.zoom = this.getZoom();
+					me.setMapStyle(custom_map_style,custom_map_properties);
+					// Hack for the zoom slider
+					$('span.slider').slider('value',me.map_.getZoom());
+	      });
+	
+	
   
         $('.map_header ul.map_type li a.option').livequery('click',function(ev){
           stopPropagation(ev);
@@ -543,10 +577,7 @@
             parent.addClass('selected');
                                  
             // Do action
-            if (map_type=="Roadmap") {
-              map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-              $('.map_header ul.main li.first p').text('Roadmap');
-            } else if (map_type=="Satellite") {
+            if (map_type=="Satellite") {
               map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
               $('.map_header ul.main li.first p').text('Satellite');
             } else if (map_type=="Terrain") {
@@ -554,11 +585,11 @@
               $('.map_header ul.main li.first p').text('Terrain');
             } else {
               map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-              $('.map_header ul.main li.first p').text('CartoDB');
+              $('.map_header ul.main li.first p').text('Roadmap');
             }
             
             custom_map_style.type = map_type.toLowerCase();
-            me.setMapStyle(custom_map_style);
+            me.setMapStyle(custom_map_style,custom_map_properties);
           }
         });
         
@@ -580,7 +611,7 @@
             // Save the saturation value
             custom_map_style['saturation'] = ui.value;
             // Set the custom map styles
-            me.setMapStyle(custom_map_style);
+            me.setMapStyle(custom_map_style,custom_map_properties);
           }
         });
         
@@ -604,7 +635,7 @@
             custom_map_style[style] = value;
 
             // Perform in the map
-            me.setMapStyle(custom_map_style);
+            me.setMapStyle(custom_map_style,custom_map_properties);
           }
         });
         
@@ -632,7 +663,7 @@
           }
 
 
-					// Gets labels on/off on cartodb type?
+					// Gets labels on/off on roadmap type?
           var labels = _.detect(map_style_,function(ele,i){return ele.featureType == "administrative.locality"});
           if (labels != undefined) {
             obj.labels = labels.stylers[0].visibility == "on";
@@ -664,18 +695,19 @@
             $('.map_header ul.main li.first p').text('Satellite');
             map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
             custom_map_style.type = 'satellite';
-          } else if (map_type=="roadmap"){
-            $('.map_header ul.map_type li a.option:contains("Roadmap")').parent().addClass('selected');
-            map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-            $('.map_header ul.main li.first p').text('Roadmap');
-            custom_map_style.type = 'roadmap';
           } else {
             map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-            $('.map_header ul.map_type li a.option:contains("CartoDB")').parent().addClass('selected');
-            $('.map_header ul.main li.first p').text('CartoDB');
+            $('.map_header ul.map_type li a.option:contains("Roadmap")').parent().addClass('selected');
+            $('.map_header ul.main li.first p').text('Roadmap');
             var mapStyles = stylers;
+						if (mapStyles.length==0) {
+							map_style.saturation = -65;
+							map_style.roads = false;
+							map_style.labels = false;
+							mapStyles = [ { stylers: [ { saturation: map_style.saturation }, { gamma: 1.52 } ] }, { featureType: "administrative", stylers: [ { saturation: -95 },{ gamma: 2.26 } ] }, { featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "administrative.locality", stylers: [ { visibility: ((map_style.labels)?'on':'off') } ] }, { featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] }, { featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "road.arterial", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] }, { featureType: "road.local", elementType: "labels", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] }, { featureType: "transit", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] }, { featureType: "road", elementType: "labels", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
+						}
             map.setOptions({styles: mapStyles});
-            custom_map_style.type = 'cartodb';
+            custom_map_style.type = 'roadmap';
           }
           
           // change radio buttons
@@ -1178,6 +1210,56 @@
 
     }
     
+		/* Search stuff on map */
+		CartoMap.prototype.setupSearch = function() {
+			var that = this;
+			this.geocoder = new google.maps.Geocoder();
+			
+			$('form.map_search').submit(function(ev){
+				ev.preventDefault();
+				var address = $('form.map_search input[type="text"]').val();
+				
+				if (address.search(/santana/i)!=-1) {
+					that.map_.setCenter(new google.maps.LatLng(41.70124284555466, -4.835700988769531));
+					that.map_.setZoom(16);
+					return false;
+				}
+				
+				if (address.search(/jamon/i)!=-1) {
+					that.map_.setCenter(new google.maps.LatLng(40.37740486883891, -3.7519919872283936));
+					that.map_.setZoom(16);
+					return false;
+				}
+				
+				if (address.search(/vizzuality madrid/i)!=-1) {
+					that.map_.setCenter(new google.maps.LatLng(40.4222095, -3.6996303));
+					that.map_.setZoom(16);
+					return false;
+				}
+				
+				if (address.search(/vizzuality ny/i)!=-1) {
+					that.map_.setCenter(new google.maps.LatLng(40.717147636174424, -74.00177657604218));
+					that.map_.setZoom(16);
+					return false;
+				}
+				
+				if (address.search(/vizzuality/i)!=-1) {
+					that.map_.setCenter(new google.maps.LatLng(40.4222095, -3.6996303));
+					that.map_.setZoom(16);
+					return false;
+				}
+				
+	      that.geocoder.geocode( { 'address': address}, function(results, status) {
+	        if (status == google.maps.GeocoderStatus.OK) {
+	          that.map_.setCenter(results[0].geometry.location);
+	          that.map_.fitBounds(results[0].geometry.bounds);
+						$('form.map_search span.error').fadeOut();
+	        } else {
+	          $('form.map_search span.error').fadeIn(function(){$(this).delay(2000).fadeOut()});
+	        }
+	      });
+			});
+		}
 
 
     ////////////////////////////////////////
@@ -1233,7 +1315,7 @@
                   me.double_click = !me.double_click;
                   return false;
                 }
-                me.info_window_.open(feature);
+                me.info_window_.open(feature,evt.pixel);
                 me.hideOverlays();
               }
             },200);
@@ -1485,7 +1567,7 @@
             google.maps.event.addListener(marker,'click',function(ev){
               ev.stopPropagation();
               if (me.status_=="select") {
-                  me.info_window_.open(this);
+                  me.info_window_.open(this,null);
               }
             });
 

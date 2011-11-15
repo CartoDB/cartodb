@@ -1,21 +1,44 @@
   
-  function Geocoding(column,table) {
+  function Geocoding(address,table) {
     if (!georeferencing) {
-      this.column = column;
+      this.address = address;
       this.table = table_name;
-      this.getRecords();
       this.page = 0;
+			
 
-      // Request
-      this.requestId = createUniqueId();
-      requests_queue.startGeoreferencing(this.requestId);
-      // End request
+      // Get the total and start loader
+      this.getTotalRecords();
       
       // Georeferencing state -> true
       georeferencing = true;
       $('p.geo').addClass('loading');
     }
   }
+
+
+
+	/*============================================================================*/
+	/* Start worker geocoding	*/
+	/*============================================================================*/
+	Geocoding.prototype.getTotalRecords = function() {
+	  var me = this;
+
+		$.ajax({
+      method: "GET",
+      url: global_api_url+'queries?sql='+escape("SELECT * from "+this.table+" where the_geom is null"),
+      headers: {'cartodbclient':true},
+      dataType:'jsonp',
+      data: {rows_per_page:100,page:me.page},
+      success: function(result) {
+				me.requestId = createUniqueId();
+		    requests_queue.startGeoreferencing(me.requestId,result.total_rows);
+		    me.getRecords();
+      }
+    });
+	}
+
+
+
   
   
   /*============================================================================*/
@@ -23,22 +46,33 @@
 	/*============================================================================*/
 	Geocoding.prototype.getRecords = function() {
 	  var me = this;
+		
+		var template = _.templateSettings = {
+		  interpolate : /\{(.+?)\}/g
+		};
+		
+	
 		$.ajax({
       method: "GET",
-      url: global_api_url+'queries?sql='+escape("SELECT cartodb_id,"+this.column+" as address from "+this.table+" where the_geom is null"),
+      url: global_api_url+'queries?sql='+escape("SELECT * from "+this.table+" where the_geom is null"),
       headers: {'cartodbclient':true},
       dataType:'jsonp',
       data: {rows_per_page:100,page:me.page},
-      success: function(result) {
-        var rows = result.rows;
-        if (result.rows!=null) {
+      success: function(result) {				
+        var rows = result.rows,
+						addresses = [];
+				_.each(rows,function(row,i){
+					addresses.push({cartodb_id:row.cartodb_id,address:_.template(me.address,row)});
+				});
+
+        if (result.rows!=null && result.rows.length>0) {
           // Update loader
           requests_queue.updateGeoreferencing(result.total_rows);
-          me.processGeocoding(result.rows);
+          me.processGeocoding(addresses);
         } else {
           requests_queue.finishGeoreferencing(me.requestId);
           $('p.geo').removeClass('loading');
-      		georeferencing = false;
+          georeferencing = false;
         }
        }
     });
@@ -76,7 +110,7 @@
             type: 'PUT',
             dataType: "text",
             headers: {"cartodbclient": true},
-            url: '/api/v1/tables/addresses/records/'+event.data.cartodb_id,
+            url: '/api/v1/tables/'+me.table+'/records/'+event.data.cartodb_id,
             data: params,
             success: function(data) {},
             error: function(e, textStatus) {}

@@ -121,41 +121,41 @@
                '<p>Just some seconds, ok?</p>'+
              '</span>'+
             '<span class="top">'+
-              '<h3>Choose your geocoding method for this column</h3>'+
-              '<p>Please select the columns for the lat/lon fields</p>'+
-              '<div class="georef_options">'+
-                '<div class="select longitude">'+
-                  '<label>LONGITUDE COLUMN</label>'+
-                  '<span class="select longitude">'+
-                    '<a id="longitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
-                    '<div class="select_content">'+
-                      '<ul class="scrollPane"></ul>'+
-                    '</div>'+
-                  '</span>'+
-                '</div>'+
-		            '<div class="select latitude last">'+
-                  '<label>LATITUDE COLUMN</label>'+
-                  '<span class="select latitude">'+
-                    '<a id="latitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
-                    '<div class="select_content">'+
-                      '<ul class="scrollPane"></ul>'+
-                    '</div>'+
-                  '</span>'+
-                '</div>'+
-              '</div>'+
-              '<div class="error_content"><p><span>You have to select latitude and longitude</span></p></div>'+
-              // // TEST - String georeferencing
-              // '<div class="georef_options">'+
-              //   '<div class="select address">'+
-              //     '<label>ADDRESS COLUMN</label>'+
-              //     '<span class="select address">'+
-              //       '<a id="address" class="option" href="#column_name" c="">Retrieving columns...</a>'+
-              //       '<div class="select_content">'+
-              //         '<ul class="scrollPane"></ul>'+
-              //       '</div>'+
-              //     '</span>'+
-              //   '</div>'+
-              // '</div>'+
+              '<h3>Choose your geocoding method for this table</h3>'+
+              '<p>Please select the columns for the lat/lon fields or choose/create an address column.</p>'+
+							'<ul class="main_list">'+
+								'<li class="first_list selected">'+
+								  '<a class="first_ul" href="#lat_lng_column">This is a lat/lon column</a>'+
+		              '<div class="georef_options">'+
+		                '<div class="select longitude">'+
+		                  '<label>LONGITUDE COLUMN</label>'+
+		                  '<span class="select longitude">'+
+		                    '<a id="longitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
+		                    '<div class="select_content">'+
+		                      '<ul class="scrollPane"></ul>'+
+		                    '</div>'+
+		                  '</span>'+
+		                '</div>'+
+				            '<div class="select latitude last">'+
+		                  '<label>LATITUDE COLUMN</label>'+
+		                  '<span class="select latitude">'+
+		                    '<a id="latitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
+		                    '<div class="select_content">'+
+		                      '<ul class="scrollPane"></ul>'+
+		                    '</div>'+
+		                  '</span>'+
+		                '</div>'+
+		              '</div>'+
+	              	'<div class="error_content"><p><span>You have to select latitude and longitude</span></p></div>'+
+								'</li>'+
+								'<li class="first_list">'+
+									'<a class="first_ul" href="#choose_address">Choose or create an address column</a>'+
+		              '<div class="georef_options">'+
+										'<p class="info">Specify columns to use for geocoding by adding them within brackets. You can also add extra information to make your geocoding more accurate (eg. {school}, New York, USA)</p>'+
+										'<input class="address_input" type="text" value=""/>'+
+		              '</div>'+
+								'</li>'+
+							'</ul>'+
             '</span>'+
             '<span class="bottom">'+
               '<a href="#close_window" class="cancel">cancel</a>'+
@@ -167,6 +167,13 @@
 
       
       // Now the listeners
+			$('div.georeference_window ul.main_list li a.first_ul').click(function(ev){
+				stopPropagation(ev);
+				if (!$(this).closest('li').hasClass('selected') && !$(this).closest('li').hasClass('disabled')) {
+					$('div.georeference_window ul.main_list li.first_list.selected').removeClass('selected');
+					$(this).closest('li').addClass('selected');
+				}
+			});
       $('a.open_georeference,p.geo').livequery('click',function(ev){
         if (georeferencing) {
           stopPropagation(ev);
@@ -177,7 +184,7 @@
           $('div.mamufas').fadeIn('fast');
           bindESC();
         } else {
-          var init_lat = $(this).closest('th').attr('c') || '';
+          var init_column = $(this).closest('th').attr('c') || '';
 
           // Remove selected list in header th
           $('thead tr th a.options').removeClass('selected');
@@ -198,8 +205,6 @@
     	      checkGeomType();
   				}
         }
-        
-        
 
         
         function checkGeomType() {
@@ -209,13 +214,15 @@
             headers: {"cartodbclient":"true"},
             success: function(result) {
               var geom_type = result.rows[0].type.toLowerCase();
+							$('div.mamufas div.georeference_window ul.main_list li').each(function(i,ele){$(ele).removeClass('selected disabled')});
               if (geom_type=="point" || geom_type=="multipoint") {
-                $('div.mamufas div.georeference_window div.georef_options').show();
-      	        getColumns();      	      
+	              $('div.mamufas div.georeference_window ul.main_list li:eq(0)').addClass('selected');
+								getColumns();
               } else {
-                $('div.georeference_window h3').text('Sorry, but you cannot georeference this table');
-                $('div.georeference_window span.top p:eq(0)').text('You likely have it already georeferenced.');
-              }
+								$('div.mamufas div.georeference_window ul.main_list li').addClass('disabled');
+								$('div.georeference_window h3').text('Sorry, but you cannot georeference this table');
+								$('div.georeference_window span.top p:eq(0)').text('You likely have it already georeferenced.');
+              }							
             },            
             error: function(e){}
           });
@@ -224,16 +231,16 @@
         function resetProperties() {
           $('div.mamufas div.georeference_window div.inner_ span.top').css('opacity',1).show();
           $('div.mamufas div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
-          $('div.mamufas div.georeference_window div.georef_options').hide();
           
-          $('div.mamufas div.georeference_window h3').text('Choose your geocoding method for this column');
-          $('div.mamufas div.georeference_window span.top p:eq(0)').text('Please select the columns for the lat/lon fields');
+          $('div.mamufas div.georeference_window h3').text('Choose your geocoding method for this table');
+          $('div.mamufas div.georeference_window span.top p:eq(0)').text('Please select the columns for the lat/lon fields or choose/create an address column.');
 
           $('div.mamufas div.georeference_window a.close_geo').show();
           $('div.mamufas div.georeference_window').css('height','auto');
           $('div.mamufas div.georeference_window div.inner_').css('height','auto');
           $('div.mamufas div.georeference_window').removeClass('loading');
-          
+          $('div.mamufas div.georeference_window input.address_input').val('');
+
           $('div.mamufas div.georeference_window span.select').each(function(i,ele){
             $(ele).addClass('disabled').removeClass('error');
           });
@@ -245,9 +252,6 @@
           $('div.mamufas div.georeference_window span.select').removeClass('clicked');
           $('div.mamufas div.georeference_window').css('overflow','visible');
 
-
-          // Remove selected li class before know where geo column is.
-          $('div.mamufas div.georeference_window ul.main_list li').removeClass('selected');
 
           // Remove all ScrollPane and lists items //
           var custom_scrolls = [];
@@ -271,6 +275,7 @@
 
               for (var i = 0; i<data.length; i++) {
                 if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
+	
                    if (data[i][2]==undefined) {
                      $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
                    } else {
@@ -294,10 +299,11 @@
                  $('div.georeference_window span.select:eq(0) ul').append('<li class="empty">Empty</li>');
                } else {
                  // If it comes from one column...
-                 if (init_lat != '') {
-                   $('a#latitude').text(init_lat);
-                   $('a#latitude').attr('c',init_lat);
-                 }
+                 if (init_column != '') {
+                   $('a#longitude').text(init_column);
+                   $('a#longitude').attr('c',init_column);
+									 $('div.georeference_window div.georef_options input.address_input').val('{'+init_column+'}');
+                 }                   
                }
 
                $('div.georeference_window span.select').removeClass('disabled');
@@ -337,8 +343,10 @@
         $(this).closest('span.select').children('a.option').text($(this).text());
         $(this).closest('span.select').children('a.option').attr('c',$(this).text());
         $('span.select').removeClass('clicked');
+				
+				var type = $(this).closest('span.select');
 
-        $(this).parent().parent().children('li').removeClass('choosen');
+				$(this).parent().parent().children('li').removeClass('choosen');
         $(this).parent().addClass('choosen');
         var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
         if (index == 0) {
@@ -352,49 +360,58 @@
         $('span.select:eq('+other_index+') ul li').removeClass('choosen');
         $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
         $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
+
       });
       $('a.confirm_georeference').livequery('click',function(ev){
         stopPropagation(ev);
 
         if (!$(this).hasClass('disabled')) {
-          var latitude = $('a#latitude').attr('c');
-          var longitude = $('a#longitude').attr('c');
-          if (!(latitude=='' && longitude=='')) {
-            var params = {};
-            params['latitude_column'] = latitude;
-            params['longitude_column'] = longitude;
-            params['_method'] = "PUT"
-            
-            var requestId = createUniqueId();
-            requests_queue.newRequest(requestId,'update_geometry');
-                        
-            $.ajax({                
-                type: "POST",
-                dataType: 'json',
-                url: global_api_url+'tables/'+ table_name,
-                data: params,
-                headers: {'cartodbclient':true},                                
-                success: function(data) {
-                  requests_queue.responseRequest(requestId,'ok','');
-                  successActionPerforming('update_geometry',null,null);
-                },
-                error: function(e) {
-                  requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors);
-                  errorActionPerforming('update_geometry',null,$.parseJSON(e.responseText).errors);
-                }
-            });
+	
+					// LAT|LON OR ADDRESS
+					if ($('div.georeference_window ul.main_list li.selected').index()==0) {
+						var latitude = $('a#latitude').attr('c');
+	          var longitude = $('a#longitude').attr('c');
+	          if (!(latitude=='' && longitude=='')) {
+	            var params = {};
+	            params['latitude_column'] = latitude;
+	            params['longitude_column'] = longitude;
+	            params['_method'] = "PUT"
 
-            loadingState();
-          } else {
-            if (latitude=='') {
-              $('span.select.latitude').addClass('error');
-            }
-            if (longitude=='') {
-              $('span.select.longitude').addClass('error');              
-            }
-            
-            $('div.georeference_window div.error_content').fadeIn().delay(3000).fadeOut();
-          }
+	            var requestId = createUniqueId();
+	            requests_queue.newRequest(requestId,'update_geometry');
+
+	            $.ajax({                
+	                type: "POST",
+	                dataType: 'json',
+	                url: global_api_url+'tables/'+ table_name,
+	                data: params,
+	                headers: {'cartodbclient':true},                                
+	                success: function(data) {
+	                  requests_queue.responseRequest(requestId,'ok','');
+	                  successActionPerforming('update_geometry',null,null);
+	                },
+	                error: function(e) {
+	                  requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors);
+	                  errorActionPerforming('update_geometry',null,$.parseJSON(e.responseText).errors);
+	                }
+	            });
+
+	            loadingState();
+	          } else {
+	            if (latitude=='') {
+	              $('span.select.latitude').addClass('error');
+	            }
+	            if (longitude=='') {
+	              $('span.select.longitude').addClass('error');              
+	            }
+	            $('div.georeference_window div.error_content').fadeIn().delay(3000).fadeOut();
+	          }
+					} else {
+						new Geocoding($('div.georeference_window div.georef_options input.address_input').val(),'addresses');
+						closeOutTableWindows();
+					}
+	
+
         }
 
 
@@ -992,7 +1009,6 @@
 	        if (!embed_map)
 	          createMap();
 	        toggleLayer();
-	        zoomToBBox();
 	        addCustomStyles();
 	        
 	        // Start zclip
@@ -1008,7 +1024,8 @@
 		  });
 		  
 			//	show embed tooltip
-			$('ul.tab_menu li a.share').mouseenter(function(){
+			$('ul.tab_menu li a.share').click(function(ev){
+				ev.preventDefault();
 				if ($(this).hasClass('disabled')) 
 					$(this).parent().find('span.share_tooltip').show();
 			});
@@ -1071,15 +1088,28 @@
           headers: {"cartodbclient":"true"},
           success:function(result){
             map_style = $.parseJSON(result.map_metadata);
-            if (!map_style || map_style.google_maps_base_type=="roadmap") {
-              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-            } else if (map_style.google_maps_base_type=="satellite") {
-              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
-            } else if (map_style.google_maps_base_type=="terrain") {
-              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
-            } else {
-              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
-            }
+						if (map_style!=null) {
+							if (map_style.google_maps_base_type=="satellite") {
+	              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+	            } else if (map_style.google_maps_base_type=="terrain") {
+	              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
+	            } else {
+	              embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+	            }
+	
+							if (map_style.zoom && map_style.longitude && map_style.latitude) {
+                embed_map.setZoom(map_style.zoom);
+                embed_map.setCenter(new google.maps.LatLng(map_style.latitude,map_style.longitude));
+              } else {
+                zoomToBBox();
+              }
+							
+						} else {
+							zoomToBBox();
+							embed_map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});
+							map_style = {};
+							map_style.google_maps_customization_style = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] }, { featureType: "administrative", stylers: [ { saturation: -95 },{ gamma: 2.26 } ] }, { featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "administrative.locality", stylers: [ { visibility: 'off' } ] }, { featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] }, { featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "road.arterial", stylers: [ { visibility: 'off' } ] }, { featureType: "road.local", elementType: "labels", stylers: [ { visibility: 'off' } ] }, { featureType: "transit", stylers: [ { visibility: 'off' } ] }, { featureType: "road", elementType: "labels", stylers: [ { visibility: 'off' } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
+						}
             
             // Custom tiles
             embed_map.setOptions({styles: map_style.google_maps_customization_style})

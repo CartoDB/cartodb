@@ -17,18 +17,15 @@
               '<div class="options short">'+
                 '<span class="tick"></span>'+
                 '<ul class="map_type">'+
-                  '<li>'+
-                    '<a class="option" href="#">CartoDB</a>'+
-                  '</li>'+
+									'<li>'+
+	                  '<a class="option" href="#">Roadmap</a>'+
+	                '</li>'+
                   '<li>'+
                     '<a class="option" href="#">Satellite</a>'+
                   '</li>'+
                   '<li>'+
                     '<a class="option" href="#">Terrain</a>'+
                   '</li>'+
-                  '<li>'+
-                    '<a class="option" href="#">Roadmap</a>'+
-                  '</li>'+                  
                   '<li>'+
                     '<a class="option" href="#">Custom tiles</a>'+
                     '<div class="suboptions">'+
@@ -326,7 +323,13 @@
         '</div>'+
         '<div class="loading">'+
           '<span class="loader"></span>'+
-        '</div>'
+        '</div>'+
+				'<form class="map_search">'+
+					'<p>go to</p>'+
+					'<input type="text" value="">'+
+					'<input type="submit">'+
+					'<span class="error">Ooops! Looks like we can\'t find this address</span>'+
+				'</form>'
       );
     }
 

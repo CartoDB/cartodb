@@ -406,9 +406,8 @@ describe CartoDB::Importer do
       result.import_type.should == '.csv'
       
       # test geometry is correct
-      res = @db[:facility].select{[x(the_geom),y(the_geom)]}.first
-      print res
-      res.should == {:x=>16.5607329, :y=>48.1199611}
+      res = @db["SELECT x(the_geom),y(the_geom) FROM facility WHERE prop_id=' Q448 '"].first
+      res.should == {:x=>-73.7698, :y=>40.6862}
     end
   end  
   

@@ -11,7 +11,11 @@ module CartoDB
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{@path}.shp #{@path}}
         out = `#{ogr2ogr_command}`
-
+        
+        if $?.exitstatus != 0
+          raise "failed to convert kml to shp"
+        end
+        
         if 0 < out.strip.length
           @runlog.stdout << out
         end

@@ -28,6 +28,11 @@ module CartoDB
         log "Running shp2pgsql: #{full_shp_command}"
 
         out = `#{full_shp_command}`
+        
+        if $?.exitstatus != 0
+          raise "failed to convert shp to sql"
+        end
+        
         if 0 < out.strip.length
           @runlog.stdout << out
         end

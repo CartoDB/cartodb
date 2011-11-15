@@ -104,12 +104,12 @@ module CartoDB
               UPDATE \"#{@suggested_name}\" 
               SET the_geom = 
                 ST_GeomFromText(
-                  'POINT(' || \"#{matching_longitude}\" || ' ' || \"#{matching_latitude}\" || ')', 4326
+                  'POINT(' || trim(\"#{matching_longitude}\") || ' ' || trim(\"#{matching_latitude}\") || ')', 4326
               ) 
               WHERE 
-              CAST(\"#{matching_longitude}\" AS text) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$' 
+              CAST(trim(\"#{matching_longitude}\") AS text) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$' 
               AND   
-              CAST(\"#{matching_latitude}\" AS text)  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+              CAST(trim(\"#{matching_latitude}\") AS text)  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
               GEOREF
               )
               @db_connection.run("CREATE INDEX \"#{@suggested_name}_the_geom_gist\" ON \"#{@suggested_name}\" USING GIST (the_geom)")

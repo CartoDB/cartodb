@@ -396,6 +396,22 @@ describe CartoDB::Importer do
     end
   end  
   
+  describe "Import CSV file with lat/lon column" do
+    it "should import facility.csv" do
+      importer = create_importer 'facility.csv', 'facility'
+      result = importer.import!
+
+      result.name.should == 'facility'
+      result.rows_imported.should == 541
+      result.import_type.should == '.csv'
+      
+      # test geometry is correct
+      res = @db[:facility].select{[x(the_geom),y(the_geom)]}.first
+      print res
+      res.should == {:x=>16.5607329, :y=>48.1199611}
+    end
+  end  
+  
   
   
   

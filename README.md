@@ -70,11 +70,11 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
 
         npm install
   
-  - Clone the main repository in your projects folder:
+  - Clone the CartoDB repository in your projects folder:
   
         git clone git@github.com:Vizzuality/cartodb.git
         
-  - Change to cartdb/ folder and `rvm` will require to create a new gemset. Say **yes**. If not, you must create a `gemset` for Ruby 1.9.2:
+  - Change to cartodb/ folder and `rvm` will require to create a new gemset. Say **yes**. If not, you must create a `gemset` for Ruby 1.9.2:
   
         rvm use 1.9.2@cartodb --create
         
@@ -104,7 +104,7 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
   
   - In a separate tab change to Node SQL API and Tiler directories and run node.js: `node app.js developement`
 
-  - Open your browser and go to `http://admin.localhost.lan:3000`
+  - Open your browser and go to `http://admin.localhost.lan:3000` or `http://my_subdomain.localhost.lan:3000`_
   
   - Enjoy!
   

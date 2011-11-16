@@ -14,19 +14,19 @@ module CartoDB
 
         random_table_name = "importing_#{Time.now.to_i}_#{@suggested_name}"
 
-        normalizer_command = "#{@python_bin_path} -Wignore #{File.expand_path("../../../../misc/shp_normalizer.py", __FILE__)} #{@path} #{random_table_name}"
+        normalizer_command = "#{@python_bin_path} -Wignore #{File.expand_path("../../../../misc/shp_normalizer.py", __FILE__)} \"#{@path}\" #{random_table_name}"
         out = `#{normalizer_command}`
         shp_args_command = out.split( /, */, 4 )
-
+        
         if shp_args_command.length != 4
           @runlog.log << "Error running python shp_normalizer script: #{normalizer_command}"
           @runlog.stdout << out
           raise "Error running python shp_normalizer script: #{normalizer_command}"
         end
 
-        full_shp_command = "#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -e -i -g the_geom -W #{shp_args_command[1]} #{shp_args_command[2]} #{shp_args_command[3].strip} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
+        full_shp_command = "#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -e -i -g the_geom -W #{shp_args_command[1]} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
         log "Running shp2pgsql: #{full_shp_command}"
-
+        
         out = `#{full_shp_command}`
         
         if $?.exitstatus != 0

@@ -235,7 +235,7 @@ describe User do
   
   it "should return the result from the last select query if multiple selects" do
     user = create_user
-    table = new_table
+    table = new_table(:user_id => user.id)
     table.user_id = user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
@@ -250,7 +250,7 @@ describe User do
 
   it "should allow multiple queries in the format: insert_query; select_query" do
     user = create_user
-    table = new_table
+    table = new_table(:user_id => user.id)
     table.user_id = user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save

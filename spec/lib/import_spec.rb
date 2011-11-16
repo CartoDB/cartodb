@@ -411,6 +411,18 @@ describe CartoDB::Importer do
     end
   end  
   
+  describe "Import CSV file with columns who are numbers" do
+    it "should import csv_with_number_columns.csv" do
+      importer = create_importer 'csv_with_number_columns.csv', 'csv_with_number_columns'
+      result = importer.import!
+
+      result.name.should == 'csv_with_number_columns'
+      result.rows_imported.should == 176
+      result.import_type.should == '.csv'
+      
+    end
+  end  
+  
   
   
   

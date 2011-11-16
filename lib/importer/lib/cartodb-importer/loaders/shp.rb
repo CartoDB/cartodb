@@ -1,7 +1,7 @@
 module CartoDB
   module Import
     class SHP < CartoDB::Import::Loader
-
+      
       register_loader :shp
 
       def process!
@@ -48,7 +48,7 @@ module CartoDB
           rescue Exception => msg  
             @runlog.err << msg
           end  
-        end
+        end        
 
         begin
           @db_connection.run("ALTER TABLE \"#{random_table_name}\" RENAME TO \"#{@suggested_name}\"")

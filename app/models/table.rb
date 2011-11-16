@@ -199,7 +199,6 @@ class Table < Sequel::Model(:user_tables)
               USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US'),
               ALTER COLUMN #{field.to_s} SET DEFAULT now();
           ALTERCREATEDAT
-          debugger
           user_database.run(sql)
       end
     end
@@ -884,6 +883,18 @@ TRIGGER
       end
     end
     return if type.nil?
+    
+    #if the geometry is MULTIPOINT we convert it to POINT
+    if type.to_s.downcase == "multipoint"
+      owner.in_database do |user_database|
+        user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'POINT', 2);")
+        user_database.run("UPDATE #{self.name} SET the_geom_simple = ST_GeometryN(the_geom,1);")
+        user_database.run("SELECT DropGeometryColumn('#{self.name}','the_geom');");
+        user_database.run("ALTER TABLE #{self.name} RENAME COLUMN the_geom_simple TO the_geom;")
+      end
+      type = "point"
+    end
+    
     raise InvalidArgument unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
     updates = false
     type = type.to_s.upcase

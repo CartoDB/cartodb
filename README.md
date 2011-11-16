@@ -45,6 +45,8 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
         psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"
         psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql 
         psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
+        psql -d template_postgis -f $POSTGIS_SQL_PATH/legacy.sql
+        psql -d template_postgis -f $POSTGIS_SQL_PATH/legacy_compatibility_layer.sql
         psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;" 
         psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
     

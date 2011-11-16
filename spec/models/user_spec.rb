@@ -150,10 +150,8 @@ describe User do
 
   it "should run valid queries against his database" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
+    table = new_table(:user_id => user.id)
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-#    debugger
     table.save
 
     query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")

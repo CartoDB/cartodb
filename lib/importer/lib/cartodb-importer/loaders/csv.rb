@@ -12,7 +12,7 @@ module CartoDB
         
         if $?.exitstatus != 0
           raise "failed to convert import CSV into postgres"
-        end
+        end        
         
         if 0 < out.strip.length
           @runlog.stdout << out

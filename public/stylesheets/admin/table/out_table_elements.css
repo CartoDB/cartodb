@@ -251,7 +251,7 @@ div.sql_window .CodeMirror{overflow:auto; height:100%;line-height:1em;font-famil
 div.sql_window .CodeMirror-scroll{position:absolute;left:0;top:0;overflow:auto;height:100%; position:relative;}
 div.sql_window .CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
 div.sql_window .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;white-space:pre !important;}
-div.sql_window .CodeMirror-lines{padding:.4em;}
+div.sql_window .CodeMirror-lines{padding:.4em; line-height:16px}
 div.sql_window .CodeMirror pre{font-family:Arial!important;font-size:13px!important;-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;padding:0;margin:0;white-space:pre;word-wrap:normal;}
 div.sql_window .CodeMirror-wrap pre{word-wrap:break-word;white-space:pre-wrap;}
 div.sql_window .CodeMirror-wrap .CodeMirror-scroll{overflow-x:hidden;}
@@ -287,7 +287,7 @@ div.mamufas div.delete_window {position:absolute; display:none; top:50%; left:50
 div.mamufas div.delete_window a.close {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0;}
 div.mamufas div.delete_window a.close:hover {background-position:0 -24px;}
 div.mamufas div.delete_window div.inner_ {width:430px; height:135px; border:2px solid #FF6600; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
-div.mamufas div.delete_window div.inner_ span.top {float:left; width:402px; padding:14px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.delete_window div.inner_ span.top {float:left; width:344px; padding:14px 14px 14px 72px; border-bottom:1px solid #CCCCCC; background:url('/images/admin/icons/stop.png') no-repeat 9px 13px;}
 div.mamufas div.delete_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.delete_window div.inner_ span.top p {position:relative; float:left!important; height:auto; width:100%; padding:10px 0 0 0!important; margin:0!important; font:normal 13px Helvetica,Arial; color:#666666; text-shadow:0 1px white;}
 div.mamufas div.delete_window div.inner_ span.top p a {color:#444444;}

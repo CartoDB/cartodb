@@ -394,6 +394,10 @@
 
           $('body').attr('query_mode','true');
           me.query_mode = true;
+					
+					// Set the new value to the editor
+					editor.setOption('query',editor.getValue());
+
           setAppStatus();
           me.refresh();
           
@@ -1412,7 +1416,7 @@
 
       // SQL?
       if (this.query_mode) {
-        var query = 'sql=' + editor.getValue();
+        var query = 'sql=' + editor.getOption('query');
         tile_url = wax.util.addUrlData(tile_url, sanitizeQuery(query));
         grid_url = wax.util.addUrlData(grid_url, sanitizeQuery(query));
       }

@@ -65,6 +65,7 @@
 					}
 				}
 	    });
+
 			
 			// Draggable and resizable capacities to sql window
 	    $('div.sql_window').draggable({appendTo: 'body',containment:'parent', handle:'h3'}).resizable({maxWidth:800,maxHeight:400});

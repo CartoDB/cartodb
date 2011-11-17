@@ -973,9 +973,9 @@ describe Table do
     FileUtils.rm_rf(path)
     
     parsed = CSV.parse(csv_content)
-    parsed[0].should == ["cartodb_id", "address", "name", "updated_at", "created_at", "the_geom"]
+    parsed[0].should == ["cartodb_id", "address", "latitude", "longitude", "name", "updated_at", "created_at", "the_geom"]
     parsed[1][0].should == "1"
-    parsed[1][5].should ==  "{\"type\":\"Point\",\"coordinates\":[-3.699732,40.423012]}"
+    parsed[1][-1].should ==  "{\"type\":\"Point\",\"coordinates\":[-3.699732,40.423012]}"
   end
   
   it "should return the content of a brand new table in SHP format" do

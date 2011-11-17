@@ -236,6 +236,7 @@ div.map_window div.cartocss_editor a.close:hover {background-position:0 -23px;}
 div.map_window div.cartocss_editor div.inner_ {float:left; width:498px; height:auto; border:1px solid #CDCDCD; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
 div.map_window div.cartocss_editor div.inner_ span.top {float:left; width:470px; padding:14px; border-bottom:1px solid #CCCCCC;}
 div.map_window div.cartocss_editor div.inner_ span.top h3 {width:100%; padding:0 0 3px 0; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
+div.map_window div.cartocss_editor div.inner_ span.top h3:hover {cursor:move}
 div.map_window div.cartocss_editor div.inner_ span.top p {display:block; padding:3px 0 0 0; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
 div.map_window div.cartocss_editor div.inner_ span.top p a {color:#666666}
 div.map_window div.cartocss_editor div.inner_ span.top p a:hover {color:#333333}
@@ -255,29 +256,31 @@ div.map_window div.cartocss_editor div.inner_ span.bottom a.try_css:hover {backg
 
 
 /*codemirror CSS*/
-div.map_window .CodeMirror{position:relative; overflow:auto; height:300px;line-height:1em;font-family:Arial; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; min-width:454px; max-width:454px; max-height:265px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #CDCDCD; webkit-border-radius:5px;
-border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial; color:#333333; line-height:13px; background:white; z-index:5;}
-div.map_window .CodeMirror-gutter{position:absolute;left:0;top:0;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
-div.map_window .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;}
-div.map_window .CodeMirror-lines{padding:.4em;}
-div.map_window .CodeMirror pre{-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;font-family:inherit;}
-div.map_window .CodeMirror textarea{font-family:Arial !important;}
+div.map_window .CodeMirror{position:relative; overflow:auto; line-height:1em;font-family:monospace; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; display:block; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0 white; border:1px solid #CDCDCD; webkit-border-radius:5px; z-index:5}
+div.map_window .CodeMirror-scroll{overflow:auto;height:300px;position:relative;}
+div.map_window .CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
+div.map_window .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;white-space:pre !important;}
+div.map_window .CodeMirror-lines{padding:.4em; line-height:14px}
+div.map_window .CodeMirror pre{font-family:Arial!important;font-size:13px!important;-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;padding:0;margin:0;white-space:pre;word-wrap:normal;}
+div.map_window .CodeMirror-wrap pre{word-wrap:break-word;white-space:pre-wrap;}
+div.map_window .CodeMirror-wrap .CodeMirror-scroll{overflow-x:hidden;}
+div.map_window .CodeMirror textarea{font-family:Arial!important;}
 div.map_window .CodeMirror-cursor{z-index:10;position:absolute;visibility:hidden;border-left:1px solid black !important;}
 div.map_window .CodeMirror-focused .CodeMirror-cursor{visibility:visible;}
 div.map_window span.CodeMirror-selected{background:#ccc !important;color:HighlightText !important;}
 div.map_window .CodeMirror-focused span.CodeMirror-selected{background:Highlight !important;}
 div.map_window .CodeMirror-matchingbracket{color:#0f0 !important;}
 div.map_window .CodeMirror-nonmatchingbracket{color:#f22 !important;}
-div.map_window pre span {float:none!important; width:auto!important;}
-
-
-/*Codemirror CSS*/
-span.css-at {color: #708;}
-span.css-unit {color: #281;}
-span.css-value {color: #708;}
-span.css-identifier {color: #990000;}
-span.css-selector {color: #11B;}
-span.css-important {color: #00F;}
-span.css-colorcode {color: #299;}
-span.css-comment {color: #A70;}
-span.css-string {color: #A22;}
+div.map_window span.cm-css-at {color: #708;}
+div.map_window span.cm-css-unit {color: #281;}
+div.map_window span.cm-css-value {color: #708;}
+div.map_window span.cm-css-identifier {color: #990000;}
+div.map_window span.cm-css-selector {color: #11B;}
+div.map_window span.cm-css-important {color: #00F;}
+div.map_window span.cm-css-colorcode {color: #299;}
+div.map_window span.cm-css-comment {color: #A70;}
+div.map_window span.cm-css-string {color: #A22;}
+div.map_window ::-webkit-scrollbar {width: 10px;}
+div.map_window ::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.3);border-radius:10px;}
+div.map_window ::-webkit-scrollbar-thumb{border-radius:10px;-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.5);background:rgba(0,0,0,0.1);cursor:pointer!important}
+div.map_window ::-webkit-scrollbar-thumb:hover,div.sql_window ::-webkit-scrollbar-thumb:active{background:rgba(0,0,0,0.3);cursor:pointer!important}

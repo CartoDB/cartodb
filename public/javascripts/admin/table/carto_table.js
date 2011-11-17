@@ -88,9 +88,9 @@
         if (table.mode!='query') {
 			    startTable();
 		    } else {
-					if (msg) {
+					if (msg || is_write_query) {
 						requests_queue.pendingOperations[requestId].type = "query_action";
-						loadingMessages["query_action"] = msg;
+						loadingMessages["query_action"] = msg || 'operation completed';
 						$('a.clear_table').click();
 					} else {
 						methods.drawQueryColumns(rows,table.total_r,time,new_query);

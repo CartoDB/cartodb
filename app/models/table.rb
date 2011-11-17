@@ -1,5 +1,5 @@
 # coding: UTF-8
-
+# Proxies management of a table in the users database
 class Table < Sequel::Model(:user_tables)
 
   # App constants

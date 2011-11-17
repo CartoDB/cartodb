@@ -23,7 +23,7 @@ div.table_position table thead tr th p.geo {float:left; width:22px; height:12px;
 div.table_position table thead tr th p.geo:hover {background-position:0 -12px; cursor:pointer;}
 div.table_position table thead tr th p.geo.disabled {opacity:0.7}
 div.table_position table thead tr th p.geo.disabled:hover {cursor:default; background-position:0 0}
-div.table_position table thead tr th p.geo.loading {height:16px; width:16px; background:url('/images/admin/table/ajax-loader.gif') no-repeat 0 0;}
+div.table_position table thead tr th p.geo.loading {height:16px; width:16px; margin:1px 0 0 5px; background:url('/images/admin/table/ajax-loader.gif') no-repeat 0 0;}
 div.table_position table thead tr th a.options {position:absolute; right:10px; top:12px; height:14px; width:14px; margin:0; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10; overflow:hidden;}
 div.table_position table thead tr th a.options:hover {background-position:0 -14px;}
 div.table_position table thead tr th a.options.selected {height:20px; background-image:url('/images/admin/table/selected_option.png')}
@@ -205,17 +205,16 @@ div.filter_window div.inner_ span.top label {display:block; padding:11px 0 0 0; 
 div.filter_window div.inner_ span.top input {width:298px; height:13px; padding:6px 7px!important; margin:5px 0 0 0; border:1px solid #999999; webkit-border-radius:4px;
 border-radius:4px; -moz-border-radius:4px; font:normal 13px Arial; color:#333333; line-height:13px;}
 div.filter_window div.inner_ span.top input:focus {outline:none;}
-div.filter_window div.inner_ span.top div.select_content {position:absolute; top:24px; left:49px; display:none; width:120px; height:auto; max-height:115px; margin:0!important; padding:2px 0px 5px;
-   background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
-   border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
-div.filter_window div.inner_ span.top ul {float:left; display:default; width:100px; height:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
-div.filter_window div.inner_ span.top ul li {float:left; width:90px!important; margin:0; padding:3px 0 2px; color:white; opacity:1; font:italic 11px "Helvetica",Arial;}
-div.filter_window div.inner_ span.top ul li.empty {opacity:0.5}
-div.filter_window div.inner_ span.top ul li a {float:left; width:90px!important; padding:0; background:none; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 11px "Helvetica",Arial; color:white;
+div.filter_window div.inner_ span.top div.select_content {position:absolute; top:-35px; left:49px; display:none; width:140px; height:auto; max-height:125px; margin:0; padding:0;
+   background:white; z-index:20; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; border:1px solid #999999}
+div.filter_window div.inner_ span.top div.select_content ul {float:left; display:block; width:100%; height:100%; margin:0; padding:0; overflow-y:auto; overflow-x:hidden;}
+div.filter_window div.inner_ span.top div.select_content ul li {display:block; margin:0; padding:0; opacity:1}
+div.filter_window div.inner_ span.top div.select_content ul li.empty {opacity:0.5}
+div.filter_window div.inner_ span.top div.select_content ul li a {display:block; padding:4px 5px 4px 10px; background:none; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 13px "Helvetica",Arial; color:#333333;
   text-shadow:none; text-decoration:none}
-div.filter_window div.inner_ span.top ul li a:hover {color:#6DBE6D;}
-div.filter_window div.inner_ span.top ul li.selected a {color:#6DBE6D;}
-div.filter_window div.inner_ span.top ul li.selected a:hover {cursor:default}
+div.filter_window div.inner_ span.top div.select_content ul li a:hover {color:#283A5A;}
+div.filter_window div.inner_ span.top div.select_content ul li.selected a {color:white; background:#283A5A}
+div.filter_window div.inner_ span.top div.select_content ul li.selected a:hover {cursor:default}
 div.filter_window div.inner_ span.bottom {float:left; width:313px; padding:6px 14px; margin:0; border-top:1px solid white;}
 div.filter_window div.inner_ span.bottom a.cancel {float:left; margin:11px 0 0 0; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.filter_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
@@ -269,13 +268,19 @@ div.table_position div.edit_cell div.date div.month span.bounds {position:relati
   background-image:-moz-linear-gradient(100% 100% 90deg, #DBDCDF, #FFFFFF); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#DBDCDF));}
 div.table_position div.edit_cell div.date div.month span.bounds a {float:left; width:78px!important; margin:2px 0 0 0!important; padding:0 10px 0 0!important; background:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white;
     text-overflow:ellipsis; overflow:hidden; white-space:nowrap; background:url('/images/admin/icons/select_arrows.png') no-repeat 70px 5px; text-decoration:none;}
-div.table_position div.edit_cell div.date div.month div.months_list {position:absolute; display:none; top:27px; left:-15px; width:120px; max-height:115px; margin:0!important; padding:2px 0px 5px;
-       background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
-       border-bottom-right-radius: 3px; border-bottom-left-radius: 3px; z-index:20;}
-div.table_position div.edit_cell div.date div.month div.months_list ul {float:left; display:block; width:100px; max-height:90px; margin:17px 0 0; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
-div.table_position div.edit_cell div.date div.month div.months_list ul li {float:left; width:90px; padding:0 0 5px 0;}
-div.table_position div.edit_cell div.date div.month div.months_list ul li a {font:normal 11px "Helvetica",Arial; color:white; text-decoration:none;}
-div.table_position div.edit_cell div.date div.month div.months_list ul li a:hover {color:#6CBE6C;}
+
+div.table_position div.edit_cell div.date div.month div.months_list {position:absolute; top:-35px; left:-4px; display:none; width:100px; height:auto; max-height:125px; margin:0; padding:5px 0;
+   background:white; z-index:20; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; border:1px solid #999999}
+div.table_position div.edit_cell div.date div.month div.months_list ul {float:left; display:block; width:100%; height:115px; margin:0; padding:0; overflow-y:auto; overflow-x:hidden;}
+div.table_position div.edit_cell div.date div.month div.months_list ul li {display:block; margin:0; padding:0; opacity:1}
+div.table_position div.edit_cell div.date div.month div.months_list ul li.empty {opacity:0.5}
+div.table_position div.edit_cell div.date div.month div.months_list ul li a {display:block; padding:4px 5px 4px 10px; background:none; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 13px "Helvetica",Arial; color:#333333;
+  text-shadow:none; text-decoration:none}
+div.table_position div.edit_cell div.date div.month div.months_list ul li a:hover {color:#283A5A;}
+div.table_position div.edit_cell div.date div.month div.months_list ul li.selected a {color:white; background:#283A5A}
+div.table_position div.edit_cell div.date div.month div.months_list ul li.selected a:hover {cursor:default}
+
+
 div.table_position div.edit_cell div.date div.year {float:left; width:57px; margin:0 0 0 8px;}
 div.table_position div.edit_cell div.date div.year label {float:left; width:54px; padding:0 0 0 3px; margin:0; font:bold 10px "Helvetica",Arial; color:#999999;}
 div.table_position div.edit_cell div.date div.year span.bounds {position:relative!important; float:left!important; top:0; bottom:0; left:0; right:0; width:57px; height:28px; padding:0; margin:5px 0 0 0; overflow:hidden;}
@@ -334,14 +339,17 @@ div.mamufas div.column_window div.inner_ span.top span.select a {float:left; wid
 div.mamufas div.column_window div.inner_ span.top span.select a:hover {color:#000000;}
 div.mamufas div.column_window div.inner_ span.top span.select select {display:none;}
 div.mamufas div.column_window div.inner_ span.top span.select.clicked a {background-position:188px -15px;}
-div.mamufas div.column_window div.inner_ span.top span.select.clicked div.select_content {position:absolute; top:18px; left:35px; display:block; width:120px; max-height:110px; margin:0!important; padding:2px 0px 5px;
-   background:url('/images/admin/table/select_bkg.png') no-repeat 0 0; z-index:20; -webkit-border-bottom-right-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px;
-   border-bottom-right-radius: 3px; border-bottom-left-radius: 3px; z-index:20;}
-div.mamufas div.column_window div.inner_ span.top span.select.clicked ul {float:left; display:default; width:100px; max-height:90px; margin:14px 0 0 1px; padding:0 7px 5px; overflow-y:auto; overflow-x:hidden;}
-div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li a {float:left; width:90px!important; padding:0; background:none; font-weight:normal; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:white;
-  text-shadow:none; font:normal 11px "Helvetica", Arial;}
-div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li a:hover {color:#6DBE6D;}
-div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li {float:left; margin:3px 0!important;}
+div.mamufas div.column_window div.inner_ span.top span.select.clicked div.select_content {position:absolute; top:-35px; left:34px; display:block; width:140px; height:auto; max-height:125px; margin:0; padding:0;
+   background:white; z-index:20; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; border:1px solid #999999; z-index:20;}
+div.mamufas div.column_window div.inner_ span.top span.select.clicked ul {float:left; display:block; width:100%; height:100%; margin:0; padding:0; overflow-y:auto; overflow-x:hidden;}
+div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li {display:block; margin:0; padding:0; opacity:1}
+div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li a {display:block!important; padding:4px 5px 4px 10px!important; background:none; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 13px "Helvetica",Arial; color:#333333;
+  text-shadow:none; text-decoration:none}
+div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li a:hover {color:#283A5A;}
+div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li.selected a {color:white; background:#283A5A}
+div.mamufas div.column_window div.inner_ span.top span.select.clicked ul li.selected a:hover {cursor:default}
+
+
 div.mamufas div.column_window div.inner_ span.top span.select.disabled {opacity:0.5;}
 div.mamufas div.column_window div.inner_ span.top span.select.disabled a {cursor:default;}
 div.mamufas div.column_window div.inner_ span.top span.select.error {border-color:#C04E03;}
@@ -366,17 +374,17 @@ div.mamufas div.lastpage_window div.inner_ span.loading p {padding:6px 0 0 0; fo
 
 
 /*jScrollPane CSS*/
-.jspContainer{overflow:hidden;position:relative;}
-.jspPane{position:absolute; width:90px;}
+.jspContainer{overflow:hidden;position:relative; width:100%}
+.jspPane{position:absolute; width:100%;}
 .jspVerticalBar{position:absolute;top:0px;right:3px;width:6px;height:100%; background:none;}
 .jspHorizontalBar{position:absolute;bottom:0;left:0;width:100%;height:16px;background:none;}
 .jspVerticalBar *,
 .jspHorizontalBar *{margin:0;padding:0;}
 .jspCap{display:none;}
 .jspHorizontalBar .jspCap{float:left;}
-.jspTrack{background:#28304A;position:relative; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
-.jspDrag{background:#DBDCDF;position:relative;top:0;left:0;cursor:pointer; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
-.jspDrag:hover {background:#fff;}
+.jspTrack{background:rgba(0,0,0,0.1);position:relative; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
+.jspDrag{background:rgba(0,0,0,0.2); position:relative;top:0;left:0;cursor:pointer; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;}
+.jspDrag:hover {background:rgba(0,0,0,0.4);}
 .jspHorizontalBar .jspTrack,
 .jspHorizontalBar .jspDrag{float:left;height:100%;}
 .jspArrow{background:#50506d;text-indent:-20000px;display:block;cursor:pointer;}

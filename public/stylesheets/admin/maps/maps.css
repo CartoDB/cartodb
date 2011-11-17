@@ -90,9 +90,12 @@ div.map_window div.map_header div.options {position:absolute; display:none; righ
 div.map_window div.map_header div.options.short {width:122px}
 div.map_window div.map_header div.options span.tick {position:relative; float:right; width:14px; height:25px; background:url('/images/admin/map/combo_bkg.png') no-repeat 0 0}
 div.map_window div.map_header div.options span.tick:hover {cursor:pointer}
+body.query div.map_window div.map_header div.options span.tick {background-position:-14px 0}
 div.map_window div.map_header div.options ul {display:block; height:auto; margin:0; padding:7px 10px; background:linear-gradient(-90deg, #283A5A, #282F49); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#283A5A), to(#282F49));
   background:-moz-linear-gradient(-90deg, #283A5A, #282F49); background: -o-linear-gradient(#283A5A,#282F49); background:#283A5A\9; -webkit-border-radius: 3px; -webkit-border-top-right-radius:0;-moz-border-radius:3px;-moz-border-radius-topright:0;
   border-radius:3px;border-top-right-radius:0; border:none}
+body.query div.map_window div.map_header div.options ul {background:linear-gradient(-90deg,rgba(51,51,51,1),rgba(10,10,10,1));background:-webkit-gradient(linear,50% 0%,50% 100%,from(rgba(51,51,51,1)),to(rgba(10,10,10,1)));
+  background:-moz-linear-gradient(-90deg,rgba(51,51,51,1),rgba(10,10,10,1));background:-o-linear-gradient(rgba(51,51,51,1),rgba(10,10,10,1));background:#515151\9;}
 div.map_window div.map_header div.options ul li {display:block; width:123px; height:auto; margin:0; padding:2px 10px; border:none;}
 div.map_window div.map_header div.options.short ul li {width:82px}
 div.map_window div.map_header div.options ul li.selected.special {padding:7px 10px; margin:3px 0 0 0; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #DBDCDF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#DBDCDF));
@@ -165,14 +168,24 @@ div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider .ui-
 background:-moz-linear-gradient(-90deg, #99CC00, #7BA600); background: -o-linear-gradient(#99CC00,#7BA600); background:#7BA600\9;}
 div.map_window div.map_header div.suboptions div.long span.alpha span.tooltip {position:absolute; display:none; top:-14px; width:30px; height:18px; margin:0 0 0 -12px; background:url('/images/admin/map/range_tooltip.png') no-repeat 0 0; font:normal 10px "Helvetica",Arial; color:white; text-align:center}
 
+div.map_window div.map_header div.options ul li span.info_tools {display:inline-block; width:100%; margin:5px 0}
+div.map_window div.map_header div.options ul li span.info_tools a {float:left; width:59px; height:11px; margin:0; padding:5px 0 5px; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;  line-height:11px;  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE)); text-align:center;
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE'); background-position:0 0!important}
+div.map_window div.map_header ul.infowindow_customization div.suboptions span.info_tools a.mark_all {-webkit-border-top-right-radius:0px; -moz-border-radius-topright:0; border-top-right-radius:0; -webkit-border-bottom-right-radius:0px; -moz-border-radius-bottomright:0; border-bottom-right-radius:0;}
+div.map_window div.map_header ul.infowindow_customization div.suboptions span.info_tools a.clear_all {-webkit-border-top-left-radius:0px; -moz-border-radius-topleft:0; border-top-left-radius:0; -webkit-border-bottom-left-radius:0px; -moz-border-radius-bottomleft:0; border-bottom-left-radius:0; border-left:hidden;}
+div.map_window div.map_header div.options ul li span.info_tools a:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer!important; background-position:0 0!important;}
+
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names {width:100%; min-height:100px; max-height:160px; padding:0; margin:0; background:none; overflow-y:auto; overflow-x:hidden}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspTrack {background: #dddddd;}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspDrag {background: #999999;}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspHover, div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspActive {background:#666666}
-div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li {padding-left:10px}
-div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a {padding:0 0 0 17px; max-width:95px; background:url('/images/admin/icons/checkbox.png') no-repeat 0 -18px!important; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#999999!important; text-shadow:0 1px white}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li {padding:0; margin:0;}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a {padding:0 0 0 15px; max-width:95px; background:url('/images/admin/icons/checkbox.png') no-repeat -2px -18px!important; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#999999!important; text-shadow:0 1px white}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a:hover {cursor:pointer!important; color:#666666!important;}
-div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a.on {background-position:0 -1px!important; color:#666666!important; text-shadow:0 1px white}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a.on {background-position:-2px -1px!important; color:#666666!important; text-shadow:0 1px white}
+
 
 /*MARKERS CUSTOMIZATION*/
 div.map_window div.map_header ul li span.marker_customization {position:absolute; display:none; top:19px; right:13px; width:163px; height:auto; background:url('/images/admin/map/combo_bkg.png') no-repeat right 0;}
@@ -226,12 +239,16 @@ div.map_window div.cartocss_editor a.close:hover {background-position:0 -23px;}
 div.map_window div.cartocss_editor div.inner_ {float:left; width:498px; height:auto; border:1px solid #CDCDCD; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
 div.map_window div.cartocss_editor div.inner_ span.top {float:left; width:470px; padding:14px; border-bottom:1px solid #CCCCCC;}
 div.map_window div.cartocss_editor div.inner_ span.top h3 {width:100%; padding:0 0 3px 0; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
+div.map_window div.cartocss_editor div.inner_ span.top h3:hover {cursor:move}
 div.map_window div.cartocss_editor div.inner_ span.top p {display:block; padding:3px 0 0 0; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
 div.map_window div.cartocss_editor div.inner_ span.top p a {color:#666666}
 div.map_window div.cartocss_editor div.inner_ span.top p a:hover {color:#333333}
-div.map_window div.cartocss_editor div.inner_ span.top textarea {min-width:454px; max-width:454px; max-height:265px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #999999; webkit-border-radius:4px;
-border-radius:4px; -moz-border-radius:4px; font:normal 13px Arial; color:#333333; line-height:13px; background:white}
+div.map_window div.cartocss_editor div.inner_ span.top textarea {position:relative; min-width:454px; max-width:454px; max-height:265px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #CDCDCD; webkit-border-radius:5px;
+border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial; color:#333333; line-height:13px; background:white}
 div.map_window div.cartocss_editor div.inner_ span.top textarea:focus {outline:none;}
+div.map_window div.cartocss_editor div.inner_ span.top span.errors {position:relative; display:none; z-index:-1; height:auto; margin:-10px 0 0 0; padding:15px 0 7px; border-radius:5px; -webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #CDCDCD;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E);
+  background:linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#FFB5A3),to(#FF8A6E));background:-moz-linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-o-linear-gradient(#FFB5A3,#FF8A6E);background:#FFB5A3\9; z-index:0;}
+div.map_window div.cartocss_editor div.inner_ span.top span.errors p {padding:0 0 0 26px; color:#333333; font:normal 13px Arial; text-shadow:none; background:url('/images/admin/icons/error.png') no-repeat 7px 1px}
 div.map_window div.cartocss_editor div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; padding:0 0 18px 0; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.map_window div.cartocss_editor div.inner_ span.bottom a.cancel:hover {color:#333333;}
 div.map_window div.cartocss_editor div.inner_ span.bottom a.try_css {float:right; height:12px; margin:10px 14px 0 0; padding:7px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
@@ -242,29 +259,31 @@ div.map_window div.cartocss_editor div.inner_ span.bottom a.try_css:hover {backg
 
 
 /*codemirror CSS*/
-div.map_window .CodeMirror{overflow:auto; height:300px;line-height:1em;font-family:Arial; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; min-width:454px; max-width:454px; max-height:265px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #999999; webkit-border-radius:4px;
-border-radius:4px; -moz-border-radius:4px; font:normal 13px Arial; color:#333333; line-height:13px; background:white}
-div.map_window .CodeMirror-gutter{position:absolute;left:0;top:0;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
-div.map_window .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;}
-div.map_window .CodeMirror-lines{padding:.4em;}
-div.map_window .CodeMirror pre{-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;font-family:inherit;}
-div.map_window .CodeMirror textarea{font-family:Arial !important;}
+div.map_window .CodeMirror{position:relative; overflow:auto; line-height:1em;font-family:monospace; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; display:block; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0 white; border:1px solid #CDCDCD; webkit-border-radius:5px; z-index:5}
+div.map_window .CodeMirror-scroll{overflow:auto;height:300px;position:relative;}
+div.map_window .CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
+div.map_window .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;white-space:pre !important;}
+div.map_window .CodeMirror-lines{padding:.4em; line-height:14px}
+div.map_window .CodeMirror pre{font-family:Arial!important;font-size:13px!important;-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;padding:0;margin:0;white-space:pre;word-wrap:normal;}
+div.map_window .CodeMirror-wrap pre{word-wrap:break-word;white-space:pre-wrap;}
+div.map_window .CodeMirror-wrap .CodeMirror-scroll{overflow-x:hidden;}
+div.map_window .CodeMirror textarea{font-family:Arial!important;}
 div.map_window .CodeMirror-cursor{z-index:10;position:absolute;visibility:hidden;border-left:1px solid black !important;}
 div.map_window .CodeMirror-focused .CodeMirror-cursor{visibility:visible;}
 div.map_window span.CodeMirror-selected{background:#ccc !important;color:HighlightText !important;}
 div.map_window .CodeMirror-focused span.CodeMirror-selected{background:Highlight !important;}
 div.map_window .CodeMirror-matchingbracket{color:#0f0 !important;}
 div.map_window .CodeMirror-nonmatchingbracket{color:#f22 !important;}
-div.map_window pre span {float:none!important; width:auto!important;}
-
-
-/*Codemirror CSS*/
-span.css-at {color: #708;}
-span.css-unit {color: #281;}
-span.css-value {color: #708;}
-span.css-identifier {color: #990000;}
-span.css-selector {color: #11B;}
-span.css-important {color: #00F;}
-span.css-colorcode {color: #299;}
-span.css-comment {color: #A70;}
-span.css-string {color: #A22;}
+div.map_window span.cm-css-at {color: #708;}
+div.map_window span.cm-css-unit {color: #281;}
+div.map_window span.cm-css-value {color: #708;}
+div.map_window span.cm-css-identifier {color: #990000;}
+div.map_window span.cm-css-selector {color: #11B;}
+div.map_window span.cm-css-important {color: #00F;}
+div.map_window span.cm-css-colorcode {color: #299;}
+div.map_window span.cm-css-comment {color: #A70;}
+div.map_window span.cm-css-string {color: #A22;}
+div.map_window ::-webkit-scrollbar {width: 10px;}
+div.map_window ::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.3);border-radius:10px;}
+div.map_window ::-webkit-scrollbar-thumb{border-radius:10px;-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.5);background:rgba(0,0,0,0.1);cursor:pointer!important}
+div.map_window ::-webkit-scrollbar-thumb:hover,div.sql_window ::-webkit-scrollbar-thumb:active{background:rgba(0,0,0,0.3);cursor:pointer!important}

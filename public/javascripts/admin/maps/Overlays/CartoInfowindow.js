@@ -87,16 +87,17 @@
   	  var pixPosition = this.getProjection().fromLatLngToDivPixel(this.latlng_);
   	  if (pixPosition) {
   		  div.style.width = this.width_ + 'px';
-  		  div.style.left = (pixPosition.x - 49) + 'px';
+  		  div.style.left = (pixPosition.x - 49 + (this.pixel?0:10)) + 'px';
   		  var actual_height = - $(div).height();
-  		  div.style.top = (pixPosition.y + actual_height + 5) + 'px';
+  		  div.style.top = (pixPosition.y + actual_height + (this.pixel?0:actual_height+60)) + 'px';
   	  }
+			
   	  this.show();
     }
 	}
 	
 	
-	CartoInfowindow.prototype.open = function(feature,pixel){
+	CartoInfowindow.prototype.open = function(feature,pixel,latlng){
 	  var me = this;
 	  this.marker_ = feature;
 	  
@@ -120,9 +121,11 @@
 
   	    // If we dont have the pixel position go and get latlng position
 				if (pixel!=null) {
-	  	    me.latlng_ = carto_map.map_canvas_.transformCoordinates(new google.maps.Point(pixel.x,pixel.y));;
+	  	    me.latlng_ = carto_map.map_canvas_.transformCoordinates(new google.maps.Point(pixel.x,pixel.y));
+					me.pixel = pixel;
 				} else {
-	  	    me.latlng_ = transformGeoJSON(info.the_geom).center;
+	  	    me.latlng_ = latlng;
+					me.pixel = null;
 				}
   	    
   	    var query_mode = $('body').attr('query_mode') === 'true';

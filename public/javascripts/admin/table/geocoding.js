@@ -3,7 +3,6 @@
     if (!georeferencing) {
       this.address = address;
       this.table = table_name;
-      this.page = 0;
 			
 
       // Get the total and start loader
@@ -25,16 +24,38 @@
 
 		$.ajax({
       method: "GET",
-      url: global_api_url+'queries?sql='+escape("SELECT * from "+this.table+" where the_geom is null"),
+      url: global_api_url+'queries?sql='+escape("SELECT cartodb_georef_status from "+this.table+" where cartodb_georef_status is NULL OR cartodb_georef_status=false"),
       headers: {'cartodbclient':true},
       dataType:'jsonp',
-      data: {rows_per_page:100,page:me.page},
+      data: {rows_per_page:100},
       success: function(result) {
 				me.requestId = createUniqueId();
 		    requests_queue.startGeoreferencing(me.requestId,result.total_rows);
 		    me.getRecords();
-      }
+      },
+			error: function(e) {
+				createGeoreferencedColumn();
+			}
     });
+
+		// Column to know if this record has been georeferenced or not
+		function createGeoreferencedColumn() {
+			var params = {};
+			params['name'] = 'cartodb_georef_status';
+			params['type'] = "boolean";
+			$.ajax({
+        dataType: 'json',
+        type: 'POST',
+        dataType: "text",
+        headers: {"cartodbclient": true},
+        url: '/api/v1/tables/'+me.table+'/columns',
+        data: params,
+        success: function(data) {
+					me.getTotalRecords();
+				},
+        error: function(e, textStatus) {}
+      });
+		}
 	}
 
 
@@ -54,11 +75,11 @@
 	
 		$.ajax({
       method: "GET",
-      url: global_api_url+'queries?sql='+escape("SELECT * from "+this.table+" where the_geom is null"),
+      url: global_api_url+'queries?sql='+escape("SELECT * from "+this.table+" where cartodb_georef_status is NULL OR cartodb_georef_status=false"),
       headers: {'cartodbclient':true},
       dataType:'jsonp',
-      data: {rows_per_page:100,page:me.page},
-      success: function(result) {				
+      data: {rows_per_page:100},
+      success: function(result) {
         var rows = result.rows,
 						addresses = [];
 				_.each(rows,function(row,i){
@@ -67,7 +88,6 @@
 
         if (result.rows!=null && result.rows.length>0) {
           // Update loader
-          requests_queue.updateGeoreferencing(result.total_rows);
           me.processGeocoding(addresses);
         } else {
           requests_queue.finishGeoreferencing(me.requestId);
@@ -93,7 +113,6 @@
         delete worker;
         
         if (event.data == "Finish") {
-          me.page++;
           me.getRecords();
         } else {
           me.stopGeocoding();
@@ -105,17 +124,18 @@
         var params = {};
         if (event.data.Placemark != undefined) {
           params['the_geom'] = {"type":"Point","coordinates":[event.data.Placemark[0].Point.coordinates[0],event.data.Placemark[0].Point.coordinates[1]]};
-          $.ajax({
-            dataType: 'json',
-            type: 'PUT',
-            dataType: "text",
-            headers: {"cartodbclient": true},
-            url: '/api/v1/tables/'+me.table+'/records/'+event.data.cartodb_id,
-            data: params,
-            success: function(data) {},
-            error: function(e, textStatus) {}
-          });
         }
+				params['cartodb_georef_status'] = true;
+				$.ajax({
+          dataType: 'json',
+          type: 'PUT',
+          dataType: "text",
+          headers: {"cartodbclient": true},
+          url: '/api/v1/tables/'+me.table+'/records/'+event.data.cartodb_id,
+          data: params,
+          success: function(data) {},
+          error: function(e, textStatus) {}
+        });
       }
     };
     

@@ -29,7 +29,7 @@
       	  if (!this.checking) {
       	    if (this.loader.html()=="") {
       	      if (this.georeferencing) {
-        	      this.loader.append('<p class="loading" style="text-align:center">Georeferencing... <strong style="opacity:0">'+this.georeferencing.total+'</strong>/'+this.georeferencing.total+'</p>');
+        	      this.loader.append('<p class="loading" style="text-align:center">Georeferencing... <strong style="opacity:0">'+this.georeferencing.total+'/</strong>'+this.georeferencing.total+'</p>');
       	      } else {
         	      this.loader.append('<p class="loading">Loading...</p>');
       	      }

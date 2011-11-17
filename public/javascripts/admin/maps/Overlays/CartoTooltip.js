@@ -14,13 +14,15 @@
 
           $(div).find('a.info').click(function(ev){
               ev.preventDefault();
+							ev.stopPropagation();
               me.hide();
               carto_map.over_marker_ = true;
-              carto_map.info_window_.open(me.markers_);
+              carto_map.info_window_.open(me.markers_,null,me.latlng_);
           });
 
           $(div).find('a.edit').click(function(ev){
               ev.preventDefault();
+							ev.stopPropagation();
               me.hide();
               carto_map.createFakeGeometry(me.markers_);
           });
@@ -77,9 +79,10 @@
           $(div).find('a.delete_geometry').unbind('click');
           $(div).find('a.delete_geometry').click(function(ev){
             ev.preventDefault();
+						ev.stopPropagation();
             carto_map.over_marker_ = true;
             me.hide();
-            carto_map.delete_window_.open(me.latlng_,marker);
+            carto_map.delete_window_.open(me.latlng_,marker,me.pixel);
           });
         } else {
           div.style.width = '14px';
@@ -116,10 +119,10 @@
   }
 
 	CartoTooltip.prototype.setPosition = function(latlng,feature) {
-		if (this.div_) {
+		if (this.div_ && !carto_map.over_tooltip) {
       var div = this.div_;
       var me = this;
-
+			
     	this.latlng_ = latlng;
 	    var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
 	    if (pixPosition) {

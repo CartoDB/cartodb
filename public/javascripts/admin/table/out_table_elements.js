@@ -57,6 +57,7 @@
 			editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
 	      lineNumbers: false,
 	      mode: "text/x-plsql",
+				lineWrapping: true,
 				onKeyEvent: function(editor,event) {
 					if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
 						stopPropagation(event);
@@ -66,7 +67,7 @@
 	    });
 			
 			// Draggable and resizable capacities to sql window
-	    $('div.sql_window').draggable({appendTo: 'body',containment:'parent'}).resizable({maxWidth:800,maxHeight:400});
+	    $('div.sql_window').draggable({appendTo: 'body',containment:'parent', handle:'h3'}).resizable({maxWidth:800,maxHeight:400});
 			
 			// Open sql console
 			$('div.general_options a.sql, p a.open_console').livequery('click',function(ev){
@@ -79,10 +80,13 @@
           if (editor.getValue()=='') {
             editor.setValue('SELECT * FROM ' + table_name);
           }
+
 					$('div.sql_window').removeAttr('style');
-	        $('div.sql_window').show();
+	        $('div.sql_window').fadeIn('fast',function(){
+						editor.refresh();
+						editor.focus();
+					});
 					bindESC();
-	        editor.focus();
 				}
 			});
 			
@@ -340,26 +344,34 @@
       });
       $('div.georeference_window div.select_content ul li a').livequery('click',function(ev){
         stopPropagation(ev);
-        $(this).closest('span.select').children('a.option').text($(this).text());
-        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
-        $('span.select').removeClass('clicked');
-				
-				var type = $(this).closest('span.select');
+				if (!$(this).parent().hasClass('selected')) {
+					$(this).closest('span.select').children('a.option').text($(this).text());
+	        $(this).closest('span.select').children('a.option').attr('c',$(this).text());
+					$(this).closest('ul').find('li.selected').removeClass('selected');
+					$(this).parent().addClass('selected')
+					
+	        $('span.select').removeClass('clicked');
 
-				$(this).parent().parent().children('li').removeClass('choosen');
-        $(this).parent().addClass('choosen');
-        var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
-        if (index == 0) {
-          var other_index = 1;
-          var other_value = $('span.select:eq(1) a.option').text();
-        } else {
-          var other_index = 0;
-          var other_value = $('span.select:eq(0) a.option').text();
-        }
-        $('span.select:eq('+index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
-        $('span.select:eq('+other_index+') ul li').removeClass('choosen');
-        $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
-        $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
+					var type = $(this).closest('span.select');
+
+					$(this).parent().parent().children('li').removeClass('choosen');
+	        $(this).parent().addClass('choosen');
+	        var index = ($(this).closest('span.select').hasClass('latitude'))?0:1;
+	        if (index == 0) {
+	          var other_index = 1;
+	          var other_value = $('span.select:eq(1) a.option').text();
+	        } else {
+	          var other_index = 0;
+	          var other_value = $('span.select:eq(0) a.option').text();
+	        }
+	        $('span.select:eq('+index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
+	        $('span.select:eq('+other_index+') ul li').removeClass('choosen');
+	        $('span.select:eq('+other_index+') ul li a:contains("'+other_value+'")').parent().addClass('choosen');
+	        $('span.select:eq('+other_index+') ul li a:contains("'+$(this).text()+'")').parent().addClass('choosen');
+				} else {
+					$('span.select').removeClass('clicked');
+				}
+
 
       });
       $('a.confirm_georeference').livequery('click',function(ev){
@@ -803,18 +815,20 @@
 	        }
         
 	        // Function to change the table name final steps
-	        function changeTableName(new_value,old_value) {
-	          if ($('p.status a').hasClass('save')) {
-	            old_value.status = 'save';
-	            $('p.status a').removeClass('save').addClass('public').text('public');
-	          }
-	          $('section.subheader h2 a').text(new_value);
-	          $('span.title_window').hide();
-	          changesRequest('name',new_value,old_value);
-	          closeOutTableWindows();
-	        }
+
 	      }
 	    });
+	
+			function changeTableName(new_value,old_value) {
+        if ($('p.status a').hasClass('save')) {
+          old_value.status = 'save';
+          $('p.status a').removeClass('save').addClass('public').text('public');
+        }
+        $('section.subheader h2 a').text(new_value);
+        $('span.title_window').hide();
+        changesRequest('name',new_value,old_value);
+        closeOutTableWindows();
+      }
 
 			return {}
 		}());

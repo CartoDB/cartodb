@@ -92,7 +92,13 @@
             
             createNewToFinish(geom_type,'');
           } else if (create_type==2) {
-            createNewToFinish('',$('div.select_file input#url_txt').val(),true);
+						var url = $('div.select_file input#url_txt').val();
+						if (isURL(url)) {
+							$('div.error_url').stop().fadeOut();
+							createNewToFinish('',url,true);
+						} else {
+							$('div.error_url').stop().fadeIn().delay(2000).fadeOut();;
+						}
           }
         }
       });
@@ -185,8 +191,8 @@
       $('span.file').removeClass('uploading');
       $('div.create_window div.inner_ span.loading').removeClass('error');
       $('span.file input[type="file"]').attr('value','');
-      $('div.select_file p').text('You can import .csv, .xls and .zip files');
-      $('div.select_file p').removeClass('error');
+      $('div.select_file span.file p').text('You can import .csv, .xls and .zip files');
+      $('div.select_file span.file p').removeClass('error');
       $('span.progress').width(5);
       $('div.create_window ul li:eq(1)').removeClass('finished');
       $('div.create_window').removeClass('georeferencing');

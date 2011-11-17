@@ -21,6 +21,18 @@
     }
 
 
+		/*============================================================================*/
+    /* Sanitize a query  */
+    /*============================================================================*/
+		function sanitizeQuery(q) {
+			// Remove last character if it is ';'
+			var l_c = q.substr(q.length-1,q.length),
+					n_q = '';
+			if (l_c == ';') 
+				n_q = q.substr(0,q.length-1);
+			return escape(n_q);
+		}
+
 
     /*============================================================================*/
     /* Convert Date string to Date object  */
@@ -201,6 +213,9 @@
     }
 
 
+    /*============================================================================*/
+    /* Convert coords to GeoJSON  */
+    /*============================================================================*/
     function transformToGeoJSON(geometries,type) {
       type = type.toLowerCase();
       var str = '{"type":"'+((type=="multipolygon")?"MultiPolygon":"MultiLineString")+'","coordinates":[';
@@ -220,3 +235,12 @@
       str += ']}';
       return str;
     }
+
+
+    /*============================================================================*/
+    /* Check if a string is a url  */
+    /*============================================================================*/
+		function isURL(s) {
+			var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+			return regexp.test(s);
+		}

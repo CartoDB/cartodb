@@ -282,9 +282,8 @@
                   '<li>'+
                     '<a href="#custom">Custom</a>'+
                     '<div class="suboptions">'+
-                      '<label>Custom vars</label>'+
-                      '<ul class="column_names scrollPane">'+
-                      '</ul>'+
+											'<span class="info_tools"><a class="mark_all" href="#mark_all">mark all</a><a class="clear_all" href="#clear_all">clear all</a></span>'+
+                      '<ul class="column_names scrollPane"></ul>'+
                     '</div>'+
                   '</li>'+
                 '</ul>'+
@@ -300,8 +299,9 @@
           '<div class="inner_">'+
             '<span class="top">'+
               '<h3>Edit your tiles</h3>'+
-              '<p>This funcionality is in beta, and it doesn\'t show any error. Get <a target="_blank" href="http://developmentseed.org/blog/2011/feb/09/introducing-carto-css-map-styling-language/">more information</a> about CartoCSS.</p>'+
+              '<p>Get <a target="_blank" href="http://developmentseed.org/blog/2011/feb/09/introducing-carto-css-map-styling-language/">more information</a> about CartoCSS.</p>'+
               '<textarea id="cartocss_editor"> </textarea>'+
+							'<span class="errors"><p>Your query is not correct, try again with another ;)</p></span>'+
             '</span>'+
             '<span class="bottom">'+
               '<a href="#try" class="try_css">Try CSS</a>'+

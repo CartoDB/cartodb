@@ -207,11 +207,16 @@
         type: 'POST',
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
         data: {style:str},
-        success: function(result) {          
+        success: function(result) {
+	     		$('.cartocss_editor span.errors').hide();
           me.refreshWax();
         },
         error:function(e) {
-          console.debug(e);
+					var errors = JSON.parse(e.responseText);
+					var msg = '';
+					_.each(errors,function(ele,i){msg += ele + ' ';});
+					$('.cartocss_editor span.errors p').text(msg);
+					$('.cartocss_editor span.errors').css({display:'block'});
         }
       });
     }
@@ -292,6 +297,9 @@
         me.double_click = true;
       });
 
+			google.maps.event.addListener(this.map_, 'zoom_changed', function() {
+        $('span.slider').slider('value',me.map_.getZoom());
+      });
     }
 
     /* Event listeners of the map tools */
@@ -354,13 +362,13 @@
 
       // Zoom slider
       $('span.slider').slider({
-          orientation: 'vertical',
-          min:0,
-          max:20,
-          value:1,
-          stop: function(event,ui){
-            me.map_.setZoom(ui.value);
-          }
+	      orientation: 'vertical',
+	      min:0,
+	      max:20,
+	      value:1,
+	      stop: function(event,ui){
+	        me.map_.setZoom(ui.value);
+	      }
       });
 
 
@@ -553,8 +561,6 @@
 				google.maps.event.addListener(me.map_, 'zoom_changed', function(ev) {
 	        custom_map_properties.zoom = this.getZoom();
 					me.setMapStyle(custom_map_style,custom_map_properties);
-					// Hack for the zoom slider
-					$('span.slider').slider('value',me.map_.getZoom());
 	      });
 	
 	
@@ -729,11 +735,12 @@
         
         /* CARTOCSS WINDOW */
         // draggable
-        $('div.cartocss_editor').draggable({containment:'parent'});
+        $('div.cartocss_editor').draggable({containment:'parent',handle:'h3'});
         
         // editor
         var cartocss_editor = CodeMirror.fromTextArea(document.getElementById("cartocss_editor"), {
   	      lineNumbers: false,
+					lineWrapping: true,
   	      mode: "css",
   				onKeyEvent: function(editor,event) {
   					if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
@@ -836,11 +843,12 @@
           var old_value = $(this).parent().find('input').val(),
               add = ($(this).text()=="+")?true:false,
               that = this,
-              css_ = $(that).closest('span').attr('css'),
-              value_ = $(that).parent().find('input').val();
+              css_ = $(that).closest('span').attr('css');
+              
           
           if (add || old_value>0) {
-            $(that).parent().find('input').val(parseInt(old_value) + ((add)?1:-1));
+						var value_ = parseInt(old_value) + ((add)?1:-1);
+            $(that).parent().find('input').val(value_);
             
             clearInterval(interval);
             interval = setTimeout(function(){
@@ -1113,6 +1121,26 @@
         }
       }
 
+			
+			$('.map_header ul.infowindow_customization div.suboptions span.info_tools a.mark_all,.map_header ul.infowindow_customization div.suboptions span.info_tools a.clear_all').livequery('click',function(ev){
+        stopPropagation(ev);
+        var bool = $(this).attr('class') === "mark_all";
+
+				$('.map_header ul.infowindow_customization div.suboptions ul.column_names li.vars a').each(function(i,ele){
+					var value = $(this).text();
+					$(this).removeClass('on off');
+					if (bool) {
+						$(this).addClass('on');
+					} else {
+						$(this).addClass('off');
+					}
+					
+					custom_infowindow[value] = bool;
+				});
+
+        me.setInfowindowVars(custom_infowindow);
+      });
+
       
       $('.map_header ul.infowindow_customization div.suboptions ul.column_names li.vars a').livequery('click',function(ev){
         stopPropagation(ev);
@@ -1130,7 +1158,7 @@
       });
       
     
-      $('.map_header ul.infowindow_customization li a').livequery('click',function(ev){
+      $('.map_header ul.infowindow_customization li > a').livequery('click',function(ev){
         stopPropagation(ev);
         var parent = $(this).parent();
         if (!parent.hasClass('selected') && !parent.hasClass('disabled') && !parent.hasClass('vars')) {
@@ -1262,6 +1290,7 @@
 		}
 
 
+
     ////////////////////////////////////////
     //  WAX AND TOOLS LISTENERS			      //
     ////////////////////////////////////////
@@ -1315,7 +1344,7 @@
                   me.double_click = !me.double_click;
                   return false;
                 }
-                me.info_window_.open(feature,evt.pixel);
+                me.info_window_.open(feature,evt.pixel,null);
                 me.hideOverlays();
               }
             },200);
@@ -1384,8 +1413,8 @@
       // SQL?
       if (this.query_mode) {
         var query = 'sql=' + editor.getValue();
-        tile_url = wax.util.addUrlData(tile_url, escape(query));
-        grid_url = wax.util.addUrlData(grid_url, escape(query));
+        tile_url = wax.util.addUrlData(tile_url, sanitizeQuery(query));
+        grid_url = wax.util.addUrlData(grid_url, sanitizeQuery(query));
       }
 
       // Build up the tileJSON
@@ -1573,7 +1602,7 @@
 
 
             // Click on map to recover wax layer and remove marker
-            google.maps.event.addListener(map,'click',function(ev){
+            google.maps.event.addListener(me.map_,'click',function(ev){
               me.fakeMarker_.setMap(null);
               me.fakeMarker_ = null;
 

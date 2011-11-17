@@ -735,11 +735,12 @@
         
         /* CARTOCSS WINDOW */
         // draggable
-        $('div.cartocss_editor').draggable({containment:'parent'});
+        $('div.cartocss_editor').draggable({containment:'parent',handle:'h3'});
         
         // editor
         var cartocss_editor = CodeMirror.fromTextArea(document.getElementById("cartocss_editor"), {
   	      lineNumbers: false,
+					lineWrapping: true,
   	      mode: "css",
   				onKeyEvent: function(editor,event) {
   					if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {

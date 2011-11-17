@@ -229,6 +229,7 @@ div.sql_window a.close {position:absolute; right:-8px; top:-7px; width:23px; hei
 div.sql_window a.close:hover {background-position:0 -23px;}
 div.sql_window div.inner {position:absolute; top:8px; left:8px; right:8px; bottom:8px; margin:0; border:1px solid #ccc; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0; z-index:1}
 div.sql_window div.inner h3 {display:block; padding:12px 0 0 10px; font:bold 15px Arial; color:#333333; text-shadow:0 1px white;}
+div.sql_window div.inner h3:hover {cursor:move}
 div.sql_window div.inner p {display:block; padding:3px 0 0 10px; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
 div.sql_window div.inner div.outer_textarea {position:absolute; top:46px; left:9px; right:9px; bottom:50px; margin:10px 0 0 0; padding:5px ; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
 div.sql_window span.bottom {position:absolute; bottom:10px; left:10px; right:10px; height:28px;}
@@ -246,31 +247,36 @@ div.sql_window span.errors p {padding:0 0 0 26px; color:#333333; font:normal 13p
 div.sql_window .ui-resizable-handle {position:absolute; right:4px; bottom:4px; width:10px; height:10px; background:url('/images/admin/table/resize.png') no-repeat 0 0}
 
 /*Codemirror SQL*/
-.CodeMirror{overflow:auto;height:100%;line-height:1em;font:normal 13px Arial;}
-.CodeMirror-gutter{position:absolute;left:0;top:0;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
-.CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;}
-.CodeMirror-lines{padding:.4em;}
-.CodeMirror pre{-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;font-family:Arial;}
-.CodeMirror textarea{font-family:Arial !important;}
-.CodeMirror-cursor{z-index:10;position:absolute;visibility:hidden;border-left:1px solid black !important;}
-.CodeMirror-focused .CodeMirror-cursor{visibility:visible;}
-span.CodeMirror-selected{background:#ccc !important;color:HighlightText !important;}
-.CodeMirror-focused span.CodeMirror-selected{background:Highlight !important;}
-.CodeMirror-matchingbracket{color:#0f0 !important;}
-.CodeMirror-nonmatchingbracket{color:#f22 !important;}
-pre span {float:none!important; width:auto!important;}
-span.plsql-keyword{color:#0099CC; font-weight:bold}
-span.plsql-var{color:red;}
-span.plsql-comment{color:#AA7700;}
-span.plsql-string{color:green;}
-span.plsql-operator{color:#0099CC;}
-span.plsql-word{color:black;}
-span.plsql-function{color:darkorange; font-weight:bold}
-span.plsql-sqlplus{color:darkorange; font-weight:bold}
-span.plsql-type{color:purple;}
-span.plsql-separator{color:#666666;}
-span.plsql-number{color:darkcyan;}
-
+div.sql_window .CodeMirror{overflow:auto; height:100%;line-height:1em;font-family:monospace;}
+div.sql_window .CodeMirror-scroll{position:absolute;left:0;top:0;overflow:auto;height:100%; position:relative;}
+div.sql_window .CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
+div.sql_window .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;white-space:pre !important;}
+div.sql_window .CodeMirror-lines{padding:.4em;}
+div.sql_window .CodeMirror pre{font-family:Arial!important;font-size:13px!important;-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;padding:0;margin:0;white-space:pre;word-wrap:normal;}
+div.sql_window .CodeMirror-wrap pre{word-wrap:break-word;white-space:pre-wrap;}
+div.sql_window .CodeMirror-wrap .CodeMirror-scroll{overflow-x:hidden;}
+div.sql_window .CodeMirror textarea{font-family:Arial!important;}
+div.sql_window .CodeMirror-cursor{z-index:10;position:absolute;visibility:hidden;border-left:1px solid black !important;}
+div.sql_window .CodeMirror-focused .CodeMirror-cursor{visibility:visible;}
+div.sql_window span.CodeMirror-selected{background:#ccc !important;color:HighlightText !important;}
+div.sql_window .CodeMirror-focused span.CodeMirror-selected{background:Highlight !important;}
+div.sql_window .CodeMirror-matchingbracket{color:#0f0 !important;}
+div.sql_window .CodeMirror-nonmatchingbracket{color:#f22 !important;}
+div.sql_window span.cm-plsql-keyword{color:#0099CC; font-weight:bold}
+div.sql_window span.cm-plsql-var{color:red;}
+div.sql_window span.cm-plsql-comment{color:#AA7700;}
+div.sql_window span.cm-plsql-string{color:green;}
+div.sql_window span.cm-plsql-operator{color:#0099CC;}
+div.sql_window span.cm-plsql-word{color:black;}
+div.sql_window span.cm-plsql-function{color:darkorange; font-weight:bold}
+div.sql_window span.cm-plsql-sqlplus{color:darkorange; font-weight:bold}
+div.sql_window span.cm-plsql-type{color:purple;}
+div.sql_window span.cm-plsql-separator{color:#666666;}
+div.sql_window span.cm-plsql-number{color:darkcyan;}
+div.sql_window ::-webkit-scrollbar {width: 10px;}
+div.sql_window ::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.3);border-radius:10px;}
+div.sql_window ::-webkit-scrollbar-thumb{border-radius:10px;-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.5);background:rgba(0,0,0,0.1);cursor:pointer!important}
+div.sql_window ::-webkit-scrollbar-thumb:hover,div.sql_window ::-webkit-scrollbar-thumb:active{background:rgba(0,0,0,0.3);cursor:pointer!important}
 
 
 /*Mamufas*/

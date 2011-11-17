@@ -57,6 +57,7 @@
 			editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
 	      lineNumbers: false,
 	      mode: "text/x-plsql",
+				lineWrapping: true,
 				onKeyEvent: function(editor,event) {
 					if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
 						stopPropagation(event);
@@ -66,7 +67,7 @@
 	    });
 			
 			// Draggable and resizable capacities to sql window
-	    $('div.sql_window').draggable({appendTo: 'body',containment:'parent'}).resizable({maxWidth:800,maxHeight:400});
+	    $('div.sql_window').draggable({appendTo: 'body',containment:'parent', handle:'h3'}).resizable({maxWidth:800,maxHeight:400});
 			
 			// Open sql console
 			$('div.general_options a.sql, p a.open_console').livequery('click',function(ev){
@@ -79,10 +80,13 @@
           if (editor.getValue()=='') {
             editor.setValue('SELECT * FROM ' + table_name);
           }
+
 					$('div.sql_window').removeAttr('style');
-	        $('div.sql_window').show();
+	        $('div.sql_window').fadeIn('fast',function(){
+						editor.refresh();
+						editor.focus();
+					});
 					bindESC();
-	        editor.focus();
 				}
 			});
 			

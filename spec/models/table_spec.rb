@@ -1142,7 +1142,7 @@ describe Table do
     
     check_schema(table, [
       [:cartodb_id, "number"], [:name, "string"], [:the_geom_str, "string"], 
-      [:created_at, "string"], [:updated_at, "string"]
+      [:created_at, "date"], [:updated_at, "date"]
     ], :cartodb_types => true)
     
     user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first

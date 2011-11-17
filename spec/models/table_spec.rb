@@ -1050,16 +1050,13 @@ describe Table do
   
   it "should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception" do
     user = create_user
-    table = new_table :name => 'table1'
-    table.user_id = user.id
+    table = new_table({:name => 'table1', :user_id => user.id})    
     table.save
     pk = table.insert_row!({:name => "name #1", :description => "description #1"})
     
     Table.any_instance.stubs(:the_geom_type=).raises(CartoDB::InvalidGeomType)
     
-    table = new_table
-    table.user_id = user.id
-    table.name = "table1"
+    table = new_table({:name => 'table1', :user_id => user.id})
     lambda {
       table.save
     }.should raise_error(CartoDB::InvalidGeomType)

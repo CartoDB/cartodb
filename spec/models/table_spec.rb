@@ -16,6 +16,11 @@ describe Table do
     table2.save.reload
     table2.name.should == "untitled_table_2"
   end
+  
+  it "should return a sequel interface" do
+    table = create_table
+    table.sequel.class.should == Sequel::Postgres::Dataset
+  end  
 
   it "should have a privacy associated and it should be private by default" do
     table = create_table
@@ -742,31 +747,59 @@ describe Table do
     }.should raise_error(CartoDB::InvalidGeoJSONFormat)
   end
   
-  it "should be able to set a the_geom column from a latitude column and a longitude column" do
+  it "should be able to set a the_geom column from numeric latitude column and a longitude column" do
     user = create_user
-    table = Table.new :privacy => Table::PRIVATE, :tags => 'movies, personal'
+    table = Table.new
     table.user_id = user.id
     table.name = 'Madrid Bars'
     table.force_schema = "name varchar, address varchar, latitude float, longitude float"
     table.save
-    pk = table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
-    table.insert_row!({:name => "El Estocolmo", :address => "Calle de la Palma 72, Madrid, Spain", :latitude => 40.426949, :longitude => -3.708969})
-    table.insert_row!({:name => "El Rey del Tallarín", :address => "Plaza Conde de Toreno 2, Madrid, Spain", :latitude => 40.424654, :longitude => -3.709570})
-    table.insert_row!({:name => "El Lacón", :address => "Manuel Fernández y González 8, Madrid, Spain", :latitude => 40.415113, :longitude => -3.699871})
-    table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
-
-    table.reload
+    table.insert_row!({:name => "Hawai", 
+                       :address => "Calle de Pérez Galdós 9, Madrid, Spain", 
+                       :latitude => 40.423012, 
+                       :longitude => -3.699732})
+                       
     table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
-    table.reload
-    # Check if the schema stored in memory is fresh and does not contain
-    # latitude and longitude columns
+
+    # Check if the schema stored in memory is fresh and contains latitude and longitude still
     check_schema(table, [
       [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
-      [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"]
+      [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"], 
+      [:latitude, "number"], [:longitude, "number"]
     ], :cartodb_types => true)
-    record = table.record(pk)
-    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{-3.699732.round(6)} #{40.423012.round(6)})"
+    
+    # confirm coords are correct
+    res = table.sequel.select{[x(the_geom),y(the_geom)]}.first
+    res.should == {:x=>-3.699732, :y=>40.423012}    
   end
+  
+  it "should be able to set a the_geom column from dirty string latitude and longitude columns" do
+    user = create_user
+    table = Table.new 
+    table.user_id = user.id
+    table.name = 'Madrid Bars'
+    table.force_schema = "name varchar, address varchar, latitude varchar, longitude varchar"
+    table.save
+    
+    table.insert_row!({:name => "Hawai", 
+                       :address => "Calle de Pérez Galdós 9, Madrid, Spain", 
+                       :latitude => "40.423012", 
+                       :longitude => " -3.699732 "})
+
+    table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+
+    # Check if the schema stored in memory is fresh and contains latitude and longitude still
+    check_schema(table, [
+      [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
+      [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"], 
+      [:latitude, "string"], [:longitude, "string"]
+    ], :cartodb_types => true)
+
+    # confirm coords are correct
+    res = table.sequel.select{[x(the_geom),y(the_geom)]}.first
+    res.should == {:x=>-3.699732, :y=>40.423012}    
+  end
+  
   
   it "should store the name of its database" do
     table = create_table

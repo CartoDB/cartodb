@@ -309,8 +309,12 @@ class Table < Sequel::Model(:user_tables)
     "rails:#{db_name}:#{table_name}"
   end
 
+  def sequel
+    owner.in_database[name.to_sym]
+  end
+
   def rows_counted
-    owner.in_database[name.to_sym].count
+    sequel.count
   end
   
   # returns table size in bytes
@@ -565,9 +569,9 @@ class Table < Sequel::Model(:user_tables)
             'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')',#{CartoDB::SRID}
         ) 
         WHERE 
-        CAST(trim(#{options[:longitude_column]}) AS text) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$' 
+        trim(CAST(#{options[:longitude_column]} AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$' 
         AND   
-        CAST(trim(#{options[:latitude_column]}) AS text)  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+        trim(CAST(#{options[:latitude_column]} AS text)) ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
         GEOREF
         )
       end

@@ -92,7 +92,7 @@
                         <%= pluralize(table.rows_counted,'row','rows') rescue '' %> /
                         <%= table.schema.size rescue '' %> columns:
                       </strong>
-                    <%= table.schema.map{ |e| e.first }[1...4].join(', ') %>...</p>
+                    <%= table.schema.map{ |e| e.first }[2...5].join(', ') %>...</p>
                   </span>
                   <span class="tags">
                     <% unless table.updated_at.blank? %>

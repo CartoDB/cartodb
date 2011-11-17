@@ -34,7 +34,9 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
   
   - Install Node.JS and Npm, following these steps: <https://github.com/joyent/node/wiki/Installation> (alternatively you can use `brew instrall node``, but npm has to be installed following the wiki instructions`)
 
-  - Install PostgreSQL, PostGIS, GDAL, and Geo.
+  - Install PostgreSQL, PostGIS, GDAL, and Geo with postgis_template setup
+   
+  - Install plpython for Python support in PostgreSQL (e.g., `sudo apt-get install postgresql-plpython-9.1`)
 
   - Install Redis from <http://redis.io/download> or using `brew install redis`.
   
@@ -49,6 +51,7 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
       
         # CartoDB
         127.0.0.1 admin.localhost.lan admin.testhost.lan
+        127.0.0.1 my_subdomain.localhost.lan
         # # # # #
                 
   - Clone the [Node SQL API](https://github.com/tokumine/cartodb-sql-api) in your projects folder:
@@ -67,11 +70,11 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
 
         npm install
   
-  - Clone the main repository in your projects folder:
+  - Clone the CartoDB repository in your projects folder:
   
         git clone git@github.com:Vizzuality/cartodb.git
         
-  - Change to cartdb/ folder and `rvm` will require to create a new gemset. Say **yes**. If not, you must create a `gemset` for Ruby 1.9.2:
+  - Change to cartodb/ folder and `rvm` will require to create a new gemset. Say **yes**. If not, you must create a `gemset` for Ruby 1.9.2:
   
         rvm use 1.9.2@cartodb --create
         
@@ -84,7 +87,9 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
         cd /tmp
         redis-server
   
-  - Run `rake db:create db:migrate cartodb:db:create_publicuser cartodb:db:create_admin` in cartodb folder
+  - Run `rake cartodb:db:setup EMAIL=me@mail.com SUBDOMAIN=my_subdomain PASSWORD=my_pass ADMIN_PASSWORD=my_pass` in cartodb folder
+  
+  - This will configure 2 users. The admin user (admin) and a user of your own.  After spinning up all your processes (cartodb, sql api, tiler), you should be able to login.
   
 
 ### Every day usage ###
@@ -99,7 +104,7 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
   
   - In a separate tab change to Node SQL API and Tiler directories and run node.js: `node app.js developement`
 
-  - Open your browser and go to `http://admin.localhost.lan:3000`
+  - Open your browser and go to `http://admin.localhost.lan:3000` or `http://my_subdomain.localhost.lan:3000`_
   
   - Enjoy!
   

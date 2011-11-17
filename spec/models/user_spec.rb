@@ -46,7 +46,8 @@ describe User do
     end
     
     legal_usernames.each do |name|
-      user.username = name
+      user.username = name      
+      user.valid?.should be_true
       user.errors[:username].should be_blank
     end
   end
@@ -148,52 +149,49 @@ describe User do
   end
 
   it "should run valid queries against his database" do
+    # config
     user = create_user
-    table = new_table
-    table.user_id = user.id
+    table = new_table(:user_id => user.id)
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
+    # initial select tests
     query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
-    # TODO
-    # query_result[:columns].should ==  [
-    #   [:cartodb_id, "number"], [:id, "number"], [:name_of_species, "string"], [:kingdom, "string"], [:family, "string"],
-    #   [:lat, "number", "latitude"], [:lon, "number", "longitude"], [:views, "number"], [:created_at, "date"], [:updated_at, "date"]
-    # ]
+    query_result[:rows].first.keys.should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views, :the_geom, :cartodb_id, :created_at, :updated_at, :the_geom_webmercator]
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
-
-    query_result = user.run_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
+    
+    # update and reselect
+    query_result = user.run_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")  
     query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:total_rows].should == 0
+    
+    # check counts
     query_result = user.run_query("select * from import_csv_1 where family='polynoidae' limit 10")
     query_result[:total_rows].should == 2
-
-    table2 = new_table :name => 'twitts'
+    
+    # add new table
+    table2 = new_table :name => 'twitts', :user_id => user.id
     table2.user_id = user.id
     table2.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
     table2.save
-
-    # query_result = user.run_query("select antantaric_species.family as fam, twitts.login as login from antantaric_species, twitts where family='Polynoidae' limit 10")
-    # query_result[:total_rows].should == 10
-    # query_result[:columns].should == [:fam, :login]
-    # query_result[:columns].should ==  [
-    #   [:fam, "text"], [:login, "text"]
-    # ]
-    #
-    # query_result[:rows][0].should == { :fam=>"Polynoidae", :login=>"vzlaturistica " }
-    #
-    # query_result = user.run_query("select count(*) from antantaric_species where family='Polynoidae' ")
-    # query_result[:time].should_not be_blank
-    # query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
-    # query_result[:total_rows].should == 1
-    # query_result[:columns].should ==  [
-    #   [:count, "number"]
-    # ]
-    # query_result[:rows][0].should == {:count => 2}
+    
+    # test a product
+    query_result = user.run_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
+    query_result[:total_rows].should == 10    
+    query_result[:rows].first.keys.should == [:fam, :login]    
+    query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
+    
+    # test counts
+    query_result = user.run_query("select count(*) from import_csv_1 where family='polynoidae' ")
+    query_result[:time].should_not be_blank
+    query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
+    query_result[:total_rows].should == 1
+    query_result[:rows].first.keys.should ==  [:count]
+    query_result[:rows][0].should == {:count => 2}
   end
 
   it "should raise errors when running invalid queries against his database" do
@@ -235,7 +233,7 @@ describe User do
   
   it "should return the result from the last select query if multiple selects" do
     user = create_user
-    table = new_table
+    table = new_table(:user_id => user.id)
     table.user_id = user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
@@ -250,7 +248,7 @@ describe User do
 
   it "should allow multiple queries in the format: insert_query; select_query" do
     user = create_user
-    table = new_table
+    table = new_table(:user_id => user.id)
     table.user_id = user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save

@@ -11,19 +11,40 @@ gem "oauth", "0.4.5"
 gem "oauth-plugin", "0.4.0.pre4"
 gem "sequel_column_type_array", "~> 0.0.2"
 gem "htmlentities"
-gem "rgeo"
+gem "rgeo", "0.3.2"
 gem "text-hyphen", "1.2.0"
-gem "rgeo-geojson", :require => "rgeo/geo_json"
+gem "rgeo-geojson", "0.2.1", :require => "rgeo/geo_json"
 gem "redis", "~> 2.2.2"
 gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
-gem "cartodb-importer", "~> 0.2.19"
 gem "airbrake", '~> 3.0.4'
 
+# importer
+gem "roo", "~> 1.9.7"
+gem "spreadsheet", "~> 0.6.5.9"
+gem "google-spreadsheet-ruby", "~> 0.1.5"
+gem "rubyzip", "~> 0.9.4"
+gem "builder"
+
 group :test, :development do
-  # gem "ruby-debug-base19x", '~>0.11.30.pre3', :require => "ruby-debug", :platforms => :mri_19
-  # gem "ruby-debug19", :require => "ruby-debug", :platforms => :mri_19
-  gem "mocha"
+  # this is for Ruby 1.9.2 debugging. You should upgrade to ruby 1.9.3, it's much faster in development
+  if (RUBY_VERSION == "1.9.2") 
+    gem "ruby-debug-base19x", '~>0.11.30.pre3', :require => "ruby-debug", :platforms => :mri_19
+    gem "ruby-debug19", '0.11.5', :require => "ruby-debug", :platforms => :mri_19
+    gem "mocha"
+  end
+  
+  ########################
+  # This is for Ruby 1.9.3 debugging only. It requires that these gems are installed locally MANUALLY.
+  # ONCE AGAIN: These gems are NOT on rubygems.org 
+  # ----------------------
+  if (RUBY_VERSION == "1.9.3")
+    gem "ruby-debug-base19", '0.11.26', :require => "ruby-debug", :platforms => :mri_19
+    gem "ruby-debug19", '0.11.6', :require => "ruby-debug", :platforms => :mri_19
+    gem "mocha", "~> 0.10.0"
+  end  
+  ########################
+  
   gem "steak", "2.0.0"
   gem "rspec-rails"
   gem "launchy"
@@ -33,3 +54,6 @@ group :test, :development do
   gem "rack-reverse-proxy", "~> 0.4.1", :require => 'rack/reverse_proxy'
   gem 'minitest', '~> 2.0.2'
 end
+
+
+

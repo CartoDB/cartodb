@@ -1,0 +1,177 @@
+region,subregion,Country,2002,2003,2004,2005,2006
+AFRICA,East Africa,Burundi,No Report,No Report,No Report,1.4,No Report
+AFRICA,East Africa,Kenya,18.584,3.93,1142.795,10.476,10.768
+AFRICA,East Africa,Mauritius,No Report,No Report,No Report,No Report,2.149
+AFRICA,East Africa,Rwanda,4.0,No Report,35.009,No Report,No Report
+AFRICA,East Africa,United Republic of Tanzania,2.461,1.727,0.62,0.362,4.131
+AFRICA,North Africa,Algeria,0.268,9.508,0.152,0.07,7.773
+AFRICA,North Africa,Egypt,4.07,0.55,2.03,0.053,0.07
+AFRICA,North Africa,Libyan Arab Jamahiriya,0.359,2.06,0.011,0.151,0.032
+AFRICA,North Africa,Morocco,15.801,2.59,4.004,843.047,53.66
+AFRICA,North Africa,Morocco,15,77,,,
+AFRICA,North Africa,Sudan,No Report,1.922,2.0,No Report,No Report
+AFRICA,North Africa,Tunisia,1.055,0.54,1.005,0.03,29.667
+AFRICA,Southern Africa,Angola,No Report,No Report,No Report,8.988,No Report
+AFRICA,Southern Africa,Botswana,No Report,No Report,No Report,0.6,0.157
+AFRICA,Southern Africa,Malawi,No Report,20.283,2.394,No Report,No Report
+AFRICA,Southern Africa,Mozambique,No Report,15.0,No Report,21.8,2.02
+AFRICA,Southern Africa,Namibia,0.189,0.056,15.493,0.197,0.908
+AFRICA,Southern Africa,Namibia,178,176,257,,
+AFRICA,Southern Africa,South Africa,436.499,776.726,593.041,309.561,360.253
+AFRICA,Southern Africa,Swaziland,1.058,4.568,No Report,0.7,No Report
+AFRICA,Southern Africa,Zambia,17.3,0.055,0.0060,2.0,0.073
+AFRICA,Southern Africa,Zimbabwe,No Report,No Report,0.0060,0.0050,0.0020
+AFRICA,West and Central Africa,Benin,0.05,0.013,291.67,28.193,28.2
+AFRICA,West and Central Africa,Burkina Faso,No Report,0.028,0.163,0.028,0.011
+AFRICA,West and Central Africa,Cameroon,No Report,No Report,2.4,2.004,4.4
+AFRICA,West and Central Africa,Cape Verde,41.824,113.267,335.68,157.0,42.125
+AFRICA,West and Central Africa,Congo,0.611,0.8,8.005,0.2,1.4
+AFRICA,West and Central Africa,CÙte d'Ivoire,3.15,No Report,No Report,0.07,0.445
+AFRICA,West and Central Africa,Gabon,No Report,No Report,No Report,0.1,0.108
+AFRICA,West and Central Africa,Gambia,No Report,0.107,No Report,17.137,No Report
+AFRICA,West and Central Africa,Ghana,10.4,15.37,616.678,661.2,No Report
+AFRICA,West and Central Africa,Guinea,No Report,0.771,0.097,40.0,8.5
+AFRICA,West and Central Africa,Liberia,No Report,No Report,No Report,No Report,0.294
+AFRICA,West and Central Africa,Mali,No Report,No Report,No Report,1.0,No Report
+AFRICA,West and Central Africa,Niger,2.98,2.2,0.759,No Report,0.057
+AFRICA,West and Central Africa,Nigeria,35.347,134.983,124.47,395.91,14435.88
+AFRICA,West and Central Africa,Senegal,0.837,No Report,No Report,18.5,27.817
+AFRICA,West and Central Africa,Sierra Leone,No Report,No Report,6.0,No Report,No Report
+AFRICA,West and Central Africa,Togo,3.051,1.775,412.001,43.615,29.688
+AMERICAS,Caribbean,Anguilla,No Report,No Report,0.0080,4.96,No Report
+AMERICAS,Caribbean,Antigua and Barbuda,No Report,62.0,25.0,No Report,No Report
+AMERICAS,Caribbean,Aruba,490.681,1.0,274.012,598.2,29.841
+AMERICAS,Caribbean,Bahamas,2477.273,4361.124,740.26,1001.0,No Report
+AMERICAS,Caribbean,Barbados,No Report,97.0,37.0,57.0,No Report
+AMERICAS,Caribbean,Bermuda,8.86,0.7,No Report,10.0,5.13
+AMERICAS,Caribbean,British Virgin Islands,No Report,No Report,0.272,No Report,No Report
+AMERICAS,Caribbean,Cayman Islands,404.825,6.007,No Report,No Report,No Report
+AMERICAS,Caribbean,Cayman Islands,28199,,,,
+AMERICAS,Caribbean,Cuba,406.019,506.5,309.05,282.0,No Report
+AMERICAS,Caribbean,Dominica,4.526,8.7,0.323,0.499,No Report
+AMERICAS,Caribbean,Dominican Republic,2300.669,735.703,2242.67,2247.454,5105.277
+AMERICAS,Caribbean,Grenada,77.32,8.5,24.0,16.019,21.0
+AMERICAS,Caribbean,Grenada,755,719,776,,
+AMERICAS,Caribbean,Guadeloupe,No Report,608.5,No Report,No Report,No Report
+AMERICAS,Caribbean,Haiti,272.76,45.0,74.9,No Report,No Report
+AMERICAS,Caribbean,Jamaica,3725.0,1586.0,1739.45,142.38,111.763
+AMERICAS,Caribbean,Jamaica,5500,,,,
+AMERICAS,Caribbean,Martinique,No Report,1138.0,No Report,No Report,No Report
+AMERICAS,Caribbean,Montserrat,No Report,No Report,0.054,No Report,0.0070
+AMERICAS,Caribbean,Netherlands Antilles,2455.168,7728.0,9025.0,No Report,1989.0
+AMERICAS,Caribbean,Puerto Rico,208.28,No Report,No Report,No Report,No Report
+AMERICAS,Caribbean,Puerto Rico,76637,,,,
+AMERICAS,Caribbean,Saint Kitts and Nevis,No Report,36.0,6.245,5368.0,No Report
+AMERICAS,Caribbean,Saint Lucia,No Report,433.0,100.256,99.0,50.7
+AMERICAS,Caribbean,Saint Vincent and the Grenadines,No Report,1.5,28.086,58.322,No Report
+AMERICAS,Caribbean,Trinidad and Tobago,172.769,172.771,590.0,1891.82,1316.076
+AMERICAS,Caribbean,Turks and Caicos Islands,1.689,48.209,0.047,3.314,0.07
+AMERICAS,Central America,Belize,9.991,56.7,735.419,244.279,90.789
+AMERICAS,Central America,Costa Rica,2955.0,4291.85,4590.38,7049.25,22909.562
+AMERICAS,Central America,Costa Rica,100381,100997,,,
+AMERICAS,Central America,El Salvador,2075.154,2044.3,2710.156,71.627,107.374
+AMERICAS,Central America,Guatemala,2934.265,9200.504,4481.0,5085.077,287.107
+AMERICAS,Central America,Honduras,79.023,5649.133,3934.75,472.709,2714.176
+AMERICAS,Central America,Honduras,708,4101,104,,
+AMERICAS,Central America,Nicaragua,2208.437,1110.7,3703.0,6951.2,9720.0
+AMERICAS,Central America,Nicaragua,12739,11626,,,
+AMERICAS,Central America,Panama,2587.7,9487.0,7068.0,18314.3,36000.0
+AMERICAS,North America,Canada,181.391,475.574,3176.685,2535.035,2705.369
+AMERICAS,North America,Canada,10086,20465,,,
+AMERICAS,North America,Mexico,12639.347,21107.238,26844.196,30227.4,21336.676
+AMERICAS,North America,United States of America,102170.2,117024.8,165957.0,174599.0,146972.0
+AMERICAS,South America,Argentina,1638.281,1992.708,3114.773,5502.568,5894.702
+AMERICAS,South America,Bolivia,5103.03,12881.0,8700.0,11461.225,14088.0
+AMERICAS,South America,Brazil,9560.7,9766.702,8194.545,16151.52,14323.68
+AMERICAS,South America,Chile,2262.311,2410.508,5263.359,5384.705,6783.026
+AMERICAS,South America,Colombia,120579.0,145601.0,187808.37,217633.99,181310.215
+AMERICAS,South America,Ecuador,11212.3,6847.59,4778.807,43361.129,34249.095
+AMERICAS,South America,French Guiana,No Report,74.0,No Report,No Report,No Report
+AMERICAS,South America,Guyana,No Report,278.783,156.972,49.342,No Report
+AMERICAS,South America,Paraguay,230.152,278.991,468.283,490.984,493.0
+AMERICAS,South America,Peru,14568.175,7940.54,13650.083,22397.9,19452.717
+AMERICAS,South America,Suriname,340.0,814.0,750.4,1507.0,577.0
+AMERICAS,South America,Uruguay,43.013,49.919,66.265,103.267,569.202
+AMERICAS,South America,Venezuela (Bolivarian Republic of),18213.68,32339.56,31277.05,58851.955,39057.94
+ASIA,Central Asia and Transcaucasian countries,Armenia,No Report,No Report,0.944,No Report,0.0
+ASIA,Central Asia and Transcaucasian countries,Kazakhstan,0.119,No Report,No Report,No Report,No Report
+ASIA,East and South-East Asia,Cambodia,No Report,No Report,No Report,1.0,5.133
+ASIA,East and South-East Asia,China,No Report,45.0,No Report,255.8,358.2
+ASIA,East and South-East Asia,Hong Kong Special Administrative Region of China,8.3,6.63,55.53,17.005,14.88
+ASIA,East and South-East Asia,Indonesia,2.314,58.116,6.319,1.013,1.124
+ASIA,East and South-East Asia,Japan,16.9,2.5,85.5,2.993,9.9
+ASIA,East and South-East Asia,Macao Special Aadministrative Region of China,0.027,0.0010,0.231,0.0050,0.018
+ASIA,East and South-East Asia,Malaysia,No Report,2.5,0.049,5.1,2.218
+ASIA,East and South-East Asia,Myanmar,No Report,No Report,No Report,No Report,1.0
+ASIA,East and South-East Asia,Philippines,8.026,No Report,No Report,0.0020,0.0020
+ASIA,East and South-East Asia,Republic of Korea,1.17,0.905,0.0080,No Report,4.772
+ASIA,East and South-East Asia,Singapore,No Report,No Report,No Report,0.01,No Report
+ASIA,East and South-East Asia,"""Taiwan"," Prov. of China""",Govt,Govt,Govt,Govt
+ASIA,East and South-East Asia,"""Taiwan"," Prov. of China""",,,,
+ASIA,East and South-East Asia,"""Taiwan"," Prov. of China""",,,,
+ASIA,East and South-East Asia,Thailand,14.73,11.0,7.0,6.29,36.036
+ASIA,Near and Middle East /South-West Asia,Afghanistan,No Report,No Report,1.9,No Report,No Report
+ASIA,Near and Middle East /South-West Asia,Bahrain,0.0020,No Report,No Report,0.0040,No Report
+ASIA,Near and Middle East /South-West Asia,"""Iran"," Islamic Republic of""",,,,
+ASIA,Near and Middle East /South-West Asia,"""Iran"," Islamic Republic of""",,,,
+ASIA,Near and Middle East /South-West Asia,"""Iran"," Islamic Republic of""",,,,
+ASIA,Near and Middle East /South-West Asia,Israel,96.012,80.009,31.014,163.5,No Report
+ASIA,Near and Middle East /South-West Asia,Jordan,0.188,9.0,32.0,0.485,5.26
+ASIA,Near and Middle East /South-West Asia,Kuwait,0.0020,4.7,No Report,No Report,No Report
+ASIA,Near and Middle East /South-West Asia,Lebanon,7.839,40.728,11.893,25.265,8.774
+ASIA,Near and Middle East /South-West Asia,Pakistan,No Report,No Report,No Report,No Report,1.827
+ASIA,Near and Middle East /South-West Asia,Saudi Arabia,1.528,0.9,No Report,0.3,No Report
+ASIA,Near and Middle East /South-West Asia,Syrian Arab Republic,57.237,36.738,40.483,14.399,1.916
+ASIA,Near and Middle East /South-West Asia,United Arab Emirates,0.013,0.408,0.195,No Report,No Report
+ASIA,South Asia,India,2.0,3.0,6.0,4.0,206.0
+ASIA,South Asia,Maldives,15.801,No Report,No Report,No Report,No Report
+ASIA,South Asia,Maldives,15,,,,
+EUROPE,East Europe,Belarus,0.0030,0.0030,0.107,2.008,No Report
+EUROPE,East Europe,Republic of Moldova,No Report,No Report,0.046,0.98,No Report
+EUROPE,East Europe,Russian Federation,58.155,53.35,92.65,109.0,16.595
+EUROPE,East Europe,Ukraine,0.012,0.094,16.816,2.06,3.328
+EUROPE,Southeast Europe,Albania,0.0060,1.286,2.3,2.848,3.857
+EUROPE,Southeast Europe,Bosnia and Herzegovina,0.24,No Report,No Report,10.0,0.65
+EUROPE,Southeast Europe,Bulgaria,36.282,8.884,0.896,141.745,80.177
+EUROPE,Southeast Europe,Croatia,3.365,350.769,17.595,8.963,5.64
+EUROPE,Southeast Europe,Montenegro,No Report,No Report,No Report,No Report,0.069
+EUROPE,Southeast Europe,Romania,2.72,12.68,24.579,109.71,10.715
+EUROPE,Southeast Europe,Serbia and Montenegro,1.926,6.021,15.469,5.349,12.876
+EUROPE,Southeast Europe,The former Yugoslav Republic of Macedonia,0.342,No Report,0.176,11.975,No Report
+EUROPE,Southeast Europe,Turkey,7.734,2.833,125.676,41.029,77.553
+EUROPE,West & Central Europe,Andorra,0.275,No Report,No Report,0.108,0.109
+EUROPE,West & Central Europe,Austria,36.896,58.306,75.519,244.849,61.778
+EUROPE,West & Central Europe,Belgium,3589.0,645.6,3541.0,9259.0,3945.851
+EUROPE,West & Central Europe,Cyprus,1.944,9.571,1.376,1.314,6.893
+EUROPE,West & Central Europe,Czech Republic,6.042,2.624,3.283,10.163,4.708
+EUROPE,West & Central Europe,Denmark,14.152,104.004,32.026,56.095,76.059
+EUROPE,West & Central Europe,Estonia,2.286,30.486,5.219,0.05,0.525
+EUROPE,West & Central Europe,Finland,0.442,1.1,1.1,1.2,6.5
+EUROPE,West & Central Europe,France,3667.198,4185.011,4502.188,5196.607,10175.025
+EUROPE,West & Central Europe,Germany,2150.094,1014.103,971.479,1084.5,1720.498
+EUROPE,West & Central Europe,Gibraltar,No Report,No Report,No Report,No Report,0.104
+EUROPE,West & Central Europe,Greece,18.035,200.645,1151.852,42.824,60.652
+EUROPE,West & Central Europe,Hungary,58.928,23.467,94.37,7.802,7.286
+EUROPE,West & Central Europe,Iceland,1.87,1.192,6.159,1.143,12.84
+EUROPE,West & Central Europe,Ireland,30.467,106.909,167.336,306.147,254.884
+EUROPE,West & Central Europe,Italy,4057.229,3521.329,3583.688,4372.061,4624.145
+EUROPE,West & Central Europe,Italy,646,512,836,,
+EUROPE,West & Central Europe,Latvia,No Report,0.616,0.64,0.684,1.123
+EUROPE,West & Central Europe,Liechtenstein,0.014,0.014,0.012,0.023,No Report
+EUROPE,West & Central Europe,Lithuania,0.732,0.183,13.449,0.698,3.124
+EUROPE,West & Central Europe,Luxembourg,2.486,11.153,4.481,1.187,3.825
+EUROPE,West & Central Europe,Malta,4.535,3.716,0.152,6.398,4.269
+EUROPE,West & Central Europe,Monaco,0.01,0.0,No Report,0.0010,0.0010
+EUROPE,West & Central Europe,Netherlands,7968.0,17560.0,12387.0,14603.0,10584.1
+EUROPE,West & Central Europe,Norway,35.828,31.369,40.507,177.315,40.502
+EUROPE,West & Central Europe,Poland,422.179,401.225,21.721,16.871,21.928
+EUROPE,West & Central Europe,Portugal,3140.103,3021.257,7422.752,18083.241,34477.48
+EUROPE,West & Central Europe,Slovakia,0.069,0.697,1.978,0.36,0.962
+EUROPE,West & Central Europe,Slovenia,55.38,1.61,106.69,2.14,4.67
+EUROPE,West & Central Europe,Spain,17618.187,49279.342,33135.629,48429.453,49652.959
+EUROPE,West & Central Europe,Sweden,41.0,42.071,29.0,33.0,1358.0
+EUROPE,West & Central Europe,Switzerland,185.942,188.617,361.451,282.614,354.378
+EUROPE,West & Central Europe,United Kingdom of Great Britain and Northern Ireland,3635.0,7119.0,4779.0,3814.0,3814.0
+OCEANIA,Oceania,Australia,105.874,288.164,202.009,87.514,251.594
+OCEANIA,Oceania,Marshall Islands,No Report,No Report,25.0,No Report,No Report
+OCEANIA,Oceania,New Zealand,0.267,7.061,17.873,7.555,32.954

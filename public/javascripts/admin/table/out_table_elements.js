@@ -985,7 +985,7 @@
               '<div class="html_code">'+
                 '<h4>HTML CODE</h4>'+
                 '<span class="copy_code">'+
-                  '<input type="text" disabled="disabled" value="<iframe src=\'http://'+user_name+'.cartodb.com/tables/'+table_name+'/embed_map\' width=\'572\' height=\'220\'></iframe>" />'+
+                  '<input type="text" disabled="disabled" value="<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map\' width=\'572\' height=\'220\'></iframe>" />'+
                   '<a id="test" class="copy">Copy</a>'+
                 '</span>'+
                 '<span class="outer_map">'+
@@ -1023,8 +1023,10 @@
 	      $('div.mamufas').fadeIn('fast',function(){
 	        if (!embed_map)
 	          createMap();
+	
 	        toggleLayer();
 	        addCustomStyles();
+					changeEmbedCode();
 	        
 	        // Start zclip
 	        $("div.embed_window .inner_ span.top div span a.copy").zclip({
@@ -1087,7 +1089,7 @@
 		    
 	      var cartodb_layer = {
           getTileUrl: function(coord, zoom) {
-            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png';
+            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png?sql=' + (($('body').attr('query_mode'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
           },
           tileSize: new google.maps.Size(256, 256)
         };
@@ -1176,6 +1178,12 @@
         });
       }
 		  
+			function changeEmbedCode() {
+				var sql = 'sql=' + (($('body').attr('query_mode'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
+				$('div.embed_window span.copy_code input').val('<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map?'+ sql +'\' width=\'572\' height=\'220\'></iframe>');
+				$('div.embed_window span.tiles_code input').val(TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}'+'.png?' + sql);
+			}
+		
 		  return {}
 		}());
 
@@ -1396,7 +1404,9 @@
 	function setAppStatus() {
 		var query_mode = ($('body').attr('query_mode') === "true");
 		if (query_mode) {
-			$('ul.tab_menu li a.share').hide();
+			if ($('ul.tab_menu li a.share').hasClass('disabled')) {
+				$('ul.tab_menu li a.share').hide();
+			}
 		  $('a.open_georeference').css({opacity:0.5});
 			$.favicon('/favicon/black_32x32.png');
 			var html = $('p.settings').html();

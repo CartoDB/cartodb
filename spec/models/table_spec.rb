@@ -48,7 +48,7 @@ describe Table do
 
   it "should be associated to a database table" do
     user = create_user
-    table = create_table :name => 'Wadus table', :user_id => user.id
+    table = create_table({:name => 'Wadus table', :user_id => user.id})
     Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
     user.in_database do |user_database|
       user_database.table_exists?(table.name.to_sym).should be_true
@@ -57,7 +57,7 @@ describe Table do
 
   it "should rename a database table when the attribute name is modified" do
     user = create_user
-    table = create_table :name => 'Wadus table', :user_id => user.id
+    table = create_table({:name => 'Wadus table', :user_id => user.id})
     Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
     user.in_database do |user_database|
       user_database.table_exists?(table.name.to_sym).should be_true

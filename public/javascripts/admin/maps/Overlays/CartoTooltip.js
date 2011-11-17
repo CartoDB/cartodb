@@ -74,7 +74,9 @@
         
         if (!is_query) {
           div.style.width = '48px';
-          $(div).find('a.info', 'a.edit').show();
+					$(div).find('a.edit').show();
+					$(div).find('a.delete_geometry').show();
+          $(div).find('a.info').show();
           $(div).find('p').hide();
           $(div).find('a.delete_geometry').unbind('click');
           $(div).find('a.delete_geometry').click(function(ev){

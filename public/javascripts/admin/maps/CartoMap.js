@@ -1412,8 +1412,8 @@
       // SQL?
       if (this.query_mode) {
         var query = 'sql=' + editor.getValue();
-        tile_url = wax.util.addUrlData(tile_url, escape(query));
-        grid_url = wax.util.addUrlData(grid_url, escape(query));
+        tile_url = wax.util.addUrlData(tile_url, sanitizeQuery(query));
+        grid_url = wax.util.addUrlData(grid_url, sanitizeQuery(query));
       }
 
       // Build up the tileJSON

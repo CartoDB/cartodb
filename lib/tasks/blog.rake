@@ -28,7 +28,7 @@ namespace :cartodb do
         content += <<-HTML
 <div class="block#{i == 2 ? ' last' : ''}">
   <h3>#{i == 0 ? "Latest from the blog" : ''}</h3>
-  <h4><a href="#{item.search('guid').first.inner_text}" >#{truncate(item.search('title').try(:first).try(:inner_text),:length=>80,:separator=>'...')}</a></h4>
+  <h4><a href="#{item.search('guid').first.inner_text}" >#{item.search('title').first.inner_text[0..60] + '...'}</a></h4>
   <p>#{text}</p>
 </div>
 HTML

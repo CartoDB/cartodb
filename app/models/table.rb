@@ -1,5 +1,5 @@
 # coding: UTF-8
-
+# Proxies management of a table in the users database
 class Table < Sequel::Model(:user_tables)
 
   # App constants
@@ -199,7 +199,6 @@ class Table < Sequel::Model(:user_tables)
               USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US'),
               ALTER COLUMN #{field.to_s} SET DEFAULT now();
           ALTERCREATEDAT
-          debugger
           user_database.run(sql)
       end
     end
@@ -310,8 +309,12 @@ class Table < Sequel::Model(:user_tables)
     "rails:#{db_name}:#{table_name}"
   end
 
+  def sequel
+    owner.in_database[name.to_sym]
+  end
+
   def rows_counted
-    @rows_counted ||= owner.in_database[name.to_sym].count
+    sequel.count
   end
   
   # returns table size in bytes
@@ -566,9 +569,9 @@ class Table < Sequel::Model(:user_tables)
             'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')',#{CartoDB::SRID}
         ) 
         WHERE 
-        CAST(#{options[:longitude_column]} AS text) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$' 
+        trim(CAST(#{options[:longitude_column]} AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$' 
         AND   
-        CAST(#{options[:latitude_column]} AS text)  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+        trim(CAST(#{options[:latitude_column]} AS text)) ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
         GEOREF
         )
       end
@@ -824,6 +827,19 @@ TRIGGER
     update_updated_at && save_changes
   end
 
+  # Returns a valid name for a table
+  # Handles:
+  # * sanitation
+  # * duplicate checking
+  # * incrementing trailing counter if duplicate
+  #
+  # Note, trailing counter increments the maximum trailing number found. 
+  # This means gaps in a counter range will be made if the user manually sets
+  # the name of a table with a trailing number. 
+  #
+  # Duplicating a table manually loaded called "my_table_2010" => "my_table_2011"
+  #
+  # TODO: Far too clever approach. Just recursivly append "_copy" if duplicate
   def get_valid_name(raw_new_name = nil)
     
     # set defaults and sanity check
@@ -834,21 +850,22 @@ TRIGGER
     raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
     raw_new_name = "untitled_table"        if raw_new_name.blank?
     
-    # we should be getting cadidates from the base name
+    # Do a basic check for the new name. If it doesn't exist, let it through (sanitized)
+    return raw_new_name if name_available?(raw_new_name)
+        
+    # Happens if we're duplicating a table.
+    # First get candidates from the base name
     # eg: "simon_24" => "simon"
     if match = /(.+)_\d+$/.match(raw_new_name)
       raw_new_name = match[1]
     end  
     
-    # check for dupes
-    # FYI: Native sequel (owner.in_database.tables) filters tables that start with sql or pg
-    candidates = owner.tables.filter(:name.like(/^#{raw_new_name}/)).select_map(:name)
-                 
     # return if no dupe
-    return raw_new_name unless candidates.include?(raw_new_name)
+    return raw_new_name if name_available?(raw_new_name)
 
     # increment trailing number (max+1) if dupe
-    max_candidate = candidates.sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
+    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
+    
     if max_candidate =~ /(.+)_(\d+)$/
       return $1 + "_#{$2.to_i + 1}"
     else
@@ -856,7 +873,15 @@ TRIGGER
     end
   end
 
+  # return name if no dupe, else false
+  def name_available?(name)                 
+    name_candidates(name).include?(name) ? false : name 
+  end    
 
+  def name_candidates(name)
+    # FYI: Native sequel (owner.in_database.tables) filters tables that start with sql or pg
+    owner.tables.filter(:name.like(/^#{name}/)).select_map(:name)
+  end  
 
   def get_new_column_type(invalid_column)
     flatten_cartodb_schema = schema.flatten
@@ -884,6 +909,18 @@ TRIGGER
       end
     end
     return if type.nil?
+    
+    #if the geometry is MULTIPOINT we convert it to POINT
+    if type.to_s.downcase == "multipoint"
+      owner.in_database do |user_database|
+        user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'POINT', 2);")
+        user_database.run("UPDATE #{self.name} SET the_geom_simple = ST_GeometryN(the_geom,1);")
+        user_database.run("SELECT DropGeometryColumn('#{self.name}','the_geom');");
+        user_database.run("ALTER TABLE #{self.name} RENAME COLUMN the_geom_simple TO the_geom;")
+      end
+      type = "point"
+    end
+    
     raise InvalidArgument unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
     updates = false
     type = type.to_s.upcase

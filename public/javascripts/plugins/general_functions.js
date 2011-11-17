@@ -30,6 +30,8 @@
 					n_q = '';
 			if (l_c == ';') 
 				n_q = q.substr(0,q.length-1);
+			else 
+				n_q = q;
 			return escape(n_q);
 		}
 

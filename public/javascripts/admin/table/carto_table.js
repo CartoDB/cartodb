@@ -153,7 +153,7 @@
 				setAppStatus(); // Change app status depending on query mode
 
 				var time,
-						query = editor.getValue(),
+						query = editor.getOption('query'),
 						is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER|DROP|DELETE).*/i)!=-1;
 				
 				// Get the total rows of the query
@@ -2104,6 +2104,7 @@
         if (table.enabled && table_mode) {
           ev.preventDefault();
 					$('body').attr('query_mode',"true");
+					editor.setOption('query',editor.getValue());
           table.mode = 'query';
           methods.refreshTable(0);
         	setAppStatus();

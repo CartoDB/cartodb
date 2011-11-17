@@ -138,8 +138,9 @@ CodeMirror.defineMode("plsql", function(config, parserConfig) {
         "fast fetch file for force form from function " +
         "generic goto grant group " +
         "having " +
-        "identified if immediate in increment index indexes indicator initial initrans insert interface intersect " +
+        "identified if immediate in increment index indexes indicator initial initrans insert interface intersect inner " +
         "into is " +
+				"join " +
         "key " +
         "level library like limited local lock log logging long loop " +
         "master maxextents maxtrans member minextents minus mislabel mode modify multiset " +

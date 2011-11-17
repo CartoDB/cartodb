@@ -365,7 +365,7 @@ div.mamufas div.warning_window {position:absolute; display:none; top:50%; left:5
 div.mamufas div.warning_window a.close {position:absolute; right:-8px; top:-8px; width:24px; height:24px; background:url('/images/admin/table/close_delete.png') no-repeat 0 0;}
 div.mamufas div.warning_window a.close:hover {background-position:0 -24px;}
 div.mamufas div.warning_window div.inner_ {width:430px; height:135px; border:2px solid #FF6600; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
-div.mamufas div.warning_window div.inner_ span.top {float:left; width:402px; padding:14px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.warning_window div.inner_ span.top {float:left; width:344px; padding:14px 14px 14px 72px; border-bottom:1px solid #CCCCCC; background:url('/images/admin/icons/warning.png') no-repeat 16px 23px;}
 div.mamufas div.warning_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.warning_window div.inner_ span.top p {position:relative; float:left!important; height:auto; width:100%; padding:10px 0 0 0!important; margin:0!important; font:normal 13px Helvetica,Arial; color:#666666; text-shadow:0 1px white;}
 div.mamufas div.warning_window div.inner_ span.top p a {color:#444444;}

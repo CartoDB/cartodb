@@ -944,31 +944,38 @@ describe Table do
   end
   
   it "should return the content of the table in CSV format" do
-    user = create_user
-    table = Table.new :privacy => Table::PRIVATE, :tags => 'movies, personal'
-    table.user_id = user.id
-    table.name = 'Madrid Bars'
+    # build up a new table
+    user               = create_user
+    table              = Table.new :privacy => Table::PRIVATE, :tags => 'movies, personal'
+    table.user_id      = user.id
+    table.name         = 'Madrid Bars'
     table.force_schema = "name varchar, address varchar, latitude float, longitude float"
     table.save
-    table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
-    table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+    table.insert_row!({:name      => "Hawai", 
+                       :address   => "Calle de Pérez Galdós 9, Madrid, Spain", 
+                       :latitude  => 40.423012, 
+                       :longitude => -3.699732})
+                       
+    table.georeference_from!(:latitude_column  => :latitude, 
+                             :longitude_column => :longitude)
 
+    # write CSV to tempfile and read it back
     csv_content = nil
     zip = table.to_csv
-    path = "/tmp/temp_csv.zip"
-    fd = File.open(path,'w+')
-    fd.write(zip)
-    fd.close
-    Zip::ZipFile.foreach(path) do |entry|
+    file = Tempfile.new('zip')
+    File.open(file,'w+') { |f| f.write(zip) }
+    
+    Zip::ZipFile.foreach(file) do |entry|
       entry.name.should == "madrid_bars_export.csv"
       csv_content = entry.get_input_stream.read
     end
-    FileUtils.rm_rf(path)
+    file.close
     
+    # parse constructed CSV and test
     parsed = CSV.parse(csv_content)
     parsed[0].should == ["cartodb_id", "address", "latitude", "longitude", "name", "updated_at", "created_at", "the_geom"]
-    parsed[1][0].should == "1"
-    parsed[1][-1].should ==  "{\"type\":\"Point\",\"coordinates\":[-3.699732,40.423012]}"
+    parsed[1].first.should == "1"
+    parsed[1].last.should  ==  "{\"type\":\"Point\",\"coordinates\":[-3.699732,40.423012]}"
   end
   
   it "should return the content of a brand new table in SHP format" do

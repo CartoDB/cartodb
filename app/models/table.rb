@@ -310,7 +310,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def rows_counted
-    @rows_counted ||= owner.in_database[name.to_sym].count
+    owner.in_database[name.to_sym].count
   end
   
   # returns table size in bytes

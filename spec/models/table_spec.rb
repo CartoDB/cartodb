@@ -1028,7 +1028,7 @@ describe Table do
       [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "string"], 
       [:shape_area, "string"], [:latitude, "string"], [:longitude, "string"], [:center_latitude, "string"], 
       [:the_geom, "geometry", "geometry", "point"], [:center_longitude, "string"], 
-      [:created_at, "string"], [:updated_at, "string"]
+      [:created_at, "date"], [:updated_at, "date"]
     ], :cartodb_types => true)
   end
   
@@ -1230,5 +1230,15 @@ describe Table do
     new_table = Table.find_by_subdomain(nil, table.id)
 
     new_table.should == nil
+  end  
+  
+  it "should make sure it converts created_at and updated at to date types when importing from CSV" do
+    user = create_user
+    table = new_table :user_id => user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+    table.save.reload
+    schema = table.schema(:cartodb_types => true)
+    schema.include?([:updated_at, "date"]).should == true
+    schema.include?([:created_at, "date"]).should == true
   end  
 end

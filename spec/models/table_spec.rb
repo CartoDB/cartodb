@@ -497,26 +497,22 @@ describe Table do
     table.rows_counted.should == 85
   end
 
-  # Not supported by cartodb-importer v0.2.1
-  # File in format different than UTF-8
-  pending "should import estaciones.csv" do
+  it "should import estaciones.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/estaciones.csv"
     table.save
     table.reload
     table.name.should == 'estaciones'
-    table.rows_counted.should == 29
+    table.rows_counted.should == 30
   end
   
-  # Not supported by cartodb-importer v0.2.1
-  # File in format UTF-8
-  pending "should import estaciones2.csv" do
+  it "should import estaciones2.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/estaciones2.csv"
     table.save
     table.reload
     table.name.should == 'estaciones2'
-    table.rows_counted.should == 29
+    table.rows_counted.should == 30
   end
 
   it "should import file ngos.xlsx" do

@@ -470,14 +470,13 @@ describe Table do
     table.rows_counted.should == 3855
   end
   
-  # Not supported by cartodb-importer v0.2.1
-  pending "should import file clubbing.csv" do
+  it "should import file clubbing.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv"
     table.save
     table.reload
     table.name.should == 'clubbing'
-    table.rows_counted.should == 2003
+    table.rows_counted.should == 1998
   end
 
   it "should import file short_clubbing.csv" do

@@ -169,6 +169,73 @@ describe CartoDB::Importer do
       result.rows_imported.should == 30
       result.import_type.should   == '.csv'
     end
+    
+    it "should import CSV with latidude/logitude" do
+      importer = create_importer 'walmart.csv'      
+      result = importer.import!
+
+      result.name.should == 'walmart'
+      result.rows_imported.should == 3176
+      result.import_type.should == '.csv'
+    end
+
+    it "should import CSV with lat/lon" do
+      importer = create_importer 'walmart_latlon.csv', 'walmart_latlon'      
+      result = importer.import!
+
+      result.name.should == 'walmart_latlon'
+      result.rows_imported.should == 3176
+      result.import_type.should == '.csv'
+    end
+
+    it "should CartoDB CSV export with latitude & longitude columns" do
+      importer = create_importer 'CartoDB_csv_export.zip', 'cartodb_csv_export'                  
+      result = importer.import!
+      
+      result.name.should == 'cartodb_csv_export'
+      result.rows_imported.should == 155
+      result.import_type.should == '.csv'
+
+      # test auto generation of geom from lat/long fields
+      res = @db[:cartodb_csv_export].select{[x(the_geom), y(the_geom), latitude, longitude]}.limit(1).first
+      res[:x].should == res[:longitude].to_f
+      res[:y].should == res[:latitude].to_f
+    end
+  
+    it "should CartoDB CSV export with the_geom in geojson" do
+      importer = create_importer 'CartoDB_csv_multipoly_export.zip', 'cartodb_csv_multipoly_export'
+      result = importer.import!
+
+      result.name.should == 'cartodb_csv_multipoly_export'
+      result.rows_imported.should == 601
+      result.import_type.should == '.csv'
+      
+      # test geometry returned is legit
+      g = '{"type":"MultiPolygon","coordinates":[[[[1.7,39.1],[1.7,39.1],[1.7,39.1],[1.7,39.1],[1.7,39.1]]]]}'
+      @db[:cartodb_csv_multipoly_export].get{ST_AsGeoJSON(the_geom,1)}.should == g
+    end
+    
+    it "should import CSV file with lat/lon column" do
+      importer = create_importer 'facility.csv', 'facility'
+      result = importer.import!
+
+      result.name.should == 'facility'
+      result.rows_imported.should == 541
+      result.import_type.should == '.csv'
+      
+      # test geometry is correct
+      res = @db["SELECT x(the_geom),y(the_geom) FROM facility WHERE prop_id=' Q448 '"].first
+      res.should == {:x=>-73.7698, :y=>40.6862}
+    end
+  
+    it "should import CSV file with columns who are numbers" do
+      importer = create_importer 'csv_with_number_columns.csv', 'csv_with_number_columns'
+      result = importer.import!
+
+      result.name.should == 'csv_with_number_columns'
+      result.rows_imported.should == 176
+      result.import_type.should == '.csv'      
+    end
   end
   
   describe "#XLSX" do
@@ -257,6 +324,18 @@ describe CartoDB::Importer do
     end
   end
     
+  describe "#GPX file" do
+    it "should import GPX file" do
+      importer = create_importer 'route2.gpx'                  
+      result = importer.import!
+      
+      result.should_not           == nil
+      result.name.should          == 'route2'
+      result.rows_imported.should == 822
+      result.import_type.should   == '.gpx'
+    end
+  end    
+    
     
   pending "#GTIFF" do
     it "should import a GTIFF file in the given database in a table named like the file" do
@@ -291,21 +370,11 @@ describe CartoDB::Importer do
       result.rows_imported.should == 312
       result.import_type.should   == '.shp'
     end
-  end  
+  end    
   
-  describe "import GPX file" do
-      it "should import GPX file" do
-        importer = create_importer 'route2.gpx'                  
-        result = importer.import!
-        
-        result.should_not           == nil
-        result.name.should          == 'route2'
-        result.rows_imported.should == 822
-        result.import_type.should   == '.gpx'
-      end
-  end
   
-  describe "Import from Simon file" do
+  describe "Import from user specific files" do
+    
     it "should import a shapefile from Simon" do
       importer = create_importer 'simon-search-spain-1297870422647.zip'                  
       result = importer.import!
@@ -313,76 +382,16 @@ describe CartoDB::Importer do
       result.rows_imported.should == 601
       result.import_type.should   == '.shp'
     end
-  end  
-  
-  describe "Import ZIPPED KML" do
-    it "should import a KML ZIP file" do
+
+    it "should import this KML ZIP file" do
       importer = create_importer 'states.kml.zip'
       result = importer.import!
 
       result.rows_imported.should == 56
       result.import_type.should   == '.kml'
     end
-  end  
-
   
-  describe "Import CSV with latidude/logitude" do
-    it "should import walmart.csv" do
-      importer = create_importer 'walmart.csv'      
-      result = importer.import!
-
-      result.name.should == 'walmart'
-      result.rows_imported.should == 3176
-      result.import_type.should == '.csv'
-    end
-  end
-
-  
-  describe "Import CSV with lat/lon" do
-    it "should import walmart.csv" do
-      importer = create_importer 'walmart_latlon.csv', 'walmart_latlon'      
-      result = importer.import!
-
-      result.name.should == 'walmart_latlon'
-      result.rows_imported.should == 3176
-      result.import_type.should == '.csv'
-    end
-  end  
-  
-  describe "Import CartoDB CSV export with latitude & longitude columns" do
-    it "should import CartoDB_csv_export.zip" do
-      importer = create_importer 'CartoDB_csv_export.zip', 'cartodb_csv_export'                  
-      result = importer.import!
-      
-      result.name.should == 'cartodb_csv_export'
-      result.rows_imported.should == 155
-      result.import_type.should == '.csv'
-
-      # test auto generation of geom from lat/long fields
-      res = @db[:cartodb_csv_export].select{[x(the_geom), y(the_geom), latitude, longitude]}.limit(1).first
-      res[:x].should == res[:longitude].to_f
-      res[:y].should == res[:latitude].to_f
-    end
-  end  
-  
-  # TODO: check that the_geom is now a real geometry built from geojson.
-  describe "Import CartoDB CSV export with the_geom in geojson" do
-    it "should import CartoDB_csv_multipoly_export.zip" do
-      importer = create_importer 'CartoDB_csv_multipoly_export.zip', 'cartodb_csv_multipoly_export'
-      result = importer.import!
-
-      result.name.should == 'cartodb_csv_multipoly_export'
-      result.rows_imported.should == 601
-      result.import_type.should == '.csv'
-      
-      # test geometry returned is legit
-      g = '{"type":"MultiPolygon","coordinates":[[[[1.7,39.1],[1.7,39.1],[1.7,39.1],[1.7,39.1],[1.7,39.1]]]]}'
-      @db[:cartodb_csv_multipoly_export].get{ST_AsGeoJSON(the_geom,1)}.should == g
-    end
-  end  
-  
-  describe "Import CartoDB SHP export with lat/lon" do
-    it "should import CartoDB_shp_export.zip" do
+    it "should import CartoDB SHP export with lat/lon" do
       importer = create_importer 'CartoDB_shp_export.zip', 'cartodb_shp_export'
       result = importer.import!
 
@@ -394,33 +403,7 @@ describe CartoDB::Importer do
       res = @db[:cartodb_shp_export].select{[x(the_geom),y(the_geom)]}.first
       res.should == {:x=>16.5607329, :y=>48.1199611}
     end
-  end  
-  
-  describe "Import CSV file with lat/lon column" do
-    it "should import facility.csv" do
-      importer = create_importer 'facility.csv', 'facility'
-      result = importer.import!
-
-      result.name.should == 'facility'
-      result.rows_imported.should == 541
-      result.import_type.should == '.csv'
-      
-      # test geometry is correct
-      res = @db["SELECT x(the_geom),y(the_geom) FROM facility WHERE prop_id=' Q448 '"].first
-      res.should == {:x=>-73.7698, :y=>40.6862}
-    end
-  end  
-  
-  describe "Import CSV file with columns who are numbers" do
-    it "should import csv_with_number_columns.csv" do
-      importer = create_importer 'csv_with_number_columns.csv', 'csv_with_number_columns'
-      result = importer.import!
-
-      result.name.should == 'csv_with_number_columns'
-      result.rows_imported.should == 176
-      result.import_type.should == '.csv'
-      
-    end
+          
   end  
   
   

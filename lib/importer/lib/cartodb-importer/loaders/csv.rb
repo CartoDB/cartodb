@@ -6,26 +6,10 @@ module CartoDB
       register_loader :csv
 
       def process!
-        # run Chardet and Iconv on input to ensure is UTF8
-        begin
-          # read source
-          contents = File.open(@path).read
         
-          # detect encoding
-          cd = CharDet.detect(contents)
+        # run Chardet + Iconv
+        fix_encoding 
         
-          # force utf8
-          output  = cd.confidence > 0.6 ? Iconv.conv("#{cd.encoding}//IGNORE", "UTF-8", contents) : contents
-                
-          # output to file
-          file = File.new(@path, 'w')
-          file.write(output)
-          file.close
-        rescue Iconv::IllegalSequence => e
-          #silently fail here and try importing anyway
-          log "ICONV failed for CSV #{@path}: #{e.message} #{e.backtrace}"
-        end
-
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@path} -nln #{@suggested_name}}
 

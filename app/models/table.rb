@@ -167,10 +167,12 @@ class Table < Sequel::Model(:user_tables)
         @import_from_file.write res.read.force_encoding('utf-8')
         @import_from_file.close
       end
-
-      Airbrake.notify(
+      
+      # nill required for this bug https://github.com/airbrake/airbrake/issues/34
+      Airbrake.notify(nil, 
         :error_class   => "Import Error",
-        :error_message => "Import Error: #{e.message}",
+        :error_message => "Import Error: #{e.try(:message)}",
+        :backtrace     => e.try(:backtrace),
         :parameters    => {
           :database  => database_name,
           :username  => owner.database_username,

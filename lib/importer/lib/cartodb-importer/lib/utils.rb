@@ -50,6 +50,27 @@ module CartoDB
         return uniname
       end
 
+      def fix_encoding
+        begin
+          # read source
+          contents = File.open(@path).read
+        
+          # detect encoding
+          cd = CharDet.detect(contents)
+          
+          # force utf8
+          output  = cd.confidence > 0.6 ? Iconv.conv("#{cd.encoding}//TRANSLIT//IGNORE", "UTF-8", contents) : Iconv.conv("UTF-8//TRANSLIT//IGNORE", "UTF-8", contents)
+                
+          # output to file
+          file = File.new(@path, 'w')
+          file.write(output)
+          file.close
+        rescue Iconv::IllegalSequence => e
+          #silently fail here and try importing anyway
+          log "ICONV failed for CSV #{@path}: #{e.message} #{e.backtrace}"
+        end
+      end  
+      
       def log str            
         #puts str # if @@debug
       end

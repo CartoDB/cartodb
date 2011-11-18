@@ -1,4 +1,4 @@
-# coding: UTF-8
+# coding: utf-8
 
 class Admin::TablesController < ApplicationController
   ssl_required :index, :show, :embed_map

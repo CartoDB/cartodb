@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'oauth'
 
 class ClientApplication < Sequel::Model

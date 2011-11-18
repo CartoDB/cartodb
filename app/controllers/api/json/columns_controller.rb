@@ -1,4 +1,4 @@
-# coding: UTF-8
+# coding: utf-8
 
 class Api::Json::ColumnsController < Api::ApplicationController
   ssl_required :index, :create, :show, :update, :delete

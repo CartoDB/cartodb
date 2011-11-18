@@ -1,3 +1,4 @@
+# coding: utf-8
 class OauthToken < Sequel::Model
 
   many_to_one :client_application

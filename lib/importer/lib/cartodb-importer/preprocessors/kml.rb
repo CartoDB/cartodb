@@ -8,10 +8,14 @@ module CartoDB
       register_preprocessor :js            
 
       def process!    
+        
+        # run Chardet + Iconv
+        fix_encoding 
+        
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{@path}.shp #{@path}}
         out = `#{ogr2ogr_command}`
-        
+
         if $?.exitstatus != 0
           raise "failed to convert kml to shp"
         end

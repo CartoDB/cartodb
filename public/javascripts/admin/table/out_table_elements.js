@@ -341,9 +341,7 @@
 
 
 			//---------
-			
-				
-			
+
 			var availableColumns = [],
 					position = 0;
 			

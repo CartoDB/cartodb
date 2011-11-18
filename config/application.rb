@@ -44,7 +44,6 @@ module CartoDB
   end
 end
 
-include GeoRuby::SimpleFeatures
 require 'csv'
 require 'cartodb/errors'
 require 'cartodb/logger'

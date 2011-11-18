@@ -470,14 +470,13 @@ describe Table do
     table.rows_counted.should == 3855
   end
   
-  # Not supported by cartodb-importer v0.2.1
-  pending "should import file clubbing.csv" do
+  it "should import file clubbing.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv"
     table.save
     table.reload
     table.name.should == 'clubbing'
-    table.rows_counted.should == 2003
+    table.rows_counted.should == 1998
   end
 
   it "should import file short_clubbing.csv" do
@@ -498,26 +497,22 @@ describe Table do
     table.rows_counted.should == 85
   end
 
-  # Not supported by cartodb-importer v0.2.1
-  # File in format different than UTF-8
-  pending "should import estaciones.csv" do
+  it "should import estaciones.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/estaciones.csv"
     table.save
     table.reload
     table.name.should == 'estaciones'
-    table.rows_counted.should == 29
+    table.rows_counted.should == 30
   end
   
-  # Not supported by cartodb-importer v0.2.1
-  # File in format UTF-8
-  pending "should import estaciones2.csv" do
+  it "should import estaciones2.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/estaciones2.csv"
     table.save
     table.reload
     table.name.should == 'estaciones2'
-    table.rows_counted.should == 29
+    table.rows_counted.should == 30
   end
 
   it "should import file ngos.xlsx" do
@@ -1028,7 +1023,7 @@ describe Table do
       [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "string"], 
       [:shape_area, "string"], [:latitude, "string"], [:longitude, "string"], [:center_latitude, "string"], 
       [:the_geom, "geometry", "geometry", "point"], [:center_longitude, "string"], 
-      [:created_at, "string"], [:updated_at, "string"]
+      [:created_at, "date"], [:updated_at, "date"]
     ], :cartodb_types => true)
   end
   
@@ -1050,16 +1045,13 @@ describe Table do
   
   it "should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception" do
     user = create_user
-    table = new_table :name => 'table1'
-    table.user_id = user.id
+    table = new_table({:name => 'table1', :user_id => user.id})    
     table.save
     pk = table.insert_row!({:name => "name #1", :description => "description #1"})
     
     Table.any_instance.stubs(:the_geom_type=).raises(CartoDB::InvalidGeomType)
     
-    table = new_table
-    table.user_id = user.id
-    table.name = "table1"
+    table = new_table({:name => 'table1', :user_id => user.id})
     lambda {
       table.save
     }.should raise_error(CartoDB::InvalidGeomType)
@@ -1069,16 +1061,15 @@ describe Table do
   
   it "should not remove an existing table when the creation of a new table from a file with the same name has raised an exception" do
     user = create_user
-    table = new_table :name => 'table1'
-    table.user_id = user.id
+    table = new_table({:name => 'table1', :user_id => user.id})    
     table.save
     pk = table.insert_row!({:name => "name #1", :description => "description #1"})
     
     Table.any_instance.stubs(:schema).raises(CartoDB::QueryNotAllowed)
     
-    table = new_table
-    table.user_id = user.id
+    table = new_table :user_id => user.id
     table.import_from_file = "#{Rails.root}/db/fake_data/reserved_columns.csv"
+
     lambda {
       table.save
     }.should raise_error(CartoDB::QueryNotAllowed)
@@ -1146,7 +1137,7 @@ describe Table do
     
     check_schema(table, [
       [:cartodb_id, "number"], [:name, "string"], [:the_geom_str, "string"], 
-      [:created_at, "string"], [:updated_at, "string"]
+      [:created_at, "date"], [:updated_at, "date"]
     ], :cartodb_types => true)
     
     user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
@@ -1230,5 +1221,15 @@ describe Table do
     new_table = Table.find_by_subdomain(nil, table.id)
 
     new_table.should == nil
+  end  
+  
+  it "should make sure it converts created_at and updated at to date types when importing from CSV" do
+    user = create_user
+    table = new_table :user_id => user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+    table.save.reload
+    schema = table.schema(:cartodb_types => true)
+    schema.include?([:updated_at, "date"]).should == true
+    schema.include?([:created_at, "date"]).should == true
   end  
 end

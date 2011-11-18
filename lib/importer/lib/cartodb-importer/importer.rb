@@ -63,7 +63,7 @@ module CartoDB
           @ext = File.extname(file_name)
           @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
           @import_from_file = Tempfile.new([@suggested_name, @ext])
-          @import_from_file.write res.read.force_encoding('utf-8')
+          @import_from_file.write res.read.force_encoding("UTF-8")
           @import_from_file.close
         end
       else

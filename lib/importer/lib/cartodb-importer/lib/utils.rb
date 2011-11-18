@@ -59,7 +59,7 @@ module CartoDB
           cd = CharDet.detect(contents)
           
           # force utf8
-          output  = cd.confidence > 0.6 ? Iconv.conv("#{cd.encoding}//TRANSLIT//IGNORE", "UTF-8", contents) : contents
+          output  = cd.confidence > 0.6 ? Iconv.conv("#{cd.encoding}//TRANSLIT//IGNORE", "UTF-8", contents) : Iconv.conv("UTF-8//TRANSLIT//IGNORE", "UTF-8", contents)
                 
           # output to file
           file = File.new(@path, 'w')

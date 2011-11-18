@@ -233,7 +233,8 @@ describe CartoDB::Importer do
       result = importer.import!
 
       result.name.should == 'csv_with_number_columns'
-      result.rows_imported.should == 176
+      result.rows_imported.should == 177
+
       result.import_type.should == '.csv'      
     end
   end
@@ -285,6 +286,7 @@ describe CartoDB::Importer do
 
       result.name.should          == 'simple'
       result.rows_imported.should == 11
+
       result.import_type.should   == '.json'
     end
     

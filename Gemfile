@@ -3,24 +3,25 @@ source 'http://rubygems.org'
 gem "rails", "3.0.10"
 
 gem "pg", "0.11"
-gem "sequel", "3.28.0"
+gem "sequel", "3.29.0"
 gem "sequel-rails", "~> 0.1.8"
-gem "nofxx-georuby", "~> 1.9.2", :require => "geo_ruby"
+gem "sequel_pg", "1.2.0", :require=>'sequel'
+gem "sequel_column_type_array", "~> 0.0.2"
 gem "rails_warden", "0.5.2"
 gem "oauth", "0.4.5"
 gem "oauth-plugin", "0.4.0.pre4"
-gem "sequel_column_type_array", "~> 0.0.2"
 gem "htmlentities"
-gem "rgeo", "0.3.2"
 gem "text-hyphen", "1.2.0"
+gem "rgeo", "0.3.2"
 gem "rgeo-geojson", "0.2.1", :require => "rgeo/geo_json"
 gem "redis", "~> 2.2.2"
 gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
 gem "airbrake", '~> 3.0.4'
-gem "rchardet19", '1.3.5'
+
 
 # importer
+gem "rchardet19", '1.3.5'
 gem "roo", "~> 1.9.7"
 gem "spreadsheet", "~> 0.6.5.9"
 gem "google-spreadsheet-ruby", "~> 0.1.5"

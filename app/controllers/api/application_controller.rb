@@ -1,4 +1,4 @@
-# coding: UTF-8
+# coding: utf-8
 
 class Api::ApplicationController < ApplicationController
   skip_before_filter :browser_is_html5_compliant?, :verify_authenticity_token

@@ -1,4 +1,4 @@
-# coding: UTF-8
+# coding: utf-8
 
 # This controller is for internal usage, so has not been documented yet
 # If it's useful can be added to the documentation

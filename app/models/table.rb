@@ -413,6 +413,7 @@ class Table < Sequel::Model(:user_tables)
           invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
           if invalid_value
             invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
+
             if new_column_type = get_new_column_type(invalid_column)
               user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
               retry

@@ -1,3 +1,5 @@
+# coding: utf-8
+
 module LoginHelper
   
   def forget_password_url

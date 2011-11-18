@@ -19,7 +19,6 @@ gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
 gem "airbrake", '~> 3.0.4'
 
-
 # importer
 gem "rchardet19", '1.3.5'
 gem "roo", "~> 1.9.7"
@@ -28,7 +27,8 @@ gem "google-spreadsheet-ruby", "~> 0.1.5"
 gem "rubyzip", "~> 0.9.4"
 gem "builder"
 
-group :test, :development do
+
+group :development, :test do
   # this is for Ruby 1.9.2 debugging. You should upgrade to ruby 1.9.3, it's much faster in development
   if (RUBY_VERSION == "1.9.2") 
     gem "ruby-debug-base19x", '~>0.11.30.pre3', :require => "ruby-debug", :platforms => :mri_19

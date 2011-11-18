@@ -59,7 +59,7 @@
 	      mode: "text/x-plsql",
 				lineWrapping: true,
 				onKeyEvent: function(editor,event) {
-					if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
+					if (event.altKey && event.keyCode == 13 && event.type == "keydown") {
 						stopPropagation(event);
 						$('div.sql_window a.try_query').trigger('click');
 					}
@@ -338,10 +338,7 @@
       });
 
 
-
-
-			//---------
-
+			// AUTOCOMPLETE STUFF
 			var availableColumns = [],
 					position = 0;
 			
@@ -384,11 +381,6 @@
 						return false;
 					}
 				});
-
-
-
-
-			//---------
 
       $('div.georeference_window span.select a.option').livequery('click',function(ev){
         stopPropagation(ev);

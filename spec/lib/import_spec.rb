@@ -287,6 +287,15 @@ describe CartoDB::Importer do
       result.rows_imported.should == 11
       result.import_type.should   == '.json'
     end
+    
+    it "should import GeoJSON files from URLs with UTF-8 chars" do
+      url = {:import_from_url => "https://raw.github.com/gist/1374824/d508009ce631483363e1b493b00b7fd743b8d008/unicode.json", :suggested_name => 'geojson_utf8'}
+      importer = CartoDB::Importer.new @db_opts.reverse_merge(url)
+      result = importer.import!
+
+      @db[:geojson_utf8].get(:reg_symbol).should == "In here -> ® <-- this here"
+      @db[:geojson_utf8].get(:tm_symbol).should == "™"
+    end  
   end
   
   describe "#SHP" do

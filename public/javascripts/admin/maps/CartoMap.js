@@ -1873,7 +1873,7 @@
     }
 
     CartoMap.prototype.showLoader = function() {
-      $('div.loading').fadeIn();
+      $('div.loading').fadeIn().delay(2000).fadeOut();
     }
 
 
@@ -1883,6 +1883,8 @@
     ////////////////////////////////////////
     CartoMap.prototype.hide = function() {
       // Remove all things
+			//this.hideLoader();
+
       if (this.editing) {
         this.editing = false;
         this.toggleEditTools();
@@ -1897,6 +1899,7 @@
 
     CartoMap.prototype.show = function() {
       $('div.map_window div.map_curtain').hide();
+			//this.showLoader();
       this.refresh();
     }
 

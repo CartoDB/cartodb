@@ -59,7 +59,7 @@
 	      mode: "text/x-plsql",
 				lineWrapping: true,
 				onKeyEvent: function(editor,event) {
-					if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
+					if (event.altKey && event.keyCode == 13 && event.type == "keydown") {
 						stopPropagation(event);
 						$('div.sql_window a.try_query').trigger('click');
 					}
@@ -156,8 +156,10 @@
 								'<li class="first_list">'+
 									'<a class="first_ul" href="#choose_address">Choose or create an address column</a>'+
 		              '<div class="georef_options">'+
-										'<p class="info">Specify columns to use for geocoding by adding them within brackets. You can also add extra information to make your geocoding more accurate (eg. {school}, New York, USA)</p>'+
+										'<p class="hack"></p>'+
+										'<p>Specify columns to use for geocoding by adding them within brackets.</p>'+
 										'<input class="address_input" type="text" value=""/>'+
+										'<span class="hint">HINT</span><p class="example">You can also add extra text to make it more accurate (eg. {school}, New York, USA )</p>'+
 		              '</div>'+
 								'</li>'+
 							'</ul>'+
@@ -234,6 +236,10 @@
         }
 
         function resetProperties() {
+					// autocomplete stuff
+					availableColumns = [];
+					$("div.georeference_window p.hack").text('');
+					
           $('div.mamufas div.georeference_window div.inner_ span.top').css('opacity',1).show();
           $('div.mamufas div.georeference_window div.inner_ span.bottom').css('opacity',1).show();
           
@@ -280,23 +286,27 @@
 
               for (var i = 0; i<data.length; i++) {
                 if (data[i][0]!="cartodb_id" && data[i][0]!="created_at" && data[i][0]!="updated_at") {
+		
+									if (data[i][0]!="the_geom" && data[i][0]!="cartodb_georef_status") {
+										availableColumns.push('{' + data[i][0] + '}');
+									}
 	
-                   if (data[i][2]==undefined) {
-                     $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                   } else {
-                     $('div.georeference_window div.block span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                     if (data[i][2]=="longitude") {
-                       $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                       $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                       $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
-                     } else if (data[i][2]=="latitude") {
-                       $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                       $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
-                       $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
-                     }
-                   }
-                 }
-               }
+                  if (data[i][2]==undefined) {
+                    $('div.georeference_window span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                  } else {
+                    $('div.georeference_window div.block span.select ul').append('<li><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                    if (data[i][2]=="longitude") {
+                      $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                      $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                      $('div.georeference_window span.select:eq(1) a.option').text(data[i][0]).attr('c',data[i][0]);
+                    } else if (data[i][2]=="latitude") {
+                      $('div.georeference_window span.select:eq(1) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                      $('div.georeference_window span.select:eq(0) ul').append('<li class="choosen"><a href="#'+data[i][0]+'">'+data[i][0]+'</a></li>');
+                      $('div.georeference_window span.select:eq(0) a.option').text(data[i][0]).attr('c',data[i][0]);
+                    }
+                  }
+                }
+              }
 
                // If the list is empty...
                if ($('div.georeference_window span.select:eq(1) ul li').size()==0) {
@@ -326,6 +336,52 @@
           });
         }
       });
+
+
+			// AUTOCOMPLETE STUFF
+			var availableColumns = [],
+					position = 0;
+			
+			function split( val ) {
+				return val.split( /,\s*| \s*/ );
+			}
+			function extractLast( term ) {
+				return split( term ).pop();
+			}
+
+			$( "div.georeference_window input.address_input")
+				.bind( "keydown", function( event ) {
+					if ( event.keyCode === $.ui.keyCode.TAB && $( this ).data( "autocomplete" ).menu.active ) {
+						event.preventDefault();
+					}
+					if (event.keyCode == 32 || event.keyCode == 188 || event.keyCode == 13 || event.keyCode == $.ui.keyCode.TAB || event.keyCode == 74 || event.keyCode == 8) {
+						var i_h = $("div.georeference_window p.hack");
+						var text = $(this).val().substr(0,$(this).caret().end);
+						i_h.text(text);
+						position = Math.min(i_h.width() + 10, 180);
+					}
+				})
+				.autocomplete({
+					autoFocus: true,
+					minLength: 1,
+					source: function( request, response ) {
+						response($.ui.autocomplete.filter(availableColumns, extractLast(request.term)));
+						var l_ = parseInt($(this.menu.element).css('left').replace('px',''));
+						$(this.menu.element).css({left:position + l_ + 'px'});
+					},
+					focus: function() {
+						return false;
+					},
+					select: function( event, ui ) {
+						var terms = split( this.value );
+						terms.pop();
+						terms.push( ui.item.value );
+						terms.push( "" );
+						this.value = terms.join(" ");
+						return false;
+					}
+				});
+
       $('div.georeference_window span.select a.option').livequery('click',function(ev){
         stopPropagation(ev);
         if (!$(this).parent().hasClass('disabled')) {

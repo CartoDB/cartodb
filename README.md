@@ -124,7 +124,7 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
   
 
 
-### Contributors ###
+### Contributors by commits###
 
   - Fernando Blat (@ferblape)
   - Javier Alvarez (@xavijam)
@@ -132,7 +132,7 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
   - Javier Álvarez Medina (@xavijam)
   - Alvaro Bautista (@batu)
   - Fernando Espinosa (@ferdev)
-  - saleiva (@saleiva)
+  - Sergio Alvarez Leiva (@saleiva)
   - Javier de la Torre (@jatorre)
   - Andrew W Hill (@andrewxhill)
   - Javier Arce (@javierarce)

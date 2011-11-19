@@ -38,6 +38,20 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
    
   - Install plpython for Python support in PostgreSQL (e.g., `sudo apt-get install postgresql-plpython-9.1`)
 
+  - Create a `template_postgis` database if one doesn't already exist:
+       
+        #!/usr/bin/env bash
+        POSTGIS_SQL_PATH='pg_config --sharedir'/contrib/postgis-2.0
+        createdb -E UTF8 template_postgis 
+        createlang -d template_postgis plpgsql 
+        psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"
+        psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql 
+        psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
+        psql -d template_postgis -f $POSTGIS_SQL_PATH/legacy.sql
+        psql -d template_postgis -f $POSTGIS_SQL_PATH/legacy_compatibility_layer.sql
+        psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;" 
+        psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+    
   - Install Redis from <http://redis.io/download> or using `brew install redis`.
   
   - Python dependencies: 
@@ -110,8 +124,16 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
   
 
 
-### Coming soon ###
+### Contributors ###
 
-* Better installation instructions
-* Simple AMI/Linode images
-* Examples and usecases
+  - Fernando Blat (@ferblape)
+  - Javier Alvarez (@xavijam)
+  - Simon Tokumine (@tokumine)
+  - Javier Álvarez Medina (@xavijam)
+  - Alvaro Bautista (@batu)
+  - Fernando Espinosa (@ferdev)
+  - saleiva (@saleiva)
+  - Javier de la Torre (@jatorre)
+  - Andrew W Hill (@andrewxhill)
+  - Javier Arce (@javierarce)
+  - Aaron Steele (@eightysteele)

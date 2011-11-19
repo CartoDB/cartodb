@@ -321,9 +321,6 @@
           '<a href="#zoom_out" class="zoom_out"></a>'+
           '<span class="slider"></span>'+
         '</div>'+
-        '<div class="loading">'+
-          '<span class="loader"></span>'+
-        '</div>'+
 				'<form class="map_search">'+
 					'<p>go to</p>'+
 					'<input type="text" value="">'+

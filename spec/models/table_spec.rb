@@ -1232,4 +1232,44 @@ describe Table do
     schema.include?([:updated_at, "date"]).should == true
     schema.include?([:created_at, "date"]).should == true
   end  
+  
+  it "should be able to update data in rows with column names with multiple underscores" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.name = "elecciones2008"
+    table.import_from_file = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+    table.save
+    
+    update_data = {:upo___nombre_partido=>"PSOEE"}
+    id = 5
+
+    lambda {
+      table.update_row!(id, update_data)
+    }.should_not raise_error        
+
+    res = table.sequel.where(:cartodb_id => 5).first
+    res[:upo___nombre_partido].should == "PSOEE"
+  end
+
+
+  it "should be able to insert data in rows with column names with multiple underscores" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.name = "elecciones2008"
+    table.import_from_file = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+    table.save
+    pk = nil
+    insert_data = {:upo___nombre_partido=>"PSOEE"}
+
+    lambda {
+      pk = table.insert_row!(insert_data)
+    }.should_not raise_error        
+    
+    res = table.sequel.where(:cartodb_id => pk).first
+    res[:upo___nombre_partido].should == "PSOEE"    
+  end
+  
+  
 end

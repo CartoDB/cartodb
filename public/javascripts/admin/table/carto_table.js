@@ -298,7 +298,7 @@
       
       if (table.mode!="normal") {
         table.e.find('thead').append('<div class="stickies"><p><strong>'+table.total_r+' result'+((table.total_r>1)?'s':'')+'</strong> for your filter in column "'+defaults.filter_column+'"  with text "'+defaults.filter_value+
-          '" - <a class="remove_filter" href="#disabled_filter">remove your filter</a></p></div>');
+          '" - <a class="remove_filter" href="#disabled_filter">clear filter</a></p></div>');
       } else {
         table.e.find('thead div.stickies').remove();
       }
@@ -716,7 +716,7 @@
           '</div>'+
         '</div>'
       );
-      $('div.filter_window').draggable({containment:'window'});
+      $('div.filter_window').draggable({containment:'window',handle:'h3'});
 
       //Mamufas elements belong to the carto table
       $('div.mamufas').append(
@@ -2180,7 +2180,6 @@
           // Reset input
           $('div.filter_window form input[type="text"]').val('');
           
-
           // Get the column
           var column_name = $(this).closest('th').attr('c');
           $('div.filter_window').attr('c',column_name);

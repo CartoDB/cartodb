@@ -191,6 +191,8 @@
     CartoMap.prototype.setTilesStyles = function(obj) {
       var me = this,
           str = '';
+
+					console.log(obj);
       
       if (typeof obj === "string") {
         str = obj.replace(/\n/g,'');
@@ -202,6 +204,8 @@
         });
         str += '}';
       }
+
+			console.log(str);
       
       $.ajax({
         type: 'POST',
@@ -1869,11 +1873,23 @@
     //  HIDE OR SHOW THE MAP LOADER		    //
     ////////////////////////////////////////
     CartoMap.prototype.hideLoader = function() {
-      $('div.loading').fadeOut();
+      requests_queue.responseRequest(this.loaderId,'ok','');
+			this.loaderId = null;
     }
 
     CartoMap.prototype.showLoader = function() {
-      $('div.loading').fadeIn().delay(2000).fadeOut();
+      var loaderId = createUniqueId(),
+					me = this;
+					
+			if (this.loaderId) {
+				requests_queue.responseRequest(this.loaderId,'ok','');
+			}
+					
+      this.loaderId = loaderId;
+      requests_queue.newRequest(loaderId,'tiles_loaded');
+			setTimeout(function(){
+				me.hideLoader();
+			},3000);
     }
 
 
@@ -1883,7 +1899,7 @@
     ////////////////////////////////////////
     CartoMap.prototype.hide = function() {
       // Remove all things
-			//this.hideLoader();
+			this.hideLoader();
 
       if (this.editing) {
         this.editing = false;
@@ -1899,7 +1915,7 @@
 
     CartoMap.prototype.show = function() {
       $('div.map_window div.map_curtain').hide();
-			//this.showLoader();
+			this.showLoader();
       this.refresh();
     }
 

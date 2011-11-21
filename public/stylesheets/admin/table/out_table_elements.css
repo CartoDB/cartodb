@@ -273,9 +273,8 @@ div.sql_window span.cm-plsql-sqlplus{color:darkorange; font-weight:bold}
 div.sql_window span.cm-plsql-type{color:purple;}
 div.sql_window span.cm-plsql-separator{color:#666666;}
 div.sql_window span.cm-plsql-number{color:darkcyan;}
-div.sql_window ::-webkit-scrollbar {width: 10px;}
-div.sql_window ::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.3);border-radius:10px;}
-div.sql_window ::-webkit-scrollbar-thumb{border-radius:10px;-webkit-box-shadow:inset 0 0 6px rgba(0,0,0,0.5);background:rgba(0,0,0,0.1);cursor:pointer!important}
+div.sql_window ::-webkit-scrollbar {width: 8px;}
+div.sql_window ::-webkit-scrollbar-thumb{border-radius:10px;background:rgba(0,0,0,0.15);cursor:pointer!important}
 div.sql_window ::-webkit-scrollbar-thumb:hover,div.sql_window ::-webkit-scrollbar-thumb:active{background:rgba(0,0,0,0.3);cursor:pointer!important}
 
 

@@ -881,6 +881,7 @@
           old_value.status = 'save';
           $('p.status a').removeClass('save').addClass('public').text('public');
         }
+				document.title = new_value + ' - CartoDB';
         $('section.subheader h2 a').text(new_value);
         $('span.title_window').hide();
         changesRequest('name',new_value,old_value);
@@ -1392,6 +1393,7 @@
                       break;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       case 'name':    $('section.subheader h2 a').text(old_value.name);
+											document.title = old_value.name + '- CartoDB';
                       if (old_value.status=="save") {
                         $('p.status a').removeClass('public private').addClass('save').text('save');
                       }

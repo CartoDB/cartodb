@@ -21,8 +21,11 @@
     // Bind links
     $('.general_options ul li.edit a.complete').click(function(ev){
 			
+			console.log(thisOjb.geometries);
+			return false;
+			
 			if (thisOjb.type == "MultiLineString" || thisOjb.type == "LineString") {
-				
+				console.log(thisOjb.geometries);
 			}
 	
       stopPropagation(ev);

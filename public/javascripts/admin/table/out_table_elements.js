@@ -435,9 +435,8 @@
         stopPropagation(ev);
 
         if (!$(this).hasClass('disabled')) {
-	
 					// LAT|LON OR ADDRESS
-					if ($('div.georeference_window ul.main_list li.selected').index()==0) {
+					if ($('div.georeference_window ul.main_list > li.selected').index()==0) {
 						var latitude = $('a#latitude').attr('c');
 	          var longitude = $('a#longitude').attr('c');
 	          if (!(latitude=='' && longitude=='')) {

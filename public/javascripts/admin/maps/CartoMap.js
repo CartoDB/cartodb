@@ -191,6 +191,8 @@
     CartoMap.prototype.setTilesStyles = function(obj) {
       var me = this,
           str = '';
+
+					console.log(obj);
       
       if (typeof obj === "string") {
         str = obj.replace(/\n/g,'');
@@ -202,6 +204,8 @@
         });
         str += '}';
       }
+
+			console.log(str);
       
       $.ajax({
         type: 'POST',

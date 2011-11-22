@@ -1,4 +1,5 @@
-# parent factory class to manage 
+# coding: utf-8 
+
 module CartoDB
   module Import
     module Util
@@ -52,10 +53,10 @@ module CartoDB
 
       def fix_encoding
         begin
-          # sample first 300 lines from source
+          # sample first 500 lines from source
           lines = []
           File.open(@path) do |f|             
-            300.times do
+            500.times do
               line = f.gets || break
               lines << line
             end            
@@ -64,10 +65,11 @@ module CartoDB
           # detect encoding for sample
           cd = CharDet.detect(lines.join)
           
-          # force utf8 by hook or crook. (May fail)        
-          from_enc = (cd.confidence > 0.6) ? cd.encoding : 'UTF-8'
+          # Only do non-UTF8 if we're really sure. (May fail)        
+          from_enc = (cd.confidence > 0.8) ? cd.encoding : 'UTF-8'
           tf = Tempfile.new(@path)        
-          `iconv -f #{from_enc}//TRANSLIT//IGNORE -t UTF-8 -c #{@path} > #{tf.path}`
+          
+          `iconv -f #{from_enc}//TRANSLIT//IGNORE -t UTF-8 #{@path} > #{tf.path}`
           `mv -f #{tf.path} #{@path}`                
           tf.close!
         rescue => e

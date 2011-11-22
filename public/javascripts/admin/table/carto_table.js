@@ -394,7 +394,6 @@
     //  DRAW ROWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawRows: function(options,data,direction,page) {
-      
       if (table.e.children('tbody').length==0) {
         if (table.mode == "filter") {
           var tbody = '<tbody style="padding-top:89px;">';
@@ -415,6 +414,7 @@
 
         // Get rest generic td
 				_.eachRow(table.h,function(head,x){
+					
 				  var data = element[head.name];
 				  var j = head.name;
 		      tbody += Mustache.to_html(generic_td,{
@@ -470,6 +470,11 @@
           table.loading = false; table.enabled = true;
         });
       }
+
+			// End of table? - add new last editable row
+			if (table.mode == "normal" && methods.endOfTable() && table.e.find('tbody tr').length>0) {
+				methods.addLastRow();
+			}
     },
 
 
@@ -511,6 +516,64 @@
         });
       }
     },
+
+
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  END OF TABLE? -> Add fake row and fill fake row functions
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    endOfTable: function() {
+			return table.total_r <= ((table.actual_p + 1) * defaults.resultsPerPage);
+		},
+
+		addLastRow: function() {
+			var tr = '';
+			
+			// Get first td
+      tr += Mustache.to_html(first_td,{
+        cartodb_id: null
+      });
+
+      // Get rest generic td
+			_.eachRow(table.h,function(head,x){
+			  var data = null;
+			  var j = head.name;
+	      tr += Mustache.to_html(generic_td,{
+          value: function(){
+            if (data==null) {
+              return '';
+            } else {
+              return data;
+            }
+           },
+           cartodb_id: null,
+           is_cartodb_id:(j=="cartodb_id")?true:false,
+        	 allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
+           cellsize: table.cell_s,
+           column: j,
+           geojson: (data!='GeoJSON')?true:false
+         });
+      });
+
+      var start = tr.lastIndexOf('"width:');
+      var end = tr.lastIndexOf('px"');
+      tr = tr.substring(0,start) + '"width:' + table.last_cell_s + tr.substring(end);
+
+      tr += '</tr>';
+			table.e.find('tbody').append(tr);
+			table.e.find('tr.new').animate({heigth:'39px',opacity:1},1000,function(){
+				methods.resizeTable();
+			});
+		},
+		
+		addNewRow: function(cartodb_id) {
+			table.e.find('tr.new td').each(function(i,ele){
+				$(ele).attr('r',cartodb_id);
+			});
+			table.e.find('tr.new').attr('r',cartodb_id).find('td:eq(1) > div').text(cartodb_id).closest('tr').removeClass('new');
+
+			methods.addLastRow();
+		},
 
 
 
@@ -782,26 +845,34 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     addRow: function() {
 
-      table.enabled = false;
+			// Cases:
+			// 	- (3) Go to the end of the table (paginate it)
+			//  - (2) Empty table, add new row.
+			//  - (1) No empty, first page, tr.new is there :)
 
-      var end = table.total_r <= ((table.actual_p+1)*defaults.resultsPerPage);
+			table.enabled = false;
+      var end = methods.endOfTable();
 
-   		if (end || $('div.empty_table').length>0) {
-        if ($('div.empty_table').length>0) {
-          $('div.empty_table').remove();
-          table.e.find('tbody').remove();
-          $('span.full_table').remove();
-          addSingleRow(0);
-        } else {
-          addSingleRow(1);
-        }
-      } else {
-        $('div.lastpage_window').show();
+			// If tr.new is visible now... focus on them!
+			if (end && table.e.find('tr.new').length>0) {
+				// (1)
+				var new_row = table.e.find('tr.new');
+				new_row.addClass('selecting');
+				table.enabled = true;
+			} else if (end && $('div.empty_table').length>0 && table.e.find('tbody').children().length==0) {
+				// (2)
+				$('div.empty_table').remove();
+        table.e.find('tbody').remove();
+        $('span.full_table').remove();
+        addSingleRow(0);
+			} else {
+				// (3)
+				$('div.lastpage_window').show();
         $('div.mamufas').fadeIn();
 
         table.max_p = Math.ceil(table.total_r / defaults.resultsPerPage) - 1;
         table.min_p = table.max_p-1;
-        actualPage = table.max_p;
+				table.actual_p = table.max_p-1;
 				defaults.mode = "asc";
   			defaults.order_by = 'cartodb_id';
   			
@@ -809,9 +880,8 @@
   			table.mode = 'normal';
   			$('div.stickies').remove();
   			table.e.find('thead').css({height:''});
-
-
-        $.ajax({
+				
+				$.ajax({
           method: "GET",
           url: defaults.getDataUrl+table_name+'/records',
           data: {
@@ -827,7 +897,7 @@
             addSingleRow(2);
           }
         });
-      }
+			}
 
 
       function addSingleRow(type) {
@@ -884,14 +954,13 @@
                     table.e.append(row);
                   } else {
                     row += '</tr>';
-                    table.e.find('tbody').append(row);
+                    table.e.find('tbody').append(row).addClass('end');
                   }
 
-                  if (type==2) {
-                    table.e.find('tbody').addClass('end');
-                  }
+									// Show new row :)!
+									methods.addLastRow();
 
-                  //Si hay más filas de las permitidas por el reuso, borramos las '50' primeras, sumamos una a la página max, min y actual
+                  //If there are more rows than you reuse let us, delete first '50', add one more to max, min and actual page
                   table.total_r++;
                   if (table.e.children('tbody').children('tr').size()>defaults.reuseResults) {
                     table.max_p++; table.min_p++; table.actual_p++;
@@ -1445,7 +1514,7 @@
         var column = $(this).attr('c');
         var type = $(this).attr('type');
         var params = {};
-        params['column_id'] = column;
+        params['column_id'] = column;				
         params["row_id"] = row;
 
 
@@ -1541,7 +1610,8 @@
 
         $('tbody tr td[r="'+row+'"][c="'+column+'"] div').attr('title',new_value);
         params[column] = new_value;
-        methods.updateTable("/records/"+row,params,new_value,old_value,'update_cell',"PUT");
+				var method = (params['row_id']==''?"POST":"PUT");
+        methods.updateTable("/records/"+row,params,new_value,old_value,'update_cell',method);
 
         $("div.edit_cell").hide();
         $("div.edit_cell textarea").css('width','262px');
@@ -2399,7 +2469,7 @@
         data: params,
         success: function(data) {
           requests_queue.responseRequest(requestId,'ok','');
-          methods.successRequest(params,new_value,old_value,type);
+          methods.successRequest(params,new_value,old_value,type,data);
         },
         error: function(e, textStatus) {
           try {
@@ -2417,15 +2487,20 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  SUCCESS UPDATING THE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    successRequest: function(params,new_value,old_value,type) {
+    successRequest: function(params,new_value,old_value,type,data) {
       switch (type) {
         case "rename_column":   _.each(table.h,function(h,i){
                                   if (h.name==old_value) {
                                     table.h[i].name = new_value;
                                   }
                                 });
-                                $('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
+                                table.e.find('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
                                 break;
+
+				case "update_cell":     if (params['row_id']=='') {
+																	methods.addNewRow(JSON.parse(data).id);
+																}
+                                break;												
         case "column_type":     methods.refreshTable('');
                                 break;
         case "new_column":      methods.closeTablePopups();
@@ -2446,15 +2521,23 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     errorRequest: function(params,new_value,old_value,type) {
       switch (type) {
-        case "update_cell":   var element = table.e.find('table tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div');
-                              element.text(old_value);
+        case "update_cell":   var element;
+															debugger;
+ 															if (params['row_id']!='') {
+																element = table.e.find('tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div');
+															}
+															else {
+																element = table.e.find('tbody tr.new td[c="'+params.column_id+'"] div');
+															}
+																
+															element.text(old_value);
                               element.attr('title',old_value);
                               element.animate({color:'#FF3300'},300,function(){
                                 setTimeout(function(){element.animate({color:'#666666'},300);},1000);
                               });
                               break;
 
-        case "rename_column": var element = $('table thead tr th:eq('+params.index+') h3');
+        case "rename_column": var element = table.e.find('thead tr th:eq('+params.index+') h3');
                               element.text(old_value);
                               element.closest('th').attr('c',old_value);
                               element.animate({color:'#FF3300'},300,function(){

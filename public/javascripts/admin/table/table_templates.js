@@ -61,7 +61,7 @@
                 '</th>';
                 
       /* td */
-      var first_td =  '<tr r="{{cartodb_id}}">'+
+      var first_td =  '<tr r="{{cartodb_id}}" class="{{^cartodb_id}}new{{/cartodb_id}}">'+
                         '<td class="first" r="{{cartodb_id}}">'+
                           '<div>' +
                             '<a href="#options" class="options">options</a>'+

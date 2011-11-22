@@ -5,8 +5,8 @@ module CartoDB
       register_preprocessor :kml
       register_preprocessor :kmz
       register_preprocessor :json
+      register_preprocessor :geojson      
       register_preprocessor :js            
-#WRITE TEST      register_preprocessor :geojson
 
       def process!    
         
@@ -14,7 +14,7 @@ module CartoDB
         fix_encoding 
         
         ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{@path}.shp #{@path}}
+        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} --config SHAPE_ENCODING LATIN1 -f "ESRI Shapefile" #{@path}.shp #{@path}}
         out = `#{ogr2ogr_command}`
 
         if $?.exitstatus != 0

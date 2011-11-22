@@ -1,3 +1,12 @@
+production:
+  adapter: postgres
+  encoding: unicode
+  host: localhost
+  port: 5432
+  database: carto_db_production
+  username: postgres
+  password:
+
 development:
   adapter: postgres
   encoding: unicode

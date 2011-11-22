@@ -6,6 +6,7 @@ module CartoDB
       register_preprocessor :kmz
       register_preprocessor :json
       register_preprocessor :js            
+#WRITE TEST      register_preprocessor :geojson
 
       def process!    
         

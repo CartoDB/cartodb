@@ -20,15 +20,15 @@
         
     // Bind links
     $('.general_options ul li.edit a.complete').click(function(ev){
-			
-			if (thisOjb.type == "MultiLineString" || thisOjb.type == "LineString") {
-				
+			if ((thisOjb.type == "MultiLineString" || thisOjb.type == "LineString") && (thisOjb.pen.polyline)) {
+				thisOjb.geometries.push(thisOjb.pen.polyline.polylineObj);
 			}
 	
       stopPropagation(ev);
-      var new_geometry = transformToGeoJSON(thisOjb.geometries,thisOjb.type);
-      var geojson = $.parseJSON(new_geometry);
-      if (geojson.coordinates.length>0) {
+
+      if (thisOjb.geometries.length>0) {
+				var new_geometry = transformToGeoJSON(thisOjb.geometries,thisOjb.type);
+	      var geojson = $.parseJSON(new_geometry);
         var params = {};
         params.the_geom = new_geometry;
         carto_map.updateTable('/records',params,new_geometry,null,"adding","POST");
@@ -109,7 +109,6 @@
         }
       });
     }
-
 
     this.drawGeometry=function(listOfDots,color,des,id) {
       if (this.parent.type=="MultiLineString") {

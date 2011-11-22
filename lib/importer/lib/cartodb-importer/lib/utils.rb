@@ -64,15 +64,14 @@ module CartoDB
           # detect encoding for sample
           cd = CharDet.detect(lines.join)
           
-          # force utf8
-          contents = File.open(@path).read
-          output = cd.confidence > 0.6 ? Iconv.conv("#{cd.encoding}//TRANSLIT//IGNORE", "UTF-8", contents) : Iconv.conv("UTF-8//TRANSLIT//IGNORE", "UTF-8", contents)
-                
-          # output to file
-          file = File.new(@path, 'w')
-          file.write(output)
-          file.close
-        rescue Iconv::IllegalSequence => e
+          # force utf8 by hook or crook. (May fail)        
+          from_enc = (cd.confidence > 0.6) ? cd.encoding : 'UTF-8'
+          tf = Tempfile.new(@path)        
+          `iconv -f #{from_enc}//TRANSLIT//IGNORE -t UTF-8 -c #{@path} > #{tf.path}`
+          `mv -f #{tf.path} #{@path}`                
+          tf.close!
+        rescue => e
+          #raise e
           #silently fail here and try importing anyway
           log "ICONV failed for CSV #{@path}: #{e.message} #{e.backtrace}"
         end

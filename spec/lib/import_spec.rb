@@ -434,7 +434,7 @@ describe CartoDB::Importer do
       res = @db[:cartodb_shp_export].select{[x(the_geom),y(the_geom)]}.first
       res.should == {:x=>16.5607329, :y=>48.1199611}
     end
-          
+        
   end  
   
   

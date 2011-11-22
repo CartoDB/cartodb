@@ -289,6 +289,16 @@ describe CartoDB::Importer do
 
       result.import_type.should   == '.json'
     end
+
+    it "should import GeoJSON file geojson.geojson" do
+      importer = create_importer 'geojson.geojson'
+      result = importer.import!
+
+      result.name.should          == 'geojson'
+      result.rows_imported.should == 4
+
+      result.import_type.should   == '.geojson'
+    end
     
     it "should import GeoJSON files from URLs with non-UTF-8 chars, transliterating if needed" do
       url = {:import_from_url => "https://raw.github.com/gist/1374824/d508009ce631483363e1b493b00b7fd743b8d008/unicode.json", :suggested_name => 'geojson_utf8'}

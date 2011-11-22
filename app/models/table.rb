@@ -367,7 +367,7 @@ class Table < Sequel::Model(:user_tables)
         raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
       end
       begin
-        primary_key = user_database[name.to_sym].insert(attributes.except(THE_GEOM).convert_nulls)
+        primary_key = user_database[name.to_sym].insert(make_sequel_compatible(attributes))
       rescue Sequel::DatabaseError => e        
         message = e.message.split("\n")[0]
         
@@ -399,13 +399,14 @@ class Table < Sequel::Model(:user_tables)
     rows_updated = 0
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
-      attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
+      attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) } 
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
       end
       if !attributes.except(THE_GEOM).empty?
-        begin
-          rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(attributes.except(THE_GEOM).convert_nulls)
+        begin                
+          # update row
+          rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(make_sequel_compatible(attributes))
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
           message = e.message.split("\n")[0]
@@ -431,6 +432,12 @@ class Table < Sequel::Model(:user_tables)
     update_the_geom!(raw_attributes, row_id)
     rows_updated
   end
+
+  # make all identifiers SEQUEL Compatible
+  # https://github.com/Vizzuality/cartodb/issues/331
+  def make_sequel_compatible attributes
+    attributes.except(THE_GEOM).convert_nulls.each_with_object({}) { |(k, v), h| h[k.identifier] = v }
+  end  
 
   def add_column!(options)
     raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9_]/

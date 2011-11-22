@@ -171,7 +171,9 @@ class User < Sequel::Model
   end   
   
   def set_map_key
-    $users_metadata.HMSET key, 'map_key', self.class.make_token
+    token = self.class.make_token
+    $users_metadata.HMSET key, 'map_key',  token
+    $users_metadata.SADD "#{key}:map_key", token
   end
   
   def get_map_key

@@ -65,13 +65,13 @@ module CartoDB
           # detect encoding for sample
           cd = CharDet.detect(lines.join)
           
-          # Only do non-UTF8 if we're really sure. (May fail)        
-          from_enc = (cd.confidence > 0.8) ? cd.encoding : 'UTF-8'
-          tf = Tempfile.new(@path)        
-          
-          `iconv -f #{from_enc}//TRANSLIT//IGNORE -t UTF-8 #{@path} > #{tf.path}`
-          `mv -f #{tf.path} #{@path}`                
-          tf.close!
+          # Only do non-UTF8 if we're quite sure. (May fail)        
+          if (cd.confidence > 0.7)             
+            tf = Tempfile.new(@path)                  
+            `iconv -f #{cd.encoding}//TRANSLIT//IGNORE -t UTF-8 #{@path} > #{tf.path}`
+            `mv -f #{tf.path} #{@path}`                
+            tf.close!
+          end  
         rescue => e
           #raise e
           #silently fail here and try importing anyway

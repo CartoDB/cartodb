@@ -1235,9 +1235,7 @@ describe Table do
   
   it "should be able to update data in rows with column names with multiple underscores" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.name = "elecciones2008"
+    table = new_table :user_id => user.id, :name => "elecciones2008"
     table.import_from_file = "#{Rails.root}/spec/support/data/elecciones2008.csv"
     table.save
     
@@ -1255,9 +1253,7 @@ describe Table do
 
   it "should be able to insert data in rows with column names with multiple underscores" do
     user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.name = "elecciones2008"
+    table = new_table :user_id => user.id, :name => "elecciones2008x"
     table.import_from_file = "#{Rails.root}/spec/support/data/elecciones2008.csv"
     table.save
     pk = nil
@@ -1266,6 +1262,20 @@ describe Table do
     lambda {
       pk = table.insert_row!(insert_data)
     }.should_not raise_error        
+    
+    res = table.sequel.where(:cartodb_id => pk).first
+    res[:upo___nombre_partido].should == "PSOEE"    
+  end
+  
+  it "should not wipe the entire column out if there is a non-convertible entry when converting string to number" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.name = "elecciones2008"
+    table.import_from_file = "#{Rails.root}/spec/support/data/string_to_number.csv"
+    table.save
+
+    
     
     res = table.sequel.where(:cartodb_id => pk).first
     res[:upo___nombre_partido].should == "PSOEE"    

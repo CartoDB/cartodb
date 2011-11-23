@@ -409,6 +409,7 @@ class Table < Sequel::Model(:user_tables)
           rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(make_sequel_compatible(attributes))
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
+          # TODO: STOP THIS MADNESS
           message = e.message.split("\n")[0]
           
           invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
@@ -462,7 +463,7 @@ class Table < Sequel::Model(:user_tables)
     new_name = options[:name] || options[:old_name]
     new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema(:cartodb_types => false).select{ |c| c[0] == new_name.to_sym }.first[1]
     cartodb_type = new_type.try(:convert_to_cartodb_type)
-    
+  
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
         raise CartoDB::InvalidColumnName if options[:new_name] =~ /^[0-9_]/ || RESERVED_COLUMN_NAMES.include?(options[:new_name])
@@ -487,12 +488,7 @@ class Table < Sequel::Model(:user_tables)
                 user_database.rename_column name.to_sym, random_name, column_name.to_sym
               end
             rescue
-              user_database.transaction do
-                random_name = "new_column_#{rand(10)*Time.now.to_i}"
-                user_database.add_column name.to_sym, random_name, new_type
-                user_database.drop_column name.to_sym, column_name.to_sym
-                user_database.rename_column name.to_sym, random_name, column_name.to_sym
-              end
+              raise e
             end
           else
             raise e

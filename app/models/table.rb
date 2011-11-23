@@ -480,14 +480,8 @@ class Table < Sequel::Model(:user_tables)
           message = e.message.split("\n").first
           if message =~ /cannot be cast to type/
             begin
-              user_database.transaction do
-                random_name = "new_column_#{rand(10)*Time.now.to_i}"
-                user_database.add_column name.to_sym, random_name, new_type
-                user_database.run("UPDATE #{name} SET #{random_name}=cast(#{column_name} as #{new_type})")
-                user_database.drop_column name.to_sym, column_name.to_sym
-                user_database.rename_column name.to_sym, random_name, column_name.to_sym
-              end
-            rescue
+              convert_column_datatype user_database, name, column_name, new_type
+            rescue => e              
               raise e
             end
           else
@@ -497,6 +491,16 @@ class Table < Sequel::Model(:user_tables)
       end
     end
     return {:name => new_name, :type => new_type, :cartodb_type => cartodb_type}
+  end
+
+  def convert_column_datatype user_database, table_name, column_name, new_type    
+    user_database.transaction do
+      random_name = "new_column_#{rand(10)*Time.now.to_i}"
+      user_database.add_column table_name, random_name, new_type
+      user_database.run("UPDATE #{table_name} SET #{random_name}=cast(#{column_name} as #{new_type})")
+      user_database.drop_column table_name, column_name
+      user_database.rename_column table_name, random_name, column_name
+    end
   end
 
   def records(options = {})

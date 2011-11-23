@@ -1273,13 +1273,6 @@ describe Table do
     table.user_id = user.id
     table.name = "elecciones2008"
     table.import_from_file = "#{Rails.root}/spec/support/data/string_to_number.csv"
-    table.save
-
-    
-    
-    res = table.sequel.where(:cartodb_id => pk).first
-    res[:upo___nombre_partido].should == "PSOEE"    
+    table.save    
   end
-  
-  
 end

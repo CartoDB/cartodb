@@ -66,7 +66,7 @@ module CartoDB
           cd = CharDet.detect(lines.join)
           
           # Only do non-UTF8 if we're quite sure. (May fail)        
-          if (cd.confidence > 0.7)             
+          if (cd.confidence > 0.6)             
             tf = Tempfile.new(@path)                  
             `iconv -f #{cd.encoding}//TRANSLIT//IGNORE -t UTF-8 #{@path} > #{tf.path}`
             `mv -f #{tf.path} #{@path}`                

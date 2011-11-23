@@ -740,7 +740,7 @@
       //Change column type tooltip
       table.e.parent().append(
         '<div class="change_type_column">'+
-          '<p>Likely you will lose all this column data. Are you sure?</p>'+
+          '<p>You will lose data if it cannot be converted.</p>'+
           '<a class="cancel_change" href="#cancel_delete">cancel</a>'+
           '<a class="button" href="#change_type">Yes, do it</a>'+
         '</div>');

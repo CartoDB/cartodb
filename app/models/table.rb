@@ -493,15 +493,40 @@ class Table < Sequel::Model(:user_tables)
     return {:name => new_name, :type => new_type, :cartodb_type => cartodb_type}
   end
 
+  # convert non-conformist rows to null
   def convert_column_datatype user_database, table_name, column_name, new_type    
-    user_database.transaction do
-      random_name = "new_column_#{rand(10)*Time.now.to_i}"
-      user_database.add_column table_name, random_name, new_type
-      user_database.run("UPDATE #{table_name} SET #{random_name}=cast(#{column_name} as #{new_type})")
-      user_database.drop_column table_name, column_name
-      user_database.rename_column table_name, random_name, column_name
-    end
+    random_name = "new_column_#{rand(10)*Time.now.to_i}"
+
+    # try straight cast
+    begin
+      user_database.transaction do
+        user_database.add_column table_name, random_name, new_type
+        user_database.run("UPDATE #{table_name} SET #{random_name}=cast(#{column_name} as #{new_type})")
+        user_database.drop_column table_name, column_name
+        user_database.rename_column table_name, random_name, column_name
+      end
+    rescue => e
+      # attempt various lossy conversions
+      # 
+      # string => number
+      debugger
+      
+      
+      # string => datetime
+      # string => boolean
+      # number => string (ok)
+      # number => boolean
+      # boolean => string  
+      # boolean => number
+      
+      # ok, nothing worked
+      raise e
+    end    
   end
+  
+  def col_type user_database, table_name, column_name
+    user_database.schema(table_name).select{ |c| c[0] == column_name.to_sym }.flatten.last[:type]
+  end  
 
   def records(options = {})
     rows  = []

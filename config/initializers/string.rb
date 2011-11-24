@@ -71,10 +71,13 @@ class String
 
   def convert_to_db_type
     if CartoDB::TYPES.keys.include?(self.downcase)
-      if self.downcase == "number"
-        "double precision"
-      else
-        CartoDB::TYPES[self.downcase].first
+      case (self.downcase)
+        when "number"
+          "double precision"
+        when "string"          
+          "text"
+        else
+          CartoDB::TYPES[self.downcase].first
       end
     else
       self.downcase

@@ -1267,7 +1267,7 @@ describe Table do
     res[:upo___nombre_partido].should == "PSOEE"    
   end
   
-  it "should normalize data if there is a non-convertible entry when converting string to number" do
+  it "should normalize strings if there is a non-convertible entry when converting string to number" do
     user = create_user
     table = new_table
     table.user_id = user.id
@@ -1291,7 +1291,7 @@ describe Table do
     table.sequel.select(:f1).where(:test_id => '12').first[:f1].should == nil                                
   end
   
-  it "should normalize data if there is a non-convertible entry when converting string to number" do
+  it "should normalize string if there is a non-convertible entry when converting string to boolean" do
     user = create_user
     table = new_table
     table.user_id = user.id
@@ -1312,5 +1312,47 @@ describe Table do
     table.sequel.select(:f1).where(:test_id => '9').first[:f1].should == false
     table.sequel.select(:f1).where(:test_id => '10').first[:f1].should == false
     table.sequel.select(:f1).where(:test_id => '11').first[:f1].should == false                              
+  end
+  
+  it "should normalize boolean if there is a non-convertible entry when converting boolean to string" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.name = "my_precious"
+    table.import_from_file = "#{Rails.root}/spec/support/data/column_boolean_to_string.csv"
+    table.save    
+    table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil    
+    table.modify_column! :name=>"f1", :type=>"string", :old_name=>"f1", :new_name=>nil
+    
+    table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 'true'                              
+    table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == 'false'                              
+  end
+
+  it "should normalize boolean if there is a non-convertible entry when converting boolean to number" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.name = "my_precious"
+    table.import_from_file = "#{Rails.root}/spec/support/data/column_boolean_to_string.csv"
+    table.save    
+    table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil    
+    table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil
+    
+    table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 1                              
+    table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == 0                              
+  end
+  
+  it "should normalize number if there is a non-convertible entry when converting number to string" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.name = "my_precious"
+    table.import_from_file = "#{Rails.root}/spec/support/data/column_number_to_string.csv"
+    table.save    
+    table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil    
+    table.modify_column! :name=>"f1", :type=>"string", :old_name=>"f1", :new_name=>nil
+    
+    table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == '1'                              
+    table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == '2'                              
   end
 end

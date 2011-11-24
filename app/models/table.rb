@@ -501,12 +501,15 @@ class Table < Sequel::Model(:user_tables)
         user_database.run("UPDATE #{table_name} SET #{column_name}=cast(#{column_name} as #{new_type})")
       end
     rescue => e
-      # attempt various lossy conversions by regexing unmatching types out and retrying conversion.
+      # attempt various lossy conversions by regex nullifying unmatching data and retrying conversion.
       user_database.transaction do
+        old_type = col_type(user_database, table_name, column_name).to_s        
+        base_sql    = "UPDATE #{table_name} SET #{column_name}=NULL WHERE"
 
         # string => number
-        #user_database.run("UPDATE #{table_name} SET #{column_name}=cast(#{column_name} as #{new_type})")
-      
+        if (old_type == 'string' && new_type == 'double precision')
+          user_database.run("#{base_sql} trim(\"#{column_name}\") !~* '^[-+]?\d+(\.\d+)?$'")
+        end
       
       
         # string => datetime

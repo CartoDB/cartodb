@@ -1276,7 +1276,17 @@ describe Table do
     table.save    
     
     table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil
-    
-    
+    table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 1
+    table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == 2
+    table.sequel.select(:f1).where(:test_id => '3').first[:f1].should == nil
+    table.sequel.select(:f1).where(:test_id => '4').first[:f1].should == 1234
+    table.sequel.select(:f1).where(:test_id => '5').first[:f1].should == 45345
+    table.sequel.select(:f1).where(:test_id => '6').first[:f1].should == -41234
+    table.sequel.select(:f1).where(:test_id => '7').first[:f1].should == 21234.2134
+    table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == 2345.2345
+    table.sequel.select(:f1).where(:test_id => '9').first[:f1].should == -1234.3452
+    table.sequel.select(:f1).where(:test_id => '10').first[:f1].should == nil
+    table.sequel.select(:f1).where(:test_id => '11').first[:f1].should == nil
+    table.sequel.select(:f1).where(:test_id => '12').first[:f1].should == nil                                
   end
 end

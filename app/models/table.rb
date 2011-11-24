@@ -505,8 +505,10 @@ class Table < Sequel::Model(:user_tables)
       user_database.transaction do
         old_type = col_type(user_database, table_name, column_name).to_s        
 
-        # number => string (ok by default)
-        
+        # conversions ok by default
+        # number => string
+        # boolean => string        
+                
         # string => number
         if (old_type == 'string' && new_type == 'double precision')
           user_database.run(<<-EOF
@@ -537,17 +539,46 @@ class Table < Sequel::Model(:user_tables)
             EOF
           )          
         end
-        
 
-        
-                        
-        # string => datetime
-        
-        # number => boolean
-        # boolean => string  
         # boolean => number
+        # normalise truthy to 1, falsy to 0
+        if (old_type == 'boolean' && new_type == 'double precision')
+          
+          # first to string
+          user_database.run(<<-EOF
+            ALTER TABLE #{table_name} 
+            ALTER COLUMN #{column_name} TYPE text 
+            USING cast(#{column_name} as text)
+            EOF
+          )
+                    
+          # normalise truthy
+          user_database.run(<<-EOF
+            UPDATE #{table_name} 
+            SET #{column_name}='1' 
+            WHERE #{column_name} = 'true' AND #{column_name} IS NOT NULL
+            EOF
+          )
+
+          # normalise falsy
+          user_database.run(<<-EOF
+            UPDATE #{table_name} 
+            SET #{column_name}='0' 
+            WHERE #{column_name} = 'false' AND #{column_name} IS NOT NULL
+            EOF
+          )
+        end
+        
+        
+        # TODO: Understand how the implicit conversion works here. 
+        # string first, then 0 = falsy, else truthy
+        # number => boolean
+                
+        # TODO: Maybe nothing? throw error here.
+        # string => datetime        
+
             
-        # try to update the column again (can raise again)
+        # try to update the column (can raise again)
         user_database.run("ALTER TABLE #{table_name} ALTER COLUMN #{column_name} TYPE #{new_type} USING cast(#{column_name} as #{new_type})")
       end
     end    

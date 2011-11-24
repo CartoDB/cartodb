@@ -505,6 +505,8 @@ class Table < Sequel::Model(:user_tables)
       user_database.transaction do
         old_type = col_type(user_database, table_name, column_name).to_s        
 
+        # number => string (ok by default)
+        
         # string => number
         if (old_type == 'string' && new_type == 'double precision')
           user_database.run(<<-EOF
@@ -533,13 +535,14 @@ class Table < Sequel::Model(:user_tables)
             SET #{column_name}='f'
             WHERE trim(\"#{column_name}\") ~* '^(#{falsy})$'
             EOF
-          )
-          
+          )          
         end
         
+
         
+                        
         # string => datetime
-        # number => string (ok)
+        
         # number => boolean
         # boolean => string  
         # boolean => number

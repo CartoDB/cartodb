@@ -504,17 +504,40 @@ class Table < Sequel::Model(:user_tables)
       # attempt various lossy conversions by regex nullifying unmatching data and retrying conversion.
       user_database.transaction do
         old_type = col_type(user_database, table_name, column_name).to_s        
-        base_sql    = "UPDATE #{table_name} SET #{column_name}=NULL WHERE"
 
         # string => number
         if (old_type == 'string' && new_type == 'double precision')
-          user_database.run("#{base_sql} trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'")
+          user_database.run(<<-EOF
+            UPDATE #{table_name} 
+            SET #{column_name}=NULL 
+            WHERE trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'
+            EOF
+          )
         end
                     
         # string => boolean
-        debugger
-        if (old_type == 'string' && new_type == 'double precision')
+        if (old_type == 'string' && new_type == 'boolean')
+          # normalise truthy (anything not false and NULL is true...)
+          falsy = "0|f|false"
+          
+          user_database.run(<<-EOF
+            UPDATE #{table_name} 
+            SET #{column_name}='t' 
+            WHERE trim(\"#{column_name}\") !~* '^(#{falsy})$' AND #{column_name} IS NOT NULL
+            EOF
+          )
+
+          # normalise falsy
+          user_database.run(<<-EOF
+            UPDATE #{table_name} 
+            SET #{column_name}='f'
+            WHERE trim(\"#{column_name}\") ~* '^(#{falsy})$'
+            EOF
+          )
+          
         end
+        
+        
         # string => datetime
         # number => string (ok)
         # number => boolean

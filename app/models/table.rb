@@ -605,7 +605,12 @@ class Table < Sequel::Model(:user_tables)
           )
         end
               
-        # TODO: string => datetime. Maybe nothing? throw error here for now.
+        # TODO: 
+        # * string  => datetime 
+        # * number  => datetime 
+        # * boolean => datetime               
+        # 
+        # Maybe do nothing? Does it even make sense? Best to throw error here for now.
                     
         # try to update normalised column to new type (if fails here, well, we have not lost anything)
         user_database.run(<<-EOF

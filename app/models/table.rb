@@ -497,8 +497,14 @@ class Table < Sequel::Model(:user_tables)
   def convert_column_datatype user_database, table_name, column_name, new_type        
     begin
       # try straight cast
-      user_database.transaction do
-        user_database.run("ALTER TABLE #{table_name} ALTER COLUMN #{column_name} TYPE #{new_type} USING cast(#{column_name} as #{new_type})")
+      user_database.transaction do                
+        user_database.run(<<-EOF
+          ALTER TABLE #{table_name} 
+          ALTER COLUMN #{column_name} 
+          TYPE #{new_type} 
+          USING cast(#{column_name} as #{new_type})
+          EOF
+        )  
       end
     rescue => e
       # attempt various lossy conversions by regex nullifying unmatching data and retrying conversion.
@@ -570,16 +576,45 @@ class Table < Sequel::Model(:user_tables)
         end
         
         
-        # TODO: Understand how the implicit conversion works here. 
-        # string first, then 0 = falsy, else truthy
         # number => boolean
-                
-        # TODO: Maybe nothing? throw error here.
-        # string => datetime        
+        # normalise 0 to falsy else truthy        
+        if (old_type == 'float' && new_type == 'boolean')
+          
+          # first to string
+          user_database.run(<<-EOF
+            ALTER TABLE #{table_name} 
+            ALTER COLUMN #{column_name} TYPE text 
+            USING cast(#{column_name} as text)
+            EOF
+          )                  
 
-            
-        # try to update the column (can raise again)
-        user_database.run("ALTER TABLE #{table_name} ALTER COLUMN #{column_name} TYPE #{new_type} USING cast(#{column_name} as #{new_type})")
+          # normalise truthy
+          user_database.run(<<-EOF
+            UPDATE #{table_name} 
+            SET #{column_name}='t' 
+            WHERE #{column_name} !~* '^0$' AND #{column_name} IS NOT NULL
+            EOF
+          )
+
+          # normalise falsy
+          user_database.run(<<-EOF
+            UPDATE #{table_name} 
+            SET #{column_name}='f'
+            WHERE #{column_name} ~* '^0$'
+            EOF
+          )
+        end
+              
+        # TODO: string => datetime. Maybe nothing? throw error here for now.
+                    
+        # try to update the column (if fails here, well, we have not lost anything)
+        user_database.run(<<-EOF
+          ALTER TABLE #{table_name} 
+          ALTER COLUMN #{column_name} 
+          TYPE #{new_type} 
+          USING cast(#{column_name} as #{new_type})
+          EOF
+        )  
       end
     end    
   end

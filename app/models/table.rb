@@ -498,7 +498,7 @@ class Table < Sequel::Model(:user_tables)
     begin
       # try straight cast
       user_database.transaction do
-        user_database.run("UPDATE #{table_name} SET #{column_name}=cast(#{column_name} as #{new_type})")
+        user_database.run("ALTER TABLE #{table_name} ALTER COLUMN #{column_name} TYPE #{new_type} USING cast(#{column_name} as #{new_type})")
       end
     rescue => e
       # attempt various lossy conversions by regex nullifying unmatching data and retrying conversion.
@@ -508,19 +508,20 @@ class Table < Sequel::Model(:user_tables)
 
         # string => number
         if (old_type == 'string' && new_type == 'double precision')
-          user_database.run("#{base_sql} trim(\"#{column_name}\") !~* '^([-+]?\d+(\.\d+)?)$'")
+          user_database.run("#{base_sql} trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'")
         end
-      
-      
-        # string => datetime
+                    
         # string => boolean
+        debugger
+        
+        # string => datetime
         # number => string (ok)
         # number => boolean
         # boolean => string  
         # boolean => number
             
         # try to update the column again (can raise again)
-        user_database.run("UPDATE #{table_name} SET #{column_name}=cast(#{column_name} as #{new_type})")
+        user_database.run("ALTER TABLE #{table_name} ALTER COLUMN #{column_name} TYPE #{new_type} USING cast(#{column_name} as #{new_type})")
       end
     end    
   end

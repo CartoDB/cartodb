@@ -513,7 +513,8 @@ class Table < Sequel::Model(:user_tables)
                     
         # string => boolean
         debugger
-        
+        if (old_type == 'string' && new_type == 'double precision')
+        end
         # string => datetime
         # number => string (ok)
         # number => boolean

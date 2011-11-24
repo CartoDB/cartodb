@@ -463,7 +463,7 @@ class Table < Sequel::Model(:user_tables)
     new_name = options[:name] || options[:old_name]
     new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema(:cartodb_types => false).select{ |c| c[0] == new_name.to_sym }.first[1]
     cartodb_type = new_type.try(:convert_to_cartodb_type)
-  
+    
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
         raise CartoDB::InvalidColumnName if options[:new_name] =~ /^[0-9_]/ || RESERVED_COLUMN_NAMES.include?(options[:new_name])
@@ -494,33 +494,31 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # convert non-conformist rows to null
-  def convert_column_datatype user_database, table_name, column_name, new_type    
-    random_name = "new_column_#{rand(10)*Time.now.to_i}"
-
-    # try straight cast
+  def convert_column_datatype user_database, table_name, column_name, new_type        
     begin
+      # try straight cast
       user_database.transaction do
-        user_database.add_column table_name, random_name, new_type
-        user_database.run("UPDATE #{table_name} SET #{random_name}=cast(#{column_name} as #{new_type})")
-        user_database.drop_column table_name, column_name
-        user_database.rename_column table_name, random_name, column_name
+        user_database.run("UPDATE #{table_name} SET #{column_name}=cast(#{column_name} as #{new_type})")
       end
     rescue => e
-      # attempt various lossy conversions
-      # 
-      # string => number
-      debugger
+      # attempt various lossy conversions by regexing unmatching types out and retrying conversion.
+      user_database.transaction do
+
+        # string => number
+        #user_database.run("UPDATE #{table_name} SET #{column_name}=cast(#{column_name} as #{new_type})")
       
       
-      # string => datetime
-      # string => boolean
-      # number => string (ok)
-      # number => boolean
-      # boolean => string  
-      # boolean => number
       
-      # ok, nothing worked
-      raise e
+        # string => datetime
+        # string => boolean
+        # number => string (ok)
+        # number => boolean
+        # boolean => string  
+        # boolean => number
+            
+        # try to update the column again (can raise again)
+        user_database.run("UPDATE #{table_name} SET #{column_name}=cast(#{column_name} as #{new_type})")
+      end
     end    
   end
   

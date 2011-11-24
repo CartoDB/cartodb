@@ -1272,7 +1272,11 @@ describe Table do
     table = new_table
     table.user_id = user.id
     table.name = "elecciones2008"
-    table.import_from_file = "#{Rails.root}/spec/support/data/string_to_number.csv"
+    table.import_from_file = "#{Rails.root}/spec/support/data/column_string_to_number.csv"
     table.save    
+    
+    table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil
+    
+    
   end
 end

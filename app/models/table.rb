@@ -607,7 +607,7 @@ class Table < Sequel::Model(:user_tables)
               
         # TODO: string => datetime. Maybe nothing? throw error here for now.
                     
-        # try to update the column (if fails here, well, we have not lost anything)
+        # try to update normalised column to new type (if fails here, well, we have not lost anything)
         user_database.run(<<-EOF
           ALTER TABLE #{table_name} 
           ALTER COLUMN #{column_name} 

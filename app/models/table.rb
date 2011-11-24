@@ -508,7 +508,7 @@ class Table < Sequel::Model(:user_tables)
 
         # string => number
         if (old_type == 'string' && new_type == 'double precision')
-          user_database.run("#{base_sql} trim(\"#{column_name}\") !~* '^[-+]?\d+(\.\d+)?$'")
+          user_database.run("#{base_sql} trim(\"#{column_name}\") !~* '^([-+]?\d+(\.\d+)?)$'")
         end
       
       

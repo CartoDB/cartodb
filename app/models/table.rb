@@ -516,7 +516,8 @@ class Table < Sequel::Model(:user_tables)
         # boolean => string        
                 
         # string => number
-        if (old_type == 'string' && new_type == 'double precision')
+        if (old_type == 'string' && new_type == 'double precision')                    
+          # normalise number
           user_database.run(<<-EOF
             UPDATE #{table_name} 
             SET #{column_name}=NULL 
@@ -527,9 +528,17 @@ class Table < Sequel::Model(:user_tables)
                     
         # string => boolean
         if (old_type == 'string' && new_type == 'boolean')
-          # normalise truthy (anything not false and NULL is true...)
           falsy = "0|f|false"
-          
+
+          # normalise empty string to NULL
+          user_database.run(<<-EOF
+            UPDATE #{table_name} 
+            SET #{column_name}=NULL
+            WHERE trim(\"#{column_name}\") ~* '^$'
+            EOF
+          )          
+
+          # normalise truthy (anything not false and NULL is true...)
           user_database.run(<<-EOF
             UPDATE #{table_name} 
             SET #{column_name}='t' 
@@ -543,8 +552,8 @@ class Table < Sequel::Model(:user_tables)
             SET #{column_name}='f'
             WHERE trim(\"#{column_name}\") ~* '^(#{falsy})$'
             EOF
-          )          
-        end
+          )                    
+        end      
 
         # boolean => number
         # normalise truthy to 1, falsy to 0

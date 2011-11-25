@@ -1298,9 +1298,17 @@ describe Table do
     table.name = "my_precious"
     table.import_from_file = "#{Rails.root}/spec/support/data/column_string_to_boolean.csv"
     table.save    
-
+    
+    # configure nil column
+    table.sequel.where(:test_id => '11').update(:f1 => nil)                              
+    
+    # configure blank column
+    table.sequel.insert(:test_id => '12', :f1 => "")                              
+    
+    # update datatype
     table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil
     
+    # test
     table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == true
     table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == true
     table.sequel.select(:f1).where(:test_id => '3').first[:f1].should == true
@@ -1311,7 +1319,8 @@ describe Table do
     table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == false
     table.sequel.select(:f1).where(:test_id => '9').first[:f1].should == false
     table.sequel.select(:f1).where(:test_id => '10').first[:f1].should == false
-    table.sequel.select(:f1).where(:test_id => '11').first[:f1].should == false                              
+    table.sequel.select(:f1).where(:test_id => '11').first[:f1].should == nil
+    table.sequel.select(:f1).where(:test_id => '12').first[:f1].should == nil    
   end
   
   it "should normalize boolean if there is a non-convertible entry when converting boolean to string" do

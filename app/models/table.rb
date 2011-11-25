@@ -19,7 +19,6 @@ class Table < Sequel::Model(:user_tables)
   attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_table_copy,
                 :importing_SRID, :importing_encoding, :temporal_the_geom_type
 
-
   ## Callbacks
   def validate
     super
@@ -209,7 +208,7 @@ class Table < Sequel::Model(:user_tables)
   def after_save
     super
     manage_tags
-    move_metadata_if_needed
+    update_name_changes
   end
 
   def after_create
@@ -217,6 +216,7 @@ class Table < Sequel::Model(:user_tables)
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
     add_python
+    delete_tile_style    
     set_trigger_update_updated_at
     set_trigger_cache_timestamp
     set_trigger_check_quota
@@ -227,7 +227,7 @@ class Table < Sequel::Model(:user_tables)
       $tables_metadata.hset key, "privacy", PRIVATE
     end
   end
-
+  
   def before_destroy
     $tables_metadata.del key
   end
@@ -958,7 +958,7 @@ TRIGGER
   end
 
   def owner    
-    @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes).filter(:id => self.user_id).first
+    @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username).filter(:id => self.user_id).first
   end
 
   private
@@ -1158,11 +1158,29 @@ SQL
     end
   end
 
-  def move_metadata_if_needed
+  def update_name_changes
     if @name_changed_from.present? && @name_changed_from != name
+      # update metadata records
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
+      
+      # update time styles
+      Rails.logger.warn "try and move the style #{tile_host}"      
     end
     @name_changed_from = nil
   end
 
+  def tile_host
+    uri  = "#{owner.username}.#{APP_CONFIG[:tile_host]}"
+    port = APP_CONFIG[:tile_port] || 80
+    Net::HTTP.new uri, port
+  end
+  
+  def delete_tile_style
+    begin
+      req = Net::HTTP::Delete.new("/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")    
+      tile_host.request(req)    
+    rescue => e
+      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"      
+    end  
+  end  
 end

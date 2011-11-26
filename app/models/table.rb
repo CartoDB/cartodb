@@ -1163,8 +1163,25 @@ SQL
       # update metadata records
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
       
-      # update time styles
-      Rails.logger.warn "try and move the style #{tile_host}"      
+      # update tile styles
+      begin
+        # get old tile style
+        get_req = Net::HTTP::Get.new("/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}")    
+        old_style = tile_host.request(get_req).try(:body)
+        
+        # parse old CartoCSS style out
+        old_style = JSON.parse(old_style).with_indifferent_access[:style]
+        
+        # rename common table name based variables
+        old_style.gsub!(@name_changed_from, self.name)      
+        
+        # post new style
+        post_req = Net::HTTP::Post.new("/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")    
+        post_req.set_form_data({"style" => old_style})
+        tile_host.request(post_req)
+      rescue => e
+        CartoDB::Logger.info "tilestyle#rename error", "#{e.inspect}"      
+      end        
     end
     @name_changed_from = nil
   end

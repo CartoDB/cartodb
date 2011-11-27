@@ -38,7 +38,7 @@ Watch some [videos of CartoDB in action](http://www.vimeo.com/channels/cartodb) 
    
   - Install plpython for Python support in PostgreSQL (e.g., `sudo apt-get install postgresql-plpython-9.1`)
 
-  - Create a `template_postgis` database if one doesn't already exist:
+  - Create a `template_postgis` database if one doesn't already exist. In the script example below, make sure that the path to each SQL file is correct. As of PostGIS r8242 for example, `spatial_ref_sys.sql` is now located in the root directory, instead of in the ./postgis directory:
        
         #!/usr/bin/env bash
         POSTGIS_SQL_PATH='pg_config --sharedir'/contrib/postgis-2.0

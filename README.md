@@ -90,78 +90,95 @@ psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
 psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
 ```
 
-  - Install Redis from <http://redis.io/download> or using `brew install redis`.
+## Install Redis ##
+
+Components of CartoDB, like Windshaft, depend on [Redis](http://redis.io). Basically it's a really fast key-value datastore used for caching.
+
+To install Redis 2.2+, You can [download it here](http://redis.io/download) or you can use `brew install redis`.
   
-  - Python dependencies: 
+## Install Python dependencies ##
+
+To install the Python modules that CartoDB depends on, you can use `easy_install`, which is easy!
+
+```bash
+easy_install pip 
+pip install -r python_requirements.txt
+```      
+
+If this fails, try doing `export ARCHFLAGS='-arch i386 -arch x86_64'` beforehand.
+
+## Setup hosts ##
+
+For development and testing, edit `/etc/hosts` with the following lines:
+``` 
+127.0.0.1 admin.localhost.lan admin.testhost.lan
+127.0.0.1 my_subdomain.localhost.lan
+```
+
+## Install CartoDB SQL API ##
+
+The CartoDB SQL API component powers the SQL queries over HTTP. To install it:
     
-      easy_install pip  # in MacOs X
-      pip install -r python_requirements.txt
-      
-      Note: If compilation fails (it did for gdal module raising a Broken pipe error) try doing "export ARCHFLAGS='-arch i386 -arch x86_64'" first
+```bash            
+git clone git@github.com:Vizzuality/CartoDB-SQL-API.git
+cd CartoDB-SQL-API
+npm install
+```
 
-  - Setup new hosts in `/etc/hosts`:
-      
-        # CartoDB
-        127.0.0.1 admin.localhost.lan admin.testhost.lan
-        127.0.0.1 my_subdomain.localhost.lan
-        # # # # #
-                
-  - Clone the [Node SQL API](https://github.com/tokumine/cartodb-sql-api) in your projects folder:
-  
-        git clone git@github.com:Vizzuality/CartoDB-SQL-API.git
+To run CartoDB SQL API in development mode, simply type:
 
-  - Install nodejs dependencies
-    
-        npm install
+```bash
+node app.js development
+```
 
-  - Clone the [map tiler](https://github.com/Vizzuality/Windshaft-cartodb) in your projects folder:
+## Install Windshaft-cartodb ##
 
-        git clone git@github.com:Vizzuality/Windshaft-cartodb.git
+The Windshaft-cartodb component powers the CartoDB Maps API. To install it:
 
-  - Install nodejs dependencies
+```bash
+git clone git@github.com:Vizzuality/Windshaft-cartodb.git
+cd Windshaft-cartodb
+npm install
+```
+To run Windshaft-cartodb in development mode, simply type:
 
-        npm install
-  
-  - Clone the CartoDB repository in your projects folder:
-  
-        git clone git@github.com:Vizzuality/cartodb.git
-        
-  - Change to cartodb/ folder and `rvm` will require to create a new gemset. Say **yes**. If not, you must create a `gemset` for Ruby 1.9.2:
-  
-        rvm use 1.9.2@cartodb --create
-        
-  - Run `bundle`:
-  
-        bundle install --binstubs
-        
-  - Run Redis:
-  
-        cd /tmp
-        redis-server
-  
-  - Run `rake cartodb:db:setup EMAIL=me@mail.com SUBDOMAIN=my_subdomain PASSWORD=my_pass ADMIN_PASSWORD=my_pass` in cartodb folder
-  
-  - This will configure 2 users. The admin user (admin) and a user of your own.  After spinning up all your processes (cartodb, sql api, tiler), you should be able to login.
-  
+```bash
+node app.js development
+```
 
-### Every day usage ###
-  
-  - Check if Redis is running, if not `cd /tmp; redis-server`
+## Install local instance of cold beer ##
 
-  - Change to CartoDB directory
-  
-  - Run `bin/rake db:reset` if you want to reset your data and load the database from `seeds.rb` file
-  
-  - Run a Rails server in port 3000: `rails s`
-  
-  - In a separate tab change to Node SQL API and Tiler directories and run node.js: `node app.js developement`
-
-  - Open your browser and go to `http://admin.localhost.lan:3000` or `http://my_subdomain.localhost.lan:3000`_
-  
-  - Enjoy!
-  
+Congratulations! Everything you need should now be installed. Celebrate by drinking a cold beer before continuing. :)
 
 
+# Running CartoDB #
+
+Time to run your development version of CartoDB.
+
+First, there are a couple of one-time setups:
+
+  - Go into the `cartodb` directory.
+  - Type `rvm` and say "yes" to create a new gemset or just type `rvm use 1.9.2@cartodb --create`
+  - Type `bundle install --binstubs`
+  - Rename `config/app_config.yml.sample` to `config/app_config.yml`
+  - Rename `config/database.yml.sample` to `config/database.yml`
+
+After that, just make sure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all running. 
+
+Next, setup your first user account:
+
+```bash
+bundle exec rake cartodb:db:setup EMAIL=me@mail.com SUBDOMAIN=my_subdomain PASSWORD=my_pass ADMIN_PASSWORD=my_pass
+bundle exec rake cartodb:db:set_user_quota['me',1000] # 1 GB quota
+```
+
+That's it! 
+
+You should now be able to access `my_subdomain.localhost.lan` in your browser and login with your email and password!
+
+Note: Look at the `public/javascripts/environments/development.js` file which configures Windshaft-cartodb tile server URLs. 
+
+  
 ### Contributors by commits###
 
   - Fernando Blat (@ferblape)

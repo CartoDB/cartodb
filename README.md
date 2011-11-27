@@ -41,7 +41,7 @@ The installation process is fairly painless, and we have successful installation
 
 Before getting started, go ahead and download CartoDB by cloning this repository:
 
-```
+```shell
 git clone https://github.com/Vizzuality/cartodb.git
 
 ```

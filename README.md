@@ -107,14 +107,6 @@ pip install -r python_requirements.txt
 
 If this fails, try doing `export ARCHFLAGS='-arch i386 -arch x86_64'` beforehand.
 
-## Setup hosts ##
-
-For development and testing, edit `/etc/hosts` with the following lines:
-``` 
-127.0.0.1 admin.localhost.lan admin.testhost.lan
-127.0.0.1 my_subdomain.localhost.lan
-```
-
 ## Install Mapnik ##
 
 Mapnik is an API for creating beautiful maps. CartoDB uses Mapnik 2.0.x for creating and syling map tiles. 
@@ -178,6 +170,7 @@ First, there are a couple of one-time setups:
   - Type `bundle install --binstubs`
   - Rename `config/app_config.yml.sample` to `config/app_config.yml`
   - Rename `config/database.yml.sample` to `config/database.yml`
+  - Edit `/etc/hosts` and add `127.0.0.1 admin.localhost.lan admin.testhost.lan` and `127.0.0.1 my_subdomain.localhost.lan`
 
 After that, just make sure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all running. 
 

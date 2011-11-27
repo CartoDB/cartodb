@@ -43,7 +43,6 @@ Before getting started, go ahead and download CartoDB by cloning this repository
 
 ```bash
 git clone https://github.com/Vizzuality/cartodb.git
-
 ```
 
 Or you can just [download the CartoDB zip file](https://github.com/Vizzuality/cartodb/zipball/master).

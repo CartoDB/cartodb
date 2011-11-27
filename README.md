@@ -158,6 +158,7 @@ node app.js development
 
 Congratulations! Everything you need should now be installed. Celebrate by drinking a cold beer before continuing. :)
 
+![](http://thesocietypages.org/socimages/files/2010/08/pabst-blue-ribbon.jpg)
 
 # Running CartoDB #
 

@@ -115,6 +115,22 @@ For development and testing, edit `/etc/hosts` with the following lines:
 127.0.0.1 my_subdomain.localhost.lan
 ```
 
+## Install Mapnik ##
+
+Mapnik is an API for creating beautiful maps. CartoDB uses Mapnik 2.0.x for creating and syling map tiles. 
+
+To install it using Ubuntu:
+
+
+```bash
+sudo apt-get install build-essential curl wget python-software-properties
+sudo add-apt-repository ppa:mapnik/nightly-trunk
+sudo apt-get update
+sudo apt-get install libmapnik2 libmapnik2-dev mapnik2-utils
+```
+
+To install it using OS X, here is a nice [Homebre recipe](http://trac.mapnik.org/wiki/MacInstallation/Homebrew).
+
 ## Install CartoDB SQL API ##
 
 The CartoDB SQL API component powers the SQL queries over HTTP. To install it:

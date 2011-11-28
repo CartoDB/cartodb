@@ -12,9 +12,9 @@ If you would like to see some live demos, check out our [videos](http://www.vime
 
 With CartoDB, you can upload your geospatial data (Shapefiles, GeoJSON, etc) using a web form and then make it public or private. 
 
-After it is uploaded, you can visualize it in a table or on a map, search it using SQL, and apply map styles using CartoCSS. You can even access it using the CartoDB Maps API and SQL API, or export it to a file. 
+After it is uploaded, you can visualize it in a table or on a map, search it using SQL, and apply map styles using CartoCSS. You can even access it using the CartoDB [Maps API](http://developers.cartodb.com/api/maps.html) and [SQL API](http://developers.cartodb.com/api/sql.html), or export it to a file. 
 
-In other words, with CartoDB you can make awesome maps and build powerful geospatial applications! 
+In other words, with CartoDB you can make awesome maps and build powerful geospatial applications! Definitely check out the [CartoDB Gallery](http://developers.cartodb.com/gallery) for interactive examples and code.
 
 # What are the components of CartoDB? #
 

@@ -907,21 +907,14 @@ TRIGGER
   def set_trigger_cache_timestamp
     owner.in_database(:as => :superuser).run(<<-TRIGGER
     CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
-    $$    
-        if 'redis' not in GD:        
-            import redis   
-            GD['redis'] = redis.Redis();
+    $$
+        if 'varnish' not in GD:
+            import varnish
+            GD['varnish'] = varnish.VarnishHandler(('localhost', 6082))
 
-        if 'time' not in GD:
-            from time import time
-            GD['time'] = time                                
-
-        table_name = TD["table_name"]    
+        table_name = TD["table_name"]
         db_name    = "#{self.database_name}"
-        cache_key  = ":".join(["cache", db_name, table_name, "last_updated_at"])
-        last_updated_at = GD['time']()
-
-        GD['redis'].set(cache_key, last_updated_at)
+        GD['varnish'].fetch('purge obj.http.X-Cache-Channel == %s' % db_name)
     $$
     LANGUAGE 'plpythonu' VOLATILE;
 

@@ -905,12 +905,16 @@ TRIGGER
 
   # move to C
   def set_trigger_cache_timestamp
+
+    varnish_host  = APP_CONFIG[:varnish_management][:host]
+    varnish_port = APP_CONFIG[:varnish_management][:port]
+
     owner.in_database(:as => :superuser).run(<<-TRIGGER
     CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
     $$
         if 'varnish' not in GD:
             import varnish
-            GD['varnish'] = varnish.VarnishHandler(('localhost', 6082))
+            GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}))
 
         table_name = TD["table_name"]
         db_name    = "#{self.database_name}"

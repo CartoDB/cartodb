@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe CartoDB::Importer do
-      
+    
   it "should raise an error if :import_from_file option is blank" do
     lambda { 
       CartoDB::Importer.new 

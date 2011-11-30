@@ -94,7 +94,7 @@ module CartoDB
     def import!
       begin
         # decompress data and update self with results
-        decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash)      
+        decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash) 
         update_self decompressor.process! if decompressor
       
         # TODO: should this be here...?

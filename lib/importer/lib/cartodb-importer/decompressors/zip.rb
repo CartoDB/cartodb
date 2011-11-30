@@ -15,6 +15,11 @@ module CartoDB
           name = entry.name.split('/').last
           next if name =~ /^(\.|\_{2})/
           
+          # cleans spaces out of archived file names
+          if name.include? ' '
+            name = name.gsub(' ','_')
+          end
+          
           # temporary filename. no collisions. 
           tmp_path = "#{tmp_dir}.#{name}"
           

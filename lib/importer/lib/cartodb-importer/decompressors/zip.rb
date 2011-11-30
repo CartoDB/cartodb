@@ -20,8 +20,8 @@ module CartoDB
           
           # add to delete queue
           @entries << tmp_path
-
-          if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
+          
+          if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name).downcase)
             @ext            = File.extname(name)
             @suggested_name = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
             @path           = tmp_path

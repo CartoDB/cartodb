@@ -77,12 +77,12 @@
 					closeOutTableWindows();
 				} else {
 				  $('div.sql_window span.errors').hide();
-				  
+
           if (editor.getValue()=='') {
             editor.setValue('SELECT * FROM ' + table_name);
           }
 
-					$('div.sql_window').removeAttr('style');
+					$('div.sql_window,div.outer_textarea').removeAttr('style');
 	        $('div.sql_window').fadeIn('fast',function(){
 						editor.refresh();
 						editor.focus();

@@ -192,7 +192,6 @@
       var me = this,
           str = '';
 
-					console.log(obj);
       
       if (typeof obj === "string") {
         str = obj.replace(/\n/g,'');
@@ -205,7 +204,6 @@
         str += '}';
       }
 
-			console.log(str);
       
       $.ajax({
         type: 'POST',
@@ -1191,6 +1189,7 @@
       
       
       function setupVars(infowindow_vars) {
+
         // Get the columns
         $.ajax({
 			    method: "GET",
@@ -1217,9 +1216,6 @@
 			        }
 			      });
 			      
-			      
-			      
-			      
 			      // Reinitialize jscrollpane in the infowindow
       	    var custom_scrolls = [];
          		$('.map_header ul.infowindow_customization div.suboptions ul.column_names').jScrollPane().data().jsp.destroy();
@@ -1229,13 +1225,20 @@
 
 			      // Print all possible items in the suboptions
 			      _.each(infowindow_vars,function(value,name){
-			        $('.map_header ul.infowindow_customization div.suboptions ul.column_names').append('<li class="vars"><a class="'+(value?'on':'')+'">'+name+'</a</li>');
+              //console.log(value,name);
+              //console.log(default_infowindow,infowindow_vars);
+              if (default_infowindow[name]==undefined) {
+                delete infowindow_vars[name];
+              } else {
+                $('.map_header ul.infowindow_customization div.suboptions ul.column_names').append('<li class="vars"><a class="'+(value?'on':'')+'">'+name+'</a</li>');
+              }
       	    });
 
             // Initialize jscrollPane
             $('.map_header ul.infowindow_customization div.suboptions ul.scrollPane').jScrollPane({autoReinitialise:true,maintainPosition:false});
 
             me.infowindow_vars_ = infowindow_vars;
+            me.setInfowindowVars(me.infowindow_vars_);
 			    },
 			    error: function(e) {
 			      console.debug(e);

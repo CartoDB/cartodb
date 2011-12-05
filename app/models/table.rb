@@ -906,19 +906,30 @@ TRIGGER
   # move to C
   def set_trigger_cache_timestamp
 
-    varnish_host  = APP_CONFIG[:varnish_management][:host]
-    varnish_port = APP_CONFIG[:varnish_management][:port]
+    varnish_host  = APP_CONFIG[:varnish_management]['host']
+    varnish_port = APP_CONFIG[:varnish_management]['port']
 
     owner.in_database(:as => :superuser).run(<<-TRIGGER
     CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
     $$
         if 'varnish' not in GD:
             import varnish
-            GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}))
+            try:
+              GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}))
+            except:
+              #some error ocurred
+              pass
+        client = GD.get('varnish', None)
 
         table_name = TD["table_name"]
         db_name    = "#{self.database_name}"
-        GD['varnish'].fetch('purge obj.http.X-Cache-Channel == %s' % db_name)
+        if client:
+          try:
+            client.fetch('purge obj.http.X-Cache-Channel == %s' % db_name)
+          except:
+            #check if the connection is closed
+            del GD['varnish']
+            pass
     $$
     LANGUAGE 'plpythonu' VOLATILE;
 

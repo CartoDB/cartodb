@@ -1180,7 +1180,7 @@ SQL
         post_req.set_form_data({"style" => old_style})
         tile_host.request(post_req)
       rescue => e
-        CartoDB::Logger.info "tilestyle#rename error", "#{e.inspect}"      
+        CartoDB::Logger.info "tilestyle#rename error for #{tile_host.inspect}", "#{e.inspect}"      
       end        
     end
     @name_changed_from = nil

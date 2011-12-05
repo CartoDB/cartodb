@@ -1828,6 +1828,9 @@
       $('.map_header span.palette').each(function(i,ele){
         $(this).hide();
       });
+
+      // Close cartocss
+      $('.cartocss_editor').hide();
       
       // Close Infowindow
       this.info_window_.hide();

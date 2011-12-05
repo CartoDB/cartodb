@@ -75,9 +75,9 @@
       var me = this;
 
       head.js('/javascripts/admin/maps/Overlays/mapCanvasStub.js',
-        '/javascripts/admin/maps/Overlays/CartoTooltip.js',
-        '/javascripts/admin/maps/Overlays/CartoInfowindow.js',
-        '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
+        '/javascripts/admin/maps/Overlays/CartoTooltip.js?'+createUniqueId(),
+        '/javascripts/admin/maps/Overlays/CartoInfowindow.js?'+createUniqueId(),
+        '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js?'+createUniqueId(),
         '/javascripts/admin/maps/polygonEdit.js',
         '/javascripts/admin/maps/polylineEdit.js',
         '/javascripts/admin/maps/geometryCreator.js',

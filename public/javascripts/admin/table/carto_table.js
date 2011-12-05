@@ -80,7 +80,8 @@
 			var columns,
 			    rows,
 			    ajax_request = 2,
-					msg;
+					msg,
+          errors = [];
 
 
       // When ajax calls are loaded
@@ -89,9 +90,11 @@
 			    startTable();
 		    } else {
 					if (msg || is_write_query) {
-						requests_queue.pendingOperations[requestId].type = "query_action";
-						loadingMessages["query_action"] = msg || 'operation completed';
-						$('a.clear_table').click();
+            if (errors.length==0) {
+              requests_queue.pendingOperations[requestId].type = "query_action";
+              loadingMessages["query_action"] = msg || 'operation completed';
+              $('a.clear_table').click();
+            }
 					} else {
 						methods.drawQueryColumns(rows,table.total_r,time,new_query);
 				    methods.drawQueryRows(rows,direction,table.actual_p);
@@ -197,9 +200,8 @@
 			    },
 			    error: function(e) {
             requests_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
-			      requestArrived();
 			      
-			      var errors = $.parseJSON(e.responseText).errors;
+			      errors = $.parseJSON(e.responseText).errors;
 			      $('div.sql_window span.errors p').text('');
 			      _.each(errors,function(error,i){
 			        $('div.sql_window span.errors p').append(' '+error+'.');
@@ -213,6 +215,7 @@
 			      $('div.sql_window span.errors').show();
 			      
 			      methods.drawQueryColumns([]);
+            requestArrived();
 			    }
 			  });
 			}
@@ -2360,8 +2363,7 @@
 	        $('table').cartoDBtable('refreshTable');
 				}
       });
-
-		},
+    },
 
 
 

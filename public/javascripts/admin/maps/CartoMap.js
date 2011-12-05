@@ -1857,6 +1857,7 @@
       //    the infowindow vars customization properly
       this.setupInfowindow();
 
+
       // Remove the fake marker
       if (this.fakeMarker_!=null)
           this.fakeMarker_.setMap(null);

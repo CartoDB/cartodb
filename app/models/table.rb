@@ -921,15 +921,18 @@ TRIGGER
               pass
         client = GD.get('varnish', None)
 
-        table_name = TD["table_name"]
-        db_name    = "#{self.database_name}"
+        # table_name = TD["table_name"]
         if client:
           try:
-            client.fetch('purge obj.http.X-Cache-Channel == %s' % db_name)
+            client.fetch('purge obj.http.X-Cache-Channel == #{self.database_name}')
           except:
-            #check if the connection is closed
-            del GD['varnish']
-            pass
+            # try again
+            import varnish
+            try:
+              client = GD['varnish'] = varnish.VarnishHandler(('#{varnish_host}', #{varnish_port}))
+              client.fetch('purge obj.http.X-Cache-Channel == #{self.database_name}')
+            except:
+              pass
     $$
     LANGUAGE 'plpythonu' VOLATILE;
 

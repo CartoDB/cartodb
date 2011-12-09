@@ -39,8 +39,18 @@
               global_api_url = '/api/v1/';
             <% end %>
 
-        var sql = "<%= request.query_string.gsub('sql=','') %>";
-
+        
+        var sql,style,params = <%= request.query_string.split('&').to_json.html_safe %>;
+        
+        // Getting vars
+        for (var i = 0, length = params.length; i<length; i++) {
+          if (params[i].search('style=%23') != -1) {
+            style = params[i].replace('style=','');
+          }
+          if (params[i].search('sql=') != -1) {
+            sql = params[i].replace('sql=','');
+          }
+        }
       </script>
 
       <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>
@@ -105,7 +115,7 @@
           // Add the cartodb tiles
           var cartodb_layer = {
             getTileUrl: function(coord, zoom) {
-              return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png?sql=' + sql;
+              return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png?sql=' + sql + '&style=' + style;
             },
             tileSize: new google.maps.Size(256, 256)
           };

@@ -763,7 +763,7 @@
   	    });
   	    $('div.cartocss_editor a.close, div.cartocss_editor a.cancel').click(function(ev){
   	      stopPropagation(ev);
-  	      $('div.cartocss_editor').fadeOut();
+          me.closeMapWindows();
   	    });
   	    /*END CARTOCSS*/
 
@@ -897,7 +897,9 @@
         /* open cartocss editor */
         $('.map_header ul.geometry_customization button').click(function(ev){
           stopPropagation(ev);
-          $(this).closest('div.options').hide();
+          me.closeMapWindows();
+          me.bindMapESC();
+
           $('div.cartocss_editor').fadeIn(function(){
             cartocss_editor.refresh();
           });
@@ -1257,18 +1259,6 @@
 			$('form.map_search').submit(function(ev){
 				ev.preventDefault();
 				var address = $('form.map_search input[type="text"]').val();
-				
-				if (address.search(/santana/i)!=-1) {
-					that.map_.setCenter(new google.maps.LatLng(41.70124284555466, -4.835700988769531));
-					that.map_.setZoom(16);
-					return false;
-				}
-				
-				if (address.search(/jamon/i)!=-1) {
-					that.map_.setCenter(new google.maps.LatLng(40.37740486883891, -3.7519919872283936));
-					that.map_.setZoom(16);
-					return false;
-				}
 				
 				if (address.search(/vizzuality madrid/i)!=-1) {
 					that.map_.setCenter(new google.maps.LatLng(40.4222095, -3.6996303));

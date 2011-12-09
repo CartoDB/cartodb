@@ -261,9 +261,9 @@
                     '</div>'+
                   '</li>'+
                   '<li>'+
-                    '<a class="option" href="#cartoCSS">CartoCSS<sup>(beta)</sup></a>'+
+                    '<a class="option" href="#carto">Carto<sup>(beta)</sup></a>'+
                     '<div class="suboptions">'+
-                      '<button type="button">Open CartoCSS</button>'+
+                      '<button type="button">Open Carto</button>'+
                     '</di>'+
                   '</li>'+
                 '</ul>'+
@@ -299,7 +299,7 @@
           '<div class="inner_">'+
             '<span class="top">'+
               '<h3>Edit your tiles</h3>'+
-              '<p>Get <a target="_blank" href="http://developmentseed.org/blog/2011/feb/09/introducing-carto-css-map-styling-language/">more information</a> about CartoCSS.</p>'+
+              '<p>Get <a target="_blank" href="http://developmentseed.org/blog/2011/feb/09/introducing-carto-css-map-styling-language/">more information</a> about Carto.</p>'+
               '<textarea id="cartocss_editor"> </textarea>'+
 							'<span class="errors"><p>Your query is not correct, try again with another ;)</p></span>'+
             '</span>'+

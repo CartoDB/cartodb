@@ -6,6 +6,9 @@ development:
   session_domain: '.localhost.lan'
   amazon_access_key: ''
   amazon_secret_key: ''
+  varnish_management: 
+    host: '127.0.0.1'
+    post: 6082
   redis:
     host: '127.0.0.1'
     port: 6379
@@ -21,6 +24,9 @@ test:
   session_domain: '.testhost.lan'
   amazon_access_key: ''
   amazon_secret_key: ''
+  varnish_management: 
+    host: '127.0.0.1'
+    post: 6082
   redis:
     host: '127.0.0.1'
     port: 6380
@@ -36,6 +42,9 @@ production:
   amazon_access_key: ''
   amazon_secret_key: ''
   secret_token: "some_secret"
+  varnish_management: 
+    host:
+    port: 
   redis: 
     host: '127.0.0.1'
     port: 6379

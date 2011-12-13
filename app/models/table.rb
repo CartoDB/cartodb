@@ -906,7 +906,7 @@ TRIGGER
   # move to C
   def set_trigger_cache_timestamp
 
-    varnish_host  = APP_CONFIG[:varnish_management]['host']
+    varnish_host = APP_CONFIG[:varnish_management]['host']
     varnish_port = APP_CONFIG[:varnish_management]['port']
 
     owner.in_database(:as => :superuser).run(<<-TRIGGER

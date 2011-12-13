@@ -128,5 +128,19 @@ namespace :cartodb do
       end
     end
 
+    desc "update the old cache trigger which was using redis to the varnish one"
+    task :update_cache_trigger => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        user.in_database do |user_database|
+          user.tables.all.each do |table|
+            table.set_trigger_cache_timestamp
+          end
+        end
+      end
+    end
+
+    
+
   end
 end

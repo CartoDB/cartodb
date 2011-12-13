@@ -90,7 +90,7 @@
 			  div.style.width = this.width_ + 'px';
 				div.style.height = this.height_ + 'px';
 			  div.style.left = (pixPosition.x + this.offsetHorizontal_) + 'px';
-			  div.style.top = (pixPosition.y + this.offsetVertical_) + 'px';
+			  div.style.top = (pixPosition.y + this.offsetVertical_ - this.height_ - 76) + 'px';
 		  }
 		  this.show();
 	  }

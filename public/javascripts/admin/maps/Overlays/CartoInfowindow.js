@@ -87,9 +87,9 @@
   	  var pixPosition = this.getProjection().fromLatLngToDivPixel(this.latlng_);
   	  if (pixPosition) {
   		  div.style.width = this.width_ + 'px';
-  		  div.style.left = (pixPosition.x - 49 + (this.pixel?0:10)) + 'px';
+  		  div.style.left = (pixPosition.x - 49) + 'px';
   		  var actual_height = - $(div).height();
-  		  div.style.top = (pixPosition.y + actual_height + (this.pixel?0:actual_height+60)) + 'px';
+  		  div.style.top = (pixPosition.y + actual_height + (this.pixel?10:actual_height+80)) + 'px';
   	  }
 			
   	  this.show();

@@ -75,9 +75,9 @@
       var me = this;
 
       head.js('/javascripts/admin/maps/Overlays/mapCanvasStub.js',
-        '/javascripts/admin/maps/Overlays/CartoTooltip.js',
-        '/javascripts/admin/maps/Overlays/CartoInfowindow.js',
-        '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js',
+        '/javascripts/admin/maps/Overlays/CartoTooltip.js?'+createUniqueId(),
+        '/javascripts/admin/maps/Overlays/CartoInfowindow.js?'+createUniqueId(),
+        '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js?'+createUniqueId(),
         '/javascripts/admin/maps/polygonEdit.js',
         '/javascripts/admin/maps/polylineEdit.js',
         '/javascripts/admin/maps/geometryCreator.js',
@@ -192,7 +192,6 @@
       var me = this,
           str = '';
 
-					console.log(obj);
       
       if (typeof obj === "string") {
         str = obj.replace(/\n/g,'');
@@ -205,7 +204,6 @@
         str += '}';
       }
 
-			console.log(str);
       
       $.ajax({
         type: 'POST',
@@ -765,7 +763,7 @@
   	    });
   	    $('div.cartocss_editor a.close, div.cartocss_editor a.cancel').click(function(ev){
   	      stopPropagation(ev);
-  	      $('div.cartocss_editor').fadeOut();
+          me.closeMapWindows();
   	    });
   	    /*END CARTOCSS*/
 
@@ -899,7 +897,9 @@
         /* open cartocss editor */
         $('.map_header ul.geometry_customization button').click(function(ev){
           stopPropagation(ev);
-          $(this).closest('div.options').hide();
+          me.closeMapWindows();
+          me.bindMapESC();
+
           $('div.cartocss_editor').fadeIn(function(){
             cartocss_editor.refresh();
           });
@@ -1191,6 +1191,7 @@
       
       
       function setupVars(infowindow_vars) {
+
         // Get the columns
         $.ajax({
 			    method: "GET",
@@ -1217,9 +1218,6 @@
 			        }
 			      });
 			      
-			      
-			      
-			      
 			      // Reinitialize jscrollpane in the infowindow
       	    var custom_scrolls = [];
          		$('.map_header ul.infowindow_customization div.suboptions ul.column_names').jScrollPane().data().jsp.destroy();
@@ -1229,13 +1227,20 @@
 
 			      // Print all possible items in the suboptions
 			      _.each(infowindow_vars,function(value,name){
-			        $('.map_header ul.infowindow_customization div.suboptions ul.column_names').append('<li class="vars"><a class="'+(value?'on':'')+'">'+name+'</a</li>');
+              //console.log(value,name);
+              //console.log(default_infowindow,infowindow_vars);
+              if (default_infowindow[name]==undefined) {
+                delete infowindow_vars[name];
+              } else {
+                $('.map_header ul.infowindow_customization div.suboptions ul.column_names').append('<li class="vars"><a class="'+(value?'on':'')+'">'+name+'</a</li>');
+              }
       	    });
 
             // Initialize jscrollPane
             $('.map_header ul.infowindow_customization div.suboptions ul.scrollPane').jScrollPane({autoReinitialise:true,maintainPosition:false});
 
             me.infowindow_vars_ = infowindow_vars;
+            me.setInfowindowVars(me.infowindow_vars_);
 			    },
 			    error: function(e) {
 			      console.debug(e);
@@ -1254,18 +1259,6 @@
 			$('form.map_search').submit(function(ev){
 				ev.preventDefault();
 				var address = $('form.map_search input[type="text"]').val();
-				
-				if (address.search(/santana/i)!=-1) {
-					that.map_.setCenter(new google.maps.LatLng(41.70124284555466, -4.835700988769531));
-					that.map_.setZoom(16);
-					return false;
-				}
-				
-				if (address.search(/jamon/i)!=-1) {
-					that.map_.setCenter(new google.maps.LatLng(40.37740486883891, -3.7519919872283936));
-					that.map_.setZoom(16);
-					return false;
-				}
 				
 				if (address.search(/vizzuality madrid/i)!=-1) {
 					that.map_.setCenter(new google.maps.LatLng(40.4222095, -3.6996303));
@@ -1825,6 +1818,9 @@
       $('.map_header span.palette').each(function(i,ele){
         $(this).hide();
       });
+
+      // Close cartocss
+      $('.cartocss_editor').hide();
       
       // Close Infowindow
       this.info_window_.hide();
@@ -1853,6 +1849,7 @@
       // Check if there was any change in the table to composite 
       //    the infowindow vars customization properly
       this.setupInfowindow();
+
 
       // Remove the fake marker
       if (this.fakeMarker_!=null)

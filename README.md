@@ -121,7 +121,7 @@ To install it using Ubuntu:
 sudo apt-get install build-essential curl wget python-software-properties
 sudo add-apt-repository ppa:mapnik/nightly-trunk
 sudo apt-get update
-sudo apt-get install libmapnik2 libmapnik2-dev mapnik2-utils
+sudo apt-get install libmapnik libmapnik-dev mapnik-utils
 ```
 
 To install it using OS X, here is a nice [Homebrew recipe](http://trac.mapnik.org/wiki/MacInstallation/Homebrew).

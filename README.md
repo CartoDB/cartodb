@@ -116,6 +116,10 @@ pip install -r python_requirements.txt
 
 If this fails, try doing `export ARCHFLAGS='-arch i386 -arch x86_64'` beforehand.
 
+Next install varnish
+
+```pip install -e git+https://github.com/RealGeeks/python-varnish.git@0971d6024fbb2614350853a5e0f8736ba3fb1f0d#egg=python-varnish```
+
 ## Install Mapnik ##
 
 Mapnik is an API for creating beautiful maps. CartoDB uses Mapnik 2.0.x for creating and syling map tiles. 

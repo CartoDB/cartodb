@@ -62,6 +62,8 @@ You can install Node.js and NPM (the Node.js package manager) by [following thes
 
 Alternatively, you can install Node.js using `brew install node`, but NPM has to be installed using the wiki instructions above.
 
+Required: {"node":">= 0.4.1 < 0.5.0"}
+
 ## Install PostgreSQL and PostGIS ##
 
 [PostgreSQL](http://www.postgresql.org) is the relational database that powers CartoDB. [PostGIS](http://postgis.refractions.net) is the geospatial extension that allows PostgreSQL to support geospatial queries. This is the heart of CartoDB!

@@ -91,5 +91,26 @@ DESC
         raise u.errors.inspect
       end
     end
+
+    desc "Set the password of the user in the USERNAME environment variable to the value of the USER_PASSWORD environment variable"
+    task :change_user_password => :environment do
+      raise "Set USER_NAME environment variable" if ENV['USER_NAME'].blank?
+      raise "Set USER_PASSWORD environment variable" if ENV['USER_PASSWORD'].blank?
+      password = ENV['USER_PASSWORD']
+
+      users = User.filter(:username => ENV['USER_NAME']).all
+      if users.empty?
+        raise "User doesn't exist"
+      else
+        u = users.first
+        u.password = password
+        u.password_confirmation = password
+        if !u.save
+          rais u.errors.inspect
+        else
+          puts "Password changed"
+        end
+      end
+    end
   end
 end

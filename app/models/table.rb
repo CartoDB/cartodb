@@ -906,8 +906,8 @@ TRIGGER
   # move to C
   def set_trigger_cache_timestamp
 
-    varnish_host = APP_CONFIG[:varnish_management]['host']
-    varnish_port = APP_CONFIG[:varnish_management]['port']
+    varnish_host = APP_CONFIG[:varnish_management].try(:[],'host') || '127.0.0.1'
+    varnish_port = APP_CONFIG[:varnish_management].try(:[],'port') || 6082
 
     owner.in_database(:as => :superuser).run(<<-TRIGGER
     CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS

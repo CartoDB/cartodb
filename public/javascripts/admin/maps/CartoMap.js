@@ -153,6 +153,10 @@
       });
 
 
+      // Get visualization type
+      // TODO
+
+
       // Get tiles style
       $.ajax({
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
@@ -273,6 +277,11 @@
         url: global_api_url + 'tables/' + table_id + '/infowindow',
         data: {infowindow: JSON.stringify(infowindow_vars)}
       });
+    }
+
+    // Set visualization vars
+    CartoMap.prototype.setVisualization = function() {
+      
     }
 
 
@@ -516,15 +525,43 @@
 
       /* Visualization type - header*/
       var visualization_type = (function(){
+
+        var $vis_ul = $('.map_header ul.visualization_type');
         
         /*Geometry tools*/
         if (geom_type=="point" || geom_type=="multipoint") {
           $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
+          $vis_ul.find('> li:eq(2)').remove();
         } else if (geom_type=="polygon" || geom_type=="multipolygon") {
           $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
+          $vis_ul.find('> li:eq(1)').remove();
         } else {
           $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
+          $vis_ul.find('> li:eq(1)').remove();
         }
+
+
+        // Control bindings
+        $vis_ul.find('li a.option').livequery('click',function(ev){
+          stopPropagation(ev);
+          var parent = $(this).parent();
+          console.log(parent);
+          if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
+
+            // Remove selected
+            $vis_ul.find('> li').each(function(i,li){$(li).removeClass('selected special')});
+            
+            // Set in clicked
+            if (parent.find('div.suboptions').length>0) {
+              parent.addClass('special selected');
+            } else {
+              parent.addClass('selected');
+            }
+
+            // Get value
+            
+          }
+        });
         
         return {}
   		}());
@@ -1248,7 +1285,6 @@
 			    }
 			  });
       }
-
     }
     
 		/* Search stuff on map */
@@ -1361,14 +1397,10 @@
     }
 
     /* Reduce opacity wax again */
-    CartoMap.prototype.fadeOutWax = function() {
-
-    }
+    CartoMap.prototype.fadeOutWax = function() {}
 
     /* Full of opacity wax again */
-    CartoMap.prototype.fadeInWax = function() {
-
-    }
+    CartoMap.prototype.fadeInWax = function() {}
 
     /* Refresh wax tiles */
     CartoMap.prototype.refreshWax = function() {
@@ -1615,8 +1647,6 @@
           },
           error:function(e){}
       });
-
-
     }
 
     /* Add fake google polygons to the map */

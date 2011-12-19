@@ -2,6 +2,25 @@
     /* Function to create all the map DOM elements */
 
     function createMapElements() {
+
+      var colors_list = '<ul>'+
+        '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+        '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
+        '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
+        '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
+        '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
+        '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
+        '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
+        '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
+        '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
+        '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
+        '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
+        '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
+        '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
+        '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
+        '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
+        '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
+      '</ul>';
       
       ///////////////////////////////////////
       //  Map header elements              //
@@ -18,16 +37,16 @@
                 '<span class="tick"></span>'+
                 '<ul class="map_type">'+
 									'<li>'+
-	                  '<a class="option" href="#">Roadmap</a>'+
+	                  '<a class="option" href="#roadmap">Roadmap</a>'+
 	                '</li>'+
                   '<li>'+
-                    '<a class="option" href="#">Satellite</a>'+
+                    '<a class="option" href="#satellite">Satellite</a>'+
                   '</li>'+
                   '<li>'+
-                    '<a class="option" href="#">Terrain</a>'+
+                    '<a class="option" href="#terrain">Terrain</a>'+
                   '</li>'+
                   '<li>'+
-                    '<a class="option" href="#">Custom tiles</a>'+
+                    '<a class="option" href="#custom">Custom tiles</a>'+
                     '<div class="suboptions">'+
                       '<label>Labels</label>'+
                       '<div class="long">'+
@@ -58,6 +77,147 @@
             '<li>'+
               '<h4>Visualization type</h4>'+
               '<p>Features visualization</p>'+
+              '<a class="open" href="#visualization_type"></a>'+
+              '<div class="options long">'+
+                '<span class="tick"></span>'+
+                '<ul class="visualization_type">'+
+                  '<li class="selected">'+
+                    '<a class="option" href="#features">Features</a>'+
+                  '</li>'+
+                  '<li>'+
+                    '<a class="option" href="#bubble_map">Bubble map</a>'+
+                    '<div class="suboptions">'+
+                      '<label>Asocciated value</label>'+
+                      '<div class="long">'+
+                      '</div>'+
+                      '<label>Fill</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="marker-fill">'+
+                          '<span class="palette">'+
+                            colors_list +
+                          '</span>'+
+                          '<a href="#change_fill_color" class="control"></a>'+
+                          '<input type="text" value="#FF6600"/>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Border</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="marker-line-color">'+
+                          '<span class="palette">'+
+                            colors_list +
+                          '</span>'+
+                          '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
+                          '<input type="text" value="#FFFFFF"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="marker-line-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Transparency</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="marker-opacity marker-line-opacity">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Bubble sizes</label>'+
+                      '<div class="long">'+
+                        
+                      '</div>'+
+                    '</div>'+
+                  '</li>'+
+                  '<li>'+
+                    '<a class="option" href="#cloropeth_map">Cloropeth map</a>'+
+                    '<div class="suboptions">'+
+                      '<label>Asocciated value</label>'+
+                      '<div class="long">'+
+                      '</div>'+
+                      '<label>Fill</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="marker-fill">'+
+                          '<span class="palette">'+
+                            colors_list +
+                          '</span>'+
+                          '<a href="#change_fill_color" class="control"></a>'+
+                          '<input type="text" value="#FF6600"/>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Border</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="marker-line-color">'+
+                          '<span class="palette">'+
+                            colors_list +
+                          '</span>'+
+                          '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
+                          '<input type="text" value="#FFFFFF"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="marker-line-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Transparency</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="marker-opacity marker-line-opacity">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Bubble sizes</label>'+
+                      '<div class="long">'+
+                        
+                      '</div>'+
+                    '</div>'+
+                  '</li>'+
+                  '<li>'+
+                    '<a class="option" href="#color_map">Color map</a>'+
+                    '<div class="suboptions">'+
+                      '<label>Asocciated value</label>'+
+                      '<div class="long">'+
+                      '</div>'+
+                      '<label>Fill</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="marker-fill">'+
+                          '<span class="palette">'+
+                            colors_list +
+                          '</span>'+
+                          '<a href="#change_fill_color" class="control"></a>'+
+                          '<input type="text" value="#FF6600"/>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Border</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="marker-line-color">'+
+                          '<span class="palette">'+
+                            colors_list +
+                          '</span>'+
+                          '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
+                          '<input type="text" value="#FFFFFF"/>'+
+                        '</span>'+
+                        '<span class="numeric" css="marker-line-width">'+
+                          '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
+                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
+                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Transparency</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="marker-opacity marker-line-opacity">'+
+                          '<div class="slider"></div>'+
+                          '<span class="tooltip">83%</span>'+
+                        '</span>'+
+                      '</div>'+
+                      '<label>Bubble sizes</label>'+
+                      '<div class="long">'+
+                        
+                      '</div>'+
+                    '</div>'+
+                  '</li>'+
+                '</ul>'+
+              '</div>'+
             '</li>'+
             '<li>'+
               '<h4>Geometry customization</h4>'+
@@ -76,24 +236,7 @@
                       '<div class="long">'+
                         '<span class="color" css="marker-fill">'+
                           '<span class="palette">'+
-                            '<ul>'+
-	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-	                            '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
-	                            '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
-	                            '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
-	                            '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
-	                            '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
-	                            '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
-	                            '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
-	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-	                            '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
-	                            '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
-	                            '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
-	                            '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
-	                            '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
-	                            '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
-	                            '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
-                            '</ul>'+
+                            colors_list +
                           '</span>'+
                           '<a href="#change_fill_color" class="control"></a>'+
                           '<input type="text" value="#FF6600"/>'+
@@ -108,24 +251,7 @@
                       '<div class="long">'+
                         '<span class="color" css="marker-line-color">'+
                           '<span class="palette">'+
-                            '<ul>'+
-	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-	                            '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
-	                            '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
-	                            '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
-	                            '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
-	                            '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
-	                            '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
-	                            '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
-	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-	                            '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
-	                            '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
-	                            '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
-	                            '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
-	                            '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
-	                            '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
-	                            '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
-                            '</ul>'+
+                            colors_list +
                           '</span>'+
                           '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
                           '<input type="text" value="#FFFFFF"/>'+
@@ -152,24 +278,7 @@
                       '<div class="long">'+
                         '<span class="color" css="polygon-fill">'+
                           '<span class="palette">'+
-                            '<ul>'+
-	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-	                            '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
-	                            '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
-	                            '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
-	                            '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
-	                            '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
-	                            '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
-	                            '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
-	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-	                            '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
-	                            '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
-	                            '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
-	                            '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
-	                            '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
-	                            '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
-	                            '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
-                            '</ul>'+
+                            colors_list +
                           '</span>'+
                           '<a href="#change_fill_color" class="control"></a>'+
                           '<input type="text" value="#FF6600"/>'+
@@ -179,24 +288,7 @@
                       '<div class="long">'+
                         '<span class="color" css="line-color">'+
                           '<span class="palette">'+
-                            '<ul>'+
-	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-	                            '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
-	                            '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
-	                            '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
-	                            '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
-	                            '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
-	                            '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
-	                            '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
-	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-	                            '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
-	                            '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
-	                            '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
-	                            '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
-	                            '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
-	                            '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
-	                            '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
-                            '</ul>'+
+                            colors_list +
                           '</span>'+
                           '<a href="#change_line_color" class="control"></a>'+
                           '<input type="text" value="#FFFFFF"/>'+
@@ -223,24 +315,7 @@
                       '<div class="long">'+
                         '<span class="color" css="line-color">'+
                           '<span class="palette">'+
-                            '<ul>'+
-	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-	                            '<li><a href="#E2DADA" style="background-color:#E2DADA">grey</a></li>'+
-	                            '<li><a href="#E25B5B" style="background-color:#E25B5B">red</a></li>'+
-	                            '<li><a href="#FF9900" style="background-color:#FF9900">orange</a></li>'+
-	                            '<li><a href="#FFCC00" style="background-color:#FFCC00">yellow</a></li>'+
-	                            '<li><a href="#99CC00" style="background-color:#99CC00">green</a></li>'+
-	                            '<li><a href="#0099FF" style="background-color:#0099FF">blue</a></li>'+
-	                            '<li><a href="#FF3366" style="background-color:#FF3366">pink</a></li>'+
-	                            '<li><a href="#000000" style="background-color:#000000">black</a></li>'+
-	                            '<li><a href="#B7B0B0" style="background-color:#B7B0B0">dark grey</a></li>'+
-	                            '<li><a href="#AB4343" style="background-color:#AB4343">dark red</a></li>'+
-	                            '<li><a href="#D78100" style="background-color:#D78100">dark orange</a></li>'+
-	                            '<li><a href="#B59100" style="background-color:#B59100">dark yellow</a></li>'+
-	                            '<li><a href="#719700" style="background-color:#719700">dark green</a></li>'+
-	                            '<li><a href="#006BB4" style="background-color:#006BB4">dark blue</a></li>'+
-	                            '<li><a href="#AA2143" style="background-color:#AA2143">dark pink</a></li>'+
-                            '</ul>'+
+                            colors_list +
                           '</span>'+
                           '<a href="#change_fill_color" class="control"></a>'+
                           '<input type="text" value="#FF6600"/>'+

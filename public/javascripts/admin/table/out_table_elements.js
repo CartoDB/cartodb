@@ -23,10 +23,10 @@
 	          '<li class="map disabled"><a class="add_polygon">add polygon</a></li>'+
 	          '<li class="map disabled"><a class="add_polyline">add line</a></li>'+
 	          '<li class="map disabled"><a class="select_area">select area</a></li>'+
+	          '<li class="map"><a class="carto">Carto</a></li>'+
 	          '<li class="map hidden edit"><a class="discard">discard</a></li>'+
 	          '<li class="map hidden special edit"><a class="complete">complete</a></li>'+
 	        '</ul>'+
-
 	        '<div class="tooltip">'+
 	          '<p>select</p>'+
 	          '<span class="arrow"></span>'+

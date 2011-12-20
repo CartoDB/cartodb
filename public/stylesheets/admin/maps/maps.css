@@ -88,10 +88,12 @@ div.map_window div.map_header ul li a.open {position:absolute; display:none; rig
 div.map_window div.map_header ul li a.open:hover {background-position:0 -26px;}
 div.map_window div.map_header div.options {position:absolute; display:none; right:13px; top:18px; width:163px; z-index:30}
 div.map_window div.map_header div.options.short {width:122px}
+div.map_window div.map_header div.options.mlong {width:200px}
+div.map_window div.map_header div.options.mlong li {width:160px;}
 div.map_window div.map_header div.options span.tick {position:relative; float:right; width:14px; height:25px; background:url('/images/admin/map/combo_bkg.png') no-repeat 0 0}
 div.map_window div.map_header div.options span.tick:hover {cursor:pointer}
 body.query div.map_window div.map_header div.options span.tick {background-position:-14px 0}
-div.map_window div.map_header div.options ul {display:block; height:auto; margin:0; padding:7px 10px; background:linear-gradient(-90deg, #283A5A, #282F49); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#283A5A), to(#282F49));
+div.map_window div.map_header div.options ul {display:block; height:auto; margin:0; padding:7px 10px 10px; background:linear-gradient(-90deg, #283A5A, #282F49); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#283A5A), to(#282F49));
   background:-moz-linear-gradient(-90deg, #283A5A, #282F49); background: -o-linear-gradient(#283A5A,#282F49); background:#283A5A\9; -webkit-border-radius: 3px; -webkit-border-top-right-radius:0;-moz-border-radius:3px;-moz-border-radius-topright:0;
   border-radius:3px;border-top-right-radius:0; border:none}
 body.query div.map_window div.map_header div.options ul {background:linear-gradient(-90deg,rgba(51,51,51,1),rgba(10,10,10,1));background:-webkit-gradient(linear,50% 0%,50% 100%,from(rgba(51,51,51,1)),to(rgba(10,10,10,1)));
@@ -144,15 +146,20 @@ div.map_window div.map_header div.suboptions div.long span.color span.palette ul
 div.map_window div.map_header div.suboptions div.long span.color a.control {display:inline-block; vertical-align:top; width:17px; height:16px; margin:2px 0 0 2px; padding:0; background:url('/images/admin/map/color_control_bkg.png') no-repeat 0 0 #FF6600; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
 div.map_window div.map_header div.suboptions div.long span.color a.control.error {background-position:0 -16px; background-color:white;}
 div.map_window div.map_header div.suboptions div.long span.color a.control:hover {cursor:pointer}
-div.map_window div.map_header div.suboptions div.long span.color input {display:inline-block; vertical-align:top; width:50px; height:11px; padding:0; margin:5px 0 0 4px; font:normal 11px "Helvetica",Arial; color:#666666; border:none; line-height:11px}
+div.map_window div.map_header div.suboptions div.long span.color input {display:inline-block; vertical-align:top; width:50px; height:13px; padding:0; margin:4px 0 0 4px; font:normal 11px "Helvetica",Arial; color:#666666; border:none; line-height:13px}
 div.map_window div.map_header div.suboptions div.long span.color input.error {color:#E25B5B}
 div.map_window div.map_header div.suboptions div.long span.numeric {position:relative; display:inline-block; vertical-align:top; width:35px; height:20px; margin:0 0 0 5px; border:1px solid #999999; background:white; box-shadow:0 1px 0 0 white; border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px;}
-div.map_window div.map_header div.suboptions div.long span.numeric input {display:inline-block; vertical-align:top; width:15px; height:12px; padding:0; margin:5px 0 0 4px; font:normal 11px "Helvetica",Arial; color:#666666; border:none; text-align:center}
+div.map_window div.map_header div.suboptions div.long span.numeric input {display:inline-block; vertical-align:top; width:15px; height:13px; padding:0; margin:4px 0 0 4px; font:normal 11px "Helvetica",Arial; color:#666666; border:none; text-align:center; line-height:12px;}
 div.map_window div.map_header div.suboptions div.long span.numeric input[disabled="disabled"] {color:#333333}
 div.map_window div.map_header div.suboptions div.long span.numeric a {position:absolute; right:-1px; top:-1px; width:14px; height:12px; margin:0; padding:0; text-indent:-9999px; background:url('/images/admin/map/range_values.png') no-repeat 0 0}
 div.map_window div.map_header div.suboptions div.long span.numeric a:hover {background-position:0 0; cursor:pointer;}
 div.map_window div.map_header div.suboptions div.long span.numeric a.range_down {top:11px; height:11px; background-position:0 -12px}
 div.map_window div.map_header div.suboptions div.long span.numeric a.range_down:hover {background-position:0 -12px; cursor:pointer;}
+span.numeric.min, span.numeric.max {width:75px!important;}
+span.numeric.min p, span.numeric.max p {position:absolute; top:1px; left:3px; font-weight:normal; color:#CCCCCC!important;}
+span.numeric.min input, span.numeric.max input {width:53px!important; text-align:right!important;}
+span.numeric.min {margin-left:0!important;}
+
 div.map_window div.map_header div.suboptions div.long span.radio a {padding-left:12px; margin-right:10px; font:bold 11px "Helvetica",Arial; color:#666666; text-shadow:0 1px white; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -239px}
 div.map_window div.map_header div.suboptions div.long span.radio a:hover {background-position:0 -215px; cursor:pointer;}
 div.map_window div.map_header div.suboptions div.long span.radio a.clicked {background-position:0 -215px}

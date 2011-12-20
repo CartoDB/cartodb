@@ -78,7 +78,7 @@
               '<h4>Visualization type</h4>'+
               '<p>Features visualization</p>'+
               '<a class="open" href="#visualization_type"></a>'+
-              '<div class="options long">'+
+              '<div class="options mlong">'+
                 '<span class="tick"></span>'+
                 '<ul class="visualization_type">'+
                   '<li class="selected">'+
@@ -89,42 +89,25 @@
                     '<div class="suboptions">'+
                       '<label>Asocciated value</label>'+
                       '<div class="long">'+
+                        '<span class="dropdown" data=""></span>'+
                       '</div>'+
                       '<label>Fill</label>'+
                       '<div class="long">'+
-                        '<span class="color" css="marker-fill">'+
-                          '<span class="palette">'+
-                            colors_list +
-                          '</span>'+
-                          '<a href="#change_fill_color" class="control"></a>'+
-                          '<input type="text" value="#FF6600"/>'+
-                        '</span>'+
+                        '<span class="color" css="marker-fill"></span>'+
                       '</div>'+
                       '<label>Border</label>'+
                       '<div class="long">'+
-                        '<span class="color" css="marker-line-color">'+
-                          '<span class="palette">'+
-                            colors_list +
-                          '</span>'+
-                          '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
-                          '<input type="text" value="#FFFFFF"/>'+
-                        '</span>'+
-                        '<span class="numeric" css="marker-line-width">'+
-                          '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
-                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
-                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
-                        '</span>'+
+                        '<span class="color" css="marker-line-color"></span>'+
+                        '<span class="numeric" css="marker-line-width"></span>'+
                       '</div>'+
                       '<label>Transparency</label>'+
                       '<div class="long">'+
-                        '<span class="alpha" css="marker-opacity marker-line-opacity">'+
-                          '<div class="slider"></div>'+
-                          '<span class="tooltip">83%</span>'+
-                        '</span>'+
+                        '<span class="alpha" css="marker-opacity marker-line-opacity"></span>'+
                       '</div>'+
                       '<label>Bubble sizes</label>'+
                       '<div class="long">'+
-                        
+                        '<span class="numeric min" css=""></span>'+
+                        '<span class="numeric max" css=""></span>'+
                       '</div>'+
                     '</div>'+
                   '</li>'+
@@ -133,42 +116,15 @@
                     '<div class="suboptions">'+
                       '<label>Asocciated value</label>'+
                       '<div class="long">'+
+                        '<span class="dropdown" data=""></span>'+
                       '</div>'+
-                      '<label>Fill</label>'+
+                      '<label>Buckets</label>'+
                       '<div class="long">'+
-                        '<span class="color" css="marker-fill">'+
-                          '<span class="palette">'+
-                            colors_list +
-                          '</span>'+
-                          '<a href="#change_fill_color" class="control"></a>'+
-                          '<input type="text" value="#FF6600"/>'+
-                        '</span>'+
+                        '<span class="dropdown" data=""></span>'+
                       '</div>'+
-                      '<label>Border</label>'+
+                      '<label>Color ramp</label>'+
                       '<div class="long">'+
-                        '<span class="color" css="marker-line-color">'+
-                          '<span class="palette">'+
-                            colors_list +
-                          '</span>'+
-                          '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
-                          '<input type="text" value="#FFFFFF"/>'+
-                        '</span>'+
-                        '<span class="numeric" css="marker-line-width">'+
-                          '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
-                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
-                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
-                        '</span>'+
-                      '</div>'+
-                      '<label>Transparency</label>'+
-                      '<div class="long">'+
-                        '<span class="alpha" css="marker-opacity marker-line-opacity">'+
-                          '<div class="slider"></div>'+
-                          '<span class="tooltip">83%</span>'+
-                        '</span>'+
-                      '</div>'+
-                      '<label>Bubble sizes</label>'+
-                      '<div class="long">'+
-                        
+                        '<span class="dropdown ramp" data=""></span>'+
                       '</div>'+
                     '</div>'+
                   '</li>'+
@@ -177,43 +133,9 @@
                     '<div class="suboptions">'+
                       '<label>Asocciated value</label>'+
                       '<div class="long">'+
+                        '<span class="dropdown" data=""></span>'+
                       '</div>'+
-                      '<label>Fill</label>'+
-                      '<div class="long">'+
-                        '<span class="color" css="marker-fill">'+
-                          '<span class="palette">'+
-                            colors_list +
-                          '</span>'+
-                          '<a href="#change_fill_color" class="control"></a>'+
-                          '<input type="text" value="#FF6600"/>'+
-                        '</span>'+
-                      '</div>'+
-                      '<label>Border</label>'+
-                      '<div class="long">'+
-                        '<span class="color" css="marker-line-color">'+
-                          '<span class="palette">'+
-                            colors_list +
-                          '</span>'+
-                          '<a href="#change_line_color" class="control" style="background-color:white"></a>'+
-                          '<input type="text" value="#FFFFFF"/>'+
-                        '</span>'+
-                        '<span class="numeric" css="marker-line-width">'+
-                          '<input disabled="disabled" class="range_value" type="text" value="3"/>'+
-                          '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
-                          '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'+
-                        '</span>'+
-                      '</div>'+
-                      '<label>Transparency</label>'+
-                      '<div class="long">'+
-                        '<span class="alpha" css="marker-opacity marker-line-opacity">'+
-                          '<div class="slider"></div>'+
-                          '<span class="tooltip">83%</span>'+
-                        '</span>'+
-                      '</div>'+
-                      '<label>Bubble sizes</label>'+
-                      '<div class="long">'+
-                        
-                      '</div>'+
+                      '<label>Values</label>'+
                     '</div>'+
                   '</li>'+
                 '</ul>'+
@@ -335,12 +257,6 @@
                       '</div>'+
                     '</div>'+
                   '</li>'+
-                  '<li>'+
-                    '<a class="option" href="#carto">Carto<sup>(beta)</sup></a>'+
-                    '<div class="suboptions">'+
-                      '<button type="button">Open Carto</button>'+
-                    '</di>'+
-                  '</li>'+
                 '</ul>'+
               '</div>'+
             '</li>'+
@@ -375,7 +291,7 @@
             '<span class="top">'+
               '<h3>Edit your tiles</h3>'+
               '<p>Get <a target="_blank" href="http://developmentseed.org/blog/2011/feb/09/introducing-carto-css-map-styling-language/">more information</a> about Carto.</p>'+
-              '<textarea id="cartocss_editor"> </textarea>'+
+              '<textarea id="cartocss_editor"></textarea>'+
 							'<span class="errors"><p>Your query is not correct, try again with another ;)</p></span>'+
             '</span>'+
             '<span class="bottom">'+

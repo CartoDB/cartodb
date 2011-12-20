@@ -188,7 +188,6 @@
           console.debug(e);
         }
       });
-      
     }
     
     // Set new tile styles
@@ -281,7 +280,6 @@
 
     // Set visualization vars
     CartoMap.prototype.setVisualization = function() {
-      
     }
 
 
@@ -319,7 +317,7 @@
 
       // Map tools
       $('div.general_options ul li.map a').hover(function(){
-        if (!$(this).parent().hasClass('disabled')) {
+        if (!$(this).parent().hasClass('disabled') && $(this).text()!='Carto') {
           // Change text
           var text = $(this).text().replace('_',' ');
           $('div.general_options div.tooltip p').text(text);
@@ -545,7 +543,7 @@
         $vis_ul.find('li a.option').livequery('click',function(ev){
           stopPropagation(ev);
           var parent = $(this).parent();
-          console.log(parent);
+
           if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
 
             // Remove selected
@@ -562,7 +560,46 @@
             
           }
         });
-        
+
+
+
+        // Color inputs
+        $vis_ul.find('span.color').each(function(i,el){
+          $(el).colorPicker({
+            change: function(color) {
+              console.log(color);
+            }
+          });
+        });
+
+
+        // Alpha slider
+        $vis_ul.find('span.alpha').each(function(i,el){
+          $(el).customSlider({
+            value:100,
+            change: function(value) {
+              console.log(value);
+            }
+          });
+        });
+
+
+        // Range input
+        $vis_ul.find('span.numeric').each(function(i,el){
+          $(el).rangeInput({
+            type: $(el).attr('class').replace('numeric','').replace(' ',''),
+            max:100,
+            min:0,
+            change: function(value) {
+              console.log(value);
+            }
+          });
+        });
+
+
+
+        // Dropdown
+
         return {}
   		}());
          
@@ -571,8 +608,6 @@
       var map_customization = (function(){
         var custom_map_style = {};
 				var custom_map_properties = {};
-	
-	
         
 				// Set map style
         map.setOptions({styles:map_style.google_maps_customization_style});
@@ -932,14 +967,16 @@
         
         
         /* open cartocss editor */
-        $('.map_header ul.geometry_customization button').click(function(ev){
+        $('.general_options.map li a.carto').click(function(ev){
           stopPropagation(ev);
-          me.closeMapWindows();
-          me.bindMapESC();
-
-          $('div.cartocss_editor').fadeIn(function(){
-            cartocss_editor.refresh();
-          });
+          if (!$('div.cartocss_editor').is(':visible')) {
+            me.closeMapWindows();
+            me.bindMapESC();
+            $('div.cartocss_editor').fadeIn(function(){cartocss_editor.refresh();});
+          } else {
+            me.closeMapWindows();
+            me.unbindMapESC();
+          }
         });
         
         
@@ -1084,9 +1121,8 @@
   		}());
       
       
-      /*Setup infowindow - header*/
+      /* Setup infowindow - header */
       this.setupInfowindow(infowindow_vars || {});
- 
  
       /* Bind events for open and close any tool */
       $('.map_header a.open').livequery('click',function(ev){
@@ -1264,8 +1300,6 @@
 
 			      // Print all possible items in the suboptions
 			      _.each(infowindow_vars,function(value,name){
-              //console.log(value,name);
-              //console.log(default_infowindow,infowindow_vars);
               if (default_infowindow[name]==undefined) {
                 delete infowindow_vars[name];
               } else {
@@ -1985,7 +2019,6 @@
           me.errorRequest(params,new_value,old_value,type);
         }
       });
-
     }
 
     /* If request is succesful */

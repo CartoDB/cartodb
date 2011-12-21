@@ -9,7 +9,7 @@ module CartoDB
 
         log "Importing raster file: #{@path}"
 
-        raster2pgsql_bin_path = `which raster2pgsql.py`.strip
+        raster2pgsql_bin_path = `which raster2pgsql`.strip
 
         host = @db_configuration[:host] ? "-h #{@db_configuration[:host]}" : ""
         port = @db_configuration[:port] ? "-p #{@db_configuration[:port]}" : ""
@@ -25,8 +25,8 @@ module CartoDB
 
         puts "SRID : #{rast_srid_command}"
         
-        blocksize = "20x20"
-        full_rast_command = "#{raster2pgsql_bin_path} -I -s #{rast_srid_command.strip} -k #{blocksize} -t  #{random_table_name} -r #{@path} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
+        blocksize = "200x200"
+        full_rast_command = "#{raster2pgsql_bin_path} -I -s #{rast_srid_command.strip} -t #{blocksize} #{@path} #{random_table_name} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
         log "Running raster2pgsql: #{raster2pgsql_bin_path}  #{full_rast_command}"
         out = `#{full_rast_command}`
         if 0 < out.strip.length

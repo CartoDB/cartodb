@@ -100,7 +100,7 @@
                         '<span class="color" css="marker-line-color"></span>'+
                         '<span class="numeric" css="marker-line-width"></span>'+
                       '</div>'+
-                      '<label>Transparency</label>'+
+                      '<label>Alpha</label>'+
                       '<div class="long">'+
                         '<span class="alpha" css="marker-opacity marker-line-opacity"></span>'+
                       '</div>'+
@@ -124,7 +124,7 @@
                       '</div>'+
                       '<label>Color ramp</label>'+
                       '<div class="long">'+
-                        '<span class="dropdown ramp" data=""></span>'+
+                        '<span class="color_ramp" data=""></span>'+
                       '</div>'+
                     '</div>'+
                   '</li>'+

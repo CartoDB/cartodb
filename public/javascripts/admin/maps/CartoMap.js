@@ -576,7 +576,7 @@
         // Alpha slider
         $vis_ul.find('span.alpha').each(function(i,el){
           $(el).customSlider({
-            value:100,
+            value:50,
             change: function(value) {
               console.log(value);
             }
@@ -597,8 +597,32 @@
         });
 
 
-
         // Dropdown
+        $vis_ul.find('span.dropdown').each(function(i,el){
+          $(el).customDropdown({
+            source: ['jamon','paco', 'gento', 'santillana', 'vizzuality', 'reloj', 'jemez', 'bla bla'],
+            unselect: 'Select a column',
+            change: function(value) {
+              console.log(value);
+            }
+          });
+        });
+        // Update dropdown
+        // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',[]);},6000);
+
+
+        // Color ramp
+        $vis_ul.find('span.color_ramp').each(function(i,el){
+          $(el).colorRamp({
+            unselect: 'Select a color ramp',
+            buckets: 7,
+            change: function(value) {
+              console.log(value);
+            }
+          });
+        });
+        // Update color ramp
+        // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',4);},6000);
 
         return {}
   		}());

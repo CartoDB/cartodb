@@ -1,7 +1,11 @@
 
 /*****************/
-/*	MAP WIDGETS	 */
-/*****************/	
+/*	  WIDGETS	 	 */
+/*****************/
+
+// TODO: Close with bind and clicking outside of the select (ESC)
+// TODO: Close all palettes
+
 
 /* COLOR INPUT */
 (function($, window, undefined) {
@@ -70,7 +74,6 @@
   		var $el = $(this).closest('span.color');
       var palette = $el.find('span.palette');
       if (!palette.is(':visible')) {
-      	 // Close all palettes - TODO Improve
         $('span.color span.palette').each(function(i,palette){
           $(palette).hide();
         });
@@ -452,7 +455,6 @@
 	 // Plugin parts
 	 	, Core, API, Helper
 	 // default options
-	 	, interval
 	 	, defaultOptions = {
 	  		globalEvents : []
 	 		};
@@ -481,7 +483,8 @@
 
 
 	  _bind: function($el) {
-      
+      $el.find('span.select').click(Core._openSource);
+      $el.find('li a').click(Core._changeValue);
 	  },
 
 
@@ -497,26 +500,278 @@
 
 
    	// PRIVATE LOGIC
-
    	_changeValue: function(ev) {
-   		
+   		ev.preventDefault();
+   		var $el = $(this).closest('span.dropdown');
+
+   		// If clicked is not selected
+   		if (!$(this).parent().hasClass('selected')) {
+   			var value = $(this).text();
+   			// Remove previous selected item
+   			$el.find('li.selected').removeClass('selected');
+
+   			// Select this item
+   			$(this).parent().addClass('selected');
+
+   			// Trigger new value
+   			Core.options.change(value);
+
+   			// Change value in the selector
+   			$el.find('span.select').text(value).removeClass('first');
+   		}
+
+   		// Close the source	
+   		Core._closeSource($el);
+   	},
+
+
+   	_openSource: function(ev) {
+   		ev.preventDefault();
+   		var $el = $(this).closest('span.dropdown');
+   		$el.addClass('selected');
+   	},
+
+
+   	_closeSource: function($el) {
+   		$el.removeClass('selected');
+   	},
+
+
+   	_addList: function($el) {
+			var scrollPane = $el.find('ul').data('jsp');
+			// Remove old list
+			scrollPane.getContentPane().find('li').remove();
+
+			var list_items = '';
+    	_.each(Core.options.source,function(el,i){
+    		list_items += '<li><a href="#' + el + '">' + el + '</a></li>'
+    	});
+
+    	// New source added
+			scrollPane.getContentPane().append(list_items);
+
+			// Reinitialise the scroll
+			scrollPane.reinitialise();
+
+			// Selector need to change!
+			$el.find('span.select')
+				.text(Core.options.unselect || 'Select a value')
+				.addClass('first');
    	},
 
 
    	_addElements: function($el) {
    		// Add the range input
       $el.append(
-      	''
+      	'<span class="select"></span>'+
+      	'<div class="options_list">'+
+      		'<ul></ul>'+
+      	'</div>'
       );
-	  }
 
+      // Add jScrollPane :S
+      $el.find('ul').jScrollPane({autoReinitialise:true,maintainPosition:false});
+
+      //Add the source if exists
+      Core._addList($el,Core.options.source);
+	  }
  	};
 
 
 	/***************************************************************************
 	* Public methods
 	**************************************************************************/
-	API = {};
+	API = {
+		update: function(source) {
+			// Remove old list and add the new source
+			var $el = $(this);
+
+			Core.options.source = source;
+
+			Core._addList($el);
+		}
+	};
+
+
+	 /***************************************************************************
+	 * Static methods
+	**************************************************************************/
+	 // var pluginPrototype = $.fn[name];
+	 // pluginPrototype.methodName = Core.methodName;
+
+
+	/***************************************************************************
+	 * Helpers (general purpose private methods)
+	**************************************************************************/
+	Helper = {};
+
+
+	/***************************************************************************
+	 * Plugin installation
+	**************************************************************************/
+	$.fn[name] = function (userInput) {
+
+	  // check if such method exists
+	  if ( $.type( userInput ) === "string" && API[ userInput ] ) {
+	    return API[ userInput ].apply( this, Array.prototype.slice.call( arguments, 1 ) );
+	  }
+	  // initialise otherwise
+	  else if ( $.type( userInput ) === "object" || !userInput ) {
+	    return Core._init.apply( this, arguments );
+	  } else {
+	    $.error( 'You cannot invoke ' + name + ' jQuery plugin with the arguments: ' + userInput );
+	  }
+	};
+})( jQuery, window );
+
+
+/* COLOR RAMP */
+(function($, window, undefined) {
+
+	// constants
+ 	var TRUE = true, FALSE = true, NULL = null
+ 		, name = 'colorRamp'
+	 // Plugin parts
+	 	, Core, API, Helper
+	 // default options
+	 	, defaultOptions = {
+	  		globalEvents : []
+	 		};
+
+		
+		/***************************************************************************
+		* Private methods
+		**************************************************************************/
+		Core = {
+		  pluginName : name,
+		  options : null,
+
+		_init : function (options) {
+			// take user options in consideration
+		 	Core.options = $.extend( true, defaultOptions, options );
+		 	Core.options.colors = Core.options.colors || color_ramps;
+
+		 	return this.each( function () {
+		  	var $el = $(this);
+		   	
+		   	// Append necessary html
+		   	Core._addElements($el);
+
+		   	// Bind events
+		   	Core._bind($el);
+		 	});
+		},
+
+
+	  _bind: function($el) {
+      $el.find('span.select').click(Core._openSource);
+      $el.find('li a').click(Core._changeValue);
+	  },
+
+
+	  _trigger : function ( eventName, data, $el ) {
+	    var isGlobal = $.inArray( eventName, Core.options.globalEvents ) >= 0, eventName = eventName + '.' +  Core.pluginName;
+
+	    if (!isGlobal) {
+	      $el.trigger( eventName, data );
+	    } else {
+	      $.event.trigger( eventName, data );
+	    }
+	  },
+
+
+   	// PRIVATE LOGIC
+   	_changeValue: function(ev) {
+   		ev.preventDefault();
+   		var $el = $(this).closest('span.dropdown');
+
+   		// If clicked is not selected
+   		if (!$(this).parent().hasClass('selected')) {
+   			var value = $(this).text();
+   			// Remove previous selected item
+   			$el.find('li.selected').removeClass('selected');
+
+   			// Select this item
+   			$(this).parent().addClass('selected');
+
+   			// Trigger new value
+   			Core.options.change(value);
+
+   			// Change value in the selector
+   			$el.find('span.select').text(value).removeClass('first');
+   		}
+
+   		// Close the source	
+   		Core._closeSource($el);
+   	},
+
+
+   	_openSource: function(ev) {
+   		ev.preventDefault();
+   		var $el = $(this).closest('span.color_ramp');
+   		$el.addClass('selected');
+   	},
+
+
+   	_closeSource: function($el) {
+   		$el.removeClass('selected');
+   	},
+
+
+   	_addList: function($el) {
+			var scrollPane = $el.find('ul').data('jsp');
+			// Remove old list
+			scrollPane.getContentPane().find('li').remove();
+
+			var color_rule = '';
+    	_.each(Core.options.colors,function(type,i){
+    		color_rule += '<li><table><tr>';
+    		_.each(type[Core.options.buckets + 'b'],function(color,i){
+    			color_rule += '<td style="background:' + color + '">x</td>'
+    		});
+    		color_rule += '</tr></table></li>';
+    	});
+    	
+
+    	// New source added
+			scrollPane.getContentPane().append(color_rule);
+
+			// Reinitialise the scroll
+			scrollPane.reinitialise();
+
+			// Selector need to change!
+			// $el.find('span.select')
+			// 	.text(Core.options.unselect || 'Select a value')
+			// 	.addClass('first');
+   	},
+
+
+   	_addElements: function($el) {
+   		// Add the range input
+      $el.append(
+      	'<span class="select"><table><tr></tr></table></span>'+
+      	'<div class="options_list">'+
+      		'<ul></ul>'+
+      	'</div>'
+      );
+
+      // Add jScrollPane :S
+      $el.find('ul').jScrollPane({autoReinitialise:true,maintainPosition:false});
+
+      //Add the source if exists
+      Core._addList($el,Core.options.source);
+	  }
+ 	};
+
+
+	/***************************************************************************
+	* Public methods
+	**************************************************************************/
+	API = {
+		update: function(source) {
+
+		}
+	};
 
 
 	 /***************************************************************************

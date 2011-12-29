@@ -191,7 +191,7 @@
       $('span.file').removeClass('uploading');
       $('div.create_window div.inner_ span.loading').removeClass('error');
       $('span.file input[type="file"]').attr('value','');
-      $('div.select_file span.file p').text('You can import .csv, .xls and .zip files');
+      $('div.select_file span.file p').text('We support xls, csv, gpx, shp, zip, etc...');
       $('div.select_file span.file p').removeClass('error');
       $('span.progress').width(5);
       $('div.create_window ul li:eq(1)').removeClass('finished');
@@ -261,7 +261,7 @@
         $('div.create_window div.inner_ span.loading h5').html('We are creating your table...');
         $('div.create_window div.inner_ form').show();
         $('div.create_window div.inner_ form').animate({opacity:1},200);
-        $('div.select_file p').text('You can import .csv, .xls and .zip files');
+        $('div.select_file p').text('We support xls, csv, gpx, shp, zip, etc...');
         $('div.select_file p').removeClass('error');
       });
     }

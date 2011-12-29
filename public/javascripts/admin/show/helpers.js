@@ -1,5 +1,3 @@
-
-
     /*============================================================================*/
     /* Use unique  */
     /*============================================================================*/
@@ -21,19 +19,19 @@
     }
 
 
-		/*============================================================================*/
+    /*============================================================================*/
     /* Sanitize a query  */
     /*============================================================================*/
-		function sanitizeQuery(q) {
-			// Remove last character if it is ';'
-			var l_c = q.substr(q.length-1,q.length),
-					n_q = '';
-			if (l_c == ';') 
-				n_q = q.substr(0,q.length-1);
-			else 
-				n_q = q;
-			return escape(n_q);
-		}
+    function sanitizeQuery(q) {
+      // Remove last character if it is ';'
+      var l_c = q.substr(q.length-1,q.length),
+          n_q = '';
+      if (l_c == ';')
+        n_q = q.substr(0,q.length-1);
+      else 
+        n_q = q;
+      return escape(n_q);
+    }
 
 
     /*============================================================================*/
@@ -242,7 +240,70 @@
     /*============================================================================*/
     /* Check if a string is a url  */
     /*============================================================================*/
-		function isURL(s) {
-			var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
-			return regexp.test(s);
-		}
+    function isURL(s) {
+      var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+      return regexp.test(s);
+    }
+
+
+    
+    /*============================================================================*/
+    /* Get updated columns  */
+    /*============================================================================*/
+    function getColumns() {
+      return $.parseJSON($.ajax({
+        method: "GET",
+        url: global_api_url + 'tables/' + table_name,
+        headers: {"cartodbclient":"true"},
+        async: false
+      }).responseText).schema;
+    }
+
+
+
+    /*============================================================================*/
+    /* Get max and min value from a column  */
+    /*============================================================================*/
+    function getMaxMinColumn(column) {
+      return $.parseJSON($.ajax({
+        method: 'GET',
+        url: global_api_url+'queries?sql='+escape('SELECT max('+column+') as max, min('+column+') as min FROM '+table_name),
+        headers: {"cartodbclient":"true"},
+        async: false
+      }).responseText).rows[0];
+    }
+
+
+
+    /*============================================================================*/
+    /* Carto to javascript  */
+    /*============================================================================*/
+    function cartoToJavascript(str, geom_type) {
+      var type,properties = {};
+      var regexp_css = /[^\[|^\{]*(\[([^\]]*)\])?\{(.*)\}/g;
+
+      var array = regexp_css.exec(str.replace(/ /g,''));
+      array.shift();
+
+
+      // Check type of visualization
+      // console.log(array);
+      if (array.length<4) {
+        type = "features"
+      } else {
+        type = "custom"
+      }
+
+
+      // Get properties (simple)
+      var split_css = array[2].split(';');
+      _.each(split_css,function(prop,i){
+        if (prop!="") {
+          var split_prop = prop.split(':');
+          properties[split_prop[0]] = split_prop[1]; 
+        }
+      })
+
+
+      return {properties: properties, type: type}; 
+    }

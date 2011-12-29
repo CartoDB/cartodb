@@ -74,13 +74,13 @@
     CartoMap.prototype.addMapOverlays = function () {
       var me = this;
 
-      head.js('/javascripts/admin/maps/Overlays/mapCanvasStub.js',
-        '/javascripts/admin/maps/Overlays/CartoTooltip.js?'+createUniqueId(),
-        '/javascripts/admin/maps/Overlays/CartoInfowindow.js?'+createUniqueId(),
-        '/javascripts/admin/maps/Overlays/CartoDeleteWindow.js?'+createUniqueId(),
-        '/javascripts/admin/maps/polygonEdit.js',
-        '/javascripts/admin/maps/polylineEdit.js',
-        '/javascripts/admin/maps/geometryCreator.js',
+      head.js('/javascripts/admin/show/map/overlays/mapCanvasStub.js',
+        '/javascripts/admin/show/map/overlays/CartoTooltip.js?'+createUniqueId(),
+        '/javascripts/admin/show/map/overlays/CartoInfowindow.js?'+createUniqueId(),
+        '/javascripts/admin/show/map/overlays/CartoDeleteWindow.js?'+createUniqueId(),
+        '/javascripts/admin/show/map/tools/polygonEdit.js',
+        '/javascripts/admin/show/map/tools/polylineEdit.js',
+        '/javascripts/admin/show/map/tools/geometryCreator.js',
         function(){
           me.selection_area_    = new google.maps.Polygon({strokeWeight:1});                          // Selection polygon area
           me.info_window_       = new CartoInfowindow(new google.maps.LatLng(-260,-260),me.map_);     // InfoWindow for markers
@@ -94,19 +94,26 @@
 
 
     ////////////////////////////////////////
-    //  GET / SET MAP STYLES    		      //
+    //  GET / SAVE MAP STYLES    		      //
     ////////////////////////////////////////
-    // Get the styles of the whole map
+    // Get all the styles of the map
     CartoMap.prototype.getStyles = function() {
       var me = this,
           map_style,
           layers_style,
           geom_type,
           infowindow_info,
+          style_info,
+          properties,
           ajax_count = 4;
       
       
-      var setupTools = _.after(ajax_count, function() {me.setupTools(geom_type,layers_style,map_style,infowindow_info)});
+      var setupTools = _.after(ajax_count, function(){
+        me.setVisualization(geom_type,layers_style);  // Show the correct tiles
+        me.setMapStyle(geom_type,map_style);          // Set map styles
+                                                     // Set infowindow vars
+
+      });
       
       
       // Get map style
@@ -130,7 +137,6 @@
       });
 
 
-
       // Get geom type
       $.ajax({
         type: "GET",
@@ -151,10 +157,6 @@
           console.debug(e);
         }
       });
-
-
-      // Get visualization type
-      // TODO
 
 
       // Get tiles style
@@ -191,7 +193,7 @@
     }
     
     // Set new tile styles
-    CartoMap.prototype.setTilesStyles = function(obj) {
+    CartoMap.prototype.saveTilesStyles = function(obj) {
       var me = this,
           str = '';
 
@@ -227,7 +229,7 @@
     }
 
     // Set new map style
-    CartoMap.prototype.setMapStyle = function(map_styles,map_properties) {
+    CartoMap.prototype.saveMapStyle = function(map_styles,map_properties) {
       // Compose array for map style      
       var styles = [];
       var type = ''
@@ -267,7 +269,7 @@
     }
 
     // Set new infowindow vars    
-    CartoMap.prototype.setInfowindowVars = function(infowindow_vars) {
+    CartoMap.prototype.saveInfowindowVars = function(infowindow_vars) {
       this.infowindow_vars_ = infowindow_vars;
       
       $.ajax({
@@ -278,14 +280,10 @@
       });
     }
 
-    // Set visualization vars
-    CartoMap.prototype.setVisualization = function() {
-    }
-
 
 
     ////////////////////////////////////////
-    //  MAP AND TOOLS         			      //
+    //  MAP AND TOOLS LISTENERS        		//
     ////////////////////////////////////////
     /* Event listeners of the map */
     CartoMap.prototype.addMapListeners = function() {
@@ -311,161 +309,274 @@
       });
     }
 
-    /* Event listeners of the map tools */
+    /* REVIEW URGENT!!!!!! Event listeners of the map tools */
     CartoMap.prototype.addToolListeners = function() {
       var me = this;
 
-      // Map tools
-      $('div.general_options ul li.map a').hover(function(){
-        if (!$(this).parent().hasClass('disabled') && $(this).text()!='Carto') {
-          // Change text
-          var text = $(this).text().replace('_',' ');
-          $('div.general_options div.tooltip p').text(text);
-          // Check position
-          var right = -($(this).offset().left-$(window).width());
-          var offset = $('div.general_options div.tooltip').width()/2;
-          // near right edge
-          if (right-13-offset<0) {
-              right = 16 + offset;
-              $('div.general_options div.tooltip span.arrow').css({left:'83%'});
-          } else {
-              $('div.general_options div.tooltip span.arrow').css({left:'50%'});
-          }
-          $('div.general_options div.tooltip').css({right:right-13-offset+'px'});
-          // Show
-          $('div.general_options div.tooltip').show();
+      $('.map_header a.open').live('click',function(ev){
+        stopPropagation(ev);
+        var options = $(this).parent().find('div.options');
+        if (!options.is(':visible')) {
+
+          
+          options.show();
         } else {
-          $('div.general_options div.tooltip').hide();
+          options.hide();
         }
-      },function(){
-        $('div.general_options div.tooltip').hide();
       });
 
-      // Change map status
-      $('div.general_options ul li.map a').click(function(ev){
+
+      $('.map_header span.tick').live('click',function(ev){
         stopPropagation(ev);
-        if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
-          var status = $(this).attr('class');
-          me.setMapStatus(status);
+        var options = $(this).closest('div.options');
+        if (options.is(':visible')) {
+          
+          options.hide();
         }
       });
+
+
+
+      // Map tools
+      // $('div.general_options ul li.map a').hover(function(){
+      //   if (!$(this).parent().hasClass('disabled') && $(this).text()!='Carto') {
+      //     // Change text
+      //     var text = $(this).text().replace('_',' ');
+      //     $('div.general_options div.tooltip p').text(text);
+      //     // Check position
+      //     var right = -($(this).offset().left-$(window).width());
+      //     var offset = $('div.general_options div.tooltip').width()/2;
+      //     // near right edge
+      //     if (right-13-offset<0) {
+      //         right = 16 + offset;
+      //         $('div.general_options div.tooltip span.arrow').css({left:'83%'});
+      //     } else {
+      //         $('div.general_options div.tooltip span.arrow').css({left:'50%'});
+      //     }
+      //     $('div.general_options div.tooltip').css({right:right-13-offset+'px'});
+      //     // Show
+      //     $('div.general_options div.tooltip').show();
+      //   } else {
+      //     $('div.general_options div.tooltip').hide();
+      //   }
+      // },function(){
+      //   $('div.general_options div.tooltip').hide();
+      // });
+
+      // // Change map status
+      // $('div.general_options ul li.map a').click(function(ev){
+      //   stopPropagation(ev);
+      //   if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
+      //     var status = $(this).attr('class');
+      //     me.setMapStatus(status);
+      //   }
+      // });
 
 
       //Zooms
-      $('a.zoom_in').click(function(ev){
-        stopPropagation(ev);
-        var new_zoom = me.map_.getZoom()+1;
-        if (new_zoom<=20) {
-          me.map_.setZoom(new_zoom);
-          $('span.slider').slider('value',new_zoom);
-        }
-      });
-      $('a.zoom_out').click(function(ev){
-        stopPropagation(ev);
-        var new_zoom = me.map_.getZoom()-1;
-        if (new_zoom>=0) {
-          me.map_.setZoom(new_zoom);
-          $('span.slider').slider('value',new_zoom);
-        }
-      });
+      // $('a.zoom_in').click(function(ev){
+      //   stopPropagation(ev);
+      //   var new_zoom = me.map_.getZoom()+1;
+      //   if (new_zoom<=20) {
+      //     me.map_.setZoom(new_zoom);
+      //     $('span.slider').slider('value',new_zoom);
+      //   }
+      // });
+      // $('a.zoom_out').click(function(ev){
+      //   stopPropagation(ev);
+      //   var new_zoom = me.map_.getZoom()-1;
+      //   if (new_zoom>=0) {
+      //     me.map_.setZoom(new_zoom);
+      //     $('span.slider').slider('value',new_zoom);
+      //   }
+      // });
 
-      // Zoom slider
-      $('span.slider').slider({
-	      orientation: 'vertical',
-	      min:0,
-	      max:20,
-	      value:1,
-	      stop: function(event,ui){
-	        me.map_.setZoom(ui.value);
-	      }
-      });
+      // // Zoom slider
+      // $('span.slider').slider({
+	     //  orientation: 'vertical',
+	     //  min:0,
+	     //  max:20,
+	     //  value:1,
+	     //  stop: function(event,ui){
+	     //    me.map_.setZoom(ui.value);
+	     //  }
+      // });
 
 
-      // SQL Map console
-      // Clear
-      $('a.clear_table').livequery('click',function(ev){
-        var view_map = ($('body').attr('view_mode') == 'map');
-        if (view_map) {
-          stopPropagation(ev);
-          $('body').removeAttr('query_mode');
-          me.query_mode = false;
-					$('.map_header div.stickies').remove();
-          me.refresh();
-        }
-      });
+       //    // SQL Map console
+       //    // Clear
+       //    $('a.clear_table').live('click',function(ev){
+       //      var view_map = ($('body').attr('view_mode') == 'map');
+       //      if (view_map) {
+       //        stopPropagation(ev);
+       //        $('body').removeAttr('query_mode');
+       //        me.query_mode = false;
+    			// 		$('.map_header div.stickies').remove();
+       //        me.refresh();
+       //      }
+       //    });
 
-      // Try query
-      $('div.sql_window a.try_query').livequery('click',function(ev){
-        var map_status = ($('body').attr('view_mode') == "map");
-        if (map_status) {
-          stopPropagation(ev);
-					me.closeMapWindows();
+       //    // Try query
+       //    $('div.sql_window a.try_query').live('click',function(ev){
+       //      var map_status = ($('body').attr('view_mode') == "map");
+       //      if (map_status) {
+       //        stopPropagation(ev);
+    			// 		me.closeMapWindows();
 
-          $('body').attr('query_mode','true');
-          me.query_mode = true;
-					
-					// Set the new value to the editor
-					editor.setOption('query',editor.getValue());
+       //        $('body').attr('query_mode','true');
+       //        me.query_mode = true;
+    					
+    			// 		// Set the new value to the editor
+    			// 		editor.setOption('query',editor.getValue());
 
-          setAppStatus();
-          me.refresh();
+       //        setAppStatus();
+       //        me.refresh();
+              
+       //        var requestId = createUniqueId();
+       //        requests_queue.newRequest(requestId,'query_table');
+
+       //        // Get results from api
+       //        $.ajax({
+       //          method: "GET",
+       //          url: global_api_url+'queries?sql='+escape(editor.getValue().replace('/\n/gi'," ")),
+       //          headers: {"cartodbclient":"true"},
+       //          success: function(data) {
+      	// 		      // Remove error content
+      	// 					$('div.sql_window span.errors').hide();
+      	// 					$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
+      	// 					$('div.sql_window').css({'min-height':'199px'});
+      						
+      	// 					$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+      	// 					$('span.query p').text('This query took '+data.time.toFixed(3)+' seconds');
+    			// 				$('.map_header div.stickies').remove();
+    			// 				$('div.map_header').append('<div class="stickies"><p><strong>'+data.total_rows+' result'+((data.total_rows>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
+      						
+      	// 					requests_queue.responseRequest(requestId,'ok','');
+      	// 		    },
+      	// 		    error: function(e) {
+       //            requests_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
+      	// 		      $(document).unbind('arrived');
+
+      	// 		      var errors = $.parseJSON(e.responseText).errors;
+      	// 		      $('div.sql_window span.errors p').text('');
+      	// 		      _.each(errors,function(error,i){
+      	// 		        $('div.sql_window span.errors p').append(' '+error+'.');
+      	// 		      });
+
+      	// 		      var new_bottom = 65 + $('div.sql_window span.errors').height();
+      	// 		      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
+
+      	// 		      var new_height = 199 + $('div.sql_window span.errors').height();
+      	// 		      $('div.sql_window').css({'min-height':new_height+'px'});
+      	// 		      $('div.sql_window span.errors').show();
+      	// 		      $('.map_header div.stickies').remove();
+      	// 		      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+       //    				$('span.query p').text('');
+      	// 		    }
+       //        });
+       //      }
+       //    });
+      
+    			// // Refresh after geolocating
+    			// $('section.subheader div.performing_op p a.refresh').live('click',function(ev){
+       //      ev.preventDefault();
+    			// 	var view_mode = ($('body').attr('view_mode') === "map");
+    			//   if (view_mode) {
+    			// 		ev.stopPropagation();
+    	  //       me.refreshWax();
+    			// 	}
+       //    });
+    }
+
+    /* Show editing tools */
+    CartoMap.prototype.toggleEditTools = function() {
+      $('.general_options ul').animate({bottom:'-40px'},300,function(){
+        $('.general_options ul li.map').each(function(i,ele){
+          if (!$(ele).hasClass('disabled') && $(ele).hasClass('hidden')) {
+            $(ele).removeClass('hidden');
+            if ($(ele).children('a').hasClass('discard')) {
+              $('.general_options ul li.all a').hide();
+              $('.general_options ul').addClass('edit');
+            }
+            if ($(ele).children('a').hasClass('select')) {
+              $('.general_options ul li.all a').show();
+              $('.general_options ul').removeClass('edit');
+            }
+            return;
+          }
           
-          var requestId = createUniqueId();
-          requests_queue.newRequest(requestId,'query_table');
+          if (!$(ele).hasClass('disabled') && !$(ele).hasClass('hidden')) {
+            $(ele).addClass('hidden');
+            return;
+          }
 
-          // Get results from api
-          $.ajax({
-            method: "GET",
-            url: global_api_url+'queries?sql='+escape(editor.getValue().replace('/\n/gi'," ")),
-            headers: {"cartodbclient":"true"},
-            success: function(data) {
-  			      // Remove error content
-  						$('div.sql_window span.errors').hide();
-  						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
-  						$('div.sql_window').css({'min-height':'199px'});
-  						
-  						$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-  						$('span.query p').text('This query took '+data.time.toFixed(3)+' seconds');
-							$('.map_header div.stickies').remove();
-							$('div.map_header').append('<div class="stickies"><p><strong>'+data.total_rows+' result'+((data.total_rows>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
-  						
-  						requests_queue.responseRequest(requestId,'ok','');
-  			    },
-  			    error: function(e) {
-              requests_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
-  			      $(document).unbind('arrived');
-
-  			      var errors = $.parseJSON(e.responseText).errors;
-  			      $('div.sql_window span.errors p').text('');
-  			      _.each(errors,function(error,i){
-  			        $('div.sql_window span.errors p').append(' '+error+'.');
-  			      });
-
-  			      var new_bottom = 65 + $('div.sql_window span.errors').height();
-  			      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
-
-  			      var new_height = 199 + $('div.sql_window span.errors').height();
-  			      $('div.sql_window').css({'min-height':new_height+'px'});
-  			      $('div.sql_window span.errors').show();
-  			      $('.map_header div.stickies').remove();
-  			      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-      				$('span.query p').text('');
-  			    }
-          });
-        }
-      });
-  
-			// Refresh after geolocating
-			$('section.subheader div.performing_op p a.refresh').livequery('click',function(ev){
-        ev.preventDefault();
-				var view_mode = ($('body').attr('view_mode') === "map");
-			  if (view_mode) {
-					ev.stopPropagation();
-	        me.refreshWax();
-				}
+          $('.general_options ul').animate({bottom:'0px'},300);
+        });
       });
     }
 
+    /* Search stuff on map */
+    CartoMap.prototype.setupSearch = function() {
+      var that = this;
+      this.geocoder = new google.maps.Geocoder();
+      
+      $('form.map_search').submit(function(ev){
+        ev.preventDefault();
+        var address = $('form.map_search input[type="text"]').val();
+        
+        if (address.search(/vizzuality madrid/i)!=-1) {
+          that.map_.setCenter(new google.maps.LatLng(40.4222095, -3.6996303));
+          that.map_.setZoom(16);
+          return false;
+        }
+        
+        if (address.search(/vizzuality ny/i)!=-1) {
+          that.map_.setCenter(new google.maps.LatLng(40.717147636174424, -74.00177657604218));
+          that.map_.setZoom(16);
+          return false;
+        }
+        
+        if (address.search(/vizzuality/i)!=-1) {
+          that.map_.setCenter(new google.maps.LatLng(40.4222095, -3.6996303));
+          that.map_.setZoom(16);
+          return false;
+        }
+        
+        that.geocoder.geocode( { 'address': address}, function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+            that.map_.setCenter(results[0].geometry.location);
+            that.map_.fitBounds(results[0].geometry.bounds);
+            $('form.map_search span.error').fadeOut();
+          } else {
+            $('form.map_search span.error').fadeIn(function(){$(this).delay(2000).fadeOut()});
+          }
+        });
+      });
+    }
+
+    /* REVIEW Set map status */
+    CartoMap.prototype.setMapStatus = function(status) {
+
+      this.status_ = status;
+
+      $('div.general_options li.map').each(function(i,ele){
+          $(ele).removeClass('selected');
+      });
+      $('div.general_options li.map a.'+status).parent().addClass('selected');
+
+      // New special geometry (multipolygon or multipolyline==multilinestring)
+     if (status == "add_polygon" || status == "add_polyline") {
+        this.geometry_creator_ = new GeometryCreator(this.map_,(this.status_=="add_polygon")?"MultiPolygon":"MultiLineString");
+      }
+
+      this.hideOverlays()
+    }
+
+
+
+    ////////////////////////////////////////
+    //  MAP HELPERS                     //
+    ////////////////////////////////////////
     /* Set bbox for the map */
     CartoMap.prototype.zoomToBBox = function() {
       var me = this;
@@ -511,129 +622,386 @@
         }
       });
     }
+    
 
+
+    ///////////////////////////////////////////////////////////////
+    //  SET MAP, INFOWINDOW && TILES CUSTOMIZATION               //
+    ///////////////////////////////////////////////////////////////
     /* Set the tools due to geom_type... */
-    CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style,infowindow_vars) {
-      var me = this;
-      var map = me.map_;
 
-			/* setup search */
-			this.setupSearch();
-
-
+    /* FINISH! - Set visualization of the tiles */
+    CartoMap.prototype.setVisualization = function(geom_type, styles) {
       /* Visualization type - header*/
-      var visualization_type = (function(){
+      var that = this;
 
-        var $vis_ul = $('.map_header ul.visualization_type');
-        
-        /*Geometry tools*/
-        if (geom_type=="point" || geom_type=="multipoint") {
-          $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
-          $vis_ul.find('> li:eq(2)').remove();
-        } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-          $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
-          $vis_ul.find('> li:eq(1)').remove();
-        } else {
-          $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
-          $vis_ul.find('> li:eq(1)').remove();
-        }
+      var $vis_ul = $('.map_header ul.visualization_type')
+        , prev_properties = cartoToJavascript(styles);        // Get previous properties, important!
 
+      
+      /*
+        LIST HEADER VISUALIZATION
+      */
+      var visualization_header = (function($, window, undefined){
+        _setCorrectGeomType(geom_type)
 
-        // Control bindings
-        $vis_ul.find('li a.option').livequery('click',function(ev){
-          stopPropagation(ev);
-          var parent = $(this).parent();
-
-          if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
-
-            // Remove selected
-            $vis_ul.find('> li').each(function(i,li){$(li).removeClass('selected special')});
-            
-            // Set in clicked
-            if (parent.find('div.suboptions').length>0) {
-              parent.addClass('special selected');
-            } else {
-              parent.addClass('selected');
-            }
-
-            // Get value
-            
+        function _setCorrectGeomType(geom_type) {
+          if (geom_type=="point" || geom_type=="multipoint") {
+            $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
+            $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.lines').remove();
+            $vis_ul.find('> li:eq(1) > div.suboptions.cloropeth').remove();
+          } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+            $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
+            $vis_ul.find('> li:eq(0) > div.suboptions.points, > li:eq(0) > div.suboptions.lines').remove();
+            $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
+          } else {
+            $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
+            $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.points').remove();
+            $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
           }
-        });
+        }
+        return {}
+      }(jQuery, window));
 
 
+      /*
+        FEATURES
+      */
+      var features = (function($, window, undefined){
 
-        // Color inputs
-        $vis_ul.find('span.color').each(function(i,el){
-          $(el).colorPicker({
-            change: function(color) {
-              console.log(color);
+        var $feature      = $vis_ul.find('> li:eq(0) div.suboptions')
+          , feature_props = {}; 
+
+        
+        _init();
+
+          function _init() {
+            _setProperties(prev_properties.properties);
+            _initElements();
+            _bindEvents();
+
+            if (prev_properties.type == "features") {
+              _activate();
             }
-          });
-        });
+          }
+
+          function _setProperties(old_properties) {
 
 
-        // Alpha slider
-        $vis_ul.find('span.alpha').each(function(i,el){
-          $(el).customSlider({
-            value:50,
-            change: function(value) {
-              console.log(value);
+            // Get editable variables (Looping through the $el)
+            $feature.find('span[css]').each(function(i,ele){
+
+              // Get css value
+              var css_ = $(ele).attr('css').split(' ');
+
+
+              // Change default value if there was a previous one
+              if (old_properties[css_[0]]) 
+                $(ele).attr('default',old_properties[css_[0]]);
+
+              var def_ = $(ele).attr('default');
+
+                // If there are more properties in the same span
+              _.each(css_,function(param,i){
+                feature_props[param] = def_;
+              });
+            });
+
+            // Get default variables depending on geom type
+            if (geom_type=="point" || geom_type=="multipoint") {
+              feature_props['marker-placement'] = 'point';
+              feature_props['marker-type'] = 'ellipse';
+              feature_props['marker-allow-overlap'] = true;
+            } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+              // No more properties are needed
+            } else {
+              // No more properties are needed
             }
-          });
-        });
+          }
 
 
-        // Range input
-        $vis_ul.find('span.numeric').each(function(i,el){
-          $(el).rangeInput({
-            type: $(el).attr('class').replace('numeric','').replace(' ',''),
-            max:100,
-            min:0,
-            change: function(value) {
-              console.log(value);
+          function _initElements() {
+            // Color inputs
+            $feature.find('span.color').each(function(i,el){
+              // Get one css element
+              var property = $(el).attr('css').split(' ')[0];
+
+              $(el).colorPicker({
+                value: feature_props[property]
+              })
+              .bind('change.colorPicker',function(ev,value){
+                _.each($(this).attr('css').split(' '),function(ele,i){
+                  feature_props[ele] = value;
+                });
+                _saveProperties();
+              });
+            });
+
+
+            // Alpha sliders
+            $feature.find('span.alpha').each(function(i,el){
+              // Get one css element
+              var property = $(el).attr('css').split(' ')[0];
+
+              $(el).customSlider({
+                value: feature_props[property]*100
+              })
+              .bind('change.customSlider',function(ev,value){
+                _.each($(this).attr('css').split(' '),function(ele,i){
+                  feature_props[ele] = value / 100;
+                });
+                _saveProperties();
+              });
+            });
+
+
+            // Range inputs
+            $feature.find('span.numeric').each(function(i,el){
+              var type = $(el).attr('class').replace('numeric','').replace(' ','')
+                , property = $(el).attr('css').split(' ')[0]
+                , value = feature_props[property];
+              
+
+              $(el).rangeInput({
+                type: $(el).attr('css').replace('numeric','').replace(' ',''),
+                value: value
+              })
+              .bind('change.rangeInput',function(ev,value){
+                _.each($(this).attr('css').split(' '),function(ele,i){
+                  feature_props[ele] = value;
+                });
+                _saveProperties();
+              });
+            });
+          }
+
+
+          function _bindEvents() {
+            $feature.closest('li').find('> a.option').click(_activate);
+          }
+
+
+          function _activate(ev) {
+            if (ev) {
+              ev.preventDefault();
             }
-          });
-        });
 
-
-        // Dropdown
-        $vis_ul.find('span.dropdown').each(function(i,el){
-          $(el).customDropdown({
-            source: ['jamon','paco', 'gento', 'santillana', 'vizzuality', 'reloj', 'jemez', 'bla bla'],
-            unselect: 'Select a column',
-            change: function(value) {
-              console.log(value);
+            // Remove all selected 
+            var parent = $feature.parent();
+            if (!parent.hasClass('selected')) {
+              $vis_ul.find('li.selected').removeClass('selected special')
+              parent.addClass('selected special');
+              _saveProperties()
             }
-          });
-        });
-        // Update dropdown
-        // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',[]);},6000);
+          }
+
+          function _saveProperties() {
+            console.log("save features");
+            that.saveTilesStyles(feature_props);
+          }
+
+        return {
+            
+        }
+      }(jQuery, window));
 
 
-        // Color ramp
-        $vis_ul.find('span.color_ramp').each(function(i,el){
-          $(el).colorRamp({
-            unselect: 'Select a color ramp',
-            buckets: 7,
-            change: function(value) {
-              console.log(value);
+      /*
+        BUBBLES | CLOROPETHAS
+      */
+      var bubbles_cloropethas = (function($, window, undefined){
+
+        var $custom       = $vis_ul.find('> li:eq(1) div.suboptions')
+          , custom_props  = {}; 
+
+
+        _init();
+        
+          function _init() {
+            _setProperties(prev_properties.properties);
+            _initElements();
+            _bindEvents();
+
+            if (prev_properties.type == "custom") {
+              _activate();
             }
-          });
-        });
+          }
+
+          function _setProperties(old_properties) {
+
+            // Get editable variables (Looping through the $el)
+            $custom.find('span[css]').each(function(i,ele){
+
+              // Get css value
+              var css_ = $(ele).attr('css').split(' ');
+
+
+              // Change default value if there was a previous one
+              if (old_properties[css_[0]]) 
+                $(ele).attr('default',old_properties[css_[0]]);
+
+              var def_ = $(ele).attr('default');
+
+                // If there are more properties in the same span
+              _.each(css_,function(param,i){
+                custom_props[param] = def_;
+              });
+            });
+
+            // Get default variables depending on geom type
+            if (geom_type=="point" || geom_type=="multipoint") {
+              custom_props['marker-placement'] = 'point';
+              custom_props['marker-type'] = 'ellipse';
+              custom_props['marker-allow-overlap'] = true;
+            } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+              // No more properties are needed
+            } else {
+              // No more properties are needed
+            }
+          }
+
+
+          function _initElements() {
+            // Color inputs
+            $custom.find('span.color').each(function(i,el){
+              // Get one css element
+              var property = $(el).attr('css').split(' ')[0];
+
+              $(el).colorPicker({
+                value: custom_props[property]
+              })
+              .bind('change.colorPicker',function(ev,value){
+                _.each($(this).attr('css').split(' '),function(ele,i){
+                  custom_props[ele] = value;
+                });
+                _saveProperties();
+              });
+            });
+
+
+            // Alpha sliders
+            $custom.find('span.alpha').each(function(i,el){
+              // Get one css element
+              var property = $(el).attr('css').split(' ')[0];
+
+              $(el).customSlider({
+                value: custom_props[property]*100
+              })
+              .bind('change.customSlider',function(ev,value){
+                _.each($(this).attr('css').split(' '),function(ele,i){
+                  custom_props[ele] = value / 100;
+                });
+                _saveProperties();
+              });
+            });
+
+
+            // Range inputs
+            $custom.find('span.numeric').each(function(i,el){
+              var type = $(el).attr('class').replace('numeric','').replace(' ','')
+                , property = $(el).attr('css').split(' ')[0]
+                , value = custom_props[property];
+              
+
+              $(el).rangeInput({
+                type: $(el).attr('css').replace('numeric','').replace(' ',''),
+                value: value
+              })
+              .bind('change.rangeInput',function(ev,value){
+                _.each($(this).attr('css').split(' '),function(ele,i){
+                  custom_props[ele] = value;
+                });
+                _saveProperties();
+              });
+            });
+
+
+            // Dropdowns
+            $vis_ul.find('span.dropdown').each(function(i,el){
+              $(el).customDropdown({
+                source: getColumns(),
+                unselect: 'Select a column'
+              })
+              .bind('change.customDropdown',function(ev,value){
+                console.log('column changed!');
+                _saveProperties();
+              });
+            });
+          }
+
+
+
+          function _bindEvents() {
+            $custom.closest('li').find('> a.option').click(_activate);
+          }
+
+
+          function _activate(ev) {
+            if (ev) {
+              ev.preventDefault();
+            }
+
+            // Remove all selected
+            var parent = $custom.parent();
+            if (!parent.hasClass('selected')) {
+              $vis_ul.find('li.selected').removeClass('selected special')
+              parent.addClass('selected special');
+              _saveProperties();
+            }
+          }
+
+          function _saveProperties() {
+            console.log("save custom");
+            that.saveTilesStyles(custom_props);
+          }
+
+        return {
+            
+        }
+      })( jQuery, window );
+
+
+      /*
+        COLOR
+      */
+      var color = (function(){
+        
+        
+
+        return {
+          
+        }
+      }());
+        
+        // // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',[]);},6000);
+
+
+        // // Color ramp
+        // $vis_ul.find('span.color_ramp').each(function(i,el){
+        //   $(el).colorRamp({
+        //     unselect: 'Select a color ramp',
+        //     buckets: 7,
+        //     change: function(el,value) {
+        //       console.log(value);
+        //     }
+        //   });
+        // });
         // Update color ramp
         // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',4);},6000);
+    }
 
-        return {}
-  		}());
-         
-      
+    /* REVIEW! - Set map styles */
+    CartoMap.prototype.setMapStyle = function(geom_type,map_style) {
+
       /*Map type - header*/
-      var map_customization = (function(){
+      var map = this.map_
+        , me = this;
+
+      var map_customization = (function($, window, undefined){
         var custom_map_style = {};
-				var custom_map_properties = {};
+        var custom_map_properties = {};
         
-				// Set map style
+        // Set map style
         map.setOptions({styles:map_style.google_maps_customization_style});
   
         // Parse the styles of the map
@@ -643,31 +1011,31 @@
         initializeMapOptions(custom_map_style,map_style.google_maps_base_type,map_style.google_maps_customization_style);
 
 
-				/* Set up center and zoom*/
-				if (map_style.zoom && map_style.latitude && map_style.longitude) {
-					custom_map_properties.zoom = map_style.zoom;
-					custom_map_properties.latitude = map_style.latitude;
-					custom_map_properties.longitude = map_style.longitude;
-					map.setCenter(new google.maps.LatLng(map_style.latitude,map_style.longitude));
-					map.setZoom(map_style.zoom);
-				} else {
-					me.zoomToBBox();
-				}
+        /* Set up center and zoom*/
+        if (map_style.zoom && map_style.latitude && map_style.longitude) {
+          custom_map_properties.zoom = map_style.zoom;
+          custom_map_properties.latitude = map_style.latitude;
+          custom_map_properties.longitude = map_style.longitude;
+          map.setCenter(new google.maps.LatLng(map_style.latitude,map_style.longitude));
+          map.setZoom(map_style.zoom);
+        } else {
+          me.zoomToBBox();
+        }
 
-				/* Bind bounds changed on map to cartomap */
-				google.maps.event.addListener(me.map_, 'dragend', function(ev) {
-	        custom_map_properties.latitude = this.getCenter().lat();
-	        custom_map_properties.longitude = this.getCenter().lng();
-					me.setMapStyle(custom_map_style,custom_map_properties);
-	      });
-				google.maps.event.addListener(me.map_, 'zoom_changed', function(ev) {
-	        custom_map_properties.zoom = this.getZoom();
-					me.setMapStyle(custom_map_style,custom_map_properties);
-	      });
-	
-	
+        /* Bind bounds changed on map to cartomap */
+        google.maps.event.addListener(me.map_, 'dragend', function(ev) {
+          custom_map_properties.latitude = this.getCenter().lat();
+          custom_map_properties.longitude = this.getCenter().lng();
+          me.saveMapStyle(custom_map_style,custom_map_properties);
+        });
+        google.maps.event.addListener(me.map_, 'zoom_changed', function(ev) {
+          custom_map_properties.zoom = this.getZoom();
+          me.saveMapStyle(custom_map_style,custom_map_properties);
+        });
   
-        $('.map_header ul.map_type li a.option').livequery('click',function(ev){
+  
+  
+        $('.map_header ul.map_type li a.option').live('click',function(ev){
           stopPropagation(ev);
           var parent = $(this).parent();
           if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
@@ -771,12 +1139,12 @@
           }
 
 
-					// Gets labels on/off on roadmap type?
+          // Gets labels on/off on roadmap type?
           var labels = _.detect(map_style_,function(ele,i){return ele.featureType == "administrative.locality"});
           if (labels != undefined) {
             obj.labels = labels.stylers[0].visibility == "on";
           }
-					
+          
           
           // Saturation value
           var saturation = _.detect(map_style_,function(ele,i){return ele.stylers[0].saturation != undefined});
@@ -808,12 +1176,12 @@
             $('.map_header ul.map_type li a.option:contains("Roadmap")').parent().addClass('selected');
             $('.map_header ul.main li.first p').text('Roadmap');
             var mapStyles = stylers;
-						if (mapStyles.length==0) {
-							map_style.saturation = -65;
-							map_style.roads = false;
-							map_style.labels = false;
-							mapStyles = [ { stylers: [ { saturation: map_style.saturation }, { gamma: 1.52 } ] }, { featureType: "administrative", stylers: [ { saturation: -95 },{ gamma: 2.26 } ] }, { featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "administrative.locality", stylers: [ { visibility: ((map_style.labels)?'on':'off') } ] }, { featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] }, { featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "road.arterial", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] }, { featureType: "road.local", elementType: "labels", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] }, { featureType: "transit", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] }, { featureType: "road", elementType: "labels", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
-						}
+            if (mapStyles.length==0) {
+              map_style.saturation = -65;
+              map_style.roads = false;
+              map_style.labels = false;
+              mapStyles = [ { stylers: [ { saturation: map_style.saturation }, { gamma: 1.52 } ] }, { featureType: "administrative", stylers: [ { saturation: -95 },{ gamma: 2.26 } ] }, { featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "administrative.locality", stylers: [ { visibility: ((map_style.labels)?'on':'off') } ] }, { featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] }, { featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] }, { featureType: "road.arterial", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] }, { featureType: "road.local", elementType: "labels", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] }, { featureType: "transit", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] }, { featureType: "road", elementType: "labels", stylers: [ { visibility: ((map_style.roads)?'on':'off') } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
+            }
             map.setOptions({styles: mapStyles});
             custom_map_style.type = 'roadmap';
           }
@@ -822,393 +1190,16 @@
           $('.map_header ul.map_type div.suboptions span.radio[css="roads"]').find('a:contains('+((map_style.roads)?'YES':'NO')+')').addClass('clicked');
           $('.map_header ul.map_type div.suboptions span.radio[css="labels"]').find('a:contains('+((map_style.labels)?'YES':'NO')+')').addClass('clicked');
         }
-        
-        
-        return {}
-  		}());
-      
-      
-      /*Geometry customization - header*/
-      var geometry_customization = (function(){
-        
-        var geometry_style = {};
-        var default_style = {};
-        
-        
-        /* CARTOCSS WINDOW */
-        // draggable
-        $('div.cartocss_editor').draggable({containment:'parent',handle:'h3'});
-        
-        // editor
-        var cartocss_editor = CodeMirror.fromTextArea(document.getElementById("cartocss_editor"), {
-  	      lineNumbers: false,
-					lineWrapping: true,
-  	      mode: "css",
-  				onKeyEvent: function(editor,event) {
-  					if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
-  						stopPropagation(event);
-  						$('div.cartocss_editor a.try_css').trigger('click');
-  					}
-  				}
-  	    });
-  	    
-  	    // Bindings
-  	    $('div.cartocss_editor a.try_css').click(function(ev){
-  	      stopPropagation(ev);
-  	      me.setTilesStyles(cartocss_editor.getValue());
-  	    });
-  	    $('div.cartocss_editor a.close, div.cartocss_editor a.cancel').click(function(ev){
-  	      stopPropagation(ev);
-          me.closeMapWindows();
-  	    });
-  	    /*END CARTOCSS*/
 
-
-        setupStyles(geom_styles);
-        
-        
-        // BINDINGS
-        /* change between list options */
-        $('.map_header ul.geometry_customization li a.option').click(function(ev){
-          stopPropagation(ev);
-          var parent = $(this).parent();
-          var type = $(this).text();
-          if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
-            // Remove selected
-            $('.map_header ul.geometry_customization li').each(function(i,li){$(li).removeClass('selected special')});
-            
-            // Add selected to the parent (special?)
-            if (parent.find('div.suboptions').length>0) {
-              parent.addClass('selected special');
-              $('.map_header ul.geometry_customization').closest('li').find('p').text((type=="CartoCSS")?'CartoCSS':'Custom Style');
-            } else {
-              parent.addClass('selected');
-              resetStyles();
-            }
-          }
-        });
-              
-              
-        /* color input */
-        $('.map_header ul.geometry_customization div.suboptions span.color input').change(function(ev){
-          stopPropagation(ev);
-          
-          var color = new RGBColor($(this).val());
-          if (color.ok) {
-            var new_color = color.toHex();
-            var css_ = $(this).closest('span.color').attr('css');
-            $(this).parent().find('a.control').removeClass('error').css({'background-color':new_color});
-            $(this).removeClass('error');
-            geometry_style[css_] = new_color;
-            me.setTilesStyles(geometry_style);
-          } else {
-            $(this).addClass('error');
-            $(this).parent().find('a.control').removeAttr('style').addClass('error');
-          }
-        });
-        
-        
-        /* color open palette */
-        $('.map_header ul.geometry_customization div.suboptions span.color a.control').click(function(ev){
-          stopPropagation(ev);
-          $('.map_header span.color span.palette').each(function(i,palette){
-            $(palette).hide();
-          });
-          $(this).closest('span.color').find('span.palette').show();
-        });
-        
-        
-        /* color palette */
-        $('.map_header ul.geometry_customization div.suboptions span.color span.palette ul li a').click(function(ev){
-          stopPropagation(ev);
-          // Get the value
-          var new_color = $(this).attr('href');
-          
-          // Hide the palette
-          $(this).closest('span.palette').hide();
-          
-          // Save the new color
-          $(this).closest('span.color').find('a.control').removeClass('error').css({'background-color':new_color});
-          $(this).closest('span.color').find('input').val(new_color);
-          $(this).removeClass('error');
-          var css_ = $(this).closest('span.color').attr('css');
-          geometry_style[css_] = new_color;
-          me.setTilesStyles(geometry_style);
-        });
-        
-        
-        /* width range */
-        var interval;
-        $('.map_header ul.geometry_customization div.suboptions span.numeric a').livequery('click',function(ev){
-          stopPropagation(ev);
-
-          var old_value = $(this).parent().find('input').val(),
-              add = ($(this).text()=="+")?true:false,
-              that = this,
-              css_ = $(that).closest('span').attr('css');
-              
-          
-          if (add || old_value>0) {
-						var value_ = parseInt(old_value) + ((add)?1:-1);
-            $(that).parent().find('input').val(value_);
-            
-            clearInterval(interval);
-            interval = setTimeout(function(){
-              geometry_style[css_] = value_;
-              me.setTilesStyles(geometry_style);
-            },400);
-          }
-        });
-        
-        
-        /* alpha slider */
-        var slider_value = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ');
-        slider_value = geometry_style[slider_value[0]]*100 || 100;
-        $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider({
-          max:100,
-          min:0,
-          range: "min",
-          value: slider_value,
-          slide: function(event,ui) {
-            $(ui.handle).closest('span.alpha').find('span.tooltip')
-              .css({left:$(ui.handle).css('left')})
-              .text(ui.value+'%')
-              .show();
-          },
-          stop: function(event,ui) {
-            $(ui.handle).closest('span.alpha').find('span.tooltip').hide();
-            
-            // Save the values in the geom_style object
-            var css_props = $(ui.handle).closest('span.alpha').attr('css').split(' ');
-            _.each(css_props,function(value,i){
-              geometry_style[value] = ui.value/100;
-            });
-
-            // Set style in the tiles finally
-            me.setTilesStyles(geometry_style);
-          }
-        });
-        
-        
-        /* open cartocss editor */
-        $('.general_options.map li a.carto').click(function(ev){
-          stopPropagation(ev);
-          if (!$('div.cartocss_editor').is(':visible')) {
-            me.closeMapWindows();
-            me.bindMapESC();
-            $('div.cartocss_editor').fadeIn(function(){cartocss_editor.refresh();});
-          } else {
-            me.closeMapWindows();
-            me.unbindMapESC();
-          }
-        });
-        
-        
-        /* setup enter styles */
-        function setupStyles(styles) {
-
-          // Remove the customization that doesn't belong to the geom_type
-         if (geom_type == 'multipoint' || geom_type == 'point') {
-            $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
-            $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
-            $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
-            
-            default_style = {
-              'marker-fill':'#00ffff',
-              'marker-opacity':1,
-              'marker-width':9,
-              'marker-line-color':'white',
-              'marker-line-width':3,
-              'marker-line-opacity':0.9,
-              'marker-placement':'point',
-              'marker-type':'ellipse',
-              'marker-allow-overlap':true
-            };
-
-         } else if (geom_type == 'multipolygon' || geom_type == 'polygon') {
-            $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
-            $('.map_header ul.geometry_customization li a:contains("lines")').parent().remove();
-            $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');            
-
-            default_style = {
-              'polygon-fill':'#FF6600',
-              'polygon-opacity': 0.7,
-              'line-opacity':1,
-              'line-color': '#FFFFFF',
-              'line-width': 1
-            };
-
-          } else {
-            $('.map_header ul.geometry_customization li a:contains("polygons")').parent().remove();
-            $('.map_header ul.geometry_customization li a:contains("points")').parent().remove();
-            $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
-            
-            default_style = {
-              'line-color':'#FF6600',
-              'line-width': 1,
-              'line-opacity': 0.7
-            };
-          }
-
-
-          // Get all the styles and save them in geometry_style object
-          var styles_ = styles.replace(/ /gi,'').replace(/\n/g,'');
-          
-          // Setup cartocss editor
-          cartocss_editor.setValue(styles_.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
-
-          // Remove table_name
-          styles_ = styles_.split('{');
-
-          // Split properties
-          styles_ = styles_[1].split(';');
-
-          // Save each property removing white-spaces
-          _.each(styles_,function(property,i){
-            if (property!="}") {
-              var split_property = property.split(':');
-              geometry_style[split_property[0]] = split_property[1];
-            }
-          });
-
-
-          // Change tools, we have to know if this styles have been edited or not...
-          _.each(geometry_style,function(value,type){
-            $('span[css="'+type+'"]').find('input').val(value);
-            
-            if (typeof(value) === "string") {
-              var color = new RGBColor(value);
-              if (color.ok) {
-                $('span[css="'+type+'"] a.control').css({'background-color':value});
-              }
-            }
-          });
-
-
-          // Determinate if it is a customized style or default
-          var is_default = true,
-              cartocss = false;
-          _.each(geometry_style,function(value,type){
-            if (!cartocss && default_style[type]==undefined) {
-              cartocss = true;
-            }
-            
-            if (default_style[type]!=undefined && geometry_style[type] != default_style[type]) {
-              is_default = false;
-            } 
-          });
-
-          // if it is not default, select second option in the list, custom geometry style
-          if (!is_default) {
-            $('.map_header ul.geometry_customization > li').removeClass('selected');
-            // if it is cartocss
-            if (cartocss) {
-              $('.map_header ul.geometry_customization > li:eq(2)').addClass('selected special');
-              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
-            } else {
-              $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
-              $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
-            }
-          }
-        }
-
-
-        /* reset styles to default */
-        function resetStyles() {
-          // Geom_types now is default_styles
-          geometry_style = default_style;
-
-          // Come back to defaults in the tools
-          _.each(default_style,function(value,type){
-            $('span[css="'+type+'"]').find('input').val(value);
-
-            if (isNaN(value)) {
-              var color = new RGBColor(value);
-              if (color.ok) {
-                $('span[css="'+type+'"] a.control').removeClass('error').css({'background-color':value});
-              }
-            }
-          });
-
-          // Reset slider
-          var css_prop = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ')[0];
-          $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider('value',default_style[css_prop]*100);
-
-          // Change the text to "Default Style"
-          $('.map_header ul.geometry_customization').closest('li').find('p').text('Default Style');
-
-          // RefreshStyles
-          me.setTilesStyles(geometry_style);
-        }
-        
-        return {}
-  		}());
-      
-      
-      /* Setup infowindow - header */
-      this.setupInfowindow(infowindow_vars || {});
- 
-      /* Bind events for open and close any tool */
-      $('.map_header a.open').livequery('click',function(ev){
-        stopPropagation(ev);
-        var options = $(this).parent().find('div.options');
-        if (!options.is(':visible')) {
-          me.closeMapWindows();
-          me.bindMapESC();
-          //If clicks out of the div...
-          $('body').click(function(event) {
-            if (!$(event.target).closest(options).length) {
-              options.hide();
-              me.unbindMapESC();
-            };
-          });
-          options.show();
-        } else {
-          me.unbindMapESC();
-          options.hide();
-        }
-      });
-      $('.map_header span.tick').livequery('click',function(ev){
-        stopPropagation(ev);
-        var options = $(this).closest('div.options');
-        if (options.is(':visible')) {
-          me.unbindMapESC();
-          options.hide();
-        }
-      });
-      
-      // All loaded? Ok -> Let's show options...
-      $('.map_header a.open').fadeIn();
+      return {}
+      }(jQuery, window));
     }
 
-    /* Show editing tools */
-    CartoMap.prototype.toggleEditTools = function() {
-      $('.general_options ul').animate({bottom:'-40px'},300,function(){
-        $('.general_options ul li.map').each(function(i,ele){
-          if (!$(ele).hasClass('disabled') && $(ele).hasClass('hidden')) {
-            $(ele).removeClass('hidden');
-            if ($(ele).children('a').hasClass('discard')) {
-              $('.general_options ul li.all a').hide();
-              $('.general_options ul').addClass('edit');
-            }
-            if ($(ele).children('a').hasClass('select')) {
-              $('.general_options ul li.all a').show();
-              $('.general_options ul').removeClass('edit');
-            }
-            return;
-          }
-          
-          if (!$(ele).hasClass('disabled') && !$(ele).hasClass('hidden')) {
-            $(ele).addClass('hidden');
-            return;
-          }
-
-          $('.general_options ul').animate({bottom:'0px'},300);
-        });
-      });
+    /* REVIEW! - Set the infowindow vars */
+    CartoMap.prototype.setInfowindowVars = function(infowindow_vars) {
     }
 
-    /* Refresh infowindow customization due to adding/removing a column */
+    /* REVIEW Refresh infowindow customization due to adding/removing a column */
     CartoMap.prototype.setupInfowindow = function(infowindow_vars) {
 
       var me = this,
@@ -1226,28 +1217,28 @@
         }
       }
 
-			
-			$('.map_header ul.infowindow_customization div.suboptions span.info_tools a.mark_all,.map_header ul.infowindow_customization div.suboptions span.info_tools a.clear_all').livequery('click',function(ev){
+      
+      $('.map_header ul.infowindow_customization div.suboptions span.info_tools a.mark_all,.map_header ul.infowindow_customization div.suboptions span.info_tools a.clear_all').live('click',function(ev){
         stopPropagation(ev);
         var bool = $(this).attr('class') === "mark_all";
 
-				$('.map_header ul.infowindow_customization div.suboptions ul.column_names li.vars a').each(function(i,ele){
-					var value = $(this).text();
-					$(this).removeClass('on off');
-					if (bool) {
-						$(this).addClass('on');
-					} else {
-						$(this).addClass('off');
-					}
-					
-					custom_infowindow[value] = bool;
-				});
+        $('.map_header ul.infowindow_customization div.suboptions ul.column_names li.vars a').each(function(i,ele){
+          var value = $(this).text();
+          $(this).removeClass('on off');
+          if (bool) {
+            $(this).addClass('on');
+          } else {
+            $(this).addClass('off');
+          }
+          
+          custom_infowindow[value] = bool;
+        });
 
         me.setInfowindowVars(custom_infowindow);
       });
 
       
-      $('.map_header ul.infowindow_customization div.suboptions ul.column_names li.vars a').livequery('click',function(ev){
+      $('.map_header ul.infowindow_customization div.suboptions ul.column_names li.vars a').live('click',function(ev){
         stopPropagation(ev);
         var value = $(this).text();
         
@@ -1263,7 +1254,7 @@
       });
       
     
-      $('.map_header ul.infowindow_customization li > a').livequery('click',function(ev){
+      $('.map_header ul.infowindow_customization li > a').live('click',function(ev){
         stopPropagation(ev);
         var parent = $(this).parent();
         if (!parent.hasClass('selected') && !parent.hasClass('disabled') && !parent.hasClass('vars')) {
@@ -1291,98 +1282,234 @@
 
         // Get the columns
         $.ajax({
-			    method: "GET",
-			    url: global_api_url + 'tables/' + table_name,
-			 		headers: {"cartodbclient":"true"},
-			    success: function(data) {
+          method: "GET",
+          url: global_api_url + 'tables/' + table_name,
+          headers: {"cartodbclient":"true"},
+          success: function(data) {
 
-			      // Select the default or custom
-			      $('.map_header ul.infowindow_customization li').removeClass('selected special');  		
-			      if (_.size(infowindow_vars)==0) {
-			        $('.map_header ul.infowindow_customization').closest('li').find('p').text('Default');
-			        $('.map_header ul.infowindow_customization li:eq(0)').addClass('selected');
-			      } else {
-			        $('.map_header ul.infowindow_customization').closest('li').find('p').text('Custom');
-			        $('.map_header ul.infowindow_customization li:eq(1)').addClass('selected special');  			        
-			      }
-			      
-			      // Loop over all columns and saving each value that is not present
-			      //   in the requested infowindow_vars
-			      _.each(data.schema,function(arr,i) {
-			        if (arr[0]!='cartodb_id') {
-			          default_infowindow[arr[0]] = true;
-			          if (infowindow_vars[arr[0]] == undefined) infowindow_vars[arr[0]] = true;
-			        }
-			      });
-			      
-			      // Reinitialize jscrollpane in the infowindow
-      	    var custom_scrolls = [];
-         		$('.map_header ul.infowindow_customization div.suboptions ul.column_names').jScrollPane().data().jsp.destroy();
+            // Select the default or custom
+            $('.map_header ul.infowindow_customization li').removeClass('selected special');      
+            if (_.size(infowindow_vars)==0) {
+              $('.map_header ul.infowindow_customization').closest('li').find('p').text('Default');
+              $('.map_header ul.infowindow_customization li:eq(0)').addClass('selected');
+            } else {
+              $('.map_header ul.infowindow_customization').closest('li').find('p').text('Custom');
+              $('.map_header ul.infowindow_customization li:eq(1)').addClass('selected special');               
+            }
+            
+            // Loop over all columns and saving each value that is not present
+            //   in the requested infowindow_vars
+            _.each(data.schema,function(arr,i) {
+              if (arr[0]!='cartodb_id') {
+                default_infowindow[arr[0]] = true;
+                if (infowindow_vars[arr[0]] == undefined) infowindow_vars[arr[0]] = true;
+              }
+            });
+            
+            // Reinitialize jscrollpane in the infowindow
+            var custom_scrolls = [];
+            $('.map_header ul.infowindow_customization div.suboptions ul.column_names').jScrollPane().data().jsp.destroy();
 
             // Remove the list items
-      	    $('.map_header ul.infowindow_customization div.suboptions ul.scrollPane').html('');
+            $('.map_header ul.infowindow_customization div.suboptions ul.scrollPane').html('');
 
-			      // Print all possible items in the suboptions
-			      _.each(infowindow_vars,function(value,name){
+            // Print all possible items in the suboptions
+            _.each(infowindow_vars,function(value,name){
               if (default_infowindow[name]==undefined) {
                 delete infowindow_vars[name];
               } else {
                 $('.map_header ul.infowindow_customization div.suboptions ul.column_names').append('<li class="vars"><a class="'+(value?'on':'')+'">'+name+'</a</li>');
               }
-      	    });
+            });
 
             // Initialize jscrollPane
             $('.map_header ul.infowindow_customization div.suboptions ul.scrollPane').jScrollPane({autoReinitialise:true,maintainPosition:false});
 
             me.infowindow_vars_ = infowindow_vars;
             me.setInfowindowVars(me.infowindow_vars_);
-			    },
-			    error: function(e) {
-			      console.debug(e);
-			      $('.map_header ul.infowindow_customization li:eq(1)').addClass('disabled');
-			    }
-			  });
+          },
+          error: function(e) {
+            console.debug(e);
+            $('.map_header ul.infowindow_customization li:eq(1)').addClass('disabled');
+          }
+        });
       }
     }
-    
-		/* Search stuff on map */
-		CartoMap.prototype.setupSearch = function() {
-			var that = this;
-			this.geocoder = new google.maps.Geocoder();
-			
-			$('form.map_search').submit(function(ev){
-				ev.preventDefault();
-				var address = $('form.map_search input[type="text"]').val();
-				
-				if (address.search(/vizzuality madrid/i)!=-1) {
-					that.map_.setCenter(new google.maps.LatLng(40.4222095, -3.6996303));
-					that.map_.setZoom(16);
-					return false;
-				}
-				
-				if (address.search(/vizzuality ny/i)!=-1) {
-					that.map_.setCenter(new google.maps.LatLng(40.717147636174424, -74.00177657604218));
-					that.map_.setZoom(16);
-					return false;
-				}
-				
-				if (address.search(/vizzuality/i)!=-1) {
-					that.map_.setCenter(new google.maps.LatLng(40.4222095, -3.6996303));
-					that.map_.setZoom(16);
-					return false;
-				}
-				
-	      that.geocoder.geocode( { 'address': address}, function(results, status) {
-	        if (status == google.maps.GeocoderStatus.OK) {
-	          that.map_.setCenter(results[0].geometry.location);
-	          that.map_.fitBounds(results[0].geometry.bounds);
-						$('form.map_search span.error').fadeOut();
-	        } else {
-	          $('form.map_search span.error').fadeIn(function(){$(this).delay(2000).fadeOut()});
-	        }
-	      });
-			});
-		}
+
+    CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style,infowindow_vars) {
+      var me = this;
+      var map = me.map_;
+
+      // /* setup search */
+      this.setupSearch();
+
+
+      // /* visualization example */
+      //this.visualization_option(geom_type,geom_styles);
+         
+      
+
+      
+      
+      // /*Geometry customization - header*/
+      // var geometry_customization = (function(){
+        
+      //   var geometry_style = {};
+      //   var default_style = {};
+        
+        
+      //   /* CARTOCSS WINDOW */
+      //   // draggable
+      //   $('div.cartocss_editor').draggable({containment:'parent',handle:'h3'});
+        
+      //   // editor
+      //   var cartocss_editor = CodeMirror.fromTextArea(document.getElementById("cartocss_editor"), {
+      //     lineNumbers: false,
+      //     lineWrapping: true,
+      //     mode: "css",
+      //     onKeyEvent: function(editor,event) {
+      //       if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
+      //         stopPropagation(event);
+      //         $('div.cartocss_editor a.try_css').trigger('click');
+      //       }
+      //     }
+      //   });
+        
+      //   // Bindings
+      //   $('div.cartocss_editor a.try_css').click(function(ev){
+      //     stopPropagation(ev);
+      //     me.setTilesStyles(cartocss_editor.getValue());
+      //   });
+      //   $('div.cartocss_editor a.close, div.cartocss_editor a.cancel').click(function(ev){
+      //     stopPropagation(ev);
+      //     me.closeMapWindows();
+      //   });
+      //   /*END CARTOCSS*/
+
+
+      //   setupStyles(geom_styles);
+        
+
+        
+        
+      //   /* open cartocss editor */
+      //   $('.general_options.map li a.carto').click(function(ev){
+      //     stopPropagation(ev);
+      //     if (!$('div.cartocss_editor').is(':visible')) {
+      //       me.closeMapWindows();
+      //       me.bindMapESC();
+      //       $('div.cartocss_editor').fadeIn(function(){cartocss_editor.refresh();});
+      //     } else {
+      //       me.closeMapWindows();
+      //       me.unbindMapESC();
+      //     }
+      //   });
+        
+        
+
+      //     // Setup cartocss editor
+      //     cartocss_editor.setValue(styles_.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
+
+      //     // Remove table_name
+      //     styles_ = styles_.split('{');
+
+      //     // Split properties
+      //     styles_ = styles_[1].split(';');
+
+      //     // Save each property removing white-spaces
+      //     _.each(styles_,function(property,i){
+      //       if (property!="}") {
+      //         var split_property = property.split(':');
+      //         geometry_style[split_property[0]] = split_property[1];
+      //       }
+      //     });
+
+
+      //     // Change tools, we have to know if this styles have been edited or not...
+      //     _.each(geometry_style,function(value,type){
+      //       $('span[css="'+type+'"]').find('input').val(value);
+            
+      //       if (typeof(value) === "string") {
+      //         var color = new RGBColor(value);
+      //         if (color.ok) {
+      //           $('span[css="'+type+'"] a.control').css({'background-color':value});
+      //         }
+      //       }
+      //     });
+
+
+      //     // Determinate if it is a customized style or default
+      //     var is_default = true,
+      //         cartocss = false;
+      //     _.each(geometry_style,function(value,type){
+      //       if (!cartocss && default_style[type]==undefined) {
+      //         cartocss = true;
+      //       }
+            
+      //       if (default_style[type]!=undefined && geometry_style[type] != default_style[type]) {
+      //         is_default = false;
+      //       } 
+      //     });
+
+      //     // if it is not default, select second option in the list, custom geometry style
+      //     if (!is_default) {
+      //       $('.map_header ul.geometry_customization > li').removeClass('selected');
+      //       // if it is cartocss
+      //       if (cartocss) {
+      //         $('.map_header ul.geometry_customization > li:eq(2)').addClass('selected special');
+      //         $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+      //       } else {
+      //         $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
+      //         $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
+      //       }
+      //     }
+      //   }
+
+
+      //   /* reset styles to default */
+      //   function resetStyles() {
+      //     // Geom_types now is default_styles
+      //     geometry_style = default_style;
+
+      //     // Come back to defaults in the tools
+      //     _.each(default_style,function(value,type){
+      //       $('span[css="'+type+'"]').find('input').val(value);
+
+      //       if (isNaN(value)) {
+      //         var color = new RGBColor(value);
+      //         if (color.ok) {
+      //           $('span[css="'+type+'"] a.control').removeClass('error').css({'background-color':value});
+      //         }
+      //       }
+      //     });
+
+      //     // Reset slider
+      //     var css_prop = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ')[0];
+      //     $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider('value',default_style[css_prop]*100);
+
+      //     // Change the text to "Default Style"
+      //     $('.map_header ul.geometry_customization').closest('li').find('p').text('Default Style');
+
+      //     // RefreshStyles
+      //     me.setTilesStyles(geometry_style);
+      //   }
+        
+      //   return {}
+      // }());
+      
+      
+      // /* Setup infowindow - header */
+      // this.setupInfowindow(infowindow_vars || {});
+ 
+      /* Bind events for open and close any tool */
+      //$(window).bind('.close.tooltip',function());
+
+    }
+
+
+
+
+
 
 
 
@@ -1526,29 +1653,6 @@
             return that.cache_buster;
         }
       };
-    }
-
-
-
-    ////////////////////////////////////////
-    //  SET MAP && MARKER STATUS		      //
-    ////////////////////////////////////////
-    /* Set map status */
-    CartoMap.prototype.setMapStatus = function(status) {
-
-      this.status_ = status;
-
-      $('div.general_options li.map').each(function(i,ele){
-          $(ele).removeClass('selected');
-      });
-      $('div.general_options li.map a.'+status).parent().addClass('selected');
-
-      // New special geometry (multipolygon or multipolyline==multilinestring)
-     if (status == "add_polygon" || status == "add_polyline") {
-        this.geometry_creator_ = new GeometryCreator(this.map_,(this.status_=="add_polygon")?"MultiPolygon":"MultiLineString");
-      }
-
-      this.hideOverlays()
     }
 
 
@@ -1856,7 +1960,7 @@
       this.updateTable('/records/'+cartodb_ids,params,null,null,"remove_points","DELETE");
     }
 
-    /* Show Big Bang error window due to edition of huge polygon */
+    /* REVIEW - Show Big Bang error window due to edition of huge polygon */
     CartoMap.prototype.showBigBang = function(cartodb_ids) {
       // Out table&map window binding
       closeOutTableWindows();
@@ -1875,52 +1979,7 @@
       
       
     
-    ////////////////////////////////////////
-    //  CLOSE OUT TABLE WINDOWS && ESC    //
-    ////////////////////////////////////////
-    // Bind ESC key
-  	CartoMap.prototype.bindMapESC = function() {
-  	  var me = this;
-      $(document).keydown(function(event){
-        if (event.which == '27') {
-          me.closeMapWindows();
-        }
-      });
-    }
-
-    // Unind ESC key
-    CartoMap.prototype.unbindMapESC = function() {
-      $(document).unbind('keydown');
-      $('body').unbind('click');
-      this.closeMapWindows();
-    }
     
-  	// Close all map elements
-    CartoMap.prototype.closeMapWindows = function() {
-      // Tools windows
-      $('.map_header ul.main li div.options').each(function(i,ele){
-        $(this).hide();
-      });
-      
-      // Close palettes
-      $('.map_header span.palette').each(function(i,ele){
-        $(this).hide();
-      });
-
-      // Close cartocss
-      $('.cartocss_editor').hide();
-      
-      // Close Infowindow
-      this.info_window_.hide();
-
-      //popup windows
-      $('div.mamufas').fadeOut('fast',function(){
-        $(document).unbind('keydown');
-        $('body').unbind('click');
-      });
-    }
-
-
 
     ////////////////////////////////////////
     //  REFRESH / CLEAR / CLEAN OVERLAYS  //
@@ -1958,7 +2017,7 @@
     //  HIDE OR SHOW THE MAP LOADER		    //
     ////////////////////////////////////////
     CartoMap.prototype.hideLoader = function() {
-      requests_queue.responseRequest(this.loaderId,'ok','');
+      window.ops_queue.responseRequest(this.loaderId,'ok','');
 			this.loaderId = null;
     }
 
@@ -1967,11 +2026,11 @@
 					me = this;
 					
 			if (this.loaderId) {
-				requests_queue.responseRequest(this.loaderId,'ok','');
+				window.ops_queue.responseRequest(this.loaderId,'ok','');
 			}
 					
       this.loaderId = loaderId;
-      requests_queue.newRequest(loaderId,'tiles_loaded');
+      window.ops_queue.newRequest(loaderId,'tiles_loaded');
 			setTimeout(function(){
 				me.hideLoader();
 			},3000);
@@ -1994,7 +2053,9 @@
           this.geometry_creator_.destroy();
       }
       
-      this.closeMapWindows();
+      // GOD -> close all active windows | tooltips | popups
+      GOD.broadcast('',3);
+      
       $('div.map_window div.map_curtain').show();
     }
 

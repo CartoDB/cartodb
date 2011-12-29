@@ -84,7 +84,7 @@ div.map_window div.map_header ul li {position:relative; float:left; width:auto; 
 div.map_window div.map_header ul li h4 {font:normal 11px "Helvetica",Arial; color:#B4B4B4; text-shadow:0 1px white;}
 div.map_window div.map_header ul li h4 a {font:normal 11px "Helvetica",Arial; color:#B4B4B4; text-shadow:0 1px white; text-decoration:none;}
 div.map_window div.map_header ul li p {padding:3px 0 0 0; font:bold 11px "Helvetica",Arial; color:#666666; text-shadow:0 1px white; text-transform:capitalize;}
-div.map_window div.map_header ul li a.open {position:absolute; display:none; right:7px; top:13px; height:26px; width:26px; background:url('/images/admin/map/open_bkg.png') no-repeat 0 0; text-indent:-9999px;}
+div.map_window div.map_header ul li a.open {position:absolute; display:block; right:7px; top:13px; height:26px; width:26px; background:url('/images/admin/map/open_bkg.png') no-repeat 0 0; text-indent:-9999px;}
 div.map_window div.map_header ul li a.open:hover {background-position:0 -26px;}
 div.map_window div.map_header div.options {position:absolute; display:none; right:13px; top:18px; width:163px; z-index:30}
 div.map_window div.map_header div.options.short {width:122px}
@@ -327,10 +327,13 @@ span.color_ramp table tr td {display:table-cell; text-indent:-9999px;}
 span.color_ramp span.select:hover {cursor:pointer;}
 span.color_ramp span.select.first {color:#ABABAB;}
 span.color_ramp div.options_list {display:none;}
-span.color_ramp.selected div.options_list {display:block; position:absolute; width:110%; height:120px; top:-61px; left:-5%; overflow:hidden; z-index:10; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; box-shadow:0 0 3px 3px rgba(0,0,0,0.2); border:1px solid #999999!important;}
+span.color_ramp.selected div.options_list {display:block; position:absolute; width:110%; height:120px; top:-61px; left:-6%; overflow:hidden; z-index:10; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; box-shadow:0 0 3px 3px rgba(0,0,0,0.2); border:1px solid #999999!important;}
 span.color_ramp.selected div.options_list ul {float:left; display:block; width:100%!important; height:120px!important; padding:0!important; margin:0!important; background:white!important; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; border:none;}
-span.color_ramp.selected div.options_list ul li {display:block!important; width:100%!important; height:auto; padding:0!important; margin:0!important; border:none!important;}
-span.color_ramp.selected div.options_list ul li a {display:block!important; padding:5px 10px 5px 10px!important; margin:0; background:white!important; border:none;}
+span.color_ramp.selected div.options_list ul li {display:block!important; height:auto; width:100%!important; padding:0!important; margin:0!important; border:none!important;}
+span.color_ramp.selected div.options_list ul li:hover {background:#283A5A; cursor:pointer;}
+span.color_ramp.selected div.options_list ul li table {width:162px; margin:4px 7px;}
+
+/*span.color_ramp.selected div.options_list ul li a {display:block!important; padding:5px 10px 5px 10px!important; margin:0; background:white!important; border:none;}
 span.color_ramp.selected div.options_list ul li a:hover {color:white!important; background:#283A5A!important; text-shadow:none!important; cursor:pointer!important;}
 span.color_ramp.selected div.options_list ul li:first-child a {-webkit-border-top-left-radius: 3px;
 -webkit-border-top-right-radius: 3px; -moz-border-radius-topleft: 3px; -moz-border-radius-topright: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px;}
@@ -338,6 +341,6 @@ span.color_ramp.selected div.options_list ul li.selected a {background:#283A5A!i
 span.color_ramp.selected div.options_list ul li:last-child a {-webkit-border-bottom-right-radius: 3px;
 -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
 span.color_ramp.selected div.options_list .jspContainer {width:100%!important; height:120px!important;}
-span.color_ramp.selected div.options_list .jspPane {width:100%!important;}
+span.color_ramp.selected div.options_list .jspPane {width:100%!important;}*/
 
 

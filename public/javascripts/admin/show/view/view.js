@@ -3,108 +3,87 @@
   var editor,georeferencing;
   
 
-  head(function(){
-		
+  function initView(){
+
+  	// Inits loader queue
+		window.ops_queue = new loaderQueue();
     
+    // Initialize cartodb-view
+    window.view = {};
+
+
+
+
     ///////////////////////////////////////
     //  Bottom bar with tools (SQL,...)  //
     ///////////////////////////////////////
 		var general_options = (function() {
 			
 			//Append general options to document
-			$('body').append(
-	      '<div class="general_options table">'+
-	        '<ul>'+
-	          '<li class="all"><a class="sql" href="#open_sql">SQL</a></li>'+
-	          '<li class="table"><a href="#add_row" class="add_row">Add row</a></li>'+
-	          '<li class="table"><a href="#add_column" class="add_column">Add column</a></li>'+
-	          '<li class="selected map"><a class="select">select</a></li>'+
-	          '<li class="map disabled"><a class="add_point">add point</a></li>'+
-	          '<li class="map disabled"><a class="add_polygon">add polygon</a></li>'+
-	          '<li class="map disabled"><a class="add_polyline">add line</a></li>'+
-	          '<li class="map disabled"><a class="select_area">select area</a></li>'+
-	          '<li class="map"><a class="carto">Carto</a></li>'+
-	          '<li class="map hidden edit"><a class="discard">discard</a></li>'+
-	          '<li class="map hidden special edit"><a class="complete">complete</a></li>'+
-	        '</ul>'+
-	        '<div class="tooltip">'+
-	          '<p>select</p>'+
-	          '<span class="arrow"></span>'+
-	        '</div>'+
-	      '</div>'+
+			$('body').append(window.view_elements.general_options + window.view_elements.sql_editor);
 
-				//SQL Console
-	      '<div class="sql_window">'+
-	      	'<a href="#close_this_view" class="close">close this view</a>'+
-					'<div class="inner">'+
-	       		'<h3>Add your custom SQL query</h3>'+
-						'<p>You can free move or close this window to watch the table. Protip: Ctrl+RETURN for lauching your query</p>'+
-		        '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
-		        '<span class="bottom">'+
-		          '<span class="errors"><p>Your query is not correct, try again with another ;)</p></span>'+
-		          '<a href="http://www.postgis.org/docs/" target="_blank" class="reference">PostGIS reference</a>'+
-		          '<a href="#apply" class="try_query">Apply query</a>'+
-		          '<a href="#clear" class="clear_table">Clear view</a>'+
-		        '</span>'+
-					'</div>'+
-	      '</div>');
-	
-	
-			/*******************/
+					/*******************/
 			/* Event listeners */
-			/*******************/
-			// SQL editor
-			editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
+	    /*******************/
+	    
+	    // SQL editor
+	    editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
 	      lineNumbers: false,
 	      mode: "text/x-plsql",
-				lineWrapping: true,
-				onKeyEvent: function(editor,event) {
-					if (event.altKey && event.keyCode == 13 && event.type == "keydown") {
-						stopPropagation(event);
-						$('div.sql_window a.try_query').trigger('click');
-					}
-				}
+	      lineWrapping: true,
+	      onKeyEvent: function (editor, event) {
+	        if (event.altKey && event.keyCode == 13 && event.type == "keydown") {
+	          stopPropagation(event);
+	          $('div.sql_window a.try_query').trigger('click');
+	        }
+	      }
 	    });
 
-			
-			// Draggable and resizable capacities to sql window
-	    $('div.sql_window').draggable({appendTo: 'body',containment:'parent', handle:'h3'}).resizable({maxWidth:800,maxHeight:400});
-			
-			// Open sql console
-			$('div.general_options a.sql, p a.open_console').livequery('click',function(ev){
-			  stopPropagation(ev);
-				if ($('div.sql_window').is(':visible')) {
-					closeOutTableWindows();
-				} else {
-				  $('div.sql_window span.errors').hide();
+	    // Draggable and resizable capacities to sql window
+	    $('div.sql_window').draggable({
+	      appendTo: 'body',
+	      containment: 'parent',
+	      handle: 'h3'
+	    }).resizable({
+	      maxWidth: 800,
+	      maxHeight: 400
+	    });
 
-          if (editor.getValue()=='') {
-            editor.setValue('SELECT * FROM ' + table_name);
-          }
+	    // Open sql console
+	    $('div.general_options a.sql, p a.open_console').live('click', function (ev) {
+	      stopPropagation(ev);
+	      if ($('div.sql_window').is(':visible')) {
+	        closeOutTableWindows();
+	      } else {
+	        $('div.sql_window span.errors').hide();
+	        if (editor.getValue() == '') {
+	          editor.setValue('SELECT * FROM ' + table_name);
+	        }
+	        $('div.sql_window,div.outer_textarea').removeAttr('style');
+	        $('div.sql_window').fadeIn('fast', function () {
+	          editor.refresh();
+	          editor.focus();
+	        });
+	        bindESC();
+	      }
+	    });
 
-					$('div.sql_window,div.outer_textarea').removeAttr('style');
-	        $('div.sql_window').fadeIn('fast',function(){
-						editor.refresh();
-						editor.focus();
-					});
-					bindESC();
-				}
-			});
-			
-			// Clear sql mode and back to normal state
-			$('a.clear_table').livequery('click',function(ev){
-			  closeOutTableWindows();
-				var query_mode = ($('body').attr('query_mode') === "true");
-			  if (query_mode) {
-					$('body').attr('query_mode','false');
-					setAppStatus();	// Out function to change app to SQL or NORMAL
-			  }
-			});
-						
-			$('div.sql_window a.close_sql,div.sql_window a.close').livequery('click',function(ev){
-	    	stopPropagation(ev);
+	    // Clear sql mode and back to normal state
+	    $('a.clear_table').live('click', function (ev) {
+	      closeOutTableWindows();
+	      var query_mode = ($('body').attr('query_mode') === "true");
+	      if (query_mode) {
+	        $('body').attr('query_mode', 'false');
+	        setAppStatus(); // Out function to change app to SQL or NORMAL
+	      }
+	    });
+	    
+	    $('div.sql_window a.close_sql,div.sql_window a.close').live('click', function (ev) {
+	      stopPropagation(ev);
 	      closeOutTableWindows();
 	    });
+
+
 			
 			return {}
 		}());
@@ -117,62 +96,8 @@
 		var georeference_window = (function() {
 			
 			//Append georeference html to the document
-			$('div.mamufas').append(
-	      '<div class="georeference_window">'+
-          '<a href="#close_window" class="close_geo"></a>'+
-          '<div class="inner_">'+
-            '<span class="loading">'+
-               '<h5>We are georeferencing your columns...</h5>'+
-               '<p>Just some seconds, ok?</p>'+
-             '</span>'+
-            '<span class="top">'+
-              '<h3>Choose your geocoding method for this table</h3>'+
-              '<p>Please select the columns for the lat/lon fields or choose/create an address column.</p>'+
-							'<ul class="main_list">'+
-								'<li class="first_list selected">'+
-								  '<a class="first_ul" href="#lat_lng_column">This is a lat/lon column</a>'+
-		              '<div class="georef_options">'+
-		                '<div class="select longitude">'+
-		                  '<label>LONGITUDE COLUMN</label>'+
-		                  '<span class="select longitude">'+
-		                    '<a id="longitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
-		                    '<div class="select_content">'+
-		                      '<ul class="scrollPane"></ul>'+
-		                    '</div>'+
-		                  '</span>'+
-		                '</div>'+
-				            '<div class="select latitude last">'+
-		                  '<label>LATITUDE COLUMN</label>'+
-		                  '<span class="select latitude">'+
-		                    '<a id="latitude" class="option" href="#column_name" c="">Retrieving columns...</a>'+
-		                    '<div class="select_content">'+
-		                      '<ul class="scrollPane"></ul>'+
-		                    '</div>'+
-		                  '</span>'+
-		                '</div>'+
-		              '</div>'+
-	              	'<div class="error_content"><p><span>You have to select latitude and longitude</span></p></div>'+
-								'</li>'+
-								'<li class="first_list">'+
-									'<a class="first_ul" href="#choose_address">Choose or create an address column</a>'+
-		              '<div class="georef_options">'+
-										'<p class="hack"></p>'+
-										'<p>Specify columns to use for geocoding by adding them within brackets.</p>'+
-										'<input class="address_input" type="text" value=""/>'+
-										'<span class="hint">HINT</span><p class="example">You can also add extra text to make it more accurate (eg. {school}, New York, USA )</p>'+
-		              '</div>'+
-								'</li>'+
-							'</ul>'+
-            '</span>'+
-            '<span class="bottom">'+
-              '<a href="#close_window" class="cancel">cancel</a>'+
-              '<a href="#confirm_georeference" class="confirm_georeference">Georeference</a>'+
-            '</span>'+
-          '</div>'+
-        '</div>');
+			$('div.mamufas').append(window.view_elements.geo_window);
 
-
-      
       // Now the listeners
 			$('div.georeference_window ul.main_list li a.first_ul').click(function(ev){
 				stopPropagation(ev);
@@ -181,7 +106,7 @@
 					$(this).closest('li').addClass('selected');
 				}
 			});
-      $('a.open_georeference,p.geo').livequery('click',function(ev){
+      $('a.open_georeference,p.geo').live('click',function(ev){
         if (georeferencing) {
           stopPropagation(ev);
           closeOutTableWindows();
@@ -382,7 +307,7 @@
 					}
 				});
 
-      $('div.georeference_window span.select a.option').livequery('click',function(ev){
+      $('div.georeference_window span.select a.option').live('click',function(ev){
         stopPropagation(ev);
         if (!$(this).parent().hasClass('disabled')) {
           if ($(this).parent().hasClass('clicked')) {
@@ -399,7 +324,7 @@
           }
         }
       });
-      $('div.georeference_window div.select_content ul li a').livequery('click',function(ev){
+      $('div.georeference_window div.select_content ul li a').live('click',function(ev){
         stopPropagation(ev);
 				if (!$(this).parent().hasClass('selected')) {
 					$(this).closest('span.select').children('a.option').text($(this).text());
@@ -431,7 +356,7 @@
 
 
       });
-      $('a.confirm_georeference').livequery('click',function(ev){
+      $('a.confirm_georeference').live('click',function(ev){
         stopPropagation(ev);
 
         if (!$(this).hasClass('disabled')) {
@@ -446,7 +371,7 @@
 	            params['_method'] = "PUT"
 
 	            var requestId = createUniqueId();
-	            requests_queue.newRequest(requestId,'update_geometry');
+	            window.ops_queue.newRequest(requestId,'update_geometry');
 
 	            $.ajax({                
 	                type: "POST",
@@ -455,11 +380,11 @@
 	                data: params,
 	                headers: {'cartodbclient':true},                                
 	                success: function(data) {
-	                  requests_queue.responseRequest(requestId,'ok','');
+	                  window.ops_queue.responseRequest(requestId,'ok','');
 	                  successActionPerforming('update_geometry',null,null);
 	                },
 	                error: function(e) {
-	                  requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors);
+	                  window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors);
 	                  errorActionPerforming('update_geometry',null,$.parseJSON(e.responseText).errors);
 	                }
 	            });
@@ -499,12 +424,12 @@
           $('div.georeference_window div.inner_').animate({height:'74px'},400);
         }
       });
-      $('div.georeference_window a.close_geo,div.georeference_window a.cancel').livequery('click',function(ev){
+      $('div.georeference_window a.close_geo,div.georeference_window a.cancel').live('click',function(ev){
         stopPropagation(ev);
         closeOutTableWindows();
         unbindESC();
       });
-			$('div.stop_window p a.cancel_geo').livequery('click',function(ev){
+			$('div.stop_window p a.cancel_geo').live('click',function(ev){
 			  stopPropagation(ev);
 			  closeOutTableWindows();
 			  $(window).trigger('stopGeo');
@@ -551,7 +476,7 @@
 	        '</ul>'+
 	      '</span>');
 	
-	    $('p.settings a.settings, span.advanced_options a.advanced').livequery('click',function(ev){
+	    $('p.settings a.settings, span.advanced_options a.advanced').live('click',function(ev){
 	      stopPropagation(ev);
 	      if (!$('span.advanced_options').is(':visible')) {
 	        closeOutTableWindows();
@@ -598,7 +523,7 @@
 	        
 	        // Send request, only if there is an error...
 	        var requestId = createUniqueId();
-          requests_queue.newRequest(requestId,'duplicate_table');
+          window.ops_queue.newRequest(requestId,'duplicate_table');
 	        
 	        $.ajax({
             type: "POST",
@@ -613,7 +538,7 @@
             },
             error: function(e) {
               closeOutTableWindows();
-              requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).message);
+              window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).message);
             }
           });
 	      } else {
@@ -694,7 +619,7 @@
 		  );
 		  
 		  
-			$('a.delete').livequery('click',function(ev){
+			$('a.delete').live('click',function(ev){
 	      stopPropagation(ev);
 	      closeOutTableWindows();
 	      var table_id = $(this).attr('table-id');
@@ -818,7 +743,7 @@
 	
 	    //Bind events
 	    // -Open window
-	    $('section.subheader h2 a, p.status a.save').livequery('click',function(ev){
+	    $('section.subheader h2 a, p.status a.save').live('click',function(ev){
 	      stopPropagation(ev);
 	      if ($('span.title_window').is(':visible')) {
 	        $('span.title_window').hide();
@@ -838,7 +763,7 @@
 	    });
 	
 	    // -Save table name
-	    $('#change_name input[type="submit"]').livequery('click',function(ev){
+	    $('#change_name input[type="submit"]').live('click',function(ev){
 	      stopPropagation(ev);
 	      var new_value = sanitizeText($('span.title_window input[type="text"]').attr('value'));
 	      var old_value = new Object();
@@ -904,7 +829,7 @@
 	        '</ul>'+
 	      '</span>');
 
-	    $('span.privacy_window ul li a').livequery('click',function(ev){
+	    $('span.privacy_window ul li a').live('click',function(ev){
 	      stopPropagation(ev);
 	      var parent_li = $(this).parent();
 	      if (!parent_li.hasClass('disabled')) {
@@ -929,7 +854,7 @@
 	      }
 	    });
 
-	    $('p.status a').livequery('click',function(ev){
+	    $('p.status a').live('click',function(ev){
 	      stopPropagation(ev);
 	      var privacy_window = $(this).closest('div.left').children('span.privacy_window');
 	      if (!$(this).hasClass('save')) {
@@ -1067,7 +992,7 @@
 		  
 
 		  // Bindings
-		  $('ul.tab_menu li a.share').livequery('click',function(ev){
+		  $('ul.tab_menu li a.share').live('click',function(ev){
 		    stopPropagation(ev);		    
 				if ($(this).hasClass('disabled')) {return false}				
 				closeOutTableWindows();
@@ -1289,7 +1214,7 @@
         stopPropagation(ev);
       }
     });
-  });
+  }
 
 
 	////////////////////////////////////////
@@ -1326,7 +1251,7 @@
     // Hide map
 		$('body').attr('view_mode','table');
     $('div.table_position').show();
-    if (carto_map) {hideMap()}
+    if (window.map.carto_map) {hideMap()}
 	}
 
 
@@ -1341,7 +1266,7 @@
 
     var requestId = createUniqueId();
     params.requestId = requestId;
-    requests_queue.newRequest(requestId,param);
+    window.ops_queue.newRequest(requestId,param);
 
     $.ajax({
       dataType: 'json',
@@ -1350,11 +1275,11 @@
       data: params,
       headers: {'cartodbclient':true},
       success: function(data) {
-        requests_queue.responseRequest(requestId,'ok','');
+        window.ops_queue.responseRequest(requestId,'ok','');
         successActionPerforming(param,value,old_value);
       },
       error: function(e) {
-        requests_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText));
+        window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText));
         errorActionPerforming(param,old_value,$.parseJSON(e.responseText));
       }
     });

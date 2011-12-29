@@ -104,7 +104,7 @@
 	/*============================================================================*/
 	Geocoding.prototype.processGeocoding = function(directions) {
     var me = this;
-    var worker = new Worker("/javascripts/admin/table/worker_geocoding.js");
+    var worker = new Worker("/javascripts/admin/show/view/geocoding_worker.js");
 
     worker.onmessage = function(event){
       

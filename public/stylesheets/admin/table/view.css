@@ -104,7 +104,11 @@ section.subheader div.right span.advanced_options ul li a {background:none; font
 section.subheader div.right span.advanced_options ul li a:hover {text-decoration:underline; cursor:pointer;}
 section.subheader div.right span.advanced_options ul li.disabled a {color:#999;}
 section.subheader div.right span.advanced_options ul li.disabled a:hover {color:#999; cursor:default; text-decoration:none;}
-section.subheader div.right span.paginate {position:absolute; right:0; bottom:5px;  width:100%;}
+section.subheader div.right span.paginate,
+section.subheader div.right span.mapkey {position:absolute; right:0; bottom:5px; width:100%;}
+section.subheader div.right span.mapkey {display:none;}
+section.subheader div.right span.mapkey a {float:right; margin:5px 0 3px; padding:3px 8px; background:#131723; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; font:bold 11px Arial; color:white; text-decoration:none;}
+section.subheader div.right span.mapkey a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
 section.subheader div.right span.paginate a {float:right; width:27px; height:23px; text-indent:-9999px;}
 section.subheader div.right span.paginate a.previous {margin:0 3px 0 0; background:url('/images/admin/icons/left_button.png') no-repeat 0 0;}
 section.subheader div.right span.paginate a.previous.disabled {background-position:0 -46px;}
@@ -503,6 +507,29 @@ div.mamufas div.embed_window div.inner_ span.bottom a.cancel:hover {background:l
 
 
 
+/*Mapkey window mamufas*/
+div.mamufas div.mapkey_window {position:absolute; display:none; top:50%; left:50%; width:453px; margin:-150px 0 0 -249px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px rgba(0,0,0,0.5); box-shadow:0 0 50px 3px rgba(0,0,0,0.5);
+  -moz-box-shadow:0 0 50px 3px rgba(0,0,0,0.5);}
+div.mamufas div.mapkey_window a.close {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
+div.mamufas div.mapkey_window a.close:hover {background-position:0 -23px;}
+div.mamufas div.mapkey_window div.inner_ {float:left; width:451px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
+div.mamufas div.mapkey_window div.inner_ span.top {float:left; width:431px; padding:10px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.mapkey_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.mapkey_window div.inner_ span.top p {position:relative; float:left!important; height:auto; width:100%; padding:3px 0 0 0!important; margin:0!important; font:normal 11px Helvetica,Arial; color:#999999; text-shadow:0 1px white;}
+div.mamufas div.mapkey_window div.inner_  span.copy_code {float:left; display:block; height:28px; margin:8px 0 0 0; border:1px solid #CDCDCD; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; background:white}
+div.mamufas div.mapkey_window div.inner_  span.copy_code input {float:left; width:375px; margin:5px 0 0 7px; border:none; font:normal 13px "Helvetica",Arial; color:#333333;}
+div.mamufas div.mapkey_window div.inner_  span.copy_code a {float:right; height:12px; margin:3px 3px 0 0; padding:4px 6px; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;  line-height:12px;  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE)); background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.mamufas div.mapkey_window div.inner_  span.copy_code a.hover  {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
+
+div.mamufas div.mapkey_window div.inner_ span.bottom {float:left; width:431px; padding:0 10px 10px; border-top:1px solid white;}
+div.mamufas div.mapkey_window div.inner_ span.bottom a.cancel {float:right; height:12px; margin:10px 0 0 0; padding:7px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;  line-height:12px;  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.mamufas div.mapkey_window div.inner_ span.bottom a.cancel:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+  background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
+
+
 
 /*Geo window mamufas*/
 div.mamufas div.georeference_window {position:absolute; display:none; top:50%; left:50%; width:408px; margin:-220px 0 0 -212px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 50px 3px #111111; box-shadow:0 0 50px 3px #111111;
@@ -581,8 +608,6 @@ ul.ui-autocomplete  li a {display:block; padding:4px 5px 4px 10px!important; max
   text-shadow:none; text-decoration:none; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 ul.ui-autocomplete  li a:hover {color:white; background:#283A5A}
 ul.ui-autocomplete a.ui-active-hover,ul.ui-autocomplete a.ui-active-hover, ul.ui-autocomplete a#ui-active-menuitem {color:white; background:#283A5A}
-
-
 
 
 

@@ -41,20 +41,20 @@
 
 			$(div).find('a.close').click(function(ev){
 				stopPropagation(ev);
-				carto_map.unbindMapESC();
+				window.map.carto_map.unbindMapESC();
 				me.hide();
 			});
 
 			$(div).find('a.delete_point').click(function(ev){
 				stopPropagation(ev);
 				me.hide();
-				carto_map.delete_window_.open(me.latlng_,me.marker_);
+				window.map.carto_map.delete_window_.open(me.latlng_,me.marker_);
 			});
 			
 			$(div).find('a.edit_point').click(function(ev){
 				stopPropagation(ev);
 				me.hide();
-				carto_map.createFakeGeometry(me.marker_);
+				window.map.carto_map.createFakeGeometry(me.marker_);
 			});
       
       google.maps.event.addDomListener(div,'click',function(ev){ev.preventDefault()});
@@ -106,7 +106,7 @@
       url:global_api_url + 'tables/'+table_name+'/records/'+feature,
       headers: {"cartodbclient": true},
       success:function(data){
-				positionateInfowindow(me,data,carto_map.infowindow_vars_);
+				positionateInfowindow(me,data,window.map.carto_map.infowindow_vars_);
       },
       error:function(e){}
     });
@@ -115,13 +115,13 @@
     function positionateInfowindow(me,info,variables) {
       if (me.div_) {
         // Set ESC binding
-        carto_map.bindMapESC();
+        window.map.carto_map.bindMapESC();
         
   	    var div = me.div_;
 
   	    // If we dont have the pixel position go and get latlng position
 				if (pixel!=null) {
-	  	    me.latlng_ = carto_map.map_canvas_.transformCoordinates(new google.maps.Point(pixel.x,pixel.y));
+	  	    me.latlng_ = window.map.carto_map.map_canvas_.transformCoordinates(new google.maps.Point(pixel.x,pixel.y));
 					me.pixel = pixel;
 				} else {
 	  	    me.latlng_ = latlng;

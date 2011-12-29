@@ -2,13 +2,28 @@
 
 
     head.ready(function(){
-			// Inits loader queue
-			requests_queue = new loaderQueue();
+			// Init the view
+			initView();
 			
 			// Init the map
 			initMap();
 
-			// Manage tabs with url hash
+			// Init the table
+			$("table#carto_table").cartoDBtable(
+			  'start',
+  			{
+          getDataUrl: global_api_url + 'tables/',
+          resultsPerPage: 40,
+          reuseResults: 120,
+          total: 5000,
+          query: "SELECT * FROM "+ table_name,
+          order_by: 'cartodb_id',
+          mode: 'asc',
+          enabled: false
+        }
+      );
+
+      // Manage tabs with url hash
 			manageHash();
     });
 
@@ -41,20 +56,4 @@
 			if (window.location.hash == "") {
 				$.History.go('/table');	
 			}
-		
-			// Init cartoDB table
-			$("table#carto_table").cartoDBtable(
-			  'start',
-  			{
-          getDataUrl: global_api_url + 'tables/',
-          resultsPerPage: 40,
-          reuseResults: 120,
-          total: 5000,
-          query: "SELECT * FROM "+ table_name,
-          order_by: 'cartodb_id',
-          mode: 'asc',
-          enabled: false
-        }
-      );
 		}
-		

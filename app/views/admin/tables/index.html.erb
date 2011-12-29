@@ -1,5 +1,5 @@
   <%= content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/file_uploader", "admin/tables/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/tables/import"  %>
+    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/file_uploader", "admin/index/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/index/import"  %>
   <% end %>
   <%= content_for(:head) do %>
     <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/dashboard') %>
@@ -148,7 +148,7 @@
           </div>
 
           <h4>BROWSE BY TAGS</h4>
-          <% if @tags_count == 0 %>
+          <% if @tags.count==0 %>
             <span class="no_tags">
               <p>You have not added any tags yet.</p>
               <p>Tags are useful for organizing and filtering your tables.</p>

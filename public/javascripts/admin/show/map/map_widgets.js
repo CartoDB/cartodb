@@ -3,9 +3,7 @@
 /*	  WIDGETS	 	 */
 /*****************/
 
-// TODO: Close with bind and clicking outside of the select (ESC)
-// TODO: Close all palettes
-
+// TODO: refresh columns when it comes from the table :S -> The same for infowindow vars :S
 
 /* COLOR INPUT */
 (function($, window, undefined) {
@@ -19,9 +17,9 @@
 	 	, defaultOptions = {
 	  		globalEvents : [],
 	  		colors: [
-		    	 ['black','#000000'],['grey', '#E2DADA'],['red', '#E25B5B'],['orange', '#FF9900'],['yellow', '#FFCC00'],['green', '#99CC00']
-		    	,['blue', '#0099FF'],['pink', '#FF3366'],['dark_black', '#000000'],['dark_red', '#AB4343'],['dark_orange', '#D78100'],['dark_yellow', '#B59100']
-		    	,['dark_green', '#719700'],['dark_blue', '#006BB4'],['dark_pink', '#AA2143'],['dark_grey', '#B7B0B0']
+		    	 ['grey','#333333'],['white', '#FFFFFF'],['red', '#E25B5B'],['orange', '#FF9900'],['yellow', '#FFCC00'],['green', '#99CC00']
+		    	,['blue', '#0099FF'],['pink', '#FF3366'],['dark_black', '#000000'],['dark_grey', '#B7B0B0'],['dark_red', '#AB4343'],['dark_orange', '#D78100'],['dark_yellow', '#B59100']
+		    	,['dark_green', '#719700'],['dark_blue', '#006BB4'],['dark_pink', '#AA2143']
 		    ]
 	 		};
 
@@ -43,6 +41,9 @@
 		   	// Append necessary html
 		   	Core._addElements($el);
 
+		   	// Unique ID for GOD
+		   	$el.data('id',createUniqueId());
+
 		   	// Bind events
 		   	Core._bind($el);
 		 	});
@@ -50,9 +51,14 @@
  
 
 	  _bind: function($el) {
-	    $el.find('a.control').bind({'click': Core._showPalette});
-	    $el.find('input').bind({'change': Core._changeColor});
+	  	// GOD
+	    var ev = '_close.palette.' + $el.data('id');
+	  	$(window).bind(ev,function(){Core._hidePalette($el)});
+
+	    $el.find('a.control').bind({'click': Core._toggle});
+	    $el.find('input').bind({'change': Core._changeColor, 'click': Core._stopPropagation});
 	    $el.find('span.palette ul li a').bind({'click': Core._chooseColor});
+
 	  },
 
 
@@ -68,25 +74,46 @@
 
 
    	// PRIVATE LOGIC
+   	_stopPropagation: function(ev) {
+   		ev.stopPropagation();
+   		ev.preventDefault();
+   	},
 
-   	_showPalette: function (ev) {
-  		ev.preventDefault();
+
+   	_toggle: function(ev) {
+   		Core._stopPropagation(ev);
+
   		var $el = $(this).closest('span.color');
       var palette = $el.find('span.palette');
       if (!palette.is(':visible')) {
-        $('span.color span.palette').each(function(i,palette){
-          $(palette).hide();
-        });
-        // Show this one
-        palette.show();
-      } else {
-      	palette.hide();
+      	Core._showPalette($el);
+    	} else {
+      	Core._hidePalette($el);
       }
    	},
 
 
+   	_showPalette: function($el) {
+   		var iden = $el.data('id');
+      // Show this one
+      $el.find('span.palette').show();
+      // GOD
+    	GOD.broadcast("_close.palette." + iden,0);
+    	GOD.subscribe("_close.palette." + iden,0);
+   	},
+
+
+
+   	_hidePalette: function($el) {
+   		var iden = $el.data('id') || $(this).closest('span.color').data('id');
+   		GOD.unsubscribe({ev:"_close.palette." + iden,type:0});
+   		$el.find('span.palette').hide();
+   	},
+
+
    	_changeColor: function (ev) {
-   		ev.preventDefault();
+   		Core._stopPropagation(ev);
+   		
    		var color = new RGBColor($(this).val());
    		var $el = $(this).closest('span.color');
 			if (color.ok) {
@@ -95,7 +122,7 @@
 			 	$el.find('a.control').removeClass('error').css({'background-color':new_color});
 			 	$(this).removeClass('error');
 			 	// CHANGE COLOR
-			 	Core.options.change(new_color);
+			 	Core.options.change($el,new_color);
 			} else {
 				$(this).addClass('error');
 			 	$el.find('a.control').removeAttr('style').addClass('error');
@@ -104,13 +131,14 @@
 
 
    	_chooseColor: function (ev) {
-      ev.preventDefault();
+      Core._stopPropagation(ev);
+
       // Get the value
       var new_color = $(this).attr('href')
       	,	$el 			= $(this).closest('span.color');
       
       // Hide the palette
-      $(this).closest('span.palette').hide();
+      Core._hidePalette($el);
       
       // Save the new color
       $el.find('a.control').removeClass('error').css({'background-color':new_color});
@@ -118,7 +146,7 @@
       $(this).removeClass('error');
 
       // CHANGE THE COLOR!
-      Core.options.change(new_color);
+      Core._trigger('change',new_color,$el);
    	},
 
 
@@ -129,10 +157,11 @@
       	colors_list += '<li><a href="' + color[1] + '" style="background-color:' + color[1] + '">' + color[0] + '</a></li>';
       });
       colors_list += '</ul>';
+
       $el.append(
       	'<span class="palette">' + colors_list + '</span>'+
-      	'<a href="#change_color" class="control"></a>'+
-      	'<input type="text" value="#FF6600"/>'
+      	'<a href="#change_color" style="background-color:'+ Core.options.value +'" class="control"></a>'+
+      	'<input type="text" value="'+ Core.options.value +'"/>'
       );
 	  }
 
@@ -253,7 +282,7 @@
    	_stop: function(ev,ui) {
    		$el = $(ui.handle).closest('span.alpha');
    		$el.find('span.tooltip').hide();
-      Core.options.change(ui.value);
+      Core._trigger('change',ui.value,$el);
    	}, 	
 
    	_addElements: function($el) {
@@ -317,7 +346,6 @@
 	 	, interval
 	 	, defaultOptions = {
 	  		globalEvents : []
-
 	 		};
 
 		
@@ -373,10 +401,11 @@
 	    if (add || old_value>0) {
 				var new_value = parseInt(old_value) + ((add)?1:-1);
 	      $(that).parent().find('input').val(new_value);
+	      var $el = $(this).closest('span.numeric');
 	      
 	      clearInterval(interval);
 	      interval = setTimeout(function(){
-	        Core.options.change(new_value);
+	      	Core._trigger('change',new_value,$el);
 	      },400);
 	    }
    	},
@@ -385,7 +414,7 @@
    	_addElements: function($el) {
    		// Add the range input
       $el.append(
-      	'<input disabled="disabled" class="range_value" type="text" value="3"/>'+
+      	'<input disabled="disabled" class="range_value" type="text" value="'+Core.options.value+'"/>'+
         '<a href="#add_one_line_width" class="range_up" href="#range">+</a>'+
         '<a href="#deduct_one_line_width" class="range_down" href="#range">-</a>'
       );
@@ -395,6 +424,7 @@
       	$el.append(
 	      	'<p>Max</p>'
 	      );
+	      $(el).find('input').removeAttr('disabled');
       }
 
       // Min?
@@ -402,6 +432,7 @@
       	$el.append(
 	      	'<p>Min</p>'
 	      );
+	      $(el).find('input').removeAttr('disabled');
       }
 	  }
 
@@ -476,6 +507,9 @@
 		   	// Append necessary html
 		   	Core._addElements($el);
 
+		   	// Unique ID for GOD
+		   	$el.data('id',createUniqueId());
+
 		   	// Bind events
 		   	Core._bind($el);
 		 	});
@@ -483,6 +517,10 @@
 
 
 	  _bind: function($el) {
+	  	// GOD
+	    var ev = '_close.dropdown.' + $el.data('id');
+	  	$(window).bind(ev,function(){Core._closeSource($el)});
+
       $el.find('span.select').click(Core._openSource);
       $el.find('li a').click(Core._changeValue);
 	  },
@@ -500,8 +538,15 @@
 
 
    	// PRIVATE LOGIC
-   	_changeValue: function(ev) {
+   	_stopPropagation: function(ev) {
+   		ev.stopPropagation();
    		ev.preventDefault();
+   	},
+
+
+   	_changeValue: function(ev) {
+   		Core._stopPropagation(ev);
+   		
    		var $el = $(this).closest('span.dropdown');
 
    		// If clicked is not selected
@@ -514,7 +559,7 @@
    			$(this).parent().addClass('selected');
 
    			// Trigger new value
-   			Core.options.change(value);
+   			Core._trigger('change',value,$el);
 
    			// Change value in the selector
    			$el.find('span.select').text(value).removeClass('first');
@@ -526,14 +571,21 @@
 
 
    	_openSource: function(ev) {
-   		ev.preventDefault();
+   		Core._stopPropagation(ev);
    		var $el = $(this).closest('span.dropdown');
    		$el.addClass('selected');
+   		// GOD open
+   		var iden = $el.data('id');
+   		GOD.broadcast("_close.dropdown." + iden,0);
+    	GOD.subscribe("_close.dropdown." + iden,0);
    	},
 
 
    	_closeSource: function($el) {
    		$el.removeClass('selected');
+   		// GOD close
+   		var iden = $el.data('id');
+    	GOD.unsubscribe({ev:"_close.dropdown." + iden,type:0});
    	},
 
 
@@ -544,7 +596,10 @@
 
 			var list_items = '';
     	_.each(Core.options.source,function(el,i){
-    		list_items += '<li><a href="#' + el + '">' + el + '</a></li>'
+    		// Check if it is number
+    		if (el[1] == "number") {
+    			list_items += '<li><a href="#' + el[0] + '">' + el[0] + '</a></li>'
+    		}
     	});
 
     	// New source added
@@ -683,7 +738,7 @@
    	// PRIVATE LOGIC
    	_changeValue: function(ev) {
    		ev.preventDefault();
-   		var $el = $(this).closest('span.dropdown');
+   		var $el = $(this).closest('span.color_ramp');
 
    		// If clicked is not selected
    		if (!$(this).parent().hasClass('selected')) {

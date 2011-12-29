@@ -549,7 +549,7 @@
 
 	    });
 	
-	    $('a.export_data').click(function(ev){
+	    $('a.export_data').live('click',function(ev){
 	      stopPropagation(ev);
 	      if ($('div.mamufas').is(':visible') && $('div.delete_window').is(':visible')) {
 	        $('div.mamufas div.delete_window').hide();
@@ -1372,6 +1372,7 @@
       $('div.mamufas div.georeference_window').hide();
       $('div.mamufas div.embed_window').hide();
       $('div.mamufas div.stop_window').hide();
+      $('div.mamufas div.mapkey_window').hide();
       $(document).unbind('keydown');
       $('body').unbind('click');
     });

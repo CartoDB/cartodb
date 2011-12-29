@@ -178,8 +178,6 @@
     });
     
 
-    
-	   
     function resetUploadFile() {
       create_type = 0;
       $('div.select_file p').removeClass('error');

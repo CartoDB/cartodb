@@ -164,8 +164,15 @@
       	},
       	onCancel: function(id, fileName){},
       	showMessage: function(message){
-      		 $('div.select_file p').html(message);
-      		 $('div.select_file p').addClass('error');
+          $('div.select_file p').html(message);
+          $('div.select_file p').addClass('error');
+          $('div.create_window ul li:eq(0)').addClass('disabled');
+          $('form input[type="submit"]').addClass('disabled');
+          $('div.create_window ul li:eq(1) a').click();
+          $('#hugeUploader').hide();
+          $('div.create_window').show();
+          $('div.mamufas').fadeIn();
+          bindESC();
       	}
       });
     });
@@ -173,10 +180,9 @@
 
     
 	   
-
-
     function resetUploadFile() {
       create_type = 0;
+      $('div.select_file p').removeClass('error');
       $('div.create_window ul li:eq(0)').removeClass('disabled');
       $('div.create_window ul li').removeClass('selected');
       $('div.create_window ul li:eq(0)').addClass('selected');

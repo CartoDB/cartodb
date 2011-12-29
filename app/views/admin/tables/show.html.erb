@@ -113,6 +113,11 @@
             <a id="nextButton"class="next" href="#next_column">Next column</a>
             <a id="previousButton" class="previous" href="#prev_column">Previous column</a>
           </span>
+          <% if @table.private? %>
+            <span class="mapkey">
+              <a class="mapkey" href="#get_api_key">API KEY</a>
+            </span>
+          <% end %>
         </div>
       </div>
     </div>

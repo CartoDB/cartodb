@@ -845,8 +845,14 @@
 	          
 	          if (new_value=='public') {
 	            $('ul.tab_menu li a.share').removeClass('disabled');
+	            $('span.mapkey').remove();
 	          } else {
 	            $('ul.tab_menu li a.share').addClass('disabled');
+	            var style="";
+	            if ($('body').attr('view_mode')=="map") {
+	            	style = 'style="display:block"';
+	            }
+	            $('.inner_subheader div.right').append('<span '+ style +' class="mapkey"><a class="mapkey" href="#get_api_key">API KEY</a></span>');
 	          }
 	          
 	          changesRequest('privacy',new_value.toUpperCase(),old_value);
@@ -955,7 +961,7 @@
         mapTypeId: google.maps.MapTypeId.ROADMAP
       }
 		  
-		  //Append georeference html to the document
+		  //Append embed html to the document
 			$('div.mamufas').append(
 	      '<div class="embed_window">'+
           '<a href="#close_window" class="close"></a>'+
@@ -999,7 +1005,6 @@
 				
 		    
 		    // Change values of the inputs
-
 	      $('div.embed_window').show();
 	      $('div.mamufas').fadeIn('fast',function(){
 	        if (!embed_map)
@@ -1196,6 +1201,62 @@
 
 
 
+	  ///////////////////////////////////////
+    //  Stop window                      //
+    ///////////////////////////////////////
+    var mapkey_window = (function() {
+      
+			$('div.mamufas').append(
+	      '<div class="mapkey_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="top">'+
+              '<h3>Your Map Key</h3>'+
+              '<p>If your table is private, you will need this for being able to use this tiles out of CartoDB.</p>'+
+              '<span class="copy_code">'+
+                '<input type="text" disabled="disabled" value="'+ map_key +'" />'+
+                '<a class="copy">Copy</a>'+
+              '</span>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#close_window" class="cancel">Close</a>'+
+            '</span>'+
+          '</div>'+
+        '</div>');
+      
+      // Bindings
+      $('div.mamufas div.mapkey_window a.close,div.mamufas div.mapkey_window a.cancel').click(function(ev){
+        stopPropagation(ev);
+	      closeOutTableWindows();
+	    });
+
+		  $('span.mapkey').live('click',function(ev){
+		    stopPropagation(ev);		    
+				closeOutTableWindows();
+		    
+		    $("div.mapkey_window .inner_ span.top a.copy").zclip('remove');
+
+		    // Change values of the inputs
+	      $('div.mapkey_window').show();
+	      $('div.mamufas').fadeIn('fast');
+
+	      // Start zclip
+        $("div.mapkey_window .inner_ span.top a.copy").zclip({
+          path: "/javascripts/plugins/ZeroClipboard.swf",
+          copy: function(){
+						$(this).parent().find('input').select();
+            return $(this).parent().find('input').val();
+          }
+        });
+	        
+	      bindESC();
+		  });
+
+      return {}
+	  }());
+
+
+
     ///////////////////////////////////////
     //  Application tabs menu            //
     ///////////////////////////////////////
@@ -1222,6 +1283,7 @@
   ////////////////////////////////////////
 	function goToMap() {
 		$('span.paginate').hide();
+		$('span.mapkey').show();
 		 					
 		// Change list and tools selected
     $('section.subheader ul.tab_menu li').removeClass('selected');
@@ -1239,6 +1301,7 @@
 	
 	function goToTable() {
 		$('span.paginate').show();
+		$('span.mapkey').hide();
 		
 		// Change list and tools selected
     $('section.subheader ul.tab_menu li').removeClass('selected');

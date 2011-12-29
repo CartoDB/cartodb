@@ -163,7 +163,7 @@
 				if (new_query!=undefined && !is_write_query) {
 					$.ajax({
 				    method: "GET",
-				    url: global_api_url+'queries?sql='+escape('SELECT count(*) FROM ('+query+') as count'),
+				    url: global_api_url+'queries?sql='+encodeURIComponent('SELECT count(*) FROM ('+query+') as count'),
 				 		headers: {"cartodbclient":"true"},
 				    success: function(data) {
 							table.total_r = data.rows[0].count;
@@ -181,7 +181,7 @@
 
 			  $.ajax({
 			    method: "POST",
-			    url: global_api_url+'queries?sql='+escape(editor.getValue()),
+			    url: global_api_url+'queries?sql='+encodeURIComponent(editor.getValue()),
 			    data: {
 			      rows_per_page: options.resultsPerPage,
 			      page: request_pages

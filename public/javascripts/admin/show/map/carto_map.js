@@ -374,118 +374,118 @@
 
 
       //Zooms
-      // $('a.zoom_in').click(function(ev){
-      //   stopPropagation(ev);
-      //   var new_zoom = me.map_.getZoom()+1;
-      //   if (new_zoom<=20) {
-      //     me.map_.setZoom(new_zoom);
-      //     $('span.slider').slider('value',new_zoom);
-      //   }
-      // });
-      // $('a.zoom_out').click(function(ev){
-      //   stopPropagation(ev);
-      //   var new_zoom = me.map_.getZoom()-1;
-      //   if (new_zoom>=0) {
-      //     me.map_.setZoom(new_zoom);
-      //     $('span.slider').slider('value',new_zoom);
-      //   }
-      // });
+      $('a.zoom_in').click(function(ev){
+        stopPropagation(ev);
+        var new_zoom = me.map_.getZoom()+1;
+        if (new_zoom<=20) {
+          me.map_.setZoom(new_zoom);
+          $('span.slider').slider('value',new_zoom);
+        }
+      });
+      $('a.zoom_out').click(function(ev){
+        stopPropagation(ev);
+        var new_zoom = me.map_.getZoom()-1;
+        if (new_zoom>=0) {
+          me.map_.setZoom(new_zoom);
+          $('span.slider').slider('value',new_zoom);
+        }
+      });
 
-      // // Zoom slider
-      // $('span.slider').slider({
-	     //  orientation: 'vertical',
-	     //  min:0,
-	     //  max:20,
-	     //  value:1,
-	     //  stop: function(event,ui){
-	     //    me.map_.setZoom(ui.value);
-	     //  }
-      // });
+      // Zoom slider
+      $('span.slider').slider({
+	      orientation: 'vertical',
+	      min:0,
+	      max:20,
+	      value:1,
+	      stop: function(event,ui){
+	        me.map_.setZoom(ui.value);
+	      }
+      });
 
 
-       //    // SQL Map console
-       //    // Clear
-       //    $('a.clear_table').live('click',function(ev){
-       //      var view_map = ($('body').attr('view_mode') == 'map');
-       //      if (view_map) {
-       //        stopPropagation(ev);
-       //        $('body').removeAttr('query_mode');
-       //        me.query_mode = false;
-    			// 		$('.map_header div.stickies').remove();
-       //        me.refresh();
-       //      }
-       //    });
+      // SQL Map console
+      // Clear
+      $('a.clear_table').live('click',function(ev){
+        var view_map = ($('body').attr('view_mode') == 'map');
+        if (view_map) {
+          stopPropagation(ev);
+          $('body').removeAttr('query_mode');
+          me.query_mode = false;
+					$('.map_header div.stickies').remove();
+          me.refresh();
+        }
+      });
 
-       //    // Try query
-       //    $('div.sql_window a.try_query').live('click',function(ev){
-       //      var map_status = ($('body').attr('view_mode') == "map");
-       //      if (map_status) {
-       //        stopPropagation(ev);
-    			// 		me.closeMapWindows();
+      // Try query
+      $('div.sql_window a.try_query').live('click',function(ev){
+        var map_status = ($('body').attr('view_mode') == "map");
+        if (map_status) {
+          stopPropagation(ev);
+					me.closeMapWindows();
 
-       //        $('body').attr('query_mode','true');
-       //        me.query_mode = true;
-    					
-    			// 		// Set the new value to the editor
-    			// 		editor.setOption('query',editor.getValue());
+          $('body').attr('query_mode','true');
+          me.query_mode = true;
+					
+					// Set the new value to the editor
+					editor.setOption('query',editor.getValue());
 
-       //        setAppStatus();
-       //        me.refresh();
-              
-       //        var requestId = createUniqueId();
-       //        requests_queue.newRequest(requestId,'query_table');
+          setAppStatus();
+          me.refresh();
+          
+          var requestId = createUniqueId();
+          requests_queue.newRequest(requestId,'query_table');
 
-       //        // Get results from api
-       //        $.ajax({
-       //          method: "GET",
-       //          url: global_api_url+'queries?sql='+escape(editor.getValue().replace('/\n/gi'," ")),
-       //          headers: {"cartodbclient":"true"},
-       //          success: function(data) {
-      	// 		      // Remove error content
-      	// 					$('div.sql_window span.errors').hide();
-      	// 					$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
-      	// 					$('div.sql_window').css({'min-height':'199px'});
-      						
-      	// 					$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-      	// 					$('span.query p').text('This query took '+data.time.toFixed(3)+' seconds');
-    			// 				$('.map_header div.stickies').remove();
-    			// 				$('div.map_header').append('<div class="stickies"><p><strong>'+data.total_rows+' result'+((data.total_rows>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
-      						
-      	// 					requests_queue.responseRequest(requestId,'ok','');
-      	// 		    },
-      	// 		    error: function(e) {
-       //            requests_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
-      	// 		      $(document).unbind('arrived');
+          // Get results from api
+          $.ajax({
+            method: "GET",
+            url: global_api_url+'queries?sql='+encodeURIComponent(editor.getValue().replace('/\n/gi'," ")),
+            headers: {"cartodbclient":"true"},
+            success: function(data) {
+  			      // Remove error content
+  						$('div.sql_window span.errors').hide();
+  						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
+  						$('div.sql_window').css({'min-height':'199px'});
+  						
+  						$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+  						$('span.query p').text('This query took '+data.time.toFixed(3)+' seconds');
+							$('.map_header div.stickies').remove();
+							$('div.map_header').append('<div class="stickies"><p><strong>'+data.total_rows+' result'+((data.total_rows>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
+  						
+  						requests_queue.responseRequest(requestId,'ok','');
+  			    },
+  			    error: function(e) {
+              requests_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
+  			      $(document).unbind('arrived');
 
-      	// 		      var errors = $.parseJSON(e.responseText).errors;
-      	// 		      $('div.sql_window span.errors p').text('');
-      	// 		      _.each(errors,function(error,i){
-      	// 		        $('div.sql_window span.errors p').append(' '+error+'.');
-      	// 		      });
+  			      var errors = $.parseJSON(e.responseText).errors;
+  			      $('div.sql_window span.errors p').text('');
+  			      _.each(errors,function(error,i){
+  			        $('div.sql_window span.errors p').append(' '+error+'.');
+  			      });
 
-      	// 		      var new_bottom = 65 + $('div.sql_window span.errors').height();
-      	// 		      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
+  			      var new_bottom = 65 + $('div.sql_window span.errors').height();
+  			      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
 
-      	// 		      var new_height = 199 + $('div.sql_window span.errors').height();
-      	// 		      $('div.sql_window').css({'min-height':new_height+'px'});
-      	// 		      $('div.sql_window span.errors').show();
-      	// 		      $('.map_header div.stickies').remove();
-      	// 		      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-       //    				$('span.query p').text('');
-      	// 		    }
-       //        });
-       //      }
-       //    });
+  			      var new_height = 199 + $('div.sql_window span.errors').height();
+  			      $('div.sql_window').css({'min-height':new_height+'px'});
+  			      $('div.sql_window span.errors').show();
+  			      $('.map_header div.stickies').remove();
+  			      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
+      				$('span.query p').text('');
+  			    }
+          });
+        }
+      });
       
-    			// // Refresh after geolocating
-    			// $('section.subheader div.performing_op p a.refresh').live('click',function(ev){
-       //      ev.preventDefault();
-    			// 	var view_mode = ($('body').attr('view_mode') === "map");
-    			//   if (view_mode) {
-    			// 		ev.stopPropagation();
-    	  //       me.refreshWax();
-    			// 	}
-       //    });
+  		// Refresh after geolocating
+  		$('section.subheader div.performing_op p a.refresh').live('click',function(ev){
+        ev.preventDefault();
+  			var view_mode = ($('body').attr('view_mode') === "map");
+  		  if (view_mode) {
+  				ev.stopPropagation();
+          me.refreshWax();
+  			}
+      });
     }
 
     /* Show editing tools */

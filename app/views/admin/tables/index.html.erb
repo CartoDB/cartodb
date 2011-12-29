@@ -1,5 +1,5 @@
   <%= content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/file_uploader", "admin/index/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/index/import"  %>
+    <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers", "plugins/file_uploader", "admin/index/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/index/import"  %>
   <% end %>
   <%= content_for(:head) do %>
     <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/dashboard') %>
@@ -44,7 +44,6 @@
                 <p class="right">Need more space? <a href="#where?">Upgrade your account</a></p>
               <% end %>
             </div>
-
             <div class="progress">
               <p><%= @quota %> MB</p>
               <span class="bar <%= disk_usage_class(disk_usage_percent(@database_size, @quota)) %>" style="width:<%= number_to_percentage(disk_usage_percent(@database_size, @quota), :precision => 2) %>">
@@ -197,7 +196,7 @@
                   <span class="file">
                     <div class="select_file">
                       <div id="uploader"></div>
-                      <p>You can import .csv, .xls or .zip files</p>
+                      <p>We support xls, csv, gpx, shp, zip, etc...</p>
                     </div>
                     <div class="progress">
                       <p>Uploading your file...</p>

@@ -551,7 +551,8 @@
 
    		// If clicked is not selected
    		if (!$(this).parent().hasClass('selected')) {
-   			var value = $(this).text();
+   			var value = $(this).attr('href').replace('#','')
+   				, text = $(this).text();
    			// Remove previous selected item
    			$el.find('li.selected').removeClass('selected');
 
@@ -562,7 +563,7 @@
    			Core._trigger('change',value,$el);
 
    			// Change value in the selector
-   			$el.find('span.select').text(value).removeClass('first');
+   			$el.find('span.select').text(text).removeClass('first');
    		}
 
    		// Close the source	
@@ -595,12 +596,20 @@
 			scrollPane.getContentPane().find('li').remove();
 
 			var list_items = '';
-    	_.each(Core.options.source,function(el,i){
-    		// Check if it is number
-    		if (el[1] == "number") {
-    			list_items += '<li><a href="#' + el[0] + '">' + el[0] + '</a></li>'
-    		}
-    	});
+			
+			if ($el.hasClass('buckets')) {
+				for (var i = 3, length = 8; i<length; i++) {
+					list_items += '<li class="' + ((i==Core.options.value)?'selected':'' ) + '"><a href="#' + i + '">' + i + ' buckets (linear)</a></li>'
+				}
+			} else {
+	    	_.each(Core.options.source,function(el,i){
+	    		// Check if it is number
+	    		if (el[1] == "number") {
+	    			list_items += '<li class="' + ((el[0]==Core.options.value)?'selected':'' ) + '"><a href="#' + el[0] + '">' + el[0] + '</a></li>'
+	    		}
+	    	});
+    	}
+
 
     	// New source added
 			scrollPane.getContentPane().append(list_items);
@@ -609,9 +618,17 @@
 			scrollPane.reinitialise();
 
 			// Selector need to change!
+			var value;
+
+			if ($el.hasClass('buckets')) {
+				value = Core.options.value || 3;
+				value += ' buckets (linear)'
+			} else {
+				value = Core.options.value || Core.options.unselect || 'Select an option';
+			}
+
 			$el.find('span.select')
-				.text(Core.options.unselect || 'Select a value')
-				.addClass('first');
+				.text(value)
    	},
 
 
@@ -712,6 +729,9 @@
 		   	// Append necessary html
 		   	Core._addElements($el);
 
+		   	// Unique ID for GOD
+		   	$el.data('id',createUniqueId());
+
 		   	// Bind events
 		   	Core._bind($el);
 		 	});
@@ -719,8 +739,11 @@
 
 
 	  _bind: function($el) {
+	  	// GOD
+	    var ev = '_close.dropdown.' + $el.data('id');
+	  	$(window).bind(ev,function(){Core._closeSource($el)});
+
       $el.find('span.select').click(Core._openSource);
-      $el.find('li a').click(Core._changeValue);
 	  },
 
 
@@ -736,24 +759,37 @@
 
 
    	// PRIVATE LOGIC
-   	_changeValue: function(ev) {
+   	_stopPropagation: function(ev) {
+   		ev.stopPropagation();
    		ev.preventDefault();
+   	},
+
+
+   	_changeValue: function(ev) {
+   		console.log('hay cambio!');
+   		Core._stopPropagation(ev);
+
    		var $el = $(this).closest('span.color_ramp');
 
    		// If clicked is not selected
    		if (!$(this).parent().hasClass('selected')) {
-   			var value = $(this).text();
+   			var value = Core.options.colors[$(this).attr('class')][Core.options.buckets + 'b'];
+
    			// Remove previous selected item
-   			$el.find('li.selected').removeClass('selected');
+   			try {
+   				$el.find('li.selected').removeClass('selected');
+   			} catch (e) {
+   				
+   			}
 
    			// Select this item
    			$(this).parent().addClass('selected');
 
    			// Trigger new value
-   			Core.options.change(value);
+   			Core._trigger('change',[value],$el);
 
    			// Change value in the selector
-   			$el.find('span.select').text(value).removeClass('first');
+   			$el.find('span.select').text(' ');
    		}
 
    		// Close the source	
@@ -762,25 +798,37 @@
 
 
    	_openSource: function(ev) {
-   		ev.preventDefault();
+   		Core._stopPropagation(ev);
+
    		var $el = $(this).closest('span.color_ramp');
    		$el.addClass('selected');
+
+   		// GOD open
+   		var iden = $el.data('id');
+   		GOD.broadcast("_close.dropdown." + iden,0);
+    	GOD.subscribe("_close.dropdown." + iden,0);
    	},
 
 
    	_closeSource: function($el) {
+   		var iden = $el.data('id');
+    	GOD.unsubscribe({ev:"_close.dropdown." + iden,type:0});
+
    		$el.removeClass('selected');
    	},
 
 
    	_addList: function($el) {
+   		// Remove listener
+   		$el.find('li table').unbind('click');
+
 			var scrollPane = $el.find('ul').data('jsp');
 			// Remove old list
 			scrollPane.getContentPane().find('li').remove();
 
 			var color_rule = '';
     	_.each(Core.options.colors,function(type,i){
-    		color_rule += '<li><table><tr>';
+    		color_rule += '<li><table class="' + i + '"><tr class="' + Core.options.buckets + 'b' + '">';
     		_.each(type[Core.options.buckets + 'b'],function(color,i){
     			color_rule += '<td style="background:' + color + '">x</td>'
     		});
@@ -795,9 +843,12 @@
 			scrollPane.reinitialise();
 
 			// Selector need to change!
-			// $el.find('span.select')
-			// 	.text(Core.options.unselect || 'Select a value')
-			// 	.addClass('first');
+			$el.find('span.select')
+				//.text(Core.options.unselect || 'Select a value')
+				.addClass('first');
+
+			// Add listener again
+			$el.find('li table').click(Core._changeValue);
    	},
 
 
@@ -824,7 +875,11 @@
 	**************************************************************************/
 	API = {
 		update: function(source) {
+			Core.options.buckets = source;
+			Core._addList($(this));
 
+			// Change now!
+   		//Core._trigger('change',[Core.options.colors[$(this).find('span.select table').attr('class')][Core.options.buckets + 'b']],$el);
 		}
 	};
 

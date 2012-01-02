@@ -22,22 +22,9 @@
 			//Append general options to document
 			$('body').append(window.view_elements.general_options + window.view_elements.sql_editor);
 
-					/*******************/
+			/*******************/
 			/* Event listeners */
 	    /*******************/
-	    
-	    // SQL editor
-	    editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
-	      lineNumbers: false,
-	      mode: "text/x-plsql",
-	      lineWrapping: true,
-	      onKeyEvent: function (editor, event) {
-	        if (event.altKey && event.keyCode == 13 && event.type == "keydown") {
-	          stopPropagation(event);
-	          $('div.sql_window a.try_query').trigger('click');
-	        }
-	      }
-	    });
 
 	    // Draggable and resizable capacities to sql window
 	    $('div.sql_window').draggable({
@@ -83,6 +70,96 @@
 	      closeOutTableWindows();
 	    });
 
+
+	    
+	    // SQL editor
+	    editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
+	      lineNumbers: false,
+	      mode: "text/x-plsql",
+	      lineWrapping: true,
+	      onKeyEvent: function (editor, event) {
+	        if (event.altKey && event.keyCode == 13 && event.type == "keydown") {
+	          stopPropagation(event);
+	          $('div.sql_window a.try_query').trigger('click');
+	        }
+	      }
+	    });
+
+	    editor.historyArray = new Array();
+	    editor.historyIndex = -1;
+
+
+	    // UNDO - REDO
+	    $('div.sql_window span.history a.undo').on('click', function (ev) {
+	      stopPropagation(ev);
+	      if ($(this).hasClass('active') && editor.historyIndex>0 && editor.historyArray.length>0) {
+					editor.historyIndex--;
+					editor.setValue(editor.historyArray[editor.historyIndex]);
+					if (editor.historyIndex == 0) {
+						$(this).removeClass('active');
+					}
+	      	$('div.sql_window span.history a.redo').addClass('active');
+		    }
+	    });
+
+	    $('div.sql_window span.history a.redo').on('click', function (ev) {
+	      stopPropagation(ev);
+	      if ($(this).hasClass('active') && editor.historyIndex<editor.historyArray.length-1) {
+	      	editor.historyIndex++;
+	      	editor.setValue(editor.historyArray[editor.historyIndex]);
+
+	      	if (editor.historyIndex == (editor.historyArray.length - 1)) {
+	      		$(this).removeClass('active');
+	      	}
+
+					$('div.sql_window span.history a.undo').addClass('active');
+		    }
+	    });
+
+	    $('div.sql_window a.redo,div.sql_window a.undo').hover(
+		    function(){
+		    	var position = $(this).position().left;
+	    		$(this)
+	    			.closest('span.history')
+	    			.find('div.tooltip p')
+	    			.text($(this).attr('class'))
+	    			.parent()
+	    			.css({left: position - 10 + 'px'})
+	    			.show();
+	    	},
+	    	function() {
+	    		$(this).closest('span.history').find('div.tooltip').hide();
+	    	}
+	    );
+	    
+
+	    editor.addHistory = function() {
+	    	var sql = editor.getValue();
+
+	    	if (editor.historyArray[editor.historyIndex] != sql) {
+	    		// Size bigger than 10?
+		    	if (editor.historyArray.length>=10) {
+		    		editor.historyArray.shift();
+		    	} else {
+		    		editor.historyIndex++;
+		    		editor.historyArray = editor.historyArray.slice(0,editor.historyIndex);
+		    	}
+		    	editor.historyArray.push(sql);
+
+		    	// Check undo and redo activation
+		    	if ((editor.historyIndex + 1) == (editor.historyArray.length)) {
+		      	$('div.sql_window a.redo').removeClass('active');
+		      } else {
+		      	$('div.sql_window a.redo').addClass('active');
+		      }
+
+		      if ((editor.historyIndex + 1) == 0) {
+						$('div.sql_window a.undo').removeClass('active');
+					} else {
+						$('div.sql_window a.undo').addClass('active');
+					}
+	    	}
+	    }
 
 			
 			return {}
@@ -508,7 +585,6 @@
             unbindESC();
           }
         });
-
         bindESC();
 	    });
 

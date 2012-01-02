@@ -111,8 +111,7 @@
       var setupTools = _.after(ajax_count, function(){
         me.setVisualization(geom_type,layers_style);  // Show the correct tiles
         me.setMapStyle(geom_type,map_style);          // Set map styles
-                                                     // Set infowindow vars
-
+                                                      // Set infowindow vars
       });
       
       
@@ -193,20 +192,45 @@
     }
     
     // Set new tile styles
-    CartoMap.prototype.saveTilesStyles = function(obj) {
+    CartoMap.prototype.saveTilesStyles = function(prop, vis_data) {
       var me = this,
           str = '';
 
-      
-      if (typeof obj === "string") {
-        str = obj.replace(/\n/g,'');
+      // Carto directly
+      if (typeof prop === "string") {
+        str = prop.replace(/\n/g,'');
       } else {
+        // Feature - Custom - Color
         str = '#'+table_name+' {';
-        _.each(obj,function(property,i){
+        _.each(prop,function(property,i){
           if (property!=undefined)
             str += i+':'+property+'; ';
         });
         str += '}';
+
+        if (vis_data && vis_data.type=="custom") {
+          var step = (vis_data.v_max - vis_data.v_min) / (vis_data.values.length - 1);
+
+          // Min
+          str += '#'+table_name+' ['+vis_data.column+ '>=' + vis_data.v_min +'] {';
+          str += vis_data.param + ':' + vis_data.values[0];
+          str += '}';
+
+          // Rest
+          for (var i=1,length=vis_data.values.length; i<length; i++) {
+            str += '#'+table_name+' ['+vis_data.column+ '>=' + (step*i) +'] {';
+            str += vis_data.param + ':' + vis_data.values[i];
+            str += '}';
+          }
+
+          // Max
+          str += '#'+table_name+' ['+vis_data.column+ '>=' + vis_data.v_max +'] {';
+          str += vis_data.param + ':' + vis_data.values[length-1];
+          str += '}';
+          
+        } else if (vis_data && vis_data.type=="color") {
+                    
+        }
       }
 
       
@@ -313,24 +337,34 @@
     CartoMap.prototype.addToolListeners = function() {
       var me = this;
 
+      /* setup search */
+      this.setupSearch();
+
+      /* Bind events for open and close any tool */
       $('.map_header a.open').live('click',function(ev){
         stopPropagation(ev);
         var options = $(this).parent().find('div.options');
         if (!options.is(':visible')) {
-
-          
+          me.closeMapWindows();
+          me.bindMapESC();
+          //If clicks out of the div...
+          $('body').click(function(event) {
+            if (!$(event.target).closest(options).length) {
+              options.hide();
+              me.unbindMapESC();
+            };
+          });
           options.show();
         } else {
+          me.unbindMapESC();
           options.hide();
         }
       });
-
-
       $('.map_header span.tick').live('click',function(ev){
         stopPropagation(ev);
         var options = $(this).closest('div.options');
         if (options.is(':visible')) {
-          
+          me.unbindMapESC();
           options.hide();
         }
       });
@@ -338,39 +372,39 @@
 
 
       // Map tools
-      // $('div.general_options ul li.map a').hover(function(){
-      //   if (!$(this).parent().hasClass('disabled') && $(this).text()!='Carto') {
-      //     // Change text
-      //     var text = $(this).text().replace('_',' ');
-      //     $('div.general_options div.tooltip p').text(text);
-      //     // Check position
-      //     var right = -($(this).offset().left-$(window).width());
-      //     var offset = $('div.general_options div.tooltip').width()/2;
-      //     // near right edge
-      //     if (right-13-offset<0) {
-      //         right = 16 + offset;
-      //         $('div.general_options div.tooltip span.arrow').css({left:'83%'});
-      //     } else {
-      //         $('div.general_options div.tooltip span.arrow').css({left:'50%'});
-      //     }
-      //     $('div.general_options div.tooltip').css({right:right-13-offset+'px'});
-      //     // Show
-      //     $('div.general_options div.tooltip').show();
-      //   } else {
-      //     $('div.general_options div.tooltip').hide();
-      //   }
-      // },function(){
-      //   $('div.general_options div.tooltip').hide();
-      // });
+      $('div.general_options ul li.map a').hover(function(){
+        if (!$(this).parent().hasClass('disabled') && $(this).text()!='Carto') {
+          // Change text
+          var text = $(this).text().replace('_',' ');
+          $('div.general_options div.tooltip p').text(text);
+          // Check position
+          var right = -($(this).offset().left-$(window).width());
+          var offset = $('div.general_options div.tooltip').width()/2;
+          // near right edge
+          if (right-13-offset<0) {
+              right = 16 + offset;
+              $('div.general_options div.tooltip span.arrow').css({left:'83%'});
+          } else {
+              $('div.general_options div.tooltip span.arrow').css({left:'50%'});
+          }
+          $('div.general_options div.tooltip').css({right:right-13-offset+'px'});
+          // Show
+          $('div.general_options div.tooltip').show();
+        } else {
+          $('div.general_options div.tooltip').hide();
+        }
+      },function(){
+        $('div.general_options div.tooltip').hide();
+      });
 
-      // // Change map status
-      // $('div.general_options ul li.map a').click(function(ev){
-      //   stopPropagation(ev);
-      //   if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
-      //     var status = $(this).attr('class');
-      //     me.setMapStatus(status);
-      //   }
-      // });
+      // Change map status
+      $('div.general_options ul li.map a').click(function(ev){
+        stopPropagation(ev);
+        if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
+          var status = $(this).attr('class');
+          me.setMapStatus(status);
+        }
+      });
 
 
       //Zooms
@@ -433,7 +467,7 @@
           me.refresh();
           
           var requestId = createUniqueId();
-          requests_queue.newRequest(requestId,'query_table');
+          window.ops_queue.newRequest(requestId,'query_table');
 
           // Get results from api
           $.ajax({
@@ -451,10 +485,10 @@
 							$('.map_header div.stickies').remove();
 							$('div.map_header').append('<div class="stickies"><p><strong>'+data.total_rows+' result'+((data.total_rows>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
   						
-  						requests_queue.responseRequest(requestId,'ok','');
+  						window.ops_queue.responseRequest(requestId,'ok','');
   			    },
   			    error: function(e) {
-              requests_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
+              window.ops_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
   			      $(document).unbind('arrived');
 
   			      var errors = $.parseJSON(e.responseText).errors;
@@ -638,6 +672,8 @@
       var $vis_ul = $('.map_header ul.visualization_type')
         , prev_properties = cartoToJavascript(styles);        // Get previous properties, important!
 
+
+        console.log(prev_properties);
       
       /*
         LIST HEADER VISUALIZATION
@@ -681,7 +717,7 @@
             _bindEvents();
 
             if (prev_properties.type == "features") {
-              _activate();
+              $feature.parent().addClass('selected special');
             }
           }
 
@@ -796,7 +832,6 @@
           }
 
           function _saveProperties() {
-            console.log("save features");
             that.saveTilesStyles(feature_props);
           }
 
@@ -812,18 +847,19 @@
       var bubbles_cloropethas = (function($, window, undefined){
 
         var $custom       = $vis_ul.find('> li:eq(1) div.suboptions')
-          , custom_props  = {}; 
+          , custom_props  = {}
+          , custom_vis    = {};
 
 
         _init();
         
           function _init() {
-            _setProperties(prev_properties.properties);
+            _setProperties(prev_properties);
             _initElements();
             _bindEvents();
 
             if (prev_properties.type == "custom") {
-              _activate();
+              $custom.parent().addClass('selected special');
             }
           }
 
@@ -837,8 +873,8 @@
 
 
               // Change default value if there was a previous one
-              if (old_properties[css_[0]]) 
-                $(ele).attr('default',old_properties[css_[0]]);
+              if (old_properties.properties[css_[0]]) 
+                $(ele).attr('default',old_properties.properties[css_[0]]);
 
               var def_ = $(ele).attr('default');
 
@@ -852,12 +888,25 @@
             if (geom_type=="point" || geom_type=="multipoint") {
               custom_props['marker-placement'] = 'point';
               custom_props['marker-type'] = 'ellipse';
-              custom_props['marker-allow-overlap'] = true;
-            } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-              // No more properties are needed
-            } else {
-              // No more properties are needed
+              custom_props['marker-allow-overlap'] = false;              
             }
+
+
+            // Get visualization variables
+            if (geom_type=="point" || geom_type=="multipoint") {
+              custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
+              custom_vis['param'] = 'marker-width';
+              custom_vis['v_min'] = old_properties.visualization.v_min || 0;
+              custom_vis['v_max'] = old_properties.visualization.v_min || 5;
+              custom_vis['values'] = old_properties.visualization.values || [0,1,2,3,4,5];
+            } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+              
+            } else {
+              
+            }
+
+            // Set type
+            custom_vis['type'] = 'custom';
           }
 
 
@@ -896,21 +945,66 @@
             });
 
 
+
             // Range inputs
             $custom.find('span.numeric').each(function(i,el){
               var type = $(el).attr('class').replace('numeric','').replace(' ','')
-                , property = $(el).attr('css').split(' ')[0]
-                , value = custom_props[property];
-              
+                , property = $(el).attr('css') || $(el).attr('data')
+                , value = 0;
+
+              if (type=='') {
+                value = custom_props[property];
+              } else {
+                var length = custom_vis[property].length
+                , values = custom_vis[property];
+
+                if (type=="max") {
+                  value = values[length-1]
+                } else {
+                  value = values[0]
+                }
+              }
 
               $(el).rangeInput({
-                type: $(el).attr('css').replace('numeric','').replace(' ',''),
+                type: type,
                 value: value
               })
               .bind('change.rangeInput',function(ev,value){
-                _.each($(this).attr('css').split(' '),function(ele,i){
-                  custom_props[ele] = value;
-                });
+                
+                if (!$(this).hasClass('min') && !$(this).hasClass('max')) {
+                  _.each($(this).attr('css').split(' '),function(ele,i){
+                    custom_props[ele] = value;
+                  });
+                } else {
+                  var values = custom_vis[$(this).attr('data')]
+                    , max , min
+                    , length = values.length - 1;
+
+                  console.log('old_values');
+                  console.log(custom_vis[$(this).attr('data')]);
+
+                  if ($(this).hasClass('max')) {
+                    max = value;
+                    min = parseInt(values[0]);
+                  } else {
+                    min = value;
+                    max = parseInt(values[length])
+                  }
+
+                  // Create the values
+                  var step = (max - min) / 5
+                    , new_values = [];
+                  
+                  new_values.push(min);
+
+                  for (var i = 1, l = 5; i<l; i++) {
+                    new_values.push((step*i) + min);
+                  }
+                  new_values.push(max);
+
+                  custom_vis[$(this).attr('data')] = new_values;
+                }
+
                 _saveProperties();
               });
             });
@@ -919,11 +1013,18 @@
             // Dropdowns
             $vis_ul.find('span.dropdown').each(function(i,el){
               $(el).customDropdown({
-                source: getColumns(),
+                source: getColumns(table_name),
                 unselect: 'Select a column'
               })
               .bind('change.customDropdown',function(ev,value){
-                console.log('column changed!');
+                custom_vis['column'] = value;
+
+                // Get min and max
+                var max_min = getMaxMinColumn(value);
+                custom_vis['v_max'] = max_min.v_max;
+                custom_vis['v_min'] = max_min.v_min;
+
+                console.log(max_min);
                 _saveProperties();
               });
             });
@@ -951,8 +1052,7 @@
           }
 
           function _saveProperties() {
-            console.log("save custom");
-            that.saveTilesStyles(custom_props);
+            that.saveTilesStyles(custom_props,custom_vis);
           }
 
         return {
@@ -1065,7 +1165,7 @@
             }
             
             custom_map_style.type = map_type.toLowerCase();
-            me.setMapStyle(custom_map_style,custom_map_properties);
+            me.saveMapStyle(custom_map_style,custom_map_properties);
           }
         });
         
@@ -1087,7 +1187,7 @@
             // Save the saturation value
             custom_map_style['saturation'] = ui.value;
             // Set the custom map styles
-            me.setMapStyle(custom_map_style,custom_map_properties);
+            me.saveMapStyle(custom_map_style,custom_map_properties);
           }
         });
         
@@ -1111,7 +1211,7 @@
             custom_map_style[style] = value;
 
             // Perform in the map
-            me.setMapStyle(custom_map_style,custom_map_properties);
+            me.saveMapStyle(custom_map_style,custom_map_properties);
           }
         });
         
@@ -1323,7 +1423,7 @@
             });
 
             // Initialize jscrollPane
-            $('.map_header ul.infowindow_customization div.suboptions ul.scrollPane').jScrollPane({autoReinitialise:true,maintainPosition:false});
+            $('.map_header ul.infowindow_customization div.suboptions ul.scrollPane').jScrollPane({autoReinitialise:true});
 
             me.infowindow_vars_ = infowindow_vars;
             me.setInfowindowVars(me.infowindow_vars_);
@@ -1337,11 +1437,6 @@
     }
 
     CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style,infowindow_vars) {
-      var me = this;
-      var map = me.map_;
-
-      // /* setup search */
-      this.setupSearch();
 
 
       // /* visualization example */
@@ -1503,13 +1598,7 @@
  
       /* Bind events for open and close any tool */
       //$(window).bind('.close.tooltip',function());
-
     }
-
-
-
-
-
 
 
 
@@ -1979,6 +2068,52 @@
       
       
     
+    ////////////////////////////////////////
+    //  CLOSE OUT TABLE WINDOWS && ESC    //
+    ////////////////////////////////////////
+    // Bind ESC key
+    CartoMap.prototype.bindMapESC = function() {
+      var me = this;
+      $(document).keydown(function(event){
+        if (event.which == '27') {
+          me.closeMapWindows();
+        }
+      });
+    }
+
+    // Unind ESC key
+    CartoMap.prototype.unbindMapESC = function() {
+      $(document).unbind('keydown');
+      $('body').unbind('click');
+      this.closeMapWindows();
+    }
+    
+    // Close all map elements
+    CartoMap.prototype.closeMapWindows = function() {
+      // Tools windows
+      $('.map_header ul.main li div.options').each(function(i,ele){
+        $(this).hide();
+      });
+      
+      // Close palettes
+      $('.map_header span.palette').each(function(i,ele){
+        $(this).hide();
+      });
+
+      // Close cartocss
+      $('.cartocss_editor').hide();
+      
+      // Close Infowindow
+      this.info_window_.hide();
+
+      //popup windows
+      $('div.mamufas').fadeOut('fast',function(){
+        $(document).unbind('keydown');
+        $('body').unbind('click');
+      });
+    }
+
+
     
 
     ////////////////////////////////////////
@@ -2053,9 +2188,7 @@
           this.geometry_creator_.destroy();
       }
       
-      // GOD -> close all active windows | tooltips | popups
-      GOD.broadcast('',3);
-      
+      this.closeMapWindows();
       $('div.map_window div.map_curtain').show();
     }
 
@@ -2077,7 +2210,7 @@
       //Queue loader
       var requestId = createUniqueId();
       params.requestId = requestId;
-      requests_queue.newRequest(requestId,type);
+      window.ops_queue.newRequest(requestId,type);
 
       $.ajax({
         dataType: 'json',
@@ -2087,19 +2220,19 @@
         url: global_api_url+'tables/'+table_name+url_change,
         data: params,
         success: function(data) {
-            requests_queue.responseRequest(requestId,'ok','');
+            window.ops_queue.responseRequest(requestId,'ok','');
             me.successRequest(params,new_value,old_value,type,data);
         },
         error: function(e, textStatus) {
           try {
             var msg = $.parseJSON(e.responseText).errors[0].error_message;
             if (msg == "Invalid rows: the_geom") {
-              requests_queue.responseRequest(requestId,'error','First georeference your table');
+              window.ops_queue.responseRequest(requestId,'error','First georeference your table');
             } else {
-              requests_queue.responseRequest(requestId,'error',msg);
+              window.ops_queue.responseRequest(requestId,'error',msg);
             }
           } catch (e) {
-            requests_queue.responseRequest(requestId,'error','There has been an error, try again later...');
+            window.ops_queue.responseRequest(requestId,'error','There has been an error, try again later...');
           }
           me.errorRequest(params,new_value,old_value,type);
         }

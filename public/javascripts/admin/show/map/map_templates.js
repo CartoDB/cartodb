@@ -113,7 +113,7 @@
                     '<div class="suboptions bubbles">'+
                       '<label>Asocciated value</label>'+
                       '<div class="long">'+
-                        '<span class="dropdown" css="column" default="cartodb_id"></span>'+
+                        '<span class="dropdown" data="column" default="cartodb_id"></span>'+
                       '</div>'+
                       '<label>Fill</label>'+
                       '<div class="long">'+
@@ -130,8 +130,8 @@
                       '</div>'+
                       '<label>Bubble sizes</label>'+
                       '<div class="long">'+
-                        '<span class="numeric min" css="b_min" default="0"></span>'+
-                        '<span class="numeric max" css="b_max" default="100"></span>'+
+                        '<span class="numeric min" data="values" default="0"></span>'+
+                        '<span class="numeric max" data="values" default="100"></span>'+
                       '</div>'+
                     '</div>'+
                     '<div class="suboptions cloropeth">'+

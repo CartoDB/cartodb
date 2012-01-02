@@ -424,7 +424,7 @@
       	$el.append(
 	      	'<p>Max</p>'
 	      );
-	      $(el).find('input').removeAttr('disabled');
+	      $el.find('input').removeAttr('disabled');
       }
 
       // Min?
@@ -432,7 +432,7 @@
       	$el.append(
 	      	'<p>Min</p>'
 	      );
-	      $(el).find('input').removeAttr('disabled');
+	      $el.find('input').removeAttr('disabled');
       }
 	  }
 
@@ -625,7 +625,7 @@
       );
 
       // Add jScrollPane :S
-      $el.find('ul').jScrollPane({autoReinitialise:true,maintainPosition:false});
+      $el.find('ul').jScrollPane({autoReinitialise:true});
 
       //Add the source if exists
       Core._addList($el,Core.options.source);
@@ -811,7 +811,7 @@
       );
 
       // Add jScrollPane :S
-      $el.find('ul').jScrollPane({autoReinitialise:true,maintainPosition:false});
+      $el.find('ul').jScrollPane({autoReinitialise:true});
 
       //Add the source if exists
       Core._addList($el,Core.options.source);

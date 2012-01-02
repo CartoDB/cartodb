@@ -2292,7 +2292,7 @@
             });
             
             // Initialize jscrollPane
-             $('div.filter_window ul.scrollPane').jScrollPane({autoReinitialise:true,maintainPosition:false});
+             $('div.filter_window ul.scrollPane').jScrollPane({autoReinitialise:true});
           }
         }
       });

@@ -143,7 +143,7 @@
   	    });
         
         // Initialize jscrollPane
-        $('div.marker_infowindow div.scrollPane').jScrollPane({autoReinitialise:true,maintainPosition:false});
+        $('div.marker_infowindow div.scrollPane').jScrollPane({autoReinitialise:true});
 
 
   	    // If app in query mode?

@@ -25,11 +25,17 @@
 	      	'<a href="#close_this_view" class="close">close this view</a>'+
 					'<div class="inner">'+
 	       		'<h3>Add your custom SQL query</h3>'+
-						'<p>You can free move or close this window to watch the table. If you want to know more about PostGIS check out this <a href="http://www.postgis.org/docs/" target="_blank">reference</a>. Protip: Ctrl+RETURN for lauching your query</p>'+
+						'<p>You can free move or close this window to watch the table. If you want to know more about PostGIS check out this <a href="http://www.postgis.org/docs/" target="_blank">reference</a>. Protip: Alt+RETURN for lauching your query</p>'+
 		        '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
 		        '<span class="bottom">'+
 		          '<span class="errors"><p>Your query is not correct, try again with another ;)</p></span>'+
-		          '<span><a href="#undo" class="undo"></a><a href="#redo" class="redo"></a></span>'+
+		          '<span class="history">'+
+		          	'<a href="#undo" class="undo"></a><a href="#redo" class="redo"></a>'+
+		          	'<div class="tooltip">'+
+	          			'<p>select</p>'+
+	          			'<span class="arrow"></span>'+
+	        			'</div>'+
+		          '</span>'+
 		          '<a href="#apply" class="try_query">Apply query</a>'+
 		          '<a href="#clear" class="clear_table">Clear view</a>'+
 		        '</span>'+

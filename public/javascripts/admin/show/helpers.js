@@ -279,7 +279,9 @@
     /* Carto to javascript  */
     /*============================================================================*/
     function cartoToJavascript(str, geom_type) {
-      var type,properties = {}, visualization = {};
+      var type, properties = {}, visualization = {};
+
+      visualization.style = str;
       str = str.replace(/ /g,'').replace(/\}#/g,'}\n #');
 
       var regexp_css = /[^\[|^\{]*(\[([^\]]*)\])?\{(.*)\}/g;
@@ -301,6 +303,7 @@
       // Check type of visualization and get its data
       if (str.search(/\/\*/) != -1) {
         type = "carto";
+        visualization.style = visualization.style.replace('/*carto*/','');
       } else if (array.length==0) {
         type = "features"
       } else {
@@ -309,8 +312,16 @@
           type = "custom";
 
           // Get min-max
-          visualization.v_min = array[1].split('>=')[1];
-          visualization.v_max = array[array.length-2].split('>=')[1];
+          visualization.v_min = parseInt(array[1].split('>=')[1]);
+          visualization.v_max = parseInt(array[array.length-2].split('>=')[1]);
+
+          // Get values
+          visualization.values = [];
+          _.each(array,function(string,i){
+            if (i % 3 == 2) {
+              visualization.values.push(string.split(':')[1]);
+            }
+          });
         } else {
           type = "color";
 
@@ -328,15 +339,6 @@
 
         // Get column
         visualization.column = array[1].split('>=')[0];
-
-
-        // Get values
-        visualization.values = [];
-        _.each(array,function(string,i){
-          if (i % 3 == 2) {
-            visualization.values.push(string.split(':')[1]);
-          }
-        });
 
       }
 

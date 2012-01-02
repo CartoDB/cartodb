@@ -135,22 +135,26 @@
                       '</div>'+
                     '</div>'+
                     '<div class="suboptions cloropeth">'+
+                      '<label>Alpha</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="line-opacity polygon-opacity" default="1"></span>'+
+                      '</div>'+
                       '<label>Asocciated value</label>'+
                       '<div class="long">'+
-                        '<span class="dropdown" data=""></span>'+
+                        '<span class="dropdown" data="column" default="cartodb_id"></span>'+
                       '</div>'+
                       '<label>Buckets</label>'+
                       '<div class="long">'+
-                        '<span class="dropdown" data=""></span>'+
+                        '<span class="dropdown buckets" data="values" default="5"></span>'+
                       '</div>'+
                       '<label>Color ramp</label>'+
                       '<div class="long">'+
-                        '<span class="color_ramp" data=""></span>'+
+                        '<span class="color_ramp" data="values"></span>'+
                       '</div>'+
                     '</div>'+
                   '</li>'+
-                  '<li>'+
-                    '<a class="option" href="#color_map">Color map</a>'+
+                  '<li class="disabled">'+
+                    '<a class="option disabled" href="#color_map">Color map</a>'+
                     '<div class="suboptions">'+
                       '<label>Asocciated value</label>'+
                       '<div class="long">'+
@@ -197,8 +201,14 @@
 							'<span class="errors"><p>Your query is not correct, try again with another ;)</p></span>'+
             '</span>'+
             '<span class="bottom">'+
-              '<a href="#try" class="try_css">Try CSS</a>'+
-              '<a href="#cancel" class="cancel">Cancel</a>'+
+              '<span class="history">'+
+                '<a href="#undo" class="undo"></a><a href="#redo" class="redo"></a>'+
+                '<div class="tooltip">'+
+                  '<p>select</p>'+
+                  '<span class="arrow"></span>'+
+                '</div>'+
+              '</span>'+
+              '<a href="#try" class="try_css">Try style</a>'+
             '</span>'+
           '</div>'+
         '</div>'

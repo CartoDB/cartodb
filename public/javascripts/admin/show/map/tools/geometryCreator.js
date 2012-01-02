@@ -12,7 +12,7 @@
 
     
     // Show edit tools
-    carto_map.toggleEditTools();
+    window.map.carto_map.toggleEditTools();
     
     // Reset previous links
     $('.general_options ul li.edit a.complete').unbind('click');
@@ -31,20 +31,20 @@
 	      var geojson = $.parseJSON(new_geometry);
         var params = {};
         params.the_geom = new_geometry;
-        carto_map.updateTable('/records',params,new_geometry,null,"adding","POST");
+        window.map.carto_map.updateTable('/records',params,new_geometry,null,"adding","POST");
       }
       $('.general_options ul li.map a.select').click();
-      carto_map.toggleEditTools();
+      window.map.carto_map.toggleEditTools();
       thisOjb.destroy();
-      carto_map.geometry_creator_ = null;
+      window.map.carto_map.geometry_creator_ = null;
     });
     
     $('.general_options ul li.edit a.discard').click(function(ev){
       stopPropagation(ev);
       $('.general_options ul li.map a.select').click();
-      carto_map.toggleEditTools();
+      window.map.carto_map.toggleEditTools();
       thisOjb.destroy();
-      carto_map.geometry_creator_ = null;
+      window.map.carto_map.geometry_creator_ = null;
     });
     
     

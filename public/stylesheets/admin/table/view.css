@@ -237,8 +237,12 @@ div.sql_window div.inner {position:absolute; top:8px; left:8px; right:8px; botto
 div.sql_window div.inner h3 {display:block; padding:12px 0 0 10px; font:bold 15px Arial; color:#333333; text-shadow:0 1px white;}
 div.sql_window div.inner h3:hover {cursor:move}
 div.sql_window div.inner p {display:block; padding:3px 0 0 10px; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
-div.sql_window div.inner div.outer_textarea {position:absolute; top:46px; left:9px; right:9px; bottom:50px; margin:10px 0 0 0; padding:5px ; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
+div.sql_window div.inner p a {color:#999999;}
+div.sql_window div.inner p a:hover {color:#666666;}
+div.sql_window div.inner div.outer_textarea {position:absolute; top:55px; left:9px; right:9px; bottom:50px; margin:10px 0 0 0; padding:5px ; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
 div.sql_window span.bottom {position:absolute; bottom:10px; left:10px; right:10px; height:28px;}
+
+
 div.sql_window span.bottom a.reference {float:left; margin:7px 0 0 2px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.sql_window span.bottom a.clear_table {float:right; margin:7px 12px 0 0; font:normal 13px 'Helvetica',Arial; color:#FF6600; text-shadow:0 1px white;}
 div.sql_window span.bottom a.clear_table:hover {color:#FF3300}
@@ -636,3 +640,21 @@ div.mamufas div.stop_window div.inner_ span.stop h5 {margin:5px 0 0 0; font:bold
 div.mamufas div.stop_window div.inner_ span.stop p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
 div.mamufas div.stop_window div.inner_ span.stop p a {color:#666666;}
 div.mamufas div.stop_window div.inner_ span.stop p a:hover {color:#333333;}
+
+
+
+/* history for sql and carto */ 
+span.history {position:relative; float:left; width:65px; height:28px;}
+span.history a {float:left; width:32px; height:28px; background:url('/images/admin/table/sql_editor_history.png') no-repeat 0 0;}
+span.history a.redo {width:33px; background-position:right 0; cursor:default;}
+span.history a.undo {cursor:default}
+span.history a.undo.active {background-position:0 -32px;}
+span.history a.redo.active {background-position:right -32px;}
+span.history a.undo.active:hover {background-position:0 -64px; cursor:pointer;}
+span.history a.redo.active:hover {background-position:right -64px; cursor:pointer;}
+span.history a.undo.active:active {background-position:0 -96px;}
+span.history a.redo.active:active {background-position:right -96px;}
+span.history div.tooltip {position:absolute; display:none; bottom:36px; z-index:100; box-shadow:0 0 5px 2px rgba(0,0,0,0.1);}
+span.history div.tooltip p {padding:4px 13px; background:rgba(0,0,0,0.7); z-index:20; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; font:normal 11px 'Helvetica',Arial; color:white; text-align:center; line-height:14px; text-shadow:0 1px black; text-transform:capitalize;}
+span.history div.tooltip span.arrow {position:absolute; bottom:-5px; left:50%; width:0; height:0; margin:20px 0 0 -5px; border-left:5px solid transparent;
+   border-right:5px solid transparent; border-top:5px solid rgba(0,0,0,0.7);}

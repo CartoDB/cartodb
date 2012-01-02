@@ -2179,6 +2179,10 @@
 					$('body').attr('query_mode',"true");
 					editor.setOption('query',editor.getValue());
           table.mode = 'query';
+          
+          // Add history to sql editor
+          editor.addHistory();
+
           methods.refreshTable(0);
         	setAppStatus();
 				}

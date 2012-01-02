@@ -111,7 +111,7 @@
       var setupTools = _.after(ajax_count, function(){
         me.setVisualization(geom_type,layers_style);  // Show the correct tiles
         me.setMapStyle(geom_type,map_style);          // Set map styles
-                                                      // Set infowindow vars
+        me.setupInfowindow(infowindow_info || {});          // Set infowindow vars
       });
       
       
@@ -209,6 +209,7 @@
         str += '}';
 
         if (vis_data && vis_data.type=="custom") {
+          
           var step = (vis_data.v_max - vis_data.v_min) / (vis_data.values.length - 1);
 
           // Min
@@ -222,18 +223,15 @@
             str += vis_data.param + ':' + vis_data.values[i];
             str += '}';
           }
-
-          // Max
-          str += '#'+table_name+' ['+vis_data.column+ '>=' + vis_data.v_max +'] {';
-          str += vis_data.param + ':' + vis_data.values[length-1];
-          str += '}';
           
         } else if (vis_data && vis_data.type=="color") {
-                    
+          //          
         }
       }
 
-      
+      console.log(vis_data);
+      console.log(str);
+
       $.ajax({
         type: 'POST',
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
@@ -398,13 +396,13 @@
       });
 
       // Change map status
-      $('div.general_options ul li.map a').click(function(ev){
-        stopPropagation(ev);
-        if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
-          var status = $(this).attr('class');
-          me.setMapStatus(status);
-        }
-      });
+      // $('div.general_options ul li.map a').click(function(ev){
+      //   stopPropagation(ev);
+      //   if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
+      //     var status = $(this).attr('class');
+      //     me.setMapStatus(status);
+      //   }
+      // });
 
 
       //Zooms
@@ -462,6 +460,9 @@
 					
 					// Set the new value to the editor
 					editor.setOption('query',editor.getValue());
+
+          // Add history to sql editor
+          editor.addHistory();
 
           setAppStatus();
           me.refresh();
@@ -672,7 +673,6 @@
       var $vis_ul = $('.map_header ul.visualization_type')
         , prev_properties = cartoToJavascript(styles);        // Get previous properties, important!
 
-
         console.log(prev_properties);
       
       /*
@@ -683,17 +683,39 @@
 
         function _setCorrectGeomType(geom_type) {
           if (geom_type=="point" || geom_type=="multipoint") {
-            $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
             $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.lines').remove();
+            $vis_ul.find('> li:eq(0) > a.option').text('Custom points');
+            $vis_ul.find('> li:eq(1) > a.option').text('Bubble map');
             $vis_ul.find('> li:eq(1) > div.suboptions.cloropeth').remove();
           } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-            $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
             $vis_ul.find('> li:eq(0) > div.suboptions.points, > li:eq(0) > div.suboptions.lines').remove();
+            $vis_ul.find('> li:eq(0) > a.option').text('Custom polygons');
+            $vis_ul.find('> li:eq(1) > a.option').text('Cloropethas map');
             $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
           } else {
-            $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
             $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.points').remove();
+            $vis_ul.find('> li:eq(0) > a.option').text('Custom lines');
+            $vis_ul.find('> li:eq(1) > a.option').text('Cloropethas map');
             $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
+          }
+        }
+        return {}
+      }(jQuery, window));
+
+
+      /*
+        GEOMETRY OPTIONS
+      */
+      var geometry_options = (function($, window, undefined){
+        _setCorrectGeomType(geom_type)
+
+        function _setCorrectGeomType(geom_type) {
+          if (geom_type=="point" || geom_type=="multipoint") {
+            $('div.general_options ul li.map a.add_point').parent().removeClass('disabled');
+          } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+            $('div.general_options ul li.map a.add_polygon').parent().removeClass('disabled');
+          } else {
+            $('div.general_options ul li.map a.add_polyline').parent().removeClass('disabled');
           }
         }
         return {}
@@ -717,7 +739,7 @@
             _bindEvents();
 
             if (prev_properties.type == "features") {
-              $feature.parent().addClass('selected special');
+              _activate();
             }
           }
 
@@ -824,10 +846,19 @@
 
             // Remove all selected 
             var parent = $feature.parent();
-            if (!parent.hasClass('selected')) {
+            if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
               $vis_ul.find('li.selected').removeClass('selected special')
               parent.addClass('selected special');
-              _saveProperties()
+              if (ev)
+                _saveProperties()
+            }
+
+            if (geom_type=="point" || geom_type=="multipoint") {
+              $('div.map_window div.map_header ul li p:eq(1)').text('Point visualization');
+            } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+              $('div.map_window div.map_header ul li p:eq(1)').text('Polygon visualization');
+            } else {
+              $('div.map_window div.map_header ul li p:eq(1)').text('Line visualization');
             }
           }
 
@@ -859,7 +890,7 @@
             _bindEvents();
 
             if (prev_properties.type == "custom") {
-              $custom.parent().addClass('selected special');
+              _activate();
             }
           }
 
@@ -889,6 +920,11 @@
               custom_props['marker-placement'] = 'point';
               custom_props['marker-type'] = 'ellipse';
               custom_props['marker-allow-overlap'] = false;              
+            } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+              custom_props['line-width'] = '1';
+              custom_props['line-color'] = '#FFFFFF';
+            } else {
+              custom_props['line-width'] = '4';
             }
 
 
@@ -897,16 +933,25 @@
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
               custom_vis['param'] = 'marker-width';
               custom_vis['v_min'] = old_properties.visualization.v_min || 0;
-              custom_vis['v_max'] = old_properties.visualization.v_min || 5;
+              custom_vis['v_max'] = old_properties.visualization.v_max || 5;
               custom_vis['values'] = old_properties.visualization.values || [0,1,2,3,4,5];
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-              
+              custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
+              custom_vis['param'] = 'polygon-fill';
+              custom_vis['v_min'] = old_properties.visualization.v_min || 0;
+              custom_vis['v_max'] = old_properties.visualization.v_max || 5;
+              custom_vis['values'] =  old_properties.visualization.values || ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
             } else {
-              
+              custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
+              custom_vis['param'] = 'polyline-fill';
+              custom_vis['v_min'] = old_properties.visualization.v_min || 0;
+              custom_vis['v_max'] = old_properties.visualization.v_max || 5;
+              custom_vis['values'] = old_properties.visualization.values || ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
             }
 
             // Set type
             custom_vis['type'] = 'custom';
+
           }
 
 
@@ -945,7 +990,6 @@
             });
 
 
-
             // Range inputs
             $custom.find('span.numeric').each(function(i,el){
               var type = $(el).attr('class').replace('numeric','').replace(' ','')
@@ -980,9 +1024,6 @@
                     , max , min
                     , length = values.length - 1;
 
-                  console.log('old_values');
-                  console.log(custom_vis[$(this).attr('data')]);
-
                   if ($(this).hasClass('max')) {
                     max = value;
                     min = parseInt(values[0]);
@@ -1011,20 +1052,46 @@
 
 
             // Dropdowns
-            $vis_ul.find('span.dropdown').each(function(i,el){
-              $(el).customDropdown({
-                source: getColumns(table_name),
-                unselect: 'Select a column'
+            $custom.find('span.dropdown').each(function(i,el){
+
+              if (!$(el).hasClass('buckets')) {
+                // Column dropdown
+                $(el).customDropdown({
+                  source: getColumns(table_name),
+                  unselect: 'Select a column',
+                  value: custom_vis[$(el).attr('data')]
+                })
+                .bind('change.customDropdown',function(ev,value){
+                  custom_vis['column'] = value;
+
+                  // Get min and max
+                  var max_min = getMaxMinColumn(value);
+                  custom_vis['v_max'] = max_min.v_max;
+                  custom_vis['v_min'] = max_min.v_min;
+
+                  _saveProperties();
+                });
+              } else {
+                // Buckets dropdown
+                $(el).customDropdown({
+                  unselect: 'Select a bucket',
+                  value: custom_vis[$(el).attr('data')].length
+                })
+                .bind('change.customDropdown',function(ev,value){
+                  $custom.find('span.color_ramp').colorRamp('update',value);
+                });
+              }
+            });
+
+
+            // Color ramps
+            $custom.find('span.color_ramp').each(function(i,el){
+              $(el).colorRamp({
+                value: custom_vis[$(el).attr('data')],
+                buckets: custom_vis[$(el).attr('data')].length
               })
-              .bind('change.customDropdown',function(ev,value){
-                custom_vis['column'] = value;
-
-                // Get min and max
-                var max_min = getMaxMinColumn(value);
-                custom_vis['v_max'] = max_min.v_max;
-                custom_vis['v_min'] = max_min.v_min;
-
-                console.log(max_min);
+              .bind('change.colorRamp',function(ev,values){
+                custom_vis['values'] = values;
                 _saveProperties();
               });
             });
@@ -1044,10 +1111,19 @@
 
             // Remove all selected
             var parent = $custom.parent();
-            if (!parent.hasClass('selected')) {
+            if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
               $vis_ul.find('li.selected').removeClass('selected special')
               parent.addClass('selected special');
-              _saveProperties();
+              if (ev)
+                _saveProperties();
+            }
+
+            if (geom_type=="point" || geom_type=="multipoint") {
+              $('div.map_window div.map_header ul li p:eq(1)').text('Bubble map');
+            } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+              $('div.map_window div.map_header ul li p:eq(1)').text('Cloropethas map');
+            } else {
+              $('div.map_window div.map_header ul li p:eq(1)').text('Cloropethas map');
             }
           }
 
@@ -1058,36 +1134,247 @@
         return {
             
         }
-      })( jQuery, window );
+      })(jQuery, window);
 
 
       /*
         COLOR
       */
-      var color = (function(){
+      var color = (function($, window, undefined){
+        var $color      = $vis_ul.find('> li:eq(2) div.suboptions')
+          , color_props = {}; 
+
         
+        _init();
+
+          function _init() {
+            //_setProperties(prev_properties.properties);
+            //_initElements();
+            _bindEvents();
+
+            // if (prev_properties.type == "features") {
+            //   $feature.parent().addClass('selected special');
+            // }
+          }
+
+          function _setProperties() {}
+
+
+          function _initElements() {}
+
+
+          function _bindEvents() {
+            $color.closest('li').find('> a.option').click(_activate);
+          }
+
+
+          function _activate(ev) {
+            if (ev) {
+              ev.preventDefault();
+            }
+
+            // Remove all selected 
+            var parent = $color.parent();
+            if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
+              $vis_ul.find('li.selected').removeClass('selected special')
+              parent.addClass('selected special');
+              _saveProperties()
+            }
+          }
+
+          function _saveProperties() {
+            //that.saveTilesStyles(feature_props);
+          }
+
+
+          // // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',[]);},6000);
+
+          // // Color ramp
+          // $vis_ul.find('span.color_ramp').each(function(i,el){
+          //   $(el).colorRamp({
+          //     unselect: 'Select a color ramp',
+          //     buckets: 7,
+          //     change: function(el,value) {
+          //       console.log(value);
+          //     }
+          //   });
+          // });
+          // Update color ramp
+          // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',4);},6000);
+
+        return {}
+      }(jQuery, window));
+
+
+      /*
+        CARTO
+      */
+      var carto = (function($, window, undefined){
+
+        var $carto = $('div.cartocss_editor'),
+            $carto_editor;
+
+        _init();
         
 
-        return {
-          
-        }
-      }());
-        
-        // // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',[]);},6000);
+          function _init() {
+            _initElements();
+            _setProperties(prev_properties);
+            _bindEvents();
+
+            if (prev_properties.type == "carto") {
+              _activate();
+            }
+          }
 
 
-        // // Color ramp
-        // $vis_ul.find('span.color_ramp').each(function(i,el){
-        //   $(el).colorRamp({
-        //     unselect: 'Select a color ramp',
-        //     buckets: 7,
-        //     change: function(el,value) {
-        //       console.log(value);
-        //     }
-        //   });
-        // });
-        // Update color ramp
-        // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',4);},6000);
+          function _setProperties(old_properties) {
+            console.log(old_properties);
+            $carto_editor.setValue(old_properties.visualization.style.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
+          }
+
+
+          function _initElements() {
+            // editor
+            $carto_editor = CodeMirror.fromTextArea(document.getElementById("cartocss_editor"), {
+              lineNumbers: false,
+              lineWrapping: true,
+              mode: "css",
+              onKeyEvent: function(editor,event) {
+                if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
+                  stopPropagation(event);
+                  _saveProperties();
+                }
+              }
+            });
+
+            $carto_editor.historyArray = new Array();
+            $carto_editor.historyIndex = -1;
+          }
+
+
+          function _bindEvents() {
+
+            // Draggable
+            $carto.draggable({containment:'parent',handle:'h3'});
+            
+            
+            /* open cartocss editor */
+            $('.general_options.map li a.carto').click(function(ev){
+              stopPropagation(ev);
+              if (!$carto.is(':visible')) {
+                that.closeMapWindows();
+                that.bindMapESC();
+                $carto.fadeIn(function(){$carto_editor.refresh();});
+              } else {
+                that.closeMapWindows();
+                that.unbindMapESC();
+              }
+            });
+
+            /* close */
+            $carto.find('a.close').click(function(ev){
+              stopPropagation(ev);
+              that.closeMapWindows();
+            });
+
+            /* try */
+            $carto.find('a.try_css').click(_activate);
+
+
+            // UNDO - REDO
+            $carto.find('span.history a.undo').on('click', function (ev) {
+              stopPropagation(ev);
+              if ($(this).hasClass('active') && $carto_editor.historyIndex>0 && $carto_editor.historyArray.length>0) {
+                $carto_editor.historyIndex--;
+                $carto_editor.setValue($carto_editor.historyArray[$carto_editor.historyIndex]);
+                if ($carto_editor.historyIndex == 0) {
+                  $(this).removeClass('active');
+                }
+                $carto.find('span.history a.redo').addClass('active');
+              }
+            });
+
+            $carto.find('div.sql_window span.history a.redo').on('click', function (ev) {
+              stopPropagation(ev);
+              if ($(this).hasClass('active') && $carto_editor.historyIndex<$carto_editor.historyArray.length-1) {
+                $carto_editor.historyIndex++;
+                $carto_editor.setValue($carto_editor.historyArray[$carto_editor.historyIndex]);
+
+                if ($carto_editor.historyIndex == ($carto_editor.historyArray.length - 1)) {
+                  $(this).removeClass('active');
+                }
+
+                $carto.find('span.history a.undo').addClass('active');
+              }
+            });
+
+            $carto.find('a.redo,a.undo').hover(
+              function(){
+                var position = $(this).position().left;
+                $(this)
+                  .closest('span.history')
+                  .find('div.tooltip p')
+                  .text($(this).attr('class'))
+                  .parent()
+                  .css({left: position - 10 + 'px'})
+                  .show();
+              },
+              function() {
+                $(this).closest('span.history').find('div.tooltip').hide();
+              }
+            );
+          }
+
+
+          function _addHistory() {
+            var sql = $carto_editor.getValue();
+
+            if ($carto_editor.historyArray[$carto_editor.historyIndex] != sql) {
+              // Size bigger than 10?
+              if ($carto_editor.historyArray.length>=10) {
+                $carto_editor.historyArray.shift();
+              } else {
+                $carto_editor.historyIndex++;
+                $carto_editor.historyArray = $carto_editor.historyArray.slice(0,$carto_editor.historyIndex);
+              }
+              $carto_editor.historyArray.push(sql);
+
+              // Check undo and redo activation
+              if (($carto_editor.historyIndex + 1) == ($carto_editor.historyArray.length)) {
+                $carto.find('a.redo').removeClass('active');
+              } else {
+                $carto.find('a.redo').addClass('active');
+              }
+
+              if (($carto_editor.historyIndex + 1) == 0) {
+                $carto.find('a.undo').removeClass('active');
+              } else {
+                $carto.find('a.undo').addClass('active');
+              }
+            }
+          }
+
+
+          function _activate(ev) {
+            if (ev) {
+              ev.preventDefault();
+            }
+
+            // Remove all selected and say Carto is being used
+            $vis_ul.find('li.selected').removeClass('selected special')
+            $('div.map_window div.map_header ul li p:eq(1)').text('Carto');
+
+            if (ev)
+              _saveProperties();
+          }
+
+
+          function _saveProperties() {
+            console.log('save!');
+            that.saveTilesStyles('/*carto*/' + $carto_editor.getValue());
+          }
+      })(jQuery, window)
     }
 
     /* REVIEW! - Set map styles */
@@ -1295,9 +1582,6 @@
       }(jQuery, window));
     }
 
-    /* REVIEW! - Set the infowindow vars */
-    CartoMap.prototype.setInfowindowVars = function(infowindow_vars) {
-    }
 
     /* REVIEW Refresh infowindow customization due to adding/removing a column */
     CartoMap.prototype.setupInfowindow = function(infowindow_vars) {
@@ -1334,7 +1618,7 @@
           custom_infowindow[value] = bool;
         });
 
-        me.setInfowindowVars(custom_infowindow);
+        me.saveInfowindowVars(custom_infowindow);
       });
 
       
@@ -1350,7 +1634,7 @@
           custom_infowindow[value] = true;
         }
         
-        me.setInfowindowVars(custom_infowindow);
+        me.saveInfowindowVars(custom_infowindow);
       });
       
     
@@ -1364,11 +1648,11 @@
           if (parent.find('div.suboptions').length>0) {
             parent.addClass('selected special');
             $('.map_header ul.infowindow_customization').closest('li').find('p').text('Custom');
-            me.setInfowindowVars(custom_infowindow);
+            me.saveInfowindowVars(custom_infowindow);
           } else {
             $('.map_header ul.infowindow_customization').closest('li').find('p').text('Default');
             parent.addClass('selected');
-            me.setInfowindowVars(default_infowindow);
+            me.saveInfowindowVars(default_infowindow);
           }
         }
       });
@@ -1426,7 +1710,7 @@
             $('.map_header ul.infowindow_customization div.suboptions ul.scrollPane').jScrollPane({autoReinitialise:true});
 
             me.infowindow_vars_ = infowindow_vars;
-            me.setInfowindowVars(me.infowindow_vars_);
+            me.saveInfowindowVars(me.infowindow_vars_);
           },
           error: function(e) {
             console.debug(e);
@@ -1439,8 +1723,7 @@
     CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style,infowindow_vars) {
 
 
-      // /* visualization example */
-      //this.visualization_option(geom_type,geom_styles);
+  
          
       
 
@@ -1451,57 +1734,7 @@
         
       //   var geometry_style = {};
       //   var default_style = {};
-        
-        
-      //   /* CARTOCSS WINDOW */
-      //   // draggable
-      //   $('div.cartocss_editor').draggable({containment:'parent',handle:'h3'});
-        
-      //   // editor
-      //   var cartocss_editor = CodeMirror.fromTextArea(document.getElementById("cartocss_editor"), {
-      //     lineNumbers: false,
-      //     lineWrapping: true,
-      //     mode: "css",
-      //     onKeyEvent: function(editor,event) {
-      //       if (event.ctrlKey && event.keyCode == 13 && event.type == "keydown") {
-      //         stopPropagation(event);
-      //         $('div.cartocss_editor a.try_css').trigger('click');
-      //       }
-      //     }
-      //   });
-        
-      //   // Bindings
-      //   $('div.cartocss_editor a.try_css').click(function(ev){
-      //     stopPropagation(ev);
-      //     me.setTilesStyles(cartocss_editor.getValue());
-      //   });
-      //   $('div.cartocss_editor a.close, div.cartocss_editor a.cancel').click(function(ev){
-      //     stopPropagation(ev);
-      //     me.closeMapWindows();
-      //   });
-      //   /*END CARTOCSS*/
-
-
-      //   setupStyles(geom_styles);
-        
-
-        
-        
-      //   /* open cartocss editor */
-      //   $('.general_options.map li a.carto').click(function(ev){
-      //     stopPropagation(ev);
-      //     if (!$('div.cartocss_editor').is(':visible')) {
-      //       me.closeMapWindows();
-      //       me.bindMapESC();
-      //       $('div.cartocss_editor').fadeIn(function(){cartocss_editor.refresh();});
-      //     } else {
-      //       me.closeMapWindows();
-      //       me.unbindMapESC();
-      //     }
-      //   });
-        
-        
-
+       
       //     // Setup cartocss editor
       //     cartocss_editor.setValue(styles_.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
 
@@ -1648,6 +1881,7 @@
             }
           },
           click: function(feature, div, opt3, evt){
+            console.log('click');
             setTimeout(function(){
               if (me.query_mode || me.status_ == "select") {
                 // Was a double click?

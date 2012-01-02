@@ -250,10 +250,10 @@
     /*============================================================================*/
     /* Get updated columns  */
     /*============================================================================*/
-    function getColumns() {
+    function getColumns(table) {
       return $.parseJSON($.ajax({
         method: "GET",
-        url: global_api_url + 'tables/' + table_name,
+        url: global_api_url + 'tables/' + table,
         headers: {"cartodbclient":"true"},
         async: false
       }).responseText).schema;
@@ -267,7 +267,7 @@
     function getMaxMinColumn(column) {
       return $.parseJSON($.ajax({
         method: 'GET',
-        url: global_api_url+'queries?sql='+escape('SELECT max('+column+') as max, min('+column+') as min FROM '+table_name),
+        url: global_api_url+'queries?sql='+escape('SELECT max('+column+') as v_max, min('+column+') as v_min FROM '+table_name),
         headers: {"cartodbclient":"true"},
         async: false
       }).responseText).rows[0];
@@ -279,31 +279,66 @@
     /* Carto to javascript  */
     /*============================================================================*/
     function cartoToJavascript(str, geom_type) {
-      var type,properties = {};
+      var type,properties = {}, visualization = {};
+      str = str.replace(/ /g,'').replace(/\}#/g,'}\n #');
+
       var regexp_css = /[^\[|^\{]*(\[([^\]]*)\])?\{(.*)\}/g;
-
-      var array = regexp_css.exec(str.replace(/ /g,''));
-      array.shift();
-
-
-      // Check type of visualization
-      // console.log(array);
-      if (array.length<4) {
-        type = "features"
-      } else {
-        type = "custom"
-      }
+      var array = _.compact(str.split(regexp_css));
 
 
       // Get properties (simple)
-      var split_css = array[2].split(';');
+      var split_css = array[0].split(';');
       _.each(split_css,function(prop,i){
         if (prop!="") {
           var split_prop = prop.split(':');
           properties[split_prop[0]] = split_prop[1]; 
         }
-      })
+      });
+
+      // Remove properties from the array
+      array.shift();
+
+      // Check type of visualization and get its data
+      if (str.search(/\/\*/) != -1) {
+        type = "carto";
+      } else if (array.length==0) {
+        type = "features"
+      } else {
+        
+        if (str.search('==') == -1) {
+          type = "custom";
+
+          // Get min-max
+          visualization.v_min = array[1].split('>=')[1];
+          visualization.v_max = array[array.length-2].split('>=')[1];
+        } else {
+          type = "color";
+
+          // Get conditions
+          visualization.conditions = [];
+          _.each(array,function(string,i){
+            if (i % 2 == 1) {
+              visualization.values.push(string.split('==')[1]);
+            }
+          });
+        }
+
+        // Get param
+        visualization.param = array[2].split(':')[0];
+
+        // Get column
+        visualization.column = array[1].split('>=')[0];
 
 
-      return {properties: properties, type: type}; 
+        // Get values
+        visualization.values = [];
+        _.each(array,function(string,i){
+          if (i % 3 == 2) {
+            visualization.values.push(string.split(':')[1]);
+          }
+        });
+
+      }
+
+      return {properties: properties, type: type, visualization:visualization}; 
     }

@@ -29,16 +29,19 @@ if os.path.isfile(prj_file):
     srid = code
   else:
     #Ok, no luck, lets try with the OpenGeo service
-    query = urlencode({
-        'exact' : True,
-        'error' : True,
-        'mode' : 'wkt',
-        'terms' : prj_txt})
-    webres = urlopen('http://prj2epsg.org/search.json', query)
-    jres = json.loads(webres.read())
-    if jres['codes']:
-      srid = int(jres['codes'][0]['code'])
-    
+    try:
+      query = urlencode({
+          'exact' : True,
+          'error' : True,
+          'mode' : 'wkt',
+          'terms' : prj_txt})
+      webres = urlopen('http://prj2epsg.org/search.json', query)
+      jres = json.loads(webres.read())
+      if jres['codes']:
+        srid = int(jres['codes'][0]['code'])
+    except:
+      srid=4326 # ensure set back to 4326 whatever happens    
+          
 try:
     #Try to detect the encoding
     dbf = open(dbf_file, 'rb')

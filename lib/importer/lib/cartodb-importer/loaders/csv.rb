@@ -46,7 +46,6 @@ module CartoDB
         # * loop over table and parse geojson into postgis geometries
         # * drop the_geom_orig
         #
-        # TODO: move the geom over using ST_FromGeoJSON once inside PostGIS 2.0
         if column_names.include? "the_geom"        
           if res = @db_connection["select the_geom from #{@suggested_name} limit 1"].first
 
@@ -62,7 +61,9 @@ module CartoDB
                 @db_connection.run("CREATE INDEX #{@suggested_name}_the_geom_gist ON #{@suggested_name} USING GIST (the_geom)")
 
                 # loop through old geom parsing into the_geom. 
-                # TODO: Should probably window this
+                # TODO: Replace with ST_GeomFromGeoJSON when production has been upgraded to postgis r8692
+                # @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(the_geom_orig),4326) WHERE the_geom_orig IS NOT NULL")
+                # tokumine ticket: http://trac.osgeo.org/postgis/ticket/1434                
                 @db_connection["select the_geom_orig from #{@suggested_name}"].each do |res|
                   begin
                     geojson = RGeo::GeoJSON.decode(res[:the_geom_orig], :json_parser => :json)

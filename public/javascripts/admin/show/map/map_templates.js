@@ -109,7 +109,7 @@
                     '</div>'+
                   '</li>'+
                   '<li>'+
-                    '<a class="option" href="#bubble_map">Bubble map</a>'+
+                    '<a class="option" href="#special">Bubble map</a>'+
                     '<div class="suboptions bubbles">'+
                       '<label>Asocciated value</label>'+
                       '<div class="long">'+

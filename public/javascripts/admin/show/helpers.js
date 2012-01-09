@@ -276,6 +276,20 @@
 
 
     /*============================================================================*/
+    /* Get column range values  */
+    /*============================================================================*/
+    function getColumnRange(column) {
+      return $.parseJSON($.ajax({
+        method: 'GET',
+        url: global_api_url+'queries?sql='+escape('SELECT max('+column+') as v_max, min('+column+') as v_min FROM '+table_name),
+        headers: {"cartodbclient":"true"},
+        async: false
+      }).responseText).rows[0];
+    }
+
+
+
+    /*============================================================================*/
     /* Carto to javascript  */
     /*============================================================================*/
     function cartoToJavascript(str, geom_type) {

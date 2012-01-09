@@ -320,17 +320,25 @@ span.dropdown.selected div.options_list .jspPane {width:100%!important;}
 
 /* color ramp */
 span.color_ramp {position:relative; display:block; width:100%; height:auto;}
-span.color_ramp span.select {display:block; height:15px; padding:2px; border:1px solid #999999; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px;}
-span.color_ramp table {width:100%; height:15px!important; overflow:hidden; border-collapse: collapse;}
-span.color_ramp table tr {width:100%; height:15px;}
+span.color_ramp span.select {display:block; height:16px; padding:2px; border:1px solid #999999; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px;}
+span.color_ramp table {position:relative; width:100%; height:15px!important; overflow:hidden; border-collapse: collapse;}
+span.color_ramp table tr {width:100%; height:15px; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; overflow:hidden;}
+span.color_ramp table tr td:first-child {-webkit-border-top-left-radius: 3px; -webkit-border-bottom-left-radius: 3px; -moz-border-radius-topleft: 3px; -moz-border-radius-bottomleft: 3px; border-top-left-radius: 3px; border-bottom-left-radius: 3px;}
+span.color_ramp table tr td:last-child {-webkit-border-top-right-radius: 3px; -webkit-border-bottom-right-radius: 3px; -moz-border-radius-topright: 3px; -moz-border-radius-bottomright: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px;}
 span.color_ramp table tr td {display:table-cell; text-indent:-9999px;}
+span.color_ramp span.bkg {position:absolute; top:4px; left:7px; width:162px; height:16px; background:url('/images/admin/map/color_ramp.png') no-repeat 0 0;}
+span.color_ramp span.bkg.first {top:3px; left:3px; background-position:left bottom;}
 span.color_ramp span.select:hover {cursor:pointer;}
 span.color_ramp span.select.first {color:#ABABAB;}
 span.color_ramp div.options_list {display:none;}
 span.color_ramp.selected div.options_list {display:block; position:absolute; width:110%; height:120px; top:-61px; left:-6%; overflow:hidden; z-index:10; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; box-shadow:0 0 3px 3px rgba(0,0,0,0.2); border:1px solid #999999!important;}
 span.color_ramp.selected div.options_list ul {float:left; display:block; width:100%!important; height:120px!important; padding:0!important; margin:0!important; background:white!important; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; border:none;}
-span.color_ramp.selected div.options_list ul li {display:block!important; height:auto; width:100%!important; padding:0!important; margin:0!important; border:none!important;}
-span.color_ramp.selected div.options_list ul li:hover {background:#283A5A; cursor:pointer;}
+span.color_ramp.selected div.options_list ul li {position:relative; display:block!important; height:auto; width:100%!important; padding:0!important; margin:0!important; border:none!important;}
+span.color_ramp.selected div.options_list ul li:hover,
+span.color_ramp.selected div.options_list ul li.selected {background:#283A5A; cursor:pointer;}
+span.color_ramp.selected div.options_list ul li.selected {cursor:default;}
+span.color_ramp.selected div.options_list ul li:first-child {-webkit-border-top-left-radius: 3px;
+-webkit-border-top-right-radius: 3px; -moz-border-radius-topleft: 3px; -moz-border-radius-topright: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px;}
+span.color_ramp.selected div.options_list ul li:last-child {-webkit-border-bottom-right-radius: 3px;
+-webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
 span.color_ramp.selected div.options_list ul li table {width:162px; margin:4px 7px;}
-
-

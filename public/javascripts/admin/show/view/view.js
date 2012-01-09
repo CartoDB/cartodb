@@ -320,7 +320,13 @@
                    $('a#longitude').text(init_column);
                    $('a#longitude').attr('c',init_column);
                    // Select the init column
-                   $('a#longitude').parent().find('div.select_content li a:contains("' + init_column + '")').parent().addClass('selected');
+                   $('a#longitude')
+                   	.parent()
+                   	.find('div.select_content li a')
+                   	.filter(function(){
+                   		return $(this).text() == init_column;
+                   	})
+                   	.parent().addClass('selected');
 									 $('div.georeference_window div.georef_options input.address_input').val('{'+init_column+'}');
                  }                   
                }

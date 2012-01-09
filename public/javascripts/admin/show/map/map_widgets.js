@@ -574,6 +574,18 @@
    	_openSource: function(ev) {
    		Core._stopPropagation(ev);
    		var $el = $(this).closest('span.dropdown');
+
+   		// Check height and positionate correctly
+   		var ul_height = $el.find('div.jspPane li').size() * 23;
+
+   		if (ul_height<118) {
+   			$el.find('div.options_list').css({height: ul_height + 2 + 'px', top:'-' + ((ul_height/2) - 10) + 'px'});
+   			$el.find('ul').css({height: ul_height + 'px'});
+   		} else {
+   			$el.find('div.options_list').removeAttr('style');
+   			$el.find('ul').css({height:'188px'});
+   		}
+
    		$el.addClass('selected');
    		// GOD open
    		var iden = $el.data('id');

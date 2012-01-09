@@ -2173,10 +2173,10 @@
       ///////////////////////////////////////
       // General options
       $('div.sql_window a.try_query').live('click',function(ev){
-        var table_mode = ($('body').attr('view_mode') == "table");
+        var table_mode = (!$('body').hasClass('map'));
         if (table.enabled && table_mode) {
           ev.preventDefault();
-					$('body').attr('query_mode',"true");
+					$('body').addClass('query');
 					editor.setOption('query',editor.getValue());
           table.mode = 'query';
           
@@ -2188,8 +2188,8 @@
 				}
       });
 			$('a.clear_table').live('click',function(ev){
-				var view_mode = ($('body').attr('view_mode') === "table");
-			  if (view_mode) {
+				var table_mode = (!$('body').hasClass('map'));
+			  if (table_mode) {
 			    stopPropagation(ev);
 			    methods.restoreTable();
 			  }
@@ -2344,7 +2344,7 @@
       });
       $('div.filter_window a.clear_filter,div.stickies a.remove_filter').live('click',function(ev){
         stopPropagation(ev);
-        $('body').attr('query_mode','false');
+        $('body').removeClass('query');
         table.mode = 'normal';
         methods.refreshTable('');
         $('div.filter_window div.select_content').hide();
@@ -2361,7 +2361,7 @@
       ///////////////////////////////////////
 			$('section.subheader div.performing_op p a.refresh').live('click',function(ev){
         ev.preventDefault();
-				var view_mode = ($('body').attr('view_mode') === "table");
+				var table_mode = (!$('body').hasClass('map'));
 			  if (view_mode) {
 					ev.stopPropagation();
 	        $('table').cartoDBtable('refreshTable');
@@ -2571,7 +2571,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     restoreTable : function() {
       table.mode = 'normal';
-      $('body').attr('query_mode',"false");
+      $('body').removeClass('query');
       methods.refreshTable('');
     },
     
@@ -2594,13 +2594,13 @@
       var new_query = undefined;
       
       // If it comes from a query (from the map)
-      var table_mode = ($('body').attr('query_mode') == "true");
+      var table_mode = ($('body').hasClass('query'));
       if (table_mode) {
         table.mode = 'query';
         new_query = true;
       }
       
-			$('body').attr('view_mode','table');
+			$('body').removeClass('map');
       table.loading = true;
 
       if (position!='') {

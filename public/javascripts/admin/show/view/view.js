@@ -58,9 +58,9 @@
 	    // Clear sql mode and back to normal state
 	    $('a.clear_table').live('click', function (ev) {
 	      closeOutTableWindows();
-	      var query_mode = ($('body').attr('query_mode') === "true");
+	      var query_mode = ($('body').hasClass('query'));
 	      if (query_mode) {
-	        $('body').attr('query_mode', 'false');
+	        $('body').removeClass('query');
 	        setAppStatus(); // Out function to change app to SQL or NORMAL
 	      }
 	    });
@@ -122,7 +122,7 @@
 	    		$(this)
 	    			.closest('span.history')
 	    			.find('div.tooltip p')
-	    			.text($(this).attr('class'))
+	    			.text($(this).attr('class').replace('active',''))
 	    			.parent()
 	    			.css({left: position - 10 + 'px'})
 	    			.show();
@@ -153,7 +153,7 @@
 		      	$('div.sql_window a.redo').addClass('active');
 		      }
 
-		      if ((editor.historyIndex + 1) == 0) {
+		      if ((editor.historyIndex + 1) < 2) {
 						$('div.sql_window a.undo').removeClass('active');
 					} else {
 						$('div.sql_window a.undo').addClass('active');
@@ -203,7 +203,7 @@
           closeOutTableWindows();
 
           // SQL mode? you can't georeference
-          var query_mode = ($('body').attr('query_mode') === "true");
+          var query_mode = ($('body').hasClass('query'));
       		if (!query_mode && !$(this).parent().hasClass('disabled')) {
       		  resetProperties();
   				  $('div.mamufas div.georeference_window').show();
@@ -925,7 +925,7 @@
 	          } else {
 	            $('ul.tab_menu li a.share').addClass('disabled');
 	            var style="";
-	            if ($('body').attr('view_mode')=="map") {
+	            if ($('body').hasClass('map')) {
 	            	style = 'style="display:block"';
 	            }
 	            $('.inner_subheader div.right').append('<span '+ style +' class="mapkey"><a class="mapkey" href="#get_api_key">API KEY</a></span>');
@@ -1151,7 +1151,7 @@
 		    
 	      var cartodb_layer = {
           getTileUrl: function(coord, zoom) {
-            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png?sql=' + (($('body').attr('query_mode'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
+            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png?sql=' + (($('body').hasClass('query'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
           },
           tileSize: new google.maps.Size(256, 256)
         };
@@ -1241,7 +1241,7 @@
       }
 		  
 			function changeEmbedCode() {
-				var sql = 'sql=' + (($('body').attr('query_mode'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
+				var sql = 'sql=' + (($('body').hasClass('query'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
 				$('div.embed_window span.copy_code input').val('<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map?'+ sql +'\' width=\'572\' height=\'220\'></iframe>');
 				$('div.embed_window div.tiles_code input').val(TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}'+'.png?' + sql);
 			}
@@ -1371,7 +1371,7 @@
     
     // Show map
     $('div.table_position').hide();
-		$('body').attr('view_mode','map');
+		$('body').addClass('map');
     showMap();
 	}
 	
@@ -1388,7 +1388,7 @@
     $('table').cartoDBtable('refreshTable');
     
     // Hide map
-		$('body').attr('view_mode','table');
+		$('body').removeClass('map');
     $('div.table_position').show();
     if (window.map.carto_map) {hideMap()}
 	}
@@ -1524,7 +1524,7 @@
   ////////////////////////////////////////
   // Change application to SQL or normal mode
 	function setAppStatus() {
-		var query_mode = ($('body').attr('query_mode') === "true");
+		var query_mode = ($('body').hasClass('query'));
 		if (query_mode) {
 			if ($('ul.tab_menu li a.share').hasClass('disabled')) {
 				$('ul.tab_menu li a.share').hide();

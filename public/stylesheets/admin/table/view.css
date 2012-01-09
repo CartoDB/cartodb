@@ -222,6 +222,7 @@ div.general_options.map ul {padding-right:2px;}
 div.general_options.map li {display:none;}
 body.query div.general_options ul li {display:none}
 body.query div.general_options ul li.map {display:none}
+body.query.map div.general_options ul li.map.carto {display:inline-block}
 div.general_options ul li.all {display:inline-block!important; margin:0 0 0 5px!important;}
 div.general_options.map ul li.all {display:inline-block!important; margin:0 2px 0 5px!important;}
 div.general_options.map ul li.all a:hover {background:linear-gradient(-90deg,#CACBCE,#ffffff)!important;background:-webkit-gradient(linear,50% 0%,50% 100%,from(#CACBCE),to(#ffffff))!important;background:-moz-linear-gradient(-90deg,#CACBCE,#ffffff)!important;background:-o-linear-gradient(#CACBCE,#ffffff)!important;background:#CACBCE\9!important;cursor:pointer!important;}

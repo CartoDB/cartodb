@@ -54,8 +54,8 @@
       this.map_ = new google.maps.Map(document.getElementById("map"),myOptions);
 
       // Change view mode and watch if query mode is activated
-      this.query_mode = ($('body').attr('query_mode') === 'true');
-      $('body').attr('view_mode','map');
+      this.query_mode = ($('body').hasClass('query'));
+      $('body').addClass('map');
 
       this.addMapOverlays();
       this.addMapListeners();
@@ -438,10 +438,10 @@
       // SQL Map console
       // Clear
       $('a.clear_table').live('click',function(ev){
-        var view_map = ($('body').attr('view_mode') == 'map');
+        var view_map = ($('body').hasClass('map'));
         if (view_map) {
           stopPropagation(ev);
-          $('body').removeAttr('query_mode');
+          $('body').removeClass('query');
           me.query_mode = false;
 					$('.map_header div.stickies').remove();
           me.refresh();
@@ -450,12 +450,12 @@
 
       // Try query
       $('div.sql_window a.try_query').live('click',function(ev){
-        var map_status = ($('body').attr('view_mode') == "map");
-        if (map_status) {
+        var view_map = ($('body').hasClass('map'));
+        if (view_map) {
           stopPropagation(ev);
 					me.closeMapWindows();
 
-          $('body').attr('query_mode','true');
+          $('body').addClass('query');
           me.query_mode = true;
 					
 					// Set the new value to the editor
@@ -515,8 +515,8 @@
   		// Refresh after geolocating
   		$('section.subheader div.performing_op p a.refresh').live('click',function(ev){
         ev.preventDefault();
-  			var view_mode = ($('body').attr('view_mode') === "map");
-  		  if (view_mode) {
+  			var view_map = ($('body').hasClass('map'));
+  		  if (view_map) {
   				ev.stopPropagation();
           me.refreshWax();
   			}
@@ -690,12 +690,12 @@
           } else if (geom_type=="polygon" || geom_type=="multipolygon") {
             $vis_ul.find('> li:eq(0) > div.suboptions.points, > li:eq(0) > div.suboptions.lines').remove();
             $vis_ul.find('> li:eq(0) > a.option').text('Custom polygons');
-            $vis_ul.find('> li:eq(1) > a.option').text('Cloropethas map');
+            $vis_ul.find('> li:eq(1) > a.option').text('Cloropeth map');
             $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
           } else {
             $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.points').remove();
             $vis_ul.find('> li:eq(0) > a.option').text('Custom lines');
-            $vis_ul.find('> li:eq(1) > a.option').text('Cloropethas map');
+            $vis_ul.find('> li:eq(1) > a.option').text('Cloropeth map');
             $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
           }
         }
@@ -1121,9 +1121,9 @@
             if (geom_type=="point" || geom_type=="multipoint") {
               $('div.map_window div.map_header ul li p:eq(1)').text('Bubble map');
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-              $('div.map_window div.map_header ul li p:eq(1)').text('Cloropethas map');
+              $('div.map_window div.map_header ul li p:eq(1)').text('Cloropeth map');
             } else {
-              $('div.map_window div.map_header ul li p:eq(1)').text('Cloropethas map');
+              $('div.map_window div.map_header ul li p:eq(1)').text('Cloropeth map');
             }
           }
 
@@ -1295,7 +1295,7 @@
               }
             });
 
-            $carto.find('div.sql_window span.history a.redo').on('click', function (ev) {
+            $carto.find('span.history a.redo').on('click', function (ev) {
               stopPropagation(ev);
               if ($(this).hasClass('active') && $carto_editor.historyIndex<$carto_editor.historyArray.length-1) {
                 $carto_editor.historyIndex++;
@@ -1315,7 +1315,7 @@
                 $(this)
                   .closest('span.history')
                   .find('div.tooltip p')
-                  .text($(this).attr('class'))
+                  .text($(this).attr('class').replace('active',''))
                   .parent()
                   .css({left: position - 10 + 'px'})
                   .show();
@@ -1347,7 +1347,7 @@
                 $carto.find('a.redo').addClass('active');
               }
 
-              if (($carto_editor.historyIndex + 1) == 0) {
+              if (($carto_editor.historyIndex + 1) < 2) {
                 $carto.find('a.undo').removeClass('active');
               } else {
                 $carto.find('a.undo').addClass('active');
@@ -1371,7 +1371,7 @@
 
 
           function _saveProperties() {
-            console.log('save!');
+            _addHistory();
             that.saveTilesStyles('/*carto*/' + $carto_editor.getValue());
           }
       })(jQuery, window)
@@ -1720,119 +1720,7 @@
       }
     }
 
-    CartoMap.prototype.setupTools = function(geom_type,geom_styles,map_style,infowindow_vars) {
-
-
-  
-         
-      
-
-      
-      
-      // /*Geometry customization - header*/
-      // var geometry_customization = (function(){
-        
-      //   var geometry_style = {};
-      //   var default_style = {};
-       
-      //     // Setup cartocss editor
-      //     cartocss_editor.setValue(styles_.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
-
-      //     // Remove table_name
-      //     styles_ = styles_.split('{');
-
-      //     // Split properties
-      //     styles_ = styles_[1].split(';');
-
-      //     // Save each property removing white-spaces
-      //     _.each(styles_,function(property,i){
-      //       if (property!="}") {
-      //         var split_property = property.split(':');
-      //         geometry_style[split_property[0]] = split_property[1];
-      //       }
-      //     });
-
-
-      //     // Change tools, we have to know if this styles have been edited or not...
-      //     _.each(geometry_style,function(value,type){
-      //       $('span[css="'+type+'"]').find('input').val(value);
-            
-      //       if (typeof(value) === "string") {
-      //         var color = new RGBColor(value);
-      //         if (color.ok) {
-      //           $('span[css="'+type+'"] a.control').css({'background-color':value});
-      //         }
-      //       }
-      //     });
-
-
-      //     // Determinate if it is a customized style or default
-      //     var is_default = true,
-      //         cartocss = false;
-      //     _.each(geometry_style,function(value,type){
-      //       if (!cartocss && default_style[type]==undefined) {
-      //         cartocss = true;
-      //       }
-            
-      //       if (default_style[type]!=undefined && geometry_style[type] != default_style[type]) {
-      //         is_default = false;
-      //       } 
-      //     });
-
-      //     // if it is not default, select second option in the list, custom geometry style
-      //     if (!is_default) {
-      //       $('.map_header ul.geometry_customization > li').removeClass('selected');
-      //       // if it is cartocss
-      //       if (cartocss) {
-      //         $('.map_header ul.geometry_customization > li:eq(2)').addClass('selected special');
-      //         $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
-      //       } else {
-      //         $('.map_header ul.geometry_customization li:eq(1)').addClass('selected special');
-      //         $('.map_header ul.geometry_customization').closest('li').find('p').text('Custom Style');
-      //       }
-      //     }
-      //   }
-
-
-      //   /* reset styles to default */
-      //   function resetStyles() {
-      //     // Geom_types now is default_styles
-      //     geometry_style = default_style;
-
-      //     // Come back to defaults in the tools
-      //     _.each(default_style,function(value,type){
-      //       $('span[css="'+type+'"]').find('input').val(value);
-
-      //       if (isNaN(value)) {
-      //         var color = new RGBColor(value);
-      //         if (color.ok) {
-      //           $('span[css="'+type+'"] a.control').removeClass('error').css({'background-color':value});
-      //         }
-      //       }
-      //     });
-
-      //     // Reset slider
-      //     var css_prop = $('.map_header ul.geometry_customization div.suboptions span.alpha').attr('css').split(' ')[0];
-      //     $('.map_header ul.geometry_customization div.suboptions span.alpha div.slider').slider('value',default_style[css_prop]*100);
-
-      //     // Change the text to "Default Style"
-      //     $('.map_header ul.geometry_customization').closest('li').find('p').text('Default Style');
-
-      //     // RefreshStyles
-      //     me.setTilesStyles(geometry_style);
-      //   }
-        
-      //   return {}
-      // }());
-      
-      
-      // /* Setup infowindow - header */
-      // this.setupInfowindow(infowindow_vars || {});
- 
-      /* Bind events for open and close any tool */
-      //$(window).bind('.close.tooltip',function());
-    }
-
+   
 
 
     ////////////////////////////////////////
@@ -2355,8 +2243,8 @@
     ////////////////////////////////////////
     /* Reset map */
     CartoMap.prototype.refresh = function(sql) {
-      this.query_mode = ($('body').attr('query_mode') === 'true');
-      $('body').attr('view_mode','map');
+      this.query_mode = ($('body').hasClass('query'));
+      $('body').addClass('map');
 
       // Refresh wax layer
       this.tilejson = this.generateTilejson();

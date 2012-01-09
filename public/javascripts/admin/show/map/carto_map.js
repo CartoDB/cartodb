@@ -209,25 +209,21 @@
         str += '}';
 
         if (vis_data && vis_data.type=="custom") {
-          
-          var step = (vis_data.v_max - vis_data.v_min) / (vis_data.values.length - 1);
 
-          // Min
-          str += '#'+table_name+' ['+vis_data.column+ '>=' + vis_data.v_min +'] {';
-          str += vis_data.param + ':' + vis_data.values[0];
-          str += '}';
-
-          // Rest
-          for (var i=1,length=vis_data.values.length; i<length; i++) {
-            str += '#'+table_name+' ['+vis_data.column+ '>=' + (step*i) +'] {';
+          for (var i=vis_data.v_buckets.length - 1; i>=0; i--) {
+            str += '#'+table_name+' ['+vis_data.column+ '<=' + (vis_data.v_buckets[i]) +'] {';
             str += vis_data.param + ':' + vis_data.values[i];
             str += '}';
           }
           
         } else if (vis_data && vis_data.type=="color") {
-          //          
+          // PENDING
         }
       }
+
+
+      //console.log(str);
+
 
       $.ajax({
         type: 'POST',
@@ -670,7 +666,7 @@
       var $vis_ul = $('.map_header ul.visualization_type')
         , prev_properties = cartoToJavascript(styles);        // Get previous properties, important!
 
-        //console.log(prev_properties);
+      //console.log(prev_properties);
       
       /*
         LIST HEADER VISUALIZATION
@@ -929,20 +925,20 @@
             if (geom_type=="point" || geom_type=="multipoint") {
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
               custom_vis['param'] = 'marker-width';
-              custom_vis['v_min'] = old_properties.visualization.v_min || 0;
-              custom_vis['v_max'] = old_properties.visualization.v_max || 50;
+              custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,2,4,12,24];
+              custom_vis['n_buckets'] = 5;
               custom_vis['values'] = old_properties.visualization.values || [0,1,2,3,4,5];
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
               custom_vis['param'] = 'polygon-fill';
-              custom_vis['v_min'] = old_properties.visualization.v_min || 0;
-              custom_vis['v_max'] = old_properties.visualization.v_max || 5;
+              custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,2,4,12,24];
+              try {custom_vis['n_buckets'] = old_properties.visualization.v_buckets.length} catch(e) {custom_vis['n_buckets'] = 5};
               custom_vis['values'] =  old_properties.visualization.values || ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
             } else {
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
               custom_vis['param'] = 'polyline-fill';
-              custom_vis['v_min'] = old_properties.visualization.v_min || 0;
-              custom_vis['v_max'] = old_properties.visualization.v_max || 5;
+              custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,2,4,12,24];
+              try { custom_vis['n_buckets'] = old_properties.visualization.v_buckets.length} catch(e) {custom_vis['n_buckets'] = 5};
               custom_vis['values'] = old_properties.visualization.values || ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
             }
 
@@ -1030,7 +1026,7 @@
                   }
 
                   // Create the values
-                  var step = (max - min) / 5
+                  var step = (max - min) / 4
                     , new_values = [];
                   
                   new_values.push(min);
@@ -1061,10 +1057,12 @@
                 .bind('change.customDropdown',function(ev,value){
                   custom_vis['column'] = value;
 
-                  // Get min and max
-                  var max_min = getMaxMinColumn(value);
-                  custom_vis['v_max'] = max_min.v_max;
-                  custom_vis['v_min'] = max_min.v_min;
+                  custom_vis['v_buckets'] = [];
+
+                  // Create the buckets
+                  _.each(getColumnRange(value,custom_vis['n_buckets']),function(ele,pos){
+                    (custom_vis['v_buckets']).push(ele.maxamount);
+                  });
 
                   _saveProperties();
                 });
@@ -1075,6 +1073,15 @@
                   value: custom_vis[$(el).attr('data')].length
                 })
                 .bind('change.customDropdown',function(ev,value){
+
+                  custom_vis['n_buckets'] = value;
+                  custom_vis['v_buckets'] = [];
+
+                  // Create the buckets
+                  _.each(getColumnRange(custom_vis['column'],value),function(ele,pos){
+                    (custom_vis['v_buckets']).push(ele.maxamount);
+                  });
+
                   $custom.find('span.color_ramp').colorRamp('update',value);
                 });
               }
@@ -1085,7 +1092,7 @@
             $custom.find('span.color_ramp').each(function(i,el){
               $(el).colorRamp({
                 value: custom_vis[$(el).attr('data')],
-                buckets: custom_vis[$(el).attr('data')].length
+                buckets: custom_vis['n_buckets']
               })
               .bind('change.colorRamp',function(ev,values){
                 custom_vis['values'] = values;

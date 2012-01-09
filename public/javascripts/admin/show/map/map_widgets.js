@@ -583,7 +583,6 @@
    			$el.find('ul').css({height: ul_height + 'px'});
    		} else {
    			$el.find('div.options_list').removeAttr('style');
-   			$el.find('ul').css({height:'188px'});
    		}
 
    		$el.addClass('selected');
@@ -857,6 +856,7 @@
 
 
    	_searchBucket: function($el) {
+
    		_.each(Core.options.colors,function(ele,color){
    			var cont = 0;
 
@@ -876,6 +876,7 @@
 
 
    	_createSelected: function($el) {
+
    		// Print selected bucket
       var selected_color = '<table class="' + Core.options.color + ' selected"><tr class="' + Core.options.buckets + 'b' + '">'
       	, values = Core.options.colors[Core.options.color][Core.options.buckets + 'b'];

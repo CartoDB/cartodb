@@ -239,8 +239,7 @@ div.map_window div.loading span.loader {position:absolute; top:50%; left:50%; wi
 
 
 /* CSS EDITOR */
-div.map_window div.cartocss_editor {position:absolute; display:none; top:50%; left:50%; width:500px; height:auto; margin:-200px 0 0 -250px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 10px 3px #666666; box-shadow:0 0 10px 3px #666666;
- -moz-box-shadow:0 0 10px 3px #666666; z-index:10;}
+div.map_window div.cartocss_editor {position:absolute; display:none; top:50%; left:50%; width:500px; height:auto; margin:-200px 0 0 -250px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 10px 3px #666666; box-shadow:0 0 10px 3px #666666; -moz-box-shadow:0 0 10px 3px #666666; z-index:10;}
 div.map_window div.cartocss_editor a.close {position:absolute; right:-9px; top:-7px; width:24px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0; text-indent:-9999px;}
 div.map_window div.cartocss_editor a.close:hover {background-position:0 -23px;}
 div.map_window div.cartocss_editor div.inner_ {float:left; width:498px; height:auto; border:1px solid #CDCDCD; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
@@ -253,13 +252,15 @@ div.map_window div.cartocss_editor div.inner_ span.top p a:hover {color:#333333}
 div.map_window div.cartocss_editor div.inner_ span.top textarea {position:relative; min-width:454px; max-width:454px; max-height:265px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #CDCDCD; webkit-border-radius:5px;
 border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial; color:#333333; line-height:13px; background:white}
 div.map_window div.cartocss_editor div.inner_ span.top textarea:focus {outline:none;}
-div.map_window div.cartocss_editor div.inner_ span.top span.errors {position:relative; display:none; z-index:-1; height:auto; margin:-10px 0 0 0; padding:15px 0 7px; border-radius:5px; -webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #CDCDCD;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E);
-  background:linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#FFB5A3),to(#FF8A6E));background:-moz-linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-o-linear-gradient(#FFB5A3,#FF8A6E);background:#FFB5A3\9; z-index:0;}
-div.map_window div.cartocss_editor div.inner_ span.top span.errors p {padding:0 0 0 26px; color:#333333; font:normal 13px Arial; text-shadow:none; background:url('/images/admin/icons/error.png') no-repeat 7px 1px}
+div.map_window div.cartocss_editor div.inner_ span.top span.errors {position:relative; display:none; z-index:-1; height:auto; margin:-10px 0 0 0; padding:15px 7px 7px; border-radius:5px; -webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #CDCDCD;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E); background:linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#FFB5A3),to(#FF8A6E));background:-moz-linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-o-linear-gradient(#FFB5A3,#FF8A6E);background:#FFB5A3\9; z-index:0; }
+div.map_window div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar {width: 8px!important; margin-right:5px;}
+div.map_window div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar-thumb {border-radius:10px!important;background:rgba(0,0,0,0.15)!important;cursor:pointer!important}
+div.map_window div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar-thumb:hover,
+div.map_window div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar-thumb:active {background:rgba(0,0,0,0.3);cursor:pointer!important}
+div.map_window div.cartocss_editor div.inner_ span.top span.errors div {width:100%; overflow:auto; max-height:100px!important;}
+div.map_window div.cartocss_editor div.inner_ span.top span.errors p {padding:0 0 0 23px; color:#333333; font:normal 13px Arial; text-shadow:none; background:url('/images/admin/icons/error.png') no-repeat 2px 1px}
 div.map_window div.cartocss_editor div.inner_ span.bottom {position:relative; float:left; width:470px; padding:10px 14px!important;}
-div.map_window div.cartocss_editor div.inner_ span.bottom a.try_css {float:right; height:12px; padding:7px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
-  -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;  line-height:12px;  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
-  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.map_window div.cartocss_editor div.inner_ span.bottom a.try_css {float:right; height:12px; padding:7px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;  line-height:12px;  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE)); background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
 div.map_window div.cartocss_editor div.inner_ span.bottom a.try_css:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
 

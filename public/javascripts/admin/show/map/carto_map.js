@@ -243,8 +243,8 @@
         error:function(e) {
 					var errors = JSON.parse(e.responseText);
 					var msg = '';
-					_.each(errors,function(ele,i){msg += ele + ' ';});
-					$('.cartocss_editor span.errors p').text(msg);
+					_.each(errors,function(ele,i){msg += ele + '<br/>';});
+					$('.cartocss_editor span.errors p').html(msg);
 					$('.cartocss_editor span.errors').css({display:'block'});
         }
       });
@@ -331,7 +331,7 @@
       });
     }
 
-    /* REVIEW URGENT!!!!!! Event listeners of the map tools */
+    /* Event listeners of the map tools */
     CartoMap.prototype.addToolListeners = function() {
       var me = this;
 
@@ -589,7 +589,7 @@
       });
     }
 
-    /* REVIEW Set map status */
+    /* Set map status */
     CartoMap.prototype.setMapStatus = function(status) {
 
       this.status_ = status;
@@ -665,7 +665,7 @@
     ///////////////////////////////////////////////////////////////
     /* Set the tools due to geom_type... */
 
-    /* FINISH! - Set visualization of the tiles */
+    /* Set visualization of the tiles */
     CartoMap.prototype.setVisualization = function(geom_type, styles) {
       /* Visualization type - header*/
       var that = this;
@@ -1377,7 +1377,7 @@
       })(jQuery, window)
     }
 
-    /* REVIEW! - Set map styles */
+    /* Set map styles */
     CartoMap.prototype.setMapStyle = function(geom_type,map_style) {
 
       /*Map type - header*/
@@ -1582,8 +1582,7 @@
       }(jQuery, window));
     }
 
-
-    /* REVIEW Refresh infowindow customization due to adding/removing a column */
+    /* Refresh infowindow customization due to adding/removing a column */
     CartoMap.prototype.setupInfowindow = function(infowindow_vars) {
 
       var me = this,

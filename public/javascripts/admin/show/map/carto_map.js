@@ -229,9 +229,6 @@
         }
       }
 
-      console.log(vis_data);
-      console.log(str);
-
       $.ajax({
         type: 'POST',
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
@@ -673,7 +670,7 @@
       var $vis_ul = $('.map_header ul.visualization_type')
         , prev_properties = cartoToJavascript(styles);        // Get previous properties, important!
 
-        console.log(prev_properties);
+        //console.log(prev_properties);
       
       /*
         LIST HEADER VISUALIZATION
@@ -933,7 +930,7 @@
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
               custom_vis['param'] = 'marker-width';
               custom_vis['v_min'] = old_properties.visualization.v_min || 0;
-              custom_vis['v_max'] = old_properties.visualization.v_max || 5;
+              custom_vis['v_max'] = old_properties.visualization.v_max || 50;
               custom_vis['values'] = old_properties.visualization.values || [0,1,2,3,4,5];
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
@@ -1229,7 +1226,6 @@
 
 
           function _setProperties(old_properties) {
-            console.log(old_properties);
             $carto_editor.setValue(old_properties.visualization.style.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
           }
 
@@ -1768,7 +1764,6 @@
             }
           },
           click: function(feature, div, opt3, evt){
-            console.log('click');
             setTimeout(function(){
               if (me.query_mode || me.status_ == "select") {
                 // Was a double click?

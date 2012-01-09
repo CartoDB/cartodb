@@ -278,13 +278,16 @@
     /*============================================================================*/
     /* Get column range values  */
     /*============================================================================*/
-    function getColumnRange(column) {
+    function getColumnRange(column, buckets) {
       return $.parseJSON($.ajax({
         method: 'GET',
-        url: global_api_url+'queries?sql='+escape('SELECT max('+column+') as v_max, min('+column+') as v_min FROM '+table_name),
+        url: global_api_url+'queries?sql='+escape('SELECT quartile, max(' + column + 
+          ') as maxAmount FROM (SELECT ' + column + ', ntile(' + buckets + ') over (order by ' + column + 
+          ') as quartile FROM ' + table_name + ' WHERE ' + column + ' IS NOT NULL) x GROUP BY quartile ORDER BY quartile'),
+
         headers: {"cartodbclient":"true"},
         async: false
-      }).responseText).rows[0];
+      }).responseText).rows;
     }
 
 
@@ -325,17 +328,26 @@
         if (str.search('==') == -1) {
           type = "custom";
 
-          // Get min-max
-          visualization.v_min = parseInt(array[1].split('>=')[1]);
-          visualization.v_max = parseInt(array[array.length-2].split('>=')[1]);
-
-          // Get values
+          // Get values and buckets
           visualization.values = [];
+          visualization.v_buckets = [];
+
           _.each(array,function(string,i){
             if (i % 3 == 2) {
-              visualization.values.push(string.split(':')[1]);
+              visualization.values.unshift(string.split(':')[1]);
+            }
+
+            if (i % 3 == 1) {
+              visualization.v_buckets.unshift(string.split('<=')[1]);
             }
           });
+
+          visualization.v_buckets = _.compact(visualization.v_buckets);
+
+          if (visualization.v_buckets.length==0) {
+            visualization.v_buckets = null;
+          }
+
         } else {
           type = "color";
 
@@ -352,7 +364,7 @@
         visualization.param = array[2].split(':')[0];
 
         // Get column
-        visualization.column = array[1].split('>=')[0];
+        visualization.column = array[1].split('<=')[0];
 
       }
 

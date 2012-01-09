@@ -51,7 +51,10 @@ class Table < Sequel::Model(:user_tables)
         ).symbolize_keys
 
         importer = CartoDB::Importer.new hash_in
-        importer_result_name = importer.import!.name
+        
+        import_result = importer.import!
+        importer_result_name = import_result.name
+        #CartoDB::Logger.info "table#import runlog", "#{import_result.inspect}" 
       end
 
       #import from URL

@@ -592,7 +592,7 @@ div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.s
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li.empty {opacity:0.5}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li a {display:block; padding:4px 5px 4px 10px!important; background:none; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; font:normal 13px "Helvetica",Arial; color:#333333;
   text-shadow:none; text-decoration:none}
-div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li a:hover {color:#283A5A;}
+div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li a:hover {color:white; background:#283A5A}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li.selected {box-shadow:none}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li.selected a {color:white; background:#283A5A}
 div.mamufas div.georeference_window div.inner_ span.top div.georef_options div.select span.select.clicked ul li.selected a:hover {cursor:default}

@@ -2362,7 +2362,7 @@
 			$('section.subheader div.performing_op p a.refresh').live('click',function(ev){
         ev.preventDefault();
 				var table_mode = (!$('body').hasClass('map'));
-			  if (view_mode) {
+			  if (table_mode) {
 					ev.stopPropagation();
 	        $('table').cartoDBtable('refreshTable');
 				}
@@ -2594,8 +2594,8 @@
       var new_query = undefined;
       
       // If it comes from a query (from the map)
-      var table_mode = ($('body').hasClass('query'));
-      if (table_mode) {
+      var query_mode = ($('body').hasClass('query'));
+      if (query_mode) {
         table.mode = 'query';
         new_query = true;
       }

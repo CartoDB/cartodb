@@ -93,5 +93,156 @@
               '<a href="#confirm_georeference" class="confirm_georeference">Georeference</a>'+
             '</span>'+
           '</div>'+
+        '</div>',
+      advanced_options : 
+      	'<div class="save_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="loading">'+
+              '<h5>We are duplicating your table...</h5>'+
+              '<p>Just some seconds, ok?</p>'+
+            '</span>'+
+            '<span class="top">'+
+              '<h3>Insert a name for your copy of this table</h3>'+
+              '<input type="text"/>'+
+              '<div class="error_content"><p><span>Provide a name for your new table</span></p></div>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#close_window" class="cancel">cancel</a>'+
+              '<a href="#save_table" class="table_save" >Save table</a>'+
+            '</span>'+
+          '</div>'+
+        '</div>',
+      subheader_right : 
+      	'<span class="advanced_options">'+
+	        '<a href="#close_advanced_options" class="advanced">advanced<span></span></a>'+
+	        '<ul>'+
+	          '<li class="disabled"><a class="import_data">Import data...</a></li>'+
+	          '<li><a class="export_data">Export data...</a></li>'+
+	          '<li><a class="save_table">Duplicate table as...</a></li>'+
+	        '</ul>'+
+	      '</span>',
+	     subheader_left :	     	
+	      '<span class="privacy_window">'+
+	        '<ul>'+
+	          '<li class="public '+((status=="public")?'selected':'')+'"><a href="#"><strong>Public</strong> (visible to others)</a></li>'+
+	          '<li class="private '+((status=="private")?'selected':'')+'"><a href="#"><strong>Private</strong> (visible to you)</a></li>'+
+	        '</ul>'+
+	      '</span>',
+	    delete_window :
+	    	'<div class="delete_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="top">'+
+              '<h3>You are about to delete this table</h3>'+
+              '<p>You will not be able to recover this information. We really recommend to <a class="export_data" href="#export_data">export the data</a> before deleting it.</p>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#close_window" class="cancel">cancel</a>'+
+              '<a href="#confirm_delete" class="confirm_delete">Delete this table</a>'+
+            '</span>'+
+          '</div>'+
+        '</div>',
+      export_window :
+		    '<div class="export_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<form action="/tables/'+ table_name +'" method="get">'+
+              '<input id="export_format" type="hidden" name="format" />'+
+              '<span class="top">'+
+                '<h3>Export your data</h3>'+
+                '<p>Select your desired format for downloading the data</p>'+
+                '<ul>'+
+                  '<li class="selected"><a class="option" href="#CSV" rel="csv">CSV (Comma separated values)</a></li>'+
+                  '<li class="disabled"><a class="option" href="#KML" rel="kml">KML</a></li>'+
+                  '<li><a class="option" href="#SHP" rel="shp">SHP</a></li>'+
+                '</ul>'+
+              '</span>'+
+              '<span class="bottom">'+
+                '<a href="#close_window" class="cancel">cancel</a>'+
+                '<input type="submit" class="download" value="Download" />'+
+              '</span>'+
+          '</div>'+
+        '</div>',
+      title_window :
+      	'<div class="warning_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<form>'+
+              '<span class="top">'+
+                '<h3>This change will affect your API calls</h3>'+
+                '<p>If you are accesing to this table via API don’t forget to update the name in the API calls after changing the name.</p>'+
+              '</span>'+
+              '<span class="bottom">'+
+                '<a href="#close_window" class="cancel">cancel</a>'+
+                '<input type="submit" class="continue" value="Ok, continue"/>'+
+              '</span>'+
+            '</form>'+
+          '</div>'+
+        '</div>',
+      tags_window :
+      	'<span class="tags_window">'+
+	        '<ul id="tags_list"></ul>'+
+	        '<a id="save_all_tags" href="#save_tags">Save</a>'+
+	      '</span>',
+      embed_window :
+	      '<div class="embed_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="top">'+
+              '<h3>Embed this map in your website</h3>'+
+              '<p>It’s just copy and paste!</p>'+
+              '<div class="html_code">'+
+                '<h4>HTML CODE</h4>'+
+                '<span class="copy_code">'+
+                  '<input type="text" disabled="disabled" value="<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map\' width=\'572\' height=\'220\'></iframe>" />'+
+                  '<a id="test" class="copy">Copy</a>'+
+                '</span>'+
+                '<span class="outer_map">'+
+                  '<div id="embed_map" class="embed_map"></div>'+
+                  '<a href="#zoom_in" class="embed_zoom_in">+</a>'+
+                  '<a href="#zoom_out" class="embed_zoom_out">-</a>'+
+                  '<a href="http://cartodb.com" class="cartodb_logo" target="_blank">CartoDB</a>'+
+                '</span>'+
+              '</div>'+
+              '<div class="tiles_code">'+
+                '<h4>OR TILES URL</h4>'+
+                '<span class="copy_code">'+
+                  '<input type="text" disabled="disabled" value="'+TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}'+'.png'+'" />'+
+                  '<a class="copy">Copy</a>'+
+                '</span>'+
+              '</div>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#close_window" class="cancel">Close</a>'+
+            '</span>'+
+          '</div>'+
+        '</div>',
+      stop_window :
+        '<div class="stop_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="stop">'+
+              '<h5>Sorry, this geometry is too big to edit in browser</h5>'+
+              '<p>We\'re working on ways to improve this, but in the meantime you can edit the geometry via our API.</p>'+
+            '</span>'+
+          '</div>'+
+        '</div>',
+      mapkey_window :
+	      '<div class="mapkey_window">'+
+          '<a href="#close_window" class="close"></a>'+
+          '<div class="inner_">'+
+            '<span class="top">'+
+              '<h3>Your Map Key</h3>'+
+              '<p>If your table is private, you will need this for being able to use this tiles out of CartoDB.</p>'+
+              '<span class="copy_code">'+
+                '<input type="text" disabled="disabled" value="'+ map_key +'" />'+
+                '<a class="copy">Copy</a>'+
+              '</span>'+
+            '</span>'+
+            '<span class="bottom">'+
+              '<a href="#close_window" class="cancel">Close</a>'+
+            '</span>'+
+          '</div>'+
         '</div>'
 		}

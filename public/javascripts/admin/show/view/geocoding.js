@@ -30,7 +30,7 @@
       data: {rows_per_page:100},
       success: function(result) {
 				me.requestId = createUniqueId();
-		    requests_queue.startGeoreferencing(me.requestId,result.total_rows);
+		    window.ops_queue.startGeoreferencing(me.requestId,result.total_rows);
 		    me.getRecords();
       },
 			error: function(e) {
@@ -90,7 +90,7 @@
           // Update loader
           me.processGeocoding(addresses);
         } else {
-          requests_queue.finishGeoreferencing(me.requestId);
+          window.ops_queue.finishGeoreferencing(me.requestId);
           $('p.geo').removeClass('loading');
           georeferencing = false;
         }
@@ -119,7 +119,7 @@
         }
       } else {
         // Add new one to loader
-        requests_queue.updateGeoreferencing(null);
+        window.ops_queue.updateGeoreferencing(null);
         
         var params = {};
         if (event.data.Placemark != undefined) {
@@ -155,7 +155,7 @@
 	  $(window).unbind('stopGeo');
 	  $('p.geo').removeClass('loading');
 		georeferencing = false;
-		requests_queue.stopGeoreferencing();
+		window.ops_queue.stopGeoreferencing();
 	}
 	
 	

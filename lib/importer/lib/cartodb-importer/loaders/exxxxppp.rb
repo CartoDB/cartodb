@@ -9,11 +9,11 @@ module CartoDB
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@path} -nln #{@suggested_name}}
 
         out = `#{ogr2ogr_command}`
-        
+
         if $?.exitstatus != 0
           raise "failed to import data to postgres"
         end
-        
+
         if 0 < out.strip.length
           @runlog.stdout << out
         end
@@ -37,15 +37,15 @@ module CartoDB
         rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
 
         payload = OpenStruct.new({
-                                  :name => @suggested_name, 
+                                  :name => @suggested_name,
                                   :rows_imported => rows_imported,
                                   :import_type => @import_type,
                                   :log => @runlog
                                 })
-        
+
         # construct return variables
-        [to_import_hash, payload]        
-      end  
+        [to_import_hash, payload]
+      end
     end
-  end    
+  end
 end

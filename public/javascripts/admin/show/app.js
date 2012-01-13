@@ -1,5 +1,3 @@
-    var requests_queue;
-
 
     head.ready(function(){
 			// Init the view

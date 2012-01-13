@@ -522,7 +522,7 @@
 	  	$(window).bind(ev,function(){Core._closeSource($el)});
 
       $el.find('span.select').click(Core._openSource);
-      $el.find('li a').click(Core._changeValue);
+      $el.find('li a').live('click',Core._changeValue);
 	  },
 
 
@@ -555,6 +555,8 @@
    				, text = $(this).text();
    			// Remove previous selected item
    			$el.find('li.selected').removeClass('selected');
+
+   			Core.options.value = value;
 
    			// Select this item
    			$(this).parent().addClass('selected');
@@ -603,6 +605,7 @@
 
    	_addList: function($el) {
 			var scrollPane = $el.find('ul').data('jsp');
+
 			// Remove old list
 			scrollPane.getContentPane().find('li').remove();
 

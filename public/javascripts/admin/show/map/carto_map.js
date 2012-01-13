@@ -165,6 +165,7 @@
         dataType: 'jsonp',
         success: function(result) {
           layers_style = result.style;
+          me.styles = result.style;
           setupTools();
         },
         error:function(e) {
@@ -221,27 +222,41 @@
         }
       }
 
+      // Set carto style
+      if (str.search('/*') < 1) {
+        this.css_editor.setValue(str.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
+      }
 
-      //console.log(str);
 
+      // Save styles to "this" object -> Refresh tiles
+      this.styles = str;
+
+      this.postStyles(str,true);
+    }
+
+    // Ajax to save the styles
+    CartoMap.prototype.postStyles = function(str,refresh) {
+      var me = this;
 
       $.ajax({
         type: 'POST',
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
         data: {style:str},
         success: function(result) {
-	     		$('.cartocss_editor span.errors').hide();
-          me.refreshWax();
+          $('.cartocss_editor span.errors').hide();
+          if (refresh)
+            me.refreshWax();
         },
         error:function(e) {
-					var errors = JSON.parse(e.responseText);
-					var msg = '';
-					_.each(errors,function(ele,i){msg += ele + '<br/>';});
-					$('.cartocss_editor span.errors p').html(msg);
-					$('.cartocss_editor span.errors').css({display:'block'});
+          var errors = JSON.parse(e.responseText);
+          var msg = '';
+          _.each(errors,function(ele,i){msg += ele + '<br/>';});
+          $('.cartocss_editor span.errors p').html(msg);
+          $('.cartocss_editor span.errors').css({display:'block'});
         }
       });
     }
+
 
     // Set new map style
     CartoMap.prototype.saveMapStyle = function(map_styles,map_properties) {
@@ -388,14 +403,15 @@
         $('div.general_options div.tooltip').hide();
       });
 
+
       // Change map status
-      // $('div.general_options ul li.map a').click(function(ev){
-      //   stopPropagation(ev);
-      //   if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
-      //     var status = $(this).attr('class');
-      //     me.setMapStatus(status);
-      //   }
-      // });
+      $('div.general_options ul li.map a').click(function(ev){
+        stopPropagation(ev);
+        if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
+          var status = $(this).attr('class');
+          me.setMapStatus(status);
+        }
+      });
 
 
       //Zooms
@@ -543,6 +559,26 @@
       });
     }
 
+    /* Update tools from a change */
+    CartoMap.prototype.updateTools = function() {
+      
+      // Set previous tile styles to new table ??
+      if (this.styles) {
+        this.postStyles(this.styles.replace(/#(\w*)\s/g,'#' + table_name));
+
+      // Update column tools in any case
+      var columns = getColumns(table_name);
+      $('div.map_header').find('span.dropdown').each(function(i,el){
+        if (!$(el).hasClass('buckets')) {
+          $(el).customDropdown('update',columns);
+        }
+      });
+
+      // Update Carto with the name of the new table
+      
+        this.css_editor.setValue(this.styles.replace(/#(\w*)\s/g,'#' + table_name + ' ').replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   ')); }
+    }
+
     /* Search stuff on map */
     CartoMap.prototype.setupSearch = function() {
       var that = this;
@@ -665,8 +701,6 @@
 
       var $vis_ul = $('.map_header ul.visualization_type')
         , prev_properties = cartoToJavascript(styles);        // Get previous properties, important!
-
-      //console.log(prev_properties);
       
       /*
         LIST HEADER VISUALIZATION
@@ -1250,6 +1284,8 @@
                 }
               }
             });
+
+            that.css_editor = $carto_editor;
 
             $carto_editor.historyArray = new Array();
             $carto_editor.historyIndex = -1;
@@ -2247,14 +2283,17 @@
       this.query_mode = ($('body').hasClass('query'));
       $('body').addClass('map');
 
-      // Refresh wax layer
-      this.tilejson = this.generateTilejson();
-      this.refreshWax();
-      
+      // Update tools if there was any change in the table or table name
+      this.updateTools();
+
       // Check if there was any change in the table to composite 
       //    the infowindow vars customization properly
       this.setupInfowindow();
 
+      // Refresh wax layer
+      this.tilejson = this.generateTilejson();
+      this.refreshWax();
+      
 
       // Remove the fake marker
       if (this.fakeMarker_!=null)

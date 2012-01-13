@@ -312,6 +312,8 @@ span.dropdown.selected div.options_list ul li a:hover {color:white!important; ba
 span.dropdown.selected div.options_list ul li:first-child a {-webkit-border-top-left-radius: 3px;
 -webkit-border-top-right-radius: 3px; -moz-border-radius-topleft: 3px; -moz-border-radius-topright: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px;}
 span.dropdown.selected div.options_list ul li.selected a {background:#283A5A!important; color:white!important; text-shadow:none!important; cursor:default!important;}
+body.query span.dropdown.selected div.options_list ul li a:hover,
+body.query span.dropdown.selected div.options_list ul li.selected a {background:#333333!important; cursor:pointer;}
 span.dropdown.selected div.options_list ul li:last-child a {-webkit-border-bottom-right-radius: 3px;
 -webkit-border-bottom-left-radius: 3px; -moz-border-radius-bottomright: 3px; -moz-border-radius-bottomleft: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;}
 span.dropdown.selected div.options_list .jspContainer {width:100%!important; height:120px!important;}
@@ -336,6 +338,8 @@ span.color_ramp.selected div.options_list ul {float:left; display:block; width:1
 span.color_ramp.selected div.options_list ul li {position:relative; display:block!important; height:auto; width:100%!important; padding:0!important; margin:0!important; border:none!important;}
 span.color_ramp.selected div.options_list ul li:hover,
 span.color_ramp.selected div.options_list ul li.selected {background:#283A5A; cursor:pointer;}
+body.query span.color_ramp.selected div.options_list ul li:hover,
+body.query span.color_ramp.selected div.options_list ul li.selected {background:#333333; cursor:pointer;}
 span.color_ramp.selected div.options_list ul li.selected {cursor:default;}
 span.color_ramp.selected div.options_list ul li:first-child {-webkit-border-top-left-radius: 3px;
 -webkit-border-top-right-radius: 3px; -moz-border-radius-topleft: 3px; -moz-border-radius-topright: 3px; border-top-left-radius: 3px; border-top-right-radius: 3px;}

@@ -155,13 +155,6 @@
                   '</li>'+
                   '<li class="disabled">'+
                     '<a class="option disabled" href="#color_map">Color map</a>'+
-                    '<div class="suboptions">'+
-                      '<label>Asocciated value</label>'+
-                      '<div class="long">'+
-                        '<span class="dropdown" data=""></span>'+
-                      '</div>'+
-                      '<label>Values</label>'+
-                    '</div>'+
                   '</li>'+
                 '</ul>'+
               '</div>'+

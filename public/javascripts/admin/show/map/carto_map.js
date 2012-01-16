@@ -223,7 +223,7 @@
       }
 
       // Set carto style
-      if (str.search('/*') < 1) {
+      if (str.search('/*carto*/') < 0 && vis_data) {
         this.css_editor.setValue(str.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
       }
 
@@ -256,7 +256,6 @@
         }
       });
     }
-
 
     // Set new map style
     CartoMap.prototype.saveMapStyle = function(map_styles,map_properties) {
@@ -721,6 +720,8 @@
             $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
           } else {
             $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.points').remove();
+            $vis_ul.find('div.suboptions.cloropeth span.color').remove();
+            $vis_ul.find('div.suboptions.cloropeth span.numeric').css({margin:'0'});
             $vis_ul.find('> li:eq(0) > a.option').text('Custom lines');
             $vis_ul.find('> li:eq(1) > a.option').text('Cloropeth map');
             $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
@@ -948,8 +949,7 @@
               custom_props['marker-type'] = 'ellipse';
               custom_props['marker-allow-overlap'] = false;              
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-              custom_props['line-width'] = '1';
-              custom_props['line-color'] = '#FFFFFF';
+              // No custom values
             } else {
               custom_props['line-width'] = '4';
             }
@@ -970,7 +970,7 @@
               custom_vis['values'] =  old_properties.visualization.values || ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
             } else {
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
-              custom_vis['param'] = 'polyline-fill';
+              custom_vis['param'] = 'line-color';
               custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,2,4,12,24];
               try { custom_vis['n_buckets'] = old_properties.visualization.v_buckets.length} catch(e) {custom_vis['n_buckets'] = 5};
               custom_vis['values'] = old_properties.visualization.values || ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
@@ -978,7 +978,6 @@
 
             // Set type
             custom_vis['type'] = 'custom';
-
           }
 
 
@@ -1027,7 +1026,7 @@
                 value = custom_props[property];
               } else {
                 var length = custom_vis[property].length
-                , values = custom_vis[property];
+                  , values = custom_vis[property];
 
                 if (type=="max") {
                   value = values[length-1]
@@ -1224,22 +1223,6 @@
             //that.saveTilesStyles(feature_props);
           }
 
-
-          // // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',[]);},6000);
-
-          // // Color ramp
-          // $vis_ul.find('span.color_ramp').each(function(i,el){
-          //   $(el).colorRamp({
-          //     unselect: 'Select a color ramp',
-          //     buckets: 7,
-          //     change: function(el,value) {
-          //       console.log(value);
-          //     }
-          //   });
-          // });
-          // Update color ramp
-          // setTimeout(function(){$vis_ul.find('span.dropdown:first').customDropdown('update',4);},6000);
-
         return {}
       }(jQuery, window));
 
@@ -1327,7 +1310,7 @@
               if ($(this).hasClass('active') && $carto_editor.historyIndex>0 && $carto_editor.historyArray.length>0) {
                 $carto_editor.historyIndex--;
                 $carto_editor.setValue($carto_editor.historyArray[$carto_editor.historyIndex]);
-                if ($carto_editor.historyIndex == 0) {
+                if ($carto_editor.historyIndex < 1) {
                   $(this).removeClass('active');
                 }
                 $carto.find('span.history a.redo').addClass('active');
@@ -1386,7 +1369,7 @@
                 $carto.find('a.redo').addClass('active');
               }
 
-              if (($carto_editor.historyIndex + 1) < 2) {
+              if ($carto_editor.historyIndex < 0) {
                 $carto.find('a.undo').removeClass('active');
               } else {
                 $carto.find('a.undo').addClass('active');

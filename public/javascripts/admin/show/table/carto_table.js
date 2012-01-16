@@ -97,7 +97,7 @@
             }
 					} else {
 						methods.drawQueryColumns(rows,table.total_r,time,new_query);
-				    methods.drawQueryRows(rows,direction,table.actual_p);
+				    methods.drawQueryRows(rows,direction,table.actual_p,new_query);
 					}
 		    }
 		    // Remove loader
@@ -339,7 +339,13 @@
 
 					$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
 					$('span.query p').text('This query took '+time+' seconds');
+
+          var element_size = _.size(rows[0])
+            , pos = 0;
+
 					_.eachRow(rows[0],function(ele,i){
+            pos++;
+
 						switch (i) {
 							case "the_geom": type = 'Geometry'; break;
 							case "created_at": type = 'Date'; break;
@@ -349,7 +355,7 @@
 						}
 
 	          thead += 	'<th>'+
-	                     	'<div '+((i=="cartodb_id")?'style="width:75px"':' style="width:'+table.cell_s+'px"') + '>'+
+	                     	'<div style="width:'+((pos==element_size)?table.last_cell_s:table.cell_s) +'px">'+
 	                      	'<span class="long">'+
 	                     			'<h3 class="static">'+i+'</h3>'+
 														((i=="the_geom")?'<p class="geo disabled">geo</p':'')+
@@ -387,8 +393,6 @@
         //Create elements
         methods.createElements();
       }
-      
-			methods.resizeTable();
     },
 
 
@@ -469,7 +473,7 @@
       if (direction!='') {
         methods.checkReuse(direction);
       } else {
-        $('body').animate({scrollTop:table.scroll},300,function() {
+        $('html,body').animate({scrollTop:table.scroll},300,function() {
           table.loading = false; table.enabled = true;
         });
       }
@@ -485,7 +489,7 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW QUERY ROWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    drawQueryRows: function(rows,direction,page) {
+    drawQueryRows: function(rows,direction,page,new_query) {
 
       if (table.e.children('tbody').length==0) {
         var tbody = '<tbody style="padding-top:89px;">';
@@ -495,9 +499,13 @@
 
       _.each(rows, function(element,i){
         tbody += '<tr><td class="first"><div></div></td>';
+        var element_size = _.size(element)
+          , pos = 0;
+
     		_.eachRow(element,function(ele,j){
+          pos++;
     			tbody += 	'<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+
-									 	' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div '+((j=='cartodb_id')?'':' style="width:'+table.cell_s+'px"') +
+									 	' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div style="width:'+((pos==element_size)?table.last_cell_s:table.cell_s) +'px"' + 
 									 	'>'+((element[j]==null)?'':element[j])+'</div></td>';
     		});
         tbody += '</tr>';
@@ -506,15 +514,18 @@
       if (table.e.children('tbody').length==0) {
         tbody += '</tbody>';
         table.e.append(tbody);
-        methods.resizeTable();
       } else {
         (direction=="previous")?table.e.children('tbody').prepend(tbody):table.e.children('tbody').append(tbody);
+      }
+
+      if (table.e.children('tbody').length==0 || new_query) {
+        methods.resizeTable(true);
       }
 
       if (direction!='') {
         methods.checkReuse(direction);
       } else {
-        $('body').animate({scrollTop:table.scroll},300,function() {
+        $('html,body').animate({scrollTop:table.scroll},300,function() {
           table.loading = false; table.enabled = true;
         });
       }
@@ -862,6 +873,9 @@
 				var new_row = table.e.find('tr.new');
 				new_row.addClass('selecting');
 				table.enabled = true;
+
+        $('html,body').animate({scrollTop:new_row.offset().top+'px'},500);
+
 			} else if (end && $('div.empty_table').length>0 && table.e.find('tbody').children().length==0) {
 				// (2)
 				$('div.empty_table').remove();
@@ -974,7 +988,7 @@
                     }
                   }
 
-                  $('body').animate({scrollTop:$('div.table_position').height()+'px'},500,function(){
+                  $('html,body').animate({scrollTop:$('div.table_position').height()+'px'},500,function(){
                     methods.closeTablePopups();
                     table.enabled = true;
                   });
@@ -1127,9 +1141,11 @@
       //  DOUBLE CLICK -> Open cell editor //
       ///////////////////////////////////////
       $(document).dblclick(function(event){
-        if (table.enabled && table.mode!='query') {
+
+        if (table.enabled) {
        		var target = event.target || event.srcElement;
           var targetElement = target.nodeName.toLowerCase();
+          var query_mode = table.mode == 'query';
 
           if (targetElement == "div" && $(target).parent().attr('c')!=undefined && !$(target).parent().hasClass('id') && $(target).parent().attr('c')!="cartodb_id" && $(target).parent().attr('c')!="updated_at" && $(target).parent().attr('c')!="created_at") {
 
@@ -1155,7 +1171,7 @@
 
             //Check if first row or last row
             if ($(target).parent().offset().top<260) {
-              $('div.edit_cell').css('top','90px');
+              $('div.edit_cell').css('top','95px');
             } else if ($(target).parent().offset().top>$(document).height()-60) {
               $('div.edit_cell').css('top',target_position.top-230+'px');
             } else {
@@ -1164,103 +1180,117 @@
 
             //Check if first column or last column
             if ($("div.table_position").width()<=($(target).parent().offset().left+table.cell_s+28)) {
-              $('div.edit_cell').css('left',table.e.parent().scrollLeft()+target_position.left-215+($(target).width()/2)+'px');
+              $('div.edit_cell').css('left',table.e.parent().scrollLeft()+target_position.left-225+($(target).width()/2)+'px');
             } else if (($(target).parent().offset().left+table.cell_s+28)<170) {
-               $('div.edit_cell').css('left','0px');
+              $('div.edit_cell').css('left','0px');
             } else {
               $('div.edit_cell').css('left',table.e.parent().scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
             }
 
 
-            var type = _.detect(table.h,function(head,j){return head.name == data.column}).type;
-
-					  if (data.value== 'GeoJSON...') {
-              type = 'geojson';
-              $('div.edit_cell textarea').addClass('loading');
-
-              $.ajax({
-        		    method: "GET",
-        		    url: global_api_url+'queries?sql='+escape('SELECT ST_AsGeoJSON(the_geom,6) as the_geom FROM '+table_name+' WHERE cartodb_id='+data.row),
-        		 		headers: {"cartodbclient":"true"},
-        		    success: function(data) {
-                  $('div.edit_cell textarea').val(data.rows[0].the_geom);
-                  $('div.edit_cell textarea').removeClass('loading');
-        		    },
-        		    error: function(e) {
-                  $('div.edit_cell textarea').removeClass('loading').addClass('error');
-        		    }
-        		  });
-            }
-
-
+            // Hide all possibilities
             $('div.edit_cell div.free').hide();
             $('div.edit_cell div.boolean').hide();
             $('div.edit_cell div.date').hide();
             $('div.edit_cell div.point').hide();
             $('div.table_position div.edit_cell div.boolean ul li').removeClass('selected');
 
+            if (!query_mode) {
+              var type = _.detect(table.h,function(head,j){return head.name == data.column}).type;
 
-            if (type=="date") {
-              var date = parseDate(data.value);
-              $('div.edit_cell div.date div.day input').val(date.day);
-              $('div.edit_cell div.date div.month span.bounds a').text(date.month_text);
-							$('div.edit_cell div.months_list ul li.selected').removeClass('selected');
-							$('div.edit_cell div.months_list ul li a:contains("'+date.month_text+'")').parent().addClass('selected');
-              $('div.edit_cell div.date div.year input').val(date.year);
-              $('div.edit_cell div.date div.hour input').val(date.time);
-              $('div.edit_cell div.date').show();
-            } else if (type=="boolean") {
-              if (data.value == "true") {
-                $('div.table_position div.edit_cell div.boolean ul li a:contains("True")').parent().addClass('selected');
-              } else if (data.value == "false") {
-                $('div.table_position div.edit_cell div.boolean ul li a:contains("False")').parent().addClass('selected');
-              } else {
-                $('div.table_position div.edit_cell div.boolean ul li a:contains("Null")').parent().addClass('selected');
+  					  if (data.value== 'GeoJSON...') {
+                type = 'geojson';
+                $('div.edit_cell textarea').addClass('loading');
+
+                $.ajax({
+          		    method: "GET",
+          		    url: global_api_url+'queries?sql='+escape('SELECT ST_AsGeoJSON(the_geom,6) as the_geom FROM '+table_name+' WHERE cartodb_id='+data.row),
+          		 		headers: {"cartodbclient":"true"},
+          		    success: function(data) {
+                    $('div.edit_cell textarea').val(data.rows[0].the_geom);
+                    $('div.edit_cell textarea').removeClass('loading');
+          		    },
+          		    error: function(e) {
+                    $('div.edit_cell textarea').removeClass('loading').addClass('error');
+          		    }
+          		  });
               }
-              $('div.edit_cell div.boolean').show();
-            } else if (type=="point") {
-              if (data.value=="") {
-                $('div.table_position div.edit_cell div.point span input#latitude_value').val('0');
-                $('div.table_position div.edit_cell div.point span input#longitude_value').val('0');
+
+              if (type=="date") {
+                var date = parseDate(data.value);
+                $('div.edit_cell div.date div.day input').val(date.day);
+                $('div.edit_cell div.date div.month span.bounds a').text(date.month_text);
+  							$('div.edit_cell div.months_list ul li.selected').removeClass('selected');
+  							$('div.edit_cell div.months_list ul li a:contains("'+date.month_text+'")').parent().addClass('selected');
+                $('div.edit_cell div.date div.year input').val(date.year);
+                $('div.edit_cell div.date div.hour input').val(date.time);
+                $('div.edit_cell div.date').show();
+              } else if (type=="boolean") {
+                if (data.value == "true") {
+                  $('div.table_position div.edit_cell div.boolean ul li a:contains("True")').parent().addClass('selected');
+                } else if (data.value == "false") {
+                  $('div.table_position div.edit_cell div.boolean ul li a:contains("False")').parent().addClass('selected');
+                } else {
+                  $('div.table_position div.edit_cell div.boolean ul li a:contains("Null")').parent().addClass('selected');
+                }
+                $('div.edit_cell div.boolean').show();
+              } else if (type=="point") {
+                if (data.value=="") {
+                  $('div.table_position div.edit_cell div.point span input#latitude_value').val('0');
+                  $('div.table_position div.edit_cell div.point span input#longitude_value').val('0');
+                } else {
+                  var point_values = data.value.replace(' ','').split(',');
+                  $('div.table_position div.edit_cell div.point span input#latitude_value').val(point_values[1]);
+                  $('div.table_position div.edit_cell div.point span input#longitude_value').val(point_values[0]);
+                }
+                $('div.edit_cell div.point').show();
+                var len = $('div.table_position div.edit_cell div.point span input#longitude_value').text().length;
               } else {
-                var point_values = data.value.replace(' ','').split(',');
-                $('div.table_position div.edit_cell div.point span input#latitude_value').val(point_values[1]);
-                $('div.table_position div.edit_cell div.point span input#longitude_value').val(point_values[0]);
+                if (type=="number"){
+                  $('div.edit_cell textarea').css({'min-height' : '16px','height' : '16px' });
+                }else{
+                  $('div.edit_cell textarea').css({'min-height' : '30px','height' : '30px'});
+                }
+                $('div.edit_cell div.free').show();
+                if (data.value!="GeoJSON...") {
+                  $('div.edit_cell div.free textarea').val(data.value);
+                } else {
+                  $('div.edit_cell div.free textarea').val('');
+                }
               }
-              $('div.edit_cell div.point').show();
-              var len = $('div.table_position div.edit_cell div.point span input#longitude_value').text().length;
+
+              $('div.edit_cell a.save').attr('r',data.row);
+              $('div.edit_cell a.save').attr('c',data.column);
+              $('div.edit_cell a.save').attr('type',type);
+              $('div.edit_cell').show();
+
+              if (type!='date' && type!='boolean' && type!='point') {
+                var len = $('div.edit_cell div.free textarea').val().length;
+                $('div.edit_cell div.free textarea').selectRange(0,len);
+              }
+
+              // Remove readonly for the textarea
+              $('div.edit_cell div.free textarea').removeAttr('readonly');
+  						
+  						// If hit ENTER, save inmediately
+  						$('div.edit_cell').keydown(function(ev){
+                if (!ev.ctrlKey && (ev.which == 13 || ev.keyCode == 13)) {
+  								ev.preventDefault();
+  								ev.stopPropagation();
+  								$("div.edit_cell a.save").click();
+  							}
+              });
+              $("div.edit_cell a.save").show();
             } else {
-              if (type=="number"){
-                $('div.edit_cell textarea').css({'min-height' : '16px','height' : '16px' });
-              }else{
-                $('div.edit_cell textarea').css({'min-height' : '30px','height' : '30px'});
-              }
+              $("div.edit_cell a.save").hide();
               $('div.edit_cell div.free').show();
-              if (data.value!="GeoJSON...") {
-                $('div.edit_cell div.free textarea').val(data.value);
-              } else {
-                $('div.edit_cell div.free textarea').val('');
-              }
+              $('div.edit_cell div.free textarea').attr('readonly','readonly');
+              $('div.edit_cell div.free textarea').val(data.value);
+              $('div.edit_cell').show();
             }
 
-            $('div.edit_cell a.save').attr('r',data.row);
-            $('div.edit_cell a.save').attr('c',data.column);
-            $('div.edit_cell a.save').attr('type',type);
-            $('div.edit_cell').show();
 
-            if (type!='date' && type!='boolean' && type!='point') {
-              var len = $('div.edit_cell div.free textarea').val().length;
-              $('div.edit_cell div.free textarea').selectRange(0,len);
-            }
-						
-						// If hit ENTER, save inmediately
-						$('div.edit_cell').keydown(function(ev){
-              if (!ev.ctrlKey && (ev.which == 13 || ev.keyCode == 13)) {
-								ev.preventDefault();
-								ev.stopPropagation();
-								$("div.edit_cell a.save").click();
-							}
-            });
+
 
 						
 						// If click out of edit_cell close it
@@ -2249,6 +2279,33 @@
       //  Filter by this column            //
       ///////////////////////////////////////
       $('a.filter_column').live('click',function(ev){
+
+        function getColumList(current_column) {
+          // Hide list in any case
+          $('div.filter_window div.select_content').hide();
+          
+          // Remove all ScrollPane and lists items
+          var custom_scrolls = [];
+          $('div.filter_window .scrollPane').each(function(){
+            custom_scrolls.push($(this).jScrollPane().data().jsp);
+          });
+          _.each(custom_scrolls,function(ele,i) {
+            ele.destroy();
+          });
+          
+          // Remove the list items
+          $('div.filter_window ul.scrollPane li').remove();
+          
+          // Add new ones
+          _.each(table.h,function(h,i){
+            $('div.filter_window ul.scrollPane').append('<li class="'+((h.name == current_column)?'selected':'')+'"><a href="#'+h.name+'">'+h.name+'</a></li>');              
+          });
+          
+          // Initialize jscrollPane
+           $('div.filter_window ul.scrollPane').jScrollPane({autoReinitialise:true});
+        }
+
+
         stopPropagation(ev);
         if (table.enabled && table.mode!='query') {
           methods.closeTablePopups();
@@ -2274,30 +2331,7 @@
           });
           
           
-          function getColumList(current_column) {
-            // Hide list in any case
-            $('div.filter_window div.select_content').hide();
-            
-            // Remove all ScrollPane and lists items
-            var custom_scrolls = [];
-            $('div.filter_window .scrollPane').each(function(){
-         		  custom_scrolls.push($(this).jScrollPane().data().jsp);
-         		});
-            _.each(custom_scrolls,function(ele,i) {
-              ele.destroy();
-            });
-            
-            // Remove the list items
-            $('div.filter_window ul.scrollPane li').remove();
-            
-            // Add new ones
-            _.each(table.h,function(h,i){
-              $('div.filter_window ul.scrollPane').append('<li class="'+((h.name == current_column)?'selected':'')+'"><a href="#'+h.name+'">'+h.name+'</a></li>');              
-            });
-            
-            // Initialize jscrollPane
-             $('div.filter_window ul.scrollPane').jScrollPane({autoReinitialise:true});
-          }
+
         }
       });
       $('div.filter_window span.top h3 a').live('click',function(ev){
@@ -2364,6 +2398,7 @@
 				var table_mode = (!$('body').hasClass('map'));
 			  if (table_mode) {
 					ev.stopPropagation();
+          table.mode = "normal";
 	        $('table').cartoDBtable('refreshTable');
 				}
       });
@@ -2419,21 +2454,22 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  RESIZE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    resizeTable: function() {
-      
+    resizeTable: function(new_) {
       var parent_width = $(window).width();
       table.e.parent().width(parent_width);
-      var width_table_content = ((table.e.children('thead').children('tr').children('th').size()-2)*(table.cell_s+27)) + 143;
-      var head_element = table.e.children('thead').children('tr').children('th:last').children('div');
-      var body_element = table.e.children('tbody').children('tr');
-
+      var width_table_content = ((table.e.find('thead tr th').size()-2)*(table.cell_s+27)) + table.e.find('th[c="cartodb_id"]').width() + 43;
+      var head_element = table.e.find('thead tr th:last div');
+      var body_element = table.e.find('tbody tr');
 
       //WIDTH
-      if (parent_width>width_table_content) {
-        $(head_element).width(parent_width - width_table_content + table.cell_s);
-        $(body_element).each(function(index,element){
-          $(element).children('td:last').children('div').width(parent_width - width_table_content + table.cell_s);
-          table.last_cell_s = parent_width - width_table_content + table.cell_s - 3;
+      if (parent_width>width_table_content || new_) {
+        table.last_cell_s = parent_width - width_table_content + table.cell_s;
+        if (table.last_cell_s<0) {
+          table.last_cell_s = table.cell_s;
+        }
+        $(head_element).width(table.last_cell_s);
+        $(body_element).each(function(index,element){          
+          $(element).find('td:last div').width(table.last_cell_s);
         });
       }
       
@@ -2571,6 +2607,8 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     restoreTable : function() {
       table.mode = 'normal';
+      /* Don't get width of the last cell in sql view! */
+      table.last_cell_s = table.cell_s;
       $('body').removeClass('query');
       methods.refreshTable('');
     },

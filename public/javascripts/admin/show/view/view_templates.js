@@ -122,7 +122,7 @@
 	          '<li><a class="save_table">Duplicate table as...</a></li>'+
 	        '</ul>'+
 	      '</span>',
-	     subheader_left :	     	
+	    privacy_window :	     	
 	      '<span class="privacy_window">'+
 	        '<ul>'+
 	          '<li class="public '+((status=="public")?'selected':'')+'"><a href="#"><strong>Public</strong> (visible to others)</a></li>'+
@@ -165,7 +165,14 @@
           '</div>'+
         '</div>',
       title_window :
-      	'<div class="warning_window">'+
+        '<span class="title_window">'+
+          '<p>Pick a name for this table</p>'+
+          '<form id="change_name" method="get" action="#"><input type="text" name="title"/>'+
+          '<input type="submit" value="Save" name="submit"/></form>'+
+          '<span>The name cannot be blank</span>'+
+        '</span>',
+      warning_window : 
+        '<div class="warning_window">'+
           '<a href="#close_window" class="close"></a>'+
           '<div class="inner_">'+
             '<form>'+

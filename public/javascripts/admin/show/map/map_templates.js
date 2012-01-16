@@ -135,10 +135,6 @@
                       '</div>'+
                     '</div>'+
                     '<div class="suboptions cloropeth">'+
-                      '<label>Alpha</label>'+
-                      '<div class="long">'+
-                        '<span class="alpha" css="line-opacity polygon-opacity" default="1"></span>'+
-                      '</div>'+
                       '<label>Asocciated value</label>'+
                       '<div class="long">'+
                         '<span class="dropdown" data="column" default="cartodb_id"></span>'+
@@ -150,6 +146,15 @@
                       '<label>Color ramp</label>'+
                       '<div class="long">'+
                         '<span class="color_ramp" data="values"></span>'+
+                      '</div>'+
+                      '<label>Border</label>'+
+                      '<div class="long">'+
+                        '<span class="color" css="line-color" default="#FFFFFF"></span>'+
+                        '<span class="numeric" css="line-width" default="1"></span>'+
+                      '</div>'+
+                      '<label>Alpha</label>'+
+                      '<div class="long">'+
+                        '<span class="alpha" css="line-opacity polygon-opacity" default="1"></span>'+
                       '</div>'+
                     '</div>'+
                   '</li>'+

@@ -91,24 +91,24 @@
 	    $('div.sql_window span.history a.undo').on('click', function (ev) {
 	      stopPropagation(ev);
 	      if ($(this).hasClass('active') && editor.historyIndex>0 && editor.historyArray.length>0) {
-					editor.historyIndex--;
+	      	editor.historyIndex--;
 					editor.setValue(editor.historyArray[editor.historyIndex]);
-					if (editor.historyIndex == 0) {
+
+					if (editor.historyIndex < 1)
 						$(this).removeClass('active');
-					}
-	      	$('div.sql_window span.history a.redo').addClass('active');
+
+					$('div.sql_window span.history a.redo').addClass('active');
 		    }
 	    });
 
 	    $('div.sql_window span.history a.redo').on('click', function (ev) {
 	      stopPropagation(ev);
-	      if ($(this).hasClass('active') && editor.historyIndex<editor.historyArray.length-1) {
+	      if ($(this).hasClass('active') && editor.historyIndex<editor.historyArray.length - 1) {
 	      	editor.historyIndex++;
 	      	editor.setValue(editor.historyArray[editor.historyIndex]);
 
-	      	if (editor.historyIndex == (editor.historyArray.length - 1)) {
+	      	if (editor.historyIndex == (editor.historyArray.length - 1)) 
 	      		$(this).removeClass('active');
-	      	}
 
 					$('div.sql_window span.history a.undo').addClass('active');
 		    }
@@ -151,7 +151,7 @@
 		      	$('div.sql_window a.redo').addClass('active');
 		      }
 
-		      if ((editor.historyIndex + 1) < 2) {
+		      if (editor.historyIndex < 0) {
 						$('div.sql_window a.undo').removeClass('active');
 					} else {
 						$('div.sql_window a.undo').addClass('active');
@@ -735,10 +735,10 @@
 		var title_name = (function() {
 		  
 		  // Warning window
-		  $('div.mamufas').append(window.view_elements.title_window);
+		  $('div.mamufas').append(window.view_elements.warning_window);
         
 			// Title window
-	    $('div.inner_subheader div.left').append(window.view_elements.subheader_left);
+	    $('div.inner_subheader div.left').append(window.view_elements.title_window);
 	
 	    //Bind events
 	    // -Open window
@@ -820,7 +820,7 @@
     //  Change table status              //
     ///////////////////////////////////////
 		var table_status = (function() {
-	    $('div.inner_subheader div.left').append(window.view_elements.subheader_left);
+	    $('div.inner_subheader div.left').append(window.view_elements.privacy_window);
 
 	    $('span.privacy_window ul li a').live('click',function(ev){
 	      stopPropagation(ev);
@@ -1388,7 +1388,7 @@
 		  $('a.open_georeference').css({opacity:0.5});
 			$.favicon('/favicon/black_32x32.png');
 			var html = $('p.settings').html();
-			$('p.settings').html(html.replace(/\|/gi,''));
+			$('p.settings').html(html.replace(/\|/g,''));
 			$('body').addClass('query');
 			$('body').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('body').css('background-position','0 -160px');},300);

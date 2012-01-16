@@ -159,6 +159,7 @@ span.numeric.min, span.numeric.max {width:75px!important;}
 span.numeric.min p, span.numeric.max p {position:absolute; top:1px; left:3px; font-weight:normal; color:#CCCCCC!important;}
 span.numeric.min input, span.numeric.max input {width:53px!important; text-align:right!important;}
 span.numeric.min {margin-left:0!important;}
+span.numeric.no_margin {margin: 0px;}
 
 div.map_window div.map_header div.suboptions div.long span.radio a {padding-left:12px; margin-right:10px; font:bold 11px "Helvetica",Arial; color:#666666; text-shadow:0 1px white; background:url('/images/admin/icons/select_create_table.png') no-repeat 0 -239px}
 div.map_window div.map_header div.suboptions div.long span.radio a:hover {background-position:0 -215px; cursor:pointer;}
@@ -173,7 +174,7 @@ div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider-hori
 div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider .ui-state-hover {cursor:pointer; background-image:-moz-linear-gradient(100% 100% 90deg, #C3C3C3, #ffffff); background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#C3C3C3), to(#ffffff));}
 div.map_window div.map_header div.suboptions div.long span.alpha .ui-slider .ui-slider-range-min {height:4px; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; background:linear-gradient(-90deg, #99CC00, #7BA600); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#99CC00), to(#7BA600));
 background:-moz-linear-gradient(-90deg, #99CC00, #7BA600); background: -o-linear-gradient(#99CC00,#7BA600); background:#7BA600\9;}
-div.map_window div.map_header div.suboptions div.long span.alpha span.tooltip {position:absolute; display:none; top:-14px; width:30px; height:18px; margin:0 0 0 -12px; background:url('/images/admin/map/range_tooltip.png') no-repeat 0 0; font:normal 10px "Helvetica",Arial; color:white; text-align:center}
+div.map_window div.map_header div.suboptions div.long span.alpha span.tooltip {position:absolute; display:none; top:-14px; width:30px; height:15px; padding:3px 0 0 0; margin:0 0 0 -12px; background:url('/images/admin/map/range_tooltip.png') no-repeat 0 0; font:normal 10px "Helvetica",Arial; color:white; text-align:center; line-height:10px;}
 
 div.map_window div.map_header div.options ul li span.info_tools {display:inline-block; width:100%; margin:5px 0}
 div.map_window div.map_header div.options ul li span.info_tools a {float:left; width:59px; height:11px; margin:0; padding:5px 0 5px; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;

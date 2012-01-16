@@ -29,7 +29,7 @@ def get_spatial_reference(shapefile):
         prj_lines = prj_file.readlines()
         prj_file.close()
         for i in range(len(prj_lines)):
-            prj_lines[i] = string.rstrip( prj_lines[i] )
+            prj_lines[i] = prj_string.rstrip( prj_lines[i] )
         srs = osr.SpatialReference()
         srs.ImportFromESRI(prj_lines)
         proj4 = srs.ExportToProj4()

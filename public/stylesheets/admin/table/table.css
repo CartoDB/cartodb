@@ -313,8 +313,11 @@ div.table_position div.edit_cell div.inner p.error span {float:left; top:0; heig
   text-shadow:0 -1px #C05A16; text-align:center;}
 div.table_position div.edit_cell a.cancel {position:relative; float:left; margin:7px 0 0 0; font:normal 11px "Helvetica"; color:#333333;}
 div.table_position div.edit_cell a.cancel:hover {color:black;}
-div.table_position div.edit_cell a.save {position:relative; float:right; width:91px; height:11px!important; padding:6px 0 7px; text-align:center; background:url('/images/admin/table/save_button.png') no-repeat 0 0; text-decoration:none; font:bold 11px "Helvetica",Arial; color:#333333; text-shadow:0 1px white; line-height:11px;}
-div.table_position div.edit_cell a.save:hover {background-position:0 -24px; color:black;}
+div.table_position div.edit_cell a.save {position:relative; float:right; width:auto; padding:5px 7px; height:11px!important; text-align:center; text-decoration:none; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;  line-height:12px;  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE)); background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
+div.table_position div.edit_cell a.save:hover {color:black; background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF)); background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF')}
+div.table_position div.edit_cell a.save.disabled {opacity:0.5; filter: alpha(opacity=50);}
+div.table_position div.edit_cell a.save.disabled:hover {color:#333333; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE)); background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE'); cursor:default;}
+
 
 
 /*Windows belong to mamufas object*/

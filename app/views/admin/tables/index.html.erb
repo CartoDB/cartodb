@@ -74,12 +74,7 @@
           <div class="middle_white_medium">
             <ul class="your_tables">
               <% @tables.each_with_index do |table, i| %>
-              <!-- TODO: Add class 'raster' to the li which table is block... -->
-              <!-- <li class="raster">
-                   </li> -->
-              <!-- end... -->
-
-              <li<%= ' class="last"'.html_safe if i == (@tables_count - 1) && i>2%>>
+              <li>
                 <div class="meta_info">
                   <span class="info">
                     <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
@@ -91,7 +86,7 @@
                         <%= pluralize(table.rows_counted,'row','rows') rescue '' %> /
                         <%= table.schema.size rescue '' %> columns:
                       </strong>
-                    <%= table.schema.map{ |e| e.first }[2...5].join(', ') %>...</p>
+                    <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...</p>
                   </span>
                   <span class="tags">
                     <% unless table.updated_at.blank? %>
@@ -104,12 +99,6 @@
                     <% end %>
                   </span>
                 </div>
-
-                <!-- TODO: Add raster span only when the table is from raster... -->
-                <!-- <% if (i==(@tables_count - 1) && i>2) %>
-                  <span class="raster"></span>
-                <% end %> -->
-                <!-- end... -->
               </li>
               <% end %>
             </ul>

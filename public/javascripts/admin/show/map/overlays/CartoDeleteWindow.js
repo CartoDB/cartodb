@@ -90,19 +90,21 @@
 			  div.style.width = this.width_ + 'px';
 				div.style.height = this.height_ + 'px';
 			  div.style.left = (pixPosition.x + this.offsetHorizontal_) + 'px';
-			  div.style.top = (pixPosition.y + this.offsetVertical_ - this.height_ - 76) + 'px';
+			  console.log(this.pixel);
+			  div.style.top = (pixPosition.y + this.offsetVertical_ - this.height_ - 76) + (this.pixel?205:0) + 'px';
 		  }
 		  this.show();
 	  }
 	}
 
 
-	CartoDeleteWindow.prototype.open = function(latlng,markers_ids){
+	CartoDeleteWindow.prototype.open = function(latlng,markers_ids,pixel){
   
 	  if (this.div_) {
 	    var div = this.div_;
 	    this.latlng_ = latlng;
 			this.markers_ = markers_ids;
+			this.pixel = pixel;
     
 	    this.moveMaptoOpen();
 	    this.setPosition();			

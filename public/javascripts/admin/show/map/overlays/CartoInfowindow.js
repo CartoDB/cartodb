@@ -48,7 +48,7 @@
 			$(div).find('a.delete_point').click(function(ev){
 				stopPropagation(ev);
 				me.hide();
-				window.map.carto_map.delete_window_.open(me.latlng_,me.marker_);
+				window.map.carto_map.delete_window_.open(me.latlng_,me.marker_,me.pixel);
 			});
 			
 			$(div).find('a.edit_point').click(function(ev){
@@ -89,7 +89,8 @@
   		  div.style.width = this.width_ + 'px';
   		  div.style.left = (pixPosition.x - 49) + 'px';
   		  var actual_height = - $(div).height();
-  		  div.style.top = (pixPosition.y + actual_height + (this.pixel?10:actual_height+80)) + 'px';
+  		  console.log(actual_height);
+  		  div.style.top = (pixPosition.y  + (this.pixel?(10+actual_height):(actual_height - 205))) + 'px';
   	  }
 			
   	  this.show();
@@ -100,7 +101,7 @@
 	CartoInfowindow.prototype.open = function(feature,pixel,latlng){
 	  var me = this;
 	  this.marker_ = feature;
-	  
+
 	  $.ajax({
       method: "GET",
       url:global_api_url + 'tables/'+table_name+'/records/'+feature,
@@ -156,8 +157,9 @@
   	    }
 
   			$(div).find('div.bottom').find('label').html('id: <strong>'+info.cartodb_id+'</strong>');
+
+  			me.setPosition();			
   	    me.moveMaptoOpen();
-  	    me.setPosition();			
   	  }
     }
 	}	

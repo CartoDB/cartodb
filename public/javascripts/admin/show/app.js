@@ -1,5 +1,8 @@
 
     head.ready(function(){
+    	// Manage tabs with url hash
+			manageHash();
+
 			// Init the view
 			initView();
 			
@@ -20,17 +23,11 @@
           enabled: false
         }
       );
-
-      // Manage tabs with url hash
-			manageHash();
     });
 
 
 
 		function manageHash() {
-			var table_enabled = true,
-					document_title = document.title;
-
 
 	    // Bind a handler for state: map
 	    $.History.bind('/map',function(state) {
@@ -52,6 +49,6 @@
 			
 			// IF there is no hash -> /table
 			if (window.location.hash == "") {
-				$.History.go('/table');	
+				$.History.go('/table');
 			}
 		}

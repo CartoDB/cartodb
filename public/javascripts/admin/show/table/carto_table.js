@@ -1259,9 +1259,13 @@
                 }
               }
 
-              $('div.edit_cell a.save').attr('r',data.row);
-              $('div.edit_cell a.save').attr('c',data.column);
-              $('div.edit_cell a.save').attr('type',type);
+              $('div.edit_cell a.save')
+                .attr('r',data.row)
+                .attr('c',data.column)
+                .attr('type',type)
+                .removeClass('disabled')
+                .text('Save changes');
+
               $('div.edit_cell').show();
 
               if (type!='date' && type!='boolean' && type!='point') {
@@ -1280,9 +1284,8 @@
   								$("div.edit_cell a.save").click();
   							}
               });
-              $("div.edit_cell a.save").show();
             } else {
-              $("div.edit_cell a.save").hide();
+              $("div.edit_cell a.save").addClass('disabled').text('Can\'t edit in this view');
               $('div.edit_cell div.free').show();
               $('div.edit_cell div.free textarea').attr('readonly','readonly');
               $('div.edit_cell div.free textarea').val(data.value);
@@ -1542,6 +1545,10 @@
       ///////////////////////////////////////
       $("div.edit_cell a.save").live('click',function(ev){
         stopPropagation(ev);
+
+        if (table.mode == 'query' || $(this).hasClass('disabled')) {
+          return false
+        }
 
         var row = $(this).attr('r');
         var column = $(this).attr('c');

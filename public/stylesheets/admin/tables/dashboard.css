@@ -62,7 +62,8 @@ section#content div.left div.middle_white_medium div.no_tables p a {color:#66666
 section#content div.left div.middle_white_medium div.no_tables p a:hover {color:#333333;}
 section#content div.left div.middle_white_medium ul {float:left; width:100%;}
 section#content div.left div.middle_white_medium ul li {position:relative; float:left; width:570px; padding:25px; border-bottom:1px solid #DDE7E9; background:white;}
-section#content div.left div.middle_white_medium ul li.last {padding:25px 25px 21px 25px; border:none;}
+section#content div.left div.middle_white_medium ul li.last,
+section#content div.left div.middle_white_medium ul li:last-child {padding:25px 25px 23px 25px; border:none;}
 section#content div.left div.middle_white_medium ul li:hover {background:#F4F8F8; cursor:pointer;}
 section#content div.left div.middle_white_medium ul li div.meta_info {float:left; width:100%;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info {float:left; width:410px; margin:0;}
@@ -75,7 +76,7 @@ section#content div.left div.middle_white_medium ul li p.status.private {color:#
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.delete {float:left; display:none; width:auto; margin:4px 0 0 0; padding:0 0 0 6px; font:normal 13px Arial; color:#999999;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.delete a {color:#FF3300; text-decoration:underline;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.delete a:hover {color:#FF1100; cursor:pointer;}
-section#content div.left div.middle_white_medium ul li div.meta_info span.info p.columns {float:left; width:100%; margin:4px 0 0 0; font:normal 13px Arial; color:#999999;}
+section#content div.left div.middle_white_medium ul li div.meta_info span.info p.columns {float:left; width:100%; margin:4px 0 0 0; font:normal 13px Arial; color:#999999; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 section#content div.left div.middle_white_medium ul li div.meta_info span.info p.columns strong {color: #333333; font-weight: normal;}
 section#content div.left div.middle_white_medium ul li:hover div.meta_info span.info p.delete {display:block;}
 section#content div.left div.middle_white_medium ul li.raster:hover div.meta_info span.info p.delete {display:none;}
@@ -100,7 +101,7 @@ section#content div.left div.middle_white_medium span.privacy_window ul li:hover
 section#content div.left div.middle_white_medium span.privacy_window ul li.disabled {background:none; opacity:0.3;}
 section#content div.left div.middle_white_medium span.privacy_window ul li.disabled:hover {background:none;}
 section#content div.left div.middle_white_medium span.privacy_window ul li.disabled:hover a {color:black; background-position:0 -28px; cursor:default;}
-section#content div.left div.bottom_white_medium {float:left; width:626px; height:4px; padding:0; background:url('/images/admin/backgrounds/bottom_white_medium.png') no-repeat 0 bottom;}
+section#content div.left div.bottom_white_medium {float:left; width:626px; height:5px; padding:0; background:url('/images/admin/backgrounds/bottom_white_medium.png') no-repeat 0 bottom;}
 
 section#content div.left div.paginate {display:block; float:left; padding:18px 0 0 0;}
 section#content div.left div.paginate a.previous {float:left; width:12px; height:13px; margin:0; background:url('/images/admin/icons/pag_prev.png') no-repeat 0 0; text-indent:-9999px;}

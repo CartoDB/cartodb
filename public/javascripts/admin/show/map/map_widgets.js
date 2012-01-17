@@ -554,7 +554,7 @@
    			var value = $(this).attr('href').replace('#','')
    				, text = $(this).text();
    			// Remove previous selected item
-   			$el.find('li.selected').removeClass('selected');
+   			$el.find('li.selected').removeClass('selected').removeClass('selected');
 
    			Core.options.value = value;
 

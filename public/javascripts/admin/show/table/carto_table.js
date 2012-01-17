@@ -105,9 +105,6 @@
 		    window.ops_queue.responseRequest(requestId,'ok','');
       });
       
-      
-      
- 
 			if (table.mode!='query') {
         // FILTER OR NORMAL MODE
         // Request schema
@@ -1983,7 +1980,7 @@
         var class_mode = $(this).attr('class');
         defaults.mode = (class_mode=="order_asc")?'asc':'desc';
         defaults.order_by = $(this).closest('th').attr('c');
-        methods.refreshTable(0);
+        methods.refreshTable();
       })
 
       
@@ -2221,7 +2218,8 @@
           // Add history to sql editor
           editor.addHistory();
 
-          methods.refreshTable(0);
+          // Refresh table
+          methods.refreshTable();
         	setAppStatus();
 				}
       });

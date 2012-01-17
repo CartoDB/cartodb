@@ -960,7 +960,7 @@
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
               custom_vis['param'] = 'marker-width';
               custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,2,4,12,24];
-              custom_vis['n_buckets'] = 5;
+              custom_vis['n_buckets'] = 10;
               custom_vis['values'] = old_properties.visualization.values || [0,1,2,3,4,5];
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';

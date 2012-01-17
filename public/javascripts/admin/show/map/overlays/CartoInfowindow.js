@@ -89,7 +89,6 @@
   		  div.style.width = this.width_ + 'px';
   		  div.style.left = (pixPosition.x - 49) + 'px';
   		  var actual_height = - $(div).height();
-  		  console.log(actual_height);
   		  div.style.top = (pixPosition.y  + (this.pixel?(10+actual_height):(actual_height - 205))) + 'px';
   	  }
 			

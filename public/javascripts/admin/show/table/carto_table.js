@@ -47,6 +47,7 @@
     //  GET DATA
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     getData : function(options, direction, new_query, refresh) {
+
       // Check georeferencing loader
       if (window.ops_queue.georeferencing && window.ops_queue.georeferencing.finished) {
         window.ops_queue.georeferencing = null;

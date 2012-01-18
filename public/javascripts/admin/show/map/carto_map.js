@@ -1178,7 +1178,7 @@
         COLOR
       */
       var color = (function($, window, undefined){
-        var $color      = $vis_ul.find('> li:eq(2) div.suboptions')
+        var $color      = $vis_ul.find('> li:eq(2)')
           , color_props = {}; 
 
         
@@ -1201,22 +1201,24 @@
 
 
           function _bindEvents() {
-            $color.closest('li').find('> a.option').click(_activate);
+            $color.find('> a.option').click(_activate);
           }
 
 
           function _activate(ev) {
+
             if (ev) {
               ev.preventDefault();
+              ev.stopPropagation();
             }
 
             // Remove all selected 
-            var parent = $color.parent();
-            if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
-              $vis_ul.find('li.selected').removeClass('selected special')
-              parent.addClass('selected special');
-              _saveProperties()
-            }
+            // var parent = $color.parent();
+            // if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
+            //   $vis_ul.find('li.selected').removeClass('selected special')
+            //   parent.addClass('selected special');
+            //   _saveProperties()
+            // }
           }
 
           function _saveProperties() {

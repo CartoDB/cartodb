@@ -723,7 +723,7 @@
             $vis_ul.find('div.suboptions.cloropeth span.color').remove();
             $vis_ul.find('div.suboptions.cloropeth span.numeric').css({margin:'0'});
             $vis_ul.find('> li:eq(0) > a.option').text('Custom lines');
-            $vis_ul.find('> li:eq(1) > a.option').text('Cloropeth map');
+            $vis_ul.find('> li:eq(1) > a.option').text('Choropleth map');
             $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
           }
         }

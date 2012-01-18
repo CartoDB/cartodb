@@ -614,7 +614,7 @@
 			if ($el.hasClass('buckets')) {
 				for (var i = 3, length = 8; i<length; i++) {
 					var class_ = ((i==Core.options.value)?"class='selected selected'":'' );
-					list_items += '<li ' + class_ + '><a href="#' + i + '">' + i + ' buckets (linear)</a></li>'
+					list_items += '<li ' + class_ + '><a href="#' + i + '">' + i + ' buckets</a></li>'
 				}
 			} else {
 	    	_.each(Core.options.source,function(el,i){
@@ -637,7 +637,7 @@
 
 			if ($el.hasClass('buckets')) {
 				value = Core.options.value || 3;
-				value += ' buckets (linear)'
+				value += ' buckets'
 			} else {
 				value = Core.options.value || Core.options.unselect || 'Select an option';
 			}

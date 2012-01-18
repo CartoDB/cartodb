@@ -1158,9 +1158,9 @@
             if (geom_type=="point" || geom_type=="multipoint") {
               $('div.map_window div.map_header ul li p:eq(1)').text('Bubble map');
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-              $('div.map_window div.map_header ul li p:eq(1)').text('Cloropeth map');
+              $('div.map_window div.map_header ul li p:eq(1)').text('Choropleth map');
             } else {
-              $('div.map_window div.map_header ul li p:eq(1)').text('Cloropeth map');
+              $('div.map_window div.map_header ul li p:eq(1)').text('Choropleth map');
             }
           }
 

@@ -961,7 +961,7 @@
               custom_vis['param'] = 'marker-width';
               custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,2,4,12,24];
               custom_vis['n_buckets'] = 10;
-              custom_vis['values'] = old_properties.visualization.values || [0,1,2,3,4,5];
+              custom_vis['values'] = old_properties.visualization.values || [0,1,2,3,4,5,6,7,8,9,10];
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
               custom_vis['param'] = 'polygon-fill';
@@ -1059,12 +1059,12 @@
                   }
 
                   // Create the values
-                  var step = (max - min) / 4
+                  var step = (max - min) / 9
                     , new_values = [];
                   
                   new_values.push(min);
 
-                  for (var i = 1, l = 5; i<l; i++) {
+                  for (var i = 1, l = 10; i<l; i++) {
                     new_values.push((step*i) + min);
                   }
                   new_values.push(max);

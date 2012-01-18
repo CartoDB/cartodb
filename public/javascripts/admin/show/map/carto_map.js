@@ -1252,7 +1252,9 @@
 
 
           function _setProperties(old_properties) {
-            $carto_editor.setValue(old_properties.visualization.style.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
+            var old_value = old_properties.visualization.style.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   ');
+            $carto_editor.setValue(old_value);
+            $carto_editor.historyArray.push(old_value);
           }
 
 
@@ -1273,7 +1275,7 @@
             that.css_editor = $carto_editor;
 
             $carto_editor.historyArray = new Array();
-            $carto_editor.historyIndex = -1;
+            $carto_editor.historyIndex = 0;
           }
 
 

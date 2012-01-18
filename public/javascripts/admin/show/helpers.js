@@ -30,7 +30,7 @@
         n_q = q.substr(0,q.length-1);
       else 
         n_q = q;
-      return escape(n_q);
+      return encodeURIComponent(n_q);
     }
 
 

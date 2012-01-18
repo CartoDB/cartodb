@@ -838,14 +838,14 @@
 	          
 	          if (new_value=='public') {
 	            $('ul.tab_menu li a.share').removeClass('disabled');
-	            $('span.mapkey').remove();
+	            //$('span.mapkey').remove();
 	          } else {
 	            $('ul.tab_menu li a.share').addClass('disabled');
 	            var style="";
 	            if ($('body').hasClass('map')) {
 	            	style = 'style="display:block"';
 	            }
-	            $('.inner_subheader div.right').append('<span '+ style +' class="mapkey"><a class="mapkey" href="#get_api_key">API KEY</a></span>');
+	            //$('.inner_subheader div.right').append('<span '+ style +' class="mapkey"><a class="mapkey" href="#get_api_key">MAP KEY</a></span>');
 	          }
 	          
 	          changesRequest('privacy',new_value.toUpperCase(),old_value);
@@ -1150,42 +1150,42 @@
 
 
 	  ///////////////////////////////////////
-    //  Stop window                      //
+    //  Map key window                   //
     ///////////////////////////////////////
-    var mapkey_window = (function() {
+   //  var mapkey_window = (function() {
       
-			$('div.mamufas').append(window.view_elements.mapkey_window);
+			// $('div.mamufas').append(window.view_elements.mapkey_window);
       
-      // Bindings
-      $('div.mamufas div.mapkey_window a.close,div.mamufas div.mapkey_window a.cancel').click(function(ev){
-        stopPropagation(ev);
-	      closeOutTableWindows();
-	    });
+   //    // Bindings
+   //    $('div.mamufas div.mapkey_window a.close,div.mamufas div.mapkey_window a.cancel').click(function(ev){
+   //      stopPropagation(ev);
+	  //     closeOutTableWindows();
+	  //   });
 
-		  $('a.mapkey').live('click',function(ev){
-		    stopPropagation(ev);		    
-				closeOutTableWindows();
+		 //  $('a.mapkey').live('click',function(ev){
+		 //    stopPropagation(ev);		    
+			// 	closeOutTableWindows();
 		    
-		    $("div.mapkey_window .inner_ span.top a.copy").zclip('remove');
+		 //    $("div.mapkey_window .inner_ span.top a.copy").zclip('remove');
 
-		    // Change values of the inputs
-	      $('div.mapkey_window').show();
-	      $('div.mamufas').fadeIn('fast');
+		 //    // Change values of the inputs
+	  //     $('div.mapkey_window').show();
+	  //     $('div.mamufas').fadeIn('fast');
 
-	      // Start zclip
-        $("div.mapkey_window .inner_ span.top a.copy").zclip({
-          path: "/javascripts/plugins/ZeroClipboard.swf",
-          copy: function(){
-						$(this).parent().find('input').select();
-            return $(this).parent().find('input').val();
-          }
-        });
+	  //     // Start zclip
+   //      $("div.mapkey_window .inner_ span.top a.copy").zclip({
+   //        path: "/javascripts/plugins/ZeroClipboard.swf",
+   //        copy: function(){
+			// 			$(this).parent().find('input').select();
+   //          return $(this).parent().find('input').val();
+   //        }
+   //      });
 	        
-	      bindESC();
-		  });
+	  //     bindESC();
+		 //  });
 
-      return {}
-	  }());
+   //    return {}
+	  // }());
 
 
 
@@ -1215,7 +1215,7 @@
   ////////////////////////////////////////
 	function goToMap() {
 		$('span.paginate').hide();
-		$('span.mapkey').show();
+		//$('span.mapkey').show();
 		 					
 		// Change list and tools selected
     $('section.subheader ul.tab_menu li').removeClass('selected');
@@ -1233,7 +1233,7 @@
 	
 	function goToTable() {
 		$('span.paginate').show();
-		$('span.mapkey').hide();
+		//$('span.mapkey').hide();
 		
 		// Change list and tools selected
     $('section.subheader ul.tab_menu li').removeClass('selected');

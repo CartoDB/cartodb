@@ -716,7 +716,7 @@
           } else if (geom_type=="polygon" || geom_type=="multipolygon") {
             $vis_ul.find('> li:eq(0) > div.suboptions.points, > li:eq(0) > div.suboptions.lines').remove();
             $vis_ul.find('> li:eq(0) > a.option').text('Custom polygons');
-            $vis_ul.find('> li:eq(1) > a.option').text('Cloropeth map');
+            $vis_ul.find('> li:eq(1) > a.option').text('Choropleth map');
             $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
           } else {
             $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.points').remove();

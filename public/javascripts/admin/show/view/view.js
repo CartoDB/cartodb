@@ -84,7 +84,8 @@
 	    });
 
 	    editor.historyArray = new Array();
-	    editor.historyIndex = -1;
+	    editor.historyArray.push('SELECT * FROM ' + table_name);
+	    editor.historyIndex = 0;
 
 
 	    // UNDO - REDO

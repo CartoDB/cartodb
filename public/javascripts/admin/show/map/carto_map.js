@@ -716,14 +716,14 @@
           } else if (geom_type=="polygon" || geom_type=="multipolygon") {
             $vis_ul.find('> li:eq(0) > div.suboptions.points, > li:eq(0) > div.suboptions.lines').remove();
             $vis_ul.find('> li:eq(0) > a.option').text('Custom polygons');
-            $vis_ul.find('> li:eq(1) > a.option').text('Choropleth map');
+            $vis_ul.find('> li:eq(1) > a.option').text('Numeric choropleth');
             $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
           } else {
             $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.points').remove();
             $vis_ul.find('div.suboptions.cloropeth span.color').remove();
             $vis_ul.find('div.suboptions.cloropeth span.numeric').css({margin:'0'});
             $vis_ul.find('> li:eq(0) > a.option').text('Custom lines');
-            $vis_ul.find('> li:eq(1) > a.option').text('Choropleth map');
+            $vis_ul.find('> li:eq(1) > a.option').text('Numeric choropleth');
             $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
           }
         }
@@ -1158,9 +1158,9 @@
             if (geom_type=="point" || geom_type=="multipoint") {
               $('div.map_window div.map_header ul li p:eq(1)').text('Bubble map');
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-              $('div.map_window div.map_header ul li p:eq(1)').text('Choropleth map');
+              $('div.map_window div.map_header ul li p:eq(1)').text('Numeric choropleth');
             } else {
-              $('div.map_window div.map_header ul li p:eq(1)').text('Choropleth map');
+              $('div.map_window div.map_header ul li p:eq(1)').text('Numeric choropleth');
             }
           }
 

@@ -76,7 +76,7 @@
                         '<span class="color" css="marker-line-color" default="#FFFFFF"></span>'+
                         '<span class="numeric" css="marker-line-width" default="1"></span>'+
                       '</div>'+
-                      '<label>Transparency</label>'+
+                      '<label>Opacity</label>'+
                       '<div class="long">'+
                         '<span class="alpha" css="marker-opacity marker-line-opacity" default="1"></span>'+
                       '</div>'+
@@ -91,7 +91,7 @@
                         '<span class="color" css="line-color" default="#FFFFFF"></span>'+
                         '<span class="numeric" css="line-width" default="1"></span>'+
                       '</div>'+
-                      '<label>Transparency</label>'+
+                      '<label>Opacity</label>'+
                       '<div class="long">'+
                         '<span class="alpha" css="polygon-opacity line-opacity" default="1"></span>'+
                       '</div>'+
@@ -102,7 +102,7 @@
                         '<span class="color" css="line-color" default="#FF6600"></span>'+
                         '<span class="numeric" css="line-width" default="1"></span>'+
                       '</div>'+
-                      '<label>Transparency</label>'+
+                      '<label>Opacity</label>'+
                       '<div class="long">'+
                         '<span class="alpha" css="line-opacity" default="1"></span>'+
                       '</div>'+
@@ -111,7 +111,7 @@
                   '<li>'+
                     '<a class="option" href="#special">Bubble map</a>'+
                     '<div class="suboptions bubbles">'+
-                      '<label>Asocciated value</label>'+
+                      '<label>Column</label>'+
                       '<div class="long">'+
                         '<span class="dropdown" data="column" default="cartodb_id"></span>'+
                       '</div>'+
@@ -124,7 +124,7 @@
                         '<span class="color" css="marker-line-color" default="#FFFFFF"></span>'+
                         '<span class="numeric" css="marker-line-width" default="1"></span>'+
                       '</div>'+
-                      '<label>Alpha</label>'+
+                      '<label>Opacity</label>'+
                       '<div class="long">'+
                         '<span class="alpha" css="marker-opacity marker-line-opacity" default="1"></span>'+
                       '</div>'+
@@ -135,11 +135,11 @@
                       '</div>'+
                     '</div>'+
                     '<div class="suboptions cloropeth">'+
-                      '<label>Asocciated value</label>'+
+                      '<label>Column</label>'+
                       '<div class="long">'+
                         '<span class="dropdown" data="column" default="cartodb_id"></span>'+
                       '</div>'+
-                      '<label>Buckets</label>'+
+                      '<label>Color divisions</label>'+
                       '<div class="long">'+
                         '<span class="dropdown buckets" data="values" default="5"></span>'+
                       '</div>'+
@@ -152,14 +152,14 @@
                         '<span class="color" css="line-color" default="#FFFFFF"></span>'+
                         '<span class="numeric" css="line-width" default="1"></span>'+
                       '</div>'+
-                      '<label>Alpha</label>'+
+                      '<label>Opacity</label>'+
                       '<div class="long">'+
                         '<span class="alpha" css="line-opacity polygon-opacity" default="1"></span>'+
                       '</div>'+
                     '</div>'+
                   '</li>'+
                   '<li class="disabled">'+
-                    '<a class="option disabled" href="#color_map">Color map</a>'+
+                    '<a class="option disabled" href="#color_map">Category choropleth</a>'+
                   '</li>'+
                 '</ul>'+
               '</div>'+

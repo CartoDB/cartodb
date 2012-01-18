@@ -158,9 +158,9 @@
                       '</div>'+
                     '</div>'+
                   '</li>'+
-                  '<li class="disabled">'+
-                    '<a class="option disabled" href="#color_map">Category choropleth</a>'+
-                  '</li>'+
+                  //'<li class="disabled">'+
+                  //  '<a class="option disabled" href="#color_map">Category choropleth</a>'+
+                  //'</li>'+
                 '</ul>'+
               '</div>'+
             '</li>'+

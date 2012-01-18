@@ -37,6 +37,7 @@ module CartoDB
           @runlog.stdout << out
         end
 
+        # TODO: THIS SHOULD BE UPDATE IF NOT NULL TO PREVENT CRASHING
         if shp_args_command[1] != '4326'
           begin  
             @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN the_geom TO the_geom_orig;")

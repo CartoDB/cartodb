@@ -424,7 +424,7 @@
       	$el.append(
 	      	'<p>Max</p>'
 	      );
-	      $el.find('input').removeAttr('disabled');
+	      //$el.find('input').removeAttr('disabled');
       }
 
       // Min?
@@ -432,7 +432,7 @@
       	$el.append(
 	      	'<p>Min</p>'
 	      );
-	      $el.find('input').removeAttr('disabled');
+	      //$el.find('input').removeAttr('disabled');
       }
 	  }
 

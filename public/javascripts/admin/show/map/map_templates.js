@@ -130,7 +130,7 @@
                       '</div>'+
                       '<label>Bubble sizes</label>'+
                       '<div class="long">'+
-                        '<span class="numeric min" data="values" default="0"></span>'+
+                        '<span class="numeric min" data="values" default="1"></span>'+
                         '<span class="numeric max" data="values" default="100"></span>'+
                       '</div>'+
                     '</div>'+

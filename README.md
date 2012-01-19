@@ -220,3 +220,4 @@ Note: Look at the `public/javascripts/environments/development.js` file which co
   - Javier Santana (@javisantana)
   - Javier Arce (@javierarce)
   - Aaron Steele (@eightysteele)
+  - Luis Bosque (@luisico)

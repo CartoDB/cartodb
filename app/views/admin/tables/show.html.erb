@@ -6,11 +6,9 @@
       # PLUGINS
       "plugins/jquery.min",
       "plugins/jquery-ui.min",
-      "plugins/general_functions",
       "plugins/jquery.mousewheel",
       "plugins/jscrollpane.min",
       "plugins/jquery.color",
-      "plugins/jquery.livequery.min",
       "plugins/codemirror/codemirror.js",
       "plugins/codemirror/plsql.js",
       "plugins/codemirror/css.js",
@@ -24,20 +22,26 @@
       "plugins/rgbcolor",
       "plugins/jquery.history.min",
       "plugins/jquery.caret.1.02",
-      # OWN MADE
-      "admin/table/out_table_elements",
-      "admin/table/loading_messages",
-      "admin/table/loader_queue",
-      "admin/table/carto_table",
-      "admin/table/table_templates",
-      "admin/table/table",
-      "admin/table/worker_geocoding",
-      "admin/table/geocoding",
-      # MAPS
-      "admin/maps/map",
-      "admin/maps/map_elements",
-      "admin/maps/CartoMap",
-      "admin/maps/wax.g"
+      # VIEW
+      "admin/show/view/loader_queue_messages",
+      "admin/show/view/loader_queue",
+      "admin/show/view/geocoding",
+      "admin/show/view/view_templates",
+      "admin/show/view/view",
+      # TABLE
+      "admin/show/table/carto_table",
+      "admin/show/table/table_templates",
+      # MAP
+      "admin/show/map/wax.g",
+      "admin/show/map/map_templates",
+      "admin/show/map/map_widgets",
+      "admin/show/map/color_ramps",
+      "admin/show/map/carto_map",
+      "admin/show/map/map",
+      # APP
+      "admin/show/view/GOD",
+      "admin/show/helpers",
+      "admin/show/app"
     )%>
 
     <script type="text/javascript">
@@ -48,8 +52,6 @@
       var user_name = "<%= current_user.username %>";
       var map_enabled = <%= current_user.map_enabled.to_s %>;
       var map_key = "<%= current_user.get_map_key %>";
-
-      var error_message = "asjdfñlasfsadfasdf";
       <% if flash[:alert] %>
         var error_message = '<%= flash[:alert] %>';
       <% end %>
@@ -62,7 +64,7 @@
 
 
   <% content_for(:head) do %>
-    <%= stylesheet_link_tag('reset.css','admin/table/out_table_elements','admin/table/carto_table', 'admin/maps/maps' ) %>
+    <%= stylesheet_link_tag('reset.css','admin/table/view','admin/table/table', 'admin/table/map' ) %>
   <% end %>
 
   <section class="subheader">

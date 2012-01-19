@@ -1,5 +1,5 @@
   <%= content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "plugins/file_uploader", "admin/tables/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/tables/import"  %>
+    <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers", "plugins/file_uploader", "admin/index/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/index/import"  %>
   <% end %>
   <%= content_for(:head) do %>
     <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/dashboard') %>
@@ -44,7 +44,6 @@
                 <p class="right">Need more space? <a href="#where?">Upgrade your account</a></p>
               <% end %>
             </div>
-
             <div class="progress">
               <p><%= @quota %> MB</p>
               <span class="bar <%= disk_usage_class(disk_usage_percent(@database_size, @quota)) %>" style="width:<%= number_to_percentage(disk_usage_percent(@database_size, @quota), :precision => 2) %>">
@@ -75,12 +74,7 @@
           <div class="middle_white_medium">
             <ul class="your_tables">
               <% @tables.each_with_index do |table, i| %>
-              <!-- TODO: Add class 'raster' to the li which table is block... -->
-              <!-- <li class="raster">
-                   </li> -->
-              <!-- end... -->
-
-              <li<%= ' class="last"'.html_safe if i == (@tables_count - 1) && i>2%>>
+              <li>
                 <div class="meta_info">
                   <span class="info">
                     <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
@@ -92,7 +86,7 @@
                         <%= pluralize(table.rows_counted,'row','rows') rescue '' %> /
                         <%= table.schema.size rescue '' %> columns:
                       </strong>
-                    <%= table.schema.map{ |e| e.first }[2...5].join(', ') %>...</p>
+                    <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...</p>
                   </span>
                   <span class="tags">
                     <% unless table.updated_at.blank? %>
@@ -105,12 +99,6 @@
                     <% end %>
                   </span>
                 </div>
-
-                <!-- TODO: Add raster span only when the table is from raster... -->
-                <!-- <% if (i==(@tables_count - 1) && i>2) %>
-                  <span class="raster"></span>
-                <% end %> -->
-                <!-- end... -->
               </li>
               <% end %>
             </ul>
@@ -148,7 +136,7 @@
           </div>
 
           <h4>BROWSE BY TAGS</h4>
-          <% if @tags_count == 0 %>
+          <% if @tags.count==0 %>
             <span class="no_tags">
               <p>You have not added any tags yet.</p>
               <p>Tags are useful for organizing and filtering your tables.</p>
@@ -197,7 +185,7 @@
                   <span class="file">
                     <div class="select_file">
                       <div id="uploader"></div>
-                      <p>You can import .csv, .xls or .zip files</p>
+                      <p>We support xls, csv, gpx, shp, zip, etc...</p>
                     </div>
                     <div class="progress">
                       <p>Uploading your file...</p>

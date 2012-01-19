@@ -947,7 +947,7 @@
             if (geom_type=="point" || geom_type=="multipoint") {
               custom_props['marker-placement'] = 'point';
               custom_props['marker-type'] = 'ellipse';
-              custom_props['marker-allow-overlap'] = false;              
+              custom_props['marker-allow-overlap'] = true;              
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
               // No custom values
             } else {

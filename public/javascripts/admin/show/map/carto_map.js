@@ -211,11 +211,9 @@
 
         if (vis_data && vis_data.type=="custom") {
 
-          console.log(vis_data.v_buckets);
-
           for (var i=vis_data.v_buckets.length - 1; i>=0; i--) {
             str += '#'+table_name+' ['+vis_data.column+ '<=' + (vis_data.v_buckets[i]) +'] {';
-            str += vis_data.param + ':' + vis_data.values[i];
+            str += vis_data.param + ':' + vis_data.values[i] || vis_data.values[vis_data.values.length-1];
             str += '}';
           }
           
@@ -228,8 +226,6 @@
       if (str.search('/*carto*/') < 0 && vis_data) {
         this.css_editor.setValue(str.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
       }
-
-      console.log('Seting carto styles: ', str, vis_data);
 
       // Save styles to "this" object -> Refresh tiles
       this.styles = str;
@@ -704,9 +700,6 @@
       var $vis_ul = $('.map_header ul.visualization_type')
         , prev_properties = cartoToJavascript(styles);        // Get previous properties, important!
       
-
-      console.log(prev_properties);
-
       /*
         LIST HEADER VISUALIZATION
       */

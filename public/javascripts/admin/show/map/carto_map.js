@@ -213,7 +213,7 @@
 
           for (var i=vis_data.v_buckets.length - 1; i>=0; i--) {
             str += '#'+table_name+' ['+vis_data.column+ '<=' + (vis_data.v_buckets[i]) +'] {';
-            str += vis_data.param + ':' + vis_data.values[i];
+            str += vis_data.param + ':' + vis_data.values[i] || vis_data.values[vis_data.values.length-1];
             str += '}';
           }
           
@@ -226,7 +226,6 @@
       if (str.search('/*carto*/') < 0 && vis_data) {
         this.css_editor.setValue(str.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
       }
-
 
       // Save styles to "this" object -> Refresh tiles
       this.styles = str;
@@ -1064,10 +1063,11 @@
                   
                   new_values.push(min);
 
-                  for (var i = 1, l = 10; i<l; i++) {
+                  for (var i = 1, l = 10; i<l+1; i++) {
                     new_values.push((step*i) + min);
                   }
 
+                  new_values.push(max);
                   custom_vis[$(this).attr('data')] = new_values;
                 }
 

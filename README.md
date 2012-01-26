@@ -197,7 +197,7 @@ rails s
 And finally, setup your first user account:
 
 ```bash
-bundle exec rake cartodb:db:setup EMAIL=me@mail.com SUBDOMAIN=my_subdomain PASSWORD=my_pass ADMIN_PASSWORD=my_pass
+bundle exec rake cartodb:db:setup EMAIL=me@mail.com SUBDOMAIN=mysubdomain PASSWORD=mypass ADMIN_PASSWORD=mypass
 bundle exec rake cartodb:db:set_user_quota['me',1000] # 1 GB quota
 ```
 

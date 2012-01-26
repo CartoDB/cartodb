@@ -25,7 +25,7 @@ module CartoDB
 
         puts "SRID : #{rast_srid_command}"
         
-        blocksize = "200x200"
+        blocksize = "256x256"
         full_rast_command = "#{raster2pgsql_bin_path} -I -s #{rast_srid_command.strip} -t #{blocksize} #{@path} #{random_table_name} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
         log "Running raster2pgsql: #{raster2pgsql_bin_path}  #{full_rast_command}"
         out = `#{full_rast_command}`

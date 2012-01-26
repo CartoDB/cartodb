@@ -70,10 +70,19 @@ class ApplicationController < ActionController::Base
   end
   
   def check_domain
-    # FIXME: Development and test hosts are fixed so we cannot use this filter unless environment is production
-    if Rails.env.production? && logged_in?
-      if request.host !~ /^#{current_user.username}#{CartoDB.session_domain}$/
-        redirect_to "https://#{current_user.username}#{CartoDB.session_domain}"
+    if Rails.env.production?
+     app_domain = CartoDB.session_domain
+     protocol   = 'https'
+     port       = ""
+    else
+     app_domain = ".localhost.lan" 
+     protocol   = 'http'
+     port       = request.port
+    end
+    
+    if logged_in?
+      if request.host !~ /^#{current_user.username}#{app_domain}$/
+        redirect_to "#{protocol}://#{current_user.username}#{app_domain}#{port}"
       end
     end
   end

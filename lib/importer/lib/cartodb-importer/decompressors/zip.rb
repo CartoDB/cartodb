@@ -20,6 +20,9 @@ module CartoDB
             name = name.gsub(' ','_')
           end
           
+          #fixes problem of different SHP archive files with different case patterns
+          name = name.downcase
+          
           # temporary filename. no collisions. 
           tmp_path = "#{tmp_dir}.#{name}"
           

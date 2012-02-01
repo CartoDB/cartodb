@@ -10,38 +10,45 @@ section#content div.inner_content div.notification div.middle_white a.close {pos
 section#content div.inner_content div.notification div.middle_white a.close:hover {background-position:0 -17px;}
 section#content div.inner_content div.notification div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
 
-section#content div.inner_content div.requests_info div.top_white {width:906px; height:7px; padding:0; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
-section#content div.inner_content div.requests_info div.middle_white {position:relative; width:846px; padding:25px 30px 24px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
-section#content div.inner_content div.requests_info div.middle_white h2 {width:100%; font:bold 21px Arial; color:#333333;}
-section#content div.inner_content div.requests_info div.middle_white p {width:100%; font:normal 15px Arial; color:#999999;}
-section#content div.inner_content div.requests_info div.middle_white p a {color:#666666;}
-section#content div.inner_content div.requests_info div.middle_white p a:hover {color:#333333;}
-section#content div.inner_content div.requests_info div.middle_white a.close {position:absolute; top:9px; right:13px; width:17px; height:17px; background:url('/images/admin/icons/close_button.png') no-repeat 0 0; text-indent:-9999px;}
-section#content div.inner_content div.requests_info div.middle_white a.close:hover {background-position:0 -17px;}
-section#content div.inner_content div.requests_info div.middle_white span.block {position:relative; display:inline-block; width:220px; margin:20px 45px 0 0; padding:5px 0 0 40px; vertical-align:top; }
-section#content div.inner_content div.requests_info div.middle_white span.block.last {width:170px; margin:20px 0 0 0;}
-section#content div.inner_content div.requests_info div.middle_white span.block h3 {font:bold 15px Arial; color:#333333;}
-section#content div.inner_content div.requests_info div.middle_white span.block label {position:absolute; left:0; top:0; width:29px; height:15px; border-radius:20px; -webkit-border-radius:20px; -moz-border-radius:20px; background:#DAE7E9;
+
+section#content div.inner_content div.white_content {width:900px; margin:0 auto 30px!important; background:white; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px; -moz-box-shadow: 0 0 5px #888; -webkit-box-shadow: 0 0 1px 3px #888; box-shadow: 0 1px 1px 1px rgba(0,0,0,0.05);}
+div.white_content.padding {width:850px!important; padding:25px;}
+div.white_content h2 {padding:0; margin:0; font:bold 21px Arial; color:#333333; letter-spacing:0; text-align:left;}
+div.white_content p,
+div.white_content label {display:inline-block; width:auto; font:normal 15px Arial; color:#999999; letter-spacing:0; text-align:left;}
+div.white_content label {color:#6C7C7F;}
+div.white_content p.big {font:bold 49px Arial; color:#6C7C7F; line-height:46px;}
+
+div.white_content table {width:100%;}
+div.white_content table td {vertical-align:top; padding:25px; border-right:1px solid #DEE7E9; letter-spacing:-4px; text-align:center;}
+div.white_content table td:last-child {border-right:none;}
+div.white_content table label {margin:5px 0 0 10px; vertical-align:top;}
+div.white_content table td:first-child p {padding:0; width:100%;}
+div.white_content table td.danger label,
+div.white_content table td.danger p {color:#F89600;}
+div.white_content table a {color:#F89600;}
+div.white_content table a:hover {color:#FF6600;}
+
+section#content div.inner_content div.requests_info h2 {padding:0 0 3px;}
+section#content div.inner_content div.requests_info p a {color:#666666;}
+section#content div.inner_content div.requests_info p a:hover {color:#333333;}
+section#content div.inner_content div.requests_info a.close {position:absolute; top:9px; right:13px; width:17px; height:17px; background:url('/images/admin/icons/close_button.png') no-repeat 0 0; text-indent:-9999px;}
+section#content div.inner_content div.requests_info a.close:hover {background-position:0 -17px;}
+section#content div.inner_content div.requests_info span.block {position:relative; display:inline-block; width:220px; margin:25px 45px 0 0; padding:5px 0 5px 40px; vertical-align:top; }
+section#content div.inner_content div.requests_info span.block.last {width:170px; margin:20px 0 0 0;}
+section#content div.inner_content div.requests_info span.block h3 {font:bold 15px Arial; color:#333333;}
+section#content div.inner_content div.requests_info span.block label {position:absolute; left:0; top:0; width:29px; height:15px; border-radius:20px; -webkit-border-radius:20px; -moz-border-radius:20px; background:#DAE7E9;
   font:bold 15px Arial; color:#333333; text-align:center; padding:7px 0; line-height:15px;}
-section#content div.inner_content div.requests_info div.middle_white span.block p {padding:6px 0 0 0; font:normal 13px Arial; color:#999999;}
-section#content div.inner_content div.requests_info div.middle_white span.block p a {color:#999999; text-decoration:underline;}
-section#content div.inner_content div.requests_info div.middle_white span.block p a:hover {color:#333333;}
+section#content div.inner_content div.requests_info span.block p {padding:6px 0 0 0; font:normal 13px Arial; color:#999999;}
+section#content div.inner_content div.requests_info span.block p a {color:#999999; text-decoration:underline;}
+section#content div.inner_content div.requests_info span.block p a:hover {color:#333333;}
 
-section#content div.inner_content div.requests_info div.middle_white div.info {width:100%; height:40px; margin:5px 0 0 0}
-section#content div.inner_content div.requests_info div.middle_white div.info p {width:auto}
-section#content div.inner_content div.requests_info div.middle_white div.info p a {color:#ff9900; text-decoration:none}
-section#content div.inner_content div.requests_info div.middle_white div.info p a:hover {color:#ff6600; text-decoration:underline}
-section#content div.inner_content div.requests_info div.middle_white div.info p.right {float:right}
-section#content div.inner_content div.requests_info div.middle_white div.info p.left {float:left}
-
-section#content div.inner_content div.requests_info div.middle_white div.progress {position:relative; width:100%; height:45px; background:#F0F5F7; border-radius:4px; -webkit-border-radius:4px; -moz-border-radius:4px;}
-section#content div.inner_content div.requests_info div.middle_white div.progress p {position:absolute; top:17px; right:25px; width:auto; font:bold 11px "Helvetica",Arial; color:#D5D9DB;}
-section#content div.inner_content div.requests_info div.middle_white div.progress span.bar {position:absolute; width:60%; height:45px; border-radius:4px; -webkit-border-radius:4px; -moz-border-radius:4px;
-  background:linear-gradient(-90deg, #8FD484, #67BA6A); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#8FD484), to(#67BA6A)); background:-moz-linear-gradient(-90deg, #8FD484, #67BA6A); background: -o-linear-gradient(#8FD484,#67BA6A); background:#8FD484\9;}
-section#content div.inner_content div.requests_info div.middle_white div.progress span.bar p {top:13px; right:11px; height:11px; padding:5px 5px 4px; background:rgba(0,0,0,0.3); border-radius:4px; -webkit-border-radius:4px; -moz-border-radius:4px; font:bold 11px "Helvetica",Arial; color:white; line-height:11px}
-section#content div.inner_content div.requests_info div.middle_white div.progress span.bar.be_careful {background:linear-gradient(-90deg, #FF9900, #BF7201); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FF9900), to(#BF7201)); background:-moz-linear-gradient(-90deg, #FF9900, #BF7201); background: -o-linear-gradient(#FF9900,#BF7201); background:#FF9900\9;}
-section#content div.inner_content div.requests_info div.middle_white div.progress span.bar.boom {background:linear-gradient(-90deg, #FF0000, #CC0000); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FF0000), to(#CC0000)); background:-moz-linear-gradient(-90deg, #FF0000, #CC0000); background: -o-linear-gradient(#FF0000,#CC0000); background:#FF0000\9;}
-section#content div.inner_content div.requests_info div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
+section#content div.inner_content div.requests_info div.info {width:100%; height:40px; margin:5px 0 0 0}
+section#content div.inner_content div.requests_info div.info p {width:auto}
+section#content div.inner_content div.requests_info div.info p a {color:#ff9900; text-decoration:none}
+section#content div.inner_content div.requests_info div.info p a:hover {color:#ff6600; text-decoration:underline}
+section#content div.inner_content div.requests_info div.info p.right {float:right}
+section#content div.inner_content div.requests_info div.info p.left {float:left}
 
 
 section#content div.left {display:inline-block; width:626px; vertical-align:top;}

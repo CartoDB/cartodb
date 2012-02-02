@@ -44,8 +44,14 @@
                     <% end %>
                   </td>
                   <td class="danger">
-                    <p class="big">30/75</p>
-                    <label>Used<br/>Megabytes</label>
+                    <% if @quota > 1024 %>
+                      <% @database_size = @database_size/1024 %>
+                      <p class="big"><%= number_with_precision(@database_size, :precision => 1) %>/<%= @quota/1024 %></p>
+                      <label>Used<br/>Gigabytes</label>
+                    <% else %>
+                      <p class="big"><%= @database_size.to_i %>/<%= @quota %></p>
+                      <label>Used<br/>Megabytes</label>                                      
+                    <% end %>  
                   </td>
                   <td>
                     <p class="big">3/10</p>

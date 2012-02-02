@@ -15,13 +15,14 @@ name = sys.argv[2]
 dbf_file = shp_file[0:-4] + '.dbf'
 prj_file = shp_file[0:-4] + '.prj'
 
+shape_name = os.path.splitext(shp_file)[0]
+prj_string = open(shape_name +'.prj','r').read()
+
 srid = 4326
 
 def get_spatial_reference(shapefile):
     srs = osr.SpatialReference()
-    shape_name = os.path.splitext(shapefile)[0]
     shpfile = os.path.basename(shape_name)
-    prj_string = open(shape_name +'.prj','r').read()
     ret = srs.SetFromUserInput(prj_string)
     proj4 = srs.ExportToProj4()
     if not proj4:
@@ -56,7 +57,7 @@ def to_epsg(srs):
             try:
                 return srs.GetAuthorityCode('GEOGCS')
             except:
-                return c
+                return None
 
 
 #Try detecting the SRID
@@ -71,7 +72,7 @@ if os.path.isfile(prj_file):
           'exact' : True,
           'error' : True,
           'mode' : 'wkt',
-          'terms' : prj_txt})
+          'terms' : prj_string})
       webres = urlopen('http://prj2epsg.org/search.json', query)
       jres = json.loads(webres.read())
       if jres['codes']:

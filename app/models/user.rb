@@ -5,13 +5,22 @@ class User < Sequel::Model
   one_to_many :tokens, :class => :OauthToken
 
   # Sequel setup & plugins
-  set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes
+  set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type
   plugin :validation_helpers
   plugin :json_serializer
   
   # Restrict to_json attributes
   @json_serializer_opts = { 
-    :except => [ :crypted_password, :salt, :invite_token, :invite_token_date, :admin, :enabled, :map_enabled, :quota_in_bytes ],
+    :except => [ :crypted_password, 
+                 :salt, 
+                 :invite_token, 
+                 :invite_token_date, 
+                 :admin, 
+                 :enabled, 
+                 :map_enabled, 
+                 :quota_in_bytes, 
+                 :table_quota, 
+                 :account_type ],
     :naked => true # avoid adding json_class to result
   }
 
@@ -233,6 +242,10 @@ class User < Sequel::Model
   
   def exceeded_quota?
     self.remaining_quota < 0      
+  end
+  
+  def remaining_table_quota
+    self.table_quota - self.table_count
   end
   
   ## User's databases setup methods

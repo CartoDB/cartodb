@@ -1,4 +1,4 @@
-class AddQuotaToUserMigration < Sequel::Migration
+class AddTableQuotaAndAccountTypeToUser < Sequel::Migration
 
   def up
     add_column :users, :table_quota, :bigint, :default => 5

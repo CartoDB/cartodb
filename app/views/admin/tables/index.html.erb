@@ -38,7 +38,7 @@
                   <td>
                     <h2>Hello <%= current_user.username %></h2>
                     <% if true %>        
-                      <p>Welcome back to your <%= current_user.account_type.humanize %> Server</p>
+                      <p>Welcome to your <%= current_user.account_type.humanize %> Server</p>
                     <% else %>
                       <p>Need more resources? <a href="#todo">Upgrade your account</a></p>
                     <% end %>
@@ -54,8 +54,13 @@
                     <% end %>  
                   </td>
                   <td>
-                    <p class="big"><%= @tables_count %>/<%= @table_quota %></p>
-                    <label>Tables<br/>created</label>
+                    <% if @table_quota.blank? %>
+                      <p class="big"><%= @tables_count %>/&infin;</p>
+                      <label>Tables<br/>created</label>
+                    <% else %>
+                      <p class="big"><%= @tables_count %>/<%= @table_quota %></p>
+                      <label>Tables<br/>created</label>                      
+                    <% end %>    
                   </td>
                 </tr>
               </tbody>

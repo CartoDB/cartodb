@@ -1033,7 +1033,7 @@
 		    
 	      var cartodb_layer = {
           getTileUrl: function(coord, zoom) {
-            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png?sql=' + (($('body').hasClass('query'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
+            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png?sql=' + encodeURIComponent(($('body').hasClass('query'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
           },
           tileSize: new google.maps.Size(256, 256)
         };
@@ -1085,7 +1085,7 @@
         var me = this;
         $.ajax({
             method: "GET",
-            url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
+            url: global_api_url+'queries?sql='+encodeURIComponent('select ST_Extent(the_geom) from '+ table_name),
             headers: {"cartodbclient":"true"},
             success: function(data) {
               if (data.rows[0].st_extent!=null) {
@@ -1123,7 +1123,7 @@
       }
 		  
 			function changeEmbedCode() {
-				var sql = (($('body').hasClass('query')) ? '?sql=' + editor.getOption('query') : '');
+				var sql = (($('body').hasClass('query')) ? '?sql=' + encodeURIComponent(editor.getOption('query')) : '');
 				$('div.embed_window span.copy_code input').val('<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map'+ sql +'\'></iframe>');
 				$('div.embed_window div.tiles_code input').val(TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map'+ sql);
 			}

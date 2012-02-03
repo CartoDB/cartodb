@@ -6,7 +6,7 @@ class AddQuotaToUserMigration < Sequel::Migration
   end
 
   def down
-    drop_column :users, :quota_in_bytes
+    drop_column :users, :table_quota
     drop_column :users, :account_type    
   end
 

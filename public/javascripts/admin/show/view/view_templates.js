@@ -197,10 +197,18 @@
           '<a href="#close_window" class="close"></a>'+
           '<div class="inner_">'+
             '<span class="top">'+
-              '<h3>Embed this map in your website</h3>'+
+              '<h3>Share your CartoDB map</h3>'+
               '<p>It’s just copy and paste!</p>'+
+              '<div class="tiles_code">'+
+                '<h4>DIRECT LINK</h4>'+
+                '<span class="copy_code">'+
+                  '<input type="text" disabled="disabled" value="'+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map\'" />'+
+                  '<a class="copy">Copy</a>'+
+                '</span>'+
+              '</div>'+
+              
               '<div class="html_code">'+
-                '<h4>HTML CODE</h4>'+
+                '<h4>OR HTML EMBED CODE</h4>'+
                 '<span class="copy_code">'+
                   '<input type="text" disabled="disabled" value="<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map\' width=\'572\' height=\'220\'></iframe>" />'+
                   '<a id="test" class="copy">Copy</a>'+
@@ -210,13 +218,6 @@
                   '<a href="#zoom_in" class="embed_zoom_in">+</a>'+
                   '<a href="#zoom_out" class="embed_zoom_out">-</a>'+
                   '<a href="http://cartodb.com" class="cartodb_logo" target="_blank">CartoDB</a>'+
-                '</span>'+
-              '</div>'+
-              '<div class="tiles_code">'+
-                '<h4>OR TILES URL</h4>'+
-                '<span class="copy_code">'+
-                  '<input type="text" disabled="disabled" value="'+TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}'+'.png'+'" />'+
-                  '<a class="copy">Copy</a>'+
                 '</span>'+
               '</div>'+
             '</span>'+

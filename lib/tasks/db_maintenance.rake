@@ -1,6 +1,10 @@
 namespace :cartodb do
   namespace :db do
 
+
+    ##############
+    # SET DB PERMS
+    ##############
     desc "Set DB Permissions"
     task :set_permissions => :environment do
       User.all.each do |user|
@@ -26,7 +30,11 @@ namespace :cartodb do
       end
     end
 
-    desc "reset Users quota to 100mb or use current setting"
+
+    ################
+    # SET DISK QUOTA
+    ################
+    desc "reset all users quota to 100mb or use current setting"
     task :reset_quotas => :environment do
       User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
@@ -64,6 +72,55 @@ namespace :cartodb do
     end
 
 
+    #################
+    # SET TABLE QUOTA
+    #################
+    desc "set users table quota"
+    task :set_user_table_quota, [:username, :table_quota] => :environment do |t, args|
+      usage = "usage: rake cartodb:db:set_user_table_quota[username,table_quota]"
+      raise usage if args[:username].blank? || args[:table_quota].blank?
+      
+      user  = User.filter(:username => args[:username]).first      
+      user.update(:table_quota => args[:table_quota].to_i)
+                    
+      puts "User: #{user.username} table quota updated to: #{args[:table_quota]}"
+    end
+
+    desc "reset Users table quota to 5"
+    task :set_all_users_to_free_table_quota => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        user.update(:table_quota => 5) if user.table_quota.blank?
+      end
+    end
+    
+    
+    ##################
+    # SET ACCOUNT TYPE
+    ##################
+    desc "set users account type"
+    task :set_user_account_type, [:username, :account_type] => :environment do |t, args|
+      usage = "usage: rake cartodb:db:set_user_account_type[username,account_type]"
+      raise usage if args[:username].blank? || args[:account_type].blank?
+      
+      user  = User.filter(:username => args[:username]).first      
+      user.update(:account_type => args[:account_type])
+                    
+      puts "User: #{user.username} table account type updated to: #{args[:account_type]}"
+    end
+
+    desc "reset all Users account type to FREE"
+    task :set_all_users_account_type_to_free => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        user.update(:account_type => 'FREE') if user.account_type.blank?
+      end
+    end
+
+
+    ##########################
+    # REBUILD GEOM WEBMERCATOR
+    ##########################    
     desc "Add the_geom_webmercator column to every table which needs it"
     task :add_the_geom_webmercator => :environment do
       User.all.each do |user|

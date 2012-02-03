@@ -38,18 +38,29 @@
                   <td>
                     <h2>Hello <%= current_user.username %></h2>
                     <% if true %>        
-                      <p>Welcome back to your Magallan Server</p>
+                      <p>Welcome to your <%= current_user.account_type.humanize %> Server</p>
                     <% else %>
                       <p>Need more resources? <a href="#todo">Upgrade your account</a></p>
                     <% end %>
                   </td>
                   <td class="danger">
-                    <p class="big">30/75</p>
-                    <label>Used<br/>Megabytes</label>
+                    <% if @quota > 1024 %>
+                      <% @database_size = @database_size/1024 %>
+                      <p class="big"><%= number_with_precision(@database_size, :precision => 1) %>/<%= @quota/1024 %></p>
+                      <label>Used<br/>Gigabytes</label>
+                    <% else %>
+                      <p class="big"><%= @database_size.to_i %>/<%= @quota %></p>
+                      <label>Used<br/>Megabytes</label>                                      
+                    <% end %>  
                   </td>
                   <td>
-                    <p class="big">3/10</p>
-                    <label>Tables<br/>created</label>
+                    <% if @table_quota.blank? %>
+                      <p class="big"><%= @tables_count %>/&infin;</p>
+                      <label>Tables<br/>created</label>
+                    <% else %>
+                      <p class="big"><%= @tables_count %>/<%= @table_quota %></p>
+                      <label>Tables<br/>created</label>                      
+                    <% end %>    
                   </td>
                 </tr>
               </tbody>
@@ -130,7 +141,7 @@
             <div class="middle_white_short">
               <h3>Wondering how to start with CartoDB?</h3>
               <p>Upload your data to a new table</p>
-              <a href="#create_table" class="new_table <%= 'disabled' if disk_usage_percent(@database_size, @quota) > 99 %>">Create a new table</a>
+              <a href="#create_table" class="new_table <%= 'disabled' if current_user.exceeded_quota? %>">Create a new table</a>
             </div>
             <div class="bottom_white_short"></div>
           </div>

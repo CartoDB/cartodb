@@ -23,6 +23,7 @@ class Table < Sequel::Model(:user_tables)
   def validate
     super
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
+    #errors.add(:user_id, 'over table quota, please upgrade')  if user.remaining_table_quota <= 0 
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
     validates_unique [:name, :user_id], :message => 'is already taken'
   end

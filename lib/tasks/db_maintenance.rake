@@ -86,6 +86,18 @@ namespace :cartodb do
       puts "User: #{user.username} table quota updated to: #{args[:table_quota]}"
     end
 
+    desc "set unlimited table quota"
+    task :set_unlimited_table_quota, [:username] => :environment do |t, args|
+      usage = "usage: rake cartodb:db:set_unlimited_table_quota[username]"
+      raise usage if args[:username].blank?
+      
+      user  = User.filter(:username => args[:username]).first      
+      user.update(:table_quota => nil)
+                    
+      puts "User: #{user.username} table quota updated to: unlimited"
+    end
+
+
     desc "reset Users table quota to 5"
     task :set_all_users_to_free_table_quota => :environment do
       User.all.each do |user|

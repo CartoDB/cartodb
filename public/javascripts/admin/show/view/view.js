@@ -1123,9 +1123,9 @@
       }
 		  
 			function changeEmbedCode() {
-				var sql = 'sql=' + (($('body').hasClass('query'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
-				$('div.embed_window span.copy_code input').val('<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map?'+ sql +'\' width=\'572\' height=\'220\'></iframe>');
-				$('div.embed_window div.tiles_code input').val(TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/{z}/{x}/{y}'+'.png?' + sql);
+				var sql = (($('body').hasClass('query')) ? '?sql=' + editor.getOption('query') : '');
+				$('div.embed_window span.copy_code input').val('<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map'+ sql +'\'></iframe>');
+				$('div.embed_window div.tiles_code input').val(TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map'+ sql);
 			}
 		
 		  return {}

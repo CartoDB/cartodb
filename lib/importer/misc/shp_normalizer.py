@@ -56,7 +56,7 @@ def to_epsg(srs):
             except:
                 return None
 
-
+srid = 4326
 #Try detecting the SRID
 if os.path.isfile(prj_file):
   prj_string = open(prj_file,'r').read()
@@ -78,8 +78,6 @@ if os.path.isfile(prj_file):
         srid = int(jres['codes'][0]['code'])
     except:
       srid=4326 # ensure set back to 4326 whatever happens    
-else:
-    srid = 4326
     
 try:
     #Try to detect the encoding
@@ -98,5 +96,4 @@ except:
     #if encoding detection fails, attempt default UTF8
     encoding = "UTF8"
 
-encoding= "LATIN1"
 print "%s,%s,%s,%s" % (srid,encoding,shp_file,name)

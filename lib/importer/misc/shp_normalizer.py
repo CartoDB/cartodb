@@ -16,9 +16,6 @@ dbf_file = shp_file[0:-4] + '.dbf'
 prj_file = shp_file[0:-4] + '.prj'
 
 shape_name = os.path.splitext(shp_file)[0]
-prj_string = open(shape_name +'.prj','r').read()
-
-srid = 4326
 
 def get_spatial_reference(shapefile):
     srs = osr.SpatialReference()
@@ -62,6 +59,8 @@ def to_epsg(srs):
 
 #Try detecting the SRID
 if os.path.isfile(prj_file):
+  prj_string = open(prj_file,'r').read()
+  srid = 4326
   code = to_epsg(get_spatial_reference(shp_file))
   if code:
     srid = code
@@ -79,7 +78,9 @@ if os.path.isfile(prj_file):
         srid = int(jres['codes'][0]['code'])
     except:
       srid=4326 # ensure set back to 4326 whatever happens    
-          
+else:
+    srid = 4326
+    
 try:
     #Try to detect the encoding
     dbf = open(dbf_file, 'rb')
@@ -97,4 +98,5 @@ except:
     #if encoding detection fails, attempt default UTF8
     encoding = "UTF8"
 
+encoding= "LATIN1"
 print "%s,%s,%s,%s" % (srid,encoding,shp_file,name)

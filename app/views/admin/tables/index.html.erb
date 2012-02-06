@@ -38,18 +38,29 @@
                   <td>
                     <h2>Hello <%= current_user.username %></h2>
                     <% if true %>        
-                      <p>Welcome back to your Magallan Server</p>
+                      <p>Welcome to your <%= current_user.account_type.humanize %> CartoDB</p>
                     <% else %>
                       <p>Need more resources? <a href="#todo">Upgrade your account</a></p>
                     <% end %>
                   </td>
-                  <td class="danger">
-                    <p class="big">30/75</p>
-                    <label>Used<br/>Megabytes</label>
+                  <td class="<%= ( @database_size.to_f/@quota > 0.75 && @tables_count.to_f/@table_quota < 0.90 ) ? 'danger' : '' %> <%= (@tables_count.to_f/@table_quota > 0.89 ) ? 'boom' : '' %>">
+                    <% if @quota > 1024 %>
+                      <% @database_size = @database_size/1024 %>
+                      <p class="big"><%= number_with_precision(@database_size, :precision => 1) %>/<%= @quota/1024 %></p>
+                      <label>Used<br/>Gigabytes</label>
+                    <% else %>
+                      <p class="big"><%= @database_size.to_i %>/<%= @quota %></p>
+                      <label>Used<br/>Megabytes</label>                                      
+                    <% end %>  
                   </td>
-                  <td>
-                    <p class="big">3/10</p>
-                    <label>Tables<br/>created</label>
+                  <td class="<%= (@table_quota.present? && @tables_count.to_f/@table_quota > 0.75 && @tables_count.to_f/@table_quota < 0.90) ? 'danger' : '' %> <%= (@table_quota.present? && @tables_count.to_f/@table_quota > 0.90 ) ? 'boom' : '' %>">
+                    <% if @table_quota.blank? %>
+                      <p class="big"><%= @tables_count %>/&infin;</p>
+                      <label>Tables<br/>created</label>
+                    <% else %>
+                      <p class="big"><%= @tables_count %>/<%= @table_quota %></p>
+                      <label>Tables<br/>created</label>                      
+                    <% end %>    
                   </td>
                 </tr>
               </tbody>
@@ -82,11 +93,12 @@
                     <p class="delete"> | <a table-name="<%= table.name %>" href="#delete" class="delete">delete table</a></p>
                     <p class="columns">
                       <strong>
-                        <%= number_to_human_size table.table_size %> /
+                        <%= number_to_human_size table.table_size %> / 
                         <%= pluralize(table.rows_counted,'row','rows') rescue '' %> /
                         <%= table.schema.size rescue '' %> columns:
-                      </strong>
-                    <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...</p>
+                    </strong>
+                    <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...
+                    </p>
                   </span>
                   <span class="tags">
                     <% unless table.updated_at.blank? %>
@@ -130,7 +142,7 @@
             <div class="middle_white_short">
               <h3>Wondering how to start with CartoDB?</h3>
               <p>Upload your data to a new table</p>
-              <a href="#create_table" class="new_table <%= 'disabled' if disk_usage_percent(@database_size, @quota) > 99 %>">Create a new table</a>
+              <a href="#create_table" class="new_table <%= 'disabled' if current_user.exceeded_quota? %>">Create a new table</a>
             </div>
             <div class="bottom_white_short"></div>
           </div>

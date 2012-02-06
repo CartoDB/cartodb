@@ -26,6 +26,8 @@ div.white_content table label {margin:5px 0 0 10px; vertical-align:top;}
 div.white_content table td:first-child p {padding:0; width:100%;}
 div.white_content table td.danger label,
 div.white_content table td.danger p {color:#F89600;}
+div.white_content table td.boom label,
+div.white_content table td.boom p {color:#FB3E2C;}
 div.white_content table a {color:#F89600;}
 div.white_content table a:hover {color:#FF6600;}
 

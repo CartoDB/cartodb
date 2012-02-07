@@ -55,12 +55,19 @@ module CartoDB
       
       # TODO: Explain THIS!
       if @import_from_file.is_a?(String)
+        @filesrc = nil
         if @import_from_file =~ /^http/
+          if @import_from_file =~ /fusiontables/
+            @filesrc = "fusiontables"
+          end
           @import_from_file = URI.escape(@import_from_file)
         end
         open(@import_from_file) do |res|
           file_name = File.basename(@import_from_file)
           @ext = File.extname(file_name)
+          if @ext == "" && @filesrc == "fusiontables"
+            @ext = ".kml"
+          end
           @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
           @import_from_file = Tempfile.new([@suggested_name, @ext])
           @import_from_file.write res.read.force_encoding("UTF-8")

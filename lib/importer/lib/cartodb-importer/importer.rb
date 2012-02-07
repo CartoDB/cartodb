@@ -56,6 +56,8 @@ module CartoDB
       # TODO: Explain THIS!
       if @import_from_file.is_a?(String)
         if @import_from_file =~ /^http/
+          response = http.request_head('http://www.example.com/remote-file.ext')
+          log "#{response}"
           @import_from_file = URI.escape(@import_from_file)
         end
         open(@import_from_file) do |res|

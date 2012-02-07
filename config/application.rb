@@ -45,7 +45,6 @@ module CartoDB
     ::Sequel.extension(:pagination)
   end
 end
-
 require 'csv'
 require 'cartodb/errors'
 require 'cartodb/logger'

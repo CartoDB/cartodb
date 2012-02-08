@@ -78,7 +78,13 @@
           <span class="normal">
             <h2><a href="#change_title"><%= @table.name %></a></h2>
             <p class="status">
-              <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
+
+              <% if true %>
+                <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
+              <% else %>
+                <em>PUBLIC</em>
+              <% end %>
+
             </p>
             <span class="tags">
               <% unless @table[:tags_names].blank? %>
@@ -98,10 +104,16 @@
             <li class="selected"><a href="#view_table">Table</a></li>
             <li class="<%= ((!current_user.map_enabled)? 'disabled' : '') %>"><a href="#view_map">Map</a></li>
             <li>
-              <a href="#share_this_map" class="share <%= 'disabled' if @table.private? %>">SHARE THIS MAP</a>
-              <span class="share_tooltip">
-                <p>Make your <a href="#make_public">table public</a> for sharing the map</p>
-              </span>
+              
+              <% if true %>
+                <a href="#share_this_map" class="share <%= 'disabled' if @table.private? %>">SHARE THIS MAP</a>
+                <span class="share_tooltip">
+                  <p>Make your <a href="#make_public">table public</a> for sharing the map</p>
+                </span>
+              <% else %>
+                <a href="#share_this_map" class="share">SHARE THIS MAP</a>
+              <% end %>
+
             </li>
           </ul>
         </div>

@@ -41,6 +41,7 @@ section.subheader p.status a.save {background:#FFCC00;}
 section.subheader p.status a.selected {background:black; color:white;}
 section.subheader p.status a:hover {background:black;}
 section.subheader p.status a.save:hover {background:#FFCC00;}
+section.subheader p em {float:left; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none; text-transform:uppercase; background:#6FBE6F;}
 section.subheader span.privacy_window {position:absolute; display:none; top:18px; width:216px; height:108px; background:url('/images/admin/table/privacy_options_bkg.png') no-repeat center center;}
 section.subheader span.privacy_window ul {float:left; width:175px; margin:34px 0 0 20px;}
 section.subheader span.privacy_window ul li {width:161px; padding:5px 7px 6px; margin:0 0 2px; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;}

@@ -17,23 +17,24 @@ module CartoDB
       @table_created = nil
       
       # Handle name of table and target name of table
-      @suggested_name = options[:suggested_name]
-      @current_name = options[:table_name]
+      @suggested_name = options[:current_name]
+      @current_name = options[:current_name]
       
       raise "current_table value can't be nil" if @current_name.nil?
 
-      unless options[:suggested_name].nil? || options[:suggested_name].blank?
-        @force_name = true
-        @suggested_name = get_valid_name(options[:current_name])
-      else
-        @force_name = false
-      end
       
       # Handle DB connection
       @db_configuration = options.slice :database, :username, :password, :host, :port
       @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
       @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")    
 
+      #handle suggested_name  
+      unless options[:suggested_name].nil? || options[:suggested_name].blank?
+        @force_name = true
+        @suggested_name = options[:suggested_name]
+      else
+        @force_name = false
+      end
       
     rescue => e
       log $!
@@ -42,9 +43,6 @@ module CartoDB
     end
     
     def migrate!
-      
-      python_bin_path = `which python`.strip
-      psql_bin_path = `which psql`.strip
 
       # Check if the file had data, if not rise an error because probably something went wrong
       if @db_connection["SELECT * from #{@current_name} LIMIT 1"].first.nil?

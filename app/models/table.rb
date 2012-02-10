@@ -79,8 +79,11 @@ class Table < Sequel::Model(:user_tables)
                 
         # ensure unique name
         uniname = get_valid_name("untitled_table")
+        
+        # create a table based on the query
         owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
         
+        # with table #{uniname} table created now run migrator to CartoDBify
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 
           :logger => ::Rails.logger,
@@ -91,11 +94,10 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
-
         migrator = CartoDB::Migrator.new hash_in
+        migrator_result = migrator.migrate!
         
-        migrator_result = importer.migrate!
-        
+        # Finalize the migration by creating CartoDB required columns
         owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
         owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
         owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")

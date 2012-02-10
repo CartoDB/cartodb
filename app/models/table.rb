@@ -39,7 +39,7 @@ class Table < Sequel::Model(:user_tables)
     self.database_name = owner.database_name    
 
     #import from file
-    if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present?
+    if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
       
       if import_from_file.present?        
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -74,7 +74,7 @@ class Table < Sequel::Model(:user_tables)
         importer_result_name = importer.import!.name
       end
 
-      #Import from copying another table
+      #Import from the results of a query
       if import_from_query.present?
                 
         # ensure unique name
@@ -97,12 +97,28 @@ class Table < Sequel::Model(:user_tables)
         migrator = CartoDB::Migrator.new hash_in
         migrator_result = migrator.migrate!
         importer_result_name = migrator_result.name #uses the same name as importers for simplicity
+      end
+      
+      #Register a table not created throug the UI
+      if migrate_existing_table.present?
+                
+        # ensure unique name
+        uniname = get_valid_name(self.name)
         
-        # Finalize the migration by creating CartoDB required columns
-        #owner.in_database.run("UPDATE #{migrator_result_name} SET created_at = now()")
-        #owner.in_database.run("UPDATE #{migrator_result_name} SET updated_at = now()")
-        #owner.in_database.run("ALTER TABLE #{migrator_result_name} ALTER COLUMN created_at SET DEFAULT now()")
-        #set_trigger_the_geom_webmercator
+        # with table #{uniname} table created now run migrator to CartoDBify
+        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          "database" => database_name, 
+          :logger => ::Rails.logger,
+          "username" => owner.database_username, 
+          "password" => owner.database_password,
+          :current_name => uniname, 
+          :suggested_name => uniname, 
+          :debug => (Rails.env.development?), 
+          :remaining_quota => owner.remaining_quota
+        ).symbolize_keys
+        migrator = CartoDB::Migrator.new hash_in
+        migrator_result = migrator.migrate!
+        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
       end
       
       #Import from copying another table

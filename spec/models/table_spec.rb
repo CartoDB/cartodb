@@ -383,6 +383,18 @@ describe Table do
     #table = Table.new
     #table = new_table
     table = new_table :name => nil
+    table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,100)"
+    table.save.reload
+    table.rows_counted.should == 100
+    row = table.records[:rows][0]
+    row[:gs].should == 1
+  end
+  
+  it "should create table from query and invalid the_geom" do
+    #user = create_user
+    #table = Table.new
+    #table = new_table
+    table = new_table :name => nil
     table.import_from_query = "SELECT generate_series as gs, generate_series as the_geom FROM generate_series(1,100)"
     table.save.reload
     table.rows_counted.should == 100

@@ -96,13 +96,13 @@ class Table < Sequel::Model(:user_tables)
         ).symbolize_keys
         migrator = CartoDB::Migrator.new hash_in
         migrator_result = migrator.migrate!
+        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
         
         # Finalize the migration by creating CartoDB required columns
-        owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
-        owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
-        owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
-        set_trigger_the_geom_webmercator
-        importer_result_name = uniname
+        #owner.in_database.run("UPDATE #{migrator_result_name} SET created_at = now()")
+        #owner.in_database.run("UPDATE #{migrator_result_name} SET updated_at = now()")
+        #owner.in_database.run("ALTER TABLE #{migrator_result_name} ALTER COLUMN created_at SET DEFAULT now()")
+        #set_trigger_the_geom_webmercator
       end
       
       #Import from copying another table

@@ -378,6 +378,25 @@ describe Table do
     ])
   end
 
+  it "should create table from query" do
+    #user = create_user
+    #table = Table.new
+    #table = new_table
+    table = new_table :name => nil
+    table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,100)"
+    table.save.reload
+    #table.name.should match(/^twitters/)
+    table.rows_counted.should == 100
+
+    #check_schema(table, [
+    #  [:cartodb_id, "integer"], [:gs, "integer"], 
+    #  [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+    #  [:the_geom, "geometry", "geometry", "point"]
+    #])
+    row = table.records[:rows][0]
+    row[:gs].should == 1
+  end
+  
   it "should import file twitters.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"

@@ -79,7 +79,7 @@ class Table < Sequel::Model(:user_tables)
                 
         # ensure unique name
         uniname = get_valid_name("untitled_table")
-        owner.in_database.run("CREATE TABLE #{uniname} AS #{self.query}")
+        owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
         
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 

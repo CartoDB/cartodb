@@ -16,8 +16,9 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_table_copy,
-                :importing_SRID, :importing_encoding, :temporal_the_geom_type
+  attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query, 
+                :import_from_table_copy, :importing_SRID, :importing_encoding, 
+                :temporal_the_geom_type
 
   ## Callbacks
   def validate
@@ -38,7 +39,7 @@ class Table < Sequel::Model(:user_tables)
     self.database_name = owner.database_name    
 
     #import from file
-    if import_from_file.present? or import_from_url.present? or import_from_table_copy.present?
+    if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present?
       
       if import_from_file.present?        
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -73,6 +74,35 @@ class Table < Sequel::Model(:user_tables)
         importer_result_name = importer.import!.name
       end
 
+      #Import from copying another table
+      if import_from_query.present?
+                
+        # ensure unique name
+        uniname = get_valid_name("untitled_table")
+        owner.in_database.run("CREATE TABLE #{uniname} AS #{self.query}")
+        
+        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          "database" => database_name, 
+          :logger => ::Rails.logger,
+          "username" => owner.database_username, 
+          "password" => owner.database_password,
+          :current_name => uniname, 
+          :suggested_name => uniname, 
+          :debug => (Rails.env.development?), 
+          :remaining_quota => owner.remaining_quota
+        ).symbolize_keys
+
+        migrator = CartoDB::Migrator.new hash_in
+        
+        migrator_result = importer.migrate!
+        
+        owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
+        owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
+        owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
+        set_trigger_the_geom_webmercator
+        importer_result_name = uniname
+      end
+      
       #Import from copying another table
       if import_from_table_copy.present?
                 

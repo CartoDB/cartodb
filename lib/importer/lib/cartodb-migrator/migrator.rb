@@ -7,8 +7,7 @@ module CartoDB
     end
     @@debug = true
     
-    attr_accessor :export_to_file, :type, :suggested_name,
-                  :ext, :db_configuration, :db_connection
+    attr_accessor :current_name, :suggested_name, :db_configuration, :db_connection
                   
     attr_reader :table_created, :force_name
 
@@ -18,14 +17,14 @@ module CartoDB
       @table_created = nil
       
       # Handle name of table and target name of table
-      @suggested_name = get_valid_name(options[:table_name])
+      @suggested_name = options[:suggested_name]
       @current_name = options[:table_name]
       
       raise "current_table value can't be nil" if @current_name.nil?
 
       unless options[:suggested_name].nil? || options[:suggested_name].blank?
         @force_name = true
-        @suggested_name = get_valid_name(options[:suggested_name])
+        @suggested_name = get_valid_name(options[:current_name])
       else
         @force_name = false
       end

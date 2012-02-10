@@ -31,10 +31,9 @@ module CartoDB
       end
       
       # Handle DB connection
-      @db_configuration = options.slice(:database, :username, :password, :host, :port)
-      @db_configuration[:port] ||= 5432
-      @db_configuration[:host] ||= '127.0.0.1'
-      @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")
+      @db_configuration = options.slice :database, :username, :password, :host, :port
+      @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
+      @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")    
 
       
     rescue => e
@@ -122,116 +121,19 @@ module CartoDB
         end
       end
 
+      
+      @table_created = true
+      rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
 
-      if @type == 'csv'
-        
-        ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "CSV" #{path} PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@export_to_file}}
+      payload = OpenStruct.new({
+                              :name => @suggested_name,
+                              :rows_imported => rows_imported,
+                              :log => @runlog
+                              })
 
-        output = `#{ogr2ogr_command} &> /dev/null`
-        
-        Zip::ZipOutputStream.open("#{path}.zip") do |zia|
-          zia.put_next_entry("#{@export_to_file}.#{type}")
-          zia.print IO.read("#{path}/#{@export_to_file}.#{type}")
-        end
-        FileUtils.rm_rf(path)
-        
-        log "path: #{path}"
-        return OpenStruct.new({
-          :name => @export_to_file, 
-          :import_type => export_type,
-          :path => "#{path}.#{type}"
-          })
-        
-      end
-      if @type == 'kml'
-
-        ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "KML" #{path}.kml PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@export_to_file}}
-
-        output = `#{ogr2ogr_command} &> /dev/null`
-
-        Zip::ZipOutputStream.open("#{path}.kmz") do |zia|
-          zia.put_next_entry("doc.kml")
-          zia.print IO.read("#{path}.kml")
-        end
-        FileUtils.rm_rf("#{path}.kml")
-
-        log "path: #{path}"
-        return OpenStruct.new({
-          :name => @export_to_file, 
-          :import_type => export_type,
-          :path => "#{path}.#{type}"
-          })
-
-      end
-      if @type == 'shp'
-
-        ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{path}.shp PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@export_to_file}}
-
-        output = `#{ogr2ogr_command} &> /dev/null`
-        
-        Zip::ZipOutputStream.open("#{path}.zip") do |zia|
-          
-          begin
-            zia.put_next_entry("#{export_to_file}.shp")
-            zia.print IO.read("#{path}.shp")
-            FileUtils.rm_rf("#{path}.shp")
-          rescue Exception=>e
-            # handle e
-            log "info #{e}"
-          end
-        
-
-          begin
-            zia.put_next_entry("#{export_to_file}.shx")
-            zia.print IO.read("#{path}.shx")
-            FileUtils.rm_rf("#{path}.shx")
-          rescue Exception=>e
-            # handle e
-            log "info #{e}"
-          end
-
-
-          begin
-            zia.put_next_entry("#{export_to_file}.dbf")
-            zia.print IO.read("#{path}.dbf")
-            FileUtils.rm_rf("#{path}.dbf")
-          rescue Exception=>e
-            # handle e
-            log "info #{e}"
-          end
-
-
-          begin
-            zia.put_next_entry("#{export_to_file}.prj")
-            zia.print IO.read("#{path}.prj")
-            FileUtils.rm_rf("#{path}.prj")
-          rescue Exception=>e
-            # handle e
-            log "info #{e}"
-          end
-
-
-          begin
-            zia.put_next_entry("#{export_to_file}.sbn")
-            zia.print IO.read("#{path}.sbn")
-            FileUtils.rm_rf("#{path}.sbn")
-          rescue Exception=>e
-            # handle e
-            log "info #{e}"
-          end
-
-        end
-        
-        return OpenStruct.new({
-          :name => @export_to_file, 
-          :import_type => export_type,
-          :path => "#{path}.#{type}"
-          })
-
-      end
+      # construct return variables
+      return payload
+      
     rescue => e
       log "====================="
       log $!

@@ -65,16 +65,22 @@ module CartoDB
       
       # attempt to transform the_geom to 4326
       if column_names.include? "the_geom"
-        if srid = @db_connection["select st_getsrid(the_geom) from #{@suggested_name} limit 1"].first
-          begin
-            if srid != 4326
-              # move original geometry column around
-              @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_Transform(the_geom, 4326);")
-              @db_connection.run("CREATE INDEX #{@suggested_name}_the_geom_gist ON #{@suggested_name} USING GIST (the_geom)")
+        begin
+          if srid = @db_connection["select st_srid(the_geom) from #{@suggested_name} limit 1"].first
+            begin
+              if srid != 4326
+                # move original geometry column around
+                @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_Transform(the_geom, 4326);")
+                @db_connection.run("CREATE INDEX #{@suggested_name}_the_geom_gist ON #{@suggested_name} USING GIST (the_geom)")
+              end
+            rescue => e
+              @runlog.err << "failed to transform the_geom to 4326 #{@suggested_name}. #{e.inspect}"
             end
-          rescue => e
-            @runlog.err << "failed to transform the_geom to 4326 #{@suggested_name}. #{e.inspect}"
           end
+        rescue
+          # if no SRID or invalid the_geom, we need to remove it from the table
+          @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
+          column_names.delete("the_geom")
         end
       end
 

@@ -62,17 +62,22 @@ module CartoDB
         end
       end
       
+      # Rename our table
+      if @current_name != @suggested_name
+        @db_connection.run("ALTER TABLE #{@current_name} RENAME TO #{@suggested_name}")
+      end
+      
       # attempt to transform the_geom to 4326
       if column_names.include? "the_geom"
-        if srid = @db_connection["select st_getsrid(the_geom) from #{@current_name} limit 1"].first
+        if srid = @db_connection["select st_getsrid(the_geom) from #{@suggested_name} limit 1"].first
           begin
             if srid != 4326
               # move original geometry column around
-              @db_connection.run("UPDATE #{@current_name} SET the_geom = ST_Transform(the_geom, 4326);")
-              @db_connection.run("CREATE INDEX #{@current_name}_the_geom_gist ON #{@current_name} USING GIST (the_geom)")
+              @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_Transform(the_geom, 4326);")
+              @db_connection.run("CREATE INDEX #{@suggested_name}_the_geom_gist ON #{@suggested_name} USING GIST (the_geom)")
             end
           rescue => e
-            @runlog.err << "failed to transform the_geom to 4326 #{@current_name}. #{e.inspect}"
+            @runlog.err << "failed to transform the_geom to 4326 #{@suggested_name}. #{e.inspect}"
           end
         end
       end
@@ -84,13 +89,13 @@ module CartoDB
         longitude_possible_names = "'longitude','lon','lng','longitudedecimal','longitud','long'"
 
         matching_latitude = nil
-        res = @db_connection["select column_name from information_schema.columns where table_name ='#{@current_name}'
+        res = @db_connection["select column_name from information_schema.columns where table_name ='#{@suggested_name}'
           and lower(column_name) in (#{latitude_possible_names}) LIMIT 1"]
         if !res.first.nil?
           matching_latitude= res.first[:column_name]
         end
         matching_longitude = nil
-        res = @db_connection["select column_name from information_schema.columns where table_name ='#{@current_name}'
+        res = @db_connection["select column_name from information_schema.columns where table_name ='#{@suggested_name}'
           and lower(column_name) in (#{longitude_possible_names}) LIMIT 1"]
         if !res.first.nil?
           matching_longitude= res.first[:column_name]
@@ -99,10 +104,10 @@ module CartoDB
 
         if matching_latitude and matching_longitude
             #we know there is a latitude/longitude columns
-            @db_connection.run("SELECT AddGeometryColumn('#{@current_name}','the_geom',4326, 'POINT', 2);")
+            @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
 
             @db_connection.run(<<-GEOREF
-            UPDATE \"#{@current_name}\"
+            UPDATE \"#{@suggested_name}\"
             SET the_geom =
               ST_GeomFromText(
                 'POINT(' || trim(\"#{matching_longitude}\") || ' ' || trim(\"#{matching_latitude}\") || ')', 4326
@@ -113,7 +118,7 @@ module CartoDB
             trim(CAST(\"#{matching_latitude}\" AS text))  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
             GEOREF
             )
-            @db_connection.run("CREATE INDEX \"#{@current_name}_the_geom_gist\" ON \"#{@current_name}\" USING GIST (the_geom)")
+            @db_connection.run("CREATE INDEX \"#{@suggested_name}_the_geom_gist\" ON \"#{@suggested_name}\" USING GIST (the_geom)")
         end
       end
 

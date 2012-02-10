@@ -379,31 +379,43 @@ describe Table do
   end
 
   it "should create table from query" do
-    #user = create_user
-    #table = Table.new
-    #table = new_table
     table = new_table :name => nil
-    table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,100)"
+    table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,10)"
     table.save.reload
-    table.rows_counted.should == 100
+    table.rows_counted.should == 10
+    check_schema(table, [
+      [:cartodb_id, "integer"], [:gs, "integer"], 
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+      [:the_geom, "geometry", "geometry", "point"]
+    ])
     row = table.records[:rows][0]
     row[:gs].should == 1
   end
   
-  it "should create table from query and invalid the_geom" do
-    #user = create_user
-    #table = Table.new
-    #table = new_table
+  it "should create table from query and create invalid_the_geom" do
     table = new_table :name => nil
-    table.import_from_query = "SELECT generate_series as gs, generate_series as the_geom FROM generate_series(1,100)"
+    table.import_from_query = "SELECT generate_series as gs, generate_series as the_geom FROM generate_series(1,10)"
     table.save.reload
-    table.rows_counted.should == 100
-
-    #check_schema(table, [
-    #  [:cartodb_id, "integer"], [:gs, "integer"], 
-    #  [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-    #  [:the_geom, "geometry", "geometry", "point"]
-    #])
+    table.rows_counted.should == 10
+    check_schema(table, [
+      [:cartodb_id, "integer"], [:gs, "integer"], 
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+      [:invalid_the_geom, "integer"], [:the_geom, "geometry", "geometry", "point"]
+    ])
+    row = table.records[:rows][0]
+    row[:gs].should == 1
+  end
+  
+  it "should create table from query and valid multipolygon not 4326" do
+    table = new_table :name => nil
+    table.import_from_query = "SELECT generate_series as gs, GEOMETRYFROMTEXT('MULTIPOLYGON(((0 0, 0 10, 10 10, 10 0, 0 0)))',3242) as the_geom FROM generate_series(1,10)"
+    table.save.reload
+    table.rows_counted.should == 10
+    check_schema(table, [
+      [:cartodb_id, "integer"], [:gs, "integer"], 
+      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+      [:the_geom, "geometry", "geometry", "multipolygon"]
+    ])
     row = table.records[:rows][0]
     row[:gs].should == 1
   end

@@ -383,9 +383,8 @@ describe Table do
     #table = Table.new
     #table = new_table
     table = new_table :name => nil
-    table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,100)"
+    table.import_from_query = "SELECT generate_series as gs, generate_series as the_geom FROM generate_series(1,100)"
     table.save.reload
-    #table.name.should match(/^twitters/)
     table.rows_counted.should == 100
 
     #check_schema(table, [

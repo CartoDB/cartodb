@@ -16,14 +16,12 @@ module CartoDB
       log "options: #{options}"
       @@debug = options[:debug] if options[:debug]
       @table_created = nil
-      @export_to_file = options[:export_to_file]
-      @type = options[:type]
-      raise "export_to_file value can't be nil" if @export_to_file.nil?
-
-      @db_configuration = options.slice(:database, :username, :password, :host, :port)
-      @db_configuration[:port] ||= 5432
-      @db_configuration[:host] ||= '127.0.0.1'
-      @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")
+      
+      # Handle name of table and target name of table
+      @suggested_name = get_valid_name(options[:table_name])
+      @current_name = options[:table_name]
+      
+      raise "current_table value can't be nil" if @current_name.nil?
 
       unless options[:suggested_name].nil? || options[:suggested_name].blank?
         @force_name = true
@@ -32,21 +30,93 @@ module CartoDB
         @force_name = false
       end
       
+      # Handle DB connection
+      @db_configuration = options.slice(:database, :username, :password, :host, :port)
+      @db_configuration[:port] ||= 5432
+      @db_configuration[:host] ||= '127.0.0.1'
+      @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")
+
+      
     rescue => e
       log $!
       log e.backtrace
       raise e
     end
     
-    def export!
-      path = "#{OUTPUT_FILE_LOCATION}/exporting_#{Time.now.to_i}_#{@export_to_file}"
+    def migrate!
       
       python_bin_path = `which python`.strip
       psql_bin_path = `which psql`.strip
+
+      # Check if the file had data, if not rise an error because probably something went wrong
+      if @db_connection["SELECT * from #{@current_name} LIMIT 1"].first.nil?
+        @runlog.err << "Empty table"
+        raise "Empty table"
+      end
       
-      entries = []
+      # Sanitize column names where needed
+      column_names = @db_connection.schema(@current_name).map{ |s| s[0].to_s }
+      need_sanitizing = column_names.each do |column_name|
+        if column_name != column_name.sanitize_column_name
+          @db_connection.run("ALTER TABLE #{@current_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
+        end
+      end
       
-      export_type = ".#{@type}"
+      # attempt to transform the_geom to 4326
+      if column_names.include? "the_geom"
+        if srid = @db_connection["select st_getsrid(the_geom) from #{@current_name} limit 1"].first
+          begin
+            if srid != 4326
+              # move original geometry column around
+              @db_connection.run("UPDATE #{@current_name} SET the_geom = ST_Transform(the_geom, 4326);")
+              @db_connection.run("CREATE INDEX #{@current_name}_the_geom_gist ON #{@current_name} USING GIST (the_geom)")
+            end
+          rescue => e
+            @runlog.err << "failed to transform the_geom to 4326 #{@current_name}. #{e.inspect}"
+          end
+        end
+      end
+
+      # if there is no the_geom, and there are latitude and longitude columns, create the_geom
+      unless column_names.include? "the_geom"
+
+        latitude_possible_names = "'latitude','lat','latitudedecimal','latitud','lati'"
+        longitude_possible_names = "'longitude','lon','lng','longitudedecimal','longitud','long'"
+
+        matching_latitude = nil
+        res = @db_connection["select column_name from information_schema.columns where table_name ='#{@current_name}'
+          and lower(column_name) in (#{latitude_possible_names}) LIMIT 1"]
+        if !res.first.nil?
+          matching_latitude= res.first[:column_name]
+        end
+        matching_longitude = nil
+        res = @db_connection["select column_name from information_schema.columns where table_name ='#{@current_name}'
+          and lower(column_name) in (#{longitude_possible_names}) LIMIT 1"]
+        if !res.first.nil?
+          matching_longitude= res.first[:column_name]
+        end
+
+
+        if matching_latitude and matching_longitude
+            #we know there is a latitude/longitude columns
+            @db_connection.run("SELECT AddGeometryColumn('#{@current_name}','the_geom',4326, 'POINT', 2);")
+
+            @db_connection.run(<<-GEOREF
+            UPDATE \"#{@current_name}\"
+            SET the_geom =
+              ST_GeomFromText(
+                'POINT(' || trim(\"#{matching_longitude}\") || ' ' || trim(\"#{matching_latitude}\") || ')', 4326
+            )
+            WHERE
+            trim(CAST(\"#{matching_longitude}\" AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
+            AND
+            trim(CAST(\"#{matching_latitude}\" AS text))  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+            GEOREF
+            )
+            @db_connection.run("CREATE INDEX \"#{@current_name}_the_geom_gist\" ON \"#{@current_name}\" USING GIST (the_geom)")
+        end
+      end
+
 
       if @type == 'csv'
         

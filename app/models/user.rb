@@ -1,6 +1,8 @@
 # coding: UTF-8
 
 class User < Sequel::Model
+  include CartoDB::MiniSequel
+  
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
 
@@ -128,6 +130,8 @@ class User < Sequel::Model
     end
   end
 
+
+  # TODO: delete - superceded by run_pg_query
   def run_query(query)
     rows = []
     time = nil
@@ -157,6 +161,42 @@ class User < Sequel::Model
       raise e
     end
   end
+  
+  def run_pg_query(query)
+    time = nil
+    res  = nil
+    translation_proc = nil
+    in_database do |user_database|
+      time = Benchmark.measure {
+        user_database.synchronize do |conn|
+          res = conn.exec query
+        end
+        translation_proc = user_database.conversion_procs
+      }
+    end
+    {
+      :time => time.real,
+      :total_rows => pg_size(res),
+      :rows     => pg_to_hash(res, translation_proc),
+      :results  => pg_results?(res),
+      :modified => pg_modified?(res)
+    }
+    rescue => e
+    if e.is_a? PGError
+      if e.message.include?("does not exist")
+        if e.message.include?("column") 
+          raise CartoDB::ColumnNotExists, e.message 
+        else
+          raise CartoDB::TableNotExists, e.message
+        end  
+      else
+        raise CartoDB::ErrorRunningQuery, e.message
+      end
+    else
+      raise e
+    end    
+  end
+  
 
   def tables
     Table.filter(:user_id => self.id).order(:id).reverse

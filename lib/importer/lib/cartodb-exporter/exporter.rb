@@ -26,6 +26,7 @@ module CartoDB
       @export_schema = options[:export_schema]
       @file_name = "#{@table_name}_export"
       raise "table_name value can't be nil" if @table_name.nil?
+      @all_files_path = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.*")
 
       @psql_bin_path    = `which psql`.strip  
       
@@ -41,7 +42,30 @@ module CartoDB
     def export!
       # TODO turn this into a factory setup like importer
       if @export_type == 'shp'
-      if @export_type == 'csv'
+        shp_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.shp")
+        zip_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.zip")
+        #pgsql2shp_bin  = `which pgsql2shp`.strip
+        FileUtils.rm_rf(Dir.glob(@all_files_path))
+      
+        ogr2ogr_bin_path = `which ogr2ogr`.strip
+        ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"ESRI Shapefile\" #{shp_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT * FROM #{@table_name}\""
+        out = `#{ogr2ogr_command}`
+        
+        if $?.success?
+          Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+            Dir.glob(Rails.root.join(OUTPUT_FILE_LOCATION,"#{@file_name}.*").to_s).each do |f|
+              zipfile.add(File.basename(f), f)
+            end
+          end
+          return File.read(zip_file_path)
+          # return OpenStruct.new({
+          #                         :success => true,
+          #                         :zip_file => File.read(zip_file_path),
+          #                         :export_type => @export_type,
+          #                         :log => @runlog
+          #                         })    
+        end
+      elsif @export_type == 'csv'
         csv_zipped = nil
         csv_file_path = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.csv")
         zip_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.zip")
@@ -93,8 +117,7 @@ module CartoDB
       end
     ensure
       # Always cleanup files    
-      FileUtils.rm_rf(Dir.glob(csv_file_path))
-      FileUtils.rm_rf(Dir.glob(zip_file_path))      
+      FileUtils.rm_rf(Dir.glob(@all_files_path)) 
     end
   end
 end

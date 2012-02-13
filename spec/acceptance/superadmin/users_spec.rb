@@ -103,6 +103,32 @@ feature "Superadmin's users API" do
   end
   
   
+  scenario "update user account details" do
+    user = create_user
+    @update_atts = {:quota_in_bytes => 2000,
+                    :table_quota    => 20,
+                    :account_type   => 'Juliet',
+                    :private_tables_enabled => true}
+    
+    # test to true
+    put_json superadmin_user_path(user), { :user => @update_atts }, default_headers do |response|
+      response.status.should == 200
+    end
+    user = User[user.id]
+    user.quota_in_bytes.should == 2000
+    user.table_quota.should == 20
+    user.account_type.should == 'Juliet'
+    user.private_tables_enabled.should == true
+    
+    # then test back to false
+    put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, default_headers do |response|
+      response.status.should == 200
+    end    
+    user = User[user.id]
+    user.private_tables_enabled.should == false    
+  end  
+  
+  
   scenario "user update fail" do
     user = create_user
     

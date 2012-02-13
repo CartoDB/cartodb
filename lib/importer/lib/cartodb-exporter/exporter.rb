@@ -51,10 +51,9 @@ module CartoDB
         ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"KML\" #{kml_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
         out = `#{ogr2ogr_command}`
         
-        p `cat #{kml_file_path}`
         if $?.success?
           Zip::ZipFile.open(kmz_file_path, Zip::ZipFile::CREATE) do |zipfile|
-            zipfile.add(File.basename(csv_file_path), kml_file_path)
+            zipfile.add(File.basename(kml_file_path), kml_file_path)
           end
           return File.read(kmz_file_path)
           # return OpenStruct.new({
@@ -67,7 +66,6 @@ module CartoDB
       elsif @export_type == 'shp'
         shp_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.shp")
         zip_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.zip")
-        #pgsql2shp_bin  = `which pgsql2shp`.strip
         FileUtils.rm_rf(Dir.glob(@all_files_path))
       
         ogr2ogr_bin_path = `which ogr2ogr`.strip

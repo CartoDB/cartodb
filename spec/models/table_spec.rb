@@ -1005,6 +1005,24 @@ describe Table do
     }.should raise_error(CartoDB::InvalidColumnName)
   end
   
+  it "should merge two twitters.csv" do
+    table1 = new_table :name => nil
+    table1.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+    table1.save.reload
+    table1.name.should match(/^twitters/)
+    table1.rows_counted.should == 7
+    
+    hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      :concatenate_to_table => table1.name
+    ).symbolize_keys
+    
+    table = new_table  :name => nil
+    table.concatenate_to_table = table1.name
+    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
+    table.save.reload
+    
+  end
+  
   it "should import and then export file twitters.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"

@@ -130,6 +130,29 @@ namespace :cartodb do
     end
 
 
+    ##########################################
+    # SET USER PRIVATE TABLES ENABLED/DISABLED
+    ##########################################
+    desc "set users private tables enabled"
+    task :set_user_private_tables_enabled, [:username, :private_tables_enabled] => :environment do |t, args|
+      usage = "usage: rake cartodb:db:set_user_private_tables_enabled[username,private_tables_enabled]"
+      raise usage if args[:username].blank? || args[:private_tables_enabled].blank?
+      
+      user  = User.filter(:username => args[:username]).first      
+      user.update(:private_tables_enabled => args[:private_tables_enabled])
+                    
+      puts "User: #{user.username} private tables enabled: #{args[:private_tables_enabled]}"
+    end
+
+    desc "reset all Users privacy tables permissions type to false"
+    task :set_all_users_private_tables_enabled_to_false => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        user.update(:private_tables_enabled => false) if user.private_tables_enabled.blank?
+      end
+    end
+
+
     ##########################
     # REBUILD GEOM WEBMERCATOR
     ##########################    

@@ -1051,7 +1051,7 @@ describe Table do
     file_ct.should == 4
   end
   
-  it "should import and then export file SHP1.zip" do
+  it "should import and then export file SHP1.zip as kml" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
     table.importing_encoding = 'LATIN1'
@@ -1062,6 +1062,26 @@ describe Table do
     # write CSV to tempfile and read it back
     shp_content = nil
     zip = table.to_kml
+    file_ct = 0
+    file = Tempfile.new('zip')
+    File.open(file,'w+') { |f| f.write(zip) }
+    Zip::ZipFile.foreach(file) do |entry|
+      file_ct = file_ct + 1
+    end
+    file.close
+    file_ct.should == 1
+  end
+  it "should import and then export file SHP1.zip as sql" do
+    table = new_table :name => nil
+    table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
+    table.importing_encoding = 'LATIN1'
+    table.save
+
+    table.name.should == "esp_adm1"
+    
+    # write SQL to tempfile and read it back
+    shp_content = nil
+    zip = table.to_sql
     file_ct = 0
     file = Tempfile.new('zip')
     File.open(file,'w+') { |f| f.write(zip) }

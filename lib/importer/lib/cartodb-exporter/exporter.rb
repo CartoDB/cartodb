@@ -41,10 +41,29 @@ module CartoDB
     
     def export!
       # TODO turn this into a factory setup like importer
-      if @export_type == 'kml'
+      if @export_type == 'sql'
+        sql_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.sql")
+        zip_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.zip")
+        FileUtils.rm_rf(Dir.glob(@all_files_path))
+      
+        ogr2ogr_bin_path = `which ogr2ogr`.strip
+        ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"PGDump\" #{sql_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
+        out = `#{ogr2ogr_command}`
+        if $?.success?
+          Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+            zipfile.add(File.basename(sql_file_path), sql_file_path)
+          end
+          return File.read(zip_file_path)
+          # return OpenStruct.new({
+          #                         :success => true,
+          #                         :zip_file => File.read(kmz_file_path),
+          #                         :export_type => @export_type,
+          #                         :log => @runlog
+          #                         })    
+        end
+      elsif @export_type == 'kml'
         kml_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.kml")
         kmz_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.kmz")
-        #pgsql2shp_bin  = `which pgsql2shp`.strip
         FileUtils.rm_rf(Dir.glob(@all_files_path))
       
         ogr2ogr_bin_path = `which ogr2ogr`.strip

@@ -16,8 +16,9 @@ class Table < Sequel::Model(:user_tables)
   # Allowed columns
   set_allowed_columns(:privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_table_copy,
-                :importing_SRID, :importing_encoding, :temporal_the_geom_type
+  attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query, 
+                :import_from_table_copy, :importing_SRID, :importing_encoding, 
+                :temporal_the_geom_type, :migrate_existing_table
 
   ## Callbacks
   def validate
@@ -38,7 +39,7 @@ class Table < Sequel::Model(:user_tables)
     self.database_name = owner.database_name    
 
     #import from file
-    if import_from_file.present? or import_from_url.present? or import_from_table_copy.present?
+    if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
       
       if import_from_file.present?        
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -73,6 +74,53 @@ class Table < Sequel::Model(:user_tables)
         importer_result_name = importer.import!.name
       end
 
+      #Import from the results of a query
+      if import_from_query.present?
+                
+        # ensure unique name
+        uniname = get_valid_name("untitled_table")
+        
+        # create a table based on the query
+        owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
+        
+        # with table #{uniname} table created now run migrator to CartoDBify
+        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          "database" => database_name, 
+          :logger => ::Rails.logger,
+          "username" => owner.database_username, 
+          "password" => owner.database_password,
+          :current_name => uniname, 
+          :suggested_name => uniname, 
+          :debug => (Rails.env.development?), 
+          :remaining_quota => owner.remaining_quota
+        ).symbolize_keys
+        migrator = CartoDB::Migrator.new hash_in
+        migrator_result = migrator.migrate!
+        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
+      end
+      
+      #Register a table not created throug the UI
+      if migrate_existing_table.present?
+                
+        # ensure unique name
+        uniname = get_valid_name(self.name)
+        
+        # with table #{uniname} table created now run migrator to CartoDBify
+        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          "database" => database_name, 
+          :logger => ::Rails.logger,
+          "username" => owner.database_username, 
+          "password" => owner.database_password,
+          :current_name => uniname, 
+          :suggested_name => uniname, 
+          :debug => (Rails.env.development?), 
+          :remaining_quota => owner.remaining_quota
+        ).symbolize_keys
+        migrator = CartoDB::Migrator.new hash_in
+        migrator_result = migrator.migrate!
+        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
+      end
+      
       #Import from copying another table
       if import_from_table_copy.present?
                 
@@ -153,6 +201,12 @@ class Table < Sequel::Model(:user_tables)
     
     # test for exceeding of quota after creation
     raise CartoDB::QuotaExceeded, "#{owner.quota_overspend / 1024}KB more space is required" if owner.exceeded_quota?
+
+    # all looks ok, so VACUUM ANALYZE for correct statistics
+    owner.in_database.run("VACUUM ANALYZE \"#{self.name}\"")
+    
+    # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
+
 
     super
   rescue => e
@@ -751,86 +805,87 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  def to_kml
+    owner.in_database do |user_database|  
+      export_schema = self.schema.map{|c| c.first}
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => database_name, 
+        :logger => ::Rails.logger,
+        "username" => owner.database_username, 
+        "password" => owner.database_password,
+        :table_name => self.name, 
+        :export_type => "kml", 
+        :export_schema => export_schema,
+        :debug => (Rails.env.development?), 
+        :remaining_quota => owner.remaining_quota
+      ).symbolize_keys
+
+      exporter = CartoDB::Exporter.new hash_in
+    
+      return exporter.export! 
+    end
+  end
   def to_csv
-    csv_zipped = nil
-    table_name = "csv_export_temp_#{self.name}"
-    file_name = "#{self.name}_export"
-    csv_file_path = Rails.root.join('tmp', "#{file_name}.csv")
-    zip_file_path  = Rails.root.join('tmp', "#{file_name}.zip")
-    FileUtils.rm_rf(Dir.glob(csv_file_path))
-    FileUtils.rm_rf(Dir.glob(zip_file_path))      
-        
-    owner.in_database do |user_database|      
-      # Setup data export table
-      user_database.run("DROP TABLE IF EXISTS #{table_name}")
+    owner.in_database do |user_database|  
+      #table_name = "csv_export_temp_#{self.name}"
       export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
       export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
-      user_database.run("CREATE TABLE #{table_name} AS SELECT #{export_schema.join(',')} FROM #{self.name}")
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => database_name, 
+        :logger => ::Rails.logger,
+        "username" => owner.database_username, 
+        "password" => owner.database_password,
+        :table_name => self.name, 
+        :export_type => "csv", 
+        :export_schema => export_schema,
+        :debug => (Rails.env.development?), 
+        :remaining_quota => owner.remaining_quota
+      ).symbolize_keys
 
-      # Configure Postgres COPY command for dumping to CSV
-      db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
-      host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
-      port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-      username = db_configuration['username']
-      command  = "COPY (SELECT * FROM #{table_name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '\\\"' HEADER"
-      
-      # Execute CSV dump and log
-      cmd = "#{`which psql`.strip} #{host} #{port} -U#{username} -w #{database_name} -c\"#{command}\" > #{csv_file_path}"      
-      system cmd
-      #CartoDB::Logger.info "Converted #{table_name} to CSV", cmd            
-      
-      # remove table whatever happened
-      user_database.run("DROP TABLE #{table_name}")
-      
-      # Compress output
-      # TODO: Move to ZLib, this is silly
-      # http://jimneath.org/2010/01/04/cryptic-ruby-global-variables-and-their-meanings.html
-      if $?.success?
-        Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
-          zipfile.add(File.basename(csv_file_path), csv_file_path)
-        end
-        return File.read(zip_file_path)      
-      end  
-    end
-  ensure
-    # Always cleanup files    
-    FileUtils.rm_rf(Dir.glob(csv_file_path))
-    FileUtils.rm_rf(Dir.glob(zip_file_path))      
-  end
-
-  def to_shp
-    shp_files_name = "#{self.name}_export"
-    all_files_path = Rails.root.join('tmp', "#{shp_files_name}.*")
-    shp_file_path  = Rails.root.join('tmp', "#{shp_files_name}.shp")
-    zip_file_path  = Rails.root.join('tmp', "#{shp_files_name}.zip")
-    pgsql2shp_bin  = `which pgsql2shp`.strip
-    FileUtils.rm_rf(Dir.glob(all_files_path))
+      exporter = CartoDB::Exporter.new hash_in
     
-    # Configure pgsql to shp arguments
-    db_configuration = ::Rails::Sequel.configuration.environment_for(Rails.env)
-    host     = db_configuration['host'] ? "-h #{db_configuration['host']}" : ""
-    port     = db_configuration['port'] ? "-p #{db_configuration['port']}" : ""
-    username = db_configuration['username']
-
-    # build command and execute
-    cmd = "#{pgsql2shp_bin} #{host} #{port} -u #{username} -f #{shp_file_path} #{database_name} #{self.name}"    
-    system cmd
-    #CartoDB::Logger.info "Converted #{self.name} to SHP", cmd            
-
-    # Compress output
-    # TODO: Move to ZLib, this is silly
-    # http://jimneath.org/2010/01/04/cryptic-ruby-global-variables-and-their-meanings.html
-    if $?.success?
-      Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
-        Dir.glob(Rails.root.join('tmp',"#{shp_files_name}.*").to_s).each do |f|
-          zipfile.add(File.basename(f), f)
-        end
-      end
-      return File.read(zip_file_path)      
+      return exporter.export! 
     end
-  ensure
-    # Always cleanup
-    FileUtils.rm_rf(Dir.glob(all_files_path))
+  end
+  def to_shp
+    owner.in_database do |user_database|  
+      export_schema = self.schema.map{|c| c.first}
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => database_name, 
+        :logger => ::Rails.logger,
+        "username" => owner.database_username, 
+        "password" => owner.database_password,
+        :table_name => self.name, 
+        :export_type => "shp", 
+        :export_schema => export_schema,
+        :debug => (Rails.env.development?), 
+        :remaining_quota => owner.remaining_quota
+      ).symbolize_keys
+
+      exporter = CartoDB::Exporter.new hash_in
+    
+      return exporter.export! 
+    end
+  end
+  def to_sql
+    owner.in_database do |user_database|  
+      export_schema = self.schema.map{|c| c.first}
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => database_name, 
+        :logger => ::Rails.logger,
+        "username" => owner.database_username, 
+        "password" => owner.database_password,
+        :table_name => self.name, 
+        :export_type => "sql", 
+        :export_schema => export_schema,
+        :debug => (Rails.env.development?), 
+        :remaining_quota => owner.remaining_quota
+      ).symbolize_keys
+
+      exporter = CartoDB::Exporter.new hash_in
+    
+      return exporter.export! 
+    end
   end
 
   def self.find_all_by_user_id_and_tag(user_id, tag_name)
@@ -1050,9 +1105,6 @@ TRIGGER
     CartoDB::NEXT_TYPE[cartodb_column_type]
   end
 
-  # REVIEW
-  # TODO: run STMakeValid.
-  # TODO: Ensure isValid is set for all tables, imported or not
   def set_the_geom_column!(type = nil)
     if type.nil?
       if self.schema(:reload => true).flatten.include?(THE_GEOM)

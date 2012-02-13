@@ -194,7 +194,7 @@
           '<div class="inner_">'+
             '<span class="top">'+
               '<h3>Edit your tiles</h3>'+
-              '<p>Get <a target="_blank" href="http://developmentseed.org/blog/2011/feb/09/introducing-carto-css-map-styling-language/">more information</a> about Carto.</p>'+
+              '<p>Check the <a target="_blank" href="http://mapbox.com/carto/">Carto documentation</a> to learn more.</p>'+
               '<textarea id="cartocss_editor"></textarea>'+
 							'<span class="errors"><div><p>Your query is not correct, try again with another ;)</p></div></span>'+
             '</span>'+

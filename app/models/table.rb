@@ -1104,9 +1104,6 @@ TRIGGER
     CartoDB::NEXT_TYPE[cartodb_column_type]
   end
 
-  # REVIEW
-  # TODO: run STMakeValid.
-  # TODO: Ensure isValid is set for all tables, imported or not
   def set_the_geom_column!(type = nil)
     if type.nil?
       if self.schema(:reload => true).flatten.include?(THE_GEOM)

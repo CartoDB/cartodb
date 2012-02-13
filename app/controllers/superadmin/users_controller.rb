@@ -28,6 +28,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     end
     
     @user.save
+    puts @user.inspect
     respond_with(:superadmin, @user)
   end
 

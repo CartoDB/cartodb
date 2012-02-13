@@ -439,6 +439,27 @@ describe Table do
     row[:country].should == " Venezuela "
     row[:followers_count].should == "211"
   end
+  
+  it "should import and then export file twitters.csv" do
+    table = new_table :name => nil
+    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+    table.save.reload
+    table.name.should match(/^twitters/)
+    table.rows_counted.should == 7
+
+    table.to_csv
+    # check_schema(table, [
+    #   [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
+    #   [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
+    #   [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+    #   [:the_geom, "geometry", "geometry", "point"]
+    # ])
+    # row = table.records[:rows][0]
+    # row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+    # row[:login].should == "vzlaturistica "
+    # row[:country].should == " Venezuela "
+    # row[:followers_count].should == "211"
+  end
 
   it "should import file import_csv_1.csv" do
     table = new_table :name => nil

@@ -55,4 +55,5 @@ require 'cartodb/pagination'
 require 'cartodb/mini_sequel'
 require 'importer/lib/cartodb-importer'
 require 'importer/lib/cartodb-migrator'
+require 'importer/lib/cartodb-exporter'
 $pool = CartoDB::ConnectionPool.new

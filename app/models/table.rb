@@ -818,10 +818,7 @@ class Table < Sequel::Model(:user_tables)
 
       exporter = CartoDB::Exporter.new hash_in
     
-      export = exporter.export! 
-      if export.success?
-        return export.zip_file
-      end
+      return exporter.export! 
     end
   end
   def to_csv_old

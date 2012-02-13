@@ -39,62 +39,58 @@ module CartoDB
     end
     
     def export!
-      csv_zipped = nil
-      csv_file_path = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.csv")
-      zip_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.zip")
-      FileUtils.rm_rf(Dir.glob(csv_file_path))
-      FileUtils.rm_rf(Dir.glob(zip_file_path))      
+      # TODO turn this into a factory setup like importer
+      if @export_type == 'shp'
+      if @export_type == 'csv'
+        csv_zipped = nil
+        csv_file_path = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.csv")
+        zip_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.zip")
+        FileUtils.rm_rf(Dir.glob(csv_file_path))
+        FileUtils.rm_rf(Dir.glob(zip_file_path))      
          
-      # Setup data export table
-      #@db_connection.run("DROP TABLE IF EXISTS #{@table_name}")
-      #@db_connection.run("CREATE TABLE #{@table_name} AS SELECT #{@export_schema.join(',')} FROM #{@name}")
-      # Configure Postgres COPY command for dumping to CSV
-      #command  = "COPY (SELECT  FROM #{@table_name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '\\\"' HEADER"
+        # Setup data export table
+        #@db_connection.run("DROP TABLE IF EXISTS #{@table_name}")
+        #@db_connection.run("CREATE TABLE #{@table_name} AS SELECT #{@export_schema.join(',')} FROM #{@name}")
+        # Configure Postgres COPY command for dumping to CSV
+        #command  = "COPY (SELECT  FROM #{@table_name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '\\\"' HEADER"
       
-      #cmd = "#{@psql_bin_path} #{@db_configuration[:host]} #{@db_configuration[:port]} -U#{@db_configuration[:username]} -w #{@db_configuration[:database]} -c\"#{command}\" > #{csv_file_path}"      
-      #out = `cmd`
+        #cmd = "#{@psql_bin_path} #{@db_configuration[:host]} #{@db_configuration[:port]} -U#{@db_configuration[:username]} -w #{@db_configuration[:database]} -c\"#{command}\" > #{csv_file_path}"      
+        #out = `cmd`
       
-      #CartoDB::Logger.info "Converted #{table_name} to CSV", cmd            
+        #CartoDB::Logger.info "Converted #{table_name} to CSV", cmd            
     
-      # remove table whatever happened
-      #@db_connection.run("DROP TABLE #{@table_name}")
+        # remove table whatever happened
+        #@db_connection.run("DROP TABLE #{@table_name}")
     
-      # an improved version of what was done before, with table copy read drop
-      # Configure Postgres COPY command for dumping to CSV
-      #command  = "COPY (SELECT #{@export_schema.join(',')} FROM #{@table_name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '\\\"' HEADER"
-      #cmd = %Q{#{@psql_bin_path} -h#{@db_configuration[:host]} -p#{@db_configuration[:port]} -U#{@db_configuration[:username]} -w #{@db_configuration[:database]} -c\"#{command}\" > #{csv_file_path}}
+        # an improved version of what was done before, with table copy read drop
+        # Configure Postgres COPY command for dumping to CSV
+        #command  = "COPY (SELECT #{@export_schema.join(',')} FROM #{@table_name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '\\\"' HEADER"
+        #cmd = %Q{#{@psql_bin_path} -h#{@db_configuration[:host]} -p#{@db_configuration[:port]} -U#{@db_configuration[:username]} -w #{@db_configuration[:database]} -c\"#{command}\" > #{csv_file_path}}
 
-      ogr2ogr_bin_path = `which ogr2ogr`.strip
-      ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "CSV" #{csv_file_path} PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" -sql "SELECT #{@export_schema.join(',')} FROM #{@table_name}"}
+        ogr2ogr_bin_path = `which ogr2ogr`.strip
+        ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"CSV\" #{csv_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
+        out = `#{ogr2ogr_command}`
       
-      # the way we should do it
-      #ogr2ogr_bin_path = `which ogr2ogr`.strip
-      #ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "CSV" #{csv_file_path} PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" -sql "SELECT #{@export_schema.join(',').replace("ST_AsGeoJSON(the_geom, 6) as the_geom","the_geom")} FROM #{@table_name}" -lco "GEOMETRY=AS_WKT"}
+        # the way we should do it, but fix for quoting like above
+        #ogr2ogr_bin_path = `which ogr2ogr`.strip
+        #ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "CSV" #{csv_file_path} PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" -sql "SELECT #{@export_schema.join(',').replace("ST_AsGeoJSON(the_geom, 6) as the_geom","the_geom")} FROM #{@table_name}" -lco "GEOMETRY=AS_WKT"}
       
-      
-      # Compress output
-      # TODO: Move to ZLib, this is silly
-      # http://jimneath.org/2010/01/04/cryptic-ruby-global-variables-and-their-meanings.html
-      if $?.success?
-        Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
-          zipfile.add(File.basename(csv_file_path), csv_file_path)
-        end
-        payload = OpenStruct.new({
-                                :success => true,
-                                :zip_file => File.read(zip_file_path),
-                                :export_type => @export_type,
-                                :log => @runlog
-                                })    
-      else
-        payload = OpenStruct.new({
-                                :success => @false,
-                                :zip_file => nil,
-                                :export_type => @export_type,
-                                :log => @runlog
-                                })
-
-      end  
-      return payload
+        # Compress output
+        # TODO: Move to ZLib, this is silly
+        # http://jimneath.org/2010/01/04/cryptic-ruby-global-variables-and-their-meanings.html
+        if $?.success?
+          Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+            zipfile.add(File.basename(csv_file_path), csv_file_path)
+          end
+          return File.read(zip_file_path)
+          # return OpenStruct.new({
+          #                         :success => true,
+          #                         :zip_file => File.read(zip_file_path),
+          #                         :export_type => @export_type,
+          #                         :log => @runlog
+          #                         })    
+        end  
+      end
     ensure
       # Always cleanup files    
       FileUtils.rm_rf(Dir.glob(csv_file_path))

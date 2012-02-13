@@ -19,10 +19,7 @@ class User < Sequel::Model
                  :invite_token_date, 
                  :admin, 
                  :enabled, 
-                 :map_enabled, 
-                 :quota_in_bytes, 
-                 :table_quota, 
-                 :account_type ],
+                 :map_enabled],
     :naked => true # avoid adding json_class to result
   }
 

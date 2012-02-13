@@ -799,7 +799,69 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  def to_kml
+    owner.in_database do |user_database|  
+      export_schema = self.schema.map{|c| c.first}
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => database_name, 
+        :logger => ::Rails.logger,
+        "username" => owner.database_username, 
+        "password" => owner.database_password,
+        :table_name => self.name, 
+        :export_type => "kml", 
+        :export_schema => export_schema,
+        :debug => (Rails.env.development?), 
+        :remaining_quota => owner.remaining_quota
+      ).symbolize_keys
+
+      exporter = CartoDB::Exporter.new hash_in
+    
+      return exporter.export! 
+    end
+  end
   def to_csv
+    owner.in_database do |user_database|  
+      #table_name = "csv_export_temp_#{self.name}"
+      export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
+      export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => database_name, 
+        :logger => ::Rails.logger,
+        "username" => owner.database_username, 
+        "password" => owner.database_password,
+        :table_name => self.name, 
+        :export_type => "csv", 
+        :export_schema => export_schema,
+        :debug => (Rails.env.development?), 
+        :remaining_quota => owner.remaining_quota
+      ).symbolize_keys
+
+      exporter = CartoDB::Exporter.new hash_in
+    
+      return exporter.export! 
+    end
+  end
+  def to_shp
+    owner.in_database do |user_database|  
+      export_schema = self.schema.map{|c| c.first}
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => database_name, 
+        :logger => ::Rails.logger,
+        "username" => owner.database_username, 
+        "password" => owner.database_password,
+        :table_name => self.name, 
+        :export_type => "shp", 
+        :export_schema => export_schema,
+        :debug => (Rails.env.development?), 
+        :remaining_quota => owner.remaining_quota
+      ).symbolize_keys
+
+      exporter = CartoDB::Exporter.new hash_in
+    
+      return exporter.export! 
+    end
+  end
+  def to_csv_old
     csv_zipped = nil
     table_name = "csv_export_temp_#{self.name}"
     file_name = "#{self.name}_export"
@@ -846,7 +908,7 @@ class Table < Sequel::Model(:user_tables)
     FileUtils.rm_rf(Dir.glob(zip_file_path))      
   end
 
-  def to_shp
+  def to_shp_old
     shp_files_name = "#{self.name}_export"
     all_files_path = Rails.root.join('tmp', "#{shp_files_name}.*")
     shp_file_path  = Rails.root.join('tmp', "#{shp_files_name}.shp")

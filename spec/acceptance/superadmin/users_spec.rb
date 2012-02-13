@@ -68,12 +68,14 @@ feature "Superadmin's users API" do
       response.body[:quota_in_bytes].should == 104857600
       response.body[:table_quota].should == 5
       response.body[:account_type].should == 'FREE'
+      response.body[:private_tables_enabled].should == false
       
       # Double check that the user has been created properly
       user = User.filter(:email => @user_atts[:email]).first
       user.quota_in_bytes.should == 104857600
       user.table_quota.should == 5
       user.account_type.should == 'FREE'
+      user.private_tables_enabled.should == false
     end
   end
 
@@ -82,18 +84,21 @@ feature "Superadmin's users API" do
     @user_atts[:quota_in_bytes] = 2000
     @user_atts[:table_quota]    = 20
     @user_atts[:account_type]   = 'Juliet'
+    @user_atts[:private_tables_enabled] = true
     
     post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 2000
       response.body[:table_quota].should == 20
       response.body[:account_type].should == 'Juliet'
+      response.body[:private_tables_enabled].should == true
       
       # Double check that the user has been created properly
       user = User.filter(:email => @user_atts[:email]).first
       user.quota_in_bytes.should == 2000
       user.table_quota.should == 20
       user.account_type.should == 'Juliet'
+      user.private_tables_enabled.should == true
     end
   end
   

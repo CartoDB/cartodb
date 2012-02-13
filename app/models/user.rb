@@ -7,7 +7,7 @@ class User < Sequel::Model
   one_to_many :tokens, :class => :OauthToken
 
   # Sequel setup & plugins
-  set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type
+  set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled
   plugin :validation_helpers
   plugin :json_serializer
   

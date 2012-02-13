@@ -78,7 +78,7 @@ GEM
     metaclass (0.0.1)
     mime-types (1.17.2)
     minitest (2.0.2)
-    mocha (0.10.0)
+    mocha (0.10.4)
       metaclass (~> 0.0.1)
     multi_json (1.0.3)
     multipart-post (1.1.4)

@@ -20,5 +20,7 @@ require 'csv'
 require 'tempfile'
 require 'ostruct'
 
+# load preprocessors and loaders
+Dir[File.dirname(__FILE__) + '/cartodb-importer/lib/*.rb'].each {|file| require file }
 # main file last
 require File.dirname(__FILE__) + '/cartodb-exporter/exporter'

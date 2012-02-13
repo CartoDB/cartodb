@@ -802,6 +802,8 @@ class Table < Sequel::Model(:user_tables)
   def to_csv
     owner.in_database do |user_database|  
       table_name = "csv_export_temp_#{self.name}"
+      export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
+      export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         "database" => database_name, 
         :logger => ::Rails.logger,
@@ -809,15 +811,17 @@ class Table < Sequel::Model(:user_tables)
         "password" => owner.database_password,
         :table_name => table_name, 
         :export_type => "csv", 
+        :name => self.name, 
+        :export_schema => export_schema,
         :debug => (Rails.env.development?), 
         :remaining_quota => owner.remaining_quota
       ).symbolize_keys
 
       exporter = CartoDB::Exporter.new hash_in
     
-      contents = exporter.export! 
-      if contents?
-        return contents
+      export = exporter.export! 
+      if export.success?
+        return export.zip_file
       end
     end
   end

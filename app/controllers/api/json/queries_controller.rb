@@ -8,7 +8,7 @@ class Api::Json::QueriesController < Api::ApplicationController
     raise "You must indicate a sql query in the query parameter" if params[:sql].blank?
 
     # execute query
-    query_result = current_user.run_query(params[:sql])
+    query_result = current_user.run_pg_query(params[:sql])
 
     # log results of query
     @to_log = params[:sql]          

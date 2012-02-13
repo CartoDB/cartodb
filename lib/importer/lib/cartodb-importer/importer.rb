@@ -54,24 +54,30 @@ module CartoDB
       end
       
       # TODO: Explain THIS!
-      if @import_from_file.is_a?(String)
+      if @import_from_file.is_a?(String) 
         @filesrc = nil
-        if @import_from_file =~ /^http/
+        if @import_from_file =~ /^http/ # Tells us it is a URL
+          # KML from FusionTables urls were not coming with extensions
           if @import_from_file =~ /fusiontables/
             @filesrc = "fusiontables"
           end
-          @import_from_file = URI.escape(@import_from_file)
+          @import_from_file = URI.escape(@import_from_file) # Ensures open-uri will work
         end
-        open(@import_from_file) do |res|
-          file_name = File.basename(@import_from_file)
-          @ext = File.extname(file_name)
-          if @ext == "" && @filesrc == "fusiontables"
-            @ext = ".kml"
+        begin
+          open(@import_from_file) do |res| # opens file normally, or open-uri to download/open
+            file_name = File.basename(@import_from_file)
+            @ext = File.extname(file_name)
+            # Fix for extensionless fusiontables files
+            if @ext == "" && @filesrc == "fusiontables"
+              @ext = ".kml"
+            end
+            @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
+            @import_from_file = Tempfile.new([@suggested_name, @ext])
+            @import_from_file.write res.read.force_encoding("UTF-8")
+            @import_from_file.close
           end
-          @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
-          @import_from_file = Tempfile.new([@suggested_name, @ext])
-          @import_from_file.write res.read.force_encoding("UTF-8")
-          @import_from_file.close
+        rescue e
+          p e
         end
       else
         original_filename = if @import_from_file.respond_to?(:original_filename)

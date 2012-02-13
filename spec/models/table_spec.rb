@@ -446,19 +446,23 @@ describe Table do
     table.save.reload
     table.name.should match(/^twitters/)
     table.rows_counted.should == 7
-
-    table.to_csv
-    # check_schema(table, [
-    #   [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
-    #   [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
-    #   [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-    #   [:the_geom, "geometry", "geometry", "point"]
-    # ])
-    # row = table.records[:rows][0]
-    # row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
-    # row[:login].should == "vzlaturistica "
-    # row[:country].should == " Venezuela "
-    # row[:followers_count].should == "211"
+    
+    # write CSV to tempfile and read it back
+    csv_content = nil
+    zip = table.to_csv
+    file = Tempfile.new('zip')
+    File.open(file,'w+') { |f| f.write(zip) }
+    
+    Zip::ZipFile.foreach(file) do |entry|
+      entry.name.should == "twitters_export.csv"
+      csv_content = entry.get_input_stream.read
+    end
+    file.close
+    
+    # parse constructed CSV and test
+    parsed = CSV.parse(csv_content)
+    parsed[0].should == ["cartodb_id", "country", "field_5", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
+    parsed[1].first.should == "1"
   end
 
   it "should import file import_csv_1.csv" do

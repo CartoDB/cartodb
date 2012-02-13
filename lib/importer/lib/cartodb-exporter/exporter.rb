@@ -58,7 +58,7 @@ module CartoDB
           return File.read(kmz_file_path)
           # return OpenStruct.new({
           #                         :success => true,
-          #                         :zip_file => File.read(zip_file_path),
+          #                         :zip_file => File.read(kmz_file_path),
           #                         :export_type => @export_type,
           #                         :log => @runlog
           #                         })    

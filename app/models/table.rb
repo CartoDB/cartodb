@@ -18,7 +18,7 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query, 
                 :import_from_table_copy, :importing_SRID, :importing_encoding, 
-                :temporal_the_geom_type, :migrate_existing_table
+                :temporal_the_geom_type, :migrate_existing_table, :concatenate_to_table
 
   ## Callbacks
   def validate
@@ -136,58 +136,72 @@ class Table < Sequel::Model(:user_tables)
         importer_result_name = uniname
       end
 
-      self[:name] = importer_result_name
-      schema = self.schema(:reload => true)
+      # if concatenate_to_table is set, it will join the table just created
+      # to the table named in concatenate_to_table and then drop the created table
+      if concatenate_to_table.present?
+        
+        self[:name] = importer_result_name
+        new_schema = self.schema(:reload => true)
+        self[:name] = concatenate_to_table
+        existing_schema = self.schema(:reload => true)
+        p 'hi'
+        p schema
+        #self[:name] = importer_result_name
+        #p self.schema(:reload => true)
+      else
+        self[:name] = importer_result_name
+        schema = self.schema(:reload => true)
 
-      owner.in_database do |user_database|
-        # If we already have a cartodb_id column let's rename it to an auxiliary column
-        aux_cartodb_id_column = nil
-        if schema.present? && schema.flatten.include?(:cartodb_id)
-           aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
-           user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
-        end
-
-        # When tables are created using ogr2ogr they are added a ogc_fid primary key
-        # In that case:
-        #  - If cartodb_id already exists, remove ogc_fid
-        #  - If cartodb_id does not exist, remove the primary key constraint and treat ogc_fid as the auxiliary column
-        if schema.present? && schema.flatten.include?(:ogc_fid)
-          if aux_cartodb_id_column.nil?
-            aux_cartodb_id_column = "ogc_fid"
-          else
-            user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
+        owner.in_database do |user_database|
+          # If we already have a cartodb_id column let's rename it to an auxiliary column
+          aux_cartodb_id_column = nil
+          if schema.present? && schema.flatten.include?(:cartodb_id)
+             aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
+             user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
           end
-        end
-        if schema.present? && schema.flatten.include?(:gid)
-          if aux_cartodb_id_column.nil?
-            aux_cartodb_id_column = "gid"
-          else
-            user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
+
+          # When tables are created using ogr2ogr they are added a ogc_fid primary key
+          # In that case:
+          #  - If cartodb_id already exists, remove ogc_fid
+          #  - If cartodb_id does not exist, remove the primary key constraint and treat ogc_fid as the auxiliary column
+          if schema.present? && schema.flatten.include?(:ogc_fid)
+            if aux_cartodb_id_column.nil?
+              aux_cartodb_id_column = "ogc_fid"
+            else
+              user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
+            end
           end
-        end
+          if schema.present? && schema.flatten.include?(:gid)
+            if aux_cartodb_id_column.nil?
+              aux_cartodb_id_column = "gid"
+            else
+              user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
+            end
+          end
 
-        user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
+          user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
 
-        # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
-        # Do this before adding constraints cause otherwise we can have duplicate key errors
-        if aux_cartodb_id_column.present?
-          user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
-          user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
-          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
-          max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max] 
+          # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
+          # Do this before adding constraints cause otherwise we can have duplicate key errors
+          if aux_cartodb_id_column.present?
+            user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
+            user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
+            cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
+            max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max] 
           
-          # only reset the sequence on real imports. 
-          # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns         
-          if max_cartodb_id
-            user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
-          end  
-        end
+            # only reset the sequence on real imports. 
+            # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns         
+            if max_cartodb_id
+              user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
+            end  
+          end
 
-        user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
+          user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
       
-        normalize_timestamp_field!(:created_at, user_database)
-        normalize_timestamp_field!(:updated_at, user_database)
+          normalize_timestamp_field!(:created_at, user_database)
+          normalize_timestamp_field!(:updated_at, user_database)
 
+        end
       end
       set_the_geom_column!
     else

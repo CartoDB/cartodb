@@ -555,8 +555,14 @@
 	      stopPropagation(ev);
 	      resetSaveWindow();
         closeOutTableWindows();
+
         $('div.mamufas div.save_window').show();
+        
+        // Fill the table name + copy
+        $('div.save_window span.top input').val(table_name + '_copy');
+
         $('div.mamufas').fadeIn('fast');
+
         $('div.save_window span.top input').focus();
         
         $(document).keydown(function(event){

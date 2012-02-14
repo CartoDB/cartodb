@@ -28,6 +28,16 @@ class Admin::TablesController < ApplicationController
     @table = Table.find_by_identifier(current_user.id, params[:id])
     respond_to do |format|
       format.html
+      format.sql do
+        send_data @table.to_sql,
+          :type => 'application/zip; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
+      end
+      format.kml do
+        send_data @table.to_kml,
+          :type => 'application/zip; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.kmz"
+      end
       format.csv do
         send_data @table.to_csv,
           :type => 'application/zip; charset=binary; header=present',

@@ -11,7 +11,7 @@ section#content div.inner_content div.notification div.middle_white a.close:hove
 section#content div.inner_content div.notification div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
 
 
-section#content div.inner_content div.white_content {width:900px; margin:0 auto 30px!important; background:white; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px; -moz-box-shadow: 0 0 5px #888; -webkit-box-shadow: 0 0 1px 3px #888; box-shadow: 0 1px 1px 1px rgba(0,0,0,0.05);}
+section#content div.inner_content div.white_content {position:relative; width:900px; margin:0 auto 30px!important; background:white; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px; -moz-box-shadow: 0 0 5px #888; -webkit-box-shadow: 0 0 1px 3px #888; box-shadow: 0 1px 1px 1px rgba(0,0,0,0.05);}
 div.white_content.padding {width:850px!important; padding:25px;}
 div.white_content h2 {padding:0; margin:0; font:bold 21px Arial; color:#333333; letter-spacing:0; text-align:left;}
 div.white_content p,
@@ -19,6 +19,7 @@ div.white_content label {display:inline-block; width:auto; font:normal 15px Aria
 div.white_content label {color:#6C7C7F;}
 div.white_content p.big {font:bold 49px Arial; color:#6C7C7F; line-height:46px;}
 
+div.white_content p.margin {margin-top:15px;}
 div.white_content table {width:100%;}
 div.white_content table td {vertical-align:top; padding:25px; border-right:1px solid #DEE7E9; letter-spacing:-4px; text-align:center;}
 div.white_content table td:last-child {border-right:none;}
@@ -30,6 +31,7 @@ div.white_content table td.boom label,
 div.white_content table td.boom p {color:#FB3E2C;}
 div.white_content table a {color:#F89600;}
 div.white_content table a:hover {color:#FF6600;}
+div.white_content img.star_table {position:absolute; bottom:0; right:42px;}
 
 section#content div.inner_content div.requests_info h2 {padding:0 0 3px;}
 section#content div.inner_content div.requests_info p a {color:#666666;}

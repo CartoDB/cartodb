@@ -173,7 +173,6 @@
         '</span>',
       warning_window : 
         '<div class="warning_window">'+
-          '<a href="#close_window" class="close"></a>'+
           '<div class="inner_">'+
             '<form>'+
               '<span class="top">'+

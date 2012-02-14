@@ -574,8 +574,17 @@
       });
 
       // Update Carto with the name of the new table
-      
-        this.css_editor.setValue(this.styles.replace(/#(\w*)\s/g,'#' + table_name + ' ').replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   ')); }
+      this.css_editor.setValue(
+        this.styles
+          .replace(/\n/g,'')
+          .replace(/ /g,'')
+          .replace(/#(\w*)\s/g,'#' + table_name + ' ')
+          .replace(/\{/gi,'{\n   ')
+          .replace(/\}/gi,'}\n')
+          .replace(/;/gi,';\n   ')
+          .replace(/\/\*carto\*\//g,'')
+        ); 
+      }
     }
 
     /* Search stuff on map */

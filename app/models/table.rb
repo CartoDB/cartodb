@@ -142,21 +142,44 @@ class Table < Sequel::Model(:user_tables)
         #get schemas of uploaded and existing tables
         self[:name] = importer_result_name
         new_schema = self.schema(:reload => true)
-        new_schema_names.collect {|x| x[0]}
-        new_schema_types.collect {|x| x[1]}
+        new_schema_hash = Hash[new_schema]
+        #new_schema_names = new_schema.collect {|x| x[0]}
+        #new_schema_types = new_schema.collect {|x| x[1]}
+        
         self[:name] = concatenate_to_table
         existing_schema = self.schema(:reload => true)
+        #existing_schema_names = existing_schema.collect {|x| x[0]}
+        #existing_schema_types = existing_schema.collect {|x| x[1]}
+        existing_schema_hash = Hash[existing_schema]
+        
+        '''
+        [[:country, "number"], [:field_5, "string"], [:followers_count, "string"], [:login, "string"], [:ogc_fid, "number"], [:url, "string"]]
+
+
+        [[:country, "string"], [:field_5, "string"], [:followers_count, "string"], [:login, "string"], [:ogc_fid, "number"], [:url, "string"]]
+
+        Hash[existing_schema]
+        { country =>string,
+          field_5 => string}
+        hash[country]
+        hash.keys
+        hash.
+        '''
         
         # fun schema check here
-        new_schema_names.each do |column_name|
-          if existing_schema.flatten.include?(column_name)
-            # check that column type is the same or force new table to be same as old
-            
+        new_schema_hash.keys.each do |column_name|
+          p column_name
+          if existing_schema_hash.keys.include?(column_name)
+            if existing_schema_hash[column_name] == new_schema_hash[column_name]
+              p 'OKAY'
+            else
+              p 'NOT OKAY'
+              p new_schema_hash[column_name]
+            end
           else
             # add column and type to old table
-            
+            p 'NOT IN THERE'
           end
-          p column_name
         end
         # append table 2 to table 1
         

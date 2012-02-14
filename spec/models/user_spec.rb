@@ -347,7 +347,7 @@ describe User do
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
-    query_result = user.run_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = user.run_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
     query_result[:total_rows].should == 3    
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"

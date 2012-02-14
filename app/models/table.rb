@@ -8,7 +8,7 @@ class Table < Sequel::Model(:user_tables)
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
-  RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
+  RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
 
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
@@ -143,56 +143,46 @@ class Table < Sequel::Model(:user_tables)
         self[:name] = importer_result_name
         new_schema = self.schema(:reload => true)
         new_schema_hash = Hash[new_schema]
-        #new_schema_names = new_schema.collect {|x| x[0]}
-        #new_schema_types = new_schema.collect {|x| x[1]}
+        new_schema_names = new_schema.collect {|x| x[0]}
         
         self[:name] = concatenate_to_table
         existing_schema = self.schema(:reload => true)
-        #existing_schema_names = existing_schema.collect {|x| x[0]}
-        #existing_schema_types = existing_schema.collect {|x| x[1]}
         existing_schema_hash = Hash[existing_schema]
         
-        '''
-        [[:country, "number"], [:field_5, "string"], [:followers_count, "string"], [:login, "string"], [:ogc_fid, "number"], [:url, "string"]]
-
-
-        [[:country, "string"], [:field_5, "string"], [:followers_count, "string"], [:login, "string"], [:ogc_fid, "number"], [:url, "string"]]
-
-        Hash[existing_schema]
-        { country =>string,
-          field_5 => string}
-        hash[country]
-        hash.keys
-        hash.
-        '''
+        self[:name] = importer_result_name
+        schema = self.schema(:reload => true)
         
         # fun schema check here
         new_schema_hash.keys.each do |column_name|
-          p column_name
-          if existing_schema_hash.keys.include?(column_name)
-            if existing_schema_hash[column_name] == new_schema_hash[column_name]
-              p 'OKAY'
-            else
-              p 'NOT OKAY'
-              p new_schema_hash[column_name]
-            end
+            p column_name.to_s
+          if RESERVED_COLUMN_NAMES.include?(column_name.to_s) or column_name.to_s == 'ogc_fid'
+            new_schema_names.delete(column_name)
           else
-            # add column and type to old table
-            p 'NOT IN THERE'
+            if existing_schema_hash.keys.include?(column_name)
+              # column name exists in new and old table
+              if existing_schema_hash[column_name] != new_schema_hash[column_name]
+                #the new column type does not match the existing, force change to existing
+                hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+                  :type => existing_schema_hash[column_name], 
+                  :name => column_name
+                ).symbolize_keys
+                modify_column! hash_in
+              end
+            else
+              # add column and type to old table
+              owner.in_database.run("ALTER TABLE #{concatenate_to_table} ADD COLUMN #{column_name} #{new_schema_hash[column_name]}")
+            end
           end
         end
         # append table 2 to table 1
-        
-        
+        p new_schema_names.join(',')
+        owner.in_database.run("INSERT INTO #{concatenate_to_table} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
         # drop table 2
+        owner.in_database.run("DROP TABLE #{importer_result_name}")
         
-        p 'hi'
-        p new_schema
-        p existing_schema
-        p existing_schema.flatten
-        p existing_schema.collect {|x| x[0] }
-        #self[:name] = importer_result_name
-        #p self.schema(:reload => true)
+        self[:name] = concatenate_to_table
+        schema = self.schema(:reload => true)
+        p schema
       else
         self[:name] = importer_result_name
         schema = self.schema(:reload => true)

@@ -1006,16 +1006,16 @@ describe Table do
   end
   
   it "should merge two twitters.csv" do
-    table1 = new_table :name => nil
-    table1.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
-    table1.save.reload
-    table1.name.should match(/^twitters/)
-    table1.rows_counted.should == 7
+    tablen = new_table :name => nil
+    tablen.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+    tablen.save.reload
+    tablen.name.should match(/^twitters/)
+    tablen.rows_counted.should == 7
     
-    table = new_table  :name => nil
-    table.concatenate_to_table = table1.name
+    table = new_table  :name => "stupid_temp_table"
+    table.concatenate_to_table = tablen
     table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
-    table.save.reload
+    table.save
     
   end
   

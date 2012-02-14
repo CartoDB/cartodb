@@ -60,8 +60,7 @@
       this.addMapOverlays();
       this.addMapListeners();
       this.addToolListeners();
-      this.startWax();
-      
+
       // Get the styles predefine for this table
       this.getStyles();
     }
@@ -109,9 +108,11 @@
       
       
       var setupTools = _.after(ajax_count, function(){
-        me.setVisualization(geom_type,layers_style);  // Show the correct tiles
-        me.setMapStyle(geom_type,map_style);          // Set map styles
-        me.setupInfowindow(infowindow_info || {});          // Set infowindow vars
+        me.setVisualization(geom_type,layers_style);      // Show the correct tiles
+        me.setMapStyle(geom_type,map_style);              // Set map styles
+        me.setupInfowindow(infowindow_info || {});        // Set infowindow vars
+        if (!map_style)                                   // If fails getting map variables, show the tiles wax!
+          me.startWax();                                  // Prevent requesting tiles from two different locations and zooms...
       });
       
       
@@ -677,6 +678,9 @@
             if (me.map_.getZoom()<2) {
               me.map_.setZoom(2);
             }
+
+            // After move the map, start wax
+            me.startWax();
           }
 
         },
@@ -1430,6 +1434,9 @@
           custom_map_properties.longitude = map_style.longitude;
           map.setCenter(new google.maps.LatLng(map_style.latitude,map_style.longitude));
           map.setZoom(map_style.zoom);
+
+          // Start now wax
+          me.startWax();
         } else {
           me.zoomToBBox();
         }

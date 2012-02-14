@@ -614,6 +614,10 @@
 	        closeOutTableWindows();
 	        $('div.mamufas div.export_window').show();
 	        $('div.mamufas').fadeIn('fast');
+
+	        // Set form url correctly before choose a export option
+					$('div.export_window').find('form').attr('action','/tables/' + table_name);
+
 	        bindESC();
 	      }
 	    });
@@ -1392,6 +1396,8 @@
 			$('p.settings').html(html.replace(/\|/g,''));
 			$('body').addClass('query');
 			$('body').animate({backgroundColor:'#282828'},500);
+			// 'Duplicate table' to 'table from query'
+			$('a.save_table').text('Table from query');
 			setTimeout(function(){$('body').css('background-position','0 -160px');},300);
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
@@ -1403,6 +1409,8 @@
 			$('p.settings a:last').before(' | ');
 			$('p.settings a:eq(1)').before(' | ');
 			$('body').animate({backgroundColor:'#2D3451'},500);
+			// 'Duplicate table' to 'table from query'
+			$('a.save_table').text('Duplicate table as...');
 			setTimeout(function(){$('body').css('background-position','0 0');},300);
 			$('section.subheader').animate({backgroundColor:'#2D3451'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -58px');},300);

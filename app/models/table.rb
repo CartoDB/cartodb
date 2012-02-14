@@ -139,13 +139,26 @@ class Table < Sequel::Model(:user_tables)
       # if concatenate_to_table is set, it will join the table just created
       # to the table named in concatenate_to_table and then drop the created table
       if concatenate_to_table.present?
-        
+        #get schemas of uploaded and existing tables
         self[:name] = importer_result_name
         new_schema = self.schema(:reload => true)
         self[:name] = concatenate_to_table
         existing_schema = self.schema(:reload => true)
+        
+        # fun schema check here
+        new_schema.collect {|x| x[0]}.each do |column_name|
+          p column_name
+        end
+        # append table 2 to table 1
+        
+        
+        # drop table 2
+        
         p 'hi'
-        p schema
+        p new_schema
+        p existing_schema
+        p existing_schema.flatten
+        p existing_schema.collect {|x| x[0] }
         #self[:name] = importer_result_name
         #p self.schema(:reload => true)
       else

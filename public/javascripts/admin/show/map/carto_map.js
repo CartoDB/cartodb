@@ -648,6 +648,7 @@
         url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
         headers: {"cartodbclient":"true"},
         success: function(data) {
+
           if (data.rows[0].st_extent!=null) {
             var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
             
@@ -678,11 +679,12 @@
             if (me.map_.getZoom()<2) {
               me.map_.setZoom(2);
             }
-
-            // After move the map, start wax
-            me.startWax();
+          } else {
+             me.map_.setZoom(2);
           }
 
+          // After move the map, start wax
+          me.startWax();
         },
         error: function(e) {
         }
@@ -796,6 +798,7 @@
               });
             });
 
+
             // Get default variables depending on geom type
             if (geom_type=="point" || geom_type=="multipoint") {
               feature_props['marker-placement'] = 'point';
@@ -804,7 +807,7 @@
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
               // No more properties are needed
             } else {
-              // No more properties are needed
+              feature_props['line-opacity'] = feature_props['line-opacity'] || 1;
             }
           }
 

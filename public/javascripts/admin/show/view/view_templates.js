@@ -154,7 +154,7 @@
                 '<p>Select your desired format for downloading the data</p>'+
                 '<ul>'+
                   '<li class="selected"><a class="option" href="#CSV" rel="csv">CSV (Comma separated values)</a></li>'+
-                  '<li class="disabled"><a class="option" href="#KML" rel="kml">KML</a></li>'+
+                  '<li class="option"><a class="option" href="#KML" rel="kml">KML</a></li>'+
                   '<li><a class="option" href="#SHP" rel="shp">SHP</a></li>'+
                 '</ul>'+
               '</span>'+

@@ -72,6 +72,7 @@ class Table < Sequel::Model(:user_tables)
         ).symbolize_keys
         
         importer_result_name = importer.import!.name
+        p importer_result_name
       end
 
       #Import from the results of a query
@@ -200,45 +201,57 @@ class Table < Sequel::Model(:user_tables)
         new_schema_hash = Hash[new_schema]
         new_schema_names = new_schema.collect {|x| x[0]}
         
-        self[:name] = concatenate_to_table
-        existing_schema = self.schema(:reload => true)
+        p concatenate_to_table
+        p owner.database_username
+        p owner
+        p self
+        p concatenate_to_table
+        existing_schema = concatenate_to_table.schema(:reload => true)
         existing_schema_hash = Hash[existing_schema]
-        
-        self[:name] = importer_result_name
-        schema = self.schema(:reload => true)
         
         # fun schema check here
         drop_names = %W{ cartodb_id created_at updated_at ogc_fid }
         new_schema_hash.keys.each do |column_name|
-            p column_name.to_s
+          p column_name
           if RESERVED_COLUMN_NAMES.include?(column_name.to_s) or drop_names.include?column_name.to_s
+            p 'res'
             new_schema_names.delete(column_name)
           else
             if existing_schema_hash.keys.include?(column_name)
+              p 'same'
               # column name exists in new and old table
               if existing_schema_hash[column_name] != new_schema_hash[column_name]
+                p 'wrong t'
                 #the new column type does not match the existing, force change to existing
                 hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
                   :type => existing_schema_hash[column_name], 
                   :name => column_name
                 ).symbolize_keys
-                modify_column! hash_in
+                self.modify_column! hash_in
               end
             else
+              p 'not same'
               # add column and type to old table
-              owner.in_database.run("ALTER TABLE #{concatenate_to_table} ADD COLUMN #{column_name} #{new_schema_hash[column_name]}")
+                hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+                  :type => new_schema_hash[column_name], 
+                  :name => column_name
+                ).symbolize_keys
+              concatenate_to_table.add_column! hash_in
+              #owner.in_database.run("ALTER TABLE #{concatenate_to_table} ADD COLUMN #{column_name} #{new_schema_hash[column_name]}")
             end
           end
         end
         # append table 2 to table 1
-        p new_schema_names.join(',')
-        owner.in_database.run("INSERT INTO #{concatenate_to_table} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
+        owner.in_database.run("INSERT INTO #{concatenate_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
         # drop table 2
         owner.in_database.run("DROP TABLE #{importer_result_name}")
-        
-        self[:name] = concatenate_to_table
-        schema = self.schema(:reload => true)
-        p schema
+        # p importer_result_name
+        # p concatenate_to_table
+        # p self
+        return concatenate_to_table.save
+        #self[:name] = concatenate_to_table
+        #schema = self.schema(:reload => true)
+        #p schema
       end
     else
       create_table_in_database!
@@ -249,15 +262,15 @@ class Table < Sequel::Model(:user_tables)
       set_the_geom_column!(self.the_geom_type)
     end
     
-    # test for exceeding of quota after creation
-    raise CartoDB::QuotaExceeded, "#{owner.quota_overspend / 1024}KB more space is required" if owner.exceeded_quota?
+    if !concatenate_to_table.present?
+      # test for exceeding of quota after creation
+      raise CartoDB::QuotaExceeded, "#{owner.quota_overspend / 1024}KB more space is required" if owner.exceeded_quota?
 
-    # all looks ok, so VACUUM ANALYZE for correct statistics
-    owner.in_database.run("VACUUM ANALYZE \"#{self.name}\"")
+      # all looks ok, so VACUUM ANALYZE for correct statistics
+      owner.in_database.run("VACUUM ANALYZE \"#{self.name}\"")
     
-    # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
-
-
+      # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
+    end
     super
   rescue => e
     CartoDB::Logger.info "table#create error", "#{e.inspect}"      
@@ -321,18 +334,20 @@ class Table < Sequel::Model(:user_tables)
 
   def after_create
     super
-    User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
-    owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
-    add_python
-    delete_tile_style    
-    set_trigger_update_updated_at
-    set_trigger_cache_timestamp
-    set_trigger_check_quota
+    if !concatenate_to_table.present? # only run the following on new tables
+      User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
+      owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
+      add_python
+      delete_tile_style    
+      set_trigger_update_updated_at
+      set_trigger_cache_timestamp
+      set_trigger_check_quota
     
-    @force_schema = nil
-    $tables_metadata.multi do
-      $tables_metadata.hset key, "user_id", user_id
-      $tables_metadata.hset key, "privacy", PRIVATE
+      @force_schema = nil
+      $tables_metadata.multi do
+        $tables_metadata.hset key, "user_id", user_id
+        $tables_metadata.hset key, "privacy", PRIVATE
+      end
     end
   end
   

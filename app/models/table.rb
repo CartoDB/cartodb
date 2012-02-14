@@ -142,11 +142,20 @@ class Table < Sequel::Model(:user_tables)
         #get schemas of uploaded and existing tables
         self[:name] = importer_result_name
         new_schema = self.schema(:reload => true)
+        new_schema_names.collect {|x| x[0]}
+        new_schema_types.collect {|x| x[1]}
         self[:name] = concatenate_to_table
         existing_schema = self.schema(:reload => true)
         
         # fun schema check here
-        new_schema.collect {|x| x[0]}.each do |column_name|
+        new_schema_names.each do |column_name|
+          if existing_schema.flatten.include?(column_name)
+            # check that column type is the same or force new table to be same as old
+            
+          else
+            # add column and type to old table
+            
+          end
           p column_name
         end
         # append table 2 to table 1

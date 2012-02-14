@@ -80,8 +80,8 @@
       // New table mode: normal, query or filter
 			var columns,
 			    rows,
-			    ajax_request = 2,
-					msg,
+			    ajax_request = (table.mode!='query')? 2 : 1,
+					modified,
           errors = [];
 
 
@@ -90,11 +90,12 @@
         if (table.mode!='query') {
 			    startTable();
 		    } else {
-					if (msg || is_write_query) {
+					if (modified) {
             if (errors.length==0) {
               window.ops_queue.pendingOperations[requestId].type = "query_action";
-              loadingMessages["query_action"] = msg || 'operation completed';
-              $('a.clear_table').click();
+              loadingMessages["query_action"] = 'operation completed';
+              methods.closeTablePopups();
+              methods.restoreTable();
             }
 					} else {
 						methods.drawQueryColumns(rows,table.total_r,time,new_query);
@@ -153,28 +154,28 @@
 			  // QUERY MODE
 				setAppStatus(); // Change app status depending on query mode
 
-				var time,
-						query = editor.getOption('query'),
-						is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER|DROP|DELETE).*/i)!=-1;
+				// var time,
+				// 		query = editor.getOption('query'),
+				// 		is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER|DROP|DELETE).*/i)!=-1;
 				
-				// Get the total rows of the query
-				if (new_query!=undefined && !is_write_query) {
-					$.ajax({
-				    method: "GET",
-				    url: global_api_url+'queries?sql='+encodeURIComponent('SELECT count(*) FROM ('+query+') as count'),
-				 		headers: {"cartodbclient":"true"},
-				    success: function(data) {
-							table.total_r = data.rows[0].count;
-							$('div.sql_console span h3').html('<strong>'+table.total_r+' results</strong>');
-							requestArrived();
-				    },
-				    error: function(e) {
-				      requestArrived();
-				    }
-				  });
-				} else {
-					requestArrived();
-				}
+				// // Get the total rows of the query
+				// if (new_query!=undefined && !is_write_query) {
+				// 	$.ajax({
+				//     method: "GET",
+				//     url: global_api_url+'queries?sql='+encodeURIComponent('SELECT count(*) FROM ('+query+') as count'),
+				//  		headers: {"cartodbclient":"true"},
+				//     success: function(data) {
+				// 			table.total_r = data.rows[0].count;
+				// 			$('div.sql_console span h3').html('<strong>'+table.total_r+' results</strong>');
+				// 			requestArrived();
+				//     },
+				//     error: function(e) {
+				//       requestArrived();
+				//     }
+				//   });
+				// } else {
+				// 	requestArrived();
+				// }
 
 
 			  $.ajax({
@@ -191,9 +192,12 @@
 						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
 						$('div.sql_window').css({'min-height':'199px'});
 						
-						msg = data.message;
+						modified = data.modified;
+
 						time = data.time.toFixed(3);
 			      rows = data.rows;
+
+            $('div.sql_console span h3').html('<strong>'+data.rows+' results</strong>');
 			      requestArrived();
 			    },
 			    error: function(e) {
@@ -2570,7 +2574,6 @@
     errorRequest: function(params,new_value,old_value,type) {
       switch (type) {
         case "update_cell":   var element;
-															debugger;
  															if (params['row_id']!='') {
 																element = table.e.find('tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div');
 															}
@@ -2614,9 +2617,12 @@
     restoreTable : function() {
       table.mode = 'normal';
       /* Don't get width of the last cell in sql view! */
+
       table.last_cell_s = table.cell_s;
       $('body').removeClass('query');
       methods.refreshTable('');
+
+      setAppStatus();
     },
     
     

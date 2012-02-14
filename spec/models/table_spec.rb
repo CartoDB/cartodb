@@ -1012,10 +1012,6 @@ describe Table do
     table1.name.should match(/^twitters/)
     table1.rows_counted.should == 7
     
-    hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      :concatenate_to_table => table1.name
-    ).symbolize_keys
-    
     table = new_table  :name => nil
     table.concatenate_to_table = table1.name
     table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 

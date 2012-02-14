@@ -1233,19 +1233,24 @@ SQL
       # update tile styles
       begin
         # get old tile style
-        get_req = Net::HTTP::Get.new("/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}")    
-        old_style = tile_host.request(get_req).try(:body)
-        
-        # parse old CartoCSS style out
-        old_style = JSON.parse(old_style).with_indifferent_access[:style]
-        
+       # get_req = Net::HTTP::Get.new("/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}")    
+       # old_style = tile_host.request(get_req).try(:body)
+       # 
+       # # parse old CartoCSS style out
+       # old_style = JSON.parse(old_style).with_indifferent_access[:style]
+        port = APP_CONFIG[:tile_port] || 80
+        get_req = Net::HTTP.new 'localhost', port
+        old_style = foo_req.request_get("/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}", {'Host' => "#{owner.username}.#{APP_CONFIG[:tile_host]}"}).try(:body)
+
         # rename common table name based variables
         old_style.gsub!(@name_changed_from, self.name)      
         
         # post new style
-        post_req = Net::HTTP::Post.new("/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")    
-        post_req.set_form_data({"style" => old_style})
-        tile_host.request(post_req)
+      #  post_req = Net::HTTP::Post.new("/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")    
+      #  post_req.set_form_data({"style" => old_style})
+      #  tile_host.request(post_req)
+        post_req = Net::HTTP.new 'localhost', port
+        post_req.request_post("/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", URI.encode_www_form({"style" => old_style}), {'Host' => "#{owner.username}.#{APP_CONFIG[:tile_host]}"})
       rescue => e
         CartoDB::Logger.info "tilestyle#rename error for #{tile_host.inspect}", "#{e.inspect}"      
       end        

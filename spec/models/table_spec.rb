@@ -1012,6 +1012,27 @@ describe Table do
     # tablen.name.should match(/^twitters/)
     # tablen.rows_counted.should == 7
     
+    table = create_table :name => 'table1'
+    table.insert_row!({:name => "name #1", :description => "description #1"})
+    table.save.reload
+    
+    append_this = new_table  :name => nil
+    append_this.user_id = table.user_id
+    append_this.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
+    append_this.save.reload
+    
+    table.append_to_table(:from_table => append_this)
+    table.save.reload
+    append_this.destroy
+    
+  end
+  it "should merge two twitters.csv" do
+    # tablen = new_table :name => nil
+    # tablen.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+    # tablen.save.reload
+    # tablen.name.should match(/^twitters/)
+    # tablen.rows_counted.should == 7
+    
     
     
     table = create_table :name => 'table1'
@@ -1021,7 +1042,7 @@ describe Table do
     tablex = new_table  :name => nil
     tablex.user_id = table.user_id
     tablex.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
-    tablex.save.reload
+    tablex.append_to_table_no(:to_table => table)
     
     p 4
     p table.run_query("SELECT count(*) FROM #{table.name} LIMIT 1")

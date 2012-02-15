@@ -1014,14 +1014,16 @@ describe Table do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
     table.save.reload
-    p table.name
     
     tablex = new_table  :name => nil
-    tablex.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv" 
+    tablex.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
     tablex.save.reload
     
-    table.append_from_tablex(:from_table => tablex)
-    table.save
+    p table.run_query("SELECT count(*) FROM #{table.name}")
+    table.append_to_tablex(:from_table => tablex)
+    table.save.reload
+    p table.run_query("SELECT count(*) FROM #{table.name}")
+    tablex.destroy
     
   end
   

@@ -130,8 +130,8 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
-        importer = CartoDB::Importer.new hash_in
-        return importer.import!.name
+        importer = CartoDB::Migrator.new hash_in
+        return importer.migrate!.name
       end
       #Register a table not created throug the UI
       if migrate_existing_table.present?

@@ -55,7 +55,6 @@ class Table < Sequel::Model(:user_tables)
         if existing_schema_hash.keys.include?(column_name)
           # column name exists in new and old table
           if existing_schema_hash[column_name] != new_schema_hash[column_name]
-            p 'chtyp'
             #the new column type does not match the existing, force change to existing
             hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
               :type => existing_schema_hash[column_name], 
@@ -75,6 +74,12 @@ class Table < Sequel::Model(:user_tables)
     end
     # append table 2 to table 1
     owner.in_database.run("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{from_table.name})")
+    # so that we can use the same method to allow the user to merge two tables
+    # that already exist in the API
+    # a future might be merge_two_tables
+    # => where tableA is duplicated
+    # => then tableB is append_to_table onto tableA
+    # => leaving both in tact while creating a new tthat contains both
   end
   def import_to_cartodb
       if import_from_file.present?        

@@ -1027,12 +1027,6 @@ describe Table do
     table.append_to_table(:from_table => append_this)
     table.save.reload
     # append_to_table doesn't automatically destroy the table
-    # so that we can use the same method to allow the user to merge two tables
-    # that already exist in the API
-    # a future might be merge_two_tables
-    # => where tableA is duplicated
-    # => then tableB is append_to_table onto tableA
-    # => leaving both in tact while creating a new tthat contains both
     append_this.destroy
     
     Table[append_this.id].should == nil

@@ -1275,36 +1275,45 @@ SQL
       # update tile styles
       begin
         # get old tile style
-        get_req = Net::HTTP::Get.new("/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}")    
-        old_style = tile_host.request(get_req).try(:body)
-        
+        old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}").try(:body)
+       
         # parse old CartoCSS style out
         old_style = JSON.parse(old_style).with_indifferent_access[:style]
-        
+
         # rename common table name based variables
         old_style.gsub!(@name_changed_from, self.name)      
         
         # post new style
-        post_req = Net::HTTP::Post.new("/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")    
-        post_req.set_form_data({"style" => old_style})
-        tile_host.request(post_req)
+        tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {"style" => old_style})
       rescue => e
-        CartoDB::Logger.info "tilestyle#rename error for #{tile_host.inspect}", "#{e.inspect}"      
+        CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"      
       end        
     end
     @name_changed_from = nil
   end
 
-  def tile_host
+  def tile_request(request_method, request_uri, form = {})
     uri  = "#{owner.username}.#{APP_CONFIG[:tile_host]}"
+    ip  = APP_CONFIG[:tile_ip] || '127.0.0.1'
     port = APP_CONFIG[:tile_port] || 80
-    Net::HTTP.new uri, port
+    http_req = Net::HTTP.new ip, port
+    request_headers = {'Host' => "#{owner.username}.#{APP_CONFIG[:tile_host]}"}
+    case request_method
+      when 'GET'
+        http_res = http_req.request_get(request_uri, request_headers)
+      when 'POST'
+        http_res = http_req.request_post(request_uri, URI.encode_www_form(form), request_headers)
+      when 'DELETE'
+        extra_delete_headers = {'Depth' => 'Infinity'}
+        http_res = http_req.delete(request_uri.merge(extra_delete_headers)) 
+      else
+    end
+    http_res
   end
-  
+
   def delete_tile_style
     begin
-      req = Net::HTTP::Delete.new("/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")    
-      tile_host.request(req)    
+      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
     rescue => e
       CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"      
     end  

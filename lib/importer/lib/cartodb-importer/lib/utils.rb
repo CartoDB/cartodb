@@ -64,7 +64,6 @@ module CartoDB
 
           # detect encoding for sample
           cd = CharDet.detect(lines.join)
-          
           # Only do non-UTF8 if we're quite sure. (May fail)        
           if (cd.confidence > 0.6)             
             tf = Tempfile.new(@path)                  

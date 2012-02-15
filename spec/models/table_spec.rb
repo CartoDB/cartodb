@@ -1018,8 +1018,10 @@ describe Table do
     
     tablex = new_table  :name => nil
     tablex.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv" 
-    tablex.append_to_table(:existing_table => table)
-    tablex.save
+    tablex.save.reload
+    
+    table.append_from_tablex(:from_table => tablex)
+    table.save
     
   end
   

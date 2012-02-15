@@ -33,11 +33,70 @@ class Table < Sequel::Model(:user_tables)
     self.privacy ||= PRIVATE
     super
   end
-  def append_to_table!(options)
-    new_name = options[:name] || options[:old_name]
-    new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema(:cartodb_types => false).select{ |c| c[0] == new_name.to_sym }.first[1]
-    cartodb_type = new_type.try(:convert_to_cartodb_type)
+  def append_to_tablex(options)
+    self.database_name = owner.database_name    
+    from_table = options[:from_table]
+    append_to_table = self
+    # if concatenate_to_table is set, it will join the table just created
+    # to the table named in concatenate_to_table and then drop the created table
+    #get schemas of uploaded and existing tables
+    new_schema_hash = Hash[from_table.schema(:reload => true)]
+    new_schema_names = schema.collect {|x| x[0]}
+  
+    existing_schema_hash = Hash[append_to_table.schema(:reload => true)]
+    p existing_schema_hash
     
+    # fun schema check here
+    drop_names = %W{ cartodb_id created_at updated_at ogc_fid}
+    new_schema_hash.keys.each do |column_name|
+      p column_name
+      if RESERVED_COLUMN_NAMES.include?(column_name.to_s) or drop_names.include?column_name.to_s
+        p 'res'
+        new_schema_names.delete(column_name)
+      elsif column_name.to_s != 'the_geom'
+        if existing_schema_hash.keys.include?(column_name)
+          p 'same'
+          # column name exists in new and old table
+          if existing_schema_hash[column_name] != new_schema_hash[column_name]
+            p 'wrong t'
+            #the new column type does not match the existing, force change to existing
+            hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+              :type => existing_schema_hash[column_name], 
+              :name => column_name
+            ).symbolize_keys
+            self.modify_column! hash_in
+          end
+        else
+          p 'not same'
+          # add column and type to old table
+            hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+              :type => new_schema_hash[column_name], 
+              :name => column_name
+            ).symbolize_keys
+          p new_schema_hash[column_name]
+          append_to_table.add_column! hash_in
+        end
+      end
+    end
+    # append table 2 to table 1
+    append_to_table.run_query("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{from_table.name})")
+    
+    #owner.in_database(:as => :superuser).run("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
+    # drop table 2
+    p importer_result_name
+    p self.rows_counted
+    append_to_table.save
+    owner.in_database.run("SELECT * FROM #{append_to_table.name}").each do |row|
+      p row
+    end
+    from_table.destroy
+    #owner.in_database.run("DROP TABLE #{from_table.name}")
+  
+  end
+  def append_to_table(options)
+    self.database_name = owner.database_name    
+    append_to_table = options[:to_table]
+    p append_to_table
     #import from file
     if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
       
@@ -45,6 +104,7 @@ class Table < Sequel::Model(:user_tables)
         importer = import_to_cartodb
         import_result = importer.import!
         importer_result_name = import_result.name
+        p importer_result_name
       end
 
       #Import from the results of a query
@@ -73,17 +133,17 @@ class Table < Sequel::Model(:user_tables)
       new_schema_hash = Hash[schema]
       new_schema_names = schema.collect {|x| x[0]}
     
-      existing_schema = append_to_table.schema(:reload => true)
-      existing_schema_hash = Hash[existing_schema]
-    
+      existing_schema_hash = Hash[append_to_table.schema(:reload => true)]
+      p existing_schema_hash
+      
       # fun schema check here
-      drop_names = %W{ cartodb_id created_at updated_at ogc_fid }
+      drop_names = %W{ cartodb_id created_at updated_at ogc_fid}
       new_schema_hash.keys.each do |column_name|
         p column_name
         if RESERVED_COLUMN_NAMES.include?(column_name.to_s) or drop_names.include?column_name.to_s
           p 'res'
           new_schema_names.delete(column_name)
-        else
+        elsif column_name.to_s != 'the_geom'
           if existing_schema_hash.keys.include?(column_name)
             p 'same'
             # column name exists in new and old table
@@ -103,12 +163,22 @@ class Table < Sequel::Model(:user_tables)
                 :type => new_schema_hash[column_name], 
                 :name => column_name
               ).symbolize_keys
+            p new_schema_hash[column_name]
             append_to_table.add_column! hash_in
           end
         end
       end
       # append table 2 to table 1
-      owner.in_database.run("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
+      p importer_result_name
+      
+      
+      $tables_metadata.multi do
+        $tables_metadata.hset key, "user_id", user_id
+        $tables_metadata.hset key, "privacy", PRIVATE
+      end
+      append_to_table.run_query("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
+      
+      #owner.in_database(:as => :superuser).run("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
       # drop table 2
       p importer_result_name
       p self.rows_counted

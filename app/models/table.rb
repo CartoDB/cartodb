@@ -18,7 +18,7 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query, 
                 :import_from_table_copy, :importing_SRID, :importing_encoding, 
-                :temporal_the_geom_type, :migrate_existing_table, :append_to_table
+                :temporal_the_geom_type, :migrate_existing_table
 
   ## Callbacks
   def validate
@@ -34,7 +34,7 @@ class Table < Sequel::Model(:user_tables)
     super
   end
   
-  def import_from
+  def import_to_cartodb
       if import_from_file.present?        
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 
@@ -116,8 +116,58 @@ class Table < Sequel::Model(:user_tables)
         set_trigger_the_geom_webmercator
         return uniname
       end
-      
+  end
+  def import_cleanup
+    owner.in_database do |user_database|
+      # If we already have a cartodb_id column let's rename it to an auxiliary column
+      aux_cartodb_id_column = nil
+      if schema.present? && schema.flatten.include?(:cartodb_id)
+         aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
+         user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
+      end
+
+      # When tables are created using ogr2ogr they are added a ogc_fid primary key
+      # In that case:
+      #  - If cartodb_id already exists, remove ogc_fid
+      #  - If cartodb_id does not exist, remove the primary key constraint and treat ogc_fid as the auxiliary column
+      if schema.present? && schema.flatten.include?(:ogc_fid)
+        if aux_cartodb_id_column.nil?
+          aux_cartodb_id_column = "ogc_fid"
+        else
+          user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
+        end
+      end
+      if schema.present? && schema.flatten.include?(:gid)
+        if aux_cartodb_id_column.nil?
+          aux_cartodb_id_column = "gid"
+        else
+          user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
+        end
+      end
     
+      if !append_to_table.present?
+        user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
+
+        # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
+        # Do this before adding constraints cause otherwise we can have duplicate key errors
+        if aux_cartodb_id_column.present?
+          user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
+          user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
+          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
+          max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max] 
+    
+          # only reset the sequence on real imports. 
+          # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns         
+          if max_cartodb_id
+            user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
+          end  
+        end
+        user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
+
+        normalize_timestamp_field!(:created_at, user_database)
+        normalize_timestamp_field!(:updated_at, user_database)
+      end
+    end
   end
   def before_create    
     update_updated_at
@@ -126,92 +176,32 @@ class Table < Sequel::Model(:user_tables)
     #import from file
     if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
       
-      if import_from_file.present?        
-        importer = self.import_from
+      if import_from_file.present? or import_from_url.present?
+        importer = import_to_cartodb
         import_result = importer.import!
         importer_result_name = import_result.name
       end
 
-      #import from URL
-      if import_from_url.present?      
-        importer = self.import_from
-        importer_result_name = importer.import!.name
-      end
-
       #Import from the results of a query
-      if import_from_query.present?
-        migrator = self.import_from
-        migrator_result = migrator.migrate!
-        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
-      end
-      
-      #Register a table not created throug the UI
-      if migrate_existing_table.present?
-        migrator = self.import_from
+      if import_from_query.present? or migrate_existing_table.present?
+        migrator = import_to_cartodb
         migrator_result = migrator.migrate!
         importer_result_name = migrator_result.name #uses the same name as importers for simplicity
       end
       
       #Import from copying another table
       if import_from_table_copy.present?
-        importer_result_name = self.import_from
+        importer_result_name = import_to_cartodb
       end
 
     
       self[:name] = importer_result_name
       schema = self.schema(:reload => true)
 
-      owner.in_database do |user_database|
-        # If we already have a cartodb_id column let's rename it to an auxiliary column
-        aux_cartodb_id_column = nil
-        if schema.present? && schema.flatten.include?(:cartodb_id)
-           aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
-           user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
-        end
-
-        # When tables are created using ogr2ogr they are added a ogc_fid primary key
-        # In that case:
-        #  - If cartodb_id already exists, remove ogc_fid
-        #  - If cartodb_id does not exist, remove the primary key constraint and treat ogc_fid as the auxiliary column
-        if schema.present? && schema.flatten.include?(:ogc_fid)
-          if aux_cartodb_id_column.nil?
-            aux_cartodb_id_column = "ogc_fid"
-          else
-            user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
-          end
-        end
-        if schema.present? && schema.flatten.include?(:gid)
-          if aux_cartodb_id_column.nil?
-            aux_cartodb_id_column = "gid"
-          else
-            user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
-          end
-        end
-        
-        if !append_to_table.present?
-          user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
-
-          # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
-          # Do this before adding constraints cause otherwise we can have duplicate key errors
-          if aux_cartodb_id_column.present?
-            user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
-            user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
-            cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
-            max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max] 
-        
-            # only reset the sequence on real imports. 
-            # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns         
-            if max_cartodb_id
-              user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
-            end  
-          end
-          user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
-    
-          normalize_timestamp_field!(:created_at, user_database)
-          normalize_timestamp_field!(:updated_at, user_database)
-        end
-      end
+      import_cleanup
+      
       set_the_geom_column!
+      
       # if concatenate_to_table is set, it will join the table just created
       # to the table named in concatenate_to_table and then drop the created table
       if append_to_table.present?

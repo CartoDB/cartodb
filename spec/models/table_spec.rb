@@ -1017,8 +1017,8 @@ describe Table do
     p table.name
     
     tablex = new_table  :name => nil
-    tablex.append_to_table = table
     tablex.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv" 
+    tablex.append_to_table(:existing_table => table)
     tablex.save
     
   end

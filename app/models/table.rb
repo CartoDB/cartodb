@@ -1244,7 +1244,7 @@ SQL
         # post new style
         tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {"style" => old_style})
       rescue => e
-        CartoDB::Logger.info "tilestyle#rename error for #{tile_host.inspect}", "#{e.inspect}"      
+        CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"      
       end        
     end
     @name_changed_from = nil
@@ -1269,12 +1269,6 @@ SQL
     http_res
   end
 
-  def tile_host
-    uri  = "#{owner.username}.#{APP_CONFIG[:tile_host]}"
-    port = APP_CONFIG[:tile_port] || 80
-    Net::HTTP.new uri, port
-  end
-  
   def delete_tile_style
     begin
       tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")

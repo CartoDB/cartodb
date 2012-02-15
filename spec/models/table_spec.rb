@@ -858,8 +858,8 @@ describe Table do
     ], :cartodb_types => true)
 
     # confirm coords are correct
-    res = table.sequel.select{[x(the_geom),y(the_geom)]}.first
-    res.should == {:x=>-3.699732, :y=>40.423012}    
+    res = table.sequel.select{[st_x(the_geom),st_y(the_geom)]}.first
+    res.should == {:st_x=>-3.699732, :st_y=>40.423012}    
   end
   
   

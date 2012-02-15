@@ -25,6 +25,7 @@ module CartoDB
         end
 
         full_shp_command = "#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{shp_args_command[1]} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
+        p full_shp_command
         log "Running shp2pgsql: #{full_shp_command}"
         
         out = `#{full_shp_command}`

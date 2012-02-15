@@ -18,7 +18,7 @@ class Table < Sequel::Model(:user_tables)
 
   attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query, 
                 :import_from_table_copy, :importing_SRID, :importing_encoding, 
-                :temporal_the_geom_type, :migrate_existing_table, :concatenate_to_table
+                :temporal_the_geom_type, :migrate_existing_table, :append_to_table
 
   ## Callbacks
   def validate
@@ -56,6 +56,7 @@ class Table < Sequel::Model(:user_tables)
         
         import_result = importer.import!
         importer_result_name = import_result.name
+        p import_result
         #CartoDB::Logger.info "table#import runlog", "#{import_result.inspect}" 
       end
 
@@ -72,7 +73,6 @@ class Table < Sequel::Model(:user_tables)
         ).symbolize_keys
         
         importer_result_name = importer.import!.name
-        p importer_result_name
       end
 
       #Import from the results of a query
@@ -168,7 +168,7 @@ class Table < Sequel::Model(:user_tables)
           end
         end
         
-        if !concatenate_to_table.present?
+        if !append_to_table.present?
           user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
 
           # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
@@ -194,19 +194,14 @@ class Table < Sequel::Model(:user_tables)
       set_the_geom_column!
       # if concatenate_to_table is set, it will join the table just created
       # to the table named in concatenate_to_table and then drop the created table
-      if concatenate_to_table.present?
+      if append_to_table.present?
         #get schemas of uploaded and existing tables
         self[:name] = importer_result_name
-        new_schema = self.schema(:reload => true)
-        new_schema_hash = Hash[new_schema]
-        new_schema_names = new_schema.collect {|x| x[0]}
+        schema = self.schema(:reload => true)
+        new_schema_hash = Hash[schema]
+        new_schema_names = schema.collect {|x| x[0]}
         
-        p concatenate_to_table
-        p owner.database_username
-        p owner
-        p self
-        p concatenate_to_table
-        existing_schema = concatenate_to_table.schema(:reload => true)
+        existing_schema = append_to_table.schema(:reload => true)
         existing_schema_hash = Hash[existing_schema]
         
         # fun schema check here
@@ -236,22 +231,20 @@ class Table < Sequel::Model(:user_tables)
                   :type => new_schema_hash[column_name], 
                   :name => column_name
                 ).symbolize_keys
-              concatenate_to_table.add_column! hash_in
-              #owner.in_database.run("ALTER TABLE #{concatenate_to_table} ADD COLUMN #{column_name} #{new_schema_hash[column_name]}")
+              append_to_table.add_column! hash_in
             end
           end
         end
         # append table 2 to table 1
-        owner.in_database.run("INSERT INTO #{concatenate_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
+        owner.in_database.run("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
         # drop table 2
+        p importer_result_name
+        p self.rows_counted
+        owner.in_database.run("SELECT * FROM #{importer_result_name}").each do |row|
+          p row
+        end
         owner.in_database.run("DROP TABLE #{importer_result_name}")
-        # p importer_result_name
-        # p concatenate_to_table
-        # p self
-        return concatenate_to_table.save
-        #self[:name] = concatenate_to_table
-        #schema = self.schema(:reload => true)
-        #p schema
+        append_to_table.save
       end
     else
       create_table_in_database!
@@ -262,7 +255,7 @@ class Table < Sequel::Model(:user_tables)
       set_the_geom_column!(self.the_geom_type)
     end
     
-    if !concatenate_to_table.present?
+    if !append_to_table.present?
       # test for exceeding of quota after creation
       raise CartoDB::QuotaExceeded, "#{owner.quota_overspend / 1024}KB more space is required" if owner.exceeded_quota?
 
@@ -271,6 +264,7 @@ class Table < Sequel::Model(:user_tables)
     
       # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
     end
+    
     super
   rescue => e
     CartoDB::Logger.info "table#create error", "#{e.inspect}"      
@@ -334,7 +328,7 @@ class Table < Sequel::Model(:user_tables)
 
   def after_create
     super
-    if !concatenate_to_table.present? # only run the following on new tables
+    if !append_to_table.present? # only run the following on new tables
       User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
       owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
       add_python

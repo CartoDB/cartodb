@@ -133,21 +133,16 @@ class Table < Sequel::Model(:user_tables)
       new_schema_names = schema.collect {|x| x[0]}
     
       existing_schema_hash = Hash[append_to_table.schema(:reload => true)]
-      p existing_schema_hash
       
       # fun schema check here
       drop_names = %W{ cartodb_id created_at updated_at ogc_fid}
       new_schema_hash.keys.each do |column_name|
-        p column_name
         if RESERVED_COLUMN_NAMES.include?(column_name.to_s) or drop_names.include?column_name.to_s
-          p 'res'
           new_schema_names.delete(column_name)
         elsif column_name.to_s != 'the_geom'
           if existing_schema_hash.keys.include?(column_name)
-            p 'same'
             # column name exists in new and old table
             if existing_schema_hash[column_name] != new_schema_hash[column_name]
-              p 'wrong t'
               #the new column type does not match the existing, force change to existing
               hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
                 :type => existing_schema_hash[column_name], 
@@ -156,25 +151,16 @@ class Table < Sequel::Model(:user_tables)
               self.modify_column! hash_in
             end
           else
-            p 'not same'
             # add column and type to old table
               hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
                 :type => new_schema_hash[column_name], 
                 :name => column_name
               ).symbolize_keys
-            p new_schema_hash[column_name]
             append_to_table.add_column! hash_in
           end
         end
       end
       # append table 2 to table 1
-      p importer_result_name
-      
-      
-      $tables_metadata.multi do
-        $tables_metadata.hset key, "user_id", user_id
-        $tables_metadata.hset key, "privacy", PRIVATE
-      end
       append_to_table.run_query("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
       
       #owner.in_database(:as => :superuser).run("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{importer_result_name})")
@@ -200,12 +186,13 @@ class Table < Sequel::Model(:user_tables)
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
 
-        return CartoDB::Importer.new hash_in
+        importer = CartoDB::Importer.new hash_in
+        return importer.import!.name
         #CartoDB::Logger.info "table#import runlog", "#{import_result.inspect}" 
       end
       #import from URL
       if import_from_url.present?
-        return CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 
           :logger => ::Rails.logger,
           "username" => owner.database_username, 
@@ -214,6 +201,7 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
+        return importer.import!.name
       end
       #Import from the results of a query
       if import_from_query.present?
@@ -235,7 +223,8 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
-        return CartoDB::Migrator.new hash_in
+        importer = CartoDB::Importer.new hash_in
+        return importer.import!.name
       end
       #Register a table not created throug the UI
       if migrate_existing_table.present?
@@ -254,7 +243,8 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
-        return CartoDB::Migrator.new hash_in
+        importer = CartoDB::Migrator.new hash_in
+        return importer.migrate!.name
       end
       #Import from copying another table
       if import_from_table_copy.present?
@@ -328,25 +318,8 @@ class Table < Sequel::Model(:user_tables)
     #import from file
     if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
       
-      if import_from_file.present? or import_from_url.present?
-        importer = import_to_cartodb
-        import_result = importer.import!
-        importer_result_name = import_result.name
-      end
-
-      #Import from the results of a query
-      if import_from_query.present? or migrate_existing_table.present?
-        migrator = import_to_cartodb
-        migrator_result = migrator.migrate!
-        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
-      end
+      importer_result_name = import_to_cartodb
       
-      #Import from copying another table
-      if import_from_table_copy.present?
-        importer_result_name = import_to_cartodb
-      end
-
-    
       self[:name] = importer_result_name
       schema = self.schema(:reload => true)
 

@@ -1011,19 +1011,29 @@ describe Table do
     # tablen.save.reload
     # tablen.name.should match(/^twitters/)
     # tablen.rows_counted.should == 7
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+    
+    
+    
+    table = create_table :name => 'table1'
+    table.insert_row!({:name => "name #1", :description => "description #1"})
     table.save.reload
     
     tablex = new_table  :name => nil
+    tablex.user_id = table.user_id
     tablex.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
     tablex.save.reload
     
-    p table.run_query("SELECT count(*) FROM #{table.name}")
-    table.append_to_tablex(:from_table => tablex)
+    p 4
+    p table.run_query("SELECT count(*) FROM #{table.name} LIMIT 1")
+    p 5
+    p table.run_query("SELECT * FROM #{tablex.name} LIMIT 1")
+    table.append_to_table(:from_table => tablex)
     table.save.reload
-    p table.run_query("SELECT count(*) FROM #{table.name}")
+    p 6
+    p table.run_query("SELECT * FROM #{table.name} LIMIT 1")
     tablex.destroy
+    p 7
+    p table.run_query("SELECT count(*) FROM #{table.name} LIMIT 1")
     
   end
   

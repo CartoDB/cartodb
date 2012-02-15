@@ -60,8 +60,7 @@
       this.addMapOverlays();
       this.addMapListeners();
       this.addToolListeners();
-      this.startWax();
-      
+
       // Get the styles predefine for this table
       this.getStyles();
     }
@@ -109,9 +108,11 @@
       
       
       var setupTools = _.after(ajax_count, function(){
-        me.setVisualization(geom_type,layers_style);  // Show the correct tiles
-        me.setMapStyle(geom_type,map_style);          // Set map styles
-        me.setupInfowindow(infowindow_info || {});          // Set infowindow vars
+        me.setVisualization(geom_type,layers_style);      // Show the correct tiles
+        me.setMapStyle(geom_type,map_style);              // Set map styles
+        me.setupInfowindow(infowindow_info || {});        // Set infowindow vars
+        if (!map_style)                                   // If fails getting map variables, show the tiles wax!
+          me.startWax();                                  // Prevent requesting tiles from two different locations and zooms...
       });
       
       
@@ -573,8 +574,17 @@
       });
 
       // Update Carto with the name of the new table
-      
-        this.css_editor.setValue(this.styles.replace(/#(\w*)\s/g,'#' + table_name + ' ').replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   ')); }
+      this.css_editor.setValue(
+        this.styles
+          .replace(/\n/g,'')
+          .replace(/ /g,'')
+          .replace(/#(\w*)\s/g,'#' + table_name + ' ')
+          .replace(/\{/gi,'{\n   ')
+          .replace(/\}/gi,'}\n')
+          .replace(/;/gi,';\n   ')
+          .replace(/\/\*carto\*\//g,'')
+        ); 
+      }
     }
 
     /* Search stuff on map */
@@ -647,6 +657,7 @@
         url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
         headers: {"cartodbclient":"true"},
         success: function(data) {
+
           if (data.rows[0].st_extent!=null) {
             var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
             
@@ -677,8 +688,12 @@
             if (me.map_.getZoom()<2) {
               me.map_.setZoom(2);
             }
+          } else {
+             me.map_.setZoom(2);
           }
 
+          // After move the map, start wax
+          me.startWax();
         },
         error: function(e) {
         }
@@ -792,6 +807,7 @@
               });
             });
 
+
             // Get default variables depending on geom type
             if (geom_type=="point" || geom_type=="multipoint") {
               feature_props['marker-placement'] = 'point';
@@ -800,7 +816,7 @@
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
               // No more properties are needed
             } else {
-              // No more properties are needed
+              feature_props['line-opacity'] = feature_props['line-opacity'] || 1;
             }
           }
 
@@ -1430,6 +1446,9 @@
           custom_map_properties.longitude = map_style.longitude;
           map.setCenter(new google.maps.LatLng(map_style.latitude,map_style.longitude));
           map.setZoom(map_style.zoom);
+
+          // Start now wax
+          me.startWax();
         } else {
           me.zoomToBBox();
         }

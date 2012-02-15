@@ -555,8 +555,14 @@
 	      stopPropagation(ev);
 	      resetSaveWindow();
         closeOutTableWindows();
+
         $('div.mamufas div.save_window').show();
+        
+        // Fill the table name + copy
+        $('div.save_window span.top input').val(table_name + '_copy');
+
         $('div.mamufas').fadeIn('fast');
+
         $('div.save_window span.top input').focus();
         
         $(document).keydown(function(event){
@@ -614,6 +620,10 @@
 	        closeOutTableWindows();
 	        $('div.mamufas div.export_window').show();
 	        $('div.mamufas').fadeIn('fast');
+
+	        // Set form url correctly before choose a export option
+					$('div.export_window').find('form').attr('action','/tables/' + table_name);
+
 	        bindESC();
 	      }
 	    });
@@ -741,6 +751,12 @@
 			// Title window
 	    $('div.inner_subheader div.left').append(window.view_elements.title_window);
 	
+			// Close warning window
+			$('div.warning_window .cancel').click(function(ev){
+				stopPropagation(ev);
+				closeOutTableWindows();
+			});
+
 	    //Bind events
 	    // -Open window
 	    $('section.subheader h2 a, p.status a.save').live('click',function(ev){
@@ -794,9 +810,6 @@
 	        } else {
 	          changeTableName(new_value,old_value);
 	        }
-        
-	        // Function to change the table name final steps
-
 	      }
 	    });
 	
@@ -1392,6 +1405,8 @@
 			$('p.settings').html(html.replace(/\|/g,''));
 			$('body').addClass('query');
 			$('body').animate({backgroundColor:'#282828'},500);
+			// 'Duplicate table' to 'table from query'
+			$('a.save_table').text('Table from query');
 			setTimeout(function(){$('body').css('background-position','0 -160px');},300);
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
@@ -1403,6 +1418,8 @@
 			$('p.settings a:last').before(' | ');
 			$('p.settings a:eq(1)').before(' | ');
 			$('body').animate({backgroundColor:'#2D3451'},500);
+			// 'Duplicate table' to 'table from query'
+			$('a.save_table').text('Duplicate table as...');
 			setTimeout(function(){$('body').css('background-position','0 0');},300);
 			$('section.subheader').animate({backgroundColor:'#2D3451'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -58px');},300);

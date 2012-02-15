@@ -9,7 +9,7 @@ class Admin::TablesController < ApplicationController
 
   def index
     current_page = params[:page].nil? ? 1 : params[:page].to_i
-    per_page = 10
+    per_page = 20
     @tags = Tag.load_user_tags(current_user.id, :limit => 10)
     @tables = if !params[:tag_name].blank?
       Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name]).order(:id).reverse.paginate(current_page, per_page)
@@ -28,6 +28,16 @@ class Admin::TablesController < ApplicationController
     @table = Table.find_by_identifier(current_user.id, params[:id])
     respond_to do |format|
       format.html
+      format.sql do
+        send_data @table.to_sql,
+          :type => 'application/zip; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.zip"
+      end
+      format.kml do
+        send_data @table.to_kml,
+          :type => 'application/zip; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.kmz"
+      end
       format.csv do
         send_data @table.to_csv,
           :type => 'application/zip; charset=binary; header=present',

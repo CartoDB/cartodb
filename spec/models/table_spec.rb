@@ -1012,50 +1012,32 @@ describe Table do
     # tablen.name.should match(/^twitters/)
     # tablen.rows_counted.should == 7
     
-    table = create_table :name => 'table1'
-    table.insert_row!({:name => "name #1", :description => "description #1"})
+    # table = create_table :name => 'table1'
+    # table.insert_row!({:name => "name #1", :description => "description #1"})
+    # load a table to treat as our 'existing' table
+    table = new_table  :name => nil
+    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
     table.save.reload
-    
+    #create a second table from a file to treat as the data we want to append
     append_this = new_table  :name => nil
     append_this.user_id = table.user_id
-    append_this.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
+    append_this.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv" 
     append_this.save.reload
-    
+    # envoke the append_to_table method
     table.append_to_table(:from_table => append_this)
     table.save.reload
+    # append_to_table doesn't automatically destroy the table
+    # so that we can use the same method to allow the user to merge two tables
+    # that already exist in the API
+    # a future might be merge_two_tables
+    # => where tableA is duplicated
+    # => then tableB is append_to_table onto tableA
+    # => leaving both in tact while creating a new tthat contains both
     append_this.destroy
     
-  end
-  it "should merge two twitters.csv" do
-    # tablen = new_table :name => nil
-    # tablen.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
-    # tablen.save.reload
-    # tablen.name.should match(/^twitters/)
-    # tablen.rows_counted.should == 7
-    
-    
-    
-    table = create_table :name => 'table1'
-    table.insert_row!({:name => "name #1", :description => "description #1"})
-    table.save.reload
-    
-    tablex = new_table  :name => nil
-    tablex.user_id = table.user_id
-    tablex.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
-    tablex.append_to_table_no(:to_table => table)
-    
-    p 4
-    p table.run_query("SELECT count(*) FROM #{table.name} LIMIT 1")
-    p 5
-    p table.run_query("SELECT * FROM #{tablex.name} LIMIT 1")
-    table.append_to_table(:from_table => tablex)
-    table.save.reload
-    p 6
-    p table.run_query("SELECT * FROM #{table.name} LIMIT 1")
-    tablex.destroy
-    p 7
-    p table.run_query("SELECT count(*) FROM #{table.name} LIMIT 1")
-    
+    Table[append_this.id].should == nil
+    table.name.should match(/^twitters/)
+    table.rows_counted.should == 2005
   end
   
   it "should import and then export file twitters.csv" do

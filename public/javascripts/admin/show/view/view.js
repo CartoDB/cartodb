@@ -555,8 +555,14 @@
 	      stopPropagation(ev);
 	      resetSaveWindow();
         closeOutTableWindows();
+
         $('div.mamufas div.save_window').show();
+        
+        // Fill the table name + copy
+        $('div.save_window span.top input').val(table_name + '_copy');
+
         $('div.mamufas').fadeIn('fast');
+
         $('div.save_window span.top input').focus();
         
         $(document).keydown(function(event){
@@ -745,6 +751,12 @@
 			// Title window
 	    $('div.inner_subheader div.left').append(window.view_elements.title_window);
 	
+			// Close warning window
+			$('div.warning_window .cancel').click(function(ev){
+				stopPropagation(ev);
+				closeOutTableWindows();
+			});
+
 	    //Bind events
 	    // -Open window
 	    $('section.subheader h2 a, p.status a.save').live('click',function(ev){
@@ -798,9 +810,6 @@
 	        } else {
 	          changeTableName(new_value,old_value);
 	        }
-        
-	        // Function to change the table name final steps
-
 	      }
 	    });
 	

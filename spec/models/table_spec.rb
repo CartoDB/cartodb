@@ -1005,6 +1005,35 @@ describe Table do
     }.should raise_error(CartoDB::InvalidColumnName)
   end
   
+  it "should merge two twitters.csv" do
+    # tablen = new_table :name => nil
+    # tablen.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+    # tablen.save.reload
+    # tablen.name.should match(/^twitters/)
+    # tablen.rows_counted.should == 7
+    
+    # table = create_table :name => 'table1'
+    # table.insert_row!({:name => "name #1", :description => "description #1"})
+    # load a table to treat as our 'existing' table
+    table = new_table  :name => nil
+    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
+    table.save.reload
+    #create a second table from a file to treat as the data we want to append
+    append_this = new_table  :name => nil
+    append_this.user_id = table.user_id
+    append_this.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv" 
+    append_this.save.reload
+    # envoke the append_to_table method
+    table.append_to_table(:from_table => append_this)
+    table.save.reload
+    # append_to_table doesn't automatically destroy the table
+    append_this.destroy
+    
+    Table[append_this.id].should == nil
+    table.name.should match(/^twitters/)
+    table.rows_counted.should == 2005
+  end
+  
   it "should import and then export file twitters.csv" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"

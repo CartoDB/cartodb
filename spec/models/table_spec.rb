@@ -1011,18 +1011,10 @@ describe Table do
     # tablen.save.reload
     # tablen.name.should match(/^twitters/)
     # tablen.rows_counted.should == 7
-    
-    user               = create_user
-    table              = Table.new :privacy => Table::PRIVATE, :tags => 'movies, personal'
-    table.user_id      = user.id
-    table.name         = 'Madrid Bars'
-    table.force_schema = "name varchar, address varchar, latitude float, longitude float"
-    table.save
-    table.insert_row!({:name      => "Hawai", 
-                       :address   => "Calle de Pérez Galdós 9, Madrid, Spain", 
-                       :latitude  => 40.423012, 
-                       :longitude => -3.699732})
-                       
+    table = new_table :name => nil
+    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+    table.save.reload
+    p table.name
     
     tablex = new_table  :name => nil
     tablex.append_to_table = table

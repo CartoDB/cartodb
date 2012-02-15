@@ -33,14 +33,8 @@ class Table < Sequel::Model(:user_tables)
     self.privacy ||= PRIVATE
     super
   end
-
-  def before_create    
-    update_updated_at
-    self.database_name = owner.database_name    
-
-    #import from file
-    if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
-      
+  
+  def import_from
       if import_from_file.present?        
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 
@@ -52,17 +46,12 @@ class Table < Sequel::Model(:user_tables)
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
 
-        importer = CartoDB::Importer.new hash_in
-        
-        import_result = importer.import!
-        importer_result_name = import_result.name
-        p import_result
+        return CartoDB::Importer.new hash_in
         #CartoDB::Logger.info "table#import runlog", "#{import_result.inspect}" 
       end
-
       #import from URL
       if import_from_url.present?
-        importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        return CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 
           :logger => ::Rails.logger,
           "username" => owner.database_username, 
@@ -71,10 +60,7 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
-        
-        importer_result_name = importer.import!.name
       end
-
       #Import from the results of a query
       if import_from_query.present?
                 
@@ -95,11 +81,8 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
-        migrator = CartoDB::Migrator.new hash_in
-        migrator_result = migrator.migrate!
-        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
+        return CartoDB::Migrator.new hash_in
       end
-      
       #Register a table not created throug the UI
       if migrate_existing_table.present?
                 
@@ -117,11 +100,8 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
-        migrator = CartoDB::Migrator.new hash_in
-        migrator_result = migrator.migrate!
-        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
+        return CartoDB::Migrator.new hash_in
       end
-      
       #Import from copying another table
       if import_from_table_copy.present?
                 
@@ -134,7 +114,47 @@ class Table < Sequel::Model(:user_tables)
         owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
         owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
         set_trigger_the_geom_webmercator
-        importer_result_name = uniname
+        return uniname
+      end
+      
+    
+  end
+  def before_create    
+    update_updated_at
+    self.database_name = owner.database_name    
+
+    #import from file
+    if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
+      
+      if import_from_file.present?        
+        importer = self.import_from
+        import_result = importer.import!
+        importer_result_name = import_result.name
+      end
+
+      #import from URL
+      if import_from_url.present?      
+        importer = self.import_from
+        importer_result_name = importer.import!.name
+      end
+
+      #Import from the results of a query
+      if import_from_query.present?
+        migrator = self.import_from
+        migrator_result = migrator.migrate!
+        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
+      end
+      
+      #Register a table not created throug the UI
+      if migrate_existing_table.present?
+        migrator = self.import_from
+        migrator_result = migrator.migrate!
+        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
+      end
+      
+      #Import from copying another table
+      if import_from_table_copy.present?
+        importer_result_name = self.import_from
       end
 
     

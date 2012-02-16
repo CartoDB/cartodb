@@ -9,7 +9,7 @@ module CartoDB
     
     @@debug = true
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
-    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json}
+    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .sql}
       
     attr_accessor :import_from_file,              
                   :db_configuration, 

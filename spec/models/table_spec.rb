@@ -1085,7 +1085,6 @@ describe Table do
     table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
     table.importing_encoding = 'LATIN1'
     table.save
-
     table.name.should == "esp_adm1"
     
     # write CSV to tempfile and read it back

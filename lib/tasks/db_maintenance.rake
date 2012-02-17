@@ -110,7 +110,7 @@ namespace :cartodb do
     ##################
     # SET ACCOUNT TYPE
     ##################
-    desc "set users account type"
+    desc "Set users account type. DEDICATED or FREE"
     task :set_user_account_type, [:username, :account_type] => :environment do |t, args|
       usage = "usage: rake cartodb:db:set_user_account_type[username,account_type]"
       raise usage if args[:username].blank? || args[:account_type].blank?

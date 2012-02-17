@@ -8,7 +8,7 @@ class Table < Sequel::Model(:user_tables)
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
-  RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
+  RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
 
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
@@ -33,14 +33,55 @@ class Table < Sequel::Model(:user_tables)
     self.privacy ||= PRIVATE
     super
   end
-
-  def before_create    
-    update_updated_at
-    self.database_name = owner.database_name    
-
-    #import from file
-    if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
-      
+  def append_to_table(options) 
+    from_table = options[:from_table]
+    self.database_name = owner.database_name   
+    append_to_table = self
+    # if concatenate_to_table is set, it will join the table just created
+    # to the table named in concatenate_to_table and then drop the created table
+    #get schemas of uploaded and existing tables
+    new_schema = from_table.schema(:reload => true)
+    new_schema_hash = Hash[new_schema]
+    new_schema_names = new_schema.collect {|x| x[0]}
+  
+    existing_schema_hash = Hash[append_to_table.schema(:reload => true)]
+    
+    # fun schema check here
+    drop_names = %W{ cartodb_id created_at updated_at ogc_fid}
+    new_schema_hash.keys.each do |column_name|
+      if RESERVED_COLUMN_NAMES.include?(column_name.to_s) or drop_names.include?column_name.to_s
+        new_schema_names.delete(column_name)
+      elsif column_name.to_s != 'the_geom'
+        if existing_schema_hash.keys.include?(column_name)
+          # column name exists in new and old table
+          if existing_schema_hash[column_name] != new_schema_hash[column_name]
+            #the new column type does not match the existing, force change to existing
+            hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+              :type => existing_schema_hash[column_name], 
+              :name => column_name
+            ).symbolize_keys
+            self.modify_column! hash_in
+          end
+        else
+          # add column and type to old table
+            hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+              :type => new_schema_hash[column_name], 
+              :name => column_name
+            ).symbolize_keys
+          append_to_table.add_column! hash_in
+        end
+      end
+    end
+    # append table 2 to table 1
+    owner.in_database.run("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{from_table.name})")
+    # so that we can use the same method to allow the user to merge two tables
+    # that already exist in the API
+    # a future might be merge_two_tables
+    # => where tableA is duplicated
+    # => then tableB is append_to_table onto tableA
+    # => leaving both in tact while creating a new tthat contains both
+  end
+  def import_to_cartodb
       if import_from_file.present?        
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 
@@ -53,12 +94,9 @@ class Table < Sequel::Model(:user_tables)
         ).symbolize_keys
 
         importer = CartoDB::Importer.new hash_in
-        
-        import_result = importer.import!
-        importer_result_name = import_result.name
+        return importer.import!.name
         #CartoDB::Logger.info "table#import runlog", "#{import_result.inspect}" 
       end
-
       #import from URL
       if import_from_url.present?
         importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -70,15 +108,13 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
-        
-        importer_result_name = importer.import!.name
+        return importer.import!.name
       end
-
       #Import from the results of a query
       if import_from_query.present?
                 
         # ensure unique name
-        uniname = get_valid_name("untitled_table")
+        uniname = get_valid_name(self.name)
         
         # create a table based on the query
         owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
@@ -94,11 +130,9 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
-        migrator = CartoDB::Migrator.new hash_in
-        migrator_result = migrator.migrate!
-        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
+        importer = CartoDB::Migrator.new hash_in
+        return importer.migrate!.name
       end
-      
       #Register a table not created throug the UI
       if migrate_existing_table.present?
                 
@@ -116,11 +150,9 @@ class Table < Sequel::Model(:user_tables)
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota
         ).symbolize_keys
-        migrator = CartoDB::Migrator.new hash_in
-        migrator_result = migrator.migrate!
-        importer_result_name = migrator_result.name #uses the same name as importers for simplicity
+        importer = CartoDB::Migrator.new hash_in
+        return importer.migrate!.name
       end
-      
       #Import from copying another table
       if import_from_table_copy.present?
                 
@@ -133,62 +165,73 @@ class Table < Sequel::Model(:user_tables)
         owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
         owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
         set_trigger_the_geom_webmercator
-        importer_result_name = uniname
+        return uniname
+      end
+  end
+  def import_cleanup
+    owner.in_database do |user_database|
+      # If we already have a cartodb_id column let's rename it to an auxiliary column
+      aux_cartodb_id_column = nil
+      if schema.present? && schema.flatten.include?(:cartodb_id)
+         aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
+         user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
       end
 
+      # When tables are created using ogr2ogr they are added a ogc_fid primary key
+      # In that case:
+      #  - If cartodb_id already exists, remove ogc_fid
+      #  - If cartodb_id does not exist, remove the primary key constraint and treat ogc_fid as the auxiliary column
+      if schema.present? && schema.flatten.include?(:ogc_fid)
+        if aux_cartodb_id_column.nil?
+          aux_cartodb_id_column = "ogc_fid"
+        else
+          user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
+        end
+      end
+      if schema.present? && schema.flatten.include?(:gid)
+        if aux_cartodb_id_column.nil?
+          aux_cartodb_id_column = "gid"
+        else
+          user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
+        end
+      end
+    
+      user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
+
+      # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
+      # Do this before adding constraints cause otherwise we can have duplicate key errors
+      if aux_cartodb_id_column.present?
+        user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
+        user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
+        cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
+        max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max] 
+  
+        # only reset the sequence on real imports. 
+        # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns         
+        if max_cartodb_id
+          user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
+        end  
+      end
+      user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
+
+      normalize_timestamp_field!(:created_at, user_database)
+      normalize_timestamp_field!(:updated_at, user_database)
+    end
+  end
+  def before_create    
+    update_updated_at
+    self.database_name = owner.database_name    
+
+    #import from file
+    if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
+      
+      importer_result_name = import_to_cartodb
+      
       self[:name] = importer_result_name
       schema = self.schema(:reload => true)
 
-      owner.in_database do |user_database|
-        # If we already have a cartodb_id column let's rename it to an auxiliary column
-        aux_cartodb_id_column = nil
-        if schema.present? && schema.flatten.include?(:cartodb_id)
-           aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
-           user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
-        end
-
-        # When tables are created using ogr2ogr they are added a ogc_fid primary key
-        # In that case:
-        #  - If cartodb_id already exists, remove ogc_fid
-        #  - If cartodb_id does not exist, remove the primary key constraint and treat ogc_fid as the auxiliary column
-        if schema.present? && schema.flatten.include?(:ogc_fid)
-          if aux_cartodb_id_column.nil?
-            aux_cartodb_id_column = "ogc_fid"
-          else
-            user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
-          end
-        end
-        if schema.present? && schema.flatten.include?(:gid)
-          if aux_cartodb_id_column.nil?
-            aux_cartodb_id_column = "gid"
-          else
-            user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
-          end
-        end
-
-        user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
-
-        # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
-        # Do this before adding constraints cause otherwise we can have duplicate key errors
-        if aux_cartodb_id_column.present?
-          user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
-          user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
-          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
-          max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max] 
-          
-          # only reset the sequence on real imports. 
-          # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns         
-          if max_cartodb_id
-            user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
-          end  
-        end
-
-        user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
+      import_cleanup
       
-        normalize_timestamp_field!(:created_at, user_database)
-        normalize_timestamp_field!(:updated_at, user_database)
-
-      end
       set_the_geom_column!
     else
       create_table_in_database!
@@ -199,15 +242,14 @@ class Table < Sequel::Model(:user_tables)
       set_the_geom_column!(self.the_geom_type)
     end
     
+    
     # test for exceeding of quota after creation
     raise CartoDB::QuotaExceeded, "#{owner.quota_overspend / 1024}KB more space is required" if owner.exceeded_quota?
 
     # all looks ok, so VACUUM ANALYZE for correct statistics
     owner.in_database.run("VACUUM ANALYZE \"#{self.name}\"")
-    
+  
     # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
-
-
     super
   rescue => e
     CartoDB::Logger.info "table#create error", "#{e.inspect}"      
@@ -278,7 +320,7 @@ class Table < Sequel::Model(:user_tables)
     set_trigger_update_updated_at
     set_trigger_cache_timestamp
     set_trigger_check_quota
-    
+  
     @force_schema = nil
     $tables_metadata.multi do
       $tables_metadata.hset key, "user_id", user_id
@@ -1233,36 +1275,45 @@ SQL
       # update tile styles
       begin
         # get old tile style
-        get_req = Net::HTTP::Get.new("/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}")    
-        old_style = tile_host.request(get_req).try(:body)
-        
+        old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}").try(:body)
+       
         # parse old CartoCSS style out
         old_style = JSON.parse(old_style).with_indifferent_access[:style]
-        
+
         # rename common table name based variables
         old_style.gsub!(@name_changed_from, self.name)      
         
         # post new style
-        post_req = Net::HTTP::Post.new("/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")    
-        post_req.set_form_data({"style" => old_style})
-        tile_host.request(post_req)
+        tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {"style" => old_style})
       rescue => e
-        CartoDB::Logger.info "tilestyle#rename error for #{tile_host.inspect}", "#{e.inspect}"      
+        CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"      
       end        
     end
     @name_changed_from = nil
   end
 
-  def tile_host
+  def tile_request(request_method, request_uri, form = {})
     uri  = "#{owner.username}.#{APP_CONFIG[:tile_host]}"
+    ip  = APP_CONFIG[:tile_ip] || '127.0.0.1'
     port = APP_CONFIG[:tile_port] || 80
-    Net::HTTP.new uri, port
+    http_req = Net::HTTP.new ip, port
+    request_headers = {'Host' => "#{owner.username}.#{APP_CONFIG[:tile_host]}"}
+    case request_method
+      when 'GET'
+        http_res = http_req.request_get(request_uri, request_headers)
+      when 'POST'
+        http_res = http_req.request_post(request_uri, URI.encode_www_form(form), request_headers)
+      when 'DELETE'
+        extra_delete_headers = {'Depth' => 'Infinity'}
+        http_res = http_req.delete(request_uri.merge(extra_delete_headers)) 
+      else
+    end
+    http_res
   end
-  
+
   def delete_tile_style
     begin
-      req = Net::HTTP::Delete.new("/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")    
-      tile_host.request(req)    
+      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
     rescue => e
       CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"      
     end  

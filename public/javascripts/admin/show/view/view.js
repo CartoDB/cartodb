@@ -555,8 +555,14 @@
 	      stopPropagation(ev);
 	      resetSaveWindow();
         closeOutTableWindows();
+
         $('div.mamufas div.save_window').show();
+        
+        // Fill the table name + copy
+        $('div.save_window span.top input').val(table_name + '_copy');
+
         $('div.mamufas').fadeIn('fast');
+
         $('div.save_window span.top input').focus();
         
         $(document).keydown(function(event){
@@ -581,13 +587,23 @@
 	        var requestId = createUniqueId();
           window.ops_queue.newRequest(requestId,'duplicate_table');
 	        
+	        // If we are in a query view
+	        var query = $('body').hasClass('query')
+	        	, data = {};
+
+	        if (query) {
+	        	data = {from_query: editor.getValue(), name: new_table}
+	        } else {
+	        	data = {
+              name: new_table,
+              table_copy: table_name
+            }
+	        }
+
 	        $.ajax({
             type: "POST",
             url: global_api_url+'tables',
-            data: {
-              name: new_table,
-              table_copy: table_name
-            },
+            data: data,
             headers: {"cartodbclient":"true"},
             success: function(result) {
               window.location.href = '/tables/'+ result.name;
@@ -601,8 +617,6 @@
 	        $('div.save_window span.top input').addClass('error');
 	        $('div.save_window span.top div.error_content').fadeIn().delay(3000).fadeOut();
 	      }
-	      
-
 	    });
 	
 	    $('a.export_data').live('click',function(ev){
@@ -614,6 +628,10 @@
 	        closeOutTableWindows();
 	        $('div.mamufas div.export_window').show();
 	        $('div.mamufas').fadeIn('fast');
+
+	        // Set form url correctly before choose a export option
+					$('div.export_window').find('form').attr('action','/tables/' + table_name);
+
 	        bindESC();
 	      }
 	    });
@@ -741,6 +759,12 @@
 			// Title window
 	    $('div.inner_subheader div.left').append(window.view_elements.title_window);
 	
+			// Close warning window
+			$('div.warning_window .cancel').click(function(ev){
+				stopPropagation(ev);
+				closeOutTableWindows();
+			});
+
 	    //Bind events
 	    // -Open window
 	    $('section.subheader h2 a, p.status a.save').live('click',function(ev){
@@ -794,9 +818,6 @@
 	        } else {
 	          changeTableName(new_value,old_value);
 	        }
-        
-	        // Function to change the table name final steps
-
 	      }
 	    });
 	
@@ -1392,6 +1413,8 @@
 			$('p.settings').html(html.replace(/\|/g,''));
 			$('body').addClass('query');
 			$('body').animate({backgroundColor:'#282828'},500);
+			// 'Duplicate table' to 'table from query'
+			$('a.save_table').text('Table from query');
 			setTimeout(function(){$('body').css('background-position','0 -160px');},300);
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
@@ -1403,6 +1426,8 @@
 			$('p.settings a:last').before(' | ');
 			$('p.settings a:eq(1)').before(' | ');
 			$('body').animate({backgroundColor:'#2D3451'},500);
+			// 'Duplicate table' to 'table from query'
+			$('a.save_table').text('Duplicate table as...');
 			setTimeout(function(){$('body').css('background-position','0 0');},300);
 			$('section.subheader').animate({backgroundColor:'#2D3451'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -58px');},300);

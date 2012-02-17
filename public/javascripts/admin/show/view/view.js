@@ -587,13 +587,23 @@
 	        var requestId = createUniqueId();
           window.ops_queue.newRequest(requestId,'duplicate_table');
 	        
+	        // If we are in a query view
+	        var query = $('body').hasClass('query')
+	        	, data = {};
+
+	        if (query) {
+	        	data = {from_query: 'SELECT * FROM ' + table_name + ' LIMIT 2', name: new_table}
+	        } else {
+	        	data = {
+              name: new_table,
+              table_copy: table_name
+            }
+	        }
+
 	        $.ajax({
             type: "POST",
             url: global_api_url+'tables',
-            data: {
-              name: new_table,
-              table_copy: table_name
-            },
+            data: data,
             headers: {"cartodbclient":"true"},
             success: function(result) {
               window.location.href = '/tables/'+ result.name;
@@ -607,8 +617,6 @@
 	        $('div.save_window span.top input').addClass('error');
 	        $('div.save_window span.top div.error_content').fadeIn().delay(3000).fadeOut();
 	      }
-	      
-
 	    });
 	
 	    $('a.export_data').live('click',function(ev){

@@ -452,6 +452,7 @@
           $('body').removeClass('query');
           me.query_mode = false;
 					$('.map_header div.stickies').remove();
+          setAppStatus();
           me.refresh();
         }
       });

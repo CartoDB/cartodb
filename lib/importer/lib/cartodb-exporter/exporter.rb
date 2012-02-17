@@ -46,9 +46,14 @@ module CartoDB
         zip_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.zip")
         FileUtils.rm_rf(Dir.glob(@all_files_path))
       
-        ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"PGDump\" #{sql_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
-        out = `#{ogr2ogr_command}`
+        #ogr2ogr_bin_path = `which ogr2ogr`.strip
+        #ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"PGDump\" #{sql_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
+        #out = `#{ogr2ogr_command}`
+        
+        pg_dump_bin_path = `which pg_dump`.strip
+        pg_dump_command = "#{pg_dump_bin_path} --data-only --table #{@table_name} -U #{@db_configuration[:username]} #{@db_configuration[:database]} -f #{sql_file_path}"
+        out = `#{pg_dump_command}`
+        
         if $?.success?
           Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
             zipfile.add(File.basename(sql_file_path), sql_file_path)

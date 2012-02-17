@@ -320,14 +320,22 @@ class Table < Sequel::Model(:user_tables)
     set_trigger_update_updated_at
     set_trigger_cache_timestamp
     set_trigger_check_quota
-  
+    
+    make_geom_valid
+    
     @force_schema = nil
     $tables_metadata.multi do
       $tables_metadata.hset key, "user_id", user_id
       $tables_metadata.hset key, "privacy", PRIVATE
     end
   end
-  
+  def make_geom_valid
+    begin 
+      owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom) WHERE NOT ST_IsValid(the_geom)")
+    rescue => e
+      CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} didn't have geom column"
+    end
+  end
   def before_destroy
     $tables_metadata.del key
   end

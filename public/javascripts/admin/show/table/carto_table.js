@@ -97,7 +97,7 @@
               methods.closeTablePopups();
               methods.restoreTable();
             }
-					} else {
+					} else {					  
 						methods.drawQueryColumns(rows,table.total_r,time,new_query);
 				    methods.drawQueryRows(rows,direction,table.actual_p,new_query);
 					}
@@ -194,10 +194,11 @@
 						
 						modified = data.modified;
 
-						time = data.time.toFixed(3);
-			      rows = data.rows;
-
-            $('div.sql_console span h3').html('<strong>'+data.rows+' results</strong>');
+						time    = data.time.toFixed(3);
+			      rows    = data.rows;
+			      table.total_r = data.total_rows
+            
+            //$('div.sql_console span h3').html('<strong>'+data.total_rows+' results</strong>');
 			      requestArrived();
 			    },
 			    error: function(e) {

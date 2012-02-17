@@ -592,7 +592,7 @@
 	        	, data = {};
 
 	        if (query) {
-	        	data = {from_query: 'SELECT * FROM ' + table_name + ' LIMIT 2', name: new_table}
+	        	data = {from_query: editor.getValue(), name: new_table}
 	        } else {
 	        	data = {
               name: new_table,

@@ -114,7 +114,7 @@ class Table < Sequel::Model(:user_tables)
       if import_from_query.present?
                 
         # ensure unique name
-        uniname = get_valid_name("untitled_table")
+        uniname = get_valid_name(self.name)
         
         # create a table based on the query
         owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")

@@ -198,9 +198,11 @@ class Table < Sequel::Model(:user_tables)
       
       schema.each do |column|
         if column[1] == 'character varying'
+          p column
           user_database.run("ALTER TABLE #{self.name} ALTER COLUMN #{column[0]} TYPE text")
         end
       end
+      schema = self.schema(:reload => true)
       
       user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
 

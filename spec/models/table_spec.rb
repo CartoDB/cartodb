@@ -895,7 +895,8 @@ describe Table do
     table.save.reload
     table.name.should match(/^twitters/)
     table.rows_counted.should == 7
-
+    p table.schema
+    
     check_schema(table, [
       [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
       [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 

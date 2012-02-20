@@ -621,9 +621,9 @@ describe Table do
   it "should import SHP1.zip" do
     table = new_table :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
-    table.importing_encoding = 'LATIN1'
+    #table.importing_encoding = 'LATIN1'
     table.save
-
+    
     table.name.should == "esp_adm1"
   end
   
@@ -895,8 +895,6 @@ describe Table do
     table.save.reload
     table.name.should match(/^twitters/)
     table.rows_counted.should == 7
-    p table.schema
-    
     check_schema(table, [
       [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
       [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
@@ -1007,14 +1005,6 @@ describe Table do
   end
   
   it "should merge two twitters.csv" do
-    # tablen = new_table :name => nil
-    # tablen.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
-    # tablen.save.reload
-    # tablen.name.should match(/^twitters/)
-    # tablen.rows_counted.should == 7
-    
-    # table = create_table :name => 'table1'
-    # table.insert_row!({:name => "name #1", :description => "description #1"})
     # load a table to treat as our 'existing' table
     table = new_table  :name => nil
     table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 

@@ -176,7 +176,7 @@ class Table < Sequel::Model(:user_tables)
          aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
          user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
       end
-
+      
       # When tables are created using ogr2ogr they are added a ogc_fid primary key
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
@@ -195,7 +195,14 @@ class Table < Sequel::Model(:user_tables)
           user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
         end
       end
-    
+      
+      self.schema(:cartodb_types => false).each do |column|
+        if column[1] =~ /^character varying/
+          user_database.run("ALTER TABLE #{self.name} ALTER COLUMN #{column[0]} TYPE text")
+        end
+      end
+      schema = self.schema(:reload => true)
+      
       user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
 
       # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
@@ -218,7 +225,7 @@ class Table < Sequel::Model(:user_tables)
       normalize_timestamp_field!(:updated_at, user_database)
     end
   end
-  def before_create    
+  def before_create
     update_updated_at
     self.database_name = owner.database_name    
 

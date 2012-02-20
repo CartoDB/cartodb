@@ -197,7 +197,7 @@ class Table < Sequel::Model(:user_tables)
       end
       
       schema.each do |column|
-        if column[1] == 'string'
+        if column[1] == 'character varying'
           user_database.run("ALTER TABLE #{self.name} ALTER COLUMN #{column[0]} TYPE text")
         end
       end

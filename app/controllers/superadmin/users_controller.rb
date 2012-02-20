@@ -55,7 +55,18 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       end
     end
 
+    # check for quota update
+    quota_changed = @user.changed_columns.include?(:quota_in_bytes) ? true : false
+    
+    # commit changes to user
     @user.save
+        
+    # if quota has been updated, update all the quota checking triggers too
+    if quota_changed
+      @user.rebuild_quota_trigger 
+      CartoDB::Logger.info "rebuild quota triggers for #{@user.username}"
+    end      
+    
     respond_with(:superadmin, @user)
   end
 

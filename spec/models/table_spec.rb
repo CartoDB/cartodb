@@ -89,6 +89,24 @@ describe Table do
       table = create_table
       $tables_metadata.hget(table.key,"user_id").should == table.user_id.to_s
     end
+    it "should rename the pk sequence when renaming the table" do
+      user = create_user
+      table1 = new_table :name => 'table 1', :user_id => user.id
+      table1.save.reload
+      table1.name.should == 'table_1'
+    
+      table1.name = 'table 2'
+      table1.save.reload
+      table1.name.should == 'table_2'
+    
+      table2 = new_table :name => 'table 1', :user_id => user.id
+      table2.save.reload
+      table2.name.should == 'table_1'
+
+      lambda {
+        table2.destroy
+      }.should_not raise_error
+    end
   end
   context "redis sync tests" do
     it "should have a unique key to be identified in Redis" do
@@ -260,9 +278,98 @@ describe Table do
       rows = table.records
       rows[:rows][0][:my_new_column_new_name].should == 1
     end
+    it "can be created with a given schema if it is valid" do
+      table = new_table
+      table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+      table.save
+      check_schema(table, [
+        [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
+        [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
+        [:kind, "character varying(10)"]
+      ])
+    end
 
+    it "should sanitize columns from a given schema" do
+      table = new_table
+      table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+      table.save
+      check_schema(table, [
+        [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
+        [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
+        [:kind, "character varying(10)"]
+      ])
+    end
+  
+    it "should alter the schema automatically to a a wide range of numbers when inserting" do
+      user = create_user
+      table = new_table
+      table.user_id = user.id
+      table.force_schema = "name varchar, age integer"
+      table.save
+
+      pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+      table.rows_counted.should == 1
+
+      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.4")
+      table.rows_counted.should == 2
+
+      table.schema(:cartodb_types => false).should include([:age, "double precision"])
+      table.schema.should include([:age, "number"])
+    end
+
+    it "should alter the schema automatically to a a wide range of numbers when inserting a number with 0" do
+      user = create_user
+      table = new_table
+      table.user_id = user.id
+      table.force_schema = "name varchar, age integer"
+      table.save
+
+      pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+      table.rows_counted.should == 1
+
+      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.0")
+      table.rows_counted.should == 2
+
+      table.schema(:cartodb_types => false).should include([:age, "double precision"])
+      table.schema.should include([:age, "number"])
+    end
+
+    it "should alter the schema automatically to a a wide range of numbers when updating" do
+      user = create_user
+      table = new_table
+      table.user_id = user.id
+      table.force_schema = "name varchar, age integer"
+      table.save
+
+      pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+      table.rows_counted.should == 1
+
+      pk_row2 = table.update_row!(pk_row1, :name => 'Javi Jam', :age => "25.4")
+      table.rows_counted.should == 1
+
+      table.schema(:cartodb_types => false).should include([:age, "double precision"])
+      table.schema.should include([:age, "number"])
+    end
+  
+    it "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do
+      user = create_user
+      table = new_table
+      table.user_id = user.id
+      table.force_schema = "name varchar(40)"
+      table.save    
+    
+      table.schema(:cartodb_types => false).should_not include([:name, "text"])
+
+      pk_row1 = table.insert_row!(:name => 'f'*201)
+      table.rows_counted.should == 1
+    
+      table.reload
+      table.schema(:cartodb_types => false).should include([:name, "text"])
+    end
+  
   end
   context "insert and row tests" do
+    
     it "should be able to insert a new row" do
       table = create_table
       table.rows_counted.should == 0
@@ -279,7 +386,7 @@ describe Table do
         table.insert_row!({:non_existing => "bad value"})
       }.should raise_error(CartoDB::InvalidAttributes)
     end
-
+    
     it "should be able to insert a row with a geometry value" do
       user = create_user
       table = new_table :user_id => user.id
@@ -339,450 +446,343 @@ describe Table do
     end
 
   end
-  it "should increase the tables_count counter from owner" do
-    user = create_user
-    user.tables_count.should == 0
+  context "counter tests" do
+    it "should increase the tables_count counter from owner" do
+      user = create_user
+      user.tables_count.should == 0
 
-    table = create_table :user_id => user.id
-    user.reload
-    user.tables_count.should == 1
-  end
-
-  it "should remove and updating the denormalized counters when removed" do
-    user = create_user
-    table = create_table :user_id => user.id, :tags => 'tag 1, tag2'
-
-    table.destroy
-    user.reload
-    user.tables_count.should == 0
-    Tag.count.should == 0
-    Table.count == 0
-    user.in_database{|database| database.table_exists?(table.name).should be_false}
-  end
-
-  it "can be created with a given schema if it is valid" do
-    table = new_table
-    table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
-    table.save
-    check_schema(table, [
-      [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
-      [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
-      [:kind, "character varying(10)"]
-    ])
-  end
-
-  it "should sanitize columns from a given schema" do
-    table = new_table
-    table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
-    table.save
-    check_schema(table, [
-      [:updated_at, "timestamp without time zone"], [:created_at, "timestamp without time zone"], [:cartodb_id, "integer"], 
-      [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"], 
-      [:kind, "character varying(10)"]
-    ])
-  end
-
-  it "should create table from query" do
-    table = new_table :name => nil
-    table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,10)"
-    table.save.reload
-    table.rows_counted.should == 10
-    check_schema(table, [
-      [:cartodb_id, "integer"], [:gs, "integer"], 
-      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-      [:the_geom, "geometry", "geometry", "point"]
-    ])
-    row = table.records[:rows][0]
-    row[:gs].should == 1
-  end
-  
-  it "should create table from query and create invalid_the_geom" do
-    table = new_table :name => nil
-    table.import_from_query = "SELECT generate_series as gs, generate_series as the_geom FROM generate_series(1,10)"
-    table.save.reload
-    table.rows_counted.should == 10
-    check_schema(table, [
-      [:cartodb_id, "integer"], [:gs, "integer"], 
-      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-      [:invalid_the_geom, "integer"], [:the_geom, "geometry", "geometry", "point"]
-    ])
-    row = table.records[:rows][0]
-    row[:gs].should == 1
-  end
-  
-  it "should create table from query and valid multipolygon not 4326" do
-    table = new_table :name => nil
-    table.import_from_query = "SELECT generate_series as gs, GEOMETRYFROMTEXT('MULTIPOLYGON(((0 0, 0 10, 10 10, 10 0, 0 0)))',3242) as the_geom FROM generate_series(1,10)"
-    table.save.reload
-    table.rows_counted.should == 10
-    check_schema(table, [
-      [:cartodb_id, "integer"], [:gs, "integer"], 
-      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-      [:the_geom, "geometry", "geometry", "multipolygon"]
-    ])
-    row = table.records[:rows][0]
-    row[:gs].should == 1
-  end
-  
-  it "should import file twitters.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
-    table.save.reload
-    table.name.should match(/^twitters/)
-    table.rows_counted.should == 7
-
-    check_schema(table, [
-      [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
-      [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
-      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-      [:the_geom, "geometry", "geometry", "point"]
-    ])
-    row = table.records[:rows][0]
-    row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
-    row[:login].should == "vzlaturistica "
-    row[:country].should == " Venezuela "
-    row[:followers_count].should == "211"
-  end
-  
-  it "should import and then export file twitters.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
-    table.save.reload
-    table.name.should match(/^twitters/)
-    table.rows_counted.should == 7
-    
-    # write CSV to tempfile and read it back
-    csv_content = nil
-    zip = table.to_csv
-    file = Tempfile.new('zip')
-    File.open(file,'w+') { |f| f.write(zip) }
-    
-    Zip::ZipFile.foreach(file) do |entry|
-      entry.name.should == "twitters_export.csv"
-      csv_content = entry.get_input_stream.read
+      table = create_table :user_id => user.id
+      user.reload
+      user.tables_count.should == 1
     end
-    file.close
-    
-    # parse constructed CSV and test
-    parsed = CSV.parse(csv_content)
-    parsed[0].should == ["cartodb_id", "country", "field_5", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
-    parsed[1].first.should == "1"
-  end
 
-  it "should import file import_csv_1.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.save
-    table.reload
-    table.name.should == 'import_csv_1'
+    it "should remove and updating the denormalized counters when removed" do
+      user = create_user
+      table = create_table :user_id => user.id, :tags => 'tag 1, tag2'
 
-    table.rows_counted.should == 100
-    row = table.records[:rows][6]
-    row[:cartodb_id] == 6
-    row[:id].should == "6"
-    row[:name_of_species].should == "Laetmonice producta 6"
-    row[:kingdom].should == "Animalia"
-    row[:family].should == "Aphroditidae"
-    row[:lat].should == "0.2"
-    row[:lon].should == "2.8"
-    row[:views].should == "540"
-  end
+      table.destroy
+      user.reload
+      user.tables_count.should == 0
+      Tag.count.should == 0
+      Table.count == 0
+      user.in_database{|database| database.table_exists?(table.name).should be_false}
+    end
 
-  it "should import file import_csv_2.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_2.csv"
-    table.save
-    table.reload
-    table.name.should == 'import_csv_2'
-
-    table.rows_counted.should == 100
-    row = table.records[:rows][6]
-    row[:cartodb_id] == 6
-    row[:id].should == "6"
-    row[:name_of_species].should == "Laetmonice producta 6"
-    row[:kingdom].should == "Animalia"
-    row[:family].should == "Aphroditidae"
-    row[:lat].should == "0.2"
-    row[:lon].should == "2.8"
-    row[:views].should == "540"
   end
-  
-  it "should import file flights-bad-encoding.csv" do
-    table = new_table
-    table.import_from_file = "#{Rails.root}/db/fake_data/flights-bad-encoding.csv"
-    table.save
-    
-    table.rows_counted.should == 791
-    row = table.record(1)
-    row[:vuelo].should == "A31762"
-  end
-  
-  it "should handle an empty file empty_file.csv" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.name = "empty_table"
-    table.import_from_file = "#{Rails.root}/db/fake_data/empty_file.csv"
-    lambda {
+  context "geom and projection tests" do
+    it "should set valid geometry types" do
+      user = create_user
+      table = new_table :user_id => user.id
+      table.force_schema = "address varchar, the_geom geometry"
+      table.the_geom_type = "line"
       table.save
-    }.should raise_error
+      table.reload
+      table.the_geom_type.should == "multilinestring"
+    end
+
+    it "should create a the_geom_webmercator column with the_geom projected to 3785" do
+      user = create_user
+      table = new_table :user_id => user.id
+      table.save.reload
+
+      lat = -43.941
+      lon = 3.429
+      pk = table.insert_row!({:name => "First check_in"})
+
+      the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+      table.update_row!(pk, {:the_geom => the_geom})
+
+      query_result = user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
+      ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
+    end
+  
+    it "should create a the_geom_webmercator column with the_geom projected to 3785 even when schema is forced" do
+      user = create_user
+      table = new_table :user_id => user.id
+      table.force_schema = "name varchar, the_geom geometry"
+      table.save.reload
+
+      lat = -43.941
+      lon = 3.429
+      pk = table.insert_row!({:name => "First check_in"})
+
+      the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+      table.update_row!(pk, {:the_geom => the_geom})
+
+      query_result = user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
+      ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
+      ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
+    end
+  
     
-    tables = user.run_query("select relname from pg_stat_user_tables WHERE schemaname='public'")
-    tables[:rows].should_not include({:relname => "empty_table"})
   end
+  context "table from query tests" do
+    it "should create table from query" do
+      table = new_table :name => nil
+      table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,10)"
+      table.save.reload
+      table.rows_counted.should == 10
+      check_schema(table, [
+        [:cartodb_id, "integer"], [:gs, "integer"], 
+        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+        [:the_geom, "geometry", "geometry", "point"]
+      ])
+      row = table.records[:rows][0]
+      row[:gs].should == 1
+    end
   
-  # It has strange line breaks
-  it "should import file arrivals_BCN.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/arrivals_BCN.csv"
-    table.save
-    table.reload
-    table.name.should == 'arrivals_bcn'
-    table.rows_counted.should == 3855
-  end
+    it "should create table from query and create invalid_the_geom" do
+      table = new_table :name => nil
+      table.import_from_query = "SELECT generate_series as gs, generate_series as the_geom FROM generate_series(1,10)"
+      table.save.reload
+      table.rows_counted.should == 10
+      check_schema(table, [
+        [:cartodb_id, "integer"], [:gs, "integer"], 
+        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+        [:invalid_the_geom, "integer"], [:the_geom, "geometry", "geometry", "point"]
+      ])
+      row = table.records[:rows][0]
+      row[:gs].should == 1
+    end
   
-  it "should import file clubbing.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv"
-    table.save
-    table.reload
-    table.name.should == 'clubbing'
-    table.rows_counted.should == 1998
+    it "should create table from query and valid multipolygon not 4326" do
+      table = new_table :name => nil
+      table.import_from_query = "SELECT generate_series as gs, GEOMETRYFROMTEXT('MULTIPOLYGON(((0 0, 0 10, 10 10, 10 0, 0 0)))',3242) as the_geom FROM generate_series(1,10)"
+      table.save.reload
+      table.rows_counted.should == 10
+      check_schema(table, [
+        [:cartodb_id, "integer"], [:gs, "integer"], 
+        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+        [:the_geom, "geometry", "geometry", "multipolygon"]
+      ])
+      row = table.records[:rows][0]
+      row[:gs].should == 1
+    end
+  
   end
+  context "importer tests" do
+    context "csv standard tests" do
+      it "should import file twitters.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+        table.save.reload
+        table.name.should match(/^twitters/)
+        table.rows_counted.should == 7
 
-  it "should import file short_clubbing.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/short_clubbing.csv"
-    table.save
-    table.reload
-    table.name.should == 'short_clubbing'
-    table.rows_counted.should == 78
-  end
-  
-  it "should import ngos_aidmaps.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/ngos_aidmaps.csv"
-    table.save
-    table.reload
-    table.name.should == 'ngos_aidmaps'
-    table.rows_counted.should == 85
-  end
-
-  it "should import estaciones.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/estaciones.csv"
-    table.save
-    table.reload
-    table.name.should == 'estaciones'
-    table.rows_counted.should == 30
-  end
-  
-  it "should import estaciones2.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/estaciones2.csv"
-    table.save
-    table.reload
-    table.name.should == 'estaciones2'
-    table.rows_counted.should == 30
-  end
-
-  it "should import file ngos.xlsx" do
-    user = create_user
-    table = new_table :name => nil
-    table.user_id = user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/ngos.xlsx"
-    table.save
-    table.reload
-    table.name.should == 'ngos'
-
-    check_schema(table, [
-      [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"],
-      [:organization_s_work_in_haiti, "character varying"], [:calculation_of_number_of_people_reached, "character varying"],
-      [:private_funding, "character varying"], [:relief, "character varying"], [:reconstruction, "character varying"],
-      [:private_funding_spent, "character varying"], [:spent_on_relief, "character varying"], [:spent_on_reconstruction, "character varying"],
-      [:usg_funding, "character varying"], [:usg_funding_spent, "character varying"], [:other_funding, "character varying"], [:other_funding_spent, "character varying"],
-      [:international_staff, "character varying"], [:national_staff, "character varying"], [:us_contact_name, "character varying"], [:us_contact_title, "character varying"],
-      [:us_contact_phone, "character varying"], [:us_contact_e_mail, "character varying"], [:media_contact_name, "character varying"],
-      [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"],
-      [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"],
-      [:city, "character varying"], [:state, "character varying"], [:zip_code, "character varying"], [:donation_website, "character varying"], 
-      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-      [:the_geom, "geometry", "geometry", "point"]
-    ])
-    table.rows_counted.should == 76
-  end
-  
-  it "should import EjemploVizzuality.zip" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/EjemploVizzuality.zip"
-    table.importing_encoding = 'LATIN1'
-    table.save
-
-    table.rows_counted.should == 11
-    table.name.should == "vizzuality"
-  end
-  
-  it "should import SHP1.zip" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
-    #table.importing_encoding = 'LATIN1'
-    table.save
+        check_schema(table, [
+          [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
+          [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
+          [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+          [:the_geom, "geometry", "geometry", "point"]
+        ])
+        row = table.records[:rows][0]
+        row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+        row[:login].should == "vzlaturistica "
+        row[:country].should == " Venezuela "
+        row[:followers_count].should == "211"
+      end
+      it "should import ngoaidmap_projects.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/ngoaidmap_projects.csv"
+        table.save
+        table.reload
+        table.name.should == 'ngoaidmap_projects'
+        table.rows_counted.should == 1864
+      end
+      it "should import and then export file twitters.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+        table.save.reload
+        table.name.should match(/^twitters/)
+        table.rows_counted.should == 7
     
-    table.name.should == "esp_adm1"
-  end
-  
-  it "should import ngoaidmap_projects.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/ngoaidmap_projects.csv"
-    table.save
-    table.reload
-    table.name.should == 'ngoaidmap_projects'
-    table.rows_counted.should == 1864
-  end
-  
-  it "should alter the schema automatically to a a wide range of numbers when inserting" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.force_schema = "name varchar, age integer"
-    table.save
-
-    pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
-    table.rows_counted.should == 1
-
-    pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.4")
-    table.rows_counted.should == 2
-
-    table.schema(:cartodb_types => false).should include([:age, "double precision"])
-    table.schema.should include([:age, "number"])
-  end
-
-  it "should alter the schema automatically to a a wide range of numbers when inserting a number with 0" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.force_schema = "name varchar, age integer"
-    table.save
-
-    pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
-    table.rows_counted.should == 1
-
-    pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.0")
-    table.rows_counted.should == 2
-
-    table.schema(:cartodb_types => false).should include([:age, "double precision"])
-    table.schema.should include([:age, "number"])
-  end
-
-  it "should alter the schema automatically to a a wide range of numbers when updating" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.force_schema = "name varchar, age integer"
-    table.save
-
-    pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
-    table.rows_counted.should == 1
-
-    pk_row2 = table.update_row!(pk_row1, :name => 'Javi Jam', :age => "25.4")
-    table.rows_counted.should == 1
-
-    table.schema(:cartodb_types => false).should include([:age, "double precision"])
-    table.schema.should include([:age, "number"])
-  end
-  
-  it "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.force_schema = "name varchar(40)"
-    table.save    
+        # write CSV to tempfile and read it back
+        csv_content = nil
+        zip = table.to_csv
+        file = Tempfile.new('zip')
+        File.open(file,'w+') { |f| f.write(zip) }
     
-    table.schema(:cartodb_types => false).should_not include([:name, "text"])
-
-    pk_row1 = table.insert_row!(:name => 'f'*201)
-    table.rows_counted.should == 1
+        Zip::ZipFile.foreach(file) do |entry|
+          entry.name.should == "twitters_export.csv"
+          csv_content = entry.get_input_stream.read
+        end
+        file.close
     
-    table.reload
-    table.schema(:cartodb_types => false).should include([:name, "text"])
-  end
-  
-  it "should set valid geometry types" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.force_schema = "address varchar, the_geom geometry"
-    table.the_geom_type = "line"
-    table.save
-    table.reload
-    table.the_geom_type.should == "multilinestring"
-    # 
-    # table.the_geom_type = "point"
-    # table.save.reload
-    # table.the_geom_type.should == "point"
-    # 
-    # table.the_geom_type = "multipoint"
-    # table.save.reload
-    # table.the_geom_type.should == "multipoint"
-    # 
-    # table.the_geom_type = "polygon"
-    # table.save.reload
-    # table.the_geom_type.should == "multipolygon"
-  end
+        # parse constructed CSV and test
+        parsed = CSV.parse(csv_content)
+        parsed[0].should == ["cartodb_id", "country", "field_5", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
+        parsed[1].first.should == "1"
+      end
 
-  it "should rename the pk sequence when renaming the table" do
-    user = create_user
-    table1 = new_table :name => 'table 1', :user_id => user.id
-    table1.save.reload
-    table1.name.should == 'table_1'
+      it "should import file import_csv_1.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
+        table.save
+        table.reload
+        table.name.should == 'import_csv_1'
+
+        table.rows_counted.should == 100
+        row = table.records[:rows][6]
+        row[:cartodb_id] == 6
+        row[:id].should == "6"
+        row[:name_of_species].should == "Laetmonice producta 6"
+        row[:kingdom].should == "Animalia"
+        row[:family].should == "Aphroditidae"
+        row[:lat].should == "0.2"
+        row[:lon].should == "2.8"
+        row[:views].should == "540"
+      end
+
+      it "should import file import_csv_2.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_2.csv"
+        table.save
+        table.reload
+        table.name.should == 'import_csv_2'
+
+        table.rows_counted.should == 100
+        row = table.records[:rows][6]
+        row[:cartodb_id] == 6
+        row[:id].should == "6"
+        row[:name_of_species].should == "Laetmonice producta 6"
+        row[:kingdom].should == "Animalia"
+        row[:family].should == "Aphroditidae"
+        row[:lat].should == "0.2"
+        row[:lon].should == "2.8"
+        row[:views].should == "540"
+      end
+  
+      it "should import file flights-bad-encoding.csv" do
+        table = new_table
+        table.import_from_file = "#{Rails.root}/db/fake_data/flights-bad-encoding.csv"
+        table.save
     
-    table1.name = 'table 2'
-    table1.save.reload
-    table1.name.should == 'table_2'
+        table.rows_counted.should == 791
+        row = table.record(1)
+        row[:vuelo].should == "A31762"
+      end
+  
+      it "should handle an empty file empty_file.csv" do
+        user = create_user
+        table = new_table
+        table.user_id = user.id
+        table.name = "empty_table"
+        table.import_from_file = "#{Rails.root}/db/fake_data/empty_file.csv"
+        lambda {
+          table.save
+        }.should raise_error
     
-    table2 = new_table :name => 'table 1', :user_id => user.id
-    table2.save.reload
-    table2.name.should == 'table_1'
-
-    lambda {
-      table2.destroy
-    }.should_not raise_error
-  end
+        tables = user.run_query("select relname from pg_stat_user_tables WHERE schemaname='public'")
+        tables[:rows].should_not include({:relname => "empty_table"})
+      end
   
-  it "should create a the_geom_webmercator column with the_geom projected to 3785" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.save.reload
-
-    lat = -43.941
-    lon = 3.429
-    pk = table.insert_row!({:name => "First check_in"})
-
-    the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
-    table.update_row!(pk, {:the_geom => the_geom})
-
-    query_result = user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
-    ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
-    ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
-  end
+      # It has strange line breaks
+      it "should import file arrivals_BCN.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/arrivals_BCN.csv"
+        table.save
+        table.reload
+        table.name.should == 'arrivals_bcn'
+        table.rows_counted.should == 3855
+      end
   
-  it "should create a the_geom_webmercator column with the_geom projected to 3785 even when schema is forced" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.force_schema = "name varchar, the_geom geometry"
-    table.save.reload
+      it "should import file clubbing.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv"
+        table.save
+        table.reload
+        table.name.should == 'clubbing'
+        table.rows_counted.should == 1998
+      end
 
-    lat = -43.941
-    lon = 3.429
-    pk = table.insert_row!({:name => "First check_in"})
-
-    the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
-    table.update_row!(pk, {:the_geom => the_geom})
-
-    query_result = user.run_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
-    ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
-    ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
-  end
+      it "should import file short_clubbing.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/short_clubbing.csv"
+        table.save
+        table.reload
+        table.name.should == 'short_clubbing'
+        table.rows_counted.should == 78
+      end
   
+      it "should import ngos_aidmaps.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/ngos_aidmaps.csv"
+        table.save
+        table.reload
+        table.name.should == 'ngos_aidmaps'
+        table.rows_counted.should == 85
+      end
+
+      it "should import estaciones.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/estaciones.csv"
+        table.save
+        table.reload
+        table.name.should == 'estaciones'
+        table.rows_counted.should == 30
+      end
+  
+      it "should import estaciones2.csv" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/estaciones2.csv"
+        table.save
+        table.reload
+        table.name.should == 'estaciones2'
+        table.rows_counted.should == 30
+      end
+
+    end
+    context "xls standard tests" do
+      it "should import file ngos.xlsx" do
+        user = create_user
+        table = new_table :name => nil
+        table.user_id = user.id
+        table.import_from_file = "#{Rails.root}/db/fake_data/ngos.xlsx"
+        table.save
+        table.reload
+        table.name.should == 'ngos'
+
+        check_schema(table, [
+          [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"],
+          [:organization_s_work_in_haiti, "character varying"], [:calculation_of_number_of_people_reached, "character varying"],
+          [:private_funding, "character varying"], [:relief, "character varying"], [:reconstruction, "character varying"],
+          [:private_funding_spent, "character varying"], [:spent_on_relief, "character varying"], [:spent_on_reconstruction, "character varying"],
+          [:usg_funding, "character varying"], [:usg_funding_spent, "character varying"], [:other_funding, "character varying"], [:other_funding_spent, "character varying"],
+          [:international_staff, "character varying"], [:national_staff, "character varying"], [:us_contact_name, "character varying"], [:us_contact_title, "character varying"],
+          [:us_contact_phone, "character varying"], [:us_contact_e_mail, "character varying"], [:media_contact_name, "character varying"],
+          [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"],
+          [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"],
+          [:city, "character varying"], [:state, "character varying"], [:zip_code, "character varying"], [:donation_website, "character varying"], 
+          [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+          [:the_geom, "geometry", "geometry", "point"]
+        ])
+        table.rows_counted.should == 76
+      end
+    end
+    context "shp standard tests" do
+      it "should import EjemploVizzuality.zip" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/EjemploVizzuality.zip"
+        table.importing_encoding = 'LATIN1'
+        table.save
+
+        table.rows_counted.should == 11
+        table.name.should == "vizzuality"
+      end
+  
+      it "should import SHP1.zip" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
+        #table.importing_encoding = 'LATIN1'
+        table.save
+    
+        table.name.should == "esp_adm1"
+      end
+    end
+
+  end
+
   it "should return a geojson for the_geom if it is a point" do
     user = create_user
     table = new_table :user_id => user.id

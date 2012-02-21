@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Table do
-  context "table setup tests" do
+  context "table setups" do
     it "should set a default name different than the previous" do
       user = create_user
       table = Table.new
@@ -114,7 +114,7 @@ describe Table do
       }.should_not raise_error
     end
   end
-  context "redis sync tests" do
+  context "redis syncs" do
     it "should have a unique key to be identified in Redis" do
       table = create_table
       user = User[table.user_id]
@@ -153,7 +153,7 @@ describe Table do
     end
   end
 
-  context "schema and column tests" do
+  context "schema and columns" do
     it "has a default schema" do
       table = create_table
       table.reload
@@ -406,7 +406,7 @@ describe Table do
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
     end
   end
-  context "insert and update row tests" do
+  context "insert and update rows" do
     
     it "should be able to insert a new row" do
       table = create_table
@@ -516,7 +516,7 @@ describe Table do
       res[:upo___nombre_partido].should == "PSOEE"    
     end
   end
-  context "counter tests" do
+  context "counter updates" do
     it "should increase the tables_count counter from owner" do
       user = create_user
       user.tables_count.should == 0
@@ -540,7 +540,7 @@ describe Table do
 
   end
   
-  context "table from query tests" do
+  context "table from queries" do
     it "should create table from query" do
       table = new_table :name => nil
       table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,10)"
@@ -584,7 +584,7 @@ describe Table do
     end
   
   end
-  context "geom and projection tests" do
+  context "geoms and projections" do
     it "should set valid geometry types" do
       user = create_user
       table = new_table :user_id => user.id
@@ -714,7 +714,7 @@ describe Table do
   
     end
   end
-  context "import to table tests" do
+  context "import tables from files" do
     context "preimport tests" do
       it "rename a table to a name that exists should add a _2 to the new name" do
         user = create_user
@@ -773,8 +773,8 @@ describe Table do
         table.rows_counted.should == 7
 
         check_schema(table, [
-          [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
-          [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
+          [:cartodb_id, "integer"], [:url, "text"], [:login, "text"], 
+          [:country, "text"], [:followers_count, "text"], [:field_5, "text"], 
           [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
           [:the_geom, "geometry", "geometry", "point"]
         ])
@@ -966,16 +966,16 @@ describe Table do
         table.name.should == 'ngos'
 
         check_schema(table, [
-          [:cartodb_id, "integer"], [:organization, "character varying"], [:website, "character varying"], [:about, "character varying"],
-          [:organization_s_work_in_haiti, "character varying"], [:calculation_of_number_of_people_reached, "character varying"],
-          [:private_funding, "character varying"], [:relief, "character varying"], [:reconstruction, "character varying"],
-          [:private_funding_spent, "character varying"], [:spent_on_relief, "character varying"], [:spent_on_reconstruction, "character varying"],
-          [:usg_funding, "character varying"], [:usg_funding_spent, "character varying"], [:other_funding, "character varying"], [:other_funding_spent, "character varying"],
-          [:international_staff, "character varying"], [:national_staff, "character varying"], [:us_contact_name, "character varying"], [:us_contact_title, "character varying"],
-          [:us_contact_phone, "character varying"], [:us_contact_e_mail, "character varying"], [:media_contact_name, "character varying"],
-          [:media_contact_title, "character varying"], [:media_contact_phone, "character varying"], [:media_contact_e_mail, "character varying"],
-          [:donation_phone_number, "character varying"], [:donation_address_line_1, "character varying"], [:address_line_2, "character varying"],
-          [:city, "character varying"], [:state, "character varying"], [:zip_code, "character varying"], [:donation_website, "character varying"], 
+          [:cartodb_id, "integer"], [:organization, "text"], [:website, "text"], [:about, "text"],
+          [:organization_s_work_in_haiti, "text"], [:calculation_of_number_of_people_reached, "text"],
+          [:private_funding, "text"], [:relief, "text"], [:reconstruction, "text"],
+          [:private_funding_spent, "text"], [:spent_on_relief, "text"], [:spent_on_reconstruction, "text"],
+          [:usg_funding, "text"], [:usg_funding_spent, "text"], [:other_funding, "text"], [:other_funding_spent, "text"],
+          [:international_staff, "text"], [:national_staff, "text"], [:us_contact_name, "text"], [:us_contact_title, "text"],
+          [:us_contact_phone, "text"], [:us_contact_e_mail, "text"], [:media_contact_name, "text"],
+          [:media_contact_title, "text"], [:media_contact_phone, "text"], [:media_contact_e_mail, "text"],
+          [:donation_phone_number, "text"], [:donation_address_line_1, "text"], [:address_line_2, "text"],
+          [:city, "text"], [:state, "text"], [:zip_code, "text"], [:donation_website, "text"], 
           [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
           [:the_geom, "geometry", "geometry", "point"]
         ])
@@ -1306,7 +1306,7 @@ describe Table do
       end
     end
   end
-  context "merging tables tests" do
+  context "merging two+ tables" do
     it "should merge two twitters.csv" do
       # load a table to treat as our 'existing' table
       table = new_table  :name => nil
@@ -1414,7 +1414,7 @@ describe Table do
       file_ct.should == 1
     end
   end
-  context "export table tests" do
+  context "exporting tables" do
     it "should return the content of the table in CSV format" do
       # build up a new table
       user               = create_user
@@ -1487,7 +1487,7 @@ describe Table do
       FileUtils.rm_rf(path)
     end
   end
-  context "retrieving table tests" do
+  context "retrieving tables from ids" do
     it "should be able to find a table by name or by identifier" do
       user = create_user
       table = new_table :user_id => user.id
@@ -1527,7 +1527,7 @@ describe Table do
     end  
   end
   
-  context "map, style, infowindow tests" do
+  context "maps, styles, and infowindows" do
     it "should let a user save an infowindow and retrieve it" do
       user = create_user
       table = new_table :user_id => user.id

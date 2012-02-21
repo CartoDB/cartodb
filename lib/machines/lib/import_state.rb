@@ -1,8 +1,7 @@
 # coding: UTF-8
 
 module CartoDB
-  class ImportState < Sequel::Model(DB[:user_tables])
-    include CartoDB::MiniSequel
+  class ImportState < Sequel::Model
   
     property :id, Serial
     property :table_id, Integer

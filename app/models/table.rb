@@ -228,7 +228,7 @@ class Table < Sequel::Model(:user_tables)
   def before_create
     update_updated_at
     self.database_name = owner.database_name    
-    self.import_state = ImportState.create
+    #self.import_state = DataImport.create
     
     #import from file
     if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?

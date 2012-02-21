@@ -175,6 +175,7 @@ class Table < Sequel::Model(:user_tables)
       if schema.present? && schema.flatten.include?(:cartodb_id)
          aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
          user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
+         self.schema
       end
       
       # When tables are created using ogr2ogr they are added a ogc_fid primary key
@@ -195,8 +196,7 @@ class Table < Sequel::Model(:user_tables)
           user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
         end
       end
-      
-      self.schema(:cartodb_types => false).each do |column|
+      self.schema(:reload => true, :cartodb_types => false).each do |column|
         if column[1] =~ /^character varying/
           user_database.run("ALTER TABLE #{self.name} ALTER COLUMN #{column[0]} TYPE text")
         end

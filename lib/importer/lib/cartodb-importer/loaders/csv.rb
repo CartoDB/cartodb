@@ -64,15 +64,17 @@ module CartoDB
                 # TODO: Replace with ST_GeomFromGeoJSON when production has been upgraded to postgis r8692
                 # @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(the_geom_orig),4326) WHERE the_geom_orig IS NOT NULL")
                 # tokumine ticket: http://trac.osgeo.org/postgis/ticket/1434
-                @db_connection["select the_geom_orig from #{@suggested_name}"].each do |res|
+                @db_connection["select the_geom_orig from #{@suggested_name} where the_geom_orig != '' and the_geom_orig is not null "].each do |res|
                   begin
                     geojson = RGeo::GeoJSON.decode(res[:the_geom_orig], :json_parser => :json)
-                    @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_GeomFromText('#{geojson.as_text}', 4326) WHERE the_geom_orig = '#{res[:the_geom_orig]}'")
+                    if geojson
+                      #insert_script = insert_script + "BEGIN; UPDATE #{@suggested_name} SET the_geom = ST_GeomFromText('#{geojson.as_text}', 4326) WHERE the_geom IS NULL AND the_geom_orig = '#{res[:the_geom_orig]}'; COMMIT; "
+                      @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_GeomFromText('#{geojson.as_text}', 4326) WHERE the_geom IS NULL AND the_geom_orig = '#{res[:the_geom_orig]}';");
+                    end
                   rescue => e
                     @runlog.err << "silently fail conversion #{geojson.inspect} to #{@suggested_name}. #{e.inspect}"
                   end
                 end
-
                 # Drop original the_geom column
                 @db_connection.run("ALTER TABLE #{@suggested_name} DROP COLUMN the_geom_orig")
               end

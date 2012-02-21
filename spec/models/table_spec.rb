@@ -406,7 +406,7 @@ describe Table do
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
     end
   end
-  context "insert and row tests" do
+  context "insert and update row tests" do
     
     it "should be able to insert a new row" do
       table = create_table
@@ -483,6 +483,38 @@ describe Table do
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
 
+    it "should be able to update data in rows with column names with multiple underscores" do
+      user = create_user
+      table = new_table :user_id => user.id, :name => "elecciones2008"
+      table.import_from_file = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+      table.save.reload
+    
+      update_data = {:upo___nombre_partido=>"PSOEE"}
+      id = 5
+
+      lambda {
+        table.update_row!(id, update_data)
+      }.should_not raise_error        
+
+      res = table.sequel.where(:cartodb_id => 5).first
+      res[:upo___nombre_partido].should == "PSOEE"
+    end
+
+    it "should be able to insert data in rows with column names with multiple underscores" do
+      user = create_user
+      table = new_table :user_id => user.id, :name => "elecciones2008x"
+      table.import_from_file = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+      table.save
+      pk = nil
+      insert_data = {:upo___nombre_partido=>"PSOEE"}
+
+      lambda {
+        pk = table.insert_row!(insert_data)
+      }.should_not raise_error        
+    
+      res = table.sequel.where(:cartodb_id => pk).first
+      res[:upo___nombre_partido].should == "PSOEE"    
+    end
   end
   context "counter tests" do
     it "should increase the tables_count counter from owner" do
@@ -1495,45 +1527,7 @@ describe Table do
     end  
   end
   
-  context "update and insert tests" do
-    
-    it "should be able to update data in rows with column names with multiple underscores" do
-      user = create_user
-      table = new_table :user_id => user.id, :name => "elecciones2008"
-      table.import_from_file = "#{Rails.root}/spec/support/data/elecciones2008.csv"
-      table.save
-    
-      update_data = {:upo___nombre_partido=>"PSOEE"}
-      id = 5
-
-      lambda {
-        table.update_row!(id, update_data)
-      }.should_not raise_error        
-
-      res = table.sequel.where(:cartodb_id => 5).first
-      res[:upo___nombre_partido].should == "PSOEE"
-    end
-
-
-    it "should be able to insert data in rows with column names with multiple underscores" do
-      user = create_user
-      table = new_table :user_id => user.id, :name => "elecciones2008x"
-      table.import_from_file = "#{Rails.root}/spec/support/data/elecciones2008.csv"
-      table.save
-      pk = nil
-      insert_data = {:upo___nombre_partido=>"PSOEE"}
-
-      lambda {
-        pk = table.insert_row!(insert_data)
-      }.should_not raise_error        
-    
-      res = table.sequel.where(:cartodb_id => pk).first
-      res[:upo___nombre_partido].should == "PSOEE"    
-    end
-  end
-  
-  
-  context "map, style, infowindow tests"
+  context "map, style, infowindow tests" do
     it "should let a user save an infowindow and retrieve it" do
       user = create_user
       table = new_table :user_id => user.id
@@ -1556,10 +1550,6 @@ describe Table do
       table.map_metadata.should == "something"
     end
   end
-  
-  
-  
-  
   
   def check_schema(table, expected_schema, options={})
     table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)

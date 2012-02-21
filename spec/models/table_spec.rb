@@ -924,8 +924,8 @@ describe Table do
         table.name.should match(/^twitters/)
         table.rows_counted.should == 7
         check_schema(table, [
-          [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
-          [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
+          [:cartodb_id, "integer"], [:url, "text"], [:login, "text"], 
+          [:country, "text"], [:followers_count, "text"], [:field_5, "text"], 
           [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]
         ])
     
@@ -1009,111 +1009,113 @@ describe Table do
       end
     end
   end
-  it "should merge two twitters.csv" do
-    # load a table to treat as our 'existing' table
-    table = new_table  :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
-    table.save.reload
-    #create a second table from a file to treat as the data we want to append
-    append_this = new_table  :name => nil
-    append_this.user_id = table.user_id
-    append_this.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv" 
-    append_this.save.reload
-    # envoke the append_to_table method
-    table.append_to_table(:from_table => append_this)
-    table.save.reload
-    # append_to_table doesn't automatically destroy the table
-    append_this.destroy
+  context "merging tables tests" do
+    it "should merge two twitters.csv" do
+      # load a table to treat as our 'existing' table
+      table = new_table  :name => nil
+      table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv" 
+      table.save.reload
+      #create a second table from a file to treat as the data we want to append
+      append_this = new_table  :name => nil
+      append_this.user_id = table.user_id
+      append_this.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv" 
+      append_this.save.reload
+      # envoke the append_to_table method
+      table.append_to_table(:from_table => append_this)
+      table.save.reload
+      # append_to_table doesn't automatically destroy the table
+      append_this.destroy
     
-    Table[append_this.id].should == nil
-    table.name.should match(/^twitters/)
-    table.rows_counted.should == 2005
-  end
-  
-  it "should import and then export file twitters.csv" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
-    table.save.reload
-    table.name.should match(/^twitters/)
-    table.rows_counted.should == 7
-    
-    # write CSV to tempfile and read it back
-    csv_content = nil
-    zip = table.to_csv
-    file = Tempfile.new('zip')
-    File.open(file,'w+') { |f| f.write(zip) }
-    
-    Zip::ZipFile.foreach(file) do |entry|
-      entry.name.should == "twitters_export.csv"
-      csv_content = entry.get_input_stream.read
+      Table[append_this.id].should == nil
+      table.name.should match(/^twitters/)
+      table.rows_counted.should == 2005
     end
-    file.close
-    
-    # parse constructed CSV and test
-    parsed = CSV.parse(csv_content)
-    parsed[0].should == ["cartodb_id", "country", "field_5", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
-    parsed[1].first.should == "1"
-  end
   
-  it "should import and then export file SHP1.zip" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
-    table.importing_encoding = 'LATIN1'
-    table.save
+    it "should import and then export file twitters.csv" do
+      table = new_table :name => nil
+      table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+      table.save.reload
+      table.name.should match(/^twitters/)
+      table.rows_counted.should == 7
+    
+      # write CSV to tempfile and read it back
+      csv_content = nil
+      zip = table.to_csv
+      file = Tempfile.new('zip')
+      File.open(file,'w+') { |f| f.write(zip) }
+    
+      Zip::ZipFile.foreach(file) do |entry|
+        entry.name.should == "twitters_export.csv"
+        csv_content = entry.get_input_stream.read
+      end
+      file.close
+    
+      # parse constructed CSV and test
+      parsed = CSV.parse(csv_content)
+      parsed[0].should == ["cartodb_id", "country", "field_5", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
+      parsed[1].first.should == "1"
+    end
+  
+    it "should import and then export file SHP1.zip" do
+      table = new_table :name => nil
+      table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
+      table.importing_encoding = 'LATIN1'
+      table.save
 
-    table.name.should == "esp_adm1"
+      table.name.should == "esp_adm1"
     
-    # write CSV to tempfile and read it back
-    shp_content = nil
-    zip = table.to_shp
-    file_ct = 0
-    file = Tempfile.new('zip')
-    File.open(file,'w+') { |f| f.write(zip) }
-    Zip::ZipFile.foreach(file) do |entry|
-      file_ct = file_ct + 1
+      # write CSV to tempfile and read it back
+      shp_content = nil
+      zip = table.to_shp
+      file_ct = 0
+      file = Tempfile.new('zip')
+      File.open(file,'w+') { |f| f.write(zip) }
+      Zip::ZipFile.foreach(file) do |entry|
+        file_ct = file_ct + 1
+      end
+      file.close
+      file_ct.should == 4
     end
-    file.close
-    file_ct.should == 4
-  end
   
-  it "should import and then export file SHP1.zip as kml" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
-    table.importing_encoding = 'LATIN1'
-    table.save
-    table.name.should == "esp_adm1"
+    it "should import and then export file SHP1.zip as kml" do
+      table = new_table :name => nil
+      table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
+      table.importing_encoding = 'LATIN1'
+      table.save
+      table.name.should == "esp_adm1"
     
-    # write CSV to tempfile and read it back
-    shp_content = nil
-    zip = table.to_kml
-    file_ct = 0
-    file = Tempfile.new('zip')
-    File.open(file,'w+') { |f| f.write(zip) }
-    Zip::ZipFile.foreach(file) do |entry|
-      file_ct = file_ct + 1
+      # write CSV to tempfile and read it back
+      shp_content = nil
+      zip = table.to_kml
+      file_ct = 0
+      file = Tempfile.new('zip')
+      File.open(file,'w+') { |f| f.write(zip) }
+      Zip::ZipFile.foreach(file) do |entry|
+        file_ct = file_ct + 1
+      end
+      file.close
+      file_ct.should == 1
     end
-    file.close
-    file_ct.should == 1
-  end
-  it "should import and then export file SHP1.zip as sql" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
-    table.importing_encoding = 'LATIN1'
-    table.save
+    it "should import and then export file SHP1.zip as sql" do
+      table = new_table :name => nil
+      table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"
+      table.importing_encoding = 'LATIN1'
+      table.save
 
-    table.name.should == "esp_adm1"
+      table.name.should == "esp_adm1"
     
-    # write SQL to tempfile and read it back
-    shp_content = nil
-    zip = table.to_sql
-    file_ct = 0
-    file = Tempfile.new('zip')
-    File.open(file,'w+') { |f| f.write(zip) }
-    Zip::ZipFile.foreach(file) do |entry|
-      file_ct = file_ct + 1
+      # write SQL to tempfile and read it back
+      shp_content = nil
+      zip = table.to_sql
+      file_ct = 0
+      file = Tempfile.new('zip')
+      File.open(file,'w+') { |f| f.write(zip) }
+      Zip::ZipFile.foreach(file) do |entry|
+        file_ct = file_ct + 1
+      end
+      file.close
+      file_ct.should == 1
     end
-    file.close
-    file_ct.should == 1
   end
   it "should return the content of the table in CSV format" do
     # build up a new table

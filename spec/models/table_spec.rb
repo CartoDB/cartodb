@@ -60,6 +60,12 @@ describe Table do
       end
     end
 
+    it "should store the name of its database" do
+      table = create_table
+      user = User[table.user_id]
+      table.database_name.should == user.database_name
+    end
+  
     it "should rename a database table when the attribute name is modified" do
       user = create_user
       table = create_table({:name => 'Wadus table', :user_id => user.id})
@@ -469,6 +475,51 @@ describe Table do
     end
 
   end
+  
+  context "table from query tests" do
+    it "should create table from query" do
+      table = new_table :name => nil
+      table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,10)"
+      table.save.reload
+      table.rows_counted.should == 10
+      check_schema(table, [
+        [:cartodb_id, "integer"], [:gs, "integer"], 
+        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+        [:the_geom, "geometry", "geometry", "point"]
+      ])
+      row = table.records[:rows][0]
+      row[:gs].should == 1
+    end
+  
+    it "should create table from query and create invalid_the_geom" do
+      table = new_table :name => nil
+      table.import_from_query = "SELECT generate_series as gs, generate_series as the_geom FROM generate_series(1,10)"
+      table.save.reload
+      table.rows_counted.should == 10
+      check_schema(table, [
+        [:cartodb_id, "integer"], [:gs, "integer"], 
+        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+        [:invalid_the_geom, "integer"], [:the_geom, "geometry", "geometry", "point"]
+      ])
+      row = table.records[:rows][0]
+      row[:gs].should == 1
+    end
+  
+    it "should create table from query and valid multipolygon not 4326" do
+      table = new_table :name => nil
+      table.import_from_query = "SELECT generate_series as gs, GEOMETRYFROMTEXT('MULTIPOLYGON(((0 0, 0 10, 10 10, 10 0, 0 0)))',3242) as the_geom FROM generate_series(1,10)"
+      table.save.reload
+      table.rows_counted.should == 10
+      check_schema(table, [
+        [:cartodb_id, "integer"], [:gs, "integer"], 
+        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
+        [:the_geom, "geometry", "geometry", "multipolygon"]
+      ])
+      row = table.records[:rows][0]
+      row[:gs].should == 1
+    end
+  
+  end
   context "geom and projection tests" do
     it "should set valid geometry types" do
       user = create_user
@@ -514,54 +565,117 @@ describe Table do
       ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
-  
+    it "should be able to set a the_geom column from numeric latitude column and a longitude column" do
+      user = create_user
+      table = Table.new
+      table.user_id = user.id
+      table.name = 'Madrid Bars'
+      table.force_schema = "name varchar, address varchar, latitude float, longitude float"
+      table.save
+      table.insert_row!({:name => "Hawai", 
+                         :address => "Calle de Pérez Galdós 9, Madrid, Spain", 
+                         :latitude => 40.423012, 
+                         :longitude => -3.699732})
+                       
+      table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+
+      # Check if the schema stored in memory is fresh and contains latitude and longitude still
+      check_schema(table, [
+        [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
+        [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"], 
+        [:latitude, "number"], [:longitude, "number"]
+      ], :cartodb_types => true)
     
+      # confirm coords are correct
+      res = table.sequel.select{[st_x(the_geom),st_y(the_geom)]}.first
+      res.should == {:st_x=>-3.699732, :st_y=>40.423012}    
+    end
+  
+    it "should be able to set a the_geom column from dirty string latitude and longitude columns" do
+      user = create_user
+      table = Table.new 
+      table.user_id = user.id
+      table.name = 'Madrid Bars'
+      table.force_schema = "name varchar, address varchar, latitude varchar, longitude varchar"
+      table.save
+    
+      table.insert_row!({:name => "Hawai", 
+                         :address => "Calle de Pérez Galdós 9, Madrid, Spain", 
+                         :latitude => "40.423012", 
+                         :longitude => " -3.699732 "})
+
+      table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+
+      # Check if the schema stored in memory is fresh and contains latitude and longitude still
+      check_schema(table, [
+        [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
+        [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"], 
+        [:latitude, "string"], [:longitude, "string"]
+      ], :cartodb_types => true)
+
+      # confirm coords are correct
+      res = table.sequel.select{[st_x(the_geom),st_y(the_geom)]}.first
+      res.should == {:st_x=>-3.699732, :st_y=>40.423012}    
+    end
+    context "geojson tests" do  
+      it "should return a geojson for the_geom if it is a point" do
+        user = create_user
+        table = new_table :user_id => user.id
+        table.save.reload
+
+        lat = -43.941
+        lon = 3.429
+        the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
+        pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
+
+        records = table.records(:page => 0, :rows_per_page => 1)
+        RGeo::GeoJSON.decode(records[:rows][0][:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
+    
+        record = table.record(pk)
+        RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
+      end
+  
+      it "should raise an error when the geojson provided is invalid" do
+        user = create_user
+        table = new_table :user_id => user.id
+        table.save.reload
+
+        lat = -43.941
+        lon = 3.429
+        the_geom = %Q{\{"type":""""Point","coordinates":[#{lon},#{lat}]\}}
+        lambda {
+          table.insert_row!({:name => "First check_in", :the_geom => the_geom})
+        }.should raise_error(CartoDB::InvalidGeoJSONFormat)
+      end
+  
+    end
   end
-  context "table from query tests" do
-    it "should create table from query" do
-      table = new_table :name => nil
-      table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,10)"
-      table.save.reload
-      table.rows_counted.should == 10
-      check_schema(table, [
-        [:cartodb_id, "integer"], [:gs, "integer"], 
-        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-        [:the_geom, "geometry", "geometry", "point"]
-      ])
-      row = table.records[:rows][0]
-      row[:gs].should == 1
-    end
+  context "import to table tests" do
+    context "preimport tests" do
+      it "rename a table to a name that exists should add a _2 to the new name" do
+        user = create_user
+        table = new_table :name => 'empty_file', :user_id => user.id
+        table.save.reload
+        table.name.should == 'empty_file'
   
-    it "should create table from query and create invalid_the_geom" do
-      table = new_table :name => nil
-      table.import_from_query = "SELECT generate_series as gs, generate_series as the_geom FROM generate_series(1,10)"
-      table.save.reload
-      table.rows_counted.should == 10
-      check_schema(table, [
-        [:cartodb_id, "integer"], [:gs, "integer"], 
-        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-        [:invalid_the_geom, "integer"], [:the_geom, "geometry", "geometry", "point"]
-      ])
-      row = table.records[:rows][0]
-      row[:gs].should == 1
-    end
+        table2 = new_table :name => 'empty_file', :user_id => user.id
+        table2.save.reload
+        table2.name.should == 'empty_file_2'
+      end
+      it "should escape table names starting with numbers" do
+        user = create_user
+        table = new_table :user_id => user.id, :name => '123_table_name'
+        table.save.reload
+    
+        table.name.should == "table_123_table_name"
+
+        table = new_table :user_id => user.id, :name => '_table_name'
+        table.save.reload
+    
+        table.name.should == "table_table_name"
+      end
   
-    it "should create table from query and valid multipolygon not 4326" do
-      table = new_table :name => nil
-      table.import_from_query = "SELECT generate_series as gs, GEOMETRYFROMTEXT('MULTIPOLYGON(((0 0, 0 10, 10 10, 10 0, 0 0)))',3242) as the_geom FROM generate_series(1,10)"
-      table.save.reload
-      table.rows_counted.should == 10
-      check_schema(table, [
-        [:cartodb_id, "integer"], [:gs, "integer"], 
-        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-        [:the_geom, "geometry", "geometry", "multipolygon"]
-      ])
-      row = table.records[:rows][0]
-      row[:gs].should == 1
     end
-  
-  end
-  context "importer tests" do
     context "csv standard tests" do
       it "should import file twitters.csv" do
         table = new_table :name => nil
@@ -732,6 +846,16 @@ describe Table do
         table.rows_counted.should == 30
       end
 
+      it "should import CSV file csv_no_quotes.csv" do
+        user = create_user
+        table = new_table :name => nil, :user_id => user.id
+        table.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
+        table.save.reload
+    
+        table.name.should == 'csv_no_quotes'
+        table.rows_counted.should == 8406    
+      end
+  
     end
     context "xls standard tests" do
       it "should import file ngos.xlsx" do
@@ -780,234 +904,111 @@ describe Table do
         table.name.should == "esp_adm1"
       end
     end
-
-  end
-
-  it "should return a geojson for the_geom if it is a point" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.save.reload
-
-    lat = -43.941
-    lon = 3.429
-    the_geom = %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
-    pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
-
-    records = table.records(:page => 0, :rows_per_page => 1)
-    RGeo::GeoJSON.decode(records[:rows][0][:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
     
-    record = table.record(pk)
-    RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
-  end
-  
-  it "should raise an error when the geojson provided is invalid" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.save.reload
+    context "import exceptions tests" do
+      it "should import reserved_names.csv" do
+        user = create_user
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/reserved_names.csv"
+        table.save.reload
+    
+        table.name.should == 'reserved_names'
+        table.rows_counted.should == 2
+      end
+    end
+    context "post import processing tests" do
+      it "should add a point the_geom column after importing a CSV" do
+        table = new_table :name => nil
+        table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+        table.save.reload
+        table.name.should match(/^twitters/)
+        table.rows_counted.should == 7
+        check_schema(table, [
+          [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
+          [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
+          [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]
+        ])
+    
+        row = table.records[:rows][0]
+        row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+        row[:login].should == "vzlaturistica "
+        row[:country].should == " Venezuela "
+        row[:followers_count].should == "211"
+      end
 
-    lat = -43.941
-    lon = 3.429
-    the_geom = %Q{\{"type":""""Point","coordinates":[#{lon},#{lat}]\}}
-    lambda {
-      table.insert_row!({:name => "First check_in", :the_geom => the_geom})
-    }.should raise_error(CartoDB::InvalidGeoJSONFormat)
-  end
-  
-  it "should be able to set a the_geom column from numeric latitude column and a longitude column" do
-    user = create_user
-    table = Table.new
-    table.user_id = user.id
-    table.name = 'Madrid Bars'
-    table.force_schema = "name varchar, address varchar, latitude float, longitude float"
-    table.save
-    table.insert_row!({:name => "Hawai", 
-                       :address => "Calle de Pérez Galdós 9, Madrid, Spain", 
-                       :latitude => 40.423012, 
-                       :longitude => -3.699732})
-                       
-    table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+      it "should not drop a table that exists when upload fails" do
+        user = create_user
+        table = new_table :name => 'empty_file', :user_id => user.id
+        table.save.reload
+        table.name.should == 'empty_file'
+    
+        table2 = new_table :name => nil, :user_id => user.id
+        table2.import_from_file = "#{Rails.root}/db/fake_data/empty_file.csv"
+        lambda {
+          table2.save
+        }.should raise_error
+    
+        user.in_database do |user_database|
+          user_database.table_exists?(table.name.to_sym).should be_true
+        end
+      end
 
-    # Check if the schema stored in memory is fresh and contains latitude and longitude still
-    check_schema(table, [
-      [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
-      [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"], 
-      [:latitude, "number"], [:longitude, "number"]
-    ], :cartodb_types => true)
+      it "should not drop a table that exists when upload does not fail" do
+        user = create_user
+        table = new_table :name => 'empty_file', :user_id => user.id
+        table.save.reload
+        table.name.should == 'empty_file'
     
-    # confirm coords are correct
-    res = table.sequel.select{[st_x(the_geom),st_y(the_geom)]}.first
-    res.should == {:st_x=>-3.699732, :st_y=>40.423012}    
-  end
-  
-  it "should be able to set a the_geom column from dirty string latitude and longitude columns" do
-    user = create_user
-    table = Table.new 
-    table.user_id = user.id
-    table.name = 'Madrid Bars'
-    table.force_schema = "name varchar, address varchar, latitude varchar, longitude varchar"
-    table.save
+        table2 = new_table :name => 'empty_file', :user_id => user.id
+        table2.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
+        table2.save.reload
+        table2.name.should == 'csv_no_quotes'
     
-    table.insert_row!({:name => "Hawai", 
-                       :address => "Calle de Pérez Galdós 9, Madrid, Spain", 
-                       :latitude => "40.423012", 
-                       :longitude => " -3.699732 "})
+        user.in_database do |user_database|
+          user_database.table_exists?(table.name.to_sym).should be_true
+          user_database.table_exists?(table2.name.to_sym).should be_true
+        end
+      end
 
-    table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+      it "should remove the user_table even when phisical table does not exist" do
+        user = create_user
+        table = new_table :name => 'empty_file', :user_id => user.id
+        table.save.reload
+        table.name.should == 'empty_file'
 
-    # Check if the schema stored in memory is fresh and contains latitude and longitude still
-    check_schema(table, [
-      [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
-      [:the_geom, "geometry", "geometry", "point"], [:created_at, "date"], [:updated_at, "date"], 
-      [:latitude, "string"], [:longitude, "string"]
-    ], :cartodb_types => true)
+        user.in_database do |user_database|
+          user_database.drop_table(table.name.to_sym)
+        end
+    
+        table.destroy
+        Table[table.id].should be_nil
+      end
+  
+      # Not supported by cartodb-importer v0.2.1
+      pending "should escape reserved column names" do
+        user = create_user
+        table = new_table :user_id => user.id
+        table.import_from_file = "#{Rails.root}/db/fake_data/reserved_columns.csv"
+        table.save.reload
+    
+        table.schema.should include([:_xmin, "number"])
+      end
 
-    # confirm coords are correct
-    res = table.sequel.select{[st_x(the_geom),st_y(the_geom)]}.first
-    res.should == {:st_x=>-3.699732, :st_y=>40.423012}    
-  end
-  
-  
-  it "should store the name of its database" do
-    table = create_table
-    user = User[table.user_id]
-    table.database_name.should == user.database_name
-  end
-  
-  it "should import CSV file csv_no_quotes.csv" do
-    user = create_user
-    table = new_table :name => nil, :user_id => user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
-    table.save.reload
-    
-    table.name.should == 'csv_no_quotes'
-    table.rows_counted.should == 8406    
-  end
-  
-  it "should import reserved_names.csv" do
-    user = create_user
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/reserved_names.csv"
-    table.save.reload
-    
-    table.name.should == 'reserved_names'
-    table.rows_counted.should == 2
-  end
-  
-  it "should add a point the_geom column after importing a CSV" do
-    table = new_table :name => nil
-    table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
-    table.save.reload
-    table.name.should match(/^twitters/)
-    table.rows_counted.should == 7
-    check_schema(table, [
-      [:cartodb_id, "integer"], [:url, "character varying"], [:login, "character varying"], 
-      [:country, "character varying"], [:followers_count, "character varying"], [:field_5, "character varying"], 
-      [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]
-    ])
-    
-    row = table.records[:rows][0]
-    row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
-    row[:login].should == "vzlaturistica "
-    row[:country].should == " Venezuela "
-    row[:followers_count].should == "211"
-  end
-  
-  it "should not drop a table that exists when upload fails" do
-    user = create_user
-    table = new_table :name => 'empty_file', :user_id => user.id
-    table.save.reload
-    table.name.should == 'empty_file'
-    
-    table2 = new_table :name => nil, :user_id => user.id
-    table2.import_from_file = "#{Rails.root}/db/fake_data/empty_file.csv"
-    lambda {
-      table2.save
-    }.should raise_error
-    
-    user.in_database do |user_database|
-      user_database.table_exists?(table.name.to_sym).should be_true
+      it "should raise an error when creating a column with reserved name" do
+        table = create_table
+        lambda {
+          table.add_column!(:name => "xmin", :type => "number")
+        }.should raise_error(CartoDB::InvalidColumnName)
+      end
+
+      it "should raise an error when renaming a column with reserved name" do
+        table = create_table
+        lambda {
+          table.modify_column!(:old_name => "name", :new_name => "xmin")
+        }.should raise_error(CartoDB::InvalidColumnName)
+      end
     end
   end
-
-  it "should not drop a table that exists when upload does not fail" do
-    user = create_user
-    table = new_table :name => 'empty_file', :user_id => user.id
-    table.save.reload
-    table.name.should == 'empty_file'
-    
-    table2 = new_table :name => 'empty_file', :user_id => user.id
-    table2.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
-    table2.save.reload
-    table2.name.should == 'csv_no_quotes'
-    
-    user.in_database do |user_database|
-      user_database.table_exists?(table.name.to_sym).should be_true
-      user_database.table_exists?(table2.name.to_sym).should be_true
-    end
-  end
-  
-  it "rename a table to a name that exists should add a _2 to the new name" do
-    user = create_user
-    table = new_table :name => 'empty_file', :user_id => user.id
-    table.save.reload
-    table.name.should == 'empty_file'
-    
-    table2 = new_table :name => 'empty_file', :user_id => user.id
-    table2.save.reload
-    table2.name.should == 'empty_file_2'
-  end
-  
-  it "should remove the user_table even when phisical table does not exist" do
-    user = create_user
-    table = new_table :name => 'empty_file', :user_id => user.id
-    table.save.reload
-    table.name.should == 'empty_file'
-
-    user.in_database do |user_database|
-      user_database.drop_table(table.name.to_sym)
-    end
-    
-    table.destroy
-    Table[table.id].should be_nil
-  end
-  
-  it "should escape table names starting with numbers" do
-    user = create_user
-    table = new_table :user_id => user.id, :name => '123_table_name'
-    table.save.reload
-    
-    table.name.should == "table_123_table_name"
-
-    table = new_table :user_id => user.id, :name => '_table_name'
-    table.save.reload
-    
-    table.name.should == "table_table_name"
-  end
-  
-  # Not supported by cartodb-importer v0.2.1
-  pending "should escape reserved column names" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/reserved_columns.csv"
-    table.save.reload
-    
-    table.schema.should include([:_xmin, "number"])
-  end
-
-  it "should raise an error when creating a column with reserved name" do
-    table = create_table
-    lambda {
-      table.add_column!(:name => "xmin", :type => "number")
-    }.should raise_error(CartoDB::InvalidColumnName)
-  end
-
-  it "should raise an error when renaming a column with reserved name" do
-    table = create_table
-    lambda {
-      table.modify_column!(:old_name => "name", :new_name => "xmin")
-    }.should raise_error(CartoDB::InvalidColumnName)
-  end
-  
   it "should merge two twitters.csv" do
     # load a table to treat as our 'existing' table
     table = new_table  :name => nil

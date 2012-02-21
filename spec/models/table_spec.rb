@@ -675,6 +675,30 @@ describe Table do
         table.name.should == "table_table_name"
       end
   
+      it "should get a valid name when a table when a name containing the current name exists" do
+        user = create_user
+        table = create_table :name => 'Table #20', :user_id => user.id
+        table2 = create_table :name => 'Table #2', :user_id => user.id
+        table2.reload
+        table2.name.should == 'table_2'
+    
+        table3 = create_table :name => nil, :user_id => user.id
+        table4 = create_table :name => nil, :user_id => user.id
+        table5 = create_table :name => nil, :user_id => user.id
+        table6 = create_table :name => nil, :user_id => user.id
+      end
+  
+      it "should allow creating multiple tables with the same name by adding a number at the and and incrementing it" do
+        user = create_user
+        table = create_table :name => 'Wadus The Table', :user_id => user.id
+        table.name.should == "wadus_the_table"
+    
+        # Renaming starts at 2
+        2.upto(25) do |n|
+          table = create_table :name => 'Wadus The Table', :user_id => user.id
+          table.name.should == "wadus_the_table_#{n}"
+        end
+      end
     end
     context "csv standard tests" do
       it "should import file twitters.csv" do
@@ -856,6 +880,16 @@ describe Table do
         table.rows_counted.should == 8406    
       end
   
+      it "should import a CSV file with a the_geom column in GeoJSON format" do
+        user = create_user
+        table = new_table
+        table.user_id = user.id
+        table.import_from_file = "#{Rails.root}/db/fake_data/cp_vizzuality_export.csv"
+        table.save
+
+        table.rows_counted.should == 19235
+      end
+  
     end
     context "xls standard tests" do
       it "should import file ngos.xlsx" do
@@ -914,6 +948,22 @@ describe Table do
     
         table.name.should == 'reserved_names'
         table.rows_counted.should == 2
+      end
+      it "should import a CSV file with a column named cartodb_id" do
+        user = create_user
+        table = new_table :user_id => user.id
+        table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+        table.save.reload
+        check_schema(table, [
+          [:cartodb_id, "number"], [:id_0, "string"], [:iso, "string"], 
+          [:name_0, "string"], [:id_1, "string"], [:name_1, "string"], [:id_2, "string"], 
+          [:name_2, "string"], [:id_3, "string"], [:name_3, "string"], [:id_4, "string"], 
+          [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], 
+          [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "string"], 
+          [:shape_area, "string"], [:latitude, "string"], [:longitude, "string"], [:center_latitude, "string"], 
+          [:the_geom, "geometry", "geometry", "point"], [:center_longitude, "string"], 
+          [:created_at, "date"], [:updated_at, "date"]
+        ], :cartodb_types => true)
       end
     end
     context "post import processing tests" do
@@ -1001,12 +1051,73 @@ describe Table do
         }.should raise_error(CartoDB::InvalidColumnName)
       end
 
-      it "should raise an error when renaming a column with reserved name" do
+      it "should raise an error when renaming a column with reserved name" do 
         table = create_table
         lambda {
           table.modify_column!(:old_name => "name", :new_name => "xmin")
         }.should raise_error(CartoDB::InvalidColumnName)
       end
+      
+      it "should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id" do
+        user = create_user
+        table = new_table :user_id => user.id
+        table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+        table.save.reload
+        user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
+        table_schema = user.in_database.schema(table.name)
+    
+        cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
+        cartodb_id_schema.should be_present
+        cartodb_id_schema = cartodb_id_schema[1]
+        cartodb_id_schema[:db_type].should == "integer"
+        cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
+        cartodb_id_schema[:primary_key].should == true
+        cartodb_id_schema[:allow_null].should == false
+      end
+  
+      it "should copy cartodb_id values to a new cartodb_id serial column when importing a file which already has a cartodb_id column" do
+        user = create_user
+        table = new_table :user_id => user.id
+        table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+        table.save.reload
+    
+        check_schema(table, [
+          [:cartodb_id, "number"], [:name, "string"], [:the_geom_str, "string"], 
+          [:created_at, "date"], [:updated_at, "date"]
+        ], :cartodb_types => true)
+    
+        user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
+        table_schema = user.in_database.schema(table.name)
+        cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
+        cartodb_id_schema.should be_present
+        cartodb_id_schema = cartodb_id_schema[1]
+        cartodb_id_schema[:db_type].should == "integer"
+        cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
+        cartodb_id_schema[:primary_key].should == true
+        cartodb_id_schema[:allow_null].should == false
+    
+        # CSV has this data:
+        # 3,Row 3,2011-08-29 16:18:37.114106,2011-08-29 16:19:07.61527,
+        # 5,Row 5,2011-08-29 16:18:37.114106,2011-08-29 16:19:16.216058,
+        # 7,Row 7,2011-08-29 16:18:37.114106,2011-08-29 16:19:31.380103,
+    
+        # cartodb_id values should be preserved
+        rows = table.records(:order_by => "cartodb_id", :mode => "asc")[:rows]
+        rows.size.should == 3
+        rows[0][:cartodb_id].should == 3
+        rows[0][:name].should == "Row 3"
+        rows[1][:cartodb_id].should == 5
+        rows[1][:name].should == "Row 5"
+        rows[2][:cartodb_id].should == 7
+        rows[2][:name].should == "Row 7"
+    
+        table.insert_row!(:name => "Row 8")
+        rows = table.records(:order_by => "cartodb_id", :mode => "asc")[:rows]
+        rows.size.should == 4
+        rows.last[:cartodb_id].should == 8
+        rows.last[:name].should == "Row 8"
+      end
+  
     end
   end
   context "merging tables tests" do
@@ -1117,109 +1228,117 @@ describe Table do
       file_ct.should == 1
     end
   end
-  it "should return the content of the table in CSV format" do
-    # build up a new table
-    user               = create_user
-    table              = Table.new :privacy => Table::PRIVATE, :tags => 'movies, personal'
-    table.user_id      = user.id
-    table.name         = 'Madrid Bars'
-    table.force_schema = "name varchar, address varchar, latitude float, longitude float"
-    table.save
-    table.insert_row!({:name      => "Hawai", 
-                       :address   => "Calle de Pérez Galdós 9, Madrid, Spain", 
-                       :latitude  => 40.423012, 
-                       :longitude => -3.699732})
+  context "export table tests" do
+    it "should return the content of the table in CSV format" do
+      # build up a new table
+      user               = create_user
+      table              = Table.new :privacy => Table::PRIVATE, :tags => 'movies, personal'
+      table.user_id      = user.id
+      table.name         = 'Madrid Bars'
+      table.force_schema = "name varchar, address varchar, latitude float, longitude float"
+      table.save
+      table.insert_row!({:name      => "Hawai", 
+                         :address   => "Calle de Pérez Galdós 9, Madrid, Spain", 
+                         :latitude  => 40.423012, 
+                         :longitude => -3.699732})
                        
-    table.georeference_from!(:latitude_column  => :latitude, 
-                             :longitude_column => :longitude)
+      table.georeference_from!(:latitude_column  => :latitude, 
+                               :longitude_column => :longitude)
 
-    # write CSV to tempfile and read it back
-    csv_content = nil
-    zip = table.to_csv
-    file = Tempfile.new('zip')
-    File.open(file,'w+') { |f| f.write(zip) }
+      # write CSV to tempfile and read it back
+      csv_content = nil
+      zip = table.to_csv
+      file = Tempfile.new('zip')
+      File.open(file,'w+') { |f| f.write(zip) }
     
-    Zip::ZipFile.foreach(file) do |entry|
-      entry.name.should == "madrid_bars_export.csv"
-      csv_content = entry.get_input_stream.read
+      Zip::ZipFile.foreach(file) do |entry|
+        entry.name.should == "madrid_bars_export.csv"
+        csv_content = entry.get_input_stream.read
+      end
+      file.close
+    
+      # parse constructed CSV and test
+      parsed = CSV.parse(csv_content)
+      parsed[0].should == ["cartodb_id", "address", "latitude", "longitude", "name", "updated_at", "created_at", "the_geom"]
+      parsed[1].first.should == "1"
+      parsed[1].last.should  ==  "{\"type\":\"Point\",\"coordinates\":[-3.699732,40.423012]}"
     end
-    file.close
-    
-    # parse constructed CSV and test
-    parsed = CSV.parse(csv_content)
-    parsed[0].should == ["cartodb_id", "address", "latitude", "longitude", "name", "updated_at", "created_at", "the_geom"]
-    parsed[1].first.should == "1"
-    parsed[1].last.should  ==  "{\"type\":\"Point\",\"coordinates\":[-3.699732,40.423012]}"
-  end
   
-  it "should return the content of a brand new table in SHP format" do
-    table = create_table :name => 'table1'
-    table.insert_row!({:name => "name #1", :description => "description #1"})
+    it "should return the content of a brand new table in SHP format" do
+      table = create_table :name => 'table1'
+      table.insert_row!({:name => "name #1", :description => "description #1"})
     
-    zip = table.to_shp
-    path = "/tmp/temp_shp.zip"
-    fd = File.open(path,'w+')
-    fd.write(zip)
-    fd.close
-    Zip::ZipFile.foreach(path) do |entry|
-      %W{ table1_export.shx table1_export.shp table1_export.dbf table1_export.prj }.should include(entry.name)
+      zip = table.to_shp
+      path = "/tmp/temp_shp.zip"
+      fd = File.open(path,'w+')
+      fd.write(zip)
+      fd.close
+      Zip::ZipFile.foreach(path) do |entry|
+        %W{ table1_export.shx table1_export.shp table1_export.dbf table1_export.prj }.should include(entry.name)
+      end
+      FileUtils.rm_rf(path)
     end
-    FileUtils.rm_rf(path)
-  end
   
-  it "should return the content of a populated table in SHP format" do
-    user = create_user
-    table = new_table
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.user_id = user.id
-    table.name = "import_csv_1"
-    table.save
+    it "should return the content of a populated table in SHP format" do
+      user = create_user
+      table = new_table
+      table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
+      table.user_id = user.id
+      table.name = "import_csv_1"
+      table.save
     
-    # FIXME: At some point georeferencing an imported table won't be necessary here
-    table.georeference_from!(:latitude_column => "lat", :longitude_column => "lon")
+      # FIXME: At some point georeferencing an imported table won't be necessary here
+      table.georeference_from!(:latitude_column => "lat", :longitude_column => "lon")
     
-    zip = table.to_shp
-    path = "/tmp/temp_shp.zip"
-    fd = File.open(path,'w+')
-    fd.write(zip)
-    fd.close
-    Zip::ZipFile.foreach(path) do |entry|
-      %W{ import_csv_1_export.shx import_csv_1_export.shp import_csv_1_export.dbf import_csv_1_export.prj }.should include(entry.name)
+      zip = table.to_shp
+      path = "/tmp/temp_shp.zip"
+      fd = File.open(path,'w+')
+      fd.write(zip)
+      fd.close
+      Zip::ZipFile.foreach(path) do |entry|
+        %W{ import_csv_1_export.shx import_csv_1_export.shp import_csv_1_export.dbf import_csv_1_export.prj }.should include(entry.name)
+      end
+      FileUtils.rm_rf(path)
     end
-    FileUtils.rm_rf(path)
   end
-  
-  it "should import a CSV file with a column named cartodb_id" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
-    table.save.reload
-    check_schema(table, [
-      [:cartodb_id, "number"], [:id_0, "string"], [:iso, "string"], 
-      [:name_0, "string"], [:id_1, "string"], [:name_1, "string"], [:id_2, "string"], 
-      [:name_2, "string"], [:id_3, "string"], [:name_3, "string"], [:id_4, "string"], 
-      [:name_4, "string"], [:varname_4, "string"], [:type_4, "string"], [:engtype_4, "string"], 
-      [:validfr_4, "string"], [:validto_4, "string"], [:remarks_4, "string"], [:shape_leng, "string"], 
-      [:shape_area, "string"], [:latitude, "string"], [:longitude, "string"], [:center_latitude, "string"], 
-      [:the_geom, "geometry", "geometry", "point"], [:center_longitude, "string"], 
-      [:created_at, "date"], [:updated_at, "date"]
-    ], :cartodb_types => true)
-  end
-  
-  it "should be able to find a table by name or by identifier" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.name = 'Fucking awesome name'
-    table.save.reload
+  context "retrieving table tests" do
+    it "should be able to find a table by name or by identifier" do
+      user = create_user
+      table = new_table :user_id => user.id
+      table.name = 'Fucking awesome name'
+      table.save.reload
     
-    Table.find_by_identifier(user.id, table.id).id.should == table.id
-    Table.find_by_identifier(user.id, table.name).id.should == table.id
-    lambda {
-      Table.find_by_identifier(666, table.name)
-    }.should raise_error
-    lambda {
-      Table.find_by_identifier(666, table.id)
-    }.should raise_error
+      Table.find_by_identifier(user.id, table.id).id.should == table.id
+      Table.find_by_identifier(user.id, table.name).id.should == table.id
+      lambda {
+        Table.find_by_identifier(666, table.name)
+      }.should raise_error
+      lambda {
+        Table.find_by_identifier(666, table.id)
+      }.should raise_error
+    end
+  
+    it "should be able to be found from username and id" do
+      user = create_user
+      table = new_table :user_id => user.id
+      table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+      table.save.reload
+    
+      new_table = Table.find_by_subdomain(user.username, table.id)
+    
+      new_table.id.should == table.id
+    end  
+  
+    it "should not be able to be found from blank subdomain and id" do
+      user = create_user
+      table = new_table :user_id => user.id
+      table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+      table.save.reload
+    
+      new_table = Table.find_by_subdomain(nil, table.id)
+
+      new_table.should == nil
+    end  
   end
   
   it "should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception" do
@@ -1256,100 +1375,6 @@ describe Table do
     table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
   end
   
-  it "should get a valid name when a table when a name containing the current name exists" do
-    user = create_user
-    table = create_table :name => 'Table #20', :user_id => user.id
-    table2 = create_table :name => 'Table #2', :user_id => user.id
-    table2.reload
-    table2.name.should == 'table_2'
-    
-    table3 = create_table :name => nil, :user_id => user.id
-    table4 = create_table :name => nil, :user_id => user.id
-    table5 = create_table :name => nil, :user_id => user.id
-    table6 = create_table :name => nil, :user_id => user.id
-  end
-  
-  it "should allow creating multiple tables with the same name by adding a number at the and and incrementing it" do
-    user = create_user
-    table = create_table :name => 'Wadus The Table', :user_id => user.id
-    table.name.should == "wadus_the_table"
-    
-    # Renaming starts at 2
-    2.upto(25) do |n|
-      table = create_table :name => 'Wadus The Table', :user_id => user.id
-      table.name.should == "wadus_the_table_#{n}"
-    end
-  end
-  
-  it "should import a CSV file with a the_geom column in GeoJSON format" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/cp_vizzuality_export.csv"
-    table.save
-
-    table.rows_counted.should == 19235
-  end
-  
-  it "should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
-    table.save.reload
-    user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
-    table_schema = user.in_database.schema(table.name)
-    
-    cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
-    cartodb_id_schema.should be_present
-    cartodb_id_schema = cartodb_id_schema[1]
-    cartodb_id_schema[:db_type].should == "integer"
-    cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
-    cartodb_id_schema[:primary_key].should == true
-    cartodb_id_schema[:allow_null].should == false
-  end
-  
-  it "should copy cartodb_id values to a new cartodb_id serial column when importing a file which already has a cartodb_id column" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
-    table.save.reload
-    
-    check_schema(table, [
-      [:cartodb_id, "number"], [:name, "string"], [:the_geom_str, "string"], 
-      [:created_at, "date"], [:updated_at, "date"]
-    ], :cartodb_types => true)
-    
-    user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
-    table_schema = user.in_database.schema(table.name)
-    cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
-    cartodb_id_schema.should be_present
-    cartodb_id_schema = cartodb_id_schema[1]
-    cartodb_id_schema[:db_type].should == "integer"
-    cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
-    cartodb_id_schema[:primary_key].should == true
-    cartodb_id_schema[:allow_null].should == false
-    
-    # CSV has this data:
-    # 3,Row 3,2011-08-29 16:18:37.114106,2011-08-29 16:19:07.61527,
-    # 5,Row 5,2011-08-29 16:18:37.114106,2011-08-29 16:19:16.216058,
-    # 7,Row 7,2011-08-29 16:18:37.114106,2011-08-29 16:19:31.380103,
-    
-    # cartodb_id values should be preserved
-    rows = table.records(:order_by => "cartodb_id", :mode => "asc")[:rows]
-    rows.size.should == 3
-    rows[0][:cartodb_id].should == 3
-    rows[0][:name].should == "Row 3"
-    rows[1][:cartodb_id].should == 5
-    rows[1][:name].should == "Row 5"
-    rows[2][:cartodb_id].should == 7
-    rows[2][:name].should == "Row 7"
-    
-    table.insert_row!(:name => "Row 8")
-    rows = table.records(:order_by => "cartodb_id", :mode => "asc")[:rows]
-    rows.size.should == 4
-    rows.last[:cartodb_id].should == 8
-    rows.last[:name].should == "Row 8"
-  end
   
   it "should let a user save an infowindow and retrieve it" do
     user = create_user
@@ -1373,34 +1398,6 @@ describe Table do
     table.map_metadata.should == "something"
   end
   
-  
-  def check_schema(table, expected_schema, options={})
-    table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
-    schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
-    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
-  end
-  
-  it "should be able to be found from username and id" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
-    table.save.reload
-    
-    new_table = Table.find_by_subdomain(user.username, table.id)
-    
-    new_table.id.should == table.id
-  end  
-  
-  it "should not be able to be found from blank subdomain and id" do
-    user = create_user
-    table = new_table :user_id => user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
-    table.save.reload
-    
-    new_table = Table.find_by_subdomain(nil, table.id)
-
-    new_table.should == nil
-  end  
   
   it "should make sure it converts created_at and updated at to date types when importing from CSV" do
     user = create_user
@@ -1560,4 +1557,9 @@ describe Table do
     table.sequel.select(:f1).where(:test_id => '4').first[:f1].should == true                                  
   end
   
+  def check_schema(table, expected_schema, options={})
+    table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
+    schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
+    schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
+  end
 end

@@ -152,7 +152,6 @@ describe Table do
       $tables_metadata.exists(table.key).should be_false
     end
   end
-
   context "schema and columns" do
     it "has a default schema" do
       table = create_table
@@ -539,7 +538,6 @@ describe Table do
     end
 
   end
-  
   context "table from queries" do
     it "should create table from query" do
       table = new_table :name => nil
@@ -1002,7 +1000,6 @@ describe Table do
         table.name.should == "esp_adm1"
       end
     end
-    
     context "import exceptions tests" do
       it "should import reserved_names.csv" do
         user = create_user
@@ -1526,7 +1523,6 @@ describe Table do
       new_table.should == nil
     end  
   end
-  
   context "maps, styles, and infowindows" do
     it "should let a user save an infowindow and retrieve it" do
       user = create_user

@@ -46,7 +46,6 @@ module CartoDB
   end
 end
 require 'csv'
-require 'state_machine'
 require 'cartodb/errors'
 require 'cartodb/logger'
 require 'cartodb/sql_parser'
@@ -57,4 +56,5 @@ require 'cartodb/mini_sequel'
 require 'importer/lib/cartodb-importer'
 require 'importer/lib/cartodb-migrator'
 require 'importer/lib/cartodb-exporter'
+require 'machines/cartodb-machines'
 $pool = CartoDB::ConnectionPool.new

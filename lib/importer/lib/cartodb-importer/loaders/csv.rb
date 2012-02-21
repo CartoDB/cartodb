@@ -64,15 +64,22 @@ module CartoDB
                 # TODO: Replace with ST_GeomFromGeoJSON when production has been upgraded to postgis r8692
                 # @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(the_geom_orig),4326) WHERE the_geom_orig IS NOT NULL")
                 # tokumine ticket: http://trac.osgeo.org/postgis/ticket/1434
+                insert_script = nil
                 @db_connection["select the_geom_orig from #{@suggested_name}"].each do |res|
                   begin
                     geojson = RGeo::GeoJSON.decode(res[:the_geom_orig], :json_parser => :json)
-                    @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_GeomFromText('#{geojson.as_text}', 4326) WHERE the_geom_orig = '#{res[:the_geom_orig]}'")
+                    insert_script = insert_script + "BEGIN; UPDATE #{@suggested_name} SET the_geom = ST_GeomFromText('#{geojson.as_text}', 4326) WHERE the_geom_orig = '#{res[:the_geom_orig]}'; COMMIT; "
                   rescue => e
                     @runlog.err << "silently fail conversion #{geojson.inspect} to #{@suggested_name}. #{e.inspect}"
                   end
                 end
-
+                if insert_script
+                  begin
+                    @db_connection.run(insert_script)
+                  rescue => e
+                    @runlog.err << "silently fail geojson to the_geom conversion"
+                  end
+                end
                 # Drop original the_geom column
                 @db_connection.run("ALTER TABLE #{@suggested_name} DROP COLUMN the_geom_orig")
               end

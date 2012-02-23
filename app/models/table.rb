@@ -103,7 +103,6 @@ class Table < Sequel::Model(:user_tables)
         importer = importer.import!
         @data_import.reload
         @data_import.imported
-        @data_import.save
         return importer.name
       end
       #import from URL
@@ -123,6 +122,7 @@ class Table < Sequel::Model(:user_tables)
           :data_import_id => @data_import.id
         ).symbolize_keys
         importer = importer.import!
+        @data_import.reload
         @data_import.imported
         @data_import.save
         return importer.name
@@ -154,6 +154,7 @@ class Table < Sequel::Model(:user_tables)
         ).symbolize_keys
         importer = CartoDB::Migrator.new hash_in
         importer = importer.migrate!
+        @data_import.reload
         @data_import.migrated
         @data_import.save
         return importer.name
@@ -182,6 +183,7 @@ class Table < Sequel::Model(:user_tables)
         ).symbolize_keys
         importer = CartoDB::Migrator.new hash_in
         importer = importer.migrate!
+        @data_import.reload
         @data_import.migrated
         @data_import.save
         return importer.name
@@ -213,6 +215,7 @@ class Table < Sequel::Model(:user_tables)
       if schema.present? && schema.flatten.include?(:cartodb_id)
          aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
          user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
+         @data_import.log_update('renaming cartodb_id from import file')
          self.schema
       end
       
@@ -225,6 +228,7 @@ class Table < Sequel::Model(:user_tables)
           aux_cartodb_id_column = "ogc_fid"
         else
           user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
+          @data_import.log_update('removing ogc_fid from import file')
         end
       end
       if schema.present? && schema.flatten.include?(:gid)
@@ -232,6 +236,7 @@ class Table < Sequel::Model(:user_tables)
           aux_cartodb_id_column = "gid"
         else
           user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
+          @data_import.log_update('removing gid from import file')
         end
       end
       self.schema(:reload => true, :cartodb_types => false).each do |column|
@@ -256,6 +261,7 @@ class Table < Sequel::Model(:user_tables)
         if max_cartodb_id
           user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
         end  
+        @data_import.log_update('cleaning supplied cartodb_id')
       end
       user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
 
@@ -273,8 +279,8 @@ class Table < Sequel::Model(:user_tables)
       #init state machine
       @data_import = DataImport.new(:user_id => self.user_id)
       @data_import.updated_at = Time.now
-      #@data_import.save
-      self.data_import = @data_import.id
+      @data_import.save
+      self.data_import_id = @data_import.id
       
       importer_result_name = import_to_cartodb
       
@@ -284,11 +290,9 @@ class Table < Sequel::Model(:user_tables)
       schema = self.schema(:reload => true)
 
       import_cleanup
-      
       set_the_geom_column!
-      p @data_import
       @data_import.formatted
-      
+      @data_import.save
     else
       create_table_in_database!
       if !self.temporal_the_geom_type.blank?
@@ -304,11 +308,6 @@ class Table < Sequel::Model(:user_tables)
 
     # all looks ok, so VACUUM ANALYZE for correct statistics
     owner.in_database.run("VACUUM ANALYZE \"#{self.name}\"")
-    
-    if @data_import
-      @data_import.finished
-      @data_import.save
-    end
       
     # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
     super
@@ -350,9 +349,6 @@ class Table < Sequel::Model(:user_tables)
         }
       )
     end
-    if @data_import
-      @data_import.save
-    end  
     raise e
   end
 
@@ -400,6 +396,11 @@ class Table < Sequel::Model(:user_tables)
     $tables_metadata.multi do
       $tables_metadata.hset key, "user_id", user_id
       $tables_metadata.hset key, "privacy", PRIVATE
+    end
+    if data_import_id
+      @data_import = DataImport.find(:id=>data_import_id)
+      @data_import.table_id = id
+      @data_import.finished
     end
   end
   def make_geom_valid

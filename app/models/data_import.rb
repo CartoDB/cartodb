@@ -13,7 +13,7 @@ class DataImport < Sequel::Model
     #end
     after_transition any => :complete do
       self.success = true
-      self.logger << "Success\n"
+      self.logger << "SUCCESS!\n"
       self.save
     end
     
@@ -67,8 +67,8 @@ class DataImport < Sequel::Model
   end
   def log_state_change(transition)
     event, from, to = transition.event, transition.from_name, transition.to_name
-    if !self.logger
-      self.logger = "Begin: \n"
+    if !self.logger 
+      self.logger = "BEGIN \n"
     end
     self.logger << "#{event}: #{from} => #{to}\n"
   end

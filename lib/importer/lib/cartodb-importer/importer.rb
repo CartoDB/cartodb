@@ -113,6 +113,7 @@ module CartoDB
       begin
         # decompress data and update self with results
         decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash) 
+        @data_import.log_update('file unzipped') if decompressor
         update_self decompressor.process! if decompressor
         
         # TODO: should this be here...?
@@ -121,16 +122,19 @@ module CartoDB
         # Preprocess data and update self with results
         # preprocessors are expected to return a hash datastructure
         preproc = CartoDB::Import::Preprocessor.create(@ext, self.to_import_hash)
+        @data_import.log_update('file preprocessed') if preproc
         update_self preproc.process! if preproc
       
         # Load data in
         loader = CartoDB::Import::Loader.create(@ext, self.to_import_hash)
         raise "no importer for this type of data" if !loader          
         @data_import.log_update("no importer for this type of data, #{@ext}") if !loader
+        @data_import.log_update("file successfully loaded") if loader
         
         i_res, payload = loader.process! 
         update_self i_res if i_res
-      
+        
+        @data_import.save
         return payload
       rescue => e
         @data_import.reload #reload incase errors were written

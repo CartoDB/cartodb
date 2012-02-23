@@ -11,7 +11,7 @@ class UserTablesMigration < Sequel::Migration
       String :geometry_columns
       Integer :rows_counted
       Integer :rows_estimated
-      Integer :data_import
+      Integer :data_import_id
     end
 
     alter_table(:user_tables) do

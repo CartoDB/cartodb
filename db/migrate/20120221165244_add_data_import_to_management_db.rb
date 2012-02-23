@@ -10,7 +10,7 @@ class AddDataImportToManagamentDbMigration < Sequel::Migration
       String :table_name, :text=>true
       String :state, :text=>true, :null=>false
       Boolean :success, :null=>false
-      Text :logger, :null=>false
+      Text :logger, :text=>true, :null=>false
       DateTime :updated_at, :null=>false
       DateTime :created_at
     end

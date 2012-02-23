@@ -1143,8 +1143,8 @@ describe Table do
         table.save.reload
     
         check_schema(table, [
-          [:cartodb_id, "number"], [:name, "string"], [:the_geom_str, "string"], 
-          [:created_at, "date"], [:updated_at, "date"]
+          [:cartodb_id, "number"], [:name, "string"], [:the_geom, "geometry", "geometry", "point"], 
+          [:invalid_the_geom, "string"], [:created_at, "date"], [:updated_at, "date"]
         ], :cartodb_types => true)
     
         user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first

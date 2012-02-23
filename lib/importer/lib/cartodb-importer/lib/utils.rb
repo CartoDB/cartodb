@@ -25,7 +25,7 @@ module CartoDB
           :psql_bin_path    => @psql_bin_path,
           :entries          => @entries,
           :runlog           => @runlog,
-          :import_type      => @import_type
+          :import_type      => @import_type,
           :data_import_id   => @data_import_id
         }
       end  

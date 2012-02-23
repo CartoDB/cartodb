@@ -58,11 +58,11 @@ class DataImport < Sequel::Model
     self.updated_at = Time.now
   end
   def log_update(update_msg)
-    self.logger << "update: #{update_msg}\n"
+    self.logger << "UPDATE: #{update_msg}\n"
     self.save
   end
   def log_error(error_msg)
-    self.logger << "error: #{error_msg}\n"
+    self.logger << "ERROR: #{error_msg}\n"
     self.save
   end
   def log_state_change(transition)
@@ -70,6 +70,6 @@ class DataImport < Sequel::Model
     if !self.logger 
       self.logger = "BEGIN \n"
     end
-    self.logger << "#{event}: #{from} => #{to}\n"
+    self.logger << "TRANSITION: #{from} => #{to}\n"
   end
 end

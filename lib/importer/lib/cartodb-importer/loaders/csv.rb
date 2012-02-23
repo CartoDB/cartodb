@@ -53,7 +53,7 @@ module CartoDB
         #
         if column_names.include? "the_geom"
           @data_import.log_update("update the_geom")
-          if res = @db_connection["select the_geom from #{@suggested_name} limit 1"].first
+          if res = @db_connection["select the_geom from #{@suggested_name} WHERE the_geom is not null and the_geom != '' limit 1"].first
 
             # attempt to read as geojson. If it fails, continue
             begin
@@ -86,12 +86,22 @@ module CartoDB
                 @db_connection.run("ALTER TABLE #{@suggested_name} DROP COLUMN the_geom_orig")
               end
             rescue => e
+              column_names.delete('the_geom')
+              @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom;")
               @runlog.err << "failed to read geojson for #{@suggested_name}. #{e.inspect}"
               @data_import.log_error("failed to read geojson for #{@suggested_name}. #{e.inspect}")
             end
+          else
+            begin
+              column_names.delete('the_geom')
+              @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom;")
+            rescue
+              column_names.delete('the_geom')
+              @runlog.err << "failed to convert the_geom to invalid_the_geom"
+            end
           end
         end
-
+        
         # if there is no the_geom, and there are latitude and longitude columns, create the_geom
         unless column_names.include? "the_geom"
 

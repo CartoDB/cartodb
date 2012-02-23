@@ -6,26 +6,31 @@ module CartoDB
       register_loader :csv
 
       def process!
+        @data_import = DataImport.find(:id=>@data_import_id)
 
         # run Chardet + Iconv
         fix_encoding
         
+        @data_import.log_update("ogr2ogr #{@suggested_name}")
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@path} -nln #{@suggested_name}}
 
         out = `#{ogr2ogr_command}`
 
         if $?.exitstatus != 0
+          @data_import.log_error("failed to convert import CSV into postgres using ogr2ogr: #{out.inspect}")
           raise "failed to convert import CSV into postgres using ogr2ogr: #{out.inspect}"
         end
 
         if 0 < out.strip.length
           @runlog.stdout << out
+          @data_import.log_update(out)
         end
 
         # Check if the file had data, if not rise an error because probably something went wrong
         if @db_connection["SELECT * from #{@suggested_name} LIMIT 1"].first.nil?
           @runlog.err << "Empty table"
+          @data_import.log_error("empty table")
           raise "Empty table"
         end
 
@@ -47,6 +52,7 @@ module CartoDB
         # * drop the_geom_orig
         #
         if column_names.include? "the_geom"
+          @data_import.log_update("update the_geom")
           if res = @db_connection["select the_geom from #{@suggested_name} limit 1"].first
 
             # attempt to read as geojson. If it fails, continue
@@ -64,15 +70,16 @@ module CartoDB
                 # TODO: Replace with ST_GeomFromGeoJSON when production has been upgraded to postgis r8692
                 # @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(the_geom_orig),4326) WHERE the_geom_orig IS NOT NULL")
                 # tokumine ticket: http://trac.osgeo.org/postgis/ticket/1434
+                @data_import.log_update("converting GeoJSON to the_geom")
                 @db_connection["select the_geom_orig from #{@suggested_name} where the_geom_orig != '' and the_geom_orig is not null "].each do |res|
                   begin
                     geojson = RGeo::GeoJSON.decode(res[:the_geom_orig], :json_parser => :json)
                     if geojson
-                      #insert_script = insert_script + "BEGIN; UPDATE #{@suggested_name} SET the_geom = ST_GeomFromText('#{geojson.as_text}', 4326) WHERE the_geom IS NULL AND the_geom_orig = '#{res[:the_geom_orig]}'; COMMIT; "
                       @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_GeomFromText('#{geojson.as_text}', 4326) WHERE the_geom IS NULL AND the_geom_orig = '#{res[:the_geom_orig]}';");
                     end
                   rescue => e
                     @runlog.err << "silently fail conversion #{geojson.inspect} to #{@suggested_name}. #{e.inspect}"
+                    @data_import.log_error("silently fail conversion #{geojson.inspect} to #{@suggested_name}. #{e.inspect}")
                   end
                 end
                 # Drop original the_geom column
@@ -80,6 +87,7 @@ module CartoDB
               end
             rescue => e
               @runlog.err << "failed to read geojson for #{@suggested_name}. #{e.inspect}"
+              @data_import.log_error("failed to read geojson for #{@suggested_name}. #{e.inspect}")
             end
           end
         end
@@ -105,6 +113,7 @@ module CartoDB
 
 
           if matching_latitude and matching_longitude
+              @data_import.log_update("converting #{matching_latitude}, #{matching_latitude} to the_geom")
               #we know there is a latitude/longitude columns
               @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
 
@@ -125,6 +134,7 @@ module CartoDB
         end
 
         @table_created = true
+        @data_import.log_update("table created")
         FileUtils.rm_rf(Dir.glob(@path))
         rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
 

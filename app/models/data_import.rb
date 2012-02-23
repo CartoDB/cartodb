@@ -1,7 +1,7 @@
 # coding: UTF-8
 class DataImport < Sequel::Model
   include CartoDB::MiniSequel
-  include ActiveModel::Validations
+  include ActiveModel::Validations 
   
   state_machine :initial => :preprocessing do
     before_transition :updated_now 

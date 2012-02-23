@@ -156,6 +156,9 @@ module CartoDB
         elsif @import_from_file.is_a? Tempfile
           @import_from_file.unlink
         end
+        if @data_import
+          @data_import.save
+        end
       end        
     end  
   end

@@ -70,6 +70,6 @@ class DataImport < Sequel::Model
     if !self.logger 
       self.logger = "BEGIN \n"
     end
-    self.logger << "TRANSITION: #{from} => #{to}\n"
+    self.logger << "TRANSITION: #{from} => #{to}, #{Time.now}\n"
   end
 end

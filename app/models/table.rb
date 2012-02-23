@@ -9,7 +9,7 @@ class Table < Sequel::Model(:user_tables)
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
-
+  
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
 
@@ -82,7 +82,12 @@ class Table < Sequel::Model(:user_tables)
     # => leaving both in tact while creating a new tthat contains both
   end
   def import_to_cartodb
-      if import_from_file.present?        
+      if import_from_file.present?     
+        @data_import.data_type = 'file'
+        @data_import.data_source = import_from_file
+        @data_import.upload
+        #@data_import.save
+        
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 
           :logger => ::Rails.logger,
@@ -90,15 +95,22 @@ class Table < Sequel::Model(:user_tables)
           "password" => owner.database_password,
           :import_from_file => import_from_file, 
           :debug => (Rails.env.development?), 
-          :remaining_quota => owner.remaining_quota
+          :remaining_quota => owner.remaining_quota,
+          :data_import_id => @data_import.id
         ).symbolize_keys
 
         importer = CartoDB::Importer.new hash_in
-        return importer.import!.name
-        #CartoDB::Logger.info "table#import runlog", "#{import_result.inspect}" 
+        importer = importer.import!
+        @data_import.reload
+        @data_import.imported
+        return importer.name
       end
       #import from URL
-      if import_from_url.present?
+      if import_from_url.present?   
+        @data_import.data_type = 'url'
+        @data_import.data_source = import_from_url
+        @data_import.download
+        @data_import.save
         importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 
           :logger => ::Rails.logger,
@@ -106,12 +118,21 @@ class Table < Sequel::Model(:user_tables)
           "password" => owner.database_password,
           :import_from_url => import_from_url, 
           :debug => (Rails.env.development?), 
-          :remaining_quota => owner.remaining_quota
+          :remaining_quota => owner.remaining_quota,
+          :data_import_id => @data_import.id
         ).symbolize_keys
-        return importer.import!.name
+        importer = importer.import!
+        @data_import.reload
+        @data_import.imported
+        @data_import.save
+        return importer.name
       end
       #Import from the results of a query
-      if import_from_query.present?
+      if import_from_query.present? 
+        @data_import.data_type = 'query'
+        @data_import.data_source = import_from_query
+        @data_import.migrate
+        @data_import.save
                 
         # ensure unique name
         uniname = get_valid_name(self.name)
@@ -128,13 +149,22 @@ class Table < Sequel::Model(:user_tables)
           :current_name => uniname, 
           :suggested_name => uniname, 
           :debug => (Rails.env.development?), 
-          :remaining_quota => owner.remaining_quota
+          :remaining_quota => owner.remaining_quota,
+          :data_import_id => @data_import.id
         ).symbolize_keys
         importer = CartoDB::Migrator.new hash_in
-        return importer.migrate!.name
+        importer = importer.migrate!
+        @data_import.reload
+        @data_import.migrated
+        @data_import.save
+        return importer.name
       end
       #Register a table not created throug the UI
       if migrate_existing_table.present?
+        @data_import.data_type = 'external_table'
+        @data_import.data_source = migrate_existing_table
+        @data_import.migrate
+        @data_import.save
                 
         # ensure unique name
         uniname = get_valid_name(self.name)
@@ -148,23 +178,33 @@ class Table < Sequel::Model(:user_tables)
           :current_name => uniname, 
           :suggested_name => uniname, 
           :debug => (Rails.env.development?), 
-          :remaining_quota => owner.remaining_quota
+          :remaining_quota => owner.remaining_quota,
+          :data_import_id => @data_import.id
         ).symbolize_keys
         importer = CartoDB::Migrator.new hash_in
-        return importer.migrate!.name
+        importer = importer.migrate!
+        @data_import.reload
+        @data_import.migrated
+        @data_import.save
+        return importer.name
       end
       #Import from copying another table
       if import_from_table_copy.present?
-                
+        @data_import.data_type = 'table'
+        @data_import.data_source = migrate_existing_table
+        @data_import.migrate
+        @data_import.save
         # ensure unique name
         uniname = get_valid_name(self.name)
         owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
+        @data_import.imported
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
         owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
         owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
         owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
         owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
         set_trigger_the_geom_webmercator
+        @data_import.migrated
         return uniname
       end
   end
@@ -175,6 +215,7 @@ class Table < Sequel::Model(:user_tables)
       if schema.present? && schema.flatten.include?(:cartodb_id)
          aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
          user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
+         @data_import.log_update('renaming cartodb_id from import file')
          self.schema
       end
       
@@ -187,6 +228,7 @@ class Table < Sequel::Model(:user_tables)
           aux_cartodb_id_column = "ogc_fid"
         else
           user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
+          @data_import.log_update('removing ogc_fid from import file')
         end
       end
       if schema.present? && schema.flatten.include?(:gid)
@@ -194,6 +236,7 @@ class Table < Sequel::Model(:user_tables)
           aux_cartodb_id_column = "gid"
         else
           user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
+          @data_import.log_update('removing gid from import file')
         end
       end
       self.schema(:reload => true, :cartodb_types => false).each do |column|
@@ -218,6 +261,7 @@ class Table < Sequel::Model(:user_tables)
         if max_cartodb_id
           user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
         end  
+        @data_import.log_update('cleaning supplied cartodb_id')
       end
       user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
 
@@ -228,18 +272,27 @@ class Table < Sequel::Model(:user_tables)
   def before_create
     update_updated_at
     self.database_name = owner.database_name    
-
+    
     #import from file
     if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
       
+      #init state machine
+      @data_import = DataImport.new(:user_id => self.user_id)
+      @data_import.updated_at = Time.now
+      @data_import.save
+      self.data_import_id = @data_import.id
+      
       importer_result_name = import_to_cartodb
       
+      @data_import.table_name = importer_result_name
       self[:name] = importer_result_name
+      
       schema = self.schema(:reload => true)
 
       import_cleanup
-      
       set_the_geom_column!
+      @data_import.formatted
+      @data_import.save
     else
       create_table_in_database!
       if !self.temporal_the_geom_type.blank?
@@ -255,14 +308,21 @@ class Table < Sequel::Model(:user_tables)
 
     # all looks ok, so VACUUM ANALYZE for correct statistics
     owner.in_database.run("VACUUM ANALYZE \"#{self.name}\"")
-  
+      
     # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
     super
   rescue => e
-    CartoDB::Logger.info "table#create error", "#{e.inspect}"      
+    CartoDB::Logger.info "table#create error", "#{e.inspect}"   
+    if @data_import
+      @data_import.reload
+      @data_import.log_error("Table error, #{e.inspect}")
+    end   
     unless self.name.blank?
       $tables_metadata.del key
       owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
+      if @data_import
+        @data_import.log_update("dropping table #{self.name}")
+      end   
     end
 
     if @import_from_file
@@ -273,7 +333,10 @@ class Table < Sequel::Model(:user_tables)
         @import_from_file.write res.read.force_encoding('utf-8')
         @import_from_file.close
       end
-      
+        
+      if @data_import
+        @data_import.log_error("Import Error: #{e.try(:message)}")
+      end   
       # nill required for this bug https://github.com/airbrake/airbrake/issues/34
       Airbrake.notify(nil, 
         :error_class   => "Import Error",
@@ -286,7 +349,6 @@ class Table < Sequel::Model(:user_tables)
         }
       )
     end
-
     raise e
   end
 
@@ -334,6 +396,11 @@ class Table < Sequel::Model(:user_tables)
     $tables_metadata.multi do
       $tables_metadata.hset key, "user_id", user_id
       $tables_metadata.hset key, "privacy", PRIVATE
+    end
+    if data_import_id
+      @data_import = DataImport.find(:id=>data_import_id)
+      @data_import.table_id = id
+      @data_import.finished
     end
   end
   def make_geom_valid

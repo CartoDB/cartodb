@@ -26,6 +26,7 @@ module CartoDB
           :entries          => @entries,
           :runlog           => @runlog,
           :import_type      => @import_type
+          :data_import_id   => @data_import_id
         }
       end  
           

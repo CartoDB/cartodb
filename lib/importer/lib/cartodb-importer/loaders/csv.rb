@@ -105,8 +105,8 @@ module CartoDB
         # if there is no the_geom, and there are latitude and longitude columns, create the_geom
         unless column_names.include? "the_geom"
 
-          latitude_possible_names = "'latitude','lat','latitudedecimal','latitud','lati'"
-          longitude_possible_names = "'longitude','lon','lng','longitudedecimal','longitud','long'"
+          latitude_possible_names = "'latitude','lat','latitudedecimal','latitud','lati','decimallatitude','decimallat'"
+          longitude_possible_names = "'longitude','lon','lng','longitudedecimal','longitud','long','decimallongitude','decimallon'"
 
           matching_latitude = nil
           res = @db_connection["select column_name from information_schema.columns where table_name ='#{@suggested_name}'

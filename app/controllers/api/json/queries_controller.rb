@@ -13,7 +13,7 @@ class Api::Json::QueriesController < Api::ApplicationController
     if params[:sql].downcase.include? "create table "
       begin
         params[:sql].downcase.split("create table ").each do |statement|
-          table_name = statement.split(' ').first
+          table_name = statement.split(/[\s\(]/).first
           if table_name
             @table = Table.new
             @table.user_id = current_user.id

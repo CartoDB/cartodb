@@ -11,14 +11,20 @@ class Api::Json::QueriesController < Api::ApplicationController
     query_result = current_user.run_pg_query(params[:sql])
     
     if params[:sql].downcase.include? "create table "
-      params[:sql].downcase.split("create table ").each do |statement|
-        table_name = statement.split(' ').first
-        if table_name
-          @table = Table.new
-          @table.user_id = current_user.id
-          @table.migrate_existing_table = table_name
-          @table.save  
+      begin
+        params[:sql].downcase.split("create table ").each do |statement|
+          table_name = statement.split(' ').first
+          if table_name
+            @table = Table.new
+            @table.user_id = current_user.id
+            @table.migrate_existing_table = table_name
+            @table.save  
+          end
         end
+      # or, should the process of 'creating' the table fail if we can't register the table?
+      rescue => e
+        errors = e.is_a?(CartoDB::ErrorRunningQuery) ? [e.db_message, e.syntax_message] : [e.message]
+        CartoDB::Logger.info "exception automatically creating new cartodb table", errors
       end
     end
     

@@ -45,13 +45,13 @@ module CartoDB
     end
     
     def migrate!
-
-      # Check if the file had data, if not rise an error because probably something went wrong
-      if @db_connection["SELECT * from #{@current_name} LIMIT 1"].first.nil?
-        @runlog.err << "Empty table"
-        @data_import.log_error("Empty table")
-        raise "Empty table"
-      end
+      # 
+      # # Check if the file had data, if not rise an error because probably something went wrong
+      # if @db_connection["SELECT * from #{@current_name} LIMIT 1"].first.nil?
+      #   @runlog.err << "Empty table"
+      #   @data_import.log_error("Empty table")
+      #   raise "Empty table"
+      # end
       
       # Sanitize column names where needed
       column_names = @db_connection.schema(@current_name).map{ |s| s[0].to_s }

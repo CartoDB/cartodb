@@ -9,7 +9,7 @@ class Api::Json::QueriesController < Api::ApplicationController
 
     # execute query
     query_result = current_user.run_pg_query(params[:sql])
-
+    
     # log results of query
     @to_log = params[:sql]          
     Resque.enqueue(Resque::QueriesThresholdJobs, current_user.id, params[:sql], query_result[:time])

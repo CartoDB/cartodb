@@ -2229,10 +2229,13 @@
 				}
       });
 			$('a.clear_table').live('click',function(ev){
-				var table_mode = (!$('body').hasClass('map'));
+				var table_mode = (!$('body').hasClass('map'))
+					, query_mode = ($('body').hasClass('query'));
+
 			  if (table_mode) {
 			    stopPropagation(ev);
-			    methods.restoreTable();
+			    if (query_mode) 
+			    	methods.restoreTable();
 			  }
 			});
 

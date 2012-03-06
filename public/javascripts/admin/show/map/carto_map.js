@@ -446,15 +446,19 @@
       // SQL Map console
       // Clear
       $('a.clear_table').live('click',function(ev){
-        var view_map = ($('body').hasClass('map'));
-        if (view_map) {
-          stopPropagation(ev);
-          $('body').removeClass('query');
-          me.query_mode = false;
-					$('.map_header div.stickies').remove();
-          setAppStatus();
-          me.refresh();
-        }
+        var map_mode = ($('body').hasClass('map'))
+        	, query_mode = ($('body').hasClass('query'));
+
+			  if (map_mode) {
+			    stopPropagation(ev);
+			    if (query_mode) {
+			    	$('body').removeClass('query');
+          	me.query_mode = false;
+						$('.map_header div.stickies').remove();
+          	setAppStatus();
+          	me.refresh();
+          }
+			  }
       });
 
       // Try query

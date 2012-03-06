@@ -10,6 +10,18 @@ class Api::Json::QueriesController < Api::ApplicationController
     # execute query
     query_result = current_user.run_pg_query(params[:sql])
     
+    if params[:sql].downcase.include? "create table "
+      params[:sql].downcase.split("create table ").each do |statement|
+        table_name = statement.split(' ').first
+        if table_name
+          @table = Table.new
+          @table.user_id = current_user.id
+          @table.migrate_existing_table = table_name
+          @table.save  
+        end
+      end
+    end
+    
     # log results of query
     @to_log = params[:sql]          
     Resque.enqueue(Resque::QueriesThresholdJobs, current_user.id, params[:sql], query_result[:time])

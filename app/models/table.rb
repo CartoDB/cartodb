@@ -167,7 +167,7 @@ class Table < Sequel::Model(:user_tables)
         @data_import.save
                 
         # ensure unique name
-        uniname = get_valid_name(self.name)
+        uniname = get_valid_name(migrate_existing_table)
         
         # with table #{uniname} table created now run migrator to CartoDBify
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -880,7 +880,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def run_query(query)
-    owner.run_query(query)
+    v = owner.run_query(query)
   end
 
   def georeference_from!(options = {})

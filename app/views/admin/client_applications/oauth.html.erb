@@ -1,5 +1,5 @@
   <% content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "admin/api/api" %>
+    <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers.js", "admin/api/api" %>
   <% end %>
   <% content_for(:head) do %>
     <%= stylesheet_link_tag('reset', 'admin/layout','admin/others/tokens') %>

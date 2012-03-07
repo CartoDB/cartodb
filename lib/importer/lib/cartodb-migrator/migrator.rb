@@ -20,8 +20,10 @@ module CartoDB
       @suggested_name = options[:current_name]
       @current_name = options[:current_name]
       
+      @data_import      = DataImport.find(:id=>options[:data_import_id])
+      @data_import_id   = options[:data_import_id]
+      
       raise "current_table value can't be nil" if @current_name.nil?
-
       
       # Handle DB connection
       @db_configuration = options.slice :database, :username, :password, :host, :port
@@ -43,12 +45,13 @@ module CartoDB
     end
     
     def migrate!
-
-      # Check if the file had data, if not rise an error because probably something went wrong
-      if @db_connection["SELECT * from #{@current_name} LIMIT 1"].first.nil?
-        @runlog.err << "Empty table"
-        raise "Empty table"
-      end
+      # 
+      # # Check if the file had data, if not rise an error because probably something went wrong
+      # if @db_connection["SELECT * from #{@current_name} LIMIT 1"].first.nil?
+      #   @runlog.err << "Empty table"
+      #   @data_import.log_error("Empty table")
+      #   raise "Empty table"
+      # end
       
       # Sanitize column names where needed
       column_names = @db_connection.schema(@current_name).map{ |s| s[0].to_s }
@@ -63,21 +66,29 @@ module CartoDB
         @db_connection.run("ALTER TABLE #{@current_name} RENAME TO #{@suggested_name}")
       end
       
+      if column_names.include? "cartodb_id"
+        # We could also just alter the column name here, but users shouldn't be bothered with this column at all
+        @db_connection.run("ALTER TABLE #{@current_name} DROP COLUMN cartodb_id")
+      end
+      
       # attempt to transform the_geom to 4326
       if column_names.include? "the_geom"
         begin
           if srid = @db_connection["select st_srid(the_geom) from #{@suggested_name} limit 1"].first
             begin
               if srid != 4326
+                @data_import.log_update("transforming the_geom from #{srid} to 4326")
                 # move original geometry column around
                 @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_Transform(the_geom, 4326);")
                 @db_connection.run("CREATE INDEX #{@suggested_name}_the_geom_gist ON #{@suggested_name} USING GIST (the_geom)")
               end
             rescue => e
+              @data_import.log_error("failed to transform the_geom to 4326 #{@suggested_name}. #{e.inspect}")
               @runlog.err << "failed to transform the_geom to 4326 #{@suggested_name}. #{e.inspect}"
             end
           end
         rescue
+          @data_import.log_error("failed to import the_geom renaming to invalid_the_geom")
           # if no SRID or invalid the_geom, we need to remove it from the table
           @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom")
           column_names.delete("the_geom")
@@ -105,6 +116,7 @@ module CartoDB
 
 
         if matching_latitude and matching_longitude
+            @data_import.log_update("converting #{matching_latitude}, #{matching_latitude} to the_geom")
             #we know there is a latitude/longitude columns
             @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
 
@@ -126,6 +138,7 @@ module CartoDB
 
       
       @table_created = true
+      @data_import.log_update("table created")
       rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
 
       payload = OpenStruct.new({

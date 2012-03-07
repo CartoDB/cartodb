@@ -46,6 +46,7 @@ module CartoDB
   end
 end
 require 'csv'
+require 'state_machine'
 require 'cartodb/errors'
 require 'cartodb/logger'
 require 'cartodb/sql_parser'

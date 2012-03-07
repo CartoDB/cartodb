@@ -185,6 +185,7 @@ GEM
       tilt (>= 1.2.2, < 2.0)
     spreadsheet (0.6.5.9)
       ruby-ole (>= 1.0)
+    state_machine (1.0.2)
     steak (2.0.0)
       capybara (>= 1.0.0)
       rspec-rails (>= 2.5.0)
@@ -240,6 +241,7 @@ DEPENDENCIES
   sequel_column_type_array (~> 0.0.2)
   sequel_pg (= 1.2.0)
   spreadsheet (~> 0.6.5.9)
+  state_machine (~> 1.0)
   steak (= 2.0.0)
   text-hyphen (= 1.2.0)
   timecop

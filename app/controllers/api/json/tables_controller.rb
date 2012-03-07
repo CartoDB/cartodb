@@ -52,7 +52,8 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.import_from_file = params[:file]              if params[:file]
     @table.import_from_url = params[:url]                if params[:url]
     @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
-    @table.import_from_query = params[:from_query]  if params[:from_query]    
+    @table.import_from_query = params[:from_query]  if params[:from_query]   
+    @table.migrate_existing_table = params[:migrate_table]  if params[:migrate_table]    
     @table.importing_SRID = params[:srid] || CartoDB::SRID
     @table.force_schema   = params[:schema]              if params[:schema]
     @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]

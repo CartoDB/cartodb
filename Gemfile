@@ -26,7 +26,7 @@ gem "spreadsheet", "~> 0.6.5.9"
 gem "google-spreadsheet-ruby", "~> 0.1.5"
 gem "rubyzip", "~> 0.9.6.1"
 gem "builder"
-
+gem "state_machine", "~> 1.0"
 
 group :development, :test do
   # this is for Ruby 1.9.2 debugging. You should upgrade to ruby 1.9.3, it's much faster in development

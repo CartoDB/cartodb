@@ -285,6 +285,13 @@ class User < Sequel::Model
     self.table_quota - self.table_count
   end
   
+  def rebuild_quota_trigger  
+    tables.all.each do |table|
+      table.add_python
+      table.set_trigger_check_quota
+    end  
+  end  
+  
   ## User's databases setup methods
   def setup_user
     return if disabled?

@@ -27,6 +27,8 @@ module CartoDB
       @psql_bin_path    = `which psql`.strip   
       @runlog           = OpenStruct.new :log => [], :stdout => [], :err => []   
       @@debug           = options[:debug]
+      @data_import      = DataImport.find(:id=>options[:data_import_id])
+      @data_import_id   = options[:data_import_id]
       @append_to_table  = options[:append_to_table] || nil
       @db_configuration = options.slice :database, :username, :password, :host, :port
       @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
@@ -65,6 +67,7 @@ module CartoDB
         end
         begin
           open(@import_from_file) do |res| # opens file normally, or open-uri to download/open
+            @data_import.file_ready
             file_name = File.basename(@import_from_file)
             @ext = File.extname(file_name)
             # Fix for extensionless fusiontables files
@@ -77,7 +80,7 @@ module CartoDB
             @import_from_file.close
           end
         rescue e
-          p e
+          @data_import.log_error(e)
         end
       else
         original_filename = if @import_from_file.respond_to?(:original_filename)
@@ -91,7 +94,9 @@ module CartoDB
       
       # finally setup current path
       @path = @import_from_file.respond_to?(:tempfile) ? @import_from_file.tempfile.path : @import_from_file.path
+      @data_import.file_ready
     rescue => e
+      @data_import.log_error(e)
       log e.inspect
       raise e
     end
@@ -108,24 +113,32 @@ module CartoDB
       begin
         # decompress data and update self with results
         decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash) 
+        @data_import.log_update('file unzipped') if decompressor
         update_self decompressor.process! if decompressor
-      
+        
         # TODO: should this be here...?
         @import_type = @ext        
       
         # Preprocess data and update self with results
         # preprocessors are expected to return a hash datastructure
         preproc = CartoDB::Import::Preprocessor.create(@ext, self.to_import_hash)
+        @data_import.log_update('file preprocessed') if preproc
         update_self preproc.process! if preproc
       
         # Load data in
         loader = CartoDB::Import::Loader.create(@ext, self.to_import_hash)
-        raise "no importer for this type of data" if !loader      
+        raise "no importer for this type of data" if !loader          
+        @data_import.log_update("no importer for this type of data, #{@ext}") if !loader
+        @data_import.log_update("file successfully loaded") if loader
+        
         i_res, payload = loader.process! 
         update_self i_res if i_res
-      
+        
+        @data_import.save
         return payload
       rescue => e
+        @data_import.reload #reload incase errors were written
+        @data_import.log_error(e)
         log "====================="
         log e
         log e.backtrace
@@ -142,6 +155,9 @@ module CartoDB
           File.unlink(@import_from_file)
         elsif @import_from_file.is_a? Tempfile
           @import_from_file.unlink
+        end
+        if @data_import
+          @data_import.save
         end
       end        
     end  

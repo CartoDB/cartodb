@@ -55,6 +55,7 @@ DESC
         if u.new?
           raise u.errors.inspect
         end
+        puts "USER_ID #{u.id}"
       rescue => e
         puts e.inspect
       end

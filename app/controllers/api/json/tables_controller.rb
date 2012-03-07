@@ -63,8 +63,20 @@ class Api::Json::TablesController < Api::ApplicationController
                      :name => @table.name, 
                      :schema => @table.schema }, 200, :location => table_path(@table))
     else
+      p 'ERRRRRRRRRORRS'
       CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
-      render_jsonp({ :errors => @table.errors.full_messages }, 400)
+      # if @table.data_import_id
+      #   v = { :errors => @table.errors.full_messages ,
+      #               :import_errors => DataImport.find(:id=>@table.data_import_id).logger }
+      #   p "#{v}"
+      #   p 'SEEEEEEEEE'
+      #   render_jsonp({ :errors => @table.errors.full_messages ,
+      #               :import_errors => DataImport.find(:id=>@table.data_import_id).logger }, 
+      #               400)
+      # else
+      #   p 'NOOOO SEEEEEEEEE'
+        render_jsonp({ :errors => @table.errors.full_messages }, 400)
+      # end
     end
   rescue => e
     # Add semantics based on the users creation method. 
@@ -76,6 +88,11 @@ class Api::Json::TablesController < Api::ApplicationController
     end  
     
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
+    p @table.data_import_id
+    p @table.data_import_id
+    p DataImport.find(:id=>@table.data_import_id)
+    p DataImport.find(:id=>@table.data_import_id)
+    p DataImport.find(:id=>@table.data_import_id)
     render_jsonp(translate_error(e), 400) and return  
   end
 

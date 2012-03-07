@@ -59,7 +59,6 @@
 	      var query_mode = ($('body').hasClass('query'));
 	      if (query_mode) {
 	        $('body').removeClass('query');
-	        setAppStatus(); // Out function to change app to SQL or NORMAL
 	      }
 	    });
 	    
@@ -1410,11 +1409,11 @@
 		  $('a.open_georeference').css({opacity:0.5});
 			$.favicon('/favicon/black_32x32.png');
 			var html = $('p.settings').html();
-			$('p.settings').html(html.replace(/\|/g,''));
+			$('p.settings').html(html.replace(/\|/gi,''));
 			$('body').addClass('query');
 			$('body').animate({backgroundColor:'#282828'},500);
 			// 'Duplicate table' to 'table from query'
-			$('a.save_table').text('Table from query');
+			//$('a.save_table').text('Table from query');
 			setTimeout(function(){$('body').css('background-position','0 -160px');},300);
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
@@ -1423,11 +1422,10 @@
 		  $('a.open_georeference').css({opacity:1});
 			$.favicon('/favicon/blue_32x32.png');
 			$('body').removeClass('query');
-			$('p.settings a:last').before(' | ');
-			$('p.settings a:eq(1)').before(' | ');
+			$('p.settings a:lt(2)').after(' | ');
 			$('body').animate({backgroundColor:'#2D3451'},500);
 			// 'Duplicate table' to 'table from query'
-			$('a.save_table').text('Duplicate table as...');
+			//$('a.save_table').text('Duplicate table as...');
 			setTimeout(function(){$('body').css('background-position','0 0');},300);
 			$('section.subheader').animate({backgroundColor:'#2D3451'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -58px');},300);

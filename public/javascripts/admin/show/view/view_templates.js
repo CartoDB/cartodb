@@ -47,7 +47,7 @@
           '<div class="inner_">'+
             '<span class="loading">'+
                '<h5>We are georeferencing your columns...</h5>'+
-               '<p>Just some seconds, ok?</p>'+
+               '<p>We\'ll be quick!</p>'+
              '</span>'+
             '<span class="top">'+
               '<h3>Choose your geocoding method for this table</h3>'+
@@ -100,7 +100,7 @@
           '<div class="inner_">'+
             '<span class="loading">'+
               '<h5>We are duplicating your table...</h5>'+
-              '<p>Just some seconds, ok?</p>'+
+              '<p>We\'ll be quick!</p>'+
             '</span>'+
             '<span class="top">'+
               '<h3>Insert a name for your copy of this table</h3>'+

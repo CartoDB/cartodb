@@ -50,15 +50,29 @@
               <tr>
                 <td>
                   <h2>Hello <%= current_user.username %></h2>
-                  <% if true %>        
-                    <p>Welcome to your <%= current_user.account_type.humanize %> CartoDB</p>
+                  <% @dedicated = current_user.try(:account_type).upcase == 'DEDICATED' ? true : false %>
+
+                  <% if @database_size.present? && @quota.present? %>
+                    <% @over_disk =  (@database_size.to_f/@quota) > 0.75  %>
                   <% else %>
-                    <p>Need more resources? <a href="#todo">Upgrade your account</a></p>
+                    <% @over_disk =  false  %>  
+                  <% end %>
+                  
+                  <% if @tables_count.present? && @table_quota.present?  %>
+                    <% @over_tables =  (@tables_count.to_f/@table_quota) > 0.75  %>
+                  <% else %>
+                    <% @over_tables =  false  %>  
+                  <% end %>
+                    
+                  <% if (@over_disk || @over_tables) && !@dedicated && !current_user.admin %>
+                    <p>Need more resources? <a href="http://<%= APP_CONFIG[:account_host] %>/upgrade">Upgrade your account</a></p>
+                  <% else %>
+                    <p>Welcome to your <%= current_user.account_type.humanize %> CartoDB</p>                  
                   <% end %>
                 </td>
                 <td class="
-                <%= (@database_size.to_f/@quota > 0.75) ? 'danger' : '' %> 
-                <%= (@database_size.to_f/@quota > 0.90 ) ? 'boom' : '' %>
+                  <%= (@database_size.to_f/@quota > 0.75) ? 'danger' : '' %> 
+                  <%= (@database_size.to_f/@quota > 0.90 ) ? 'boom' : '' %>
                 ">
                   <% if @quota > 1024 %>
                     <% @database_size = @database_size/1024 %>

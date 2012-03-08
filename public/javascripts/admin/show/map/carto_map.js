@@ -976,6 +976,7 @@
               // No custom values
             } else {
               custom_props['line-width'] = '4';
+              delete custom_props['polygon-opacity'];
             }
 
 

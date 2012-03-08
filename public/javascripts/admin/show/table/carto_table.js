@@ -153,7 +153,7 @@
 			  });
 
 			} else {
-				
+
 			  // Remove empty table if it exists
 				table.e.parent().find('div.empty_table').remove();
 
@@ -187,10 +187,10 @@
 
 			      $('div.sql_window span.errors p').text('');
 			      _.each(errors,function(error,i){
-			        $('div.sql_window span.errors p').append(' '+error+'.');
+			        $('div.sql_window span.errors p').append(''+error+'.<br/>');
 			      });
 			      
-			      var errors_height = (errors.length * 16)
+			      var errors_height = (errors.length * 16) + 17
 			      	, new_bottom = 48 + errors_height
 			      	, new_height = 199 + errors_height;
 

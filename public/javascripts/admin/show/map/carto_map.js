@@ -508,13 +508,14 @@
 
   			      var errors = $.parseJSON(e.responseText).errors;
   			      $('div.sql_window span.errors p').text('');
-  			      _.each(errors,function(error,i){
-  			        $('div.sql_window span.errors p').append(' '+error+'.');
-  			      });
+  			      
+			      	_.each(errors,function(error,i){
+			        	$('div.sql_window span.errors p').append(''+error+'.<br/>');
+			      	});
 
-							var errors_height = (errors.length * 16)
-			      		, new_bottom = 48 + errors_height
-			      		, new_height = 199 + errors_height;
+				      var errors_height = (errors.length * 16) + 17
+				      	, new_bottom = 48 + errors_height
+				      	, new_height = 199 + errors_height;
 
 				      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
 				      $('div.sql_window')

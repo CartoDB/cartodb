@@ -82,6 +82,7 @@
 			    rows,
 			    ajax_request = (table.mode!='query')? 2 : 1,
 					modified,
+					time = 0,
           errors = [];
 
 
@@ -102,8 +103,10 @@
 				    methods.drawQueryRows(rows,direction,table.actual_p,new_query);
 					}
 		    }
+
 		    // Remove loader
-		    window.ops_queue.responseRequest(requestId,'ok','');
+		    if (errors.length == 0)
+		    	window.ops_queue.responseRequest(requestId,'ok','');
       });
       
 			if (table.mode!='query') {
@@ -152,9 +155,6 @@
 			} else {
 			  
 			  // QUERY MODE
-				//setAppStatus(); // Change app status depending on query mode
-
-
 			  $.ajax({
 			    method: "POST",
 			    url: global_api_url+'queries?sql='+encodeURIComponent(editor.getValue()),
@@ -165,7 +165,7 @@
 			 		headers: {"cartodbclient":"true"},
 			    success: function(data) {
 			      // Remove error content
-						$('div.sql_window span.errors').hide();
+						$('div.sql_window').removeClass('error');
 						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
 						$('div.sql_window').css({'min-height':'199px'});
 						
@@ -175,24 +175,26 @@
 			      rows    = data.rows;
 			      table.total_r = data.total_rows
             
-            //$('div.sql_console span h3').html('<strong>'+data.total_rows+' results</strong>');
 			      requestArrived();
 			    },
 			    error: function(e) {
             window.ops_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
 			      
 			      errors = $.parseJSON(e.responseText).errors;
+
 			      $('div.sql_window span.errors p').text('');
 			      _.each(errors,function(error,i){
 			        $('div.sql_window span.errors p').append(' '+error+'.');
 			      });
 			      
-			      var new_bottom = 65 + $('div.sql_window span.errors').height();
+			      var errors_height = (errors.length * 16)
+			      	, new_bottom = 48 + errors_height
+			      	, new_height = 199 + errors_height;
+
 			      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
-			      
-			      var new_height = 199 + $('div.sql_window span.errors').height();
-			      $('div.sql_window').css({'min-height':new_height+'px'});
-			      $('div.sql_window span.errors').show();
+			      $('div.sql_window')
+			      	.css({'min-height':new_height+'px'})
+			      	.addClass('error');
 			      
 			      methods.drawQueryColumns([]);
             requestArrived();
@@ -2211,8 +2213,10 @@
 
 			  if (table_mode) {
 			    stopPropagation(ev);
-			    if (query_mode) 
+			    if (query_mode) {
+			    	$('div.sql_window').removeClass('error');
 			    	methods.restoreTable();
+			    }			    	
 			  }
 			});
 

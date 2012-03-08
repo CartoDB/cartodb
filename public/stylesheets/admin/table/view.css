@@ -243,8 +243,6 @@ div.sql_window div.inner p a {color:#999999;}
 div.sql_window div.inner p a:hover {color:#666666;}
 div.sql_window div.inner div.outer_textarea {position:absolute; top:55px; left:9px; right:9px; bottom:50px; margin:10px 0 0 0; padding:5px ; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
 div.sql_window span.bottom {position:absolute; bottom:10px; left:10px; right:10px; height:28px;}
-
-
 div.sql_window span.bottom a.reference {float:left; margin:7px 0 0 2px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.sql_window span.bottom a.clear_table {float:right; margin:7px 12px 0 0; font:normal 13px 'Helvetica',Arial; color:#FF6600; text-shadow:0 1px white;}
 div.sql_window span.bottom a.clear_table:hover {color:#FF3300}
@@ -253,10 +251,13 @@ div.sql_window span.bottom a.try_query {float:right; margin:0; height:12px; padd
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#DEDEDE\9; text-decoration:none}
 div.sql_window span.bottom a.try_query:hover { background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); background:#CACBCE\9; cursor:pointer;}
-div.sql_window span.errors {position:absolute;display:none;z-index:0;bottom:40px;left:-1px;right:-1px;height:auto;padding:15px 0 7px;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #CDCDCD;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E);
+div.sql_window span.errors {position:absolute;display:none;z-index:0;bottom:40px;left:-1px;right:-1px;height:auto;padding:15px 0 7px;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #666666;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E);
   background:linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#FFB5A3),to(#FF8A6E));background:-moz-linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-o-linear-gradient(#FFB5A3,#FF8A6E);background:#FFB5A3\9;}
 div.sql_window span.errors p {padding:0 0 0 26px; color:#333333; font:normal 13px Arial; text-shadow:none; background:url('/images/admin/icons/error.png') no-repeat 7px 1px}
 div.sql_window .ui-resizable-handle {position:absolute; right:4px; bottom:4px; width:10px; height:10px; background:url('/images/admin/table/resize.png') no-repeat 0 0}
+div.sql_window.error div.inner div.outer_textarea {border-color:#666666;}
+div.sql_window.error div.inner span.errors {display:block!important;}
+
 
 /*Codemirror SQL*/
 div.sql_window .CodeMirror{overflow:auto; height:100%;line-height:1em;font-family:monospace;}

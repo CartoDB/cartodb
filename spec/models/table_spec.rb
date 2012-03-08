@@ -1303,6 +1303,18 @@ describe Table do
       end
     end
   end
+  context "migrate existing postgresql tables into cartodb" do
+    it "create table via SQL statement and then migrate table into CartoDB" do
+      user = create_user
+      table = new_table :name => 'empty_file', :user_id => user.id
+      table.save.reload
+      table.name.should == 'empty_file'
+
+      table2 = new_table :name => 'empty_file', :user_id => user.id
+      table2.save.reload
+      table2.name.should == 'empty_file_2'
+    end
+  end
   context "merging two+ tables" do
     it "should merge two twitters.csv" do
       # load a table to treat as our 'existing' table

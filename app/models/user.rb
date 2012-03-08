@@ -278,12 +278,21 @@ class User < Sequel::Model
   end
   
   def exceeded_quota?
-    self.remaining_quota < 0      
+    self.remaining_quota <= 0 || self.remaining_table_quota == 0      
   end
   
+  #can be nil table quotas
   def remaining_table_quota
-    self.table_quota - self.table_count
+    if self.table_quota.present?
+      self.table_quota - self.table_count
+    else
+      false
+    end    
   end
+  
+  def table_count
+    Table.filter({:user_id => self.id}).count
+  end  
   
   def rebuild_quota_trigger  
     tables.all.each do |table|

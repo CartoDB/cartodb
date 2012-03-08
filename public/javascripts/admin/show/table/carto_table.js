@@ -152,30 +152,7 @@
 			} else {
 			  
 			  // QUERY MODE
-				setAppStatus(); // Change app status depending on query mode
-
-				// var time,
-				// 		query = editor.getOption('query'),
-				// 		is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER|DROP|DELETE).*/i)!=-1;
-				
-				// // Get the total rows of the query
-				// if (new_query!=undefined && !is_write_query) {
-				// 	$.ajax({
-				//     method: "GET",
-				//     url: global_api_url+'queries?sql='+encodeURIComponent('SELECT count(*) FROM ('+query+') as count'),
-				//  		headers: {"cartodbclient":"true"},
-				//     success: function(data) {
-				// 			table.total_r = data.rows[0].count;
-				// 			$('div.sql_console span h3').html('<strong>'+table.total_r+' results</strong>');
-				// 			requestArrived();
-				//     },
-				//     error: function(e) {
-				//       requestArrived();
-				//     }
-				//   });
-				// } else {
-				// 	requestArrived();
-				// }
+				//setAppStatus(); // Change app status depending on query mode
 
 
 			  $.ajax({

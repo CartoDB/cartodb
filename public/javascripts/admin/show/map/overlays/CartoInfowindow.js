@@ -128,7 +128,7 @@
 					me.pixel = null;
 				}
   	    
-  	    var query_mode = $('body').attr('query_mode') === 'true';
+  	    var query_mode = $('body').hasClass('query');
 
   	    // Reinitialize jscrollpane in the infowindow
      		$('div.marker_infowindow div.scrollPane').jScrollPane().data().jsp.destroy();

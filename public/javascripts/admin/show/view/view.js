@@ -795,22 +795,17 @@
 	          $('span.title_window span').fadeOut();
 	        },1500);
 	      } else {
-	        // If the name of the table is Untitled_table... - not show warning
-	        if ((old_value.name).search('untitled_table')==-1) {
-	          closeOutTableWindows();
-	          $('div.mamufas div.warning_window form').unbind('submit');
-	          $('div.mamufas div.warning_window form').submit(function(ev){
-	            stopPropagation(ev);
-	            changeTableName(new_value,old_value);
-	          });
-	          $('div.mamufas div.warning_window').show();
-	          $('div.mamufas').fadeIn('fast',function(){
-	            $('div.mamufas div.warning_window input').focus();
-	          });
-	          bindESC();
-	        } else {
-	          changeTableName(new_value,old_value);
-	        }
+          closeOutTableWindows();
+          $('div.mamufas div.warning_window form').unbind('submit');
+          $('div.mamufas div.warning_window form').submit(function(ev){
+            stopPropagation(ev);
+            changeTableName(new_value,old_value);
+          });
+          $('div.mamufas div.warning_window').show();
+          $('div.mamufas').fadeIn('fast',function(){
+            $('div.mamufas div.warning_window input').focus();
+          });
+          bindESC();
 	      }
 	    });
 	

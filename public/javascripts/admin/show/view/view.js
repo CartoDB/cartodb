@@ -753,7 +753,7 @@
 	    $('div.inner_subheader div.left').append(window.view_elements.title_window);
 	
 			// Close warning window
-			$('div.warning_window .cancel').click(function(ev){
+			$('div.warning_window .cancel,div.warning_window .close').click(function(ev){
 				stopPropagation(ev);
 				closeOutTableWindows();
 			});

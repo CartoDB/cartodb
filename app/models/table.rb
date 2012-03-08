@@ -291,12 +291,6 @@ class Table < Sequel::Model(:user_tables)
       
       #init state machine
       @data_import  = DataImport.find(:id=>self.data_import_id)
-      p @data_import
-      p @data_import
-      p @data_import
-      p @data_import
-      p @data_import
-      p @data_import
       # @data_import = DataImport.new(:user_id => self.user_id)
       # @data_import.updated_at = Time.now
       # @data_import.save

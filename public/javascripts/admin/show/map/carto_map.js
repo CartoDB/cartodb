@@ -243,7 +243,7 @@
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
         data: {style:str},
         success: function(result) {
-          $('.cartocss_editor span.errors').hide();
+          $('.cartocss_editor').removeClass('error');
           if (refresh)
             me.refreshWax();
         },
@@ -252,7 +252,7 @@
           var msg = '';
           _.each(errors,function(ele,i){msg += ele + '<br/>';});
           $('.cartocss_editor span.errors p').html(msg);
-          $('.cartocss_editor span.errors').css({display:'block'});
+          $('.cartocss_editor').addClass('error');
         }
       });
     }
@@ -453,6 +453,7 @@
 			    stopPropagation(ev);
 			    if (query_mode) {
 			    	$('body').removeClass('query');
+			    	$('div.sql_window').removeClass('error');
           	me.query_mode = false;
 						$('.map_header div.stickies').remove();
           	setAppStatus();
@@ -490,7 +491,7 @@
             headers: {"cartodbclient":"true"},
             success: function(data) {
   			      // Remove error content
-  						$('div.sql_window span.errors').hide();
+  						$('div.sql_window').removeClass('error');
   						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
   						$('div.sql_window').css({'min-height':'199px'});
   						
@@ -511,12 +512,15 @@
   			        $('div.sql_window span.errors p').append(' '+error+'.');
   			      });
 
-  			      var new_bottom = 65 + $('div.sql_window span.errors').height();
-  			      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
+							var errors_height = (errors.length * 16)
+			      		, new_bottom = 48 + errors_height
+			      		, new_height = 199 + errors_height;
 
-  			      var new_height = 199 + $('div.sql_window span.errors').height();
-  			      $('div.sql_window').css({'min-height':new_height+'px'});
-  			      $('div.sql_window span.errors').show();
+				      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
+				      $('div.sql_window')
+				      	.css({'min-height':new_height+'px'})
+				      	.addClass('error');
+
   			      $('.map_header div.stickies').remove();
   			      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
       				$('span.query p').text('');
@@ -1828,7 +1832,6 @@
                 me.hideOverlays();
               }
             },200);
-
           }
         },
         clickAction: 'full'

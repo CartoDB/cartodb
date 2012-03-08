@@ -40,11 +40,10 @@
 	      if ($('div.sql_window').is(':visible')) {
 	        closeOutTableWindows();
 	      } else {
-	        $('div.sql_window span.errors').hide();
 	        if (editor.getValue() == '') {
 	          editor.setValue('SELECT * FROM ' + table_name);
 	        }
-	        $('div.sql_window,div.outer_textarea').removeAttr('style');
+	        
 	        $('div.sql_window').fadeIn('fast', function () {
 	          editor.refresh();
 	          editor.focus();
@@ -1407,6 +1406,7 @@
 			$('p.settings').html(html.replace(/\|/gi,''));
 			$('body').addClass('query');
 			$('body').animate({backgroundColor:'#282828'},500);
+			$('a.save_table').text('Table from query');
 			setTimeout(function(){$('body').css('background-position','0 -160px');},300);
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
@@ -1415,6 +1415,7 @@
 		  $('a.open_georeference').css({opacity:1});
 			$.favicon('/favicon/blue_32x32.png');
 			$('body').removeClass('query');
+			$('a.save_table').text('Duplicate table as...');
 			$('p.settings a:lt(2)').after(' | ');
 			$('body').animate({backgroundColor:'#2D3451'},500);
 			setTimeout(function(){$('body').css('background-position','0 0');},300);

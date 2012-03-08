@@ -1736,7 +1736,7 @@
             // Loop over all columns and saving each value that is not present
             //   in the requested infowindow_vars
             _.each(data.schema,function(arr,i) {
-              if (arr[0]!='cartodb_id') {
+              if (arr[0]!='cartodb_id' && arr[0]!='the_geom' && arr[0]!='the_geom_webmercator') {
                 default_infowindow[arr[0]] = true;
                 if (infowindow_vars[arr[0]] == undefined) infowindow_vars[arr[0]] = true;
               }

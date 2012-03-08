@@ -153,7 +153,10 @@
 			  });
 
 			} else {
-			  
+				
+			  // Remove empty table if it exists
+				table.e.parent().find('div.empty_table').remove();
+
 			  // QUERY MODE
 			  $.ajax({
 			    method: "POST",

@@ -144,9 +144,10 @@ module CartoDB
       payload = OpenStruct.new({
                               :name => @suggested_name,
                               :rows_imported => rows_imported,
+                              :import_type => "external_table",
                               :log => @runlog
                               })
-
+      
       # construct return variables
       return payload
       

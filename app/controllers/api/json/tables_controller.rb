@@ -51,7 +51,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @data_import = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
-    
+    p @data_import
     @table.user_id = current_user.id
     @table.data_import_id = @data_import.id
     @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
@@ -94,6 +94,7 @@ class Api::Json::TablesController < Api::ApplicationController
     end  
     
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
+    p @data_import
     p @table.data_import_id
     p @table.data_import_id
     p DataImport.find(:id=>@table.data_import_id)

@@ -16,9 +16,9 @@ class DataImport < Sequel::Model
       self.logger << "SUCCESS!\n"
       self.save
     end
-    after_transition any => :destroyed do
+    after_transition any => :failure do
       self.success = false
-      self.logger << "FAILURE!\n"
+      self.logger << "ERROR!\n"
       self.save
     end
     
@@ -58,9 +58,18 @@ class DataImport < Sequel::Model
     event :retry do
       transition any => same
     end
+    event :failed do 
+      transition any => :failure
+    end
   end
+  def after_rollback(*args, &block)
+    self.save
+    set_callback(:rollback, :after, *args, &block)
+  end
+    
   def updated_now(transition)
     self.updated_at = Time.now
+    self.save
   end
   def log_update(update_msg)
     self.logger << "UPDATE: #{update_msg}\n"

@@ -69,7 +69,6 @@ class DataImport < Sequel::Model
     
   def updated_now(transition)
     self.updated_at = Time.now
-    self.save
   end
   def log_update(update_msg)
     self.logger << "UPDATE: #{update_msg}\n"

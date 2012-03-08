@@ -51,7 +51,6 @@ class Api::Json::TablesController < Api::ApplicationController
     @data_import = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
-    p @data_import
     @table.user_id = current_user.id
     @table.data_import_id = @data_import.id
     @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
@@ -69,20 +68,17 @@ class Api::Json::TablesController < Api::ApplicationController
                      :name => @table.name, 
                      :schema => @table.schema }, 200, :location => table_path(@table))
     else
-      p 'ERRRRRRRRRORRS'
+      @data_import.reload
       CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
-      # if @table.data_import_id
-      #   v = { :errors => @table.errors.full_messages ,
-      #               :import_errors => DataImport.find(:id=>@table.data_import_id).logger }
-      #   p "#{v}"
-      #   p 'SEEEEEEEEE'
-      #   render_jsonp({ :errors => @table.errors.full_messages ,
-      #               :import_errors => DataImport.find(:id=>@table.data_import_id).logger }, 
-      #               400)
-      # else
-      #   p 'NOOOO SEEEEEEEEE'
+      if @table.data_import_id
+        v = { :errors => @table.errors.full_messages ,
+                    :import_errors => @data_import.logger }
+        render_jsonp({ :errors => @table.errors.full_messages ,
+                    :import_errors => @data_import.logger }, 
+                    400)
+      else
         render_jsonp({ :errors => @table.errors.full_messages }, 400)
-      # end
+      end
     end
   rescue => e
     # Add semantics based on the users creation method. 
@@ -94,14 +90,9 @@ class Api::Json::TablesController < Api::ApplicationController
     end  
     
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
-    p @data_import
-    p @table.data_import_id
-    p @table.data_import_id
-    p DataImport.find(:id=>@table.data_import_id)
-    p DataImport.find(:id=>@table.data_import_id)
-    p DataImport.find(:id=>@table.data_import_id)
-    #render_jsonp(translate_error(e), 400) and return  
-    render_jsonp({ :errors => translate_error(e), :import_errors => "something here" }, 400)
+    
+    @data_import.reload
+    render_jsonp({ :errors => translate_error(e), :import_errors => @data_import.logger }, 400)
   end
 
   def show

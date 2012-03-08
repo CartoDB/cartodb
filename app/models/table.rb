@@ -97,7 +97,7 @@ class Table < Sequel::Model(:user_tables)
         @data_import.data_type = 'file'
         @data_import.data_source = import_from_file
         @data_import.upload
-        #@data_import.save
+        @data_import.save
         
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 
@@ -290,10 +290,17 @@ class Table < Sequel::Model(:user_tables)
     if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
       
       #init state machine
-      @data_import = DataImport.new(:user_id => self.user_id)
-      @data_import.updated_at = Time.now
-      @data_import.save
-      self.data_import_id = @data_import.id
+      @data_import  = DataImport.find(:id=>self.data_import_id)
+      p @data_import
+      p @data_import
+      p @data_import
+      p @data_import
+      p @data_import
+      p @data_import
+      # @data_import = DataImport.new(:user_id => self.user_id)
+      # @data_import.updated_at = Time.now
+      # @data_import.save
+      # self.data_import_id = @data_import.id
       
       importer_result_name = import_to_cartodb
       

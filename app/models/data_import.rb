@@ -16,6 +16,11 @@ class DataImport < Sequel::Model
       self.logger << "SUCCESS!\n"
       self.save
     end
+    after_transition any => :destroyed do
+      self.success = false
+      self.logger << "FAILURE!\n"
+      self.save
+    end
     
     event :upload do |event| 
       #the import is ready to start handling file upload

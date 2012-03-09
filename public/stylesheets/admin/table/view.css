@@ -4,7 +4,7 @@ a:focus {outline:none;}
 input[type="submit"]::-moz-focus-inner, input[type="button"]::-moz-focus-inner {border:0px;} 
 
 /*HEADER*/
-header {width:100%; min-width:880px; height:58px; margin:0 auto; background:none; z-index:100;}
+header {width:100%; min-width:880px; height:58px; margin:0 auto; background:none; z-index:1000;}
 header a.logo {float:left; width:70px; height:15px; margin:23px 0 0 40px; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
 header ul {float:right; margin: 24px 40px 0 0; }
 header ul li {float:left; display: inline; list-style: none; padding: 0 10px 0 0; border-right: solid 1px #949BAB; }
@@ -23,6 +23,7 @@ body.query section.subheader span.normal {display:none}
 body.query section.subheader span.query {display:block}
 
 section.subheader {position:fixed; top:58px; left:0; width:100%; min-width:880px; height:103px; background:url('/images/admin/common/new_header.png') repeat-x center -58px #2D3451; z-index:100;}
+body.map section.subheader {position:absolute; z-index:0;}
 section.subheader div.outer {float:left; width:100%; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
 body.query section.subheader div.outer {background:url('/images/admin/table/sql_border.png') repeat-x 0 0}
 section.subheader div.left {position:relative; float:left; width:500px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
@@ -231,50 +232,55 @@ div.general_options ul li.all a:hover {background:linear-gradient(-90deg,#CACBCE
 
 
 /*sql console*/
-div.sql_window {position:fixed; display:none; top:50%; left:50%; min-width:610px; min-height:199px; padding:9px; margin:-109px 0 0 -314px; z-index:100; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
+div.sql_window {position:fixed; display:none; top:50%; left:50%; min-width:510px; min-height:230px; padding:9px; margin:-109px 0 0 -255px; z-index:100; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
   -webkit-box-shadow:0 0 10px 3px rgba(0,0,0,0.31); -moz-box-shadow:0 0 50px 3px rgba(0,0,0,0.31); box-shadow:0 0 15px 3px rgba(0,0,0,0.31);}
 div.sql_window a.close {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0; text-indent:-9999px; z-index:10}
 div.sql_window a.close:hover {background-position:0 -23px;}
 div.sql_window div.inner {position:absolute; top:8px; left:8px; right:8px; bottom:8px; margin:0; border:1px solid #ccc; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0; z-index:1}
-div.sql_window div.inner h3 {display:block; padding:12px 0 0 10px; font:bold 15px Arial; color:#333333; text-shadow:0 1px white;}
-div.sql_window div.inner h3:hover {cursor:move}
-div.sql_window div.inner p {display:block; padding:3px 0 0 10px; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
-div.sql_window div.inner p a {color:#999999;}
-div.sql_window div.inner p a:hover {color:#666666;}
-div.sql_window div.inner div.outer_textarea {position:absolute; top:55px; left:9px; right:9px; bottom:50px; margin:10px 0 0 0; padding:5px ; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
-div.sql_window span.bottom {position:absolute; bottom:10px; left:10px; right:10px; height:28px;}
+
+div.sql_window div.inner span.top {position:absolute; top:0; left:0; right:0; bottom:47px; margin:0; padding:9px; border-bottom:1px solid #CCCCCC;}
+div.sql_window div.inner span.top h3 {width:100%; padding:0 0 3px 0; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
+div.sql_window div.inner span.top h3:hover {cursor:move}
+div.sql_window div.inner span.top p {display:block; padding:3px 0 0 0; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
+div.sql_window div.inner span.top p a {color:#666666}
+div.sql_window div.inner span.top p a:hover {color:#333333}
+div.sql_window div.inner span.top div.outer_textarea {position:absolute; top:60px; left:9px; right:9px; bottom:11px; margin:10px 0 0 0; padding:5px ; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
+div.sql_window div.inner span.top textarea {position:relative; min-width:454px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #CDCDCD; webkit-border-radius:5px;
+border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial; color:#333333; line-height:13px; background:white}
+div.sql_window span.bottom {position:absolute; bottom:10px; left:9px; right:9px; height:28px;}
 div.sql_window span.bottom a.reference {float:left; margin:7px 0 0 2px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.sql_window span.bottom a.clear_table {float:right; margin:7px 12px 0 0; font:normal 13px 'Helvetica',Arial; color:#FF6600; text-shadow:0 1px white;}
 div.sql_window span.bottom a.clear_table:hover {color:#FF3300}
-div.sql_window span.bottom a.try_query {float:right; margin:0; height:12px; padding:7px 9px 9px 9px; -webkit-border-radius: 5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999; font:bold 12px Arial; text-shadow:0 1px white;
+div.sql_window span.bottom a.try_query {float:right; margin:0; height:12px; padding:7px 9px 9px 9px; -webkit-border-radius: 3px; -moz-border-radius:3px; border-radius:3px; border:1px solid #999999; font:bold 12px Arial; text-shadow:0 1px white;
   color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#DEDEDE\9; text-decoration:none}
 div.sql_window span.bottom a.try_query:hover { background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); background:#CACBCE\9; cursor:pointer;}
-div.sql_window span.errors {position:absolute;display:none;z-index:0;bottom:40px;left:-1px;right:-1px;height:auto;padding:15px 0 7px;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #666666;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E);
+div.sql_window span.top span.errors {position:absolute;display:none;z-index:0;bottom:10px;left:9px;right:9px;height:auto;padding:15px 0 7px;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #666666;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E);
   background:linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#FFB5A3),to(#FF8A6E));background:-moz-linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-o-linear-gradient(#FFB5A3,#FF8A6E);background:#FFB5A3\9;}
-div.sql_window span.errors p {padding:0 0 0 26px; color:#333333; font:normal 13px Arial; text-shadow:none; background:url('/images/admin/icons/error.png') no-repeat 7px 1px}
-div.sql_window .ui-resizable-handle {position:absolute; right:4px; bottom:4px; width:10px; height:10px; background:url('/images/admin/table/resize.png') no-repeat 0 0}
-div.sql_window.error div.inner div.outer_textarea {border-color:#666666;}
+div.sql_window span.top span.errors p {padding:0 0 0 26px; color:#333333; font:normal 13px Arial; text-shadow:none; background:url('/images/admin/icons/error.png') no-repeat 7px 1px}
+div.sql_window .ui-resizable-handle {position:absolute; right:4px; bottom:4px; width:10px; height:10px; background:url('/images/admin/table/resize.png') no-repeat 0 0; cursor:se-resize;}
+div.sql_window.error div.inner div.outer_textarea {border-color:#666666!important;}
 div.sql_window.error div.inner span.errors {display:block!important;}
 
 
 /*Codemirror SQL*/
-div.sql_window .CodeMirror{overflow:auto; height:100%;line-height:1em;font-family:monospace;}
-div.sql_window .CodeMirror-scroll{position:absolute;left:0;top:0;overflow:auto;height:100%; position:relative;}
-div.sql_window .CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
-div.sql_window .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;white-space:pre !important;}
-div.sql_window .CodeMirror-lines{padding:.4em; line-height:16px}
-div.sql_window .CodeMirror pre{font-family:Arial!important;font-size:13px!important;-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;padding:0;margin:0;white-space:pre;word-wrap:normal;}
-div.sql_window .CodeMirror-wrap pre{word-wrap:break-word;white-space:pre-wrap;}
-div.sql_window .CodeMirror-wrap .CodeMirror-scroll{overflow-x:hidden;}
-div.sql_window .CodeMirror textarea{font-family:Arial!important;}
-div.sql_window .CodeMirror-cursor{z-index:10;position:absolute;visibility:hidden;border-left:1px solid black !important;}
-div.sql_window .CodeMirror-focused .CodeMirror-cursor{visibility:visible;}
-div.sql_window span.CodeMirror-selected{background:#ccc !important;color:HighlightText !important;}
-div.sql_window .CodeMirror-focused span.CodeMirror-selected{background:Highlight !important;}
-div.sql_window .CodeMirror-matchingbracket{color:#0f0 !important;}
-div.sql_window .CodeMirror-nonmatchingbracket{color:#f22 !important;}
+div.sql_window .CodeMirror {overflow:auto; height:100%; line-height: 1em; font-family: monospace;}
+div.sql_window .CodeMirror-scroll {overflow: auto; height: auto; position: relative; outline: none;}
+div.sql_window .CodeMirror-gutter {position: absolute; left: 0; top: 0; z-index: 10; background-color: #f7f7f7; border-right: 1px solid #eee; min-width: 2em; height: 100%;}
+div.sql_window .CodeMirror-gutter-text {color: #aaa; text-align: right; padding: .4em .2em .4em .4em; white-space: pre !important;}
+div.sql_window .CodeMirror-lines {padding: .4em; white-space: pre;}
+div.sql_window .CodeMirror pre {font:normal 13px Arial!important; -moz-border-radius: 0; -webkit-border-radius: 0; -o-border-radius: 0; border-radius: 0; border-width: 0; margin: 0; padding: 0; background: transparent; font-family: inherit;
+  font-size: inherit; padding: 0; margin: 0; white-space: pre; word-wrap: normal;}
+div.sql_window .CodeMirror-wrap pre {word-wrap: break-word; white-space: pre-wrap;}
+div.sql_window .CodeMirror-wrap .CodeMirror-scroll {overflow-x: hidden;}
+div.sql_window .CodeMirror textarea {outline: none !important;}
+div.sql_window .CodeMirror pre.CodeMirror-cursor {z-index: 10; position: absolute; visibility: hidden; border-left: 1px solid black; border-right:none; width:0;}
+div.sql_window .CodeMirror pre.CodeMirror-cursor.CodeMirror-overwrite {}
+div.sql_window .CodeMirror-focused pre.CodeMirror-cursor {visibility: visible;}
+div.sql_window div.CodeMirror-selected { background: #d9d9d9; }
+.CodeMirror-focused div.CodeMirror-selected { background: #d7d4f0; }
+div.sql_window .CodeMirror-searching {background: #ffa;background: rgba(255, 255, 0, .4);}
 div.sql_window span.cm-plsql-keyword{color:#0099CC; font-weight:bold}
 div.sql_window span.cm-plsql-var{color:red;}
 div.sql_window span.cm-plsql-comment{color:#AA7700;}
@@ -643,9 +649,8 @@ div.mamufas div.stop_window div.inner_ span.stop p a {color:#666666;}
 div.mamufas div.stop_window div.inner_ span.stop p a:hover {color:#333333;}
 
 
-
 /* history for sql and carto */ 
-span.history {position:relative; float:left; width:65px; height:28px;}
+span.history {position:relative; float:left; width:65px; height:28px; margin:1px 0 0;}
 span.history a {float:left; width:32px; height:28px; background:url('/images/admin/table/sql_editor_history.png') no-repeat 0 0;}
 span.history a.redo {width:33px; background-position:right 0; cursor:default;}
 span.history a.undo {cursor:default}

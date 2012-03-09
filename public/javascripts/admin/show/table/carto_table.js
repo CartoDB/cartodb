@@ -169,11 +169,9 @@
 			    success: function(data) {
 			      // Remove error content
 						$('div.sql_window').removeClass('error');
-						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
-						$('div.sql_window').css({'min-height':'199px'});
-						
-						modified = data.modified;
+						$('div.sql_window div.inner div.outer_textarea').removeAttr('style');
 
+						modified = data.modified;
 						time    = data.time.toFixed(3);
 			      rows    = data.rows;
 			      table.total_r = data.total_rows
@@ -190,14 +188,10 @@
 			        $('div.sql_window span.errors p').append(''+error+'.<br/>');
 			      });
 			      
-			      var errors_height = (errors.length * 16) + 17
-			      	, new_bottom = 48 + errors_height
-			      	, new_height = 199 + errors_height;
+			      var errors_height = (errors.length * 16) + 22;
 
-			      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
-			      $('div.sql_window')
-			      	.css({'min-height':new_height+'px'})
-			      	.addClass('error');
+			      $('div.sql_window div.inner div.outer_textarea').css({bottom:errors_height+'px'});
+			      $('div.sql_window').addClass('error');
 			      
 			      methods.drawQueryColumns([]);
             requestArrived();
@@ -778,7 +772,7 @@
           '</div>'+
         '</div>'
       );
-      $('div.filter_window').draggable({containment:'window',handle:'h3'});
+      $('div.filter_window').draggable({containment:'parent',handle:'h3'});
 
       //Mamufas elements belong to the carto table
       $('div.mamufas').append(
@@ -2324,12 +2318,11 @@
           defaults.filter_column = column_name;
            
           // Show filter window
-          $('div.filter_window').fadeIn(function(ev){
+          $('div.filter_window')
+          	.css({'left': (($(document).width() / 2) - 170) + 'px'})
+          .fadeIn(function(ev){
             $('div.filter_window input[type="text"]').focus();
           });
-          
-          
-
         }
       });
       $('div.filter_window span.top h3 a').live('click',function(ev){

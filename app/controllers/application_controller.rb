@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
   def not_authorized
     respond_to do |format|
       format.html do
-        session[:return_to] = request.request_uri
+        session[:return_to] = request.url
         redirect_to login_path and return
       end
       format.json do

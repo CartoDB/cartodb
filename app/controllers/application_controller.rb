@@ -71,14 +71,13 @@ class ApplicationController < ActionController::Base
   
   def check_domain
     if Rails.env.production?
-     app_domain = CartoDB.session_domain
      protocol   = 'https'
      port       = ""
     else
-     app_domain = ".localhost.lan" 
      protocol   = 'http'
-     port       = request.port
+     port       = ":#{request.port}"
     end
+    app_domain = CartoDB.session_domain
     
     if logged_in?
       if request.host !~ /^#{current_user.username}#{app_domain}$/

@@ -195,7 +195,7 @@
             '<span class="top">'+
               '<h3>Edit your tiles</h3>'+
               '<p>Check the <a target="_blank" href="http://mapbox.com/carto/">Carto documentation</a> to learn more.</p>'+
-              '<textarea id="cartocss_editor"></textarea>'+
+              '<div class="outer_textarea"><textarea id="cartocss_editor" wrap="hard"></textarea></div>'+
 							'<span class="errors"><div><p>Your query is not correct, try again with another ;)</p></div></span>'+
             '</span>'+
             '<span class="bottom">'+

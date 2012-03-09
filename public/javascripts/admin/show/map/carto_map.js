@@ -244,6 +244,7 @@
         data: {style:str},
         success: function(result) {
           $('.cartocss_editor').removeClass('error');
+          $('.cartocss_editor').find('.outer_textarea').removeAttr('style');
           if (refresh)
             me.refreshWax();
         },
@@ -252,7 +253,10 @@
           var msg = '';
           _.each(errors,function(ele,i){msg += ele + '<br/>';});
           $('.cartocss_editor span.errors p').html(msg);
-          $('.cartocss_editor').addClass('error');
+
+		      var errors_height = (errors.length * 16) + 23;
+		      $('.cartocss_editor').find('.outer_textarea').css({'bottom':errors_height+'px'});
+		      $('.cartocss_editor').addClass('error');
         }
       });
     }
@@ -492,8 +496,7 @@
             success: function(data) {
   			      // Remove error content
   						$('div.sql_window').removeClass('error');
-  						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
-  						$('div.sql_window').css({'min-height':'199px'});
+  						$('div.sql_window div.inner div.outer_textarea').removeAttr();
   						
   						$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
   						$('span.query p').text('This query took '+data.time.toFixed(3)+' seconds');
@@ -513,14 +516,10 @@
 			        	$('div.sql_window span.errors p').append(''+error+'.<br/>');
 			      	});
 
-				      var errors_height = (errors.length * 16) + 17
-				      	, new_bottom = 48 + errors_height
-				      	, new_height = 199 + errors_height;
+				      var errors_height = (errors.length * 16) + 22;
 
-				      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
-				      $('div.sql_window')
-				      	.css({'min-height':new_height+'px'})
-				      	.addClass('error');
+				      $('div.sql_window div.inner div.outer_textarea').css({bottom:errors_height+'px'});
+				      $('div.sql_window').addClass('error');				      	
 
   			      $('.map_header div.stickies').remove();
   			      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
@@ -1308,8 +1307,9 @@
           function _bindEvents() {
 
             // Draggable
-            $carto.draggable({containment:'parent',handle:'h3'});
-            
+            $carto
+            	.draggable({containment:'parent',handle:'h3'})
+            	.resizable({maxWidth:600,maxHeight:600});
             
             /* open cartocss editor */
             $('.general_options.map li a.carto').click(function(ev){

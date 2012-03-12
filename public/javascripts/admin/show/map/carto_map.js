@@ -724,6 +724,9 @@
       var $vis_ul = $('.map_header ul.visualization_type')
         , prev_properties = cartoToJavascript(styles);        // Get previous properties, important!
       
+
+        console.log(prev_properties);
+
       /*
         LIST HEADER VISUALIZATION
       */
@@ -986,7 +989,7 @@
               custom_vis['param'] = 'marker-width';
               custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,1,2,3,4,5,6,7,8,9];
               custom_vis['n_buckets'] = 10;
-              custom_vis['values'] = old_properties.visualization.values || [1,2,3,4,5,6,7,8,9,10];
+              custom_vis['values'] = old_properties.visualization.values || [4,5,6,7,8,9,10,11,12,13];
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
               custom_vis['param'] = 'polygon-fill';
@@ -1043,6 +1046,7 @@
 
             // Range inputs
             $custom.find('span.numeric').each(function(i,el){
+            	debugger;
               var type = $(el).attr('class').replace('numeric','').replace(' ','')
                 , property = $(el).attr('css') || $(el).attr('data')
                 , value = 0;

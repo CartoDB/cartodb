@@ -244,7 +244,7 @@ div.sql_window div.inner span.top h3:hover {cursor:move}
 div.sql_window div.inner span.top p {display:block; padding:3px 0 0 0; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
 div.sql_window div.inner span.top p a {color:#666666}
 div.sql_window div.inner span.top p a:hover {color:#333333}
-div.sql_window div.inner span.top div.outer_textarea {position:absolute; top:60px; left:9px; right:9px; bottom:11px; margin:10px 0 0 0; padding:5px ; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
+div.sql_window div.inner span.top div.outer_textarea {position:absolute; top:60px; left:9px; right:9px; bottom:11px; margin:10px 0 0 0; padding:3px ; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
 div.sql_window div.inner span.top textarea {position:relative; min-width:454px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #CDCDCD; webkit-border-radius:5px;
 border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial; color:#333333; line-height:13px; background:white}
 div.sql_window span.bottom {position:absolute; bottom:10px; left:9px; right:9px; height:28px;}
@@ -265,7 +265,7 @@ div.sql_window.error div.inner span.errors {display:block!important;}
 
 
 /*Codemirror SQL*/
-div.sql_window .CodeMirror {overflow:auto; height:100%; line-height: 1em; font-family: monospace;}
+div.sql_window .CodeMirror {position:absolute; left:3px; right:3px; top:3px; bottom:3px; overflow:auto; line-height:1em;font-family:monospace; z-index:5}
 div.sql_window .CodeMirror-scroll {overflow: auto; height: auto; position: relative; outline: none;}
 div.sql_window .CodeMirror-gutter {position: absolute; left: 0; top: 0; z-index: 10; background-color: #f7f7f7; border-right: 1px solid #eee; min-width: 2em; height: 100%;}
 div.sql_window .CodeMirror-gutter-text {color: #aaa; text-align: right; padding: .4em .2em .4em .4em; white-space: pre !important;}

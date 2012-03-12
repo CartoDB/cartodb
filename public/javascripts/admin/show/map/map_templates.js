@@ -187,29 +187,7 @@
           '</ul>'+
         '</div>'+
         '<p class="georeferencing"></p>'+
-        '<div id="map"></div>'+
-        
-        '<div class="cartocss_editor">'+
-          '<a class="close" href="#close">close</a>'+
-          '<div class="inner_">'+
-            '<span class="top">'+
-              '<h3>Edit your tiles</h3>'+
-              '<p>Check the <a target="_blank" href="http://mapbox.com/carto/">Carto documentation</a> to learn more.</p>'+
-              '<div class="outer_textarea"><textarea id="cartocss_editor" wrap="hard"></textarea></div>'+
-							'<span class="errors"><div><p>Your query is not correct, try again with another ;)</p></div></span>'+
-            '</span>'+
-            '<span class="bottom">'+
-              '<span class="history">'+
-                '<a href="#undo" class="undo"></a><a href="#redo" class="redo"></a>'+
-                '<div class="tooltip">'+
-                  '<p>select</p>'+
-                  '<span class="arrow"></span>'+
-                '</div>'+
-              '</span>'+
-              '<a href="#try" class="try_css">Try style</a>'+
-            '</span>'+
-          '</div>'+
-        '</div>'
+        '<div id="map"></div>'
       );
       
       
@@ -229,6 +207,34 @@
 					'<span class="error">Ooops! Looks like we can\'t find this address</span>'+
 				'</form>'
       );
+
+
+      //////////////////////////////////////
+      // Tiles Carto Editor								//
+      //////////////////////////////////////
+      $('body').append(
+	      '<div class="cartocss_editor">'+
+	          '<a class="close" href="#close">close</a>'+
+	          '<div class="inner_">'+
+	            '<span class="top">'+
+	              '<h3>Edit your tiles</h3>'+
+	              '<p>Check the <a target="_blank" href="http://mapbox.com/carto/">Carto documentation</a> to learn more.</p>'+
+	              '<div class="outer_textarea"><textarea id="cartocss_editor" wrap="hard"></textarea></div>'+
+								'<span class="errors"><div><p>Your query is not correct, try again with another ;)</p></div></span>'+
+	            '</span>'+
+	            '<span class="bottom">'+
+	              '<span class="history">'+
+	                '<a href="#undo" class="undo"></a><a href="#redo" class="redo"></a>'+
+	                '<div class="tooltip">'+
+	                  '<p>select</p>'+
+	                  '<span class="arrow"></span>'+
+	                '</div>'+
+	              '</span>'+
+	              '<a href="#try" class="try_css">Try style</a>'+
+	            '</span>'+
+	          '</div>'+
+	        '</div>'
+	    );
     }
 
     

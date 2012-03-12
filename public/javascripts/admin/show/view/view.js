@@ -1392,9 +1392,6 @@
 	function setAppStatus() {
 		var query_mode = ($('body').hasClass('query'));
 		if (query_mode) {
-			if ($('ul.tab_menu li a.share').hasClass('disabled')) {
-				$('ul.tab_menu li a.share').hide();
-			}
 		  $('a.open_georeference').css({opacity:0.5});
 			$.favicon('/favicon/black_32x32.png');
 			var html = $('p.settings').html();
@@ -1406,7 +1403,6 @@
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
 		} else {
-			$('ul.tab_menu li a.share').show();
 		  $('a.open_georeference').css({opacity:1});
 			$.favicon('/favicon/blue_32x32.png');
 			$('body').removeClass('query');

@@ -54,7 +54,7 @@ section.subheader span.privacy_window ul li.selected a {color:white; background-
 section.subheader span.privacy_window ul li.public:hover {background:#6FBE6F;}
 section.subheader span.privacy_window ul li.private:hover {background:#FF2F1E;}
 section.subheader span.privacy_window ul li:hover a {color:white; background-position:0 2px;}
-section.subheader span.privacy_window ul li.disabled {background:none; opacity:0.3;}
+section.subheader span.privacy_window ul li.disabled {background:none; opacity:0.5; filter:alpha(opacity=50);}
 section.subheader span.privacy_window ul li.disabled:hover {background:none;}
 section.subheader span.privacy_window ul li.disabled:hover a {color:black; background-position:0 -28px; cursor:default;}
 
@@ -71,7 +71,7 @@ section.subheader ul.tab_menu li a {float:left; padding:7px 15px; color:white; f
   text-decoration:none}
 section.subheader ul.tab_menu li a.share {margin:5px 0 0 6px; padding:3px 8px; background:#131723; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; font:bold 11px Arial;}
 section.subheader ul.tab_menu li a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
-section.subheader ul.tab_menu li a.share.disabled {opacity:0.5;}
+section.subheader ul.tab_menu li a.share.disabled {opacity:0.5; filter: alpha(opacity=50);}
 section.subheader ul.tab_menu li a.share.disabled:hover {background:#131723; color:white; cursor:default}
 section.subheader ul.tab_menu li span.share_tooltip {position:absolute; display:none; bottom:15px; left:-40px; width:197px; height:95px; background:url('/images/admin/table/share_tooltip.png') no-repeat 0 0;}
 section.subheader ul.tab_menu li span.share_tooltip p {width:153px; margin:25px 0 0 20px; font:normal 13px "Arial"; color:#666666; text-align:center}
@@ -113,16 +113,16 @@ section.subheader div.right span.mapkey a {float:right; margin:5px 0 3px; paddin
 section.subheader div.right span.mapkey a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
 section.subheader div.right span.paginate a {float:right; width:27px; height:23px; text-indent:-9999px;}
 section.subheader div.right span.paginate a.previous {margin:0 3px 0 0; background:url('/images/admin/icons/left_button.png') no-repeat 0 0;}
-section.subheader div.right span.paginate a.previous.disabled {background-position:0 -46px;}
+section.subheader div.right span.paginate a.previous.disabled {background-position:0 -46px; opacity:0.5; filter: alpha(opacity=50);}
 section.subheader div.right span.paginate a.next {background:url('/images/admin/icons/right_button.png') no-repeat 0 0;}
-section.subheader div.right span.paginate a.next.disabled {background-position:0 -46px;}
+section.subheader div.right span.paginate a.next.disabled {background-position:0 -46px; opacity:0.5; filter: alpha(opacity=50);}
 section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
 section.subheader div.right span.paginate a.disabled:hover {cursor:default;}
 body.query section.subheader div.right span.paginate a.previous {background:url('/images/admin/icons/sql_paginate.png') no-repeat 0 0;}
 body.query section.subheader div.right span.paginate a.previous:hover {background-position:0 -24px}
-body.query section.subheader div.right span.paginate a.previous.disabled {background-position:0 -46px; opacity:0.5}
+body.query section.subheader div.right span.paginate a.previous.disabled {background-position:0 -46px; opacity:0.5; filter: alpha(opacity=50);}
 body.query section.subheader div.right span.paginate a.next {background:url('/images/admin/icons/sql_paginate.png') -27px 0;}
-body.query section.subheader div.right span.paginate a.next.disabled {background-position:-27px -46px; opacity:0.5}
+body.query section.subheader div.right span.paginate a.next.disabled {background-position:-27px -46px; opacity:0.5; filter: alpha(opacity=50);}
 body.query section.subheader div.right span.paginate a.next:hover {background-position:-27px -23px;}
 body.query section.subheader div.right span.paginate a.disabled:hover {cursor:default;}
 

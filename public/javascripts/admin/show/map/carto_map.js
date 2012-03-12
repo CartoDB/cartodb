@@ -498,6 +498,9 @@
   			      // Remove error content
   						$('div.sql_window').removeClass('error');
   						$('div.sql_window div.inner div.outer_textarea').removeAttr('style');
+
+  						// Remove errors from the editor
+  						delete editor['errors'];
   						
   						$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
   						$('span.query p').text('This query took '+data.time.toFixed(3)+' seconds');
@@ -510,7 +513,12 @@
               window.ops_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
   			      $(document).unbind('arrived');
 
+  			      // parse errors
   			      var errors = $.parseJSON(e.responseText).errors;
+
+  			      // set errors in the editor
+  			      editor['errors'] = errors;
+  			      
   			      $('div.sql_window span.errors p').text('');
   			      
 			      	_.each(errors,function(error,i){

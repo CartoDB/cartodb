@@ -171,6 +171,9 @@
 						$('div.sql_window').removeClass('error');
 						$('div.sql_window div.inner div.outer_textarea').removeAttr('style');
 
+						// Remove errors from editor
+						delete editor['errors'];
+
 						modified = data.modified;
 						time    = data.time.toFixed(3);
 			      rows    = data.rows;
@@ -181,8 +184,12 @@
 			    error: function(e) {
             window.ops_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
 			      
+			      // parse errors
 			      errors = $.parseJSON(e.responseText).errors;
 
+			      // Save errors in the editor
+			      editor['errors'] = errors;
+			      
 			      $('div.sql_window span.errors p').text('');
 			      _.each(errors,function(error,i){
 			        $('div.sql_window span.errors p').append(''+error+'.<br/>');

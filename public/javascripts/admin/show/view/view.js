@@ -48,6 +48,14 @@
 	          editor.refresh();
 	          editor.focus();
 	        });
+
+	        // Set errors size if exists
+	        if (editor.errors) {
+	        	$('div.sql_window div.inner div.outer_textarea').css({bottom:$('div.sql_window span.errors').outerHeight() +'px'});
+	        } else {
+	        	$('div.sql_window div.inner div.outer_textarea').removeAttr('style');
+	        }
+
 	        bindESC();
 	      }
 	    });
@@ -60,6 +68,10 @@
 	    $('div.sql_window a.close_sql,div.sql_window a.close').live('click', function (ev) {
 	      stopPropagation(ev);
 	      closeOutTableWindows();
+	      if (editor.errors) {
+	      	delete editor['errors'];
+	      	$('a.clear_table:eq(0)').click();
+	      }
 	    });
 
 	    

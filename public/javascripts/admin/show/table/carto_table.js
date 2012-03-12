@@ -188,12 +188,9 @@
 			        $('div.sql_window span.errors p').append(''+error+'.<br/>');
 			      });
 			      
-			      var errors_height = (errors.length * 16) + 22;
-
-			      $('div.sql_window div.inner div.outer_textarea').css({bottom:errors_height+'px'});
 			      $('div.sql_window').addClass('error');
+			      $('div.sql_window div.inner div.outer_textarea').css({bottom:$('div.sql_window span.errors').outerHeight() +'px'});
 			      
-			      methods.drawQueryColumns([]);
             requestArrived();
 			    }
 			  });
@@ -248,6 +245,10 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawColumns: function(data,rows,direction,actualPage,options) {
       table.h = [];
+
+      // Remove previous thead
+      table.e.find('thead').remove();
+
       //Draw the columns headers
       var thead = '<thead style="'+((table.mode!="normal")?'height:91px':'')+'"><tr><th class="first"><div></div></th>';
 
@@ -311,6 +312,10 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawQueryColumns: function(rows,total,time,new_query) {
       if (rows && rows.length>0) {
+
+      	// Remove previous thead
+      	table.e.find('thead').remove();
+
 				if (new_query) {
 					//Draw the columns headers
 		      var thead = '<thead style="height:91px"><tr><th class="first"><div></div></th>';
@@ -348,6 +353,7 @@
 					});
 
 					thead += "</tr></thead>";
+
 					table.e.append(thead);
 					table.e.find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
 				}
@@ -2212,6 +2218,7 @@
 			    stopPropagation(ev);
 			    if (query_mode) {
 			    	$('div.sql_window').removeClass('error');
+			    	$('div.sql_window div.outer_textarea').removeAttr('style');
 			    	methods.restoreTable();
 			    }			    	
 			  }
@@ -2448,12 +2455,14 @@
     resizeTable: function(new_) {
       var parent_width = $(window).width();
       table.e.parent().width(parent_width);
-      var width_table_content = ((table.e.find('thead tr th').size()-2)*(table.cell_s+27)) + table.e.find('th[c="cartodb_id"]').width() + 43;
-      var head_element = table.e.find('thead tr th:last div');
-      var body_element = table.e.find('tbody tr');
+
+      var width_table_content = ((table.e.find('thead > tr > th').size()-2)*(table.cell_s+27)) + table.e.find('th[c="cartodb_id"]').width() + 43
+      	, head_element = table.e.find('thead tr th:last div')
+      	, body_element = table.e.find('tbody tr');
 
       //WIDTH
-      if (parent_width>width_table_content || new_) {
+      if (parent_width>width_table_content || new_) {      	
+
         table.last_cell_s = parent_width - width_table_content + table.cell_s;
         if (table.last_cell_s<0) {
           table.last_cell_s = table.cell_s;

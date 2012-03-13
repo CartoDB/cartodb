@@ -269,24 +269,31 @@ class User < Sequel::Model
     size / 2  
   end
   
+  def exceeded_quota?
+    self.over_disk_quota? || self.over_table_quota?      
+  end
+  
   def remaining_quota
     self.quota_in_bytes - self.db_size_in_bytes
   end  
   
-  def quota_overspend
-    self.exceeded_quota? ? self.remaining_quota.abs : 0
+  def disk_quota_overspend
+    self.over_disk_quota? ? self.remaining_quota.abs : 0
+  end
+    
+  def over_disk_quota?
+    self.remaining_quota <= 0
   end
   
-  def exceeded_quota?
-    self.remaining_quota <= 0 || self.remaining_table_quota == 0      
+  def over_table_quota?
+    (remaining_table_quota && remaining_table_quota <= 0) ? true : false
   end
   
   #can be nil table quotas
   def remaining_table_quota
     if self.table_quota.present?
-      self.table_quota - self.table_count
-    else
-      false
+      remaining = self.table_quota - self.table_count
+      (remaining < 0) ? 0 : remaining
     end    
   end
   

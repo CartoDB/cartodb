@@ -185,20 +185,29 @@ Congratulations! Everything you need should now be installed. Celebrate by drink
 
 Time to run your development version of CartoDB.
 
-First, there are a couple of one-time setups:
+```
+// [mysubdomain] = replace with the subdomain/username of your choice (in cartodb, username == subdomain)
 
-  - Go into the `cartodb` directory.
-  - Type `rvm` and say "yes" to create a new gemset or just type `rvm use 1.9.2@cartodb --create`
-  - Type `bundle install --binstubs`
-  - Rename `config/app_config.yml.sample` to `config/app_config.yml`
-  - Rename `config/database.yml.sample` to `config/database.yml`
-  - Edit `/etc/hosts` and add `127.0.0.1 admin.localhost.lan admin.testhost.lan` and `127.0.0.1 [mysubdomain].localhost.lan`
+// Go into the `cartodb` directory.
+cd cartodb
 
-Setup your first user account:
+// Create a new gemset
+rvm use 1.9.2@cartodb --create
 
-```bash
-// [xxx] = replace with your choice
- 
+// Install local dependencies 
+bundle install --binstubs
+
+// Configure the application constants
+mv config/app_config.yml.sample config/app_config.yml && nano config/app_config.yml
+
+// Configure your postgis database connection details
+mv config/database.yml.sample config/database.yml && nano config/database.yml
+
+// Add entries to /etc/hosts needed in development
+echo "127.0.0.1 admin.localhost.lan" | sudo tee -a /etc/hosts
+echo "127.0.0.1 admin.testhost.lan" | sudo tee -a /etc/hosts
+echo "127.0.0.1 [mysubdomain].localhost.lan" | sudo tee -a /etc/hosts
+
 // Create your user at [mysubdomain].cartodb.com
 bundle exec rake cartodb:db:setup SUBDOMAIN=[mysubdomain] PASSWORD=[mypass] ADMIN_PASSWORD=[mypass] EMAIL=[me@mail.com] 
 
@@ -215,7 +224,7 @@ bundle exec rake cartodb:db:set_user_private_tables_enabled['[mysubdomain]', 'tr
 bundle exec rake cartodb:db:set_user_account_type['[mysubdomain]', '[DEDICATED]'] 
 ```
 
-Finally, let's start the CartoDB development server on port 3000:
+Finally, start the CartoDB development server on port 3000:
 
 ```bash
 $ rails server -p 3000

@@ -199,8 +199,8 @@ After that, just make sure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all
 Setup your first user account:
 
 ```bash
-$ bundle exec rake cartodb:db:setup EMAIL=me@mail.com SUBDOMAIN=mysubdomain PASSWORD=mypass ADMIN_PASSWORD=mypass
-$ bundle exec rake cartodb:db:set_user_quota['me',1000] # 1 GB quota
+$ bundle exec rake cartodb:db:setup SUBDOMAIN=mysubdomain PASSWORD=mypass ADMIN_PASSWORD=mypass EMAIL=me@mail.com 
+$ bundle exec rake cartodb:db:set_user_quota['mysubdomain',1000] # 1 GB quota
 ```
 
 And finally, let's start CartoDB on the rails development server:
@@ -211,7 +211,7 @@ $ rails s
 
 That's it! 
 
-You should now be able to access `mysubdomain.localhost.lan` in your browser and login with your email and password.
+You should now be able to access `http://mysubdomain.localhost.lan:3000` in your browser and login with your email and password.
 
 Note: Look at the `public/javascripts/environments/development.js` file which configures Windshaft-cartodb tile server URLs. 
   

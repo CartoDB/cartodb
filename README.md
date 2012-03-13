@@ -185,42 +185,42 @@ Congratulations! Everything you need should now be installed. Celebrate by drink
 
 Time to run your development version of CartoDB.
 
-```
-// [mysubdomain] = replace with the subdomain/username of your choice (in cartodb, username == subdomain)
+```bash
+# [mysubdomain] = replace with the subdomain/username of your choice (in cartodb, username == subdomain)
 
-// Go into the `cartodb` directory.
+# Enter the `cartodb` directory.
 cd cartodb
 
-// Create a new gemset
+# Create a new gemset
 rvm use 1.9.2@cartodb --create
 
-// Install local dependencies 
+# Install local dependencies 
 bundle install --binstubs
 
-// Configure the application constants
+# Configure the application constants
 mv config/app_config.yml.sample config/app_config.yml && nano config/app_config.yml
 
-// Configure your postgis database connection details
+# Configure your postgis database connection details
 mv config/database.yml.sample config/database.yml && nano config/database.yml
 
-// Add entries to /etc/hosts needed in development
+# Add entries to /etc/hosts needed in development
 echo "127.0.0.1 admin.localhost.lan" | sudo tee -a /etc/hosts
 echo "127.0.0.1 admin.testhost.lan" | sudo tee -a /etc/hosts
 echo "127.0.0.1 [mysubdomain].localhost.lan" | sudo tee -a /etc/hosts
 
-// Create your user at [mysubdomain].cartodb.com
+# Create your user at [mysubdomain].cartodb.com
 bundle exec rake cartodb:db:setup SUBDOMAIN=[mysubdomain] PASSWORD=[mypass] ADMIN_PASSWORD=[mypass] EMAIL=[me@mail.com] 
 
-// Update your quota to 10GB
+# Update your quota to 10GB
 bundle exec rake cartodb:db:set_user_quota['[mysubdomain]',10240]      
 
-// Allow unlimited tables to be created
+# Allow unlimited tables to be created
 bundle exec rake cartodb:db:set_unlimited_table_quota['[mysubdomain]'] 
 
-// Allow user to create private tables in addition to public
+# Allow user to create private tables in addition to public
 bundle exec rake cartodb:db:set_user_private_tables_enabled['[mysubdomain]', 'true'] 
 
-// Set the name of the CartoDB
+# Set the name of the CartoDB
 bundle exec rake cartodb:db:set_user_account_type['[mysubdomain]', '[DEDICATED]'] 
 ```
 

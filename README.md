@@ -237,7 +237,8 @@ Celebrate by drinking a cold beer before continuing. :)
 Time to run your development version of CartoDB.
 
 ```bash
-# [mysubdomain] = replace with the subdomain/username of your choice (in cartodb, username == subdomain)
+# [mysubdomain] = replace with the subdomain/username of your choice 
+#                 (in cartodb, username == subdomain)
 
 # Enter the `cartodb` directory.
 cd cartodb
@@ -262,7 +263,8 @@ echo "127.0.0.1 admin.testhost.lan" | sudo tee -a /etc/hosts
 echo "127.0.0.1 [mysubdomain].localhost.lan" | sudo tee -a /etc/hosts
 
 # Create your user at [mysubdomain].cartodb.com
-bundle exec rake cartodb:db:setup SUBDOMAIN=[mysubdomain] PASSWORD=[mypass] ADMIN_PASSWORD=[mypass] EMAIL=[me@mail.com] 
+bundle exec rake cartodb:db:setup SUBDOMAIN=[mysubdomain] \
+PASSWORD=[mypass] ADMIN_PASSWORD=[mypass] EMAIL=[me@mail.com] 
 
 # Update your quota to 10GB
 bundle exec rake cartodb:db:set_user_quota['[mysubdomain]',10240]      

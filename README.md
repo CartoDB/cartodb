@@ -196,17 +196,17 @@ First, there are a couple of one-time setups:
 
 After that, just make sure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all running. 
 
-Ok, let's start CartoDB on the rails development server:
-
-```bash
-$ rails s
-```
-
-And finally, setup your first user account:
+Setup your first user account:
 
 ```bash
 $ bundle exec rake cartodb:db:setup EMAIL=me@mail.com SUBDOMAIN=mysubdomain PASSWORD=mypass ADMIN_PASSWORD=mypass
 $ bundle exec rake cartodb:db:set_user_quota['me',1000] # 1 GB quota
+```
+
+And finally, let's start CartoDB on the rails development server:
+
+```bash
+$ rails s
 ```
 
 That's it! 

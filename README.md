@@ -192,28 +192,43 @@ First, there are a couple of one-time setups:
   - Type `bundle install --binstubs`
   - Rename `config/app_config.yml.sample` to `config/app_config.yml`
   - Rename `config/database.yml.sample` to `config/database.yml`
-  - Edit `/etc/hosts` and add `127.0.0.1 admin.localhost.lan admin.testhost.lan` and `127.0.0.1 mysubdomain.localhost.lan`
-
-After that, just make sure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all running. 
+  - Edit `/etc/hosts` and add `127.0.0.1 admin.localhost.lan admin.testhost.lan` and `127.0.0.1 [mysubdomain].localhost.lan`
 
 Setup your first user account:
 
 ```bash
-$ bundle exec rake cartodb:db:setup SUBDOMAIN=mysubdomain PASSWORD=mypass ADMIN_PASSWORD=mypass EMAIL=me@mail.com 
-$ bundle exec rake cartodb:db:set_user_quota['mysubdomain',1000] # 1 GB quota
+// [xxx] = replace with your choice
+ 
+// Create your user at [mysubdomain].cartodb.com
+bundle exec rake cartodb:db:setup SUBDOMAIN=[mysubdomain] PASSWORD=[mypass] ADMIN_PASSWORD=[mypass] EMAIL=[me@mail.com] 
+
+// Update your quota to 10GB
+bundle exec rake cartodb:db:set_user_quota['[mysubdomain]',10240]      
+
+// Allow unlimited tables to be created
+bundle exec rake cartodb:db:set_unlimited_table_quota['[mysubdomain]'] 
+
+// Allow user to create private tables in addition to public
+bundle exec rake cartodb:db:set_user_private_tables_enabled['[mysubdomain]', 'true'] 
+
+// Set the name of the CartoDB
+bundle exec rake cartodb:db:set_user_account_type['[mysubdomain]', '[DEDICATED]'] 
 ```
 
-And finally, let's start CartoDB on the rails development server:
+Finally, let's start the CartoDB development server on port 3000:
 
 ```bash
-$ rails s
+$ rails server -p 3000
 ```
 
-That's it! 
+You should now be able to access **`http://[mysubdomain].localhost.lan:3000`** in your browser and login with the password specified above.
 
-You should now be able to access `http://mysubdomain.localhost.lan:3000` in your browser and login with your email and password.
 
-Note: Look at the `public/javascripts/environments/development.js` file which configures Windshaft-cartodb tile server URLs. 
+# Note on tiling, SQL API and Redis #
+
+Please ensure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all running for full experience. 
+
+Manual configuration is needed for the `public/javascripts/environments/development.js` file which configures Windshaft-cartodb tile server URLs. 
   
 ### Contributors ###
 
@@ -229,4 +244,4 @@ Note: Look at the `public/javascripts/environments/development.js` file which co
   - Javier Arce (@javierarce)
   - Aaron Steele (@eightysteele)
   - Luis Bosque (@luisico)
-  - test
+  - Sandro Santilli (@strk)

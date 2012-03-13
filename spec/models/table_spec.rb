@@ -1303,6 +1303,43 @@ describe Table do
       end
     end
   end
+  context "migrate existing postgresql tables into cartodb" do
+    it "create table via SQL statement and then migrate table into CartoDB" do
+      table = new_table :name => nil
+      table.migrate_existing_table = "exttable"
+      user = User[table.user_id]
+      user.run_pg_query("CREATE TABLE exttable (go VARCHAR, ttoo INT, bed VARCHAR)")
+      user.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
+                         INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 2, 'p')")
+      table.save
+      table.name.should == 'exttable'
+      table.rows_counted.should == 2
+    end
+    it "create and migrate a table containing a the_geom and cartodb_id" do
+      table = new_table :name => nil
+      table.migrate_existing_table = "exttable"
+      user = User[table.user_id]
+      user.run_pg_query("CREATE TABLE exttable (the_geom VARCHAR, cartodb_id INT, bed VARCHAR)")
+      user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
+                         INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
+      table.save
+      table.name.should == 'exttable'
+      table.rows_counted.should == 2
+    end
+    it "create and migrate a table containing a valid the_geom" do
+      table = new_table :name => nil
+      table.migrate_existing_table = "exttable"
+      user = User[table.user_id]
+      user.run_pg_query("CREATE TABLE exttable (cartodb_id INT, bed VARCHAR)")
+      user.run_pg_query("SELECT AddGeometryColumn ('exttable','the_geom',4326,'POINT',2);")
+      user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( GEOMETRYFROMTEXT('POINT(10 14)',4326), 1, 'p');
+                         INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( GEOMETRYFROMTEXT('POINT(22 34)',4326), 2, 'p')")
+      table.save
+      table.name.should == 'exttable'
+      table.rows_counted.should == 2
+      check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]])
+    end
+  end
   context "merging two+ tables" do
     it "should merge two twitters.csv" do
       # load a table to treat as our 'existing' table

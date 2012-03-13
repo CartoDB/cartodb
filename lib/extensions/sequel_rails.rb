@@ -14,7 +14,6 @@ module Rails
     def self.setup(environment=nil)
       environment ||= Rails.env
       puts "[sequel] Setting up the #{environment.inspect} environment:"
-
       @@connections[environment] ||= ::Sequel.connect({:logger => configuration.logger}.merge(::Rails::Sequel.configuration.environment_for(environment.to_s)))
       @@connections[environment]
     end
@@ -24,7 +23,7 @@ module Rails
       def host
         @host ||= config['host'] || 'localhost'
       end
-      
+                                    
       class Postgres < Storage
         def _create
           system(

@@ -69,7 +69,7 @@
                       '<label>Fill</label>'+
                       '<div class="long">'+
                         '<span class="color" css="marker-fill" default="#FF6600"></span>'+
-                        '<span class="numeric" css="marker-width" default="1"></span>'+
+                        '<span class="numeric" css="marker-width" default="5"></span>'+
                       '</div>'+
                       '<label>Border</label>'+
                       '<div class="long">'+
@@ -109,7 +109,7 @@
                     '</div>'+
                   '</li>'+
                   '<li>'+
-                    '<a class="option" href="#special">Bubble map</a>'+
+                    '<a class="option" href="#bubbles">Bubble map</a>'+
                     '<div class="suboptions bubbles">'+
                       '<label>Column</label>'+
                       '<div class="long">'+
@@ -136,29 +136,28 @@
                     '</div>'+
                   '</li>'+
                   '<li>'+
-                    '<a class="option" href="#special">Choropleth map</a>'+
-                    '<div class="suboptions bubbles">'+
+                    '<a class="option" href="#choropleth">Numeric Choropleth</a>'+
+                    '<div class="suboptions choropleth">'+
                       '<label>Column</label>'+
                       '<div class="long">'+
                         '<span class="dropdown" data="column" default="cartodb_id"></span>'+
                       '</div>'+
-                      '<label>Fill</label>'+
+                      '<label>Color divisions</label>'+
                       '<div class="long">'+
-                        '<span class="color" css="marker-fill" default="#FF6600"></span>'+
+                        '<span class="dropdown buckets" data="values" default="5"></span>'+
+                      '</div>'+
+                      '<label>Color ramp</label>'+
+                      '<div class="long">'+
+                        '<span class="color_ramp" data="values"></span>'+
                       '</div>'+
                       '<label>Border</label>'+
                       '<div class="long">'+
-                        '<span class="color" css="marker-line-color" default="#FFFFFF"></span>'+
-                        '<span class="numeric" css="marker-line-width" default="1"></span>'+
+                        '<span class="color" css="line-color" default="#FFFFFF"></span>'+
+                        '<span class="numeric" css="line-width" default="1"></span>'+
                       '</div>'+
                       '<label>Opacity</label>'+
                       '<div class="long">'+
-                        '<span class="alpha" css="marker-opacity marker-line-opacity" default="1"></span>'+
-                      '</div>'+
-                      '<label>Bubble sizes</label>'+
-                      '<div class="long">'+
-                        '<span class="numeric min" data="values" default="4"></span>'+
-                        '<span class="numeric max" data="values" default="100"></span>'+
+                        '<span class="alpha" css="line-opacity polygon-opacity" default="1"></span>'+
                       '</div>'+
                     '</div>'+
                   '</li>'+

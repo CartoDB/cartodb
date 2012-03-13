@@ -58,11 +58,13 @@ module CartoDB
       # TODO: Explain THIS!
       if @import_from_file.is_a?(String) 
         @filesrc = nil
+        @fromuri = false
         if @import_from_file =~ /^http/ # Tells us it is a URL
           # KML from FusionTables urls were not coming with extensions
           if @import_from_file =~ /fusiontables/
             @filesrc = "fusiontables"
           end
+          @fromuri = true
           #@import_from_file = URI(@import_from_file) # Ensures open-uri will work
         end
           begin
@@ -78,27 +80,9 @@ module CartoDB
                   @ext = ".csv"
                 end
               end
-              p file_name
-              p file_name
-              p file_name
-              p file_name
-              p file_name
-              p file_name
-              p file_name
-              p file_name
-              p file_name
-              a = res.read.force_encoding("UTF-8")
-              p a
-              p a
-              p a
-              p a
-              p a
-              p a
-              p a
-              p a
               @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
               @import_from_file = Tempfile.new([@suggested_name, @ext])
-              @import_from_file.write a
+              @import_from_file.write res.read.force_encoding("UTF-8")
               @import_from_file.close
             end
           rescue e
@@ -189,22 +173,5 @@ module CartoDB
         end
       end        
     end  
-    def fetch(uri_str, limit = 10)
-      # You should choose better exception.
-      raise ArgumentError, 'HTTP redirect too deep' if limit == 0
-
-      url = URI.parse(uri_str)
-      req = Net::HTTP::Get.new(url.path, { 'User-Agent' => "cartodb.com 1.0" })
-      #if uri_str =~ /https:\/\//
-      #  req.use_ssl = true
-      #end
-      response = Net::HTTP.start(url.host, url.port) { |http| http.request(req) }
-      case response
-      when Net::HTTPSuccess     then response
-      when Net::HTTPRedirection then fetch(response['location'], limit - 1)
-      else
-        response.error!
-      end
-    end
   end
 end

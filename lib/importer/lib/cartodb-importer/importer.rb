@@ -71,8 +71,12 @@ module CartoDB
             file_name = File.basename(@import_from_file)
             @ext = File.extname(file_name)
             # Fix for extensionless fusiontables files
-            if @ext == "" && @filesrc == "fusiontables"
-              @ext = ".kml"
+            if @ext == "" 
+              if @filesrc == "fusiontables"
+                @ext = ".kml"
+              else
+                @ext = ".csv"
+              end
             end
             @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
             @import_from_file = Tempfile.new([@suggested_name, @ext])

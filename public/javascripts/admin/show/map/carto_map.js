@@ -243,7 +243,8 @@
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
         data: {style:str},
         success: function(result) {
-          $('.cartocss_editor span.errors').hide();
+          $('.cartocss_editor').removeClass('error');
+          $('.cartocss_editor').find('.outer_textarea').removeAttr('style');
           if (refresh)
             me.refreshWax();
         },
@@ -252,7 +253,10 @@
           var msg = '';
           _.each(errors,function(ele,i){msg += ele + '<br/>';});
           $('.cartocss_editor span.errors p').html(msg);
-          $('.cartocss_editor span.errors').css({display:'block'});
+
+		      var errors_height = (errors.length * 16) + 23;
+		      $('.cartocss_editor').find('.outer_textarea').css({'bottom':errors_height+'px'});
+		      $('.cartocss_editor').addClass('error');
         }
       });
     }
@@ -446,15 +450,21 @@
       // SQL Map console
       // Clear
       $('a.clear_table').live('click',function(ev){
-        var view_map = ($('body').hasClass('map'));
-        if (view_map) {
-          stopPropagation(ev);
-          $('body').removeClass('query');
-          me.query_mode = false;
-					$('.map_header div.stickies').remove();
-          setAppStatus();
-          me.refresh();
-        }
+        var map_mode = ($('body').hasClass('map'))
+        	, query_mode = ($('body').hasClass('query'));
+
+			  if (map_mode) {
+			    stopPropagation(ev);
+			    if (query_mode) {
+			    	$('body').removeClass('query');
+			    	$('div.sql_window').removeClass('error');
+			    	$('div.sql_window div.outer_textarea').removeAttr('style');
+          	me.query_mode = false;
+						$('.map_header div.stickies').remove();
+          	setAppStatus();
+          	me.refresh();
+          }
+			  }
       });
 
       // Try query
@@ -486,9 +496,11 @@
             headers: {"cartodbclient":"true"},
             success: function(data) {
   			      // Remove error content
-  						$('div.sql_window span.errors').hide();
-  						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
-  						$('div.sql_window').css({'min-height':'199px'});
+  						$('div.sql_window').removeClass('error');
+  						$('div.sql_window div.inner div.outer_textarea').removeAttr('style');
+
+  						// Remove errors from the editor
+  						delete editor['errors'];
   						
   						$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
   						$('span.query p').text('This query took '+data.time.toFixed(3)+' seconds');
@@ -501,18 +513,21 @@
               window.ops_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
   			      $(document).unbind('arrived');
 
+  			      // parse errors
   			      var errors = $.parseJSON(e.responseText).errors;
+
+  			      // set errors in the editor
+  			      editor['errors'] = errors;
+  			      
   			      $('div.sql_window span.errors p').text('');
-  			      _.each(errors,function(error,i){
-  			        $('div.sql_window span.errors p').append(' '+error+'.');
-  			      });
+  			      
+			      	_.each(errors,function(error,i){
+			        	$('div.sql_window span.errors p').append(''+error+'.<br/>');
+			      	});
 
-  			      var new_bottom = 65 + $('div.sql_window span.errors').height();
-  			      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
+							$('div.sql_window').addClass('error');
+				      $('div.sql_window div.inner div.outer_textarea').css({bottom:$('div.sql_window span.errors').outerHeight() +'px'});				      
 
-  			      var new_height = 199 + $('div.sql_window span.errors').height();
-  			      $('div.sql_window').css({'min-height':new_height+'px'});
-  			      $('div.sql_window span.errors').show();
   			      $('.map_header div.stickies').remove();
   			      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
       				$('span.query p').text('');
@@ -968,6 +983,7 @@
               // No custom values
             } else {
               custom_props['line-width'] = '4';
+              delete custom_props['polygon-opacity'];
             }
 
 
@@ -977,7 +993,7 @@
               custom_vis['param'] = 'marker-width';
               custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,1,2,3,4,5,6,7,8,9];
               custom_vis['n_buckets'] = 10;
-              custom_vis['values'] = old_properties.visualization.values || [1,2,3,4,5,6,7,8,9,10];
+              custom_vis['values'] = old_properties.visualization.values || [4,5,6,7,8,9,10,11,12,13];
             } else if (geom_type=="polygon" || geom_type=="multipolygon") {
               custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
               custom_vis['param'] = 'polygon-fill';
@@ -1298,8 +1314,9 @@
           function _bindEvents() {
 
             // Draggable
-            $carto.draggable({containment:'parent',handle:'h3'});
-            
+            $carto
+            	.draggable({containment:'parent',handle:'h3'})
+            	.resizable({maxWidth:600,maxHeight:600});
             
             /* open cartocss editor */
             $('.general_options.map li a.carto').click(function(ev){
@@ -1728,7 +1745,7 @@
             // Loop over all columns and saving each value that is not present
             //   in the requested infowindow_vars
             _.each(data.schema,function(arr,i) {
-              if (arr[0]!='cartodb_id') {
+              if (arr[0]!='cartodb_id' && arr[0]!='the_geom' && arr[0]!='the_geom_webmercator') {
                 default_infowindow[arr[0]] = true;
                 if (infowindow_vars[arr[0]] == undefined) infowindow_vars[arr[0]] = true;
               }
@@ -1824,7 +1841,6 @@
                 me.hideOverlays();
               }
             },200);
-
           }
         },
         clickAction: 'full'

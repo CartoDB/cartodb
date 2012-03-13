@@ -1,3 +1,12 @@
+GIT
+  remote: git@github.com:tokumine/sequel-rails.git
+  revision: d553ee706c397afc7719dba8a91c16fd7a024fbd
+  tag: 0.3.3
+  specs:
+    cartodb-sequel-rails (0.3.1)
+      rails (~> 3.0.10)
+      sequel (~> 3.28)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -67,7 +76,7 @@ GEM
     json_pure (1.6.1)
     launchy (2.0.5)
       addressable (~> 2.2.6)
-    linecache19 (0.5.13)
+    linecache19 (0.5.12)
       ruby_core_source (>= 0.1.4)
     log4r (1.1.10)
     mail (2.2.19)
@@ -148,14 +157,19 @@ GEM
       activesupport (~> 3.0)
       railties (~> 3.0)
       rspec (~> 2.7.0)
-    ruby-debug-base19 (0.11.26)
+    ruby-debug-base19 (0.11.25)
       columnize (>= 0.3.1)
       linecache19 (>= 0.5.11)
       ruby_core_source (>= 0.1.4)
-    ruby-debug19 (0.11.6)
+    ruby-debug-base19x (0.11.30.pre10)
       columnize (>= 0.3.1)
       linecache19 (>= 0.5.11)
-      ruby-debug-base19 (>= 0.11.19)
+      rake (>= 0.8.1)
+      ruby_core_source (>= 0.1.4)
+    ruby-debug19 (0.11.5)
+      columnize (>= 0.3.1)
+      linecache19 (>= 0.5.11)
+      ruby-debug-base19 (>= 0.11.15)
     ruby-ole (1.2.11.2)
     ruby_core_source (0.1.5)
       archive-tar-minitar (>= 0.5.2)
@@ -166,11 +180,6 @@ GEM
       json_pure
       rubyzip
     sequel (3.29.0)
-    sequel-rails (0.1.8)
-      actionpack (~> 3.0.0)
-      activesupport (~> 3.0.0)
-      railties (~> 3.0.0)
-      sequel (~> 3.13)
     sequel_column_type_array (0.0.2)
     sequel_pg (1.2.0)
       pg (>= 0.8.0)
@@ -209,12 +218,13 @@ DEPENDENCIES
   airbrake (~> 3.0.4)
   builder
   capybara (~> 1.1.1)
+  cartodb-sequel-rails!
   email_spec
   google-spreadsheet-ruby (~> 0.1.5)
   htmlentities
   launchy
   minitest (~> 2.0.2)
-  mocha (~> 0.10.0)
+  mocha
   oauth (= 0.4.5)
   oauth-plugin (= 0.4.0.pre4)
   pg (= 0.11)
@@ -228,11 +238,10 @@ DEPENDENCIES
   rgeo-geojson (= 0.2.1)
   roo (~> 1.9.7)
   rspec-rails
-  ruby-debug-base19 (= 0.11.26)
-  ruby-debug19 (= 0.11.6)
+  ruby-debug-base19x (~> 0.11.30.pre3)
+  ruby-debug19 (= 0.11.5)
   rubyzip (~> 0.9.6.1)
   sequel (= 3.29.0)
-  sequel-rails (~> 0.1.8)
   sequel_column_type_array (~> 0.0.2)
   sequel_pg (= 1.2.0)
   spreadsheet (~> 0.6.5.9)

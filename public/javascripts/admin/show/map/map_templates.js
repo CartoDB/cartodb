@@ -134,33 +134,34 @@
                         '<span class="numeric max" data="values" default="100"></span>'+
                       '</div>'+
                     '</div>'+
-                    '<div class="suboptions cloropeth">'+
+                  '</li>'+
+                  '<li>'+
+                    '<a class="option" href="#special">Choropleth map</a>'+
+                    '<div class="suboptions bubbles">'+
                       '<label>Column</label>'+
                       '<div class="long">'+
                         '<span class="dropdown" data="column" default="cartodb_id"></span>'+
                       '</div>'+
-                      '<label>Color divisions</label>'+
+                      '<label>Fill</label>'+
                       '<div class="long">'+
-                        '<span class="dropdown buckets" data="values" default="5"></span>'+
-                      '</div>'+
-                      '<label>Color ramp</label>'+
-                      '<div class="long">'+
-                        '<span class="color_ramp" data="values"></span>'+
+                        '<span class="color" css="marker-fill" default="#FF6600"></span>'+
                       '</div>'+
                       '<label>Border</label>'+
                       '<div class="long">'+
-                        '<span class="color" css="line-color" default="#FFFFFF"></span>'+
-                        '<span class="numeric" css="line-width" default="1"></span>'+
+                        '<span class="color" css="marker-line-color" default="#FFFFFF"></span>'+
+                        '<span class="numeric" css="marker-line-width" default="1"></span>'+
                       '</div>'+
                       '<label>Opacity</label>'+
                       '<div class="long">'+
-                        '<span class="alpha" css="line-opacity polygon-opacity" default="1"></span>'+
+                        '<span class="alpha" css="marker-opacity marker-line-opacity" default="1"></span>'+
+                      '</div>'+
+                      '<label>Bubble sizes</label>'+
+                      '<div class="long">'+
+                        '<span class="numeric min" data="values" default="4"></span>'+
+                        '<span class="numeric max" data="values" default="100"></span>'+
                       '</div>'+
                     '</div>'+
                   '</li>'+
-                  //'<li class="disabled">'+
-                  //  '<a class="option disabled" href="#color_map">Category choropleth</a>'+
-                  //'</li>'+
                 '</ul>'+
               '</div>'+
             '</li>'+

@@ -192,7 +192,7 @@ First, there are a couple of one-time setups:
   - Type `bundle install --binstubs`
   - Rename `config/app_config.yml.sample` to `config/app_config.yml`
   - Rename `config/database.yml.sample` to `config/database.yml`
-  - Edit `/etc/hosts` and add `127.0.0.1 admin.localhost.lan admin.testhost.lan` and `127.0.0.1 my_subdomain.localhost.lan`
+  - Edit `/etc/hosts` and add `127.0.0.1 admin.localhost.lan admin.testhost.lan` and `127.0.0.1 mysubdomain.localhost.lan`
 
 After that, just make sure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all running. 
 
@@ -211,7 +211,7 @@ $ rails s
 
 That's it! 
 
-You should now be able to access `my_subdomain.localhost.lan` in your browser and login with your email and password.
+You should now be able to access `mysubdomain.localhost.lan` in your browser and login with your email and password.
 
 Note: Look at the `public/javascripts/environments/development.js` file which configures Windshaft-cartodb tile server URLs. 
   

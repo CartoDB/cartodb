@@ -18,8 +18,10 @@ gem "redis", "~> 2.2.2"
 gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
 gem "airbrake", '~> 3.0.4'
+gem "nokogiri", '~> 1.5.2'
 
 # importer
+gem "ruby-ole", "~> 1.2.11.3"
 gem "rchardet19", '1.3.5'
 gem "roo", "~> 1.9.7"
 gem "spreadsheet", "~> 0.6.5.9"

@@ -195,8 +195,8 @@ div.table_position div.explain_tooltip.down span.arrow {top:-30px!important; bor
 
 
 /*Filter window*/
-div.filter_window {position:fixed; display:none; top:50%; left:50%; width:343px; margin:-120px 0 0 -171px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 20px 3px rgba(0,0,0,0.5);
-  -moz-box-shadow:0 0 20px 3px rgba(0,0,0,0.5); box-shadow:0 0 20px 3px rgba(0,0,0,0.5); z-index:10}
+div.filter_window {position:fixed; display:none; top:300px; left:50%; width:343px; margin:20px 0 0; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 20px 3px rgba(0,0,0,0.5);
+  -moz-box-shadow:0 0 20px 3px rgba(0,0,0,0.5); box-shadow:0 0 20px 3px rgba(0,0,0,0.5); z-index:1000000}
 div.filter_window a.close {position:absolute; right:-9px; top:-7px; width:24px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0;}
 div.filter_window a.close:hover {background-position:0 -23px;}
 div.filter_window div.inner_ {float:left; width:341px; height:165px; border:1px solid #CCCCCC; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}

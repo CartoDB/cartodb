@@ -1,7 +1,7 @@
 GIT
   remote: git@github.com:tokumine/sequel-rails.git
-  revision: d553ee706c397afc7719dba8a91c16fd7a024fbd
-  tag: 0.3.3
+  revision: 8c257d65b5bd35ca4a7cbc1957621bff0410312c
+  tag: 0.3.4
   specs:
     cartodb-sequel-rails (0.3.1)
       rails (~> 3.0.10)

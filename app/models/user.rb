@@ -327,7 +327,7 @@ class User < Sequel::Model
         begin
           conn.run("CREATE DATABASE #{self.database_name}
           WITH TEMPLATE = template_postgis
-          OWNER = postgres
+          OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
           ENCODING = 'UTF8'
           CONNECTION LIMIT=-1")
         rescue

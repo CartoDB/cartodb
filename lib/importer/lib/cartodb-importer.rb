@@ -4,6 +4,9 @@ require 'rubygems'
 require 'csv'
 require 'tempfile'
 require 'ostruct'
+require 'net/http'
+require 'uri'
+require 'mechanize'
 
 # load preprocessors and loaders
 Dir[File.dirname(__FILE__) + '/cartodb-importer/lib/*.rb'].each {|file| require file }

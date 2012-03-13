@@ -64,27 +64,55 @@ module CartoDB
             @filesrc = "fusiontables"
           end
           @import_from_file = URI.escape(@import_from_file) # Ensures open-uri will work
-        end
-        begin
-          open(@import_from_file) do |res| # opens file normally, or open-uri to download/open
-            @data_import.file_ready
-            file_name = File.basename(@import_from_file)
-            @ext = File.extname(file_name)
-            # Fix for extensionless fusiontables files
-            if @ext == "" 
-              if @filesrc == "fusiontables"
-                @ext = ".kml"
-              else
-                @ext = ".csv"
+          begin
+            a = Mechanize.new { |agent|
+              # Flickr refreshes after login
+              agent.follow_meta_refresh = true
+            }
+
+           a.get(@import_from_file) do |res| # opens file normally, or open-uri to download/open
+              @data_import.file_ready
+              file_name = File.basename(@import_from_file)
+              @ext = File.extname(file_name)
+              # Fix for extensionless fusiontables files
+              if @ext == "" 
+                if @filesrc == "fusiontables"
+                  @ext = ".kml"
+                else
+                  @ext = ".csv"
+                end
               end
+              @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
+              @import_from_file = Tempfile.new([@suggested_name, @ext])
+              @import_from_file.write res.read.force_encoding("UTF-8")
+              @import_from_file.close
             end
-            @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
-            @import_from_file = Tempfile.new([@suggested_name, @ext])
-            @import_from_file.write res.read.force_encoding("UTF-8")
-            @import_from_file.close
+          rescue e
+            @data_import.log_error(e)
           end
-        rescue e
-          @data_import.log_error(e)
+        end
+        else
+          begin
+            open(@import_from_file) do |res| # opens file normally, or open-uri to download/open
+              @data_import.file_ready
+              file_name = File.basename(@import_from_file)
+              @ext = File.extname(file_name)
+              # Fix for extensionless fusiontables files
+              if @ext == "" 
+                if @filesrc == "fusiontables"
+                  @ext = ".kml"
+                else
+                  @ext = ".csv"
+                end
+              end
+              @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
+              @import_from_file = Tempfile.new([@suggested_name, @ext])
+              @import_from_file.write res.read.force_encoding("UTF-8")
+              @import_from_file.close
+            end
+          rescue e
+            @data_import.log_error(e)
+          end
         end
       else
         original_filename = if @import_from_file.respond_to?(:original_filename)
@@ -165,5 +193,22 @@ module CartoDB
         end
       end        
     end  
+    def fetch(uri_str, limit = 10)
+      # You should choose better exception.
+      raise ArgumentError, 'HTTP redirect too deep' if limit == 0
+
+      url = URI.parse(uri_str)
+      req = Net::HTTP::Get.new(url.path, { 'User-Agent' => "cartodb.com 1.0" })
+      #if uri_str =~ /https:\/\//
+      #  req.use_ssl = true
+      #end
+      response = Net::HTTP.start(url.host, url.port) { |http| http.request(req) }
+      case response
+      when Net::HTTPSuccess     then response
+      when Net::HTTPRedirection then fetch(response['location'], limit - 1)
+      else
+        response.error!
+      end
+    end
   end
 end

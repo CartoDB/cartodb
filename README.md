@@ -274,11 +274,11 @@ bundle exec rake cartodb:db:set_unlimited_table_quota['[mysubdomain]']
 
 # Allow user to create private tables in addition to public
 bundle exec rake \
- cartodb:db:set_user_private_tables_enabled['[mysubdomain]', 'true'] 
+ cartodb:db:set_user_private_tables_enabled['[mysubdomain]','true'] 
 
 # Set the name of the CartoDB
 bundle exec rake \
- cartodb:db:set_user_account_type['[mysubdomain]', '[DEDICATED]'] 
+ cartodb:db:set_user_account_type['[mysubdomain]','[DEDICATED]'] 
 ```
 
 Finally, start the CartoDB development server on port 3000:

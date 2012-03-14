@@ -1,19 +1,18 @@
-
-  <% content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/jquery.color", "admin/tables/public_tables", "admin/tables/import" %>
+  <%= content_for(:js) do %>
+    <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers", "plugins/file_uploader", "admin/index/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/index/import"  %>
   <% end %>
-  <% content_for(:head) do %>
-    <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/public_tables') %>
+  <%= content_for(:head) do %>
+    <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/dashboard') %>
   <% end %>
 
   <%= render 'admin/shared/subheader' %>
 
   <section id="content">
+    <div id="hugeUploader"></div>
     <div class="inner_content">
-
       <div class="tables_list">
         <div class="left">
-          <div class="top_blue_medium_big">
+          <div class="top_blue_medium">
             <h3><strong><%= pluralize(@tables.pagination_record_count, "Public</strong> table", "Public</strong> tables").html_safe %> in CartoDB</h3>
             <form action="#">
               <input type="text" value="" name="table_name" />
@@ -21,61 +20,62 @@
             </form>
           </div>
           <div class="middle_white_medium">
-            <% if @tables.current_page_record_count == 0 %>
-            <div class="no_tables">
-              <h5>Ouch! There are not tables for your search</h5>
-              <p>You can try with different terms or you can <a href="#">create your own table</a></p>
-            </div>
-            <% else %>
-              <ul class="your_tables">
-                <% @tables.each_with_index do |table, i| %>
-                <li<%= ' class="last"'.html_safe if i == @tables.current_page_record_count - 1%>>
-                  <div class="meta_info">
-                    <span class="info">
-                      <h4><%= link_to(table.name, table, :class=>"tableTitle") %></h4>
-                      <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
-                      <span class="watching">
-                        <a href="#" class="no_watching">Stop watching</a>
-                      </span>
-                    </span>
-                    <div class="tags">
-                    <span class="tags">
-                      <% unless table.updated_at.blank? %>
-                      <p class="last_op"><%= time_ago_in_words(table.updated_at) %> ago</p>
+            <ul class="your_tables">
+              <% @tables.each_with_index do |table, i| %>
+              <li>
+                <div class="meta_info">
+                  <span class="info">
+                    <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
+                    <p class="status public disabled">PUBLIC</p>
+                    <p class="columns">
+                      <strong>
+                        <%= number_to_human_size table.table_size %> / 
+                        <%= pluralize(table.rows_counted,'row','rows') rescue '' %> /
+                        <%= table.schema.size rescue '' %> columns:
+                    </strong>
+                    <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...
+                    </p>
+                  </span>
+                  <span class="tags">
+                    <% unless table.updated_at.blank? %>
+                    <p class="last_op"><%= time_ago_in_words(table.updated_at) %> ago</p>
+                    <% end %>
+                    <% unless table.tags.blank? %>
+                      <% table.tags.split(',').each do |tag_name| %>
+                      <a href="<%= dashboard_path(:tag_name => tag_name) %>"><%= tag_name %></a>
                       <% end %>
-                      <% unless table.tags.blank? %>
-                        <% table.tags.split(',').each do |tag_name| %>
-                        <a href="#"><%= tag_name %></a>
-                        <% end %>
-                      <% end %>
-                    </span>
-                  </div>
-                </li>
-                <% end %>
-              </ul>
-            <% end %>
+                    <% end %>
+                  </span>
+                </div>
+              </li>
+              <% end %>
+            </ul>
           </div>
           <div class="bottom_white_medium"></div>
-
           <%= paginate(@tables) %>
-
         </div>
         <div class="right">
           <div class="banner">
             <div class="top_white_short"></div>
             <div class="middle_white_short">
-              <h3>Can't find what you are looking for?</h3>
+              <h3>Wondering how to start with CartoDB?</h3>
               <p>Upload your data to a new table</p>
-              <a href="#create_table" class="new_table">Create a new table</a>
+              <a href="#create_table" class="new_table <%= 'disabled' if current_user.exceeded_quota? %>">Create a new table</a>
             </div>
             <div class="bottom_white_short"></div>
           </div>
 
-          <h4>BROWSE BY TAGS</h4>
-          <% unless @tags.empty? %>
+          <h4>POPULAR TAGS</h4>
+          <% if @tags.count==0 %>
+            <span class="no_tags">
+              <p>There are no tags any tags yet.</p>
+              <p>Tags are useful for organizing and filtering your tables.</p>
+              <p>To add tags to your tables, open them and enter them under the name.</p>
+            </span>
+          <% else %>
             <ul>
               <% @tags.each do |tag| %>
-                <li><a href="#"><span style="background-position:<%= tag_width(tag[:count], @tags.last[:count], @tags.first[:count]) %>px 0"><%= tag[:name] %></span></a></li>
+                <li><a href="<%= dashboard_path(:tag_name => tag[:name]) %>"><span style="background-position:<%= tag_width(tag[:count], @tags.last[:count], @tags.first[:count]) %>px 0"><%= tag[:name] %></span></a></li>
               <% end %>
             </ul>
           <% end %>
@@ -84,60 +84,51 @@
     </div>
   </section>
 
+
   <%= content_for(:mamufas) do %>
     <div class="mamufas">
-
       <div class="create_window">
         <a href="#close_window" class="close_create"></a>
         <div class="inner_">
           <span class="loading">
             <h5>We are creating your table...</h5>
-            <p>It's not gonna be a lot of time. Just a few seconds, ok?</p>
+            <p>It shouldn't take long, just a few more seconds ok?</p>
           </span>
           <form action="#import_file" id="import_file" enctype="multipart/form-data" method="post">
             <span class="top">
-              <h4>Do you want to import some data to the new table?</h4>
-              <p>You will also be available to do it later.</p>
+              <h4>Do you want to import some data to the new table now?</h4>
+              <p>You will also be able to do it later.</p>
               <ul>
-                <li class="selected"><a href="#">I want to create an empty table</a></li>
+                <li class="selected">
+                  <a href="#">I want to create an empty table</a>
+                  <div class="geom_type">
+                    <span class="selected"><a href="#point">Point</a></span>
+                    <span><a href="#line">Line</a></span>
+                    <span><a href="#polygon">Polygon</a></span>
+                  </div>
+                </li>
                 <li>
-                  <a href="#">I want to start importing some data...</a>
+                  <a href="#">I want to start with some imported data</a>
                   <span class="file">
                     <div class="select_file">
-                      <a href="#select_file">Select files...</a>
-                      <p>You can import .csv and .xls files</p>
-                      <input type="file" value="select your file" name="file"/>
+                      <div id="uploader"></div>
+                      <p>We support xls, csv, gpx, shp, zip, etc...</p>
                     </div>
                     <div class="progress">
                       <p>Uploading your file...</p>
                       <span class="progress"></span>
                     </div>
                   </span>
-                  <span class="georeference">
-                    <h4>Do you want to georeference your data now?</h4>
-                    <ul>
-                      <li class="selected">
-                        <a href="#nope">No</a>
-                        <p>I'll do it later</p>
-                      </li>
-                      <li>
-                        <a href="#lets_geocode">Yes, I want to geocode it</a>
-                        <p>I have a column that needs to be georeferenced</p>
-                        <!-- <div class="select_box">
-                          <h5>Option 1</h5>
-                          <ul>
-                            <li><a href="#">Option 1</a></li>
-                            <li><a href="#">Option 2</a></li>
-                            <li><a href="#">Option 3</a></li>
-                            <li><a href="#">Option 4</a></li>
-                          </ul>
-                        </div> -->
-                      </li>
-                      <li>
-                        <a href="#yes_lets_join">Yes, I want to join it with another dataset</a>
-                        <p>I want to join it with a country data, region, etc...</p>
-                      </li>
-                    </ul>
+                </li>
+                <li>
+                  <a href="#">I want to add some data from a URL</a>
+                  <span class="file">
+                    <div class="select_file">
+                      <input id="url_txt" type="text" name="url_value" value="Insert a valid URL..."/>
+                      <div class="error_url">
+                        <p><span>This URL is not valid</span></p>
+                      </div>
+                    </div>
                   </span>
                 </li>
               </ul>

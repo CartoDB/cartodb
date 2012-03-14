@@ -56,9 +56,14 @@ section#content div.inner_content div.requests_info div.info p.left {float:left}
 
 
 section#content div.left {display:inline-block; width:626px; vertical-align:top;}
-section#content div.left div.top_blue_medium {float:left; width:626px; height:61px; background:url('/images/admin/backgrounds/top_blue_medium.png') no-repeat 0 0;}
+section#content div.left div.top_blue_medium {float:left; width:626px; height:auto; padding:0 0 20px; background:url('/images/admin/backgrounds/top_blue_medium_big.png') no-repeat 0 0;}
 section#content div.left div.top_blue_medium h3 {float:left; margin:18px 0 0 25px; font:normal 23px "Aller",Arial; color:white; text-shadow:0 1px #718C92;}
-
+section#content div.left div.top_blue_medium form {position:relative; float:left; width:575px; height:31px; margin:6px 0 0 25px;}
+section#content div.left div.top_blue_medium form input[type="text"] {float:left; width:530px; height:16px; padding:7px 35px 8px 10px; margin:0; background:url('/images/admin/public_tables/input_bkg.png') no-repeat 0 0; border:none; font:normal 16px Arial; color:#999999;}
+section#content div.left div.top_blue_medium form input[type="text"]:focus {outline:none; background-position:0 -31px; color:#666666;}
+section#content div.left div.top_blue_medium form input[type="submit"] {position:absolute; right:10px; top:8px; width:16px; height:16px; background:url('/images/admin/public_tables/len.png') no-repeat 0 0; text-indent:-9999px; border:none;}
+section#content div.left div.top_blue_medium form input[type="submit"]:hover {background-position:0 -16px; cursor:pointer;}
+section#content div.left div.top_blue_medium form input[type="submit"]:focus {outline:none; background-position:0 -16px;}
 section#content div.left div.middle_white_medium {position:relative; float:left; width:620px; min-height:375px; padding:0 3px; background:url('/images/admin/backgrounds/middle_white_medium.png') repeat-y 0 0;}
 section#content div.left div.middle_white_medium div.no_tables {float:left; width:620px; padding:270px 0 75px 0; background:url('/images/admin/public_tables/no_tables.jpg') no-repeat center 70px;}
 section#content div.left div.middle_white_medium div.no_tables h5 {width:100%; text-align:center; font:bold 21px Arial; color:#A4BBC0; word-spacing:2px;}

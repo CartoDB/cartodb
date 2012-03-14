@@ -14,6 +14,7 @@ CartoDB::Application.routes.draw do
     match '/dashboard'        => 'tables#index', :as => :dashboard
     resources :tables, :only => [:show] do
       get 'embed_map', :on => :member
+      get 'public' => 'tables#show_public', :on => :member
     end      
     match '/your_apps/oauth' => 'client_applications#oauth', :as => :oauth_credentials
     match '/your_apps/jsonp' => 'client_applications#jsonp', :as => :jsonp_credentials

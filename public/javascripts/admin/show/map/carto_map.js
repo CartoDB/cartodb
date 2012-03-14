@@ -457,8 +457,12 @@
 			    stopPropagation(ev);
 			    if (query_mode) {
 			    	$('body').removeClass('query');
+
+			    	// Reset sql window if there was any problem
 			    	$('div.sql_window').removeClass('error');
 			    	$('div.sql_window div.outer_textarea').removeAttr('style');
+			    	delete editor['errors'];
+
           	me.query_mode = false;
 						$('.map_header div.stickies').remove();
           	setAppStatus();
@@ -981,7 +985,6 @@
             custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,1,2,3,4,5,6,7,8,9];
             custom_vis['n_buckets'] = 10;
             custom_vis['values'] = (old_properties.visualization.values && typeof old_properties.visualization.values[0] == 'integer') ? old_properties.visualization.values : [4,5,6,7,8,9,10,11,12,13];
-
 
             // Set type
             custom_vis['type'] = 'custom';

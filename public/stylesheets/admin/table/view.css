@@ -30,6 +30,7 @@ section.subheader div.left {position:relative; float:left; width:500px; height:8
 section.subheader h2 {float:left; width:auto; max-width:85%; font:bold 21px Arial; color:white; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 section.subheader h2 a {color:white; text-decoration:none;}
 section.subheader h2 a:hover {}
+section.subheader h2 small {font:normal 15px Arial; color:white;}
 section.subheader h3 {float:left; width:auto; font:bold 21px Arial; color:white; letter-spacing:-1px}
 section.subheader h3 a {display:inline-block; vertical-align:top; padding:2px 10px 2px 7px; margin:4px 0 0 5px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none; text-transform:uppercase; background:#FF6600}
 section.subheader h3 a:hover {background:#FF4400}
@@ -81,14 +82,16 @@ section.subheader ul.tab_menu li.selected a {background-color:rgba(256,256,256,1
 section.subheader ul.tab_menu li.selected a:hover {color:#272E48; text-decoration:none;}
 section.subheader ul.tab_menu li.disabled a {text-decoration:none; color:#999999;}
 section.subheader ul.tab_menu li.disabled a:hover {background:rgba(256,256,256,0.1)!important; cursor:default}
-section.subheader div.right {position:relative; float:right; width:255px; height:88px; padding:15px 0 0 0; margin:0 40px 0 0; color:white!important;}
+section.subheader div.right {position:relative; float:right; width:275px; height:88px; padding:15px 0 0 0; margin:0 40px 0 0; color:white!important;}
 section.subheader div.right p.settings {float:right; font:normal 15px Arial; color:white; z-index:10;}
-section.subheader div.right p.settings a {font:normal 13px Arial; text-shadow:0 1px black;}
+section.subheader div.right p.settings a {font:normal 13px Arial; color:white; text-shadow:0 1px black;}
 section.subheader div.right p.settings a.delete {padding:0 3px 0 0; color:#FF3300;}
 section.subheader div.right p.settings a.delete:hover {color:#FF4400;}
 body.query section.subheader div.right p.settings a.delete, body.query section.subheader div.right p.settings a.open_georeference{display:none}
 section.subheader div.right p.settings a.settings {padding:0 20px 0 3px; color:white; background:url('/images/admin/icons/settings.png') no-repeat right 1px;}
 section.subheader div.right p.settings a.open_georeference, section.subheader div.right p.settings a.georeference_global:visited {font:normal 13px Arial; text-shadow:0 1px black; color: white;}
+section.subheader div.right p.settings a.duplicate {padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none; text-transform:uppercase; background:#6FBE6F; text-shadow:none;}
+section.subheader div.right p.settings a.duplicate:hover {background:black;}
 
 section.subheader div.right span.advanced_options {position:absolute; display:none; right:-10px; top:9px; width:122px; z-index:100;}
 section.subheader div.right span.advanced_options a.advanced {position:relative; float:right; padding:7px 29px 7px 9px; font:normal 13px Arial; text-shadow:0 1px black;

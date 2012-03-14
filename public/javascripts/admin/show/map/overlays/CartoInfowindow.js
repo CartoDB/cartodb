@@ -128,7 +128,7 @@
 					me.pixel = null;
 				}
   	    
-  	    var query_mode = $('body').attr('query_mode') === 'true';
+  	    var query_mode = $('body').hasClass('query');
 
   	    // Reinitialize jscrollpane in the infowindow
      		$('div.marker_infowindow div.scrollPane').jScrollPane().data().jsp.destroy();
@@ -137,7 +137,7 @@
   	    $(div).find('div.top').html('');
         
   	    _.each(info,function(value,label){
-  	      if ((label!='cartodb_id' && variables[label]) || (label!='cartodb_id' && query_mode)) {
+  	      if ((label!='cartodb_id' && variables[label])) {
     				$(div).find('div.top').append('<label>'+label+'</label><p class="'+((info[label]!=null)?'':'empty')+'">'+value+'</p>');
   	      }
   	    });

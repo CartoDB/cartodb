@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:tokumine/sequel-rails.git
+  remote: git://github.com/tokumine/sequel-rails.git
   revision: 8c257d65b5bd35ca4a7cbc1957621bff0410312c
   tag: 0.3.4
   specs:

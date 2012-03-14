@@ -42,6 +42,9 @@ module CartoDB
         if !(name[0,1].to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil)
           name="_#{name}"
         end
+        if name.length > 20
+          name = name[0..19]
+        end
         existing_names = @db_connection["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{name}%'"].map(:relname)
         testn = 1
         uniname = name

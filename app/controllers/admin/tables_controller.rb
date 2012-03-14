@@ -3,9 +3,9 @@
 class Admin::TablesController < ApplicationController
   ssl_required :index, :show, :embed_map
 
-  skip_before_filter :check_domain, :only => [:embed_map]
+  skip_before_filter :check_domain, :only => [:embed_map, :show]
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]  
-  before_filter :login_required, :except => [:embed_map]
+  before_filter :login_required, :except => [:embed_map, :show]
 
   def index
     current_page = params[:page].nil? ? 1 : params[:page].to_i
@@ -23,37 +23,50 @@ class Admin::TablesController < ApplicationController
     @table_quota   = current_user.table_quota
     @tables_count  = @tables.pagination_record_count
   end
-
+  
   def show
-    @table = Table.find_by_identifier(current_user.id, params[:id])
-    respond_to do |format|
-      format.html
-      format.sql do
-        send_data @table.to_sql,
-          :type => 'application/zip; charset=binary; header=present',
-          :disposition => "attachment; filename=#{@table.name}.zip"
-      end
-      format.kml do
-        send_data @table.to_kml,
-          :type => 'application/zip; charset=binary; header=present',
-          :disposition => "attachment; filename=#{@table.name}.kmz"
-      end
-      format.csv do
-        send_data @table.to_csv,
-          :type => 'application/zip; charset=binary; header=present',
-          :disposition => "attachment; filename=#{@table.name}.zip"
-      end
-      format.shp do
-        if shp_content = @table.to_shp
-          send_data shp_content,
-            :type => 'application/octet-stream; charset=binary; header=present',
+    # private table show as normal
+    if current_user.present?    
+      @table = Table.find_by_identifier(current_user.id, params[:id])
+      respond_to do |format|
+        format.html
+        format.sql do
+          send_data @table.to_sql,
+            :type => 'application/zip; charset=binary; header=present',
             :disposition => "attachment; filename=#{@table.name}.zip"
-        else
-          # FIXME: Give some feedback in the UI
-          redirect_to table_path(@table), :alert => "There was an error exporting the table"
+        end
+        format.kml do
+          send_data @table.to_kml,
+            :type => 'application/zip; charset=binary; header=present',
+            :disposition => "attachment; filename=#{@table.name}.kmz"
+        end
+        format.csv do
+          send_data @table.to_csv,
+            :type => 'application/zip; charset=binary; header=present',
+            :disposition => "attachment; filename=#{@table.name}.zip"
+        end
+        format.shp do
+          if shp_content = @table.to_shp
+            send_data shp_content,
+              :type => 'application/octet-stream; charset=binary; header=present',
+              :disposition => "attachment; filename=#{@table.name}.zip"
+          else
+            # FIXME: Give some feedback in the UI
+            redirect_to table_path(@table), :alert => "There was an error exporting the table"
+          end
         end
       end
-    end
+      
+    # public table show  
+    else
+      @subdomain = request.subdomain
+      @table = Table.find_by_subdomain(@subdomain, params[:id])    
+      if @table.blank? || @table.private?
+        head :forbidden
+      else
+        render 'show_public', :layout => 'application_public'           
+      end      
+    end  
   end
   
   def embed_map

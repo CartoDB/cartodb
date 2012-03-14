@@ -1,3 +1,109 @@
-TESTO
+  <% content_for(:js) do %>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>
 
-<DIV> USERNAME: <%= current_user.try(:username)%></DIV>
+
+    <%= headjs_include_tag(
+      # PLUGINS
+      "plugins/jquery.min",
+      "plugins/jquery-ui.min",
+      "plugins/jquery.mousewheel",
+      "plugins/jscrollpane.min",
+      "plugins/jquery.color",
+      "plugins/codemirror/codemirror.js",
+      "plugins/codemirror/plsql.js",
+      "plugins/codemirror/css.js",
+      "plugins/ZeroClipboard.js",
+      "plugins/underscore",
+      "plugins/mustache",
+      "plugins/tag-it",
+      "plugins/file_uploader",
+      "plugins/jquery.cookie",
+      "plugins/jquery.favicon",
+      "plugins/rgbcolor",
+      "plugins/jquery.history.min",
+      "plugins/jquery.caret.1.02",
+      # VIEW
+      "admin/show/view/loader_queue_messages",
+      "admin/show/view/loader_queue",
+      "admin/show/view/geocoding",
+      "admin/show/view/view_templates",
+      "admin/show/view/view",
+      # TABLE
+      "admin/show/table/carto_table",
+      "admin/show/table/table_templates",
+      # APP
+      "admin/show/view/GOD",
+      "admin/show/helpers",
+      "admin/show/app"
+    )%>
+
+    <script type="text/javascript">
+      var table_id = <%= @table.id %>
+      	, table_name = "<%= @table.name %>";
+    </script>
+  <% end %>
+
+  <% content_for(:page_title) do %>
+    <%= @table.name %> -
+  <% end %>
+
+  <% content_for(:head) do %>
+    <%= stylesheet_link_tag('reset.css','admin/table/view','admin/table/table', 'admin/table/map' ) %>
+  <% end %>
+
+  <section class="subheader">
+    <div class="outer">
+      <div class="inner_subheader">
+        <div class="left">
+          <span class="query">
+            <h3></h3>
+            <p></p>
+          </span>
+          
+          <DIV> USERNAME if logged in: <%= current_user.try(:username)%></DIV>
+          
+          <span class="normal">
+            <h2><a href="#change_title"><%= @table.name %></a></h2>
+            <p class="status">
+              <em>PUBLIC</em>
+            </p>
+            <span class="tags">
+              <% unless @table[:tags_names].blank? %>
+                <% tagsSize=@table[:tags_names].split(',').size %>
+                <% @table[:tags_names].split(',').each_with_index do |tag_name,index| %>
+                <% if index==tagsSize-1 %>
+                  <p class="last"><%= tag_name %></p>
+                <% else %>
+                  <p><%= tag_name %></p>
+                <% end %>
+                <% end %>
+              <% end %>
+            </span>
+          </span>
+          <ul class="tab_menu">
+            <li class="selected"><a href="#view_table">Table</a></li>
+            <li><a href="#view_map">Map</a></li>
+          </ul>
+        </div>
+        <div class="right">
+          <p class="settings">
+<!-- <a class="delete" table-id="<%= @table.id %>" href="#delete_table">delete table</a> | <a class="open_georeference" href="#show_georeference_window">georeference</a> | <a class="settings selected" href="#show_advanced_options">advanced</a> -->
+          </p>
+          <span class="paginate">
+            <a id="nextButton"class="next" href="#next_column">Next column</a>
+            <a id="previousButton" class="previous" href="#prev_column">Previous column</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="table_position">
+    <table border="0" id="carto_table" cellspacing="0"></table>
+  </div>
+  <div class="map_window"></div>
+
+
+  <%= content_for(:mamufas) do %>
+    <div class="mamufas"></div>
+  <% end %>

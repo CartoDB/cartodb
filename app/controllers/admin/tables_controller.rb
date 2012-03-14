@@ -1,7 +1,7 @@
 # coding: utf-8
 
 class Admin::TablesController < ApplicationController
-  ssl_required :index, :show, :embed_map, :show_public
+  ssl_required :index, :show, :embed_map, :show_public, :index_public
 
   skip_before_filter :check_domain, :only => [:embed_map, :show, :show_public]
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]  
@@ -24,6 +24,14 @@ class Admin::TablesController < ApplicationController
     @tables_count  = @tables.pagination_record_count
   end
   
+  def index_public
+    @tables = if !params[:tag_name].blank?
+      Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name]).order(:id).reverse.paginate(current_page, per_page)
+    else
+      Table.filter({:user_id => current_user.id}).order(:id).reverse.paginate(current_page, per_page)
+    end    
+  end
+
   def show
     # private table show as normal
     if current_user.present?    

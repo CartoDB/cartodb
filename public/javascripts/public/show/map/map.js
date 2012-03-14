@@ -1,0 +1,1 @@
+	// Show map function -> carto_map  function showMap() {    $('div.map_window div.map_curtain').hide();  }  	// Hide map function -> carto_map  function hideMap() {		$('div.map_window div.map_curtain').show();  }

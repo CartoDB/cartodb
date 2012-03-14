@@ -232,9 +232,34 @@
             },
             error: function(e) {
 							var json = $.parseJSON(e.responseText);
-							if (json) {
-                $('div.create_window div.inner_ span.loading p').html(json.raw_error +'<br/><br/>'+ json.hint);
-                $('div.create_window div.inner_ span.loading h5').text(json.message);
+
+							if (json.errors || json.import_errors) {
+
+								// Title
+								$('div.create_window div.inner_ span.loading h5').text('Oops! Error');
+
+								// Content
+								var content = '';
+								$('div.create_window div.inner_ span.loading p').html('');
+
+								if (json.errors && json.errors.length>0) {
+									for (var i=0,_length=json.errors.length; i<_length; i++) {
+										content += json.errors[i] + '<br/>';
+									}
+									$('div.create_window div.inner_ span.loading p').html(content);
+								}
+
+								if (json.import_errors && json.import_errors.length>0) {
+									content = '';
+									for (var i=0,_length=json.import_errors.length; i<_length; i++) {
+										content += json.import_errors[i] + '<br/>';
+									}
+									$('div.create_window div.inner_ span.loading p').append(content);
+								}
+
+								// Are there still hints?
+                //$('div.create_window div.inner_ span.loading p').appen(json.raw_error +'<br/><br/>'+ json.hint);
+                
 							} else {
                 $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:support@cartodb.com">contact us</a> with a sample of your data if possible. Thanks!');
                 $('div.create_window div.inner_ span.loading h5').text('Oops! Error');

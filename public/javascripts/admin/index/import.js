@@ -109,7 +109,7 @@
         element: document.getElementById('uploader'),
         action: '/upload',
         params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz'],
         sizeLimit: 0, // max size
         minSizeLimit: 0, // min size
         debug: false,
@@ -138,7 +138,7 @@
       	element: document.getElementById('hugeUploader'),
       	action: '/upload',
       	params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz'],
       	sizeLimit: 0,
       	minSizeLimit: 0,
       	debug: false,

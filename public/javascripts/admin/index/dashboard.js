@@ -31,7 +31,7 @@
       
       $('span.privacy_window li a').click(function(ev){
         stopPropagation(ev);
-        if (!$(this).parent().hasClass('selected')) {
+        if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
           $('span.privacy_window li').each(function(i,ele){
             $(ele).removeClass('selected');
           });
@@ -53,6 +53,8 @@
             success: function(data) {},
             error: function(e) {}
           });
+        } else {
+        	$('body').click();
         }
       });
 

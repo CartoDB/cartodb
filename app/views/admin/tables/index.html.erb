@@ -161,7 +161,11 @@
             <span class="privacy_window">
               <ul>
                 <li class="public"><a href="#public"><strong>Public</strong> (visible to others)</a></li>
-                <li class="private"><a href="#private"><strong>Private</strong> (visible to you)</a></li>
+                <% if !current_user.private_tables_enabled %>
+                	<li class="disabled"><a><strong>Private</strong> (only paid plans)</a></li>
+                <% else %>
+                	<li class="private"><a href="#private"><strong>Private</strong> (visible to you)</a></li>
+               	<% end %>
               </ul>
             </span>
           </div>

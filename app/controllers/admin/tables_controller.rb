@@ -66,7 +66,8 @@ class Admin::TablesController < ApplicationController
   def show_public
     @subdomain = request.subdomain
     @table = Table.find_by_subdomain(@subdomain, params[:id])    
-    if @table.blank? || @table.private?
+
+    if @table.blank? || (!current_user && @table.private?) || ((current_user && current_user.id != @table.owner.id) && @table.private?)     
       head :forbidden
     else
       render 'show_public', :layout => 'application_public'           

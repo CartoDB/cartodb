@@ -1,6 +1,6 @@
 div.map_window {position:absolute; top:161px; left:0; right:0; bottom:0; width:100%; background:white;}
 div.map_window div.map_curtain {position:absolute; left:0; right:0; top:0; bottom:0; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5; z-index:12;}
-div.map_window div#map {position:absolute; left:0; right:0; bottom:0; top:51px; width:100%; z-index:5; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;}
+div.map_window div#map {position:absolute; left:0; right:0; bottom:0; top:60px; width:100%; z-index:5; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;}
 div.map_window div#map div {-webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;}
 
 

@@ -47,8 +47,8 @@ module CartoDB
         end
 
         # TODO: THIS SHOULD BE UPDATE IF NOT NULL TO PREVENT CRASHING
-        if shp_args_command[1] != '4326'
-          @data_import.log_update("reprojecting the_geom column from #{shp_args_command[1]} to 4326")
+        if shp_args_command[0] != '4326'
+          @data_import.log_update("reprojecting the_geom column from #{shp_args_command[0]} to 4326")
           begin  
             @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN the_geom TO the_geom_orig;")
             geom_type = @db_connection["SELECT GeometryType(the_geom_orig) as type from #{random_table_name} LIMIT 1"].first[:type]

@@ -4,9 +4,9 @@ gem "rails", "3.0.10"
 
 gem "pg", "0.11"
 gem "sequel", "3.29.0"
-gem "sequel-rails", "~> 0.1.8"
 gem "sequel_pg", "1.2.0", :require=>'sequel'
 gem "sequel_column_type_array", "~> 0.0.2"
+gem "cartodb-sequel-rails", :git => "git@github.com:tokumine/sequel-rails.git", :tag => '0.3.4'
 gem "rails_warden", "0.5.2"
 gem "oauth", "0.4.5"
 gem "oauth-plugin", "0.4.0.pre4"
@@ -18,8 +18,10 @@ gem "redis", "~> 2.2.2"
 gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
 gem "airbrake", '~> 3.0.4'
+gem "nokogiri", '~> 1.5.2'
 
 # importer
+gem "ruby-ole", "~> 1.2.11.3"
 gem "rchardet19", '1.3.5'
 gem "roo", "~> 1.9.7"
 gem "spreadsheet", "~> 0.6.5.9"

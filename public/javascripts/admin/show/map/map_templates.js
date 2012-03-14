@@ -69,7 +69,7 @@
                       '<label>Fill</label>'+
                       '<div class="long">'+
                         '<span class="color" css="marker-fill" default="#FF6600"></span>'+
-                        '<span class="numeric" css="marker-width" default="1"></span>'+
+                        '<span class="numeric" css="marker-width" default="5"></span>'+
                       '</div>'+
                       '<label>Border</label>'+
                       '<div class="long">'+
@@ -109,7 +109,7 @@
                     '</div>'+
                   '</li>'+
                   '<li>'+
-                    '<a class="option" href="#special">Bubble map</a>'+
+                    '<a class="option" href="#bubbles">Bubble map</a>'+
                     '<div class="suboptions bubbles">'+
                       '<label>Column</label>'+
                       '<div class="long">'+
@@ -134,7 +134,10 @@
                         '<span class="numeric max" data="values" default="100"></span>'+
                       '</div>'+
                     '</div>'+
-                    '<div class="suboptions cloropeth">'+
+                  '</li>'+
+                  '<li>'+
+                    '<a class="option" href="#choropleth">Numeric Choropleth</a>'+
+                    '<div class="suboptions choropleth">'+
                       '<label>Column</label>'+
                       '<div class="long">'+
                         '<span class="dropdown" data="column" default="cartodb_id"></span>'+
@@ -158,9 +161,6 @@
                       '</div>'+
                     '</div>'+
                   '</li>'+
-                  //'<li class="disabled">'+
-                  //  '<a class="option disabled" href="#color_map">Category choropleth</a>'+
-                  //'</li>'+
                 '</ul>'+
               '</div>'+
             '</li>'+

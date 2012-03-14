@@ -1,6 +1,6 @@
 module CartoDB
   module Import
-    class Zipper < CartoDB::Import::Decompressor
+    class Gzipper < CartoDB::Import::Decompressor
 
       register_decompressor :zip
       register_decompressor :kmz

@@ -1,7 +1,5 @@
 
   //SUBHEADER EVENTS AND FLOATING WINDOWS+//
-  var editor,georeferencing;
-  
 
   function initView(){
 
@@ -15,179 +13,159 @@
 	  ///////////////////////////////////////
     //  Advanced options                 //
     ///////////////////////////////////////
-		// var advanced_options = (function() {
+		var advanced_options = (function() {
 		  
-		//   $('div.mamufas').append(window.view_elements.advanced_options);
-			
-		// 	$('div.inner_subheader div.right').append(window.view_elements.subheader_right);
-	
-	 //    $('p.settings a.settings, span.advanced_options a.advanced').live('click',function(ev){
-	 //      stopPropagation(ev);
-	 //      if (!$('span.advanced_options').is(':visible')) {
-	 //        closeOutTableWindows();
-	 //        bindESC();
-	 //        $(this).parent().parent().children('span.advanced_options').show();
-	 //        $('body').click(function(event) {
-	 //          if (!$(event.target).closest('span.advanced_options').length) {
-	 //            $('span.advanced_options').hide();
-	 //            $('body').unbind('click');
-	 //          };
-	 //        });
-	 //      } else {
-	 //        $(this).parent().hide();
-	 //        $('body').unbind('click');
-	 //      }
-	 //    });
-	
-	 //    $('a.save_table').click(function(ev){
-	 //      stopPropagation(ev);
-	 //      resetSaveWindow();
-  //       closeOutTableWindows();
+		  // Append neccessary html
+		  $('div.mamufas').append(window.view_elements.duplicate_window);
+				
+		  // Bind events
+	    $('a.duplicate').click(function(ev){
+	      stopPropagation(ev);
+	      resetSaveWindow();
+        closeOutTableWindows();
 
-  //       $('div.mamufas div.save_window').show();
+        $('div.mamufas div.save_window').show();
         
-  //       // Fill the table name + copy
-  //       $('div.save_window span.top input').val(table_name + '_copy');
+        // Fill the table name + copy
+        $('div.save_window span.top input').val(table_name + '_copy');
 
-  //       $('div.mamufas').fadeIn('fast');
+        $('div.mamufas').fadeIn('fast');
 
-  //       $('div.save_window span.top input').focus();
+        $('div.save_window span.top input').focus();
         
-  //       $(document).keydown(function(event){
-  //         if (event.which == '13') {
-  //           $('a.table_save').click();
-  //           unbindESC();
-  //         }
-  //       });
-  //       bindESC();
-	 //    });
+        $(document).keydown(function(event){
+          if (event.which == '13') {
+            $('a.table_save').click();
+            unbindESC();
+          }
+        });
+        bindESC();
+	    });
 
-	 //    $('a.table_save').click(function(ev){
-	 //      stopPropagation(ev);
-	 //      unbindESC();
-	 //      var new_table = $('div.save_window span.top input').val();
+	    $('div.mamufas div.save_window a.close,div.mamufas div.save_window a.cancel').click(function(ev){
+	      stopPropagation(ev);
+	      closeOutTableWindows();
+	    });
+
+
+	    $('a.table_save').click(function(ev){
+	      stopPropagation(ev);
+	      unbindESC();
+	      var new_table = $('div.save_window span.top input').val();
 	      
-	 //      if (new_table!="") {
-	 //        $('div.save_window span.top input').removeClass('error');
-	 //        loadingState();
+	      if (new_table!="") {
+	        $('div.save_window span.top input').removeClass('error');
+	        loadingState();
 	        
-	 //        // Send request, only if there is an error...
-	 //        var requestId = createUniqueId();
-  //         window.ops_queue.newRequest(requestId,'duplicate_table');
+	        // Send request, only if there is an error...
+	        var requestId = createUniqueId();
+          window.ops_queue.newRequest(requestId,'duplicate_table');
 	        
-	 //        // If we are in a query view
-	 //        var query = $('body').hasClass('query')
-	 //        	, data = {};
+	        var data = {
+            name: new_table,
+            table_copy: table_name
+          }
 
-	 //        if (query) {
-	 //        	data = {from_query: editor.getValue(), name: new_table}
-	 //        } else {
-	 //        	data = {
-  //             name: new_table,
-  //             table_copy: table_name
-  //           }
-	 //        }
-
-	 //        $.ajax({
-  //           type: "POST",
-  //           url: global_api_url+'tables',
-  //           data: data,
-  //           headers: {"cartodbclient":"true"},
-  //           success: function(result) {
-  //             window.location.href = '/tables/'+ result.name;
-  //           },
-  //           error: function(e) {
-  //             closeOutTableWindows();
-  //             window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).message);
-  //           }
-  //         });
-	 //      } else {
-	 //        $('div.save_window span.top input').addClass('error');
-	 //        $('div.save_window span.top div.error_content').fadeIn().delay(3000).fadeOut();
-	 //      }
-	 //    });
+	       // $.ajax({
+         //    type: "POST",
+         //    url: global_api_url+'tables',
+         //    data: data,
+         //    headers: {"cartodbclient":"true"},
+         //    success: function(result) {
+         //      window.location.href = '/tables/'+ result.name;
+         //    },
+         //    error: function(e) {
+         //      closeOutTableWindows();
+         //      window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).message);
+         //    }
+         //  });
+	      } else {
+	        $('div.save_window span.top input').addClass('error');
+	        $('div.save_window span.top div.error_content').fadeIn().delay(3000).fadeOut();
+	      }
+	    });
 	
-	 //    $('a.export_data').live('click',function(ev){
-	 //      stopPropagation(ev);
-	 //      if ($('div.mamufas').is(':visible') && $('div.delete_window').is(':visible')) {
-	 //        $('div.mamufas div.delete_window').hide();
-	 //        $('div.mamufas div.export_window').show();
-	 //      } else {
-	 //        closeOutTableWindows();
-	 //        $('div.mamufas div.export_window').show();
-	 //        $('div.mamufas').fadeIn('fast');
+			
+			
+			function resetSaveWindow() {
+			  $('div.save_window').css('overflow','visible');
+        $('div.save_window div.inner_ span.top').css({opacity:1,display:'block'});
+        $('div.save_window a.close').show();
+        $('div.save_window').removeClass('loading');
+        $('div.save_window div.inner_ span.loading').css({opacity:0});
+        $('div.save_window div.inner_ span.bottom').css({opacity:1,display:'block'});
+        $('div.save_window div.inner_').css({height:'auto'});
+        $('div.save_window span.top input').val('');
+			}
+			
+			
+		  function loadingState() {
+        unbindESC();
+        $('div.save_window').css('overflow','hidden');
+        $('div.save_window div.inner_ span.top').animate({opacity:0},200,function(){
+          $(this).hide();
+          $('div.save_window a.close').hide();
+          $('div.save_window span.loading').css('opacity','0');
+          $('div.save_window').addClass('loading');
+          $('div.save_window div.inner_ span.loading').animate({opacity:1},200);
+        });
+        $('div.save_window div.inner_ span.bottom').animate({opacity:0},200,function(){
+          $(this).hide();
+        });
+        $('div.save_window div.inner_').animate({height:'74px'},400);
+      }
+			
+			return {}
+		}());
 
-	 //        // Set form url correctly before choose a export option
-		// 			$('div.export_window').find('form').attr('action','/tables/' + table_name);
 
-	 //        bindESC();
-	 //      }
-	 //    });
-			
-			
-		// 	function resetSaveWindow() {
-		// 	  $('div.save_window').css('overflow','visible');
-  //       $('div.save_window div.inner_ span.top').css({opacity:1,display:'block'});
-  //       $('div.save_window a.close').show();
-  //       $('div.save_window').removeClass('loading');
-  //       $('div.save_window div.inner_ span.loading').css({opacity:0});
-  //       $('div.save_window div.inner_ span.bottom').css({opacity:1,display:'block'});
-  //       $('div.save_window div.inner_').css({height:'auto'});
-  //       $('div.save_window span.top input').val('');
-		// 	}
-			
-			
-		//   function loadingState() {
-  //       unbindESC();
-  //       $('div.save_window').css('overflow','hidden');
-  //       $('div.save_window div.inner_ span.top').animate({opacity:0},200,function(){
-  //         $(this).hide();
-  //         $('div.save_window a.close').hide();
-  //         $('div.save_window span.loading').css('opacity','0');
-  //         $('div.save_window').addClass('loading');
-  //         $('div.save_window div.inner_ span.loading').animate({opacity:1},200);
-  //       });
-  //       $('div.save_window div.inner_ span.bottom').animate({opacity:0},200,function(){
-  //         $(this).hide();
-  //       });
-  //       $('div.save_window div.inner_').animate({height:'74px'},400);
-  //     }
-			
-			
-		// 	return {}
-		// }());
-		
-		
+
+
     ///////////////////////////////////////
     //  Export window                    //
     ///////////////////////////////////////
-		// var export_table = (function() {
+		var export_table = (function() {
 		  
-		//   $('div.mamufas').append(window.view_elements.export_window);
+		  // Append element
+		  $('div.mamufas').append(window.view_elements.export_window);
+
+		  // Bind events
+		 	$('a.export').live('click',function(ev){
+	      stopPropagation(ev);
+        closeOutTableWindows();
+
+        $('div.mamufas div.export_window').show();
+        $('div.mamufas').fadeIn('fast');
+
+        // Set form url correctly before choose a export option
+				$('div.export_window').find('form').attr('action','/tables/' + table_name);
+
+        bindESC();
+	    });
 			
-	 //    $('div.mamufas div.export_window form a.option').click(function(ev){
-	 //      stopPropagation(ev);
-		// 		if (!$(this).parent().hasClass('disabled')) {
-		// 			var format = $(this).attr('rel');
-		//       $('div.mamufas div.export_window form ul li').removeClass('selected');
-		//       $(this).parent().addClass('selected');
-		//       $('#export_format').val(format);
-		// 		}
-	 //    });
+	    $('div.mamufas div.export_window form a.option').click(function(ev){
+	      stopPropagation(ev);
+				if (!$(this).parent().hasClass('disabled')) {
+					var format = $(this).attr('rel');
+		      $('div.mamufas div.export_window form ul li').removeClass('selected');
+		      $(this).parent().addClass('selected');
+		      $('#export_format').val(format);
+				}
+	    });
 	    
-	 //    $('div.mamufas div.export_window a.close,div.mamufas div.export_window a.cancel').click(function(ev){
-	 //      stopPropagation(ev);
-	 //      closeOutTableWindows();
-	 //    });
+	    $('div.mamufas div.export_window a.close,div.mamufas div.export_window a.cancel').click(function(ev){
+	      stopPropagation(ev);
+	      closeOutTableWindows();
+	    });
 	
-	 //    $('div.mamufas div.export_window form').submit(function(ev){
-	 //      closeOutTableWindows();
-	 //    });
+	    $('div.mamufas div.export_window form').submit(function(ev){
+	      closeOutTableWindows();
+	    });
 	
-	 //    $('#export_format').val($('div.mamufas div.export_window form ul li.selected a.option').attr('rel'));
+	    $('#export_format').val($('div.mamufas div.export_window form ul li.selected a.option').attr('rel'));
 	
-		// 	return {}
-		// }());
+			return {}
+		}());
 
 
     ///////////////////////////////////////

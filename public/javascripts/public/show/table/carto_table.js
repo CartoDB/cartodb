@@ -21,7 +21,7 @@
     last_cell_s: 100,
     // Scroll stuff
     scroll:0,
-    // Table mode (normal, query or filter)
+    // Table mode (normal or filter)
     mode: 'normal'
   }
 

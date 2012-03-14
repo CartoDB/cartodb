@@ -1,11 +1,11 @@
 # coding: utf-8
 
 class Admin::TablesController < ApplicationController
-  ssl_required :index, :show, :embed_map
+  ssl_required :index, :show, :embed_map, :show_public
 
-  skip_before_filter :check_domain, :only => [:embed_map, :show]
+  skip_before_filter :check_domain, :only => [:embed_map, :show, :show_public]
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]  
-  before_filter :login_required, :except => [:embed_map, :show]
+  before_filter :login_required, :only => [:index]
 
   def index
     current_page = params[:page].nil? ? 1 : params[:page].to_i
@@ -57,17 +57,21 @@ class Admin::TablesController < ApplicationController
         end
       end
       
-    # public table show  
+    # redirect to public table show  
     else
-      @subdomain = request.subdomain
-      @table = Table.find_by_subdomain(@subdomain, params[:id])    
-      if @table.blank? || @table.private?
-        head :forbidden
-      else
-        render 'show_public', :layout => 'application_public'           
-      end      
+      redirect_to public_table_path(params[:id])
     end  
   end
+  
+  def show_public
+    @subdomain = request.subdomain
+    @table = Table.find_by_subdomain(@subdomain, params[:id])    
+    if @table.blank? || @table.private?
+      head :forbidden
+    else
+      render 'show_public', :layout => 'application_public'           
+    end          
+  end  
   
   def embed_map
     @subdomain = request.subdomain

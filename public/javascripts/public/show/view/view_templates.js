@@ -1,11 +1,11 @@
 
 		window.view_elements = {
-      advanced_options : 
+      duplicate_window : 
       	'<div class="save_window">'+
           '<a href="#close_window" class="close"></a>'+
           '<div class="inner_">'+
             '<span class="loading">'+
-              '<h5>We are duplicating your table...</h5>'+
+              '<h5>We are duplicating this table...</h5>'+
               '<p>We\'ll be quick!</p>'+
             '</span>'+
             '<span class="top">'+

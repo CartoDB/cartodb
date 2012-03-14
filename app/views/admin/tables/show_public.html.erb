@@ -54,7 +54,6 @@
         <div class="left">
           <span class="normal">
             <h2><%= @table.name %> <small>by <%= @table.owner.username %></small></h2>
-            <p class="status"><em>PUBLIC</em></p>
             <span class="tags">
               <% unless @table[:tags_names].blank? %>
                 <% tagsSize=@table[:tags_names].split(',').size %>
@@ -75,7 +74,7 @@
         </div>
         <div class="right">
           <p class="settings">
-          	<a class="export" href="#export">export table</a><% if current_user %> | <a class="duplicate_table" href="#duplicate_table">duplicate table</a><% end %>
+          	<a class="export" href="#export">export table</a><% if current_user %> <a class="duplicate" href="#duplicate_table">DUPLICATE IN YOUR ACCOUNT</a><% end %>
           </p>
           <span class="paginate">
             <a id="nextButton"class="next" href="#next_column">Next column</a>

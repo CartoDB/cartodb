@@ -262,23 +262,14 @@ echo "127.0.0.1 admin.localhost.lan" | sudo tee -a /etc/hosts
 echo "127.0.0.1 admin.testhost.lan" | sudo tee -a /etc/hosts
 echo "127.0.0.1 [mysubdomain].localhost.lan" | sudo tee -a /etc/hosts
 
-# Create your user at [mysubdomain].cartodb.com
-bundle exec rake cartodb:db:setup SUBDOMAIN=[mysubdomain] \
-PASSWORD=[mypass] ADMIN_PASSWORD=[mypass] EMAIL=[me@mail.com] 
-
-# Update your quota to 10GB
-bundle exec rake cartodb:db:set_user_quota['[mysubdomain]',10240]      
-
-# Allow unlimited tables to be created
-bundle exec rake cartodb:db:set_unlimited_table_quota['[mysubdomain]'] 
-
-# Allow user to create private tables in addition to public
-bundle exec rake \
- cartodb:db:set_user_private_tables_enabled['[mysubdomain]','true'] 
-
-# Set the name of the CartoDB
-bundle exec rake \
- cartodb:db:set_user_account_type['[mysubdomain]','[DEDICATED]'] 
+# Create a development user
+#
+# The script will ask you for passwords and email
+#
+# Read the script for more informations about how to perform
+# individual steps of user creation and settings management
+#
+sh script/create_dev_user [mysubdomain]
 ```
 
 Finally, start the CartoDB development server on port 3000:

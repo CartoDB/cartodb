@@ -13,8 +13,10 @@
     $('a.confirm_renew').click(function(e){
       var csrf_token = $('meta[name=csrf-token]').attr('content'),
           csrf_param = $('meta[name=csrf-param]').attr('content');
-      e.preventDefault();
-      var form = $('<form method="post" action="'+$(this).attr('href')+'"></form>');
+
+      stopPropagation(e);
+
+      var form = $('<form method="post" action=""></form>');
       var metadata_input = '<input name="_method" value="delete" type="hidden" />';
       if (csrf_param != null && csrf_token != null) {
         metadata_input += '<input name="'+csrf_param+'" value="'+csrf_token+'" type="hidden" />';

@@ -109,7 +109,7 @@
         element: document.getElementById('uploader'),
         action: '/upload',
         params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz'],
         sizeLimit: 0, // max size
         minSizeLimit: 0, // min size
         debug: false,
@@ -138,7 +138,7 @@
       	element: document.getElementById('hugeUploader'),
       	action: '/upload',
       	params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz'],
       	sizeLimit: 0,
       	minSizeLimit: 0,
       	debug: false,
@@ -236,7 +236,7 @@
                 $('div.create_window div.inner_ span.loading p').html(json.raw_error +'<br/><br/>'+ json.hint);
                 $('div.create_window div.inner_ span.loading h5').text(json.message);
 							} else {
-                $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:wadus@cartodb.com">contact us</a> with a sample of your data if possible. Thanks!');
+                $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:support@cartodb.com">contact us</a> with a sample of your data if possible. Thanks!');
                 $('div.create_window div.inner_ span.loading h5').text('Oops! Error');
 							}
 						  $('div.create_window div.inner_ span.loading').addClass('error');

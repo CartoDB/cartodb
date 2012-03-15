@@ -7,6 +7,8 @@ module CartoDB
 
       def process!
         log "Importing zip file: #{@path}"
+        @data_import = DataImport.find(:id=>@data_import_id)
+        @data_import.log_update("decompressing file #{@path}") 
 
         # generate a temp file for import
         tmp_dir = temporary_filename

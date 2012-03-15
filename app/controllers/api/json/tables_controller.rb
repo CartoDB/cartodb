@@ -80,7 +80,7 @@ class Api::Json::TablesController < Api::ApplicationController
                     :code=>@data_import.error_code }, 
                     400)
       else
-        render_jsonp({ :description => nil, :stack => @table.errors.full_messages, :code=>99 }, 400)
+        render_jsonp({ :description => nil, :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
       end
     end
   rescue => e
@@ -95,6 +95,7 @@ class Api::Json::TablesController < Api::ApplicationController
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     
     @data_import.reload
+    
     import_errors = nil
     if @data_import.logger
       import_errors = @data_import.logger.split("\n")

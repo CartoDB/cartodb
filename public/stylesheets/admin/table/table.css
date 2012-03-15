@@ -13,6 +13,7 @@ div.table_position table thead tr th h3 {float:left; width:auto; max-width:90%; 
 div.table_position table thead tr th h3:hover {cursor:pointer; color:#444444;}
 div.table_position table thead tr th h3.static {color:#bbb; max-width:90%;}
 div.table_position table thead tr th h3.static:hover {cursor:default; color:#bbb;}
+div.table_position.public table thead tr th h3:hover {cursor:default; color:#727272;}
 div.table_position table thead tr th p {padding:3px 0 0 0;  font:normal 11px "Helvetica"; color:#B4B4B4; text-align:left; text-shadow:0 1px white;}
 div.table_position table thead tr th div p.long {float:left; display:block; width:100%; margin:0; padding:0}
 div.table_position table thead tr th div input {position:absolute; display:none; left:8px; top:10px; width:65%; margin:0; padding:2px; background:#FEFFDF; border:1px solid #C0C0C0; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px;
@@ -23,7 +24,7 @@ div.table_position table thead tr th p.geo {float:left; width:22px; height:12px;
 div.table_position table thead tr th p.geo:hover {background-position:0 -12px; cursor:pointer;}
 div.table_position table thead tr th p.geo.disabled {opacity:0.7}
 div.table_position table thead tr th p.geo.disabled:hover {cursor:default; background-position:0 0}
-div.table_position table thead tr th p.geo.public:hover {background-position:0 0; cursor:default;}
+div.table_position.public table thead tr th p.geo:hover {background-position:0 0; cursor:default;}
 div.table_position table thead tr th p.geo.loading {height:16px; width:16px; margin:1px 0 0 5px; background:url('/images/admin/table/ajax-loader.gif') no-repeat 0 0;}
 div.table_position table thead tr th a.options {position:absolute; right:10px; top:12px; height:14px; width:14px; margin:0; background:url('/images/admin/table/head_option_bkg.png') no-repeat 0 0; text-indent:-9999px; z-index:10; overflow:hidden;}
 div.table_position table thead tr th a.options:hover {background-position:0 -14px;}
@@ -65,7 +66,7 @@ div.table_position table thead div.stickies p a:hover {color:black}
 div.table_position table tbody {float:left; margin:5px 0 0 0;}
 div.table_position table tbody.end {padding-bottom:150px!important;}
 div.table_position table tbody tr {position:relative; float:left; height:38px; padding:0 0 0 41px;}
-div.table_position table.public tr {padding:0;}
+div.table_position.public table tr {padding:0;}
 div.table_position table tbody tr td {height:37px!important; padding:0; margin:0; background:url('/images/admin/table/item_bkg.jpg') repeat-x 0 -1px; border:1px solid #E4E5E9; font:normal 13px "Helvetica"; line-height:13px; color:#666666; overflow-y:hidden;
 text-shadow:0 1px white;}
 div.table_position table tbody tr td:hover {cursor:pointer;}
@@ -236,6 +237,7 @@ div.filter_window div.inner_ span.bottom input.apply_query:hover {background:lin
 /************************************EDIT FIELDS************************************/
 div.table_position div.edit_cell {position:absolute; display:none; top:200px; left:200px; min-width:262px; padding:7px 7px 42px; -moz-box-shadow:0px 0px 10px 2px #999; -webkit-box-shadow:0px 0px 10px 2px #999; box-shadow:0px 0px 10px 2px #999; border:1px solid #999999; background:#E6F2E4;
   -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; z-index:10; -moz-user-select:text!important;}
+div.table_position.public div.edit_cell {padding-bottom:29px;}
 div.table_position div.edit_cell a.close {position:absolute; top:-7px; right:-8px; width:24px; height:24px; background:url('/images/admin/table/close.png') no-repeat 0 0; text-indent:-9999px; z-index:10;}
 div.table_position div.edit_cell a.close:hover {background-position:0 -24px;}
 div.table_position div.edit_cell div.boolean {float:left; display:none; width:248px; height:30px; padding:7px; margin:0; border:1px solid #ccc; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; background:white;}

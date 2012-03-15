@@ -4,6 +4,9 @@
 			// Init the view
 			initView();
 
+			// Init the map
+			initMap();
+
 			// IF there is no hash -> /table
 			var table_enabled = false;
 			if (window.location.hash == "") {
@@ -12,9 +15,8 @@
 
 			// Init the table
 			$("table#carto_table").cartoDBtable(
-			  'start',
-  			{
-          getDataUrl: global_api_url + 'tables/',
+			  'start', {
+          getDataUrl: global_api_url + 'sql/',
           resultsPerPage: 40,
           reuseResults: 120,
           total: 5000,

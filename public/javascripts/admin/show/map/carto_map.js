@@ -2102,7 +2102,7 @@
         this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
 
         // add interaction
-        this.interaction.remove();
+        if ( this.interaction ) this.interaction.remove();
         this.interaction = wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
       }
     }

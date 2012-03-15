@@ -57,12 +57,11 @@ and code.
   
 # How do I install CartoDB? #
 
-The installation process is fairly painless, and we have successful
-installations running on Amazon EC2, Linode, and development machines
-with OS X and Ubuntu.
+CartoDB is under heavy development, so the installation process is only for hardy souls.  
+That said, there are many successful installations on Amazon EC2, Linode, 
+dedicated instances and development machines running OS X and Ubuntu 10.04+.
 
-Before getting started, go ahead and download CartoDB by cloning this
-repository:
+If you want to give it a try, download CartoDB by cloning this repository:
 
 ```bash
 $ git clone https://github.com/Vizzuality/cartodb.git

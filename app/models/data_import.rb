@@ -15,6 +15,7 @@ class DataImport < Sequel::Model
   # 8: SHP to PGSQL error
   # 9: Database import error
   # 10: Unable to open file
+  # 11: Raster import error
   # 99: Unknown 
   
   state_machine :initial => :preprocessing do

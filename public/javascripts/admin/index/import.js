@@ -32,6 +32,14 @@
          }
       });
 
+      $('a.see_more').live('click',function(ev){
+      	stopPropagation(ev);
+      	var $parent = $(this).closest('span');
+      	$parent.find('span').show();
+      	$parent.find('p.see_details').remove();
+      	$('div.create_window div.inner_').height($('div.create_window div.inner_ span.loading').height() + 30);
+      })
+
 
       $('div.select_file input#url_txt').focusin(function(){
          $(this).val('');
@@ -200,8 +208,9 @@
       $('span.progress').width(5);
       $('div.create_window ul li:eq(1)').removeClass('finished');
       $('div.create_window').removeClass('georeferencing');
-      $('div.create_window div.inner_ span.loading p').html('It\'s not gonna be a lot of time. Just a few seconds, ok?');
-      $('div.create_window div.inner_ span.loading h5').html('We are creating your table...');
+      $('div.create_window div.inner_ span.loading').html('');
+			$('div.create_window div.inner_ span.loading').append('<h5>We are creating your table...</h5>');
+      $('div.create_window div.inner_ span.loading').append('<p>It\'s not gonna be a lot of time. Just a few seconds, ok?</p>');
       $('div.qq-upload-drop-area').hide();
     }
 
@@ -233,28 +242,29 @@
             error: function(e) {
 							var json = $.parseJSON(e.responseText);
 
-							if (json.errors || json.import_errors) {
+							if (json.code || json.import_errors) {
+
+								// Reset
+								$('div.create_window div.inner_ span.loading').html('');
 
 								// Title
-								$('div.create_window div.inner_ span.loading h5').text('Oops! Error');
+								$('div.create_window div.inner_ span.loading').html('<h5>Oops! There has been an error</h5>');
 
-								// Content
-								var content = '';
-								$('div.create_window div.inner_ span.loading p').html('');
-
-								if (json.errors && json.errors.length>0) {
-									for (var i=0,_length=json.errors.length; i<_length; i++) {
-										content += json.errors[i] + '<br/>';
-									}
-									$('div.create_window div.inner_ span.loading p').html(content);
+								// Description
+								if (json.description) {
+									$('div.create_window div.inner_ span.loading').append('<p>' + json.description + '</p>');
 								}
 
-								if (json.import_errors && json.import_errors.length>0) {
-									content = '';
-									for (var i=0,_length=json.import_errors.length; i<_length; i++) {
-										content += json.import_errors[i] + '<br/>';
+								// Stack
+								if (json.stack && json.stack.length>0) {
+									$('div.create_window div.inner_ span.loading').append('<p class="see_details"><a class="see_more" href="#show_more">see details</a></p>');
+									
+									var stack = '<span style="display:none; padding:10px 0 0;"><h6>Code ' + (json.code || '') + '</h6><dl>';
+									for (var i=0,_length=json.stack.length; i<_length; i++) {
+										stack += '<dd>' + json.stack[i] + '</dd>';
 									}
-									$('div.create_window div.inner_ span.loading p').append(content);
+									stack += '</dl></span>';
+									$('div.create_window div.inner_ span.loading').append(stack);
 								}
 
 								// Are there still hints?
@@ -286,8 +296,9 @@
       $('div.create_window div.inner_ span.loading').animate({opacity:0},300,function(){
         $('div.create_window div.inner_ span.loading').hide();
         $('div.create_window div.inner_ span.loading').removeClass('error');
-        $('div.create_window div.inner_ span.loading p').html('It\'s not gonna be a lot of time. Just a few seconds, ok?');
-        $('div.create_window div.inner_ span.loading h5').html('We are creating your table...');
+        $('div.create_window div.inner_ span.loading').html('');
+				$('div.create_window div.inner_ span.loading').append('<h5>We are creating your table...</h5>');
+        $('div.create_window div.inner_ span.loading').append('<p>It\'s not gonna be a lot of time. Just a few seconds, ok?</p>');
         $('div.create_window div.inner_ form').show();
         $('div.create_window div.inner_ form').animate({opacity:1},200);
         $('div.select_file p').text('We support xls, csv, gpx, shp, zip, etc...');

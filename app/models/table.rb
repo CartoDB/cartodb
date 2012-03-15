@@ -26,13 +26,19 @@ class Table < Sequel::Model(:user_tables)
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
     errors.add(nil, 'over table quota, please upgrade') if self.new? && self.owner.over_table_quota?
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
-    errors.add(:privacy, 'unauthorized') if  self.new? && privacy == PRIVATE && !self.owner.try(:private_tables_enabled)    
-    errors.add(:privacy, 'unauthorized') if !self.new? && privacy == PUBLIC  && !self.owner.try(:private_tables_enabled)
+    if !self.owner.try(:private_tables_enabled)  
+      errors.add(:privacy, 'unauthorized to create private tables') if self.new? && privacy == PRIVATE          
+      
+      # if the table exists, is private, but the owner no longer has private privalidges
+      if !self.new? && privacy == PRIVATE && self.changed_columns.include?(:privacy)
+        errors.add(:privacy, 'unauthorized to modify privacy status to private') 
+      end  
+    end
     validates_unique [:name, :user_id], :message => 'is already taken'
   end
 
-  def before_validation
-    self.privacy ||= PRIVATE
+  def before_validation  
+    self.privacy ||= owner.private_tables_enabled ? PRIVATE : PUBLIC  
     super
   end
   
@@ -84,6 +90,8 @@ class Table < Sequel::Model(:user_tables)
     # => then tableB is append_to_table onto tableA
     # => leaving both in tact while creating a new tthat contains both
   end
+  
+  
   def import_to_cartodb
       if import_from_file.present?     
         @data_import.data_type = 'file'
@@ -211,6 +219,7 @@ class Table < Sequel::Model(:user_tables)
         return uniname
       end
   end
+  
   def import_cleanup
     owner.in_database do |user_database|
       # If we already have a cartodb_id column let's rename it to an auxiliary column
@@ -272,6 +281,7 @@ class Table < Sequel::Model(:user_tables)
       normalize_timestamp_field!(:updated_at, user_database)
     end
   end
+  
   def before_create
     update_updated_at
     self.database_name = owner.database_name    
@@ -355,28 +365,6 @@ class Table < Sequel::Model(:user_tables)
     raise e
   end
 
-  # adds the column if not exists or cast it to timestamp field
-  def normalize_timestamp_field!(field, user_database)
-    schema = self.schema(:reload => true)
-    if schema.nil? || !schema.flatten.include?(field)
-        user_database.run("ALTER TABLE #{self.name} ADD COLUMN #{field.to_s} timestamp DEFAULT NOW()")
-    end
-
-    if !schema.nil?
-      field_type = Hash[schema][field]
-      # if column already exists, cast to timestamp value and set default
-      if field_type == 'string' && schema.flatten.include?(field)
-          #TODO: check type
-          sql = <<-ALTERCREATEDAT
-              ALTER TABLE #{self.name} ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
-              USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US'),
-              ALTER COLUMN #{field.to_s} SET DEFAULT now();
-          ALTERCREATEDAT
-          user_database.run(sql)
-      end
-    end
-  end
-
   def after_save
     super
     manage_tags
@@ -406,15 +394,7 @@ class Table < Sequel::Model(:user_tables)
       @data_import.finished
     end
   end
-  
-  def make_geom_valid
-    begin 
-      owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom) WHERE NOT ST_IsValid(the_geom)")
-    rescue => e
-      CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} make valid failed: #{e.inspect}"
-    end
-  end
-  
+    
   def before_destroy
     $tables_metadata.del key
   end
@@ -433,6 +413,39 @@ class Table < Sequel::Model(:user_tables)
     end
   end
   ## End of Callbacks
+
+
+  # adds the column if not exists or cast it to timestamp field
+  def normalize_timestamp_field!(field, user_database)
+    schema = self.schema(:reload => true)
+    if schema.nil? || !schema.flatten.include?(field)
+        user_database.run("ALTER TABLE #{self.name} ADD COLUMN #{field.to_s} timestamp DEFAULT NOW()")
+    end
+
+    if !schema.nil?
+      field_type = Hash[schema][field]
+      # if column already exists, cast to timestamp value and set default
+      if field_type == 'string' && schema.flatten.include?(field)
+          #TODO: check type
+          sql = <<-ALTERCREATEDAT
+              ALTER TABLE #{self.name} ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
+              USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US'),
+              ALTER COLUMN #{field.to_s} SET DEFAULT now();
+          ALTERCREATEDAT
+          user_database.run(sql)
+      end
+    end
+  end
+  
+  
+  def make_geom_valid
+    begin 
+      owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom) WHERE NOT ST_IsValid(the_geom)")
+    rescue => e
+      CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} make valid failed: #{e.inspect}"
+    end
+  end
+  
 
   def name=(value)
     return if value == self[:name] || value.blank?
@@ -473,8 +486,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_default_table_privacy
-    table_privacy = self.owner.try(:private_tables_enabled) ? PRIVATE : PUBLIC
-    self.privacy = table_privacy
+    self.privacy ||= self.owner.try(:private_tables_enabled) ? PRIVATE : PUBLIC
     save
   end
     

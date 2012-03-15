@@ -25,7 +25,15 @@
     mode: 'normal'
   }
 
-  
+  /* 
+
+  	TODO:
+	
+		- Check live if there is any change with owner table :)
+		- Get total rows
+
+  */
+
   var methods = {
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,15 +54,8 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  GET DATA
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    getData : function(options, direction, new_query, refresh) {
+    getData : function(options, direction, refresh) {
 
-      // Check georeferencing loader
-      if (window.ops_queue.georeferencing && window.ops_queue.georeferencing.finished) {
-        window.ops_queue.georeferencing = null;
-        window.ops_queue.loopPendingOperations();
-      }
-      
-      
       // Show loader
       if (!table.loaded || refresh) {
         var requestId = createUniqueId();
@@ -76,137 +77,38 @@
 			  request_pages = table.min_p +'..'+ table.max_p;
 			}
 
-      
-      // New table mode: normal, query or filter
-			var columns,
-			    rows,
-			    ajax_request = (table.mode!='query')? 2 : 1,
-					modified,
-					time = 0,
-          errors = [];
 
-
-      // When ajax calls are loaded
-      var requestArrived = _.after(ajax_request,function(){
-        if (table.mode!='query') {
-			    startTable();
-		    } else {
-					if (modified) {
-            if (errors.length==0) {
-              window.ops_queue.pendingOperations[requestId].type = "query_action";
-              loadingMessages["query_action"] = 'operation completed';
-              methods.closeTablePopups();
-              methods.restoreTable();
-            }
-					} else {					  
-						methods.drawQueryColumns(rows,table.total_r,time,new_query);
-				    methods.drawQueryRows(rows,direction,table.actual_p,new_query);
-					}
-		    }
-
-		    // Remove loader
-		    if (errors.length == 0)
+      // FILTER OR NORMAL MODE
+      // Request rows
+		  $.ajax({
+		     method: "GET",
+		     url: options.getDataUrl + table_name +'/records',
+		     data: {
+		       rows_per_page: options.resultsPerPage,
+		       page: request_pages,
+		       mode: defaults.mode,
+		       order_by: defaults.order_by,
+		       filter_column: (table.mode=="filter")?options.filter_column:'',
+		       filter_value: (table.mode=="filter")?options.filter_value:'',
+		     },
+		    success: function(data) {
+		      rows = data.rows;
+		      table.total_r = 5000;
+		      startTable(options.schema,data.rows,table.total_r);
 		    	window.ops_queue.responseRequest(requestId,'ok','');
-      });
-      
-			if (table.mode!='query') {
-        // FILTER OR NORMAL MODE
-        // Request schema
-			  $.ajax({
-			    method: "GET",
-			    url: options.getDataUrl + table_name,
-			 		headers: {"cartodbclient":"true"},
-			    success: function(data) {
-				 		columns = data.schema;
-			      requestArrived();
-			    },
-			    error: function(e) {
-			      window.ops_queue.responseRequest(requestId,'error','There has been an error, try again later...');
-			      requestArrived();
-			    }
-			  });
-
-        // Request rows
-			  $.ajax({
-			     method: "GET",
-			     url: options.getDataUrl + table_name +'/records',
-			     data: {
-			       rows_per_page: options.resultsPerPage,
-			       page: request_pages,
-			       mode: defaults.mode,
-			       order_by: defaults.order_by,
-			       filter_column: (table.mode=="filter")?options.filter_column:'',
-			       filter_value: (table.mode=="filter")?options.filter_value:'',
-			     },
-				 	headers: {"cartodbclient":"true"},
-			    success: function(data) {
-			      rows = data.rows;
-			      table.total_r = data.total_rows;
-			      requestArrived();
-			    },
-			    error: function(e) {
-  			    window.ops_queue.responseRequest(requestId,'error','There has been an error, try again later...');
-			      requestArrived();
-			      table.total_r = 0;
-			      startTable();
-			    }
-			  });
-
-			} else {
-
-			  // Remove empty table if it exists
-				table.e.parent().find('div.empty_table').remove();
-
-			  // QUERY MODE
-			  $.ajax({
-			    method: "POST",
-			    url: global_api_url+'queries?sql='+encodeURIComponent(editor.getValue()),
-			    data: {
-			      rows_per_page: options.resultsPerPage,
-			      page: request_pages
-			    },
-			 		headers: {"cartodbclient":"true"},
-			    success: function(data) {
-			      // Remove error content
-						$('div.sql_window').removeClass('error');
-						$('div.sql_window div.inner div.outer_textarea').removeAttr('style');
-
-						// Remove errors from editor
-						delete editor['errors'];
-
-						modified = data.modified;
-						time    = data.time.toFixed(3);
-			      rows    = data.rows;
-			      table.total_r = data.total_rows
-            
-			      requestArrived();
-			    },
-			    error: function(e) {
-            window.ops_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
-			      
-			      // parse errors
-			      errors = $.parseJSON(e.responseText).errors;
-
-			      // Save errors in the editor
-			      editor['errors'] = errors;
-			      
-			      $('div.sql_window span.errors p').text('');
-			      _.each(errors,function(error,i){
-			        $('div.sql_window span.errors p').append(''+error+'.<br/>');
-			      });
-			      
-			      $('div.sql_window').addClass('error');
-			      $('div.sql_window div.inner div.outer_textarea').css({bottom:$('div.sql_window span.errors').outerHeight() +'px'});
-			      
-            requestArrived();
-			    }
-			  });
-			}
+		    },
+		    error: function(e) {
+			    window.ops_queue.responseRequest(requestId,'error','There has been an error, try again later...');
+		      requestArrived();
+		      table.total_r = 0;
+		      startTable();
+		    }
+		  });
 
 
 
-      function startTable() {
-        if (table.total_r==0) {
+      function startTable(columns,rows,total) {
+        if (total==0) {
           //Start new table
           //Calculate width of th on header
           var window_width = $(window).width();
@@ -257,7 +159,7 @@
       table.e.find('thead').remove();
 
       //Draw the columns headers
-      var thead = '<thead style="'+((table.mode!="normal")?'height:91px':'')+'"><tr><th class="first"><div></div></th>';
+      var thead = '<thead style="'+((table.mode!="normal")?'height:91px':'')+'"><tr>';
 
       _.each(data,function(element,index){
         //Get type of table -> Points, polygons or lines
@@ -270,9 +172,7 @@
 
 	        // Playing with templates (table_templates.js - Mustache.js)
 	        thead += Mustache.to_html(th,{
-	          allowed:(element[0]!="cartodb_id" && element[0]!="created_at" && element[0]!="updated_at" && element[3]==undefined)?true:false,
 	          type:element[1],
-	          geo_allow: element[1]=="number" || element[1]=="string",
 	          name:element[0],
 	          cartodb_id: (element[0]!="cartodb_id")?false:true,
 	          cellsize: table.cell_s,
@@ -296,8 +196,6 @@
 
       if (!table.loaded) {
         table.loaded = true;
-        //Print correct column types
-        methods.getColumnTypes();
 
         //Scroll event
         methods.addScroll();
@@ -315,101 +213,24 @@
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  DRAW COLUMNS
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    drawQueryColumns: function(rows,total,time,new_query) {
-      if (rows && rows.length>0) {
-
-      	// Remove previous thead
-      	table.e.find('thead').remove();
-
-				if (new_query) {
-					//Draw the columns headers
-		      var thead = '<thead style="height:91px"><tr><th class="first"><div></div></th>';
-		      table.h = [];
-
-					$('span.query h3').html(total + ' row' + ((total>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-					$('span.query p').text('This query took '+time+' seconds');
-
-          var element_size = _.size(rows[0])
-            , pos = 0;
-
-					_.eachRow(rows[0],function(ele,i){
-            pos++;
-
-						switch (i) {
-							case "the_geom": type = 'Geometry'; break;
-							case "created_at": type = 'Date'; break;
-							case "updated_at": type = 'Date'; break;
-							case "cartodb_id": type = 'Number'; break;
-							default: type = 'Unknown';
-						}
-
-	          thead += 	'<th>'+
-	                     	'<div style="width:'+((pos==element_size)?table.last_cell_s:table.cell_s) +'px">'+
-	                      	'<span class="long">'+
-	                     			'<h3 class="static">'+i+'</h3>'+
-														((i=="the_geom")?'<p class="geo disabled">geo</p':'')+
-	                      	'</span>'+
-													'<p class="long">'+
-	                     			'<a class="static">'+type+'</a>'+
-	                      	'</p>'+
-													'<a class="options disabled">options</a>'+
-	                     	'</div>'+
-	                   	'</th>';
-					});
-
-					thead += "</tr></thead>";
-
-					table.e.append(thead);
-					table.e.find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
-				}
-      } else {
-				$('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
-				$('span.query p').text('');
-				var thead = '<thead><tr><th class="first"><div></div></th><th><div></div></th></tr></thead>';
-				table.e.append(thead);
-			}
-			
-			if (!table.loaded) {
-        table.loaded = true;
-        //Print correct column types
-        methods.getColumnTypes();
-
-        //Scroll event
-        methods.addScroll();
-
-        //Cell click event
-        methods.bindEvents();
-
-        //Create elements
-        methods.createElements();
-      }
-    },
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  DRAW ROWS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawRows: function(options,data,direction,page) {
+    	var tbody = '';
+
       if (table.e.children('tbody').length==0) {
         if (table.mode == "filter") {
-          var tbody = '<tbody style="padding-top:89px;">';
+          tbody = '<tbody style="padding-top:89px;">';
         } else {
-          var tbody = '<tbody style="padding-top:53px;">';
+          tbody = '<tbody style="padding-top:53px;">';
         }
-      } else {
-        var tbody = '';
       }
 
       //Loop all the data
       _.each(data, function(element,i){
 
         // Get first td
-        tbody += Mustache.to_html(first_td,{
-          cartodb_id: element['cartodb_id']
-        });
+        tbody += '<tr>'
 
         // Get rest generic td
 				_.eachRow(table.h,function(head,x){
@@ -478,124 +299,12 @@
 
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  DRAW QUERY ROWS
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    drawQueryRows: function(rows,direction,page,new_query) {
-
-      if (table.e.children('tbody').length==0) {
-        var tbody = '<tbody style="padding-top:89px;">';
-      } else {
-        var tbody = '';
-      }
-
-      _.each(rows, function(element,i){
-        tbody += '<tr><td class="first"><div></div></td>';
-        var element_size = _.size(element)
-          , pos = 0;
-
-    		_.eachRow(element,function(ele,j){
-          pos++;
-    			tbody += 	'<td '+((j=="cartodb_id" || j=="created_at" || j=="updated_at")?'class="special"':'')+
-									 	' r="'+ element['cartodb_id'] +'" c="'+ j +'"><div style="width:'+((pos==element_size)?table.last_cell_s:table.cell_s) +'px"' + 
-									 	'>'+((element[j]==null)?'':element[j])+'</div></td>';
-    		});
-        tbody += '</tr>';
-      });
-
-      if (table.e.children('tbody').length==0) {
-        tbody += '</tbody>';
-        table.e.append(tbody);
-      } else {
-        (direction=="previous")?table.e.children('tbody').prepend(tbody):table.e.children('tbody').append(tbody);
-      }
-
-      if (table.e.children('tbody').length==0 || new_query) {
-        methods.resizeTable(true);
-      }
-
-      if (direction!='') {
-        methods.checkReuse(direction);
-      } else {
-        $('html,body').animate({scrollTop:table.scroll},300,function() {
-          table.loading = false; table.enabled = true;
-        });
-      }
-    },
-
-
-
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  END OF TABLE? -> Add fake row and fill fake row functions
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     endOfTable: function() {
 			return table.total_r <= ((table.actual_p + 1) * defaults.resultsPerPage);
 		},
-
-		addLastRow: function() {
-			var tr = '';
-			
-			// Get first td
-      tr += Mustache.to_html(first_td,{
-        cartodb_id: null
-      });
-
-      // Get rest generic td
-			_.eachRow(table.h,function(head,x){
-			  var data = null;
-			  var j = head.name;
-	      tr += Mustache.to_html(generic_td,{
-          value: function(){
-            if (data==null) {
-              return '';
-            } else {
-              return data;
-            }
-           },
-           cartodb_id: null,
-           is_cartodb_id:(j=="cartodb_id")?true:false,
-        	 allowed: (j=="cartodb_id" || j=="created_at" || j=="updated_at")?true:false,
-           cellsize: table.cell_s,
-           column: j,
-           geojson: (data!='GeoJSON')?true:false
-         });
-      });
-
-      var start = tr.lastIndexOf('"width:');
-      var end = tr.lastIndexOf('px"');
-      tr = tr.substring(0,start) + '"width:' + table.last_cell_s + tr.substring(end);
-
-      tr += '</tr>';
-			table.e.find('tbody').append(tr);
-			table.e.find('tr.new').animate({heigth:'39px',opacity:1},1000,function(){
-				methods.resizeTable();
-			});
-		},
-		
-		addNewRow: function(cartodb_id) {
-			table.e.find('tr.new td').each(function(i,ele){
-				$(ele).attr('r',cartodb_id);
-			});
-			table.e.find('tr.new').attr('r',cartodb_id).find('td:eq(1) > div').text(cartodb_id).closest('tr').removeClass('new');
-
-			methods.addLastRow();
-		},
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  GET COLUMN TYPES AND PRINT THEM
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    getColumnTypes: function() {
-			var types = ["Number","String","Date","Boolean"];
-
-      $('span.col_types').each(function(index,element){
-        $(element).children('ul').children('li').remove();
-        for (var i = 0; i<types.length; i++) {
-          $(element).children('ul').append('<li><a href="#'+types[i]+'">'+types[i]+'</a></li>');
-        }
-      });
-    },
 
 
 
@@ -652,114 +361,13 @@
             '<div class="free">'+
               '<textarea></textarea>'+
             '</div>'+
-            '<div class="boolean">'+
-              '<ul>'+
-                '<li><a href="#True">True</a></li>'+
-                '<li><a href="#False">False</a></li>'+
-                '<li><a class="null" href="#Null">Null</a></li>'+
-              '</ul>'+
-            '</div>'+
-            '<div class="point">'+
-              '<span class="point_block lon">'+
-                '<p>Lon</p>'+
-                '<input type="text" value="0" id="longitude_value" />'+
-              '</span>'+
-              '<p>,</p>'+
-              '<span class="point_block lat">'+
-                '<p>Lat</p>'+
-                '<input type="text" value="0" id="latitude_value" />'+
-              '</span>'+
-            '</div>'+
-            '<div class="date">'+
-              '<div class="day">'+
-                '<label>DAY</label>'+
-                '<span class="bounds">'+
-                  '<input value="1" />'+
-                  '<a class="up" href="#one_day_more">up</a>'+
-                  '<a class="down" href="#one_day_less">dowm</a>'+
-                '</span>'+
-              '</div>'+
-              '<div class="month">'+
-                '<label>MONTH</label>'+
-                '<span class="bounds">'+
-                  '<a href="#...x">January</a>'+
-                '</span>'+
-                '<div class="months_list">'+
-                  '<ul class="scroll-pane">'+
-                    '<li class="selected"><a href="#January">January</a></li>'+
-                    '<li><a href="#February">February</a></li>'+
-                    '<li><a href="#March">March</a></li>'+
-                    '<li><a href="#April">April</a></li>'+
-                    '<li><a href="#May">May</a></li>'+
-                    '<li><a href="#June">June</a></li>'+
-                    '<li><a href="#July">July</a></li>'+
-                    '<li><a href="#August">August</a></li>'+
-                    '<li><a href="#September">September</a></li>'+
-                    '<li><a href="#October">October</a></li>'+
-                    '<li><a href="#November">November</a></li>'+
-                    '<li><a href="#December">December</a></li>'+
-                  '</ul>'+
-                '</div>'+
-              '</div>'+
-              '<div class="year">'+
-                '<label>YEAR</label>'+
-                '<span class="bounds">'+
-                  '<input value="2011" />'+
-                  '<a class="up" href="#one_year_more">up</a>'+
-                  '<a class="down" href="#one_year_less">dowm</a>'+
-                '</span>'+
-              '</div>'+
-              '<div class="hour">'+
-                '<label>TIME</label>'+
-                '<span class="bounds">'+
-                  '<input value="14:13:13" />'+
-                '</span>'+
-              '</div>'+
-            '</div>'+
-            '<p class="error"><span>Write a correct time</span></p>'+
           '</div>'+
           '<span>'+
             '<a class="cancel" href="#">Cancel</a>'+
-            '<a class="save" href="#">Save changes</a>'+
           '</span>'+
         '</div>');
 
 
-      //Row delete tooltip
-      table.e.parent().append(
-        '<div class="delete_row">'+
-          '<p>You are about to delete this row. Are you sure?</p>'+
-          '<a class="cancel_delete" href="#cancel_delete">cancel</a>'+
-          '<a class="button" href="#delete_row">Yes, delete it</a>'+
-        '</div>');
-
-
-      //Column delete tooltip
-      table.e.parent().append(
-        '<div class="delete_column">'+
-          '<p>You are about to delete this column. Are you sure?</p>'+
-          '<a class="cancel_delete" href="#cancel_delete">cancel</a>'+
-          '<a class="button" href="#delete_column">Yes, delete it</a>'+
-        '</div>');
-
-
-      //Change column type tooltip
-      table.e.parent().append(
-        '<div class="change_type_column">'+
-          '<p>Unconvertible data will be lost. Are you sure?</p>'+
-          '<a class="cancel_change" href="#cancel_delete">cancel</a>'+
-          '<a class="button" href="#change_type">Yes, do it</a>'+
-        '</div>');
-
-      
-      // Explain tooltip
-      table.e.parent().append(
-        '<div class="explain_tooltip">'+
-          '<p>Double-click for editing any cell</p>'+
-          '<span class="arrow"></span>'+
-        '</div>');
-        
-        
       // Filter table
       table.e.parent().append(
         '<div class="filter_window">'+
@@ -786,43 +394,6 @@
         '</div>'
       );
       $('div.filter_window').draggable({containment:'parent',handle:'h3'});
-
-      //Mamufas elements belong to the carto table
-      $('div.mamufas').append(
-        '<div class="column_window">'+
-          '<a href="#close_window" class="close_create"></a>'+
-          '<div class="inner_">'+
-            '<span class="top">'+
-              '<h3>Add a new column</h3>'+
-              '<p>Configure your new column.</p>'+
-              '<div class="options">'+
-                '<label>COLUMN NAME</label>'+
-                '<input type="text" value=""/>'+
-                '<label>COLUMN TYPE</label>'+
-                '<span class="select">'+
-                  '<a class="option" href="#select_type">Retrieving types...</a>'+
-                  '<div class="select_content">'+
-                    '<ul class="scrollPane"></ul>'+
-                  '</div>'+
-                '</span>'+
-              '</div>'+
-              '<p class="error"><span>Choose a name and type</span></p>'+
-            '</span>'+
-            '<span class="bottom">'+
-              '<a href="#close_window" class="cancel">cancel</a>'+
-              '<a href="#add_column" class="column_add">Create</a>'+
-            '</span>'+
-          '</div>'+
-        '</div>'+
-        '<div class="lastpage_window">'+
-          '<div class="inner_">'+
-            '<span class="loading">'+
-              '<h5>We are redirecting you to the end of your table...</h5>'+
-              '<p>Is not gonna be a lot of time. Just some seconds, right?</p>'+
-            '</span>'+
-          '</div>'+
-        '</div>'
-        );
     },
 
 
@@ -835,180 +406,13 @@
 
       table.e.parent().append(
         '<div class="empty_table">'+
-          '<h5>Add some rows to your table</h5>'+
-          '<p>You can <a class="add_row" href="#add_row">add it manually</a></p>'+ //or <a class="import_data" href="#import_data">import data</a>
+          '<h5>There is no data for this table</h5>'+
+          '<p>Back later to check it again</p>'+
         '</div>'
       );
 
       table.enabled = true;
       methods.resizeTable();
-    },
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  CREATE NEW ROW
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    addRow: function() {
-
-			// Cases:
-			// 	- (3) Go to the end of the table (paginate it)
-			//  - (2) Empty table, add new row.
-			//  - (1) No empty, first page, tr.new is there :)
-
-			table.enabled = false;
-      var end = methods.endOfTable();
-
-			// If tr.new is visible now... focus on them!
-			if (end && table.e.find('tr.new').length>0) {
-				// (1)
-				var new_row = table.e.find('tr.new');
-				new_row.addClass('selecting');
-				table.enabled = true;
-
-        $('html,body').animate({scrollTop:new_row.offset().top+'px'},500);
-
-			} else if (end && $('div.empty_table').length>0 && table.e.find('tbody').children().length==0) {
-				// (2)
-				$('div.empty_table').remove();
-        table.e.find('tbody').remove();
-        $('span.full_table').remove();
-        addSingleRow(0);
-			} else {
-				// (3)
-				$('div.lastpage_window').show();
-        $('div.mamufas').fadeIn();
-
-        table.max_p = Math.ceil(table.total_r / defaults.resultsPerPage) - 1;
-        table.min_p = table.max_p-1;
-				table.actual_p = table.max_p-1;
-				defaults.mode = "asc";
-  			defaults.order_by = 'cartodb_id';
-  			
-  			//If you are viewing a filter view, it goes to normal mode
-  			table.mode = 'normal';
-  			$('div.stickies').remove();
-  			table.e.find('thead').css({height:''});
-				
-				$.ajax({
-          method: "GET",
-          url: defaults.getDataUrl+table_name+'/records',
-          data: {
-            rows_per_page: defaults.resultsPerPage,
-            page: table.min_p+'..'+table.max_p,
-						mode: defaults.mode,
-						order_by: defaults.order_by
-          },
-          headers: {"cartodbclient": true},
-          success: function(data) {
-            table.e.children('tbody').remove();
-            methods.drawRows(defaults,data.rows,'next',table.actual_p);
-            addSingleRow(2);
-          }
-        });
-			}
-
-
-      function addSingleRow(type) {
-        var requestId = createUniqueId();
-        window.ops_queue.newRequest(requestId,'add_row');
-
-        $.ajax({
-           type: "POST",
-           url: defaults.getDataUrl+table_name+'/records',
-           headers: {"cartodbclient": true},
-           success: function(data) {
-
-             row_id = data.id;
-             $.ajax({
-                method: "GET",
-                url: defaults.getDataUrl+table_name,
-                headers: {"cartodbclient": true},
-                success: function(data) {
-                  data = data.schema;
-                  window.ops_queue.responseRequest(requestId,'ok','');
-                  var options_list = '<span><h5>EDIT</h5><ul><li><a href="#">Duplicate row(s)</a></li><li><a href="#delete_row" class="delete_row">Delete row(s)</a></li></ul>' +
-                                      '<div class="line"></div><h5>CREATE</h5><ul><li class="last"><a href="#add_row" class="add_row">Add new row</a></li>' +
-                                      '</ul></span>';
-
-                  if (type==0) {
-                    var row = '<tbody style="padding-top:52px"><tr class="editing" r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
-                  } else {
-                    var row = '<tr class="editing" r="'+row_id+'"><td class="first" r="'+row_id+'"><div><a href="#options" class="options">options</a>'+options_list+'</div></td>';
-                  }
-
-
-                  for (var i = 0; i<data.length; i++) {
-                    var text = '';
-                    if (data[i][0]=="cartodb_id") {
-                      text = row_id;
-                    } else if (data[i][0]=="created_at" || data[i][0]=="updated_at") {
-                      var date = new Date();
-                      var test = new Date();
-                      var offset = -test.getTimezoneOffset()/60;
-
-                      text = date.getFullYear()+'-'+(zeroPad(date.getMonth()+1,2))+'-'+zeroPad(date.getDate(),2)+'T'+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()+'+'+zeroPad(offset,2)+':00';
-                    } else {
-                      text = '';
-                    }
-                 		row += '<td '+((data[i][0]=="cartodb_id" || data[i][0]=="created_at" || data[i][0]=="updated_at")?'class="special"':'')+' r="'+row_id+'"  c="'+ data[i][0] +'"><div '+((data[i][0]=='cartodb_id')?'':' style="width:'+table.cell_s+'px"') + '>'+text+'</div></td>';
-                  }
-
-                  var start = row.lastIndexOf('"width:');
-                  var end = row.lastIndexOf('px"');
-                  row = row.substring(0,start) + '"width:' + table.last_cell_s + row.substring(end);
-
-                  if (type==0) {
-                    row += '</tr></tbody>';
-                    table.e.append(row);
-                  } else {
-                    row += '</tr>';
-                    table.e.find('tbody').append(row).addClass('end');
-                  }
-
-									// Show new row :)!
-									methods.addLastRow();
-
-                  //If there are more rows than you reuse let us, delete first '50', add one more to max, min and actual page
-                  table.total_r++;
-                  if (table.e.children('tbody').children('tr').size()>defaults.reuseResults) {
-                    table.max_p++; table.min_p++; table.actual_p++;
-                    table.e.children('tbody').children('tr:lt('+defaults.resultsPerPage+')').remove();
-                  } else {
-                    if (table.e.children('tbody').children('tr').size()>defaults.resultsPerPage) {
-                      table.max_p++; table.actual_p++;
-                    }
-                  }
-
-                  $('html,body').animate({scrollTop:$('div.table_position').height()+'px'},500,function(){
-                    methods.closeTablePopups();
-                    table.enabled = true;
-                  });
-                  
-                  $('div.empty_table').remove();
-                  methods.resizeTable();
-                },
-                error: function(e) {
-                  window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
-                  table.enabled = true;
-                }
-             });
-           }
-        });
-      }
-    },
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  CREATE NEW COLUMN
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    addColumn: function(name,type) {
-      var params = {};
-      params['name'] = sanitizeText(name);
-      params['type'] = type.charAt(0).toUpperCase() + type.slice(1);
-
-      methods.updateTable('/columns',params,params.column,null,"new_column","POST");
     },
 
 
@@ -1050,12 +454,12 @@
           if ($(window).scrollTop()==difference && !end && table.max_p!=-1) {
             table.loading = true;
             methods.showLoader('next');
-            setTimeout(function(){methods.getData(defaults,'next')},500);
+            setTimeout(function(){methods.getData(defaults,'next',false)},500);
           } else if ($(window).scrollTop()==0 && table.min_p!=0) {
             table.loading = true;
 						table.e.find('tbody').removeClass('end');
             methods.showLoader('previous');
-            setTimeout(function(){methods.getData(defaults,'previous')},500);
+            setTimeout(function(){methods.getData(defaults,'previous',false)},500);
           } else if (end) {
 						table.e.find('tbody').addClass('end');
           }
@@ -1126,7 +530,7 @@
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  BIND EVENTS
+    //  BIND EVENTS (REVIEW)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     bindEvents: function() {
       ///////////////////////////////////////
@@ -1390,144 +794,6 @@
               event.returnValue = false;
             }
           }
-        }
-      });
-
-
-      ///////////////////////////////////////
-      //  Editing selected rows            //
-      ///////////////////////////////////////
-      $(document).mousedown(function(event){
-        if (table.enabled && table.mode!='query') {
-       		var target = event.target || event.srcElement;
-          var targetElement = target.nodeName.toLowerCase();
-
-          if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
-
-            table.e.find('tbody tr td.first div span').hide();
-            table.e.find('tbody tr td.first div a.options').removeClass('selected');
-            table.e.find('tbody tr').removeClass('editing');
-            table.e.find('tbody tr').removeClass('selecting_first').removeClass('border');
-            table.e.find('tbody tr').removeClass('selecting');
-            table.e.find('tbody tr').removeClass('selecting_last');
-            table.e.find('tbody tr').removeClass('selected');
-
-            var first_row = $(target).closest('tr');
-            first_row.addClass('selecting_first');
-            var initial_x = first_row.position().top;
-
-            //Show tooltip about editing cell
-            if (!table.edited) {
-							var initial_top = $(target).closest('tr').position().top;
-              var initial_left = $(target).closest('td').position().left;
-              var cell_width = $(target).closest('td').width();
-              // If click on the first or second row
-							if (initial_top<100) {
-								$('div.explain_tooltip').addClass('down').css({top:initial_x+45+'px',left:initial_left+(cell_width/2)-55+'px'});
-              } else {
-								$('div.explain_tooltip').removeClass('down').css({top:initial_x-45+'px',left:initial_left+(cell_width/2)-55+'px'});
-							}
-							$('div.explain_tooltip').hide().stop(true).fadeIn().delay(4000).fadeOut();
-            }
-
-            if (event.preventDefault) {
-              event.preventDefault();
-              event.stopPropagation();
-            } else {
-              event.stopPropagation();
-              event.returnValue = false;
-            }
-          }
-
-          $(document).mousemove(function(event){
-         		var target = event.target || event.srcElement;
-            var targetElement = target.nodeName.toLowerCase();
-
-            if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
-              $('div.explain_tooltip').hide();
-              var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-              var current_row = $(target).closest('tr');
-              var current_x = current_row.position().top;
-              table.e.children('tbody').children('tr').removeClass('selecting');
-              current_row.addClass('selecting');
-
-              var find = false;
-              var cursor = first_row;
-
-              while (!find) {
-                if (initial_x<current_x) {
-                  first_row.removeClass('selecting_last').addClass('selecting_first');
-                  if (cursor.attr('r')==current_row.attr('r')) {
-                    cursor.addClass('selecting');
-                    cursor.next().removeClass('selecting');
-                    find=true;
-                  } else {
-                    cursor.next().removeClass('selecting');
-                    cursor.addClass('selecting');
-                    cursor = cursor.next();
-                  }
-                } else if (initial_x>current_x) {
-                  first_row.removeClass('selecting_first').addClass('selecting_last');
-                  if (cursor.attr('r')==current_row.attr('r')) {
-                    cursor.addClass('selecting');
-                    cursor.prev().removeClass('selecting');
-                    find=true;
-                  } else {
-                    cursor.prev().removeClass('selecting');
-                    cursor.addClass('selecting');
-                    cursor = cursor.prev();
-                  }
-                } else {
-                  find=true;
-                  return false;
-                }
-              }
-
-            } else {
-            }
-            if (event.preventDefault) {
-              event.preventDefault();
-              event.stopPropagation();
-            } else {
-              event.stopPropagation();
-              event.returnValue = false;
-            }
-          });
-        }
-      });
-      $(document).mouseup(function(event){
-        if (table.enabled && table.mode!='query') {
-       		var target = event.target || event.srcElement;
-          var targetElement = target.nodeName.toLowerCase();
-
-          if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
-            var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
-            if ($('tbody tr').hasClass('selecting_last')) {
-              $('tbody tr[r="'+data.row+'"]').addClass('selecting_first');
-              $('tbody tr[r="'+data.row+'"]').addClass('border');
-              $('tbody tr.selecting_last').addClass('border');
-            } else {
-              $('tbody tr[r="'+data.row+'"]').addClass('selecting_last').addClass('border');
-              $('tbody tr.selecting_first').addClass('border');
-            }
-
-            if ($('tbody tr[r="'+data.row+'"]').hasClass('selecting_last') && $('tbody tr[r="'+data.row+'"]').hasClass('selecting_first')) {
-              $('tbody tr[r="'+data.row+'"]').removeClass('selecting_first');
-              $('tbody tr[r="'+data.row+'"]').removeClass('selecting_last');
-              $('tbody tr[r="'+data.row+'"]').removeClass('border');
-              $('tbody tr[r="'+data.row+'"]').removeClass('selecting');
-              $('tbody tr[r="'+data.row+'"]').removeClass('editing');
-              $('tbody tr[r="'+data.row+'"]').removeClass('selected');
-            }
-            if (event.preventDefault) {
-              event.preventDefault();
-              event.stopPropagation();
-            } else {
-              event.stopPropagation();
-              event.returnValue = false;
-            }
-          }
-          $(document).unbind('mousemove');
         }
       });
 
@@ -1979,257 +1245,8 @@
 
       
 
-      ///////////////////////////////////////
-      //  Add - remove row events          //
-      ///////////////////////////////////////
-      $('a.add_row').live('click',function(ev){
-        stopPropagation(ev);
-        if (table.enabled && table.mode!='query'){
-          methods.addRow();
-        }
-      });
-      $('a.delete_row').live('click',function(ev){
-        stopPropagation(ev);
-        methods.closeTablePopups();
-        methods.bindESCkey();
-
-        var cartodb_id = $(this).closest('tr').attr('r');
-        var top_position = table.e.find('tr[r="'+cartodb_id+'"]').position().top;
-        var rows_involved = $('table tbody tr.selecting').size();
-
-        // Several rows involved or only one?
-        if (rows_involved>1) {
-          $('div.delete_row p').text('You are about to delete these rows. Are you sure?');
-          $('div.delete_row a.button').text('Yes, delete them');
-          var rows_involved_ids = '';
-          $('table tbody tr.selecting').each(function(i,ele){
-            rows_involved_ids += $(ele).attr('r') + ',';
-          });
-          rows_involved_ids = rows_involved_ids.substr(0,rows_involved_ids.length-1);
-          $('div.delete_row a.button').attr('r',rows_involved_ids);
-        } else {
-          $('div.delete_row p').text('You are about to delete this row. Are you sure?');
-          $('div.delete_row a.button').text('Yes, delete it');
-          $('div.delete_row a.button').attr('r',cartodb_id);
-        }
-
-        $('div.delete_row').css('top',top_position-7+'px');
-        $('div.delete_row').css('left',table.e.parent().scrollLeft()+10+'px');
-        $('div.delete_row').show();
-
-        $('body').click(function(event) {
-         if (!$(event.target).closest('div.delete_row').length) {
-           methods.closeTablePopups();
-         };
-        });
-      });
-      $('div.delete_row a.button').live('click',function(ev){
-        stopPropagation(ev);
-        methods.closeTablePopups();
-
-        var row = $(this).attr('r');
-        var params = {};
-        params.primary_key = row;
-
-        methods.updateTable('/records/'+row,params,null,null,"delete_row","DELETE");
-      });
 
 
-      ///////////////////////////////////////
-      //  Add - remove column events       //
-      ///////////////////////////////////////
-      $('a.add_column').live('click',function(ev){
-        stopPropagation(ev);
-				if (table.enabled && table.mode!='query') {
-					methods.closeTablePopups();
-	        methods.bindESCkey();
-	        table.enabled = false;
-
-	        $('div.column_window p.error').hide();
-	        $('div.column_window span.select').removeClass('error');
-	        $('div.column_window input').removeClass('error');
-	        $('div.column_window span.select').addClass('disabled');
-	        $('div.column_window span.select a:eq(0)').text('Retreiving types...').attr('type','');
-	        $('div.column_window a.column_add').addClass('disabled');
-	        $('div.column_window span.select').removeClass('clicked');
-
-	        $.ajax({
-	          method: "GET",
-	          url: global_api_url + 'column_types',
-	          headers: {"cartodbclient": true},
-	          success: function(data) {
-				      //Saves the position of the String type for setting it as type per default
-				      var defaultTypeIndex = undefined;
-				      
-				      //Remove ScrollPane
-	            var custom_scrolls = [];
-	            $('.scrollPane').each(function(){
-	              custom_scrolls.push($(this).jScrollPane().data().jsp);
-	            });
-	            
-	            $.each(custom_scrolls,function(i) {
-	             this.destroy();
-	            });
-	            
-	            $('div.column_window span.select ul li').remove();
-	            for (var i = 0; i<data.length; i++) {
-	              $('div.column_window span.select ul').append('<li class="'+((data[i]=="String")?'selected':'')+'"><a href="#'+data[i]+'">'+data[i]+'</a></li>');
-	              //It looks for the index in data for the string type
-	              if (defaultTypeIndex == undefined && data[i] == 'String'){
-		              defaultTypeIndex = i;
-	              }
-	            }
-	            $('div.column_window span.select').removeClass('disabled');
-              
-	            $('div.column_window span.select a.option').each(function(i,ele){
-	              if ($(ele).text()=="Retreiving types...") {
-		             //For getting the string type by default
-	                 $(ele).text(data[defaultTypeIndex].toString()).attr('type',data[defaultTypeIndex]);
-	               }
-	            });
-	            $('div.column_window a.column_add').removeClass('disabled');
-              
-	            //This adds the needed code for adding the column when pushing enter
-				      $(document).keydown(function(event){
-				 	      if (event.which == '13') {
-						      stopPropagation(event);
-        				  if ($('div.column_window input').attr('value')!='' && $('div.column_window a.option').attr('type')!='') {
-        				    $(document).unbind('keydown');
-				            methods.addColumn($('div.column_window input').attr('value'),$('div.column_window a.option').attr('type'));
-				            $('div.column_window input').attr('value','');
-				          } else {
-				            if ($('div.column_window input').attr('value')=='' && $('div.column_window a.option').attr('type')=='') {
-				              $('div.column_window span.select,div.column_window input').addClass('error');
-				              var position = $('div.column_window input').position().top;
-				              $('div.column_window p.error').css('top',position-32+'px');
-				              $('div.column_window p.error span').text('Choose a name and type');
-				            } else {
-				              if ($('div.column_window input').attr('value')=='') {
-				                $('div.column_window input').addClass('error');
-				                var position = $('div.column_window input').position().top;
-				                $('div.column_window p.error').css('top',position-32+'px');
-				                $('div.column_window p.error span').text('Choose a name');
-				              } else {
-				                var position = $('div.column_window span.select').position().top;
-				                $('div.column_window p.error').css('top',position-32+'px');
-				                $('div.column_window span.select').addClass('error');
-				                $('div.column_window p.error span').text('Choose a type');
-				              }
-				            }
-				            $('div.column_window p.error').fadeIn().delay(2000).fadeOut();
-				          }
-			      	  }
-			        });
-				      //End of the controller for the enter key
-	          },
-	          error: function(e) {
-	            $('div.column_window span.select a.option').text('Error retrieving types').attr('type','');
-	          }
-	        });
-
-	        $('div.mamufas div.column_window').show();
-	        $('div.mamufas').fadeIn(function(ev){
-	          $('div.column_window div.options input').focus();
-	        });
-				}
-      });
-      $('div.column_window span.select a.option').live('click',function(ev){
-        stopPropagation(ev);
-        if (!$(this).parent().hasClass('disabled')) {
-          if ($(this).parent().hasClass('clicked')) {
-            $(this).parent().removeClass('clicked');
-          } else {
-            $('body').bind('click',function(ev){
-              if (!$(ev.target).closest('div.column_window span.select').length) {
-                $('div.column_window span.select').removeClass('clicked');
-              };
-            });
-            $(this).parent().addClass('clicked');
-          }
-        }
-      });
-      $('div.column_window span.select ul li a').live('click',function(ev){
-        stopPropagation(ev);
-				if (!$(this).parent().hasClass('selected')) {
-					$(this).closest('ul').find('li.selected').removeClass('selected');
-					$(this).parent().addClass('selected');
-					$(this).closest('span.select').children('a.option').text($(this).text());
-	        $(this).closest('span.select').children('a.option').attr('type',$(this).text());
-	        $(this).closest('span.select').removeClass('clicked');
-				} else {
-					$(this).closest('span.select').removeClass('clicked');
-				}
-
-      });
-      $('a.column_add').live('click',function(ev){
-        stopPropagation(ev);
-        $('div.column_window span.select').removeClass('clicked');
-
-        if ($('div.column_window input').attr('value')!='' && $('div.column_window a.option').attr('type')!='') {
-          methods.addColumn($('div.column_window input').attr('value'),$('div.column_window a.option').attr('type'));
-          $('div.column_window input').attr('value','');
-        } else {
-          if ($('div.column_window input').attr('value')=='' && $('div.column_window a.option').attr('type')=='') {
-            $('div.column_window span.select,div.column_window input').addClass('error');
-            var position = $('div.column_window input').position().top;
-            $('div.column_window p.error').css('top',position-32+'px');
-            $('div.column_window p.error span').text('Choose a name and type');
-          } else {
-            if ($('div.column_window input').attr('value')=='') {
-              $('div.column_window input').addClass('error');
-              var position = $('div.column_window input').position().top;
-              $('div.column_window p.error').css('top',position-32+'px');
-              $('div.column_window p.error span').text('Choose a name');
-            } else {
-              var position = $('div.column_window span.select').position().top;
-              $('div.column_window p.error').css('top',position-32+'px');
-              $('div.column_window span.select').addClass('error');
-              $('div.column_window p.error span').text('Choose a type');
-            }
-          }
-          $('div.column_window p.error').fadeIn().delay(2000).fadeOut();
-        }
-      });
-      $('div.column_window a.close_create,div.column_window a.cancel').live('click',function(ev){
-        stopPropagation(ev);
-        table.enabled = true;
-        methods.closeTablePopups();
-      });
-
-
-      ///////////////////////////////////////
-      //  SQL Editor                       //
-      ///////////////////////////////////////
-      // General options
-      $('div.sql_window a.try_query').live('click',function(ev){
-        var table_mode = (!$('body').hasClass('map'));
-        if (table.enabled && table_mode) {
-          ev.preventDefault();
-					$('body').addClass('query');
-					editor.setOption('query',editor.getValue());
-          table.mode = 'query';
-          
-          // Add history to sql editor
-          editor.addHistory();
-
-          // Refresh table
-          methods.refreshTable();
-        	setAppStatus();
-				}
-      });
-			$('a.clear_table').live('click',function(ev){
-				var table_mode = (!$('body').hasClass('map'))
-					, query_mode = ($('body').hasClass('query'));
-
-			  if (table_mode) {
-			    stopPropagation(ev);
-			    if (query_mode) {
-			    	$('div.sql_window').removeClass('error');
-			    	$('div.sql_window div.outer_textarea').removeAttr('style');
-			    	methods.restoreTable();
-			    }			    	
-			  }
-			});
 
 
       ///////////////////////////////////////
@@ -2313,6 +1330,7 @@
 
 
         stopPropagation(ev);
+
         if (table.enabled && table.mode!='query') {
           methods.closeTablePopups();
           methods.bindESCkey();
@@ -2392,20 +1410,6 @@
         stopPropagation(ev);
         methods.closeTablePopups();
         $('div.filter_window div.select_content').hide();
-      });
-    
-
-			///////////////////////////////////////
-      //  Refresh table after geolocating  //
-      ///////////////////////////////////////
-			$('section.subheader div.performing_op p a.refresh').live('click',function(ev){
-        ev.preventDefault();
-				var table_mode = (!$('body').hasClass('map'));
-			  if (table_mode) {
-					ev.stopPropagation();
-          table.mode = "normal";
-	        $('table').cartoDBtable('refreshTable');
-				}
       });
     },
 
@@ -2501,114 +1505,6 @@
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  UPDATE TABLE
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    updateTable: function(url_change,params,new_value,old_value,type,request_type) {
-      //Queue loader
-      var requestId = createUniqueId();
-      params.requestId = requestId;
-      window.ops_queue.newRequest(requestId,type);
-      
-      $.ajax({
-        dataType: 'json',
-        type: request_type,
-        dataType: "text",
-        headers: {"cartodbclient": true},
-        url: defaults.getDataUrl + table_name + url_change,
-        data: params,
-        success: function(data) {
-          window.ops_queue.responseRequest(requestId,'ok','');
-          methods.successRequest(params,new_value,old_value,type,data);
-        },
-        error: function(e, textStatus) {
-          try {
-            window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
-          } catch (e) {
-            window.ops_queue.responseRequest(requestId,'error','There has been an error, try again later...');
-          }
-          methods.errorRequest(params,new_value,old_value,type);
-        }
-      });
-    },
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  SUCCESS UPDATING THE TABLE
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    successRequest: function(params,new_value,old_value,type,data) {
-      switch (type) {
-        case "rename_column":   _.each(table.h,function(h,i){
-                                  if (h.name==old_value) {
-                                    table.h[i].name = new_value;
-                                  }
-                                });
-                                table.e.find('tbody tr td[c="'+old_value+'"]').attr('c',new_value);
-                                break;
-
-				case "update_cell":     if (params['row_id']=='') {
-																	methods.addNewRow(JSON.parse(data).id);
-																}
-                                break;												
-        case "column_type":     methods.refreshTable('');
-                                break;
-        case "new_column":      methods.closeTablePopups();
-                                methods.refreshTable('next');
-                                break;
-        case "delete_column":   methods.refreshTable('');
-                                break;
-        case "delete_row":      methods.refreshTable('');
-                                break;
-        default:                break;
-      }
-    },
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  ERROR UPDATING THE TABLE
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    errorRequest: function(params,new_value,old_value,type) {
-      switch (type) {
-        case "update_cell":   var element;
- 															if (params['row_id']!='') {
-																element = table.e.find('tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div');
-															}
-															else {
-																element = table.e.find('tbody tr.new td[c="'+params.column_id+'"] div');
-															}
-																
-															element.text(old_value);
-                              element.attr('title',old_value);
-                              element.animate({color:'#FF3300'},300,function(){
-                                setTimeout(function(){element.animate({color:'#666666'},300);},1000);
-                              });
-                              break;
-
-        case "rename_column": var element = table.e.find('thead tr th:eq('+params.index+') h3');
-                              element.text(old_value);
-                              element.closest('th').attr('c',old_value);
-                              element.animate({color:'#FF3300'},300,function(){
-                                setTimeout(function(){element.animate({color:'#727272'},300);},1000);
-                              });
-                              break;
-        case "update_geometry": methods.closeTablePopups();
-                              break;
-
-        case "column_type":   var element = table.e.find('th[c="'+params.name+'"] p.long a');
-                              element.text(old_value);
-                              element.animate({color:'#FF3300'},300,function(){
-                                setTimeout(function(){element.animate({color:'#b4b4b4'},300);},1000);
-                              });
-                              break;
-        case "new_column":    methods.closeTablePopups();
-        default:              break;
-      }
-    },
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //  RESTORE TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     restoreTable : function() {
@@ -2616,10 +1512,7 @@
       /* Don't get width of the last cell in sql view! */
 
       table.last_cell_s = table.cell_s;
-      $('body').removeClass('query');
       methods.refreshTable('');
-
-      setAppStatus();
     },
     
     
@@ -2637,18 +1530,10 @@
     //  REFRESH TABLE
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     refreshTable: function(position) {
-      
-      var new_query = undefined;
-      
-      // If it comes from a query (from the map)
-      var query_mode = ($('body').hasClass('query'));
-      if (query_mode) {
-        table.mode = 'query';
-        new_query = true;
-      }
-      
+
 			$('body').removeClass('map');
       table.loading = true;
+      var refresh = false;
 
       if (position!='') {
         // Reset pages position
@@ -2656,19 +1541,19 @@
         table.max_p = -1;
         if (position==undefined)
           position = 'next';
+      	refresh = true;
       } else {
         //Hide scroll loaders
         $('div.loading_previous').hide();
         $('div.loading_next').hide();
         table.scroll = $(document).scrollTop();
-				new_query = true;
       }
       
       table.e.children('thead').remove();
       table.e.children('tbody').remove();
       $(document).scrollTop(0);
 			table.e.find('tbody').removeClass('end');
-      methods.getData(defaults, position, new_query, true);
+      methods.getData(defaults, position, refresh);
       table.enabled = true;
     },
 
@@ -2685,29 +1570,11 @@
       
       // Filter window
       $('div.filter_window').hide();
-      //Column row popup
-      $('div.delete_row').hide();
-      //Column delete popup
-      $('div.delete_column').hide();
-      //Change column type warning
-      $('div.change_type_column').hide();
       //Edit window
       $('div.edit_cell').hide();
-      //Remove row editing class
-      $('tbody tr').removeClass('editing');
-      //Row options
-      $('table tbody tr td.first div a.options').removeClass('selected');
-      $('table tbody tr td.first div span').hide();
       //Thead options
-      $('thead tr span.col_types').hide();
       $('thead tr a.options').removeClass('selected');
       $('thead tr span.col_ops_list').hide();
-
-      //popup windows
-      $('div.mamufas').fadeOut('fast',function(){
-        $('div.mamufas div.column_window').hide();
-        $('div.mamufas div.lastpage_window').hide();
-      });
 
       closeOutTableWindows();
     },

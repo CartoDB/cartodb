@@ -21,7 +21,8 @@
           query: "SELECT * FROM "+ table_name,
           order_by: 'cartodb_id',
           mode: 'asc',
-          enabled: table_enabled
+          enabled: table_enabled,
+          schema: table_schema
         }
       );
 

@@ -26,7 +26,7 @@
             '<form action="/tables/'+ table_name +'" method="get">'+
               '<input id="export_format" type="hidden" name="format" />'+
               '<span class="top">'+
-                '<h3>Export your data</h3>'+
+                '<h3>Export this data</h3>'+
                 '<p>Select your desired format for downloading the data</p>'+
                 '<ul>'+
                   '<li class="selected"><a class="option" href="#CSV" rel="csv">CSV (Comma separated values)</a></li>'+

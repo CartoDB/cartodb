@@ -12,7 +12,7 @@ module CartoDB
         tmp_dir = temporary_filename
         
         Dir.mkdir(tmp_dir)
-        if @ext = '.tar'
+        if @ext == '.tar'
           tarcmd = "tar -C #{tmp_dir} -xvf #{@path}"
         else
           tarcmd = "tar -C #{tmp_dir} -zxvf #{@path}"

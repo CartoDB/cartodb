@@ -76,6 +76,11 @@ class DataImport < Sequel::Model
   end
   def log_error(error_msg)
     self.logger << "ERROR: #{error_msg}\n"
+    self.error_code = 99
+    self.save
+  end
+  def log_warning(error_msg)
+    self.logger << "WARNING: #{error_msg}\n"
     self.save
   end
   def log_state_change(transition)

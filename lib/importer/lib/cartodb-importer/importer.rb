@@ -10,7 +10,7 @@ module CartoDB
     @@debug = true
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
     SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .tar .gz .tgz }
-      
+    
     attr_accessor :import_from_file,              
                   :db_configuration, 
                   :db_connection, 
@@ -123,13 +123,17 @@ module CartoDB
     #
     def import!
       begin
+        
         # decompress data and update self with results
         decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash) 
         @data_import.log_update('file unzipped') if decompressor
         update_self decompressor.process! if decompressor
+        @data_import.reload
         
         # TODO: should this be here...?
         @import_type = @ext        
+        
+        @data_import.log_update("file type set to #{@ext}") 
       
         # Preprocess data and update self with results
         # preprocessors are expected to return a hash datastructure
@@ -150,7 +154,7 @@ module CartoDB
         return payload
       rescue => e
         @data_import.reload #reload incase errors were written
-        @data_import.log_error(e)
+        #@data_import.log_error(e)
         log "====================="
         log e
         log e.backtrace

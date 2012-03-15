@@ -77,7 +77,7 @@ class Api::Json::TablesController < Api::ApplicationController
         end
         render_jsonp({ :description => @table.errors.full_messages ,
                     :stack => import_errors,
-                    :code=>99 }, 
+                    :code=>@data_import.error_code }, 
                     400)
       else
         render_jsonp({ :description => nil, :stack => @table.errors.full_messages, :code=>99 }, 400)
@@ -99,7 +99,7 @@ class Api::Json::TablesController < Api::ApplicationController
     if @data_import.logger
       import_errors = @data_import.logger.split("\n")
     end
-    render_jsonp({ :description => translate_error(e), :stack => import_errors, :code=>99 }, 400)
+    render_jsonp({ :description => translate_error(e), :stack => import_errors, :code => @data_import.error_code }, 400)
   end
 
   def show

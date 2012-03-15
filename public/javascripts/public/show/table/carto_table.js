@@ -28,7 +28,6 @@
   /* 
   	TODO:
 		- Check live if there is any change with owner table :)
-		- Check GeoJSON edit cell data
   */
 
   var methods = {
@@ -912,7 +911,7 @@
       var window_width = $(window).width();
       var table_width = table.e.width();
 
-   		if (window_width==table_width || (window_width-2)>=table_width || $('table tbody').length==0) {
+   		if (window_width==table_width || (window_width)>=table_width || $('table tbody').length==0) {
         $('span.paginate a#previousButton').addClass('disabled');
         $('span.paginate a#nextButton').addClass('disabled');
       } else {

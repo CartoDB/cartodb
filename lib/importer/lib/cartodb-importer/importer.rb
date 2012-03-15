@@ -9,7 +9,7 @@ module CartoDB
     
     @@debug = true
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
-    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json }
+    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .tar .gz .tgz }
       
     attr_accessor :import_from_file,              
                   :db_configuration, 
@@ -58,30 +58,42 @@ module CartoDB
       # TODO: Explain THIS!
       if @import_from_file.is_a?(String) 
         @filesrc = nil
+        @fromuri = false
         if @import_from_file =~ /^http/ # Tells us it is a URL
           # KML from FusionTables urls were not coming with extensions
           if @import_from_file =~ /fusiontables/
             @filesrc = "fusiontables"
           end
-          @import_from_file = URI.escape(@import_from_file) # Ensures open-uri will work
+          @fromuri = true
+          #@import_from_file = URI(@import_from_file) # Ensures open-uri will work
         end
-        begin
-          open(@import_from_file) do |res| # opens file normally, or open-uri to download/open
-            @data_import.file_ready
-            file_name = File.basename(@import_from_file)
-            @ext = File.extname(file_name)
-            # Fix for extensionless fusiontables files
-            if @ext == "" && @filesrc == "fusiontables"
-              @ext = ".kml"
+          begin
+            open(@import_from_file) do |res| # opens file normally, or open-uri to download/open
+              @data_import.file_ready
+              file_name = File.basename(@import_from_file)
+              @ext = File.extname(file_name)
+              # Fix for extensionless fusiontables files
+              if @ext == "" 
+                if @filesrc == "fusiontables"
+                  @ext = ".kml"
+                else
+                  @ext = ".csv"
+                end
+              end
+              @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
+              @import_from_file = Tempfile.new([@suggested_name, @ext])
+              @import_from_file.write res.read.force_encoding("UTF-8")
+              @import_from_file.close
             end
-            @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
-            @import_from_file = Tempfile.new([@suggested_name, @ext])
-            @import_from_file.write res.read.force_encoding("UTF-8")
-            @import_from_file.close
+          rescue e
+            if @import_from_file =~ /^http/
+              uri = $!.uri
+              retry
+            else
+              @data_import.log_error(e)
+            end
           end
-        rescue e
-          @data_import.log_error(e)
-        end
+        
       else
         original_filename = if @import_from_file.respond_to?(:original_filename)
           @import_from_file.original_filename

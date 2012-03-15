@@ -14,3 +14,4 @@ config/database.yml
 config/app_config.yml
 src/
 Gemfile.lock
+lib/importer/misc/dbfUtils.pyc

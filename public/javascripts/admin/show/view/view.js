@@ -74,7 +74,6 @@
 	      }
 	    });
 
-	    
 	    // SQL editor
 	    editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
 	      lineNumbers: false,
@@ -844,11 +843,21 @@
 		var table_status = (function() {
 	    $('div.inner_subheader div.left').append(window.view_elements.privacy_window);
 
+	    // Check if the user can make private tables
+	    if (!privacy_enabled) {
+	    	$('div.inner_subheader div.left').find('span.privacy_window > ul > li.private')
+	    		.removeClass('private')
+	    		.addClass('disabled')
+	    		.find('a')
+	    		.html('<strong>Private</strong> (only paid plans)');
+	    }
+
 	    $('span.privacy_window ul li a').live('click',function(ev){
-	      stopPropagation(ev);
+	      ev.preventDefault();
 	      var parent_li = $(this).parent();
 	      if (!parent_li.hasClass('disabled')) {
 	        if (parent_li.hasClass('selected')) {
+	        	ev.stopPropagation();
 	          $('span.privacy_window').hide();
 	        } else {
 	          var old_value = $('span.privacy_window ul li.selected a strong').text().toLowerCase();
@@ -867,11 +876,11 @@
 	            if ($('body').hasClass('map')) {
 	            	style = 'style="display:block"';
 	            }
-	            //$('.inner_subheader div.right').append('<span '+ style +' class="mapkey"><a class="mapkey" href="#get_api_key">MAP KEY</a></span>');
 	          }
-	          
 	          changesRequest('privacy',new_value.toUpperCase(),old_value);
 	        }
+	      } else {
+	      	$('body').click()
 	      }
 	    });
 

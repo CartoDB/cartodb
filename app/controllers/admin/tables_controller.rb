@@ -70,7 +70,7 @@ class Admin::TablesController < ApplicationController
       
     # redirect to public table show  
     else
-      redirect_to public_table_path(params[:id])
+      redirect_to public_table_path(params[:id], :format => params[:format])
     end  
   end
   
@@ -81,7 +81,33 @@ class Admin::TablesController < ApplicationController
     if @table.blank? || (!current_user && @table.private?) || ((current_user && current_user.id != @table.owner.id) && @table.private?)     
       head :forbidden
     else
-      render 'show_public', :layout => 'application_public'           
+      respond_to do |format|
+        format.html {render 'show_public', :layout => 'application_public' }
+        format.sql do
+          send_data @table.to_sql,
+            :type => 'application/zip; charset=binary; header=present',
+            :disposition => "attachment; filename=#{@table.name}.zip"
+        end
+        format.kml do
+          send_data @table.to_kml,
+            :type => 'application/zip; charset=binary; header=present',
+            :disposition => "attachment; filename=#{@table.name}.kmz"
+        end
+        format.csv do
+          send_data @table.to_csv,
+            :type => 'application/zip; charset=binary; header=present',
+            :disposition => "attachment; filename=#{@table.name}.zip"
+        end
+        format.shp do
+          if shp_content = @table.to_shp
+            send_data shp_content,
+              :type => 'application/octet-stream; charset=binary; header=present',
+              :disposition => "attachment; filename=#{@table.name}.zip"
+          else
+            redirect_to public_table_path(@table), :alert => "There was an error exporting the table"
+          end
+        end
+      end      
     end          
   end  
   

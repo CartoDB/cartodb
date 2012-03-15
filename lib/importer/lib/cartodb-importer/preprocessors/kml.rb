@@ -24,11 +24,6 @@ module CartoDB
           @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
           raise "failed to convert #{@ext.sub('.','')} to shp"
         end
-        # if $?.exitstatus != 0
-        #   @data_import.set_error_code(7)
-        #   @data_import.log_error($?.)
-        #   raise "failed to convert #{@ext.sub('.','')} to shp"
-        # end
         
         unless (reg = stdout.read).empty?
           @runlog.stdout << reg

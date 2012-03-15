@@ -26,7 +26,8 @@ class Table < Sequel::Model(:user_tables)
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
     errors.add(nil, 'over table quota, please upgrade') if self.new? && self.owner.over_table_quota?
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
-    errors.add(:privacy, 'unauthorized') if !self.new? && privacy == PRIVATE && !self.owner.try(:private_tables_enabled)
+    errors.add(:privacy, 'unauthorized') if  self.new? && privacy == PRIVATE && !self.owner.try(:private_tables_enabled)    
+    errors.add(:privacy, 'unauthorized') if !self.new? && privacy == PUBLIC  && !self.owner.try(:private_tables_enabled)
     validates_unique [:name, :user_id], :message => 'is already taken'
   end
 

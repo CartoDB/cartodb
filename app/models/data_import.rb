@@ -9,7 +9,7 @@ class DataImport < Sequel::Model
   # 2: Decompression error
   # 3: Unsupported or missing projection
   # 4: Unable to read SHP file
-  # 5: Empty file
+  # 5: Empty table
   # 6: File encoding error
   # 7: File conversion error
   # 8: SHP to PGSQL error

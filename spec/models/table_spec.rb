@@ -825,6 +825,9 @@ describe Table do
   
       it "should get a valid name when a table when a name containing the current name exists" do
         user = create_user
+        user.table_quota = 100
+        user.save
+        
         table = create_table :name => 'Table #20', :user_id => user.id
         table2 = create_table :name => 'Table #2', :user_id => user.id
         table2.reload
@@ -838,6 +841,8 @@ describe Table do
   
       it "should allow creating multiple tables with the same name by adding a number at the and and incrementing it" do
         user = create_user
+        user.table_quota = 100
+        user.save
         table = create_table :name => 'Wadus The Table', :user_id => user.id
         table.name.should == "wadus_the_table"
     

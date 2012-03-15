@@ -12,8 +12,9 @@ class DataImport < Sequel::Model
   # 5: Empty file
   # 6: File encoding error
   # 7: File conversion error
-  # 8: Database import error
-  # 9: Unable to open file
+  # 8: SHP to PGSQL error
+  # 9: Database import error
+  # 10: Unable to open file
   # 99: Unknown 
   
   state_machine :initial => :preprocessing do
@@ -99,6 +100,7 @@ class DataImport < Sequel::Model
     event, from, to = transition.event, transition.from_name, transition.to_name
     if !self.logger 
       self.logger = "BEGIN \n"
+      self.error_code = nil
     end
     self.logger << "TRANSITION: #{from} => #{to}, #{Time.now}\n"
   end

@@ -33,17 +33,17 @@ module CartoDB
 
         @data_import.log_update("#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{shp_args_command[1]} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip}")
         full_shp_command = "#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{shp_args_command[1]} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
-        @data_import.log_update(full_shp_command)
         
         log "Running shp2pgsql: #{full_shp_command}"
         
         stdin,  stdout, stderr = Open3.popen3(full_shp_command) 
   
-        unless (err = stderr.read).empty?
-          @data_import.set_error_code(7)
+        #unless (err = stderr.read).empty?
+        if $?.exitstatus != 0  
+          @data_import.set_error_code(8)
           @data_import.log_error(err)
-          @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
-          raise "failed to convert #{@ext.sub('.','')} to shp"
+          @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
+          raise "ERROR: failed to generate SQL from #{@path}"
         end
         
         unless (reg = stdout.read).empty?
@@ -73,8 +73,10 @@ module CartoDB
             @db_connection.run("ALTER TABLE #{random_table_name} DROP COLUMN the_geom_orig")
             @db_connection.run("CREATE INDEX \"#{random_table_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
           rescue Exception => msg  
-            @data_import.log_error(msg)
             @runlog.err << msg
+            @data_import.set_error_code(7)
+            @data_import.log_error(msg)
+            @data_import.log_error("ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326")
           end  
         end        
 
@@ -82,8 +84,10 @@ module CartoDB
           @db_connection.run("ALTER TABLE \"#{random_table_name}\" RENAME TO \"#{@suggested_name}\"")
           @table_created = true
         rescue Exception => msg  
-          @data_import.log_error(msg)
           @runlog.err << msg
+          @data_import.set_error_code(9)
+          @data_import.log_error(msg)
+          @data_import.log_error("ERROR: unable to rename \"#{random_table_name}\" to \"#{@suggested_name}\"")
         end  
 
         @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?

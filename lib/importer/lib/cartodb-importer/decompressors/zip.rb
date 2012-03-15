@@ -39,7 +39,6 @@ module CartoDB
           # extract
           entry.extract(tmp_path)
         end        
-
         # construct return variables
         to_import_hash
       end  

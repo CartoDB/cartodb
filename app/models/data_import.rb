@@ -3,6 +3,19 @@ class DataImport < Sequel::Model
   include CartoDB::MiniSequel
   include ActiveModel::Validations 
   
+  # PRELIM ERROR CODES
+  # -- specific errors
+  # 1: Unsupported file type
+  # 2: Decompression error
+  # 3: Unsupported projection
+  # 4: Missing projection
+  # 5: Empty file
+  # 6: File encoding error
+  # 7: File conversion error
+  # 8: Database import error
+  # 9: Unable to open file
+  # 99: Unknown 
+  
   state_machine :initial => :preprocessing do
     before_transition :updated_now 
     before_transition do
@@ -75,8 +88,7 @@ class DataImport < Sequel::Model
     self.save
   end
   def log_error(error_msg)
-    self.logger << "ERROR: #{error_msg}\n"
-    self.error_code = 99
+    self.logger << "#{error_msg}\n"
     self.save
   end
   def log_warning(error_msg)
@@ -89,5 +101,9 @@ class DataImport < Sequel::Model
       self.logger = "BEGIN \n"
     end
     self.logger << "TRANSITION: #{from} => #{to}, #{Time.now}\n"
+  end
+  def set_error_code(code)
+    self.error_code = code
+    self.save
   end
 end

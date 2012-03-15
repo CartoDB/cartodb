@@ -23,8 +23,11 @@ module CartoDB
         if shp_args_command.length != 4
           @runlog.log << "Error running python shp_normalizer script: #{normalizer_command}"
           @runlog.stdout << out
-          @data_import.log_error("Error running python shp_normalizer script: #{normalizer_command}")
+          
+          @data_import.set_error_code(4)
+          @data_import.log_error("#{normalizer_command}")
           @data_import.log_error(out)
+          @data_import.log_error("ERROR: shp_normalizer script failed")
           raise "Error running python shp_normalizer script: #{normalizer_command}"
         end
 
@@ -34,17 +37,30 @@ module CartoDB
         
         log "Running shp2pgsql: #{full_shp_command}"
         
-        out = `#{full_shp_command}`
-        
-        if $?.exitstatus != 0
-          @data_import.log_error("failed to convert shp to sql")
-          raise "failed to convert shp to sql"
+        stdin,  stdout, stderr = Open3.popen3(full_shp_command) 
+  
+        unless (err = stderr.read).empty?
+          @data_import.set_error_code(7)
+          @data_import.log_error(err)
+          @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
+          raise "failed to convert #{@ext.sub('.','')} to shp"
         end
         
-        if 0 < out.strip.length
-          @data_import.log_update(out)
-          @runlog.stdout << out
+        unless (reg = stdout.read).empty?
+          @runlog.stdout << reg
         end
+        
+        # out = `#{full_shp_command}`
+        # 
+        # if $?.exitstatus != 0
+        #   @data_import.log_error("failed to convert shp to sql")
+        #   raise "failed to convert shp to sql"
+        # end
+        # 
+        # if 0 < out.strip.length
+        #   @data_import.log_update(out)
+        #   @runlog.stdout << out
+        # end
 
         # TODO: THIS SHOULD BE UPDATE IF NOT NULL TO PREVENT CRASHING
         if shp_args_command[0] != '4326'

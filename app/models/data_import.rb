@@ -7,8 +7,8 @@ class DataImport < Sequel::Model
   # -- specific errors
   # 1: Unsupported file type
   # 2: Decompression error
-  # 3: Unsupported projection
-  # 4: Missing projection
+  # 3: Unsupported or missing projection
+  # 4: Unable to read SHP file
   # 5: Empty file
   # 6: File encoding error
   # 7: File conversion error

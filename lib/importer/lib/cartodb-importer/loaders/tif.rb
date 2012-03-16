@@ -34,7 +34,7 @@ module CartoDB
         log "Running raster2pgsql: #{raster2pgsql_bin_path}  #{full_rast_command}"
         out = `#{full_rast_command}`
         if 0 < out.strip.length
-          @data_import.set_error_code(04001)
+          @data_import.set_error_code(4001)
           @data_import.log_error(out)
           @runlog.stdout << out
         end
@@ -43,7 +43,7 @@ module CartoDB
           @db_connection.run("CREATE TABLE \"#{@suggested_name}\" AS SELECT * FROM \"#{random_table_name}\"")
           @db_connection.run("DROP TABLE \"#{random_table_name}\"")
         rescue Exception => msg  
-          @data_import.set_error_code(05000)
+          @data_import.set_error_code(5000)
           @data_import.log_error(msg)
           @runlog.err << msg
         end  

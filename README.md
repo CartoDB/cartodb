@@ -57,7 +57,8 @@ and code.
   
 # How do I install CartoDB? #
 
-CartoDB is under heavy development, so the installation process is only for hardy souls.  
+CartoDB is under heavy development, so the installation process is only
+for hardy souls.
 That said, there are many successful installations on Amazon EC2, Linode, 
 dedicated instances and development machines running OS X and Ubuntu 10.04+.
 

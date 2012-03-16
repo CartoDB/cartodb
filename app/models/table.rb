@@ -290,11 +290,13 @@ class Table < Sequel::Model(:user_tables)
     if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
       
       #init state machine
-      @data_import  = DataImport.find(:id=>self.data_import_id)
-      # @data_import = DataImport.new(:user_id => self.user_id)
-      # @data_import.updated_at = Time.now
-      # @data_import.save
-      # self.data_import_id = @data_import.id
+      if self.data_import_id.nil? #needed for non ui-created tables
+        @data_import  = DataImport.new(:user_id => self.user_id)
+        @data_import.updated_at = Time.now
+        @data_import.save
+      else
+        @data_import  = DataImport.find(:id=>self.data_import_id)
+      end
       
       importer_result_name = import_to_cartodb
       

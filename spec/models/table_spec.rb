@@ -822,7 +822,6 @@ describe Table do
     
         table.name.should == "table_table_name"
       end
-  
       it "should get a valid name when a table when a name containing the current name exists" do
         user = create_user
         user.table_quota = 100
@@ -838,7 +837,6 @@ describe Table do
         table5 = create_table :name => nil, :user_id => user.id
         table6 = create_table :name => nil, :user_id => user.id
       end
-  
       it "should allow creating multiple tables with the same name by adding a number at the and and incrementing it" do
         user = create_user
         user.table_quota = 100

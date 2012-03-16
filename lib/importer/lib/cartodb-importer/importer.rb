@@ -143,8 +143,11 @@ module CartoDB
       
         # Load data in
         loader = CartoDB::Import::Loader.create(@ext, self.to_import_hash)
-        raise "no importer for this type of data" if !loader          
-        @data_import.log_update("no importer for this type of data, #{@ext}") if !loader
+        if !loader
+          @data_import.log_update("no importer for this type of data, #{@ext}")
+          @data_import.set_error_code(01002)
+          raise "no importer for this type of data"          
+        end
         @data_import.log_update("file successfully loaded") if loader
         
         i_res, payload = loader.process! 

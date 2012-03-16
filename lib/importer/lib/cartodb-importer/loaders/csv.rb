@@ -18,15 +18,12 @@ module CartoDB
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
         unless (err = stderr.read).empty?
-          @data_import.set_error_code(7)
+          @data_import.set_error_code(02000)
           @data_import.log_error(err)
           @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
           
           if err.include? "already exists"
-            @data_import.set_error_code(12)
-            @data_import.log_error("ERROR: #{@path} contains reserved column names")
-          elsif err.include? "already not"
-            @data_import.set_error_code(12)
+            @data_import.set_error_code(05002)
             @data_import.log_error("ERROR: #{@path} contains reserved column names")
           end
           raise "failed to convert #{@ext.sub('.','')} to shp"
@@ -49,7 +46,7 @@ module CartoDB
         # Check if the file had data, if not rise an error because probably something went wrong
         if @db_connection["SELECT * from #{@suggested_name} LIMIT 1"].first.nil?
           @runlog.err << "Empty table"
-          @data_import.set_error_code(5)
+          @data_import.set_error_code(05001)
           @data_import.log_error(err)
           @data_import.log_error("ERROR: no data could be imported from file")
           raise "Empty table"

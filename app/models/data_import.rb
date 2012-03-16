@@ -4,20 +4,37 @@ class DataImport < Sequel::Model
   include ActiveModel::Validations 
   
   # PRELIM ERROR CODES
-  # -- specific errors
-  # 1: Unsupported file type
-  # 2: Decompression error
-  # 3: Unsupported or missing projection
-  # 4: Unable to read SHP file
-  # 5: Empty table
-  # 6: File encoding error
-  # 7: File conversion error
-  # 8: SHP to PGSQL error
-  # 9: Database import error
-  # 10: Unable to open file
-  # 11: Raster import error
-  # 12: Reserved column names
-  # 99: Unknown
+  # 01 - File I/O errors
+  # 01000 - File I/O error
+  # 01001: Unable to open file
+  # 01002: Unsupported file type
+  # 01003: Decompression error
+  # 01004: File encoding error
+
+  # 02 - File conversion errors
+  # 02000 - File conversion errors
+
+  # 03 - Vector errors
+  # 03000 - Vector error
+  # 03004: Unable to read SHP file
+  # 03005: SHP to PGSQL error
+  # 03100: Unsupported or missing projection
+
+  # 04 - Raster errors
+  # 04000: Raster errors
+  # 04001: Raster import error
+
+  # 05 - Database import errors
+  # 05000 - Database import error
+  # 05001: Empty table
+  # 05002: Reserved column names
+
+  # 08 - CartoDB account errors
+  # 08000 - CartoDB account error
+  # 08001 - Over account storage limit
+  # 08002 - Over table limit
+  
+  # 99999 - Unknown
    
   attr_accessor :get_log
   
@@ -95,7 +112,7 @@ class DataImport < Sequel::Model
   def log_error(error_msg)
     self.logger << "#{error_msg}\n"
     if self.error_code.nil?
-      self.error_code = 99
+      self.error_code = 99999
     end
     self.save
   end

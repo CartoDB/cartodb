@@ -16,7 +16,9 @@ class DataImport < Sequel::Model
   # 9: Database import error
   # 10: Unable to open file
   # 11: Raster import error
-  # 99: Unknown 
+  # 99: Unknown
+   
+  attr_accessor :get_log
   
   state_machine :initial => :preprocessing do
     before_transition :updated_now 
@@ -91,6 +93,9 @@ class DataImport < Sequel::Model
   end
   def log_error(error_msg)
     self.logger << "#{error_msg}\n"
+    if self.error_code.nil?
+      self.error_code = 99
+    end
     self.save
   end
   def log_warning(error_msg)
@@ -108,5 +113,12 @@ class DataImport < Sequel::Model
   def set_error_code(code)
     self.error_code = code
     self.save
+  end
+  def log_json
+    if self.logger.nil?
+      ["empty"]
+    else
+      self.logger.split("\n")
+    end
   end
 end

@@ -24,7 +24,7 @@ module CartoDB
           @runlog.log << "Error running python shp_normalizer script: #{normalizer_command}"
           @runlog.stdout << out
           
-          @data_import.set_error_code(4)
+          @data_import.set_error_code(03005)
           @data_import.log_error("#{normalizer_command}")
           @data_import.log_error(out)
           @data_import.log_error("ERROR: shp_normalizer script failed")
@@ -40,7 +40,7 @@ module CartoDB
   
         #unless (err = stderr.read).empty?
         if $?.exitstatus != 0  
-          @data_import.set_error_code(8)
+          @data_import.set_error_code(03005)
           @data_import.log_error(err)
           @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
           raise "ERROR: failed to generate SQL from #{@path}"
@@ -74,7 +74,7 @@ module CartoDB
             @db_connection.run("CREATE INDEX \"#{random_table_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
           rescue Exception => msg  
             @runlog.err << msg
-            @data_import.set_error_code(7)
+            @data_import.set_error_code(02000)
             @data_import.log_error(msg)
             @data_import.log_error("ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326")
           end  
@@ -85,7 +85,7 @@ module CartoDB
           @table_created = true
         rescue Exception => msg  
           @runlog.err << msg
-          @data_import.set_error_code(9)
+          @data_import.set_error_code(05000)
           @data_import.log_error(msg)
           @data_import.log_error("ERROR: unable to rename \"#{random_table_name}\" to \"#{@suggested_name}\"")
         end  

@@ -320,7 +320,14 @@ class Table < Sequel::Model(:user_tables)
     
     
     # test for exceeding of table quota after creation - needed as no way to test future db size pre-creation
-    raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required" if owner.over_disk_quota?
+    if owner.over_disk_quota?
+      if @data_import
+        @data_import.reload
+        @data_import.set_error_code(08001)
+        @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
+      end   
+      raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required" 
+    end
 
     # all looks ok, so VACUUM ANALYZE for correct statistics
     owner.in_database.run("VACUUM ANALYZE \"#{self.name}\"")

@@ -15,7 +15,7 @@ module CartoDB
         
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} --config SHAPE_ENCODING LATIN1 -f "ESRI Shapefile" #{@path}.shp #{@path}}
-        out = `#{ogr2ogr_command}`
+        
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
         unless (err = stderr.read).empty?

@@ -14,11 +14,14 @@ class DataImport < Sequel::Model
   # 02 - File conversion errors
   # 02000 - File conversion errors
 
-  # 03 - Vector errors
-  # 03000 - Vector error
+  # 03 - Geometry errors
+  # 03000 - Geometry error
   # 03004: Unable to read SHP file
   # 03005: SHP to PGSQL error
-  # 03100: Unsupported or missing projection
+  # 03100: Projection error
+  # 03101: Unsupported or missing projection
+  # 03200: Unsupported geometry type
+  # 03201: Geometry Collection not supported
 
   # 04 - Raster errors
   # 04000: Raster errors

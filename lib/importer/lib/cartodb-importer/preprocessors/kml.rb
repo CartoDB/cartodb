@@ -23,6 +23,12 @@ module CartoDB
           @data_import.log_error(err)
           @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
           raise "failed to convert #{@ext.sub('.','')} to shp"
+          
+          if err.include? "Geometry Collection"
+            @data_import.set_error_code(03201)
+            @data_import.log_error("ERROR: geometry contains Geometry Collection")
+          end
+          
         end
         
         unless (reg = stdout.read).empty?

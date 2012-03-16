@@ -14,23 +14,41 @@ module CartoDB
         @data_import.log_update("ogr2ogr #{@suggested_name}")
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@path} -nln #{@suggested_name}}
-
-        out = `#{ogr2ogr_command}`
-
-        if $?.exitstatus != 0
-          @data_import.log_error("failed to convert import CSV into postgres using ogr2ogr: #{out.inspect}")
-          raise "failed to convert import CSV into postgres using ogr2ogr: #{out.inspect}"
+        
+        stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
+  
+        unless (err = stderr.read).empty?
+          @data_import.set_error_code(2000)
+          @data_import.log_error(err)
+          @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
+          
+          if err.include? "already exists"
+            @data_import.set_error_code(5002)
+            @data_import.log_error("ERROR: #{@path} contains reserved column names")
+          end
+          raise "failed to convert #{@ext.sub('.','')} to shp"
         end
-
-        if 0 < out.strip.length
-          @runlog.stdout << out
-          @data_import.log_update(out)
+        
+        unless (reg = stdout.read).empty?
+          @runlog.stdout << reg
         end
+        # 
+        # if $?.exitstatus != 0
+        #   @data_import.log_error("failed to convert import CSV into postgres using ogr2ogr: #{out.inspect}")
+        #   raise "failed to convert import CSV into postgres using ogr2ogr: #{out.inspect}"
+        # end
+        # 
+        # if 0 < out.strip.length
+        #   @runlog.stdout << out
+        #   @data_import.log_update(out)
+        # end
 
         # Check if the file had data, if not rise an error because probably something went wrong
         if @db_connection["SELECT * from #{@suggested_name} LIMIT 1"].first.nil?
           @runlog.err << "Empty table"
-          @data_import.log_error("empty table")
+          @data_import.set_error_code(5001)
+          @data_import.log_error(err)
+          @data_import.log_error("ERROR: no data could be imported from file")
           raise "Empty table"
         end
 
@@ -79,7 +97,7 @@ module CartoDB
                     end
                   rescue => e
                     @runlog.err << "silently fail conversion #{geojson.inspect} to #{@suggested_name}. #{e.inspect}"
-                    @data_import.log_error("silently fail conversion #{geojson.inspect} to #{@suggested_name}. #{e.inspect}")
+                    @data_import.log_error("ERROR: silently fail conversion #{geojson.inspect} to #{@suggested_name}. #{e.inspect}")
                   end
                 end
                 # Drop original the_geom column
@@ -89,7 +107,7 @@ module CartoDB
               column_names.delete('the_geom')
               @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom;")
               @runlog.err << "failed to read geojson for #{@suggested_name}. #{e.inspect}"
-              @data_import.log_error("failed to read geojson for #{@suggested_name}. #{e.inspect}")
+              @data_import.log_error("ERROR: failed to read geojson for #{@suggested_name}. #{e.inspect}")
             end
           else
             begin
@@ -98,6 +116,7 @@ module CartoDB
             rescue
               column_names.delete('the_geom')
               @runlog.err << "failed to convert the_geom to invalid_the_geom"
+              @data_import.log_error("ERROR: failed to convert the_geom to invalid_the_geom")
             end
           end
         end

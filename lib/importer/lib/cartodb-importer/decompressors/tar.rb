@@ -7,6 +7,8 @@ module CartoDB
       register_decompressor :tgz
 
       def process!
+        @data_import = DataImport.find(:id=>@data_import_id)
+        @data_import.log_update("untar file #{@path}") 
         
         # generate a temp file for import
         tmp_dir = temporary_filename

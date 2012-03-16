@@ -71,16 +71,12 @@ class Api::Json::TablesController < Api::ApplicationController
       @data_import.reload
       CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
       if @table.data_import_id
-        import_errors = nil
-        if @data_import.logger
-          import_errors = @data_import.logger.split("\n")
-        end
         render_jsonp({ :description => @table.errors.full_messages ,
-                    :stack => import_errors,
+                    :stack =>  @data_import.log_json,
                     :code=>@data_import.error_code }, 
                     400)
       else
-        render_jsonp({ :description => nil, :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
+        render_jsonp({ :description => '', :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
       end
     end
   rescue => e
@@ -95,12 +91,7 @@ class Api::Json::TablesController < Api::ApplicationController
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     
     @data_import.reload
-    
-    import_errors = nil
-    if @data_import.logger
-      import_errors = @data_import.logger.split("\n")
-    end
-    render_jsonp({ :description => translate_error(e), :stack => import_errors, :code => @data_import.error_code }, 400)
+    render_jsonp({ :description => translate_error(e), :stack =>  @data_import.log_json, :code => @data_import.error_code }, 400)
   end
 
   def show

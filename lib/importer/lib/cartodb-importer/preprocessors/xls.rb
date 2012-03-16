@@ -18,7 +18,7 @@ module CartoDB
             when '.ods'
               Openoffice.new(@path)
             else
-              @data_import.set_error_code(05000)
+              @data_import.set_error_code(5000)
               @data_import.log_error("ERROR: unable to open spreadsheet #{@path}")
               @runlog.log << "Don't know how to open spreadsheet #{@path}"
               raise ArgumentError, "Don't know how to open spreadsheet #{@path}"
@@ -28,7 +28,7 @@ module CartoDB
           @ext = '.csv'
           @path = @import_from_file.path
         rescue
-          @data_import.set_error_code(05000)
+          @data_import.set_error_code(5000)
           @data_import.log_error("ERROR: unable to open spreadsheet #{@path}")
           @runlog.log << "Don't know how to open spreadsheet #{@path}"
         end

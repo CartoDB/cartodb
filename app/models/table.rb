@@ -323,7 +323,7 @@ class Table < Sequel::Model(:user_tables)
     if owner.over_disk_quota?
       if @data_import
         @data_import.reload
-        @data_import.set_error_code(08001)
+        @data_import.set_error_code(8001)
         @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
       end   
       raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required" 

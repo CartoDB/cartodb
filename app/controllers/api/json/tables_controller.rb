@@ -47,7 +47,12 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def create
     @table = Table.new
+    
+    @data_import = DataImport.new(:user_id => current_user.id)
+    @data_import.updated_at = Time.now
+    @data_import.save
     @table.user_id = current_user.id
+    @table.data_import_id = @data_import.id
     @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
     @table.import_from_file = params[:file]              if params[:file]
     @table.import_from_url = params[:url]                if params[:url]
@@ -63,8 +68,16 @@ class Api::Json::TablesController < Api::ApplicationController
                      :name => @table.name, 
                      :schema => @table.schema }, 200, :location => table_path(@table))
     else
+      @data_import.reload
       CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
-      render_jsonp({ :errors => @table.errors.full_messages }, 400)
+      if @table.data_import_id
+        render_jsonp({ :description => @table.errors.full_messages ,
+                    :stack =>  @data_import.log_json,
+                    :code=>@data_import.error_code }, 
+                    400)
+      else
+        render_jsonp({ :description => '', :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
+      end
     end
   rescue => e
     # Add semantics based on the users creation method. 
@@ -76,7 +89,9 @@ class Api::Json::TablesController < Api::ApplicationController
     end  
     
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
-    render_jsonp(translate_error(e), 400) and return  
+    
+    @data_import.reload
+    render_jsonp({ :description => translate_error(e), :stack =>  @data_import.log_json, :code => @data_import.error_code }, 400)
   end
 
   def show

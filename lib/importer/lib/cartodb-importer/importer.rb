@@ -148,6 +148,8 @@ module CartoDB
         @data_import.log_update("file successfully loaded") if loader
         
         i_res, payload = loader.process! 
+        @data_import.log_update("file successfully imported")
+        
         update_self i_res if i_res
         
         @data_import.save

@@ -16,6 +16,7 @@ class DataImport < Sequel::Model
   # 9: Database import error
   # 10: Unable to open file
   # 11: Raster import error
+  # 12: Reserved column names
   # 99: Unknown
    
   attr_accessor :get_log

@@ -281,6 +281,13 @@ You should now be able to access
 **`http://[mysubdomain].localhost.lan:3000`**
 in your browser and login with the password specified above.
 
+# Handy tasks #
+
+For a full list of CartoDB utility tests:
+
+```
+bundle exec rake -T
+```
 
 # Note on tiling, SQL API and Redis #
 

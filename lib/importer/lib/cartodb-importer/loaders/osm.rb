@@ -20,7 +20,7 @@ module CartoDB
         allowed_cache_size = 24000
         random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"
         
-        full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -G -I -C #{allowed_cache_size} -p #{random_table_prefix} #{@path}"
+        full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -G -I -C #{allowed_cache_size} -E 4326 -p #{random_table_prefix} #{@path}"
         
         log "Running osm2pgsql: #{full_osm_command}"
         @data_import.log_update(full_osm_command)
@@ -39,27 +39,60 @@ module CartoDB
           @runlog.stdout << reg
         end
         
-        @db_connection["SELECT tablename FROM pg_tables where tablename not like 'pg_%' and tablename not like 'sql_%' and tablename not like 'untitled_%'"].each do |row|
-          @data_import.log_update(row)
+        valid_tables = Array.new
+        
+        ["line", "polygon", "roads", "point"].each  do |feature| 
+          @old_table_name = "#{random_table_prefix}_#{feature}"
+          rows_imported = @db_connection["SELECT count(*) as count from #{@old_table_name}"].first[:count]
+          if !rows_imported.nil? and 0 < rows_imported
+            valid_tables << feature
+          else
+            @db_connection.drop_table @old_table_name
+          end
         end
-        begin
-          @db_connection.run("ALTER TABLE \"#{random_table_prefix}_point\" RENAME TO \"#{@suggested_name}_point\"")
-          @table_created = true
-        rescue Exception => msg  
-          @runlog.err << msg
-          @data_import.set_error_code(5000)
-          @data_import.log_error(msg)
-          @data_import.log_error("ERROR: unable to rename \"#{random_table_prefix}_point\" to \"#{@suggested_name}_point\"")
-        end  
-
-        @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?
-        rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}_point"].first[:count]
+        
+        import_tables = Array.new
+        valid_tables.each do |feature|
+          @old_table_name = "#{random_table_prefix}_#{feature}"
+          @table_name = get_valid_name("#{@suggested_name}_#{feature}")
+          begin
+            begin
+              @db_connection.run("ALTER TABLE \"#{@old_table_name}\" RENAME TO \"#{@table_name}\"")
+              @table_created = true
+            rescue Exception => msg  
+              @runlog.err << msg
+              @data_import.set_error_code(5000)
+              @data_import.log_error(msg)
+              @data_import.log_error("ERROR: unable to rename \"#{@old_table_name}\" to \"#{@table_name}\"")
+              @db_connection.drop_table @old_table_name
+            end  
+          
+            @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?
+            @rows_imported = @db_connection["SELECT count(*) as count from #{@table_name}"].first[:count]
+          
+            osm_geom_name = "way"
+            @db_connection.run("ALTER TABLE #{@table_name} RENAME COLUMN #{osm_geom_name} TO the_geom")
+        
+            # Sanitize column names where needed
+            column_names = @db_connection.schema(@table_name).map{ |s| s[0].to_s }
+            need_sanitizing = column_names.each do |column_name|
+              if column_name != column_name.sanitize_column_name
+                @db_connection.run("ALTER TABLE #{@table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
+              end
+            end
+            import_tables << @table_name
+          rescue
+              @db_connection.drop_table @old_table_name
+          end
+        end
+        
         @import_from_file.unlink
 
         payload = OpenStruct.new({
-                                :name => "#{@suggested_name}_point", 
-                                :rows_imported => rows_imported,
+                                :name => @table_name,
+                                :rows_imported => @rows_imported,
                                 :import_type => @import_type,
+                                :import_tables => import_tables,
                                 :log => @runlog
                               })
  

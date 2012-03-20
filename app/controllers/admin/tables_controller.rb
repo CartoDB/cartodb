@@ -4,7 +4,7 @@ class Admin::TablesController < ApplicationController
   ssl_required :index, :show, :embed_map
 
   skip_before_filter :check_domain, :only => [:embed_map]
-  skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]  
+  skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]
   before_filter :login_required, :except => [:embed_map]
 
   def index
@@ -16,7 +16,7 @@ class Admin::TablesController < ApplicationController
     else
       Table.filter({:user_id => current_user.id}).order(:id).reverse.paginate(current_page, per_page)
     end
-    
+
     # Quota (in Mb and Tables)
     @quota         = current_user.quota_in_bytes / 1024 / 1024
     @database_size = current_user.db_size_in_bytes / 1024 /1024
@@ -55,14 +55,14 @@ class Admin::TablesController < ApplicationController
       end
     end
   end
-  
+
   def embed_map
     @subdomain = request.subdomain
-    @table = Table.find_by_subdomain(@subdomain, params[:id])    
+    @table = Table.find_by_subdomain(@subdomain, params[:id])
     if @table.blank? || @table.private?
       head :forbidden
     else
-      render :layout => false        
+      render :layout => false
     end
   end
 end

@@ -36,12 +36,12 @@ Warden::Strategies.add(:api_authentication) do
     if ClientApplication.verify_request(request) do |request_proxy|
           @oauth_token = ClientApplication.find_token(request_proxy.token)
           if @oauth_token.respond_to?(:provided_oauth_verifier=)
-            @oauth_token.provided_oauth_verifier=request_proxy.oauth_verifier 
+            @oauth_token.provided_oauth_verifier=request_proxy.oauth_verifier
           end
           # return the token secret and the consumer secret
           [(@oauth_token.nil? ? nil : @oauth_token.secret), (@oauth_token.nil? || @oauth_token.client_application.nil? ? nil : @oauth_token.client_application.secret)]
         end
-      
+
       if @oauth_token && @oauth_token.is_a?(::AccessToken)
         success!(User.find_with_custom_fields(@oauth_token.user_id)) and return
       end

@@ -39,7 +39,7 @@
         <li><a href="<%= APP_CONFIG[:developers_host] %>">Developers</a></li>
         <li><a href="http://cartodb.tumblr.com" target="_blank">Blog</a></li>
         <li class="last">
-          <% if env['warden'].authenticated? %>
+          <% if env['warden'].authenticated?(request.subdomain) %>
             <a href="<%= CartoDB.hostname %>/dashboard"><%= env['warden'].user.email %></a>
             <span><a href="<%= CartoDB.hostname %>/logout">(close session)</a></span>
           <% else %>

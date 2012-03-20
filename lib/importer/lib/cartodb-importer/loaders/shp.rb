@@ -41,7 +41,7 @@ module CartoDB
         #unless (err = stderr.read).empty?
         if $?.exitstatus != 0  
           @data_import.set_error_code(3005)
-          @data_import.log_error(err)
+          @data_import.log_error(stderr)
           @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
           raise "ERROR: failed to generate SQL from #{@path}"
         end

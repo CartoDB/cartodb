@@ -79,11 +79,7 @@
           <span class="normal">
             <h2><a href="#change_title"><%= @table.name %></a></h2>
             <p class="status">
-              <% if true %>
-                <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
-              <% else %>
-                <em>PUBLIC</em>
-              <% end %>
+              <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
             </p>
             <span class="tags">
               <% unless @table[:tags_names].blank? %>

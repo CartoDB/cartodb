@@ -3,6 +3,7 @@
     <div class="left">
       <ul class="tables_list">
         <li class="<%= selected_if(current_path == dashboard_path) %>"><a class="oth <%= selected_if(current_path == dashboard_path) %>" href="<%= dashboard_path %>">Your tables</a></li>
+        <!--<li class="<%= selected_if(current_path == "") %>"><a class="oth <%= selected_if(current_path == "") %>" href="<%= "" %>">Public tables</a></li>-->
         <li class="<%= selected_if(controller_name == "client_applications") %>"><a class="oth <%= selected_if(controller_name == "client_applications") %>" href="<%= oauth_credentials_path %>">Your api keys</a></li>
       </ul>
     </div>

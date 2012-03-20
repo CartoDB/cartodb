@@ -146,7 +146,7 @@
       	element: document.getElementById('hugeUploader'),
       	action: '/upload',
       	params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz', 'osm', 'bz2'],
       	sizeLimit: 0,
       	minSizeLimit: 0,
       	debug: false,

@@ -1,7 +1,7 @@
 
 
     head(function(){
-      
+
       // Privacy tooltip
       var p_change;
       var table_name;
@@ -60,24 +60,25 @@
 
       
       // Right column floating effect
-      $(window).scroll(
-        function(ev) {
-          var right_column = $('div.tables_list div.right');
-          var scrolled = $(window).scrollTop();
-          var right_column_height = right_column.height();
-          var right_column_pos = $('div.tables_list div.left').offset().top;
-          var list_height = $('div.tables_list').height() + right_column_pos - right_column_height;
-          if (scrolled>(right_column_pos-30)) {
-            if (scrolled<list_height) {
-              right_column.css({'position':'fixed','margin':'-'+(right_column_pos-30)+'px 0 0 20px','display':'inline', 'vertical-align':'top'});
-            } else {
-              right_column.css({'position':'relative','margin':'0 0 0 16px','display':'inline-block','vertical-align':'bottom'});
-            }
-          } else {
-            right_column.css({'position':'relative','margin':'0 0 0 16px','display':'inline-block'});
-          }
-        }
-      );
+			if (navigator.appVersion.indexOf("Linux")==-1)
+	      $(window).scroll(
+	        function(ev) {
+	          var right_column = $('div.tables_list div.right');
+	          var scrolled = $(window).scrollTop();
+	          var right_column_height = right_column.height();
+	          var right_column_pos = $('div.tables_list div.left').offset().top;
+	          var list_height = $('div.tables_list').height() + right_column_pos - right_column_height;
+	          if (scrolled>(right_column_pos-30)) {
+	            if (scrolled<list_height) {
+	              right_column.css({'position':'fixed','margin':'-'+(right_column_pos-30)+'px 0 0 20px','display':'inline', 'vertical-align':'top'});
+	            } else {
+	              right_column.css({'position':'relative','margin':'0 0 0 16px','display':'inline-block','vertical-align':'bottom'});
+	            }
+	          } else {
+	            right_column.css({'position':'relative','margin':'0 0 0 16px','display':'inline-block'});
+	          }
+	        }
+	      );
       
       //Put paginator in middle
       var paginator_width = $('div.paginate').width();

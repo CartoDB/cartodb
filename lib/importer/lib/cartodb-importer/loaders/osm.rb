@@ -2,46 +2,38 @@ module CartoDB
   module Import
     class SHP < CartoDB::Import::Loader
       
-      register_loader :shp
+      register_loader :bz2
+      register_loader :osm
 
       def process!
         @data_import = DataImport.find(:id=>@data_import_id)
 
-        log "processing shp"
-        shp2pgsql_bin_path = `which shp2pgsql`.strip
+        log "processing osm"
+        osm2pgsql_bin_path = `which osm2pgsql`.strip
 
         host = @db_configuration[:host] ? "-h #{@db_configuration[:host]}" : ""
         port = @db_configuration[:port] ? "-p #{@db_configuration[:port]}" : ""
-
-        random_table_name = "importing_#{Time.now.to_i}_#{@suggested_name}"
-
-        @data_import.log_update("running shp normalizer")
-        normalizer_command = "#{@python_bin_path} -Wignore #{File.expand_path("../../../../misc/shp_normalizer.py", __FILE__)} \"#{@path}\" #{random_table_name}"
-        out = `#{normalizer_command}`
-        shp_args_command = out.split( /, */, 4 )
         
-        if shp_args_command.length != 4
-          @runlog.log << "Error running python shp_normalizer script: #{normalizer_command}"
-          @runlog.stdout << out
-          
-          @data_import.set_error_code(3005)
-          @data_import.log_error("#{normalizer_command}")
-          @data_import.log_error(out)
-          @data_import.log_error("ERROR: shp_normalizer script failed")
-          raise "Error running python shp_normalizer script: #{normalizer_command}"
-        end
+        # TODO
+        # Create either a dynamic cache size based on user account type or pick a wiser number
+        # for everybody
+        allowed_cache_size = 24000
+        random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"
 
-        @data_import.log_update("#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{shp_args_command[1]} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip}")
-        full_shp_command = "#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{shp_args_command[1]} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
+
+        full_osm_command = "#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{shp_args_command[1]} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
         
-        log "Running shp2pgsql: #{full_shp_command}"
+        full_osm_command = "#{osm2pgsql_bin_path} -H #{host} -P #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -G -I -C #{allowed_cache_size} -p #{random_table_prefix} #{@path}"
         
-        stdin,  stdout, stderr = Open3.popen3(full_shp_command) 
+        log "Running osm2pgsql: #{full_osm_command}"
+        @data_import.log_update(full_osm_command)
+        
+        stdin,  stdout, stderr = Open3.popen3(full_osm_command) 
   
         #unless (err = stderr.read).empty?
         if $?.exitstatus != 0  
           @data_import.set_error_code(3005)
-          @data_import.log_error(err)
+          @data_import.log_error(stderr)
           @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
           raise "ERROR: failed to generate SQL from #{@path}"
         end

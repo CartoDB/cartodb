@@ -387,7 +387,7 @@ div.mamufas div.lastpage_window div.inner_ span.loading p {padding:6px 0 0 0; fo
 .jspContainer{overflow:hidden; position:relative; width:100%}
 .jspPane{position:absolute; width:100%;}
 .jspVerticalBar{position:absolute;top:0px;right:3px;width:6px;height:100%; background:none;}
-.jspHorizontalBar{position:absolute;bottom:0;left:0;width:100%;height:16px;background:none;}
+.jspHorizontalBar{position:absolute;bottom:0;left:0;width:100%;height:6px;background:none;}
 .jspVerticalBar *,
 .jspHorizontalBar *{margin:0;padding:0;}
 .jspCap{display:none;}

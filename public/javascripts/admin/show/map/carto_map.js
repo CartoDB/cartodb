@@ -141,14 +141,14 @@
       $.ajax({
         type: "GET",
         dataType: 'jsonp',
-        url: global_api_url+'queries?sql='+escape('SELECT DISTINCT(GeometryType(the_geom)) as geom_type FROM '+table_name+' GROUP BY \'the_geom\''),
+        url: global_api_url+'queries?sql='+escape('SELECT DISTINCT(GeometryType(the_geom)) as geom_type FROM '+table_name+' GROUP BY geom_type'),
         headers: {"cartodbclient":"true"},
         success: function(data) {
 
           if (data.rows.length>0 && 
-              data.rows[0].type!="undefined" && 
-              data.rows[0].type.toLowerCase()!= "geometry") {
-            geom_type = me.geometry_type_ = data.rows[0].type.toLowerCase();
+              data.rows[0].geom_type!="undefined" && 
+              data.rows[0].geom_type.toLowerCase()!= "geometry") {
+            geom_type = me.geometry_type_ = data.rows[0].geom_type.toLowerCase();
           } else {
             // Force table to be points due to...
             // known issues:
@@ -2654,7 +2654,7 @@
         },
         error: function(e, textStatus) {
           try {
-            var msg = $.parseJSON(e.responseText).errors[0].error_message;
+            var msg = $.parseJSON(e.responseText).errors[0];
             if (msg == "Invalid rows: the_geom") {
               window.ops_queue.responseRequest(requestId,'error','First georeference your table');
             } else {
@@ -2687,6 +2687,8 @@
 
     /* If request fails */
     CartoMap.prototype.errorRequest = function(params,new_value,old_value,type) {
+      var me = this;
+
       switch (type) {
         case "change_latlng":   var occ_id = params.cartodb_id;
                                 (this.points_[occ_id]).setPosition(old_value);
@@ -2696,6 +2698,9 @@
                                 _.each(array,function(ele,i){
                                     me.points_[ele].setMap(me.map_);
                                 });
+                                break;
+        case "update_geometry": me.refreshWax();
+                                me.removeFakeGeometries();
                                 break;
         default:                break;
       }

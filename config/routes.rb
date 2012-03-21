@@ -49,10 +49,13 @@ CartoDB::Application.routes.draw do
       post   '/tables/:id/infowindow'                => 'tables#set_infowindow', :as => "api_tables_info_window"
       post   '/tables/:id/map_metadata'              => 'tables#set_map_metadata', :as => "api_tables_map_metadata"
       get    '/tables/:id/map_metadata'              => 'tables#get_map_metadata'
+      get    '/tables/:table_id.:format'                 => 'export_tables#show'
+      #we should depricate the following four
       get    '/tables/:table_id/export/csv'          => 'export_tables#show', :format => :csv
       get    '/tables/:table_id/export/shp'          => 'export_tables#show', :format => :shp
       get    '/tables/:table_id/export/kml'          => 'export_tables#show', :format => :kml
       get    '/tables/:table_id/export/sql'          => 'export_tables#show', :format => :sql
+      
       get    '/tables/:table_id/records'             => 'records#index'
       post   '/tables/:table_id/records'             => 'records#create'
       get    '/tables/:table_id/records/pending_addresses' => 'records#pending_addresses'

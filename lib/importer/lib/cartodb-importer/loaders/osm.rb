@@ -29,7 +29,7 @@ module CartoDB
   
         #unless (err = stderr.read).empty?
         if $?.exitstatus != 0  
-          @data_import.set_error_code(3005)
+          @data_import.set_error_code(6000)
           @data_import.log_error(stderr)
           @data_import.log_error("ERROR: failed to import #{@path}")
           raise "ERROR: failed to import #{@path}"

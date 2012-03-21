@@ -68,8 +68,6 @@
             , right_column_pos = $('div.tables_list div.left').offset().top
             , list_height = $('div.tables_list').height() + right_column_pos - right_column_height;
 
-            console.log(scrolled,right_column_pos-30,list_height);
-
           if (scrolled>(right_column_pos-30)) {
             if (scrolled<list_height) {
               right_column.css({'position':'fixed','margin':'-'+(right_column_pos-30)+'px 0 0 19px','display':'inline-block', 'vertical-align':'top'});

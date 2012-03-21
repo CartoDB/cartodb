@@ -79,7 +79,7 @@ class ApplicationController < ActionController::Base
     app_domain = CartoDB.session_domain
 
     if logged_in?
-      if request.host !~ /^#{current_user.username}#{app_domain}$/
+      if current_user.present? and request.host !~ /^#{current_user.username}#{app_domain}$/
         redirect_to "#{protocol}://#{current_user.username}#{app_domain}#{port}"
       end
     end

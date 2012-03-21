@@ -32,16 +32,6 @@ module CartoDB
         unless (reg = stdout.read).empty?
           @runlog.stdout << reg
         end
-        # 
-        # if $?.exitstatus != 0
-        #   @data_import.log_error("failed to convert import CSV into postgres using ogr2ogr: #{out.inspect}")
-        #   raise "failed to convert import CSV into postgres using ogr2ogr: #{out.inspect}"
-        # end
-        # 
-        # if 0 < out.strip.length
-        #   @runlog.stdout << out
-        #   @data_import.log_update(out)
-        # end
 
         # Check if the file had data, if not rise an error because probably something went wrong
         if @db_connection["SELECT * from #{@suggested_name} LIMIT 1"].first.nil?

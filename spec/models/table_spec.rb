@@ -492,6 +492,30 @@ describe Table do
     end
   end
   context "insert and update rows" do
+
+    it "should be able to insert a row with correct created_at and updated_at values" do
+      table = create_table
+      pk1 = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})      
+      sleep(1)
+      pk2 = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})      
+      first_created_at  = table.records[:rows].first[:created_at]
+      second_created_at = table.records[:rows].last[:created_at]
+      first_updated_at  = table.records[:rows].first[:updated_at]
+      second_updated_at = table.records[:rows].last[:updated_at]
+      
+      first_created_at.should  == first_updated_at
+      second_created_at.should == second_updated_at
+      
+      first_created_at.should_not == second_created_at
+      first_updated_at.should_not == second_updated_at
+
+      table.update_row!(pk1, :description => "Description 123")      
+      first_updated_at_2 = table.records[:rows].first[:updated_at]      
+      first_updated_at_2.should_not == table.records[:rows].first[:created_at]      
+      first_updated_at_2.should_not == first_updated_at
+    end
+    
+    
     
     it "should be able to insert a new row" do
       table = create_table

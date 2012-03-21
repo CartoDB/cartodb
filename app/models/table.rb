@@ -1327,8 +1327,8 @@ TRIGGER
           column :cartodb_id, "SERIAL PRIMARY KEY"
           String :name
           String :description, :text => true
-          DateTime :created_at, :default => "NOW()"
-          DateTime :updated_at, :default => "NOW()"
+          DateTime :created_at, :default => Sequel::CURRENT_TIMESTAMP
+          DateTime :updated_at, :default => Sequel::CURRENT_TIMESTAMP
         end
       else
         sanitized_force_schema = force_schema.split(',').map do |column|

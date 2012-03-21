@@ -141,18 +141,26 @@
       $.ajax({
         type: "GET",
         dataType: 'jsonp',
-        url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
+        url: global_api_url+'queries?sql='+escape('SELECT DISTINCT(GeometryType(the_geom)) as geom_type FROM '+table_name+' GROUP BY \'the_geom\''),
         headers: {"cartodbclient":"true"},
-        success: function(data) {          
-          if (data.rows.length>0) {
+        success: function(data) {
+
+          if (data.rows.length>0 && 
+              data.rows[0].type!="undefined" && 
+              data.rows[0].type.toLowerCase()!= "geometry") {
             geom_type = me.geometry_type_ = data.rows[0].type.toLowerCase();
           } else {
-            geom_type = undefined;
+            // Force table to be points due to...
+            // known issues:
+            //  - the_geom = undefined 
+            //  - the_geom = 'geometry'
+            geom_type = 'point';
           }
           
           setupTools();
         },
         error: function(e) {
+          geom_type = 'point';
           setupTools();
           console.debug(e);
         }
@@ -716,6 +724,12 @@
           me.startWax();
         },
         error: function(e) {
+
+          // Set map to world view
+          me.map_.setZoom(2)
+
+          // Start wax
+          me.startWax();
         }
       });
     }
@@ -742,18 +756,18 @@
         _setCorrectGeomType(geom_type)
 
         function _setCorrectGeomType(geom_type) {
-          if (geom_type=="point" || geom_type=="multipoint") {
-            $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.lines').remove();
-            $vis_ul.find('> li:eq(0) > a.option').text('Custom points');
-            $vis_ul.find('> li:eq(2)').remove();
-          } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-            $vis_ul.find('> li:eq(0) > div.suboptions.points, > li:eq(0) > div.suboptions.lines').remove();
-            $vis_ul.find('> li:eq(0) > a.option').text('Custom polygons');
-          } else {
+          if (geom_type=="linestring" || geom_type=="multilinestring") {
             $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.points').remove();
             $vis_ul.find('div.suboptions.choropleth span.color').remove();
             $vis_ul.find('div.suboptions.choropleth span.numeric').css({margin:'0'});
             $vis_ul.find('> li:eq(0) > a.option').text('Custom lines');
+          } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+            $vis_ul.find('> li:eq(0) > div.suboptions.points, > li:eq(0) > div.suboptions.lines').remove();
+            $vis_ul.find('> li:eq(0) > a.option').text('Custom polygons');
+          } else {
+            $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.lines').remove();
+            $vis_ul.find('> li:eq(0) > a.option').text('Custom points');
+            $vis_ul.find('> li:eq(2)').remove();
           }
         }
         return {}

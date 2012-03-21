@@ -89,6 +89,7 @@ module CartoDB
     5000 => 'Database import error',
     5001 => 'Empty table',
     5002 => 'Reserved column names',
+    6000 => 'OSM data import error',
     8000 => 'CartoDB account error',
     8001 => 'Over account storage limit',
     8002 => 'Over table limit',

@@ -49,7 +49,8 @@ class Api::Json::TablesController < Api::ApplicationController
     @data_import = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
-        
+    
+    #get info about any import data coming
     multifiles = ['.bz2','.osm']
     if params[:url]
       ext = File.extname(params[:url]) 
@@ -58,6 +59,7 @@ class Api::Json::TablesController < Api::ApplicationController
     end
     
     if ext.present? and multifiles.include?(ext)
+      begin
         owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => owner.database_name, 
@@ -72,7 +74,14 @@ class Api::Json::TablesController < Api::ApplicationController
     
         importer = CartoDB::Importer.new hash_in
         importer = importer.import!
-        render_jsonp({:tag => importer.tag }, 200, :location => '/dashboard?tag_name=#{importer.tag}')
+        render_jsonp({:tag => importer.tag }, 200, :location => '/dashboard')
+        
+      rescue => e
+        
+        @data_import.log_error(e)
+        @data_import.set_error_code(6000)
+        raise "OSM data error"
+      end
     else
       @table = Table.new
       @table.user_id = current_user.id
@@ -86,7 +95,7 @@ class Api::Json::TablesController < Api::ApplicationController
       @table.importing_SRID = params[:srid] || CartoDB::SRID
       @table.force_schema   = params[:schema]              if params[:schema]
       @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
-        
+      
       if @table.valid? && @table.save      
         render_jsonp({ :id => @table.id, 
                        :name => @table.name, 

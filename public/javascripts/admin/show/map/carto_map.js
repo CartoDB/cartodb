@@ -605,7 +605,6 @@
       this.css_editor.setValue(
         this.styles
           .replace(/\n/g,'')
-          .replace(/ /g,'')
           .replace(/#(\w*)\s/g,'#' + table_name + ' ')
           .replace(/\{/gi,'{\n   ')
           .replace(/\}/gi,'}\n')

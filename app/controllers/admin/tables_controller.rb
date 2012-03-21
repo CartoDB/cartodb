@@ -79,7 +79,7 @@ class Admin::TablesController < ApplicationController
     @table = Table.find_by_subdomain(@subdomain, params[:id])    
 
     if @table.blank? || (!current_user && @table.private?) || ((current_user && current_user.id != @table.owner.id) && @table.private?)     
-      head :forbidden
+      render_403
     else
       respond_to do |format|
         format.html {render 'show_public', :layout => 'application_public' }

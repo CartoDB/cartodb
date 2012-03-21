@@ -34,6 +34,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def render_403
+    respond_to do |format|
+      format.html { render :file => "public/403.html", :status => 403, :layout => false }
+      format.all  { head :forbidden }      
+    end
+  end
+
   def render_404
     respond_to do |format|
       format.html do

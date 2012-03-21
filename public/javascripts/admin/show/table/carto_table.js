@@ -2226,6 +2226,7 @@
 			  if (table_mode) {
 			    stopPropagation(ev);
 			    if (query_mode) {
+            delete editor['errors'];
 			    	$('div.sql_window').removeClass('error');
 			    	$('div.sql_window div.outer_textarea').removeAttr('style');
 			    	methods.restoreTable();

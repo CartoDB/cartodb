@@ -146,7 +146,8 @@
         success: function(data) {
 
           if (data.rows.length>0 && 
-              data.rows[0].geom_type!="undefined" && 
+              data.rows[0].geom_type!=undefined &&
+              data.rows[0].geom_type!=null &&
               data.rows[0].geom_type.toLowerCase()!= "geometry") {
             geom_type = me.geometry_type_ = data.rows[0].geom_type.toLowerCase();
           } else {

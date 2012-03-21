@@ -82,17 +82,14 @@
 
       // When ajax calls are loaded
       var requestArrived = _.after(ajax_request,function(){
-
         // Start table
 			   startTable(options.schema,rows,table.total_r);
 		    // Remove loader
 		    window.ops_queue.responseRequest(requestId,'ok','');
       });
 
-
       var url = TILEHTTP + '://' + user + '.' + SQL_SERVER + options.getDataUrl
       	, query = 'SELECT count(*) FROM ' + table_name;
-
 
       // Get count only when requests first page (0)
       if (request_pages == 0) {
@@ -583,6 +580,7 @@
           	// Close everything
             methods.closeTablePopups();
             methods.bindESCkey();
+            $('div.edit_cell textarea').removeClass('error');
 
             // Get data
             var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()}
@@ -614,17 +612,20 @@
               $('div.edit_cell textarea').addClass('loading');
 
               $.ajax({
-        		    method: "GET",
-        		    url: global_api_url+'queries?sql='+escape('SELECT ST_AsGeoJSON(the_geom,6) as the_geom FROM '+table_name+' WHERE cartodb_id='+data.row),
-        		 		headers: {"cartodbclient":"true"},
-        		    success: function(data) {
+                method: "GET",
+                url: TILEHTTP + '://' + user + '.' + SQL_SERVER + defaults.getDataUrl,
+                dataType: 'jsonp',
+                data: {
+                  q: 'SELECT ST_AsGeoJSON(the_geom,6) as the_geom FROM '+table_name+' WHERE cartodb_id='+data.row
+                },
+                success: function(data) {
                   $('div.edit_cell textarea').val(data.rows[0].the_geom);
                   $('div.edit_cell textarea').removeClass('loading');
-        		    },
-        		    error: function(e) {
+                },
+                error: function(e) {
                   $('div.edit_cell textarea').removeClass('loading').addClass('error');
-        		    }
-        		  });
+                }
+              });
             }
 
 

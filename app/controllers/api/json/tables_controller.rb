@@ -107,6 +107,11 @@ class Api::Json::TablesController < Api::ApplicationController
           :type => 'application/octet-stream; charset=binary; header=present',
           :disposition => "attachment; filename=#{@table.name}.zip"
       end
+      format.kml or format.kmz do
+        send_data @table.to_kml,
+          :type => 'application/vnd.google-earth.kml+xml; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.kmz"
+      end
       format.json do
         render_jsonp({ :id => @table.id,
                        :name => @table.name,

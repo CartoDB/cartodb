@@ -35,7 +35,9 @@
       $('a.see_more').live('click',function(ev){
       	stopPropagation(ev);
       	var $parent = $(this).closest('span');
-      	$parent.find('span').show();
+      	$parent.find('span')
+          .show()
+          .css('display','block');
       	$parent.find('p.see_details').remove();
       	$('div.create_window div.inner_').height($('div.create_window div.inner_ span.loading').height() + 30);
       })
@@ -63,13 +65,15 @@
         if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled') && !$(this).parent().is("span")) {
           $('div.create_window ul li').removeClass('selected');
           $(this).parent().addClass('selected');
+
+          if (($(this).closest('li').index()==1) || ($(this).closest('li').index()==2) && $('div.select_file input#url_txt').val() == "Insert a valid URL...") {
+            $('div.create_window span.bottom input').addClass('disabled');
+          } else {
+            $('div.create_window span.bottom input').removeClass('disabled');
+          }
         }
 				
-				if (($(this).closest('li').index()==1) || ($(this).closest('li').index()==2) && $('div.select_file input#url_txt').val() == "Insert a valid URL...") {
-					$('div.create_window span.bottom input').addClass('disabled');
-				} else {
-					$('div.create_window span.bottom input').removeClass('disabled');
-				}
+
       });
       
 
@@ -122,7 +126,8 @@
         minSizeLimit: 0, // min size
         debug: false,
         onSubmit: function(id, fileName){
-          $('div.create_window ul li:eq(0)').addClass('disabled');
+          $('div.create_window ul > li:eq(0)').addClass('disabled');
+          $('div.create_window ul > li:eq(2)').addClass('disabled');
           $('form input[type="submit"]').addClass('disabled');
           $('span.file').addClass('uploading');     
         },
@@ -153,7 +158,8 @@
 
       	onSubmit: function(id, fileName){
         	resetUploadFile();
-      		$('div.create_window ul li:eq(0)').addClass('disabled');
+      		$('div.create_window ul > li:eq(0)').addClass('disabled');
+          $('div.create_window ul > li:eq(2)').addClass('disabled');
       		$('form input[type="submit"]').addClass('disabled');
       		$('span.file').addClass('uploading');
       		$('div.create_window ul li:eq(1) a').click();
@@ -189,7 +195,8 @@
     function resetUploadFile() {
       create_type = 0;
       $('div.select_file p').removeClass('error');
-      $('div.create_window ul li:eq(0)').removeClass('disabled');
+      $('div.create_window ul > li:eq(0)').removeClass('disabled');
+      $('div.create_window ul > li:eq(2)').removeClass('disabled');
       $('div.create_window ul li').removeClass('selected');
       $('div.create_window ul li:eq(0)').addClass('selected');
       $('div.create_window div.inner_ form').show();
@@ -259,16 +266,13 @@
 								if (json.stack && json.stack.length>0) {
 									$('div.create_window div.inner_ span.loading').append('<p class="see_details"><a class="see_more" href="#show_more">see details</a></p>');
 									
-									var stack = '<span style="display:none; padding:10px 0 0;"><h6>Code ' + (json.code || '') + '</h6><dl>';
+									var stack = '<span class="error_details"><h6>Code ' + (json.code || '') + '</h6><dl>';
 									for (var i=0,_length=json.stack.length; i<_length; i++) {
 										stack += '<dd>' + json.stack[i] + '</dd>';
 									}
 									stack += '</dl></span>';
 									$('div.create_window div.inner_ span.loading').append(stack);
 								}
-
-								// Are there still hints?
-                //$('div.create_window div.inner_ span.loading p').appen(json.raw_error +'<br/><br/>'+ json.hint);
                 
 							} else {
                 $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:support@cartodb.com">contact us</a> with a sample of your data if possible. Thanks!');

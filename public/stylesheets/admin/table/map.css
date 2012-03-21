@@ -190,10 +190,11 @@ div.map_window div.map_header ul.infowindow_customization div.suboptions ul.colu
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspTrack {background: #dddddd;}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspDrag {background: #999999;}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspHover, div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspActive {background:#666666}
-div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li {width:100%; height:auto; padding:0; margin:0; border:none;}
-div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a {padding:0 0 0 15px; max-width:95px; background:url('/images/admin/icons/checkbox.png') no-repeat -2px -18px!important; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#999999!important; text-shadow:0 1px white}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li {display:block; width:100%; height:auto; padding:0; margin:2px 0; border:none;}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a {display:block; padding:0 0 0 15px; background:url('/images/admin/icons/checkbox.png') no-repeat -2px -18px!important; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#999999!important; text-shadow:0 1px white;
+text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a:hover {cursor:pointer!important; color:#666666!important;}
-div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a.on {background-position:-2px -1px!important; color:#666666!important; text-shadow:0 1px white}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a.on {background-position:-2px -1px!important; color:#666666!important; text-shadow:0 1px white; }
 
 
 /*MARKERS CUSTOMIZATION*/

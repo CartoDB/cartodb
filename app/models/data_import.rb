@@ -100,6 +100,7 @@ class DataImport < Sequel::Model
       transition any => :failure
     end
   end
+  
   def after_rollback(*args, &block)
     self.save
     set_callback(:rollback, :after, *args, &block)

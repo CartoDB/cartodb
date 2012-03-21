@@ -42,58 +42,77 @@ module CartoDB
         valid_tables = Array.new
         
         ["line", "polygon", "roads", "point"].each  do |feature| 
-          @old_table_name = "#{random_table_prefix}_#{feature}"
-          rows_imported = @db_connection["SELECT count(*) as count from #{@old_table_name}"].first[:count]
-          if !rows_imported.nil? and 0 < rows_imported
+          old_table_name = "#{random_table_prefix}_#{feature}"
+          rows_imported = @db_connection["SELECT count(*) as count from #{old_table_name}"].first[:count]
+          unless rows_imported.nil? || rows_imported == 0
             valid_tables << feature
           else
             @db_connection.drop_table @old_table_name
           end
         end
         
+        import_tag = "#{@suggested_name}_#{Time.now.to_i}"
         import_tables = Array.new
         valid_tables.each do |feature|
           @old_table_name = "#{random_table_prefix}_#{feature}"
           @table_name = get_valid_name("#{@suggested_name}_#{feature}")
           begin
-            begin
-              @db_connection.run("ALTER TABLE \"#{@old_table_name}\" RENAME TO \"#{@table_name}\"")
-              @table_created = true
-            rescue Exception => msg  
-              @runlog.err << msg
-              @data_import.set_error_code(5000)
-              @data_import.log_error(msg)
-              @data_import.log_error("ERROR: unable to rename \"#{@old_table_name}\" to \"#{@table_name}\"")
-              @db_connection.drop_table @old_table_name
-            end  
-          
-            @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?
-            @rows_imported = @db_connection["SELECT count(*) as count from #{@table_name}"].first[:count]
-          
-            osm_geom_name = "way"
-            @db_connection.run("ALTER TABLE #{@table_name} RENAME COLUMN #{osm_geom_name} TO the_geom")
+            @db_connection.run("ALTER TABLE \"#{@old_table_name}\" RENAME TO \"#{@table_name}\"")
+            @table_created = true
+            #begin
+              @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?
         
-            # Sanitize column names where needed
-            column_names = @db_connection.schema(@table_name).map{ |s| s[0].to_s }
-            need_sanitizing = column_names.each do |column_name|
-              if column_name != column_name.sanitize_column_name
-                @db_connection.run("ALTER TABLE #{@table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
+              osm_geom_name = "way"
+              geoms = @db_connection["SELECT count(*) as count from #{@table_name}"].first[:count]
+              unless geoms.nil? || geoms == 0
+                @db_connection.run("ALTER TABLE #{@table_name} RENAME COLUMN #{osm_geom_name} TO the_geom")
               end
-            end
-            import_tables << @table_name
-          rescue
+      
+              # Sanitize column names where needed
+              column_names = @db_connection.schema(@table_name).map{ |s| s[0].to_s }
+              need_sanitizing = column_names.each do |column_name|
+                if column_name != column_name.sanitize_column_name
+                  @db_connection.run("ALTER TABLE #{@table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
+                end
+              end
+              
+              @rows_imported = @db_connection["SELECT count(*) as count from #{@table_name}"].first[:count]
+              
+              # import_tables << @table_name
+              # @last_table = @table_name
+              
+              @new_table = Table.new :tags => "#{import_tag}"
+              @di = DataImport.new(:user_id => @data_import.user_id)
+              @di.updated_at = Time.now
+              @di.save
+              @new_table.user_id =  @data_import.user_id
+              @new_table.data_import_id = @di.id
+              @new_table.name = @table_name  
+              @new_table.migrate_existing_table = @table_name 
+              if @new_table.valid?
+                @new_table.save
+              end
+            
+            # rescue
+            #   @data_import.set_error_code(5000)
+            #   @data_import.log_error("ERROR: unable to format table \"#{@table_name}\" for CartoDB")
+            #   @db_connection.drop_table @old_table_name
+            # end
+          rescue Exception => msg  
+            @runlog.err << msg
+            @data_import.set_error_code(5000)
+            @data_import.log_error(msg)
+            @data_import.log_error("ERROR: unable to rename \"#{@old_table_name}\" to \"#{@table_name}\"")
+            begin
               @db_connection.drop_table @old_table_name
-          end
+            rescue
+              @data_import.log_error("ERROR: \"#{@old_table_name}\" doesn't exist")
+            end
+          end  
         end
         
-        @import_from_file.unlink
-
         payload = OpenStruct.new({
-                                :name => @table_name,
-                                :rows_imported => @rows_imported,
-                                :import_type => @import_type,
-                                :import_tables => import_tables,
-                                :log => @runlog
+                                :tag => "#{import_tag}"
                               })
  
         # construct return variables

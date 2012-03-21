@@ -74,9 +74,9 @@
       var me = this;
 
       head.js('/javascripts/admin/show/map/overlays/mapCanvasStub.js',
-        '/javascripts/admin/show/map/overlays/CartoTooltip.js?'+createUniqueId(),
-        '/javascripts/admin/show/map/overlays/CartoInfowindow.js?'+createUniqueId(),
-        '/javascripts/admin/show/map/overlays/CartoDeleteWindow.js?'+createUniqueId(),
+        '/javascripts/admin/show/map/overlays/CartoTooltip.js',
+        '/javascripts/admin/show/map/overlays/CartoInfowindow.js',
+        '/javascripts/admin/show/map/overlays/CartoDeleteWindow.js',
         '/javascripts/admin/show/map/tools/polygonEdit.js',
         '/javascripts/admin/show/map/tools/polylineEdit.js',
         '/javascripts/admin/show/map/tools/geometryCreator.js',
@@ -992,9 +992,8 @@
             custom_props['marker-type'] = 'ellipse';
             custom_props['marker-allow-overlap'] = true;              
 
-
             // Get visualization variables
-            custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
+            custom_vis['column'] = (isNaN(old_properties.visualization.column)) ? old_properties.visualization.column : 'cartodb_id';
             custom_vis['param'] = 'marker-width';
             custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,1,2,3,4,5,6,7,8,9];
             custom_vis['n_buckets'] = 10;
@@ -1237,20 +1236,21 @@
               custom_vis['param'] = 'line-color';
             }
 
-            custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
+
+            custom_vis['column'] = (isNaN(old_properties.visualization.column)) ? old_properties.visualization.column : 'cartodb_id';
             custom_vis['v_buckets'] = 
             	(old_properties.visualization.v_buckets &&
             		old_properties.visualization.v_buckets.length<8 &&
             		old_properties.visualization.v_buckets.length>2 ) ? old_properties.visualization.v_buckets : [0,2,4,12,24];
 						custom_vis['n_buckets'] = 
-            	(old_properties.visualization.v_buckets && 
-            		old_properties.visualization.v_buckets.length<8 &&
-            		old_properties.visualization.v_buckets.length>2 ) ? old_properties.visualization.values.length : 5;
+            	(old_properties.visualization.values && 
+            		old_properties.visualization.values.length<8 &&
+            		old_properties.visualization.values.length>2 ) ? old_properties.visualization.values.length : 5;
             custom_vis['values'] = 
             	(old_properties.visualization.values &&
             		old_properties.visualization.values.length<8 &&
-            		old_properties.visualization.v_buckets.values>2 ) ? old_properties.visualization.values : ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
-
+            		old_properties.visualization.values.length>2 &&
+                old_properties.visualization.v_buckets.length == old_properties.visualization.values.length) ? old_properties.visualization.values : ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
 
             // Set type
             custom_vis['type'] = 'custom';

@@ -1354,6 +1354,13 @@ SQL
 
   def update_the_geom!(attributes, primary_key)
     return unless attributes[THE_GEOM]
+    # TODO: use this once the server geojson is updated
+    # begin
+    #   owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON('#{attributes[THE_GEOM].sanitize_sql}'),#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
+    # rescue => e
+    #   raise CartoDB::InvalidGeoJSONFormat
+    # end    
+
     geo_json = RGeo::GeoJSON.decode(attributes[THE_GEOM], :json_parser => :json).try(:as_text)
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?
     owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")

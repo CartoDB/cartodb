@@ -63,13 +63,15 @@
         if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled') && !$(this).parent().is("span")) {
           $('div.create_window ul li').removeClass('selected');
           $(this).parent().addClass('selected');
+
+          if (($(this).closest('li').index()==1) || ($(this).closest('li').index()==2) && $('div.select_file input#url_txt').val() == "Insert a valid URL...") {
+            $('div.create_window span.bottom input').addClass('disabled');
+          } else {
+            $('div.create_window span.bottom input').removeClass('disabled');
+          }
         }
 				
-				if (($(this).closest('li').index()==1) || ($(this).closest('li').index()==2) && $('div.select_file input#url_txt').val() == "Insert a valid URL...") {
-					$('div.create_window span.bottom input').addClass('disabled');
-				} else {
-					$('div.create_window span.bottom input').removeClass('disabled');
-				}
+
       });
       
 
@@ -122,7 +124,8 @@
         minSizeLimit: 0, // min size
         debug: false,
         onSubmit: function(id, fileName){
-          $('div.create_window ul li:eq(0)').addClass('disabled');
+          $('div.create_window ul > li:eq(0)').addClass('disabled');
+          $('div.create_window ul > li:eq(2)').addClass('disabled');
           $('form input[type="submit"]').addClass('disabled');
           $('span.file').addClass('uploading');     
         },
@@ -153,7 +156,8 @@
 
       	onSubmit: function(id, fileName){
         	resetUploadFile();
-      		$('div.create_window ul li:eq(0)').addClass('disabled');
+      		$('div.create_window ul > li:eq(0)').addClass('disabled');
+          $('div.create_window ul > li:eq(2)').addClass('disabled');
       		$('form input[type="submit"]').addClass('disabled');
       		$('span.file').addClass('uploading');
       		$('div.create_window ul li:eq(1) a').click();
@@ -189,7 +193,8 @@
     function resetUploadFile() {
       create_type = 0;
       $('div.select_file p').removeClass('error');
-      $('div.create_window ul li:eq(0)').removeClass('disabled');
+      $('div.create_window ul > li:eq(0)').removeClass('disabled');
+      $('div.create_window ul > li:eq(2)').removeClass('disabled');
       $('div.create_window ul li').removeClass('selected');
       $('div.create_window ul li:eq(0)').addClass('selected');
       $('div.create_window div.inner_ form').show();

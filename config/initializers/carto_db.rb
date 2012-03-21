@@ -69,5 +69,28 @@ module CartoDB
                                   USING VERBOSE WHEN WHERE }
   
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
-  
+
+  ERROR_CODES = {
+    1000 => 'File I/O error',
+    1001 => 'Unable to open file',
+    1002 => 'Unsupported file type',
+    1003 => 'Decompression error',
+    1004 => 'File encoding error',
+    2000 => 'File conversion errors',
+    3000 => 'Geometry error',
+    3004 => 'Unable to read SHP file',
+    3005 => 'SHP to PGSQL error',
+    3100 => 'Projection error',
+    3101 => 'Unsupported or missing projection',
+    3200 => 'Unsupported geometry type',
+    3201 => 'Geometry Collection not supported',
+    4000 => 'Raster errors',
+    4001 => 'Raster import error',
+    5000 => 'Database import error',
+    5001 => 'Empty table',
+    5002 => 'Reserved column names',
+    8000 => 'CartoDB account error',
+    8001 => 'Over account storage limit',
+    8002 => 'Over table limit',
+    99999 => 'Unknown' }
 end

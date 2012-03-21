@@ -237,7 +237,11 @@
             data: params,
             headers: {'cartodbclient':true},
             success: function(data, textStatus, XMLHttpRequest) {
-              window.location.href = "/tables/"+data.id;
+              if (data.tag){
+                  window.location.href = "/dashboard?tag_name="+data.tag;
+              }else{
+                  window.location.href = "/tables/"+data.id;
+              }
             },
             error: function(e) {
 							var json = $.parseJSON(e.responseText);

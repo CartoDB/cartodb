@@ -20,7 +20,7 @@ module CartoDB
         allowed_cache_size = 24000
         random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"
         
-        full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -G -I -C #{allowed_cache_size} -E 4326 -p #{random_table_prefix} #{@path}"
+        full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -G -I -C #{allowed_cache_size} --latlong	-p #{random_table_prefix} #{@path}"
         
         log "Running osm2pgsql: #{full_osm_command}"
         @data_import.log_update(full_osm_command)
@@ -65,7 +65,7 @@ module CartoDB
               osm_geom_name = "way"
               geoms = @db_connection["SELECT count(*) as count from #{@table_name}"].first[:count]
               unless geoms.nil? || geoms == 0
-                @db_connection.run("ALTER TABLE #{@table_name} RENAME COLUMN #{osm_geom_name} TO the_geom")
+                @db_connection.run("ALTER TABLE #{@table_name} RENAME COLUMN \"#{osm_geom_name}\" TO the_geom")
               end
       
               # Sanitize column names where needed

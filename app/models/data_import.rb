@@ -38,6 +38,7 @@ class DataImport < Sequel::Model
   # 08002 - Over table limit
   
   # 99999 - Unknown
+  
    
   attr_accessor :get_log
   
@@ -46,6 +47,7 @@ class DataImport < Sequel::Model
     before_transition do
       self.save
     end
+
     after_transition :log_state_change 
     #after_transition  :uploading => :preparing, :preparing => :importing, :importing => :cleaning do
     #end
@@ -134,6 +136,9 @@ class DataImport < Sequel::Model
   def set_error_code(code)
     self.error_code = code
     self.save
+  end
+  def get_error_text
+    CartoDB::ERROR_CODES[self.error_code]
   end
   def log_json
     if self.logger.nil?

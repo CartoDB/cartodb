@@ -1,6 +1,6 @@
 
 /*CONTENT*/
-section#content div.inner_content div.tables_list {width:906px; padding:0 0 40px 0;}
+section#content div.inner_content div.tables_list {width:906px; padding:0 0 40px 0; letter-spacing:-4px;}
 
 section#content div.inner_content div.notification div.top_white {width:906px; height:7px; padding:0; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
 section#content div.inner_content div.notification div.middle_white {position:relative; width:846px; padding:12px 30px 12px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
@@ -55,7 +55,7 @@ section#content div.inner_content div.requests_info div.info p.right {float:righ
 section#content div.inner_content div.requests_info div.info p.left {float:left}
 
 
-section#content div.left {display:inline-block; width:626px; vertical-align:top;}
+section#content div.left {display:inline-block; width:626px; vertical-align:top; letter-spacing:0;}
 section#content div.left div.top_blue_medium {float:left; width:626px; height:auto; padding:0 0 20px; background:url('/images/admin/backgrounds/top_blue_medium_big.png') no-repeat 0 0;}
 section#content div.left div.top_blue_medium h3 {float:left; margin:18px 0 0 25px; font:normal 23px "Aller",Arial; color:white; text-shadow:0 1px #718C92;}
 section#content div.left div.top_blue_medium form {position:relative; float:left; width:575px; height:31px; margin:6px 0 0 25px;}
@@ -124,7 +124,7 @@ section#content div.left div.paginate ul li a {float:left; width:13px; height:13
 section#content div.left div.paginate ul li a:hover {background-position:0 -13px;}
 section#content div.left div.paginate ul li.selected a {background-position:0 -13px;}
 section#content div.left div.paginate ul li.selected a:hover {background-position:0 -13px; cursor:default;}
-section#content div.right {display:inline-block; vertical-align:top; width:260px; margin:0 0 0 16px;}
+section#content div.right {display:inline-block; vertical-align:top; width:260px; margin:0 0 0 19px; letter-spacing:0;}
 section#content div.right div.banner {width:260px;}
 section#content div.right div.banner div.top_white_short {float:left; width:100%; height:10px; background:url('/images/admin/backgrounds/top_white_short.png') no-repeat 0 0;}
 section#content div.right div.banner div.middle_white_short {float:left; width:204px; height:auto; padding:18px 28px 21px; background:url('/images/admin/backgrounds/middle_white_short.png') repeat-y 0 0;}

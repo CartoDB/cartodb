@@ -233,7 +233,13 @@
 
       // Set carto style
       if (str.search('/*carto*/') < 0 && vis_data) {
-        this.css_editor.setValue(str.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
+        this.css_editor.setValue(
+          str.replace(/\n/g,'')
+          .replace(/\{\n?\s*/g,'{\n   ')
+          .replace(/;\n?\s*/g,';\n   ')          
+          .replace(/\s*\}/gi,'\n}\n')
+          .replace(/\/\*carto\*\//g,'')
+        );
       }
 
       // Save styles to "this" object -> Refresh tiles
@@ -601,14 +607,15 @@
         }
       });
 
+
       // Update Carto with the name of the new table
       this.css_editor.setValue(
         this.styles
           .replace(/\n/g,'')
           .replace(/#(\w*)\s/g,'#' + table_name + ' ')
-          .replace(/\{/gi,'{\n   ')
-          .replace(/\}/gi,'}\n')
-          .replace(/;/gi,';\n   ')
+          .replace(/\{\n?\s*/g,'{\n   ')
+          .replace(/;\n?\s*/g,';\n   ')          
+          .replace(/\s*\}/gi,'\n}\n')
           .replace(/\/\*carto\*\//g,'')
         ); 
       }
@@ -1528,7 +1535,14 @@
 
           function _setProperties(old_properties) {
             var old_value = old_properties.visualization.style.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   ');
-            $carto_editor.setValue(old_value);
+            $carto_editor.setValue(
+              old_value
+                .replace(/\n/g,'')
+                .replace(/\{\n?\s*/g,'{\n   ')
+                .replace(/;\n?\s*/g,';\n   ')          
+                .replace(/\s*\}/gi,'\n}\n')
+                .replace(/\/\*carto\*\//g,'')
+            );
             $carto_editor.historyArray.push(old_value);
           }
 

@@ -56,6 +56,7 @@ section.subheader span.privacy_window ul li.public:hover {background:#6FBE6F;}
 section.subheader span.privacy_window ul li.private:hover {background:#FF2F1E;}
 section.subheader span.privacy_window ul li:hover a {color:white; background-position:0 2px;}
 section.subheader span.privacy_window ul li.disabled {background:none; opacity:0.5; filter:alpha(opacity=50);}
+section.subheader span.privacy_window ul li.selected.disabled a {color:black;  background-position:0 -28px; cursor:default;}
 section.subheader span.privacy_window ul li.disabled:hover {background:none;}
 section.subheader span.privacy_window ul li.disabled:hover a {color:black; background-position:0 -28px; cursor:default;}
 

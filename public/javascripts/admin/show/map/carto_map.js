@@ -1271,10 +1271,10 @@
               })
               .bind('change.customSlider',function(ev,value){
                 _.each($(this).attr('css').split(' '),function(ele,i){
-                  if ((geom_type=="linestring" || geom_type=="multilinestring") && ele != "polygon-opacity") {
-										custom_props[ele] = value / 100;
+                  if ((geom_type=="linestring" || geom_type=="multilinestring") && ele == "polygon-opacity") {
+										delete custom_props[ele];
                   } else {
-                  	delete custom_props[ele];
+                    custom_props[ele] = value / 100;                  	
                   }
                 });
                 _saveProperties();

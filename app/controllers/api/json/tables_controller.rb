@@ -46,37 +46,62 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def create
-    @table = Table.new
-    
     @data_import = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
-    @table.user_id = current_user.id
-    @table.data_import_id = @data_import.id
-    @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
-    @table.import_from_file = params[:file]              if params[:file]
-    @table.import_from_url = params[:url]                if params[:url]
-    @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
-    @table.import_from_query = params[:from_query]  if params[:from_query]   
-    @table.migrate_existing_table = params[:migrate_table]  if params[:migrate_table]    
-    @table.importing_SRID = params[:srid] || CartoDB::SRID
-    @table.force_schema   = params[:schema]              if params[:schema]
-    @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
         
-    if @table.valid? && @table.save      
-      render_jsonp({ :id => @table.id, 
-                     :name => @table.name, 
-                     :schema => @table.schema }, 200, :location => table_path(@table))
+    multifiles = ['.bz2','.osm']
+    if params[:url]
+      ext = File.extname(params[:url]) 
+    elsif params[:file]
+      ext = File.extname(params[:file]) 
+    end
+    
+    if ext.present? and multifiles.include?(ext)
+        owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
+        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          "database" => owner.database_name, 
+          :logger => ::Rails.logger,
+          "username" => owner.database_username, 
+          "password" => owner.database_password,
+          :import_from_file => params[:file], 
+          :debug => (Rails.env.development?), 
+          :remaining_quota => owner.remaining_quota,
+          :data_import_id => @data_import.id
+        ).symbolize_keys
+    
+        importer = CartoDB::Importer.new hash_in
+        importer = importer.import!
+        render_jsonp({:tag => importer.tag }, 200, :location => '/dashboard?tag_name=#{importer.tag}')
     else
-      @data_import.reload
-      CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
-      if @table.data_import_id
-        render_jsonp({ :description => @table.errors.full_messages ,
-                    :stack =>  @data_import.log_json,
-                    :code=>@data_import.error_code }, 
-                    400)
+      @table = Table.new
+      @table.user_id = current_user.id
+      @table.data_import_id = @data_import.id
+      @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
+      @table.import_from_file = params[:file]              if params[:file]
+      @table.import_from_url = params[:url]                if params[:url]
+      @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
+      @table.import_from_query = params[:from_query]  if params[:from_query]   
+      @table.migrate_existing_table = params[:migrate_table]  if params[:migrate_table]    
+      @table.importing_SRID = params[:srid] || CartoDB::SRID
+      @table.force_schema   = params[:schema]              if params[:schema]
+      @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
+        
+      if @table.valid? && @table.save      
+        render_jsonp({ :id => @table.id, 
+                       :name => @table.name, 
+                       :schema => @table.schema }, 200, :location => table_path(@table))
       else
-        render_jsonp({ :description => '', :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
+        @data_import.reload
+        CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
+        if @table.data_import_id
+          render_jsonp({ :description => @table.errors.full_messages ,
+                      :stack =>  @data_import.log_json,
+                      :code=>@data_import.error_code }, 
+                      400)
+        else
+          render_jsonp({ :description => '', :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
+        end
       end
     end
   rescue => e

@@ -35,7 +35,9 @@
       $('a.see_more').live('click',function(ev){
       	stopPropagation(ev);
       	var $parent = $(this).closest('span');
-      	$parent.find('span').show();
+      	$parent.find('span')
+          .show()
+          .css('display','block');
       	$parent.find('p.see_details').remove();
       	$('div.create_window div.inner_').height($('div.create_window div.inner_ span.loading').height() + 30);
       })
@@ -264,16 +266,13 @@
 								if (json.stack && json.stack.length>0) {
 									$('div.create_window div.inner_ span.loading').append('<p class="see_details"><a class="see_more" href="#show_more">see details</a></p>');
 									
-									var stack = '<span style="display:none; padding:10px 0 0;"><h6>Code ' + (json.code || '') + '</h6><dl>';
+									var stack = '<span class="error_details"><h6>Code ' + (json.code || '') + '</h6><dl>';
 									for (var i=0,_length=json.stack.length; i<_length; i++) {
 										stack += '<dd>' + json.stack[i] + '</dd>';
 									}
 									stack += '</dl></span>';
 									$('div.create_window div.inner_ span.loading').append(stack);
 								}
-
-								// Are there still hints?
-                //$('div.create_window div.inner_ span.loading p').appen(json.raw_error +'<br/><br/>'+ json.hint);
                 
 							} else {
                 $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:support@cartodb.com">contact us</a> with a sample of your data if possible. Thanks!');

@@ -24,7 +24,14 @@ class Table < Sequel::Model(:user_tables)
   def validate
     super
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
-    errors.add(nil, 'over table quota, please upgrade') if self.new? && self.owner.over_table_quota?
+    if self.new? && self.owner.over_table_quota?
+      errors.add(nil, 'over table quota, please upgrade') 
+      if @data_import.nil?
+        @data_import = DataImport.find(:id => self.data_import_id)
+        @data_import.set_error_code(8002)
+        @data_import.log_error( 'over table quota, please upgrade' )
+      end
+    end
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
     if !self.owner.try(:private_tables_enabled)  
       errors.add(:privacy, 'unauthorized to create private tables') if self.new? && privacy == PRIVATE          
@@ -321,7 +328,7 @@ class Table < Sequel::Model(:user_tables)
     
     # test for exceeding of table quota after creation - needed as no way to test future db size pre-creation
     if owner.over_disk_quota?
-      if @data_import
+      unless @data_import.nil?
         @data_import.reload
         @data_import.set_error_code(8001)
         @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )

@@ -1430,7 +1430,7 @@ SQL
         http_res = http_req.request_post(request_uri, URI.encode_www_form(form), request_headers)
       when 'DELETE'
         extra_delete_headers = {'Depth' => 'Infinity'}
-        http_res = http_req.delete(request_uri.merge(extra_delete_headers)) 
+        http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers)) 
       else
     end
     http_res

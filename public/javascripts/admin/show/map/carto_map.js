@@ -141,24 +141,42 @@
       $.ajax({
         type: "GET",
         dataType: 'jsonp',
-        url: global_api_url+'queries?sql='+escape('SELECT DISTINCT(GeometryType(the_geom)) as geom_type FROM '+table_name+' GROUP BY geom_type'),
+        url: global_api_url+'queries?sql='+escape('SELECT type as geom_type FROM geometry_columns where "f_table_name" = \''+ table_name +'\' AND "f_geometry_column" = \'the_geom\''),
         headers: {"cartodbclient":"true"},
         success: function(data) {
-
           if (data.rows.length>0 && 
               data.rows[0].geom_type!=undefined &&
               data.rows[0].geom_type!=null &&
               data.rows[0].geom_type.toLowerCase()!= "geometry") {
             geom_type = me.geometry_type_ = data.rows[0].geom_type.toLowerCase();
+            setupTools();
           } else {
-            // Force table to be points due to...
-            // known issues:
-            //  - the_geom = undefined 
-            //  - the_geom = 'geometry'
-            geom_type = 'point';
+            // Attempt to work out geometry based on data contents
+            $.ajax({
+              type: "GET",
+              dataType: 'jsonp',
+              url: global_api_url+'queries?sql='+escape('SELECT DISTINCT(GeometryType(the_geom)) as geom_type FROM '+table_name+' GROUP BY geom_type'),
+              headers: {"cartodbclient":"true"},
+              success: function(data) {
+                if (data.rows.length>0 && 
+                    data.rows[0].geom_type!=undefined &&
+                    data.rows[0].geom_type!=null &&
+                    data.rows[0].geom_type.toLowerCase()!= "geometry") {
+                  geom_type = me.geometry_type_ = data.rows[0].geom_type.toLowerCase();
+                } else {
+                  // FIXME: This forces table to be points when geometry_columns returns 'geometry' and the table is empty.
+                  // breaks things if data type is actually not point
+                  geom_type = 'point';
+                }
+                setupTools();
+              },
+              error: function(e) {
+                geom_type = 'point';
+                setupTools();
+                console.debug(e);
+              }
+            });
           }
-          
-          setupTools();
         },
         error: function(e) {
           geom_type = 'point';

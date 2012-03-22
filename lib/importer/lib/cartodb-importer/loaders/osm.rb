@@ -20,7 +20,9 @@ module CartoDB
         allowed_cache_size = 24000
         random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"
         
-        full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -G -I -C #{allowed_cache_size} --latlong	-p #{random_table_prefix} #{@path}"
+        # I tried running the -G or --multi-geometry option to force multigeometries
+        # but the result is always a column with mixed types, polygons and multipolgons!
+        full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong -x -p #{random_table_prefix} #{@path}"
         
         log "Running osm2pgsql: #{full_osm_command}"
         @data_import.log_update(full_osm_command)
@@ -40,6 +42,7 @@ module CartoDB
         end
         
         valid_tables = Array.new
+        type_conversions = ["line" => "MULTILINESTRING", "polygon" => "MULTIPOLYGON", "roads" => "MULTILINESTRING", "points" => "POINT"]
         
         ["line", "polygon", "roads", "point"].each  do |feature| 
           old_table_name = "#{random_table_prefix}_#{feature}"
@@ -66,6 +69,12 @@ module CartoDB
               geoms = @db_connection["SELECT count(*) as count from #{@table_name}"].first[:count]
               unless geoms.nil? || geoms == 0
                 @db_connection.run("ALTER TABLE #{@table_name} RENAME COLUMN \"#{osm_geom_name}\" TO the_geom")
+                # because the osm2pgsql importer isn't being complete about multi geom type
+                # i use this check, instead of the full geom rebuild used in the table methods
+                # to get all geoms to the same type
+                if feature != "point"
+                  @db_connection.run("UPDATE #{@table_name} SET the_geom = ST_Multi(the_geom) WHERE upper(geometrytype(the_geom)) != '#{type_conversions[feature]}' ;")
+                end
               end
       
               # Sanitize column names where needed

@@ -68,7 +68,7 @@ module CartoDB
           #@import_from_file = URI(@import_from_file) # Ensures open-uri will work
         end
           begin
-            open(@import_from_file) do |res| # opens file normally, or open-uri to download/open
+            open(URI.escape(@import_from_file)) do |res| # opens file normally, or open-uri to download/open
               @data_import.file_ready
               file_name = File.basename(@import_from_file)
               @ext = File.extname(file_name)

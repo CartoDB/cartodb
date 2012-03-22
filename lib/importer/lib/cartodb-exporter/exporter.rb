@@ -8,7 +8,7 @@ module CartoDB
     include CartoDB::Import::Util
     
     SUPPORTED_FORMATS = %W{ .csv .shp .kml }
-    OUTPUT_FILE_LOCATION = "/tmp"
+    OUTPUT_FILE_LOCATION = "tmp"
     
     @@debug = true
     
@@ -24,7 +24,7 @@ module CartoDB
       @table_name = options[:table_name]
       @export_type = options[:export_type]
       @export_schema = options[:export_schema]
-      @file_name = "#{@table_name}_export"
+      @file_name = "#{@table_name}_export_#{rand(10000)+Time.now.to_i}"
       raise "table_name value can't be nil" if @table_name.nil?
       @all_files_path = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.*")
 

@@ -1248,7 +1248,6 @@
   ////////////////////////////////////////
 	function goToMap() {
 		$('span.paginate').hide();
-		//$('span.mapkey').show();
 		 					
 		// Change list and tools selected
     $('section.subheader ul.tab_menu li').removeClass('selected');
@@ -1266,7 +1265,6 @@
 	
 	function goToTable() {
 		$('span.paginate').show();
-		//$('span.mapkey').hide();
 		
 		// Change list and tools selected
     $('section.subheader ul.tab_menu li').removeClass('selected');

@@ -39,6 +39,8 @@ module CartoDB
         stdin,  stdout, stderr = Open3.popen3(full_shp_command) 
   
         #unless (err = stderr.read).empty?
+        # I think we may want to run a stdout.downcase.include?(error) here instead
+        # will need to test, but shp2pgsql does not appear to throw an exitsta != 0 when an error occurs
         if $?.exitstatus != 0  
           @data_import.set_error_code(3005)
           @data_import.log_error(stderr)
@@ -83,7 +85,6 @@ module CartoDB
         # KML file imports are creating nasty 4 dim geoms sometimes, or worse, mixed dim
         # This block detects and then fixes those
         dimensions = @db_connection["SELECT max(st_ndims(the_geom)) as dim from \"#{random_table_name}\""].first[:dim]
-        debugger
         if 2 < dimensions
           @data_import.log_update("reprojecting the_geom column #{shp_args_command[0]} to 2D")
           begin  

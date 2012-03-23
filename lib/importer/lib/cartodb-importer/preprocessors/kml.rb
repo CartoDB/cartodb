@@ -3,7 +3,7 @@ module CartoDB
     class KML < CartoDB::Import::Preprocessor
 
       register_preprocessor :kml
-      register_preprocessor :kmz
+      #register_preprocessor :kmz
       register_preprocessor :json
       register_preprocessor :geojson      
       register_preprocessor :js            
@@ -14,12 +14,12 @@ module CartoDB
         fix_encoding 
         
         ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco DIM=2 --config SHAPE_ENCODING LATIN1 -f "ESRI Shapefile" #{@path}.shp #{@path}}
+        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 --config SHAPE_ENCODING LATIN1 -f "ESRI Shapefile" #{@path}.shp #{@path}}
         #-lco DIM=*2* 
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
         unless (err = stderr.read).empty?
-          if err.downcase.include?('error')
+          if err.downcase.include?('failure')
             @data_import.set_error_code(2000)
             @data_import.log_error(err)
             @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
@@ -30,6 +30,8 @@ module CartoDB
             end
           
             raise "failed to convert #{@ext.sub('.','')} to shp"
+          else
+            @data_import.log_update(err)
           end
         end
         

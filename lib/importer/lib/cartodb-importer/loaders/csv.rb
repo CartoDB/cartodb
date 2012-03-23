@@ -18,7 +18,7 @@ module CartoDB
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
         unless (err = stderr.read).empty?
-          if err.downcase.include?('error')
+          if err.downcase.include?('failure')
             @data_import.set_error_code(2000)
             @data_import.log_error(err)
             @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
@@ -28,6 +28,8 @@ module CartoDB
               @data_import.log_error("ERROR: #{@path} contains reserved column names")
             end
             raise "failed to convert #{@ext.sub('.','')} to shp"
+          else
+            @data_import.log_update(err)
           end
         end
         

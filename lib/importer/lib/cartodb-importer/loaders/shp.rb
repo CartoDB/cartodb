@@ -41,7 +41,7 @@ module CartoDB
         #unless (err = stderr.read).empty?
         if $?.exitstatus != 0  
           @data_import.set_error_code(3005)
-          @data_import.log_error(err)
+          @data_import.log_error(stderr)
           @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
           raise "ERROR: failed to generate SQL from #{@path}"
         end
@@ -79,7 +79,28 @@ module CartoDB
             @data_import.log_error("ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326")
           end  
         end        
-
+        
+        # KML file imports are creating nasty 4 dim geoms sometimes, or worse, mixed dim
+        # This block detects and then fixes those
+        dimensions = @db_connection["SELECT max(st_ndims(the_geom)) as dim from \"#{random_table_name}\""].first[:dim]
+        debugger
+        if 2 < dimensions
+          @data_import.log_update("reprojecting the_geom column #{shp_args_command[0]} to 2D")
+          begin  
+            @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN the_geom TO the_geom_orig;")
+            geom_type = @db_connection["SELECT GeometryType(the_geom_orig) as type from #{random_table_name} LIMIT 1"].first[:type]
+            @db_connection.run("SELECT AddGeometryColumn('#{random_table_name}','the_geom',4326, '#{geom_type}', 2);")
+            @db_connection.run("UPDATE \"#{random_table_name}\" SET the_geom = ST_Force_2D(ST_Transform(the_geom_orig, 4326))")
+            @db_connection.run("ALTER TABLE #{random_table_name} DROP COLUMN the_geom_orig")
+            @db_connection.run("CREATE INDEX \"#{random_table_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
+          rescue Exception => msg  
+            @runlog.err << msg
+            @data_import.set_error_code(3102)
+            @data_import.log_error(msg)
+            @data_import.log_error("ERROR: Unable to force geoetry to 2-dimensions")
+          end  
+        end
+        
         begin
           @db_connection.run("ALTER TABLE \"#{random_table_name}\" RENAME TO \"#{@suggested_name}\"")
           @table_created = true

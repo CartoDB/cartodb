@@ -65,7 +65,7 @@ module CartoDB
             @filesrc = "fusiontables"
           end
           @fromuri = true
-          #@import_from_file = URI(@import_from_file) # Ensures open-uri will work
+          #@import_from_file = URI.escape(@import_from_file) # Ensures open-uri will work
         end
           begin
             open(URI.escape(@import_from_file)) do |res| # opens file normally, or open-uri to download/open

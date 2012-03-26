@@ -124,7 +124,8 @@
       // Request rows
 
       // Reset query
-      query = 'SELECT * FROM ' + table_name;
+      // TODO, REMOVE -1 HACK AND DON'T USE *
+      query = 'SELECT *, -1 as the_geom, -1 as the_geom_webmercator FROM ' + table_name;
       
       // Filter?
       if (table.mode == "filter")

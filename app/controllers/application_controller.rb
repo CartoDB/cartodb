@@ -34,6 +34,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def render_403
+    respond_to do |format|
+      format.html { render :file => "public/403.html", :status => 403, :layout => false }
+      format.all  { head :forbidden }      
+    end
+  end
+
   def render_404
     respond_to do |format|
       format.html do
@@ -77,7 +84,7 @@ class ApplicationController < ActionController::Base
      port       = ":#{request.port}"
     end
     app_domain = CartoDB.session_domain
-
+    
     if logged_in?
       if current_user.present? and request.host !~ /^#{current_user.username}#{app_domain}$/
         redirect_to "#{protocol}://#{current_user.username}#{app_domain}#{port}"

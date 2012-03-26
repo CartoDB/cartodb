@@ -4,5 +4,6 @@
 # Mime::Type.register "text/richtext", :rtf
 # Mime::Type.register_alias "text/html", :iphone
 Mime::Type.register "application/vnd.google-earth.kml+xml", :kml
-Mime::Type.register "application/octet-stream", :shp
-Mime::Type.register "application/octet-stream", :sql
+Mime::Type.register "application/vnd.google-earth.kml+xml", :kmz
+Mime::Type.register "application/octet-stream", :shp #sent as zip
+Mime::Type.register "application/octet-stream", :sql #sent as zip

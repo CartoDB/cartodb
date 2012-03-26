@@ -74,9 +74,9 @@
       var me = this;
 
       head.js('/javascripts/admin/show/map/overlays/mapCanvasStub.js',
-        '/javascripts/admin/show/map/overlays/CartoTooltip.js?'+createUniqueId(),
-        '/javascripts/admin/show/map/overlays/CartoInfowindow.js?'+createUniqueId(),
-        '/javascripts/admin/show/map/overlays/CartoDeleteWindow.js?'+createUniqueId(),
+        '/javascripts/admin/show/map/overlays/CartoTooltip.js',
+        '/javascripts/admin/show/map/overlays/CartoInfowindow.js',
+        '/javascripts/admin/show/map/overlays/CartoDeleteWindow.js',
         '/javascripts/admin/show/map/tools/polygonEdit.js',
         '/javascripts/admin/show/map/tools/polylineEdit.js',
         '/javascripts/admin/show/map/tools/geometryCreator.js',
@@ -141,18 +141,45 @@
       $.ajax({
         type: "GET",
         dataType: 'jsonp',
-        url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
+        url: global_api_url+'queries?sql='+escape('SELECT type as geom_type FROM geometry_columns where "f_table_name" = \''+ table_name +'\' AND "f_geometry_column" = \'the_geom\''),
         headers: {"cartodbclient":"true"},
-        success: function(data) {          
-          if (data.rows.length>0) {
-            geom_type = me.geometry_type_ = data.rows[0].type.toLowerCase();
+        success: function(data) {
+          if (data.rows.length>0 && 
+              data.rows[0].geom_type!=undefined &&
+              data.rows[0].geom_type!=null &&
+              data.rows[0].geom_type.toLowerCase()!= "geometry") {
+            geom_type = me.geometry_type_ = data.rows[0].geom_type.toLowerCase();
+            setupTools();
           } else {
-            geom_type = undefined;
+            // Attempt to work out geometry based on data contents
+            $.ajax({
+              type: "GET",
+              dataType: 'jsonp',
+              url: global_api_url+'queries?sql='+escape('SELECT DISTINCT(GeometryType(the_geom)) as geom_type FROM '+table_name+' GROUP BY geom_type'),
+              headers: {"cartodbclient":"true"},
+              success: function(data) {
+                if (data.rows.length>0 && 
+                    data.rows[0].geom_type!=undefined &&
+                    data.rows[0].geom_type!=null &&
+                    data.rows[0].geom_type.toLowerCase()!= "geometry") {
+                  geom_type = me.geometry_type_ = data.rows[0].geom_type.toLowerCase();
+                } else {
+                  // FIXME: This forces table to be points when geometry_columns returns 'geometry' and the table is empty.
+                  // breaks things if data type is actually not point
+                  geom_type = 'point';
+                }
+                setupTools();
+              },
+              error: function(e) {
+                geom_type = 'point';
+                setupTools();
+                console.debug(e);
+              }
+            });
           }
-          
-          setupTools();
         },
         error: function(e) {
+          geom_type = 'point';
           setupTools();
           console.debug(e);
         }
@@ -225,7 +252,13 @@
 
       // Set carto style
       if (str.search('/*carto*/') < 0 && vis_data) {
-        this.css_editor.setValue(str.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
+        this.css_editor.setValue(
+          str.replace(/\n/g,'')
+          .replace(/\{\n?\s*/g,'{\n   ')
+          .replace(/;\n?\s*/g,';\n   ')          
+          .replace(/\s*\}/gi,'\n}\n')
+          .replace(/\/\*carto\*\//g,'')
+        );
       }
 
       // Save styles to "this" object -> Refresh tiles
@@ -593,15 +626,15 @@
         }
       });
 
+
       // Update Carto with the name of the new table
       this.css_editor.setValue(
         this.styles
           .replace(/\n/g,'')
-          .replace(/ /g,'')
           .replace(/#(\w*)\s/g,'#' + table_name + ' ')
-          .replace(/\{/gi,'{\n   ')
-          .replace(/\}/gi,'}\n')
-          .replace(/;/gi,';\n   ')
+          .replace(/\{\n?\s*/g,'{\n   ')
+          .replace(/;\n?\s*/g,';\n   ')          
+          .replace(/\s*\}/gi,'\n}\n')
           .replace(/\/\*carto\*\//g,'')
         ); 
       }
@@ -716,6 +749,12 @@
           me.startWax();
         },
         error: function(e) {
+
+          // Set map to world view
+          me.map_.setZoom(2)
+
+          // Start wax
+          me.startWax();
         }
       });
     }
@@ -742,18 +781,18 @@
         _setCorrectGeomType(geom_type)
 
         function _setCorrectGeomType(geom_type) {
-          if (geom_type=="point" || geom_type=="multipoint") {
-            $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.lines').remove();
-            $vis_ul.find('> li:eq(0) > a.option').text('Custom points');
-            $vis_ul.find('> li:eq(2)').remove();
-          } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-            $vis_ul.find('> li:eq(0) > div.suboptions.points, > li:eq(0) > div.suboptions.lines').remove();
-            $vis_ul.find('> li:eq(0) > a.option').text('Custom polygons');
-          } else {
+          if (geom_type=="linestring" || geom_type=="multilinestring") {
             $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.points').remove();
             $vis_ul.find('div.suboptions.choropleth span.color').remove();
             $vis_ul.find('div.suboptions.choropleth span.numeric').css({margin:'0'});
             $vis_ul.find('> li:eq(0) > a.option').text('Custom lines');
+          } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+            $vis_ul.find('> li:eq(0) > div.suboptions.points, > li:eq(0) > div.suboptions.lines').remove();
+            $vis_ul.find('> li:eq(0) > a.option').text('Custom polygons');
+          } else {
+            $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.lines').remove();
+            $vis_ul.find('> li:eq(0) > a.option').text('Custom points');
+            $vis_ul.find('> li:eq(2)').remove();
           }
         }
         return {}
@@ -978,9 +1017,8 @@
             custom_props['marker-type'] = 'ellipse';
             custom_props['marker-allow-overlap'] = true;              
 
-
             // Get visualization variables
-            custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
+            custom_vis['column'] = (isNaN(old_properties.visualization.column)) ? old_properties.visualization.column : 'cartodb_id';
             custom_vis['param'] = 'marker-width';
             custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,1,2,3,4,5,6,7,8,9];
             custom_vis['n_buckets'] = 10;
@@ -1223,20 +1261,21 @@
               custom_vis['param'] = 'line-color';
             }
 
-            custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
+
+            custom_vis['column'] = (isNaN(old_properties.visualization.column)) ? old_properties.visualization.column : 'cartodb_id';
             custom_vis['v_buckets'] = 
             	(old_properties.visualization.v_buckets &&
             		old_properties.visualization.v_buckets.length<8 &&
             		old_properties.visualization.v_buckets.length>2 ) ? old_properties.visualization.v_buckets : [0,2,4,12,24];
 						custom_vis['n_buckets'] = 
-            	(old_properties.visualization.v_buckets && 
-            		old_properties.visualization.v_buckets.length<8 &&
-            		old_properties.visualization.v_buckets.length>2 ) ? old_properties.visualization.values.length : 5;
+            	(old_properties.visualization.values && 
+            		old_properties.visualization.values.length<8 &&
+            		old_properties.visualization.values.length>2 ) ? old_properties.visualization.values.length : 5;
             custom_vis['values'] = 
             	(old_properties.visualization.values &&
             		old_properties.visualization.values.length<8 &&
-            		old_properties.visualization.v_buckets.values>2 ) ? old_properties.visualization.values : ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
-
+            		old_properties.visualization.values.length>2 &&
+                old_properties.visualization.v_buckets.length == old_properties.visualization.values.length) ? old_properties.visualization.values : ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
 
             // Set type
             custom_vis['type'] = 'custom';
@@ -1271,10 +1310,10 @@
               })
               .bind('change.customSlider',function(ev,value){
                 _.each($(this).attr('css').split(' '),function(ele,i){
-                  if ((geom_type=="linestring" || geom_type=="multilinestring") && ele != "polygon-opacity") {
-										custom_props[ele] = value / 100;
+                  if ((geom_type=="linestring" || geom_type=="multilinestring") && ele == "polygon-opacity") {
+										delete custom_props[ele];
                   } else {
-                  	delete custom_props[ele];
+                    custom_props[ele] = value / 100;                  	
                   }
                 });
                 _saveProperties();
@@ -1515,7 +1554,14 @@
 
           function _setProperties(old_properties) {
             var old_value = old_properties.visualization.style.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   ');
-            $carto_editor.setValue(old_value);
+            $carto_editor.setValue(
+              old_value
+                .replace(/\n/g,'')
+                .replace(/\{\n?\s*/g,'{\n   ')
+                .replace(/;\n?\s*/g,';\n   ')          
+                .replace(/\s*\}/gi,'\n}\n')
+                .replace(/\/\*carto\*\//g,'')
+            );
             $carto_editor.historyArray.push(old_value);
           }
 
@@ -2640,7 +2686,7 @@
         },
         error: function(e, textStatus) {
           try {
-            var msg = $.parseJSON(e.responseText).errors[0].error_message;
+            var msg = $.parseJSON(e.responseText).errors[0];
             if (msg == "Invalid rows: the_geom") {
               window.ops_queue.responseRequest(requestId,'error','First georeference your table');
             } else {
@@ -2673,6 +2719,8 @@
 
     /* If request fails */
     CartoMap.prototype.errorRequest = function(params,new_value,old_value,type) {
+      var me = this;
+
       switch (type) {
         case "change_latlng":   var occ_id = params.cartodb_id;
                                 (this.points_[occ_id]).setPosition(old_value);
@@ -2682,6 +2730,9 @@
                                 _.each(array,function(ele,i){
                                     me.points_[ele].setMap(me.map_);
                                 });
+                                break;
+        case "update_geometry": me.refreshWax();
+                                me.removeFakeGeometries();
                                 break;
         default:                break;
       }

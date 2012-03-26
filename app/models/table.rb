@@ -24,7 +24,14 @@ class Table < Sequel::Model(:user_tables)
   def validate
     super
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
-    errors.add(nil, 'over table quota, please upgrade') if self.new? && self.owner.over_table_quota?
+    if self.new? && self.owner.over_table_quota?
+      errors.add(nil, 'over table quota, please upgrade') 
+      if @data_import.nil?
+        @data_import = DataImport.find(:id => self.data_import_id)
+        @data_import.set_error_code(8002)
+        @data_import.log_error( 'over table quota, please upgrade' )
+      end
+    end
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
     if !self.owner.try(:private_tables_enabled)  
       errors.add(:privacy, 'unauthorized to create private tables') if self.new? && privacy == PRIVATE          
@@ -321,7 +328,7 @@ class Table < Sequel::Model(:user_tables)
     
     # test for exceeding of table quota after creation - needed as no way to test future db size pre-creation
     if owner.over_disk_quota?
-      if @data_import
+      unless @data_import.nil?
         @data_import.reload
         @data_import.set_error_code(8001)
         @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
@@ -1354,6 +1361,13 @@ SQL
 
   def update_the_geom!(attributes, primary_key)
     return unless attributes[THE_GEOM]
+    # TODO: use this once the server geojson is updated
+    # begin
+    #   owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON('#{attributes[THE_GEOM].sanitize_sql}'),#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
+    # rescue => e
+    #   raise CartoDB::InvalidGeoJSONFormat
+    # end    
+
     geo_json = RGeo::GeoJSON.decode(attributes[THE_GEOM], :json_parser => :json).try(:as_text)
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?
     owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
@@ -1423,7 +1437,7 @@ SQL
         http_res = http_req.request_post(request_uri, URI.encode_www_form(form), request_headers)
       when 'DELETE'
         extra_delete_headers = {'Depth' => 'Infinity'}
-        http_res = http_req.delete(request_uri.merge(extra_delete_headers)) 
+        http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers)) 
       else
     end
     http_res

@@ -18,19 +18,22 @@ module CartoDB
     attr_reader :table_created, :force_name
 
     def initialize(options = {})
+      raise "table_name value can't be nil" if options[:table_name].nil?
+
       log "options: #{options}"
       @runlog           = OpenStruct.new :log => [], :stdout => [], :err => []   
-      @@debug = options[:debug] if options[:debug]
-      @table_name = options[:table_name]
-      @export_type = options[:export_type]
-      @export_schema = options[:export_schema]
-      @file_name = "#{@table_name}_export"
-      raise "table_name value can't be nil" if @table_name.nil?
-      @all_files_path = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.*")
-
-      @psql_bin_path    = `which psql`.strip  
+      @@debug           = options[:debug] if options[:debug]
+      @table_name       = options[:table_name]
+      @export_type      = options[:export_type]
+      @export_schema    = options[:export_schema]
       
-      @db_configuration = options.slice(:database, :username, :password, :host, :port)
+      @export_dir     = "cartodb_export_#{Time.now.to_i}_#{rand(10000)}"
+      @file_name      = "#{@table_name}_export"      
+      @all_files_dir  = build_path(OUTPUT_FILE_LOCATION, @export_dir)
+      @all_files_path = build_path(@all_files_dir, "#{@file_name}.*")
+
+      @psql_bin_path             = `which psql`.strip        
+      @db_configuration          = options.slice(:database, :username, :password, :host, :port)
       @db_configuration[:port] ||= 5432
       @db_configuration[:host] ||= '127.0.0.1'
       @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")
@@ -39,13 +42,19 @@ module CartoDB
       raise e
     end
     
+    def build_path *args
+      Pathname.new(File.join(args))
+    end
+    
     def export!
+      # prep final location
+      FileUtils.rm_rf(@all_files_dir)
+      FileUtils.mkdir_p(@all_files_dir)
+
       # TODO turn this into a factory setup like importer
       if @export_type == 'sql'
-        sql_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.sql")
-        zip_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.zip")
-        FileUtils.rm_rf(Dir.glob(@all_files_path))
-      
+        sql_file_path  = build_path(@all_files_dir, "#{@file_name}.sql")
+        zip_file_path  = build_path(@all_files_dir, "#{@file_name}.zip")
         #ogr2ogr_bin_path = `which ogr2ogr`.strip
         #ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"PGDump\" #{sql_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
         #out = `#{ogr2ogr_command}`
@@ -67,9 +76,8 @@ module CartoDB
           #                         })    
         end
       elsif @export_type == 'kml'
-        kml_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.kml")
-        kmz_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.kmz")
-        FileUtils.rm_rf(Dir.glob(@all_files_path))
+        kml_file_path  = build_path(@all_files_dir, "#{@file_name}.kml")
+        kmz_file_path  = build_path(@all_files_dir, "#{@file_name}.kmz")
       
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"KML\" #{kml_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
@@ -88,9 +96,8 @@ module CartoDB
           #                         })    
         end
       elsif @export_type == 'shp'
-        shp_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.shp")
-        zip_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.zip")
-        FileUtils.rm_rf(Dir.glob(@all_files_path))
+        shp_file_path = build_path(@all_files_dir, "#{@file_name}.shp")
+        zip_file_path = build_path(@all_files_dir, "#{@file_name}.zip")
       
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"ESRI Shapefile\" #{shp_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
@@ -98,7 +105,7 @@ module CartoDB
         
         if $?.success?
           Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
-            Dir.glob(Rails.root.join(OUTPUT_FILE_LOCATION,"#{@file_name}.*").to_s).each do |f|
+            Dir.glob(@all_files_path).each do |f|
               zipfile.add(File.basename(f), f)
             end
           end
@@ -112,10 +119,8 @@ module CartoDB
         end
       elsif @export_type == 'csv'
         csv_zipped = nil
-        csv_file_path = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.csv")
-        zip_file_path  = Rails.root.join(OUTPUT_FILE_LOCATION, "#{@file_name}.zip")
-        FileUtils.rm_rf(Dir.glob(csv_file_path))
-        FileUtils.rm_rf(Dir.glob(zip_file_path))      
+        csv_file_path = build_path(@all_files_dir, "#{@file_name}.csv")
+        zip_file_path = build_path(@all_files_dir, "#{@file_name}.zip")
          
         # Setup data export table
         #@db_connection.run("DROP TABLE IF EXISTS #{@table_name}")
@@ -139,6 +144,7 @@ module CartoDB
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"CSV\" #{csv_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
         out = `#{ogr2ogr_command}`
+      Rails.logger.info ogr2ogr_command
       
         # the way we should do it, but fix for quoting like above
         #ogr2ogr_bin_path = `which ogr2ogr`.strip
@@ -162,7 +168,7 @@ module CartoDB
       end
     ensure
       # Always cleanup files    
-      FileUtils.rm_rf(Dir.glob(@all_files_path)) 
+      FileUtils.rm_rf(@all_files_dir) 
     end
   end
 end

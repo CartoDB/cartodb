@@ -1398,11 +1398,12 @@
       //  Editing selected rows            //
       ///////////////////////////////////////
       $(document).mousedown(function(event){
-        if (table.enabled && table.mode!='query') {
-       		var target = event.target || event.srcElement;
-          var targetElement = target.nodeName.toLowerCase();
+        var target = event.target || event.srcElement;
+        var targetElement = target.nodeName.toLowerCase();
 
-          if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
+        if (table.enabled && table.mode!='query' && targetElement == "div" && $(target).parent().is('td')) {
+       		
+          if (!event.ctrlKey && !event.metaKey) {
 
             table.e.find('tbody tr td.first div span').hide();
             table.e.find('tbody tr td.first div a.options').removeClass('selected');
@@ -1495,6 +1496,7 @@
           });
         }
       });
+
       $(document).mouseup(function(event){
         if (table.enabled && table.mode!='query') {
        		var target = event.target || event.srcElement;
@@ -2224,6 +2226,7 @@
 			  if (table_mode) {
 			    stopPropagation(ev);
 			    if (query_mode) {
+            delete editor['errors'];
 			    	$('div.sql_window').removeClass('error');
 			    	$('div.sql_window div.outer_textarea').removeAttr('style');
 			    	methods.restoreTable();

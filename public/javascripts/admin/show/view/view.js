@@ -624,20 +624,22 @@
 	    });
 	
 	    $('a.export_data').live('click',function(ev){
-	      stopPropagation(ev);
-	      if ($('div.mamufas').is(':visible') && $('div.delete_window').is(':visible')) {
-	        $('div.mamufas div.delete_window').hide();
-	        $('div.mamufas div.export_window').show();
-	      } else {
-	        closeOutTableWindows();
-	        $('div.mamufas div.export_window').show();
-	        $('div.mamufas').fadeIn('fast');
+        if (!$(this).parent().hasClass('disabled')) {
+          stopPropagation(ev);
+          if ($('div.mamufas').is(':visible') && $('div.delete_window').is(':visible')) {
+            $('div.mamufas div.delete_window').hide();
+            $('div.mamufas div.export_window').show();
+          } else {
+            closeOutTableWindows();
+            $('div.mamufas div.export_window').show();
+            $('div.mamufas').fadeIn('fast');
 
-	        // Set form url correctly before choose a export option
-					$('div.export_window').find('form').attr('action','/tables/' + table_name);
+            // Set form url correctly before choose a export option
+            $('div.export_window').find('form').attr('action','/tables/' + table_name);
 
-	        bindESC();
-	      }
+            bindESC();
+          }
+        }
 	    });
 			
 			
@@ -1246,7 +1248,6 @@
   ////////////////////////////////////////
 	function goToMap() {
 		$('span.paginate').hide();
-		//$('span.mapkey').show();
 		 					
 		// Change list and tools selected
     $('section.subheader ul.tab_menu li').removeClass('selected');
@@ -1264,7 +1265,6 @@
 	
 	function goToTable() {
 		$('span.paginate').show();
-		//$('span.mapkey').hide();
 		
 		// Change list and tools selected
     $('section.subheader ul.tab_menu li').removeClass('selected');
@@ -1419,7 +1419,11 @@
 			$('p.settings').html(html.replace(/\|/gi,''));
 			$('body').addClass('query');
 			$('body').animate({backgroundColor:'#282828'},500);
+
+      // Change advanced options
 			$('a.save_table').text('Table from query');
+      $('a.export_data').parent().addClass('disabled');
+
 			setTimeout(function(){$('body').css('background-position','0 -160px');},300);
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
@@ -1427,8 +1431,12 @@
 		  $('a.open_georeference').css({opacity:1});
 			$.favicon('/favicon/blue_32x32.png');
 			$('body').removeClass('query');
-			$('a.save_table').text('Duplicate table as...');
+
+      // Change advanced options
+      $('a.save_table').text('Duplicate table as...');
+      $('a.export_data').parent().removeClass('disabled');
 			$('p.settings a:lt(2)').after(' | ');
+
 			$('body').animate({backgroundColor:'#2D3451'},500);
 			setTimeout(function(){$('body').css('background-position','0 0');},300);
 			$('section.subheader').animate({backgroundColor:'#2D3451'},500);

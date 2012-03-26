@@ -65,10 +65,10 @@ module CartoDB
             @filesrc = "fusiontables"
           end
           @fromuri = true
-          #@import_from_file = URI(@import_from_file) # Ensures open-uri will work
+          #@import_from_file = URI.escape(@import_from_file) # Ensures open-uri will work
         end
           begin
-            open(@import_from_file) do |res| # opens file normally, or open-uri to download/open
+            open(URI.escape(@import_from_file)) do |res| # opens file normally, or open-uri to download/open
               @data_import.file_ready
               file_name = File.basename(@import_from_file)
               @ext = File.extname(file_name)
@@ -138,11 +138,13 @@ module CartoDB
         # Preprocess data and update self with results
         # preprocessors are expected to return a hash datastructure
         preproc = CartoDB::Import::Preprocessor.create(@ext, self.to_import_hash)
+        @data_import.reload
         @data_import.log_update('file preprocessed') if preproc
         update_self preproc.process! if preproc
       
         # Load data in
         loader = CartoDB::Import::Loader.create(@ext, self.to_import_hash)
+        @data_import.reload
         if !loader
           @data_import.log_update("no importer for this type of data, #{@ext}")
           @data_import.set_error_code(1002)

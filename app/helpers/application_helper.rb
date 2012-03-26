@@ -96,4 +96,7 @@ module ApplicationHelper
     end
   end
 
+  def upgrade_url
+    account_url + '/upgrade'
+  end
 end

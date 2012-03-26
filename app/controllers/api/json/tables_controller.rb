@@ -81,6 +81,7 @@ class Api::Json::TablesController < Api::ApplicationController
       end
     end
   rescue => e
+    @data_import.reload
     # Add semantics based on the users creation method. 
     # TODO: The importer should throw these specific errors
     if !e.is_a? CartoDB::QuotaExceeded
@@ -88,7 +89,6 @@ class Api::Json::TablesController < Api::ApplicationController
       e = CartoDB::InvalidFile.new    e.message    if params[:file]    
       e = CartoDB::TableCopyError.new e.message    if params[:table_copy]    
     end  
-    
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     
     @data_import.reload
@@ -106,6 +106,11 @@ class Api::Json::TablesController < Api::ApplicationController
         send_data @table.to_shp,
           :type => 'application/octet-stream; charset=binary; header=present',
           :disposition => "attachment; filename=#{@table.name}.zip"
+      end
+      format.kml or format.kmz do
+        send_data @table.to_kml,
+          :type => 'application/vnd.google-earth.kml+xml; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.kmz"
       end
       format.json do
         render_jsonp({ :id => @table.id,

@@ -11,6 +11,9 @@ class Api::Json::ExportTablesController < Api::ApplicationController
     respond_to do |format|
       format.csv { render :text => @table.to_csv }
       format.shp { render :text => @table.to_shp }
+      format.kmz { render :text => @table.to_kml }
+      format.kml { render :text => @table.to_kml }
+      format.sql { render :text => @table.to_sql }
     end
   end
 end

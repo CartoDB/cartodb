@@ -65,7 +65,7 @@
                   <% end %>
                     
                   <% if (@over_disk || @over_tables) && !@dedicated && !current_user.admin %>
-                    <p>Need more resources? <a href="http://<%= APP_CONFIG[:account_host] %>/upgrade">Upgrade your account</a></p>
+                    <p>Need more resources? <a href="<%= upgrade_url %>">Upgrade your account</a></p>
                   <% else %>
                     <p>Welcome to your <%= current_user.account_type.humanize %> CartoDB</p>                  
                   <% end %>

@@ -147,6 +147,14 @@ div.mamufas div.create_window div.inner_ span.top ul li.finished span.georeferen
 div.mamufas div.create_window div.inner_ span.top ul li.finished span.georeference ul li p {margin:0 0 0 17px; font:normal 11px Arial; color:#434C5D; text-shadow:none;}
 div.mamufas div.create_window div.inner_ span.top ul li.disabled a {opacity:0.3;}
 div.mamufas div.create_window div.inner_ span.top ul li.disabled a:hover {cursor:default; background-position:0 -28px;}
+
+div.mamufas div.create_window div.inner_ span.error_details {display:none; margin:10px 0 0; max-height:150px; overflow:auto; white-space:pre; word-wrap: break-word;}
+div.mamufas div.create_window div.inner_ span.error_details::-webkit-scrollbar {width:8px!important; height:8px!important; margin-right:5px;}
+div.mamufas div.create_window div.inner_ span.error_details::-webkit-scrollbar-thumb {border-radius:10px!important;background:rgba(0,0,0,0.15)!important;cursor:pointer!important}
+div.mamufas div.create_window div.inner_ span.error_details::-webkit-scrollbar-thumb:hover,
+div.mamufas div.create_window div.inner_ span.error_details::-webkit-scrollbar-thumb:active {background:rgba(0,0,0,0.3);cursor:pointer!important}
+
+
 div.mamufas div.create_window div.inner_ span.bottom {float:left; width:394px; padding:10px; border-top:1px solid white;}
 div.mamufas div.create_window div.inner_ span.bottom input {float:right; height:26px; padding:6px 10px; border:1px solid #999; font:bold 12px "Helvetica",Arial; color:#333333; text-align:center;
   text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white;

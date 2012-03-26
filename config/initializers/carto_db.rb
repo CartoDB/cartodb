@@ -82,6 +82,7 @@ module CartoDB
     3005 => 'SHP to PGSQL error',
     3100 => 'Projection error',
     3101 => 'Unsupported or missing projection',
+    3102 => 'Unable to force geoetry to 2-dimensions',
     3200 => 'Unsupported geometry type',
     3201 => 'Geometry Collection not supported',
     4000 => 'Raster errors',
@@ -91,7 +92,7 @@ module CartoDB
     5002 => 'Reserved column names',
     6000 => 'OSM data import error',
     8000 => 'CartoDB account error',
-    8001 => 'Over account storage limit',
-    8002 => 'Over table limit',
+    8001 => 'Over account storage limit, please upgrade',
+    8002 => 'Over account table limit, please upgrade',
     99999 => 'Unknown' }
 end

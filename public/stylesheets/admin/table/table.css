@@ -135,6 +135,7 @@ div.table_position table tbody tr.editing td.first div a.options.selected:hover 
 /*new table*/
 div.table_position table.new {height:100%; width:100%;}
 div.table_position div.empty_table {position:fixed; top:62%; left:50%; width:300px; height:230px; margin:-115px 0 0 -150px; padding:170px 0 0 0; background:url('/images/admin/table/new_table.png') no-repeat 47px 0;}
+div.table_position.public div.empty_table {width:340px; margin-left:-170px; background:url('/images/front/404/no_table.png') no-repeat 0 0;}
 div.table_position div.empty_table h5 {width:100%; text-align:center; font:bold 21px Arial; color:#666666; letter-spacing:-1px; word-spacing:2px; text-shadow:0 1px white;}
 div.table_position div.empty_table p {width:100%; padding:9px 0 0 0; text-align:center; font:normal 15px Arial; color:#999999; text-shadow:0 1px white;}
 div.table_position div.empty_table p a {color:#999999;}
@@ -387,7 +388,7 @@ div.mamufas div.lastpage_window div.inner_ span.loading p {padding:6px 0 0 0; fo
 .jspContainer{overflow:hidden; position:relative; width:100%}
 .jspPane{position:absolute; width:100%;}
 .jspVerticalBar{position:absolute;top:0px;right:3px;width:6px;height:100%; background:none;}
-.jspHorizontalBar{position:absolute;bottom:0;left:0;width:100%;height:16px;background:none;}
+.jspHorizontalBar{position:absolute;bottom:0;left:0;width:100%;height:6px;background:none;}
 .jspVerticalBar *,
 .jspHorizontalBar *{margin:0;padding:0;}
 .jspCap{display:none;}

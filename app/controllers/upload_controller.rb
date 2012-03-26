@@ -1,31 +1,46 @@
 # coding: UTF-8
 
 class UploadController < ApplicationController
-  ssl_required :create
+
+  if Rails.env.production?
+    ssl_required :create
+  end
+
   skip_before_filter :verify_authenticity_token
-  before_filter :login_required
+  before_filter :api_or_user_authorization_required
+  skip_before_filter :check_domain
 
   def create
-    head(400) and return if params[:qqfile].blank? || request.body.blank?
- 	
-    upload_path  = Rails.root.join('public', 'uploads', current_user.id.to_s) 	
-    file_path    = upload_path.join(params[:qqfile])
- 	
-    FileUtils.mkdir_p(upload_path) unless File.directory?(upload_path)
-    File.open(file_path, 'w+') do |file|
-      file.write(request.body.read.force_encoding('utf-8'))
-    end
-    render :json => {:file_uri => "/uploads/#{current_user.id}/" + params[:qqfile], :success => true}
+    begin
+      temp_file = filename = filedata = nil
 
-    # begin
-    #   file_path = Tempfile.new(params[:qqfile])
-    #   File.open(file_path, 'w+') do |file|
-    #     file.write(request.body.read.force_encoding('utf-8'))
-    #   end
-    #   render :json => {:file_uri => file_path, :success => true}
-    # rescue => e
-    #   debugger
-    #   head(400) and return
-    # end    
+      case
+      when params[:qqfile].present? && request.body.present?
+        filename = params[:qqfile]
+        filedata = request.body.read.force_encoding('utf-8')
+      when params[:file].present?
+        filename = params[:file].original_filename
+        filedata = params[:file].read.force_encoding('utf-8')
+      end
+
+      random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
+
+      FileUtils.mkdir_p(Rails.root.join('public/uploads').join(random_token))
+
+      file = File.new(Rails.root.join('public/uploads').join(random_token).join(File.basename(filename)), 'w')
+      file.write filedata
+      file.close
+
+      render :json => {:file_uri => file.path[/(\/uploads\/.*)/, 1], :success => true}
+    rescue => e
+      logger.error e
+      logger.error e.backtrace
+      head(400)
+    end
   end
+
+  def api_or_user_authorization_required
+    api_authorization_required || login_required
+  end
+  private :api_or_user_authorization_required
 end

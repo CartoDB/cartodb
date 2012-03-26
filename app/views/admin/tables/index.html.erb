@@ -65,7 +65,7 @@
                   <% end %>
                     
                   <% if (@over_disk || @over_tables) && !@dedicated && !current_user.admin %>
-                    <p>Need more resources? <a href="http://<%= APP_CONFIG[:account_host] %>/upgrade">Upgrade your account</a></p>
+                    <p>Need more resources? <a href="<%= upgrade_url %>">Upgrade your account</a></p>
                   <% else %>
                     <p>Welcome to your <%= current_user.account_type.humanize %> CartoDB</p>                  
                   <% end %>
@@ -161,7 +161,11 @@
             <span class="privacy_window">
               <ul>
                 <li class="public"><a href="#public"><strong>Public</strong> (visible to others)</a></li>
-                <li class="private"><a href="#private"><strong>Private</strong> (visible to you)</a></li>
+                <% if !current_user.private_tables_enabled %>
+                	<li class="disabled"><a><strong>Private</strong> (only paid plans)</a></li>
+                <% else %>
+                	<li class="private"><a href="#private"><strong>Private</strong> (visible to you)</a></li>
+               	<% end %>
               </ul>
             </span>
           </div>

@@ -3,4 +3,4 @@ argparse==1.2.1
 brewery==0.6
 redis==2.4.9
 hiredis==0.1.0
-pip install -e git+https://github.com/RealGeeks/python-varnish.git@0971d6024fbb2614350853a5e0f8736ba3fb1f0d#egg=python-varnish
+-e git+https://github.com/RealGeeks/python-varnish.git@0971d6024fbb2614350853a5e0f8736ba3fb1f0d#egg=python-varnish==0.1.2

@@ -27,6 +27,91 @@ describe Table do
       table.should be_private
       $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVATE
     end
+    
+    it "should be public if the creating user doesn't have the ability to make private tables" do 
+      user  = create_user(:private_tables_enabled => false)
+      table = create_table(:user_id => user.id)
+      table.privacy.should == Table::PUBLIC      
+    end
+
+    it "should be private if it's creating user has the ability to make private tables" do 
+      user  = create_user(:private_tables_enabled => true)
+      table = create_table(:user_id => user.id)
+      table.privacy.should == Table::PRIVATE      
+    end
+
+    it "should be able to make private tables if the user gets the ability to do it" do 
+      user  = create_user(:private_tables_enabled => false)
+      table = create_table(:user_id => user.id)
+      table.privacy.should == Table::PUBLIC      
+
+      user.private_tables_enabled = true
+      user.save
+      table = create_table(:user_id => user.id)
+      table.privacy.should == Table::PRIVATE      
+    end
+
+    it "should only be able to make public tables if the user is stripped of permissions" do 
+      user  = create_user(:private_tables_enabled => true)
+      table = create_table(:user_id => user.id)
+      table.privacy.should == Table::PRIVATE      
+
+      user.private_tables_enabled = false
+      user.save
+      table = create_table(:user_id => user.id)
+      table.privacy.should == Table::PUBLIC      
+    end
+    
+    it "should still be able to edit the private table if the user is stripped of permissions" do 
+      user  = create_user(:private_tables_enabled => true)
+      table = create_table(:user_id => user.id)
+      table.privacy.should == Table::PRIVATE      
+
+      user.private_tables_enabled = false
+      user.save
+      table.name = "my_super_test"
+      table.save.should be_true
+    end
+    
+    it "should be able to convert to public table if the user is stripped of permissions" do 
+      user  = create_user(:private_tables_enabled => true)
+      table = create_table(:user_id => user.id)
+      table.privacy.should == Table::PRIVATE      
+
+      user.private_tables_enabled = false
+      user.save
+      table.privacy = Table::PUBLIC      
+      table.save.should be_true
+    end
+    
+    it "should not be able to convert to public table if the user has no permissions" do 
+      user  = create_user(:private_tables_enabled => false)
+      table = create_table(:user_id => user.id)
+      table.privacy.should == Table::PUBLIC      
+
+      table.privacy = Table::PRIVATE   
+      expect {
+        table.save
+      }.to raise_error(Sequel::ValidationFailed)        
+    end
+    
+    it "should not be able to convert to public table if the user is stripped of " do 
+      user  = create_user(:private_tables_enabled => true)
+      table = create_table(:user_id => user.id)
+      table.privacy.should == Table::PRIVATE      
+      
+      user.private_tables_enabled = false
+      user.save
+            
+      table.privacy = Table::PUBLIC
+      table.save
+      table.owner.reload # this is because the ORM is stupid
+      
+      table.privacy = Table::PRIVATE   
+      expect {
+        table.save
+      }.to raise_error(Sequel::ValidationFailed)        
+    end
 
     it "should not allow public user access to a table when it is private" do
       table = create_table
@@ -50,6 +135,7 @@ describe Table do
       }.to_not raise_error
       $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PUBLIC
     end
+    
 
     it "should be associated to a database table" do
       user = create_user
@@ -58,7 +144,7 @@ describe Table do
       user.in_database do |user_database|
         user_database.table_exists?(table.name.to_sym).should be_true
       end
-    end
+    end    
 
     it "should store the name of its database" do
       table = create_table
@@ -736,9 +822,11 @@ describe Table do
     
         table.name.should == "table_table_name"
       end
-  
       it "should get a valid name when a table when a name containing the current name exists" do
         user = create_user
+        user.table_quota = 100
+        user.save
+        
         table = create_table :name => 'Table #20', :user_id => user.id
         table2 = create_table :name => 'Table #2', :user_id => user.id
         table2.reload
@@ -749,9 +837,10 @@ describe Table do
         table5 = create_table :name => nil, :user_id => user.id
         table6 = create_table :name => nil, :user_id => user.id
       end
-  
       it "should allow creating multiple tables with the same name by adding a number at the and and incrementing it" do
         user = create_user
+        user.table_quota = 100
+        user.save
         table = create_table :name => 'Wadus The Table', :user_id => user.id
         table.name.should == "wadus_the_table"
     
@@ -1301,6 +1390,43 @@ describe Table do
         table.sequel.select(:f1).where(:test_id => '3').first[:f1].should == true                              
         table.sequel.select(:f1).where(:test_id => '4').first[:f1].should == true                                  
       end
+    end
+  end
+  context "migrate existing postgresql tables into cartodb" do
+    it "create table via SQL statement and then migrate table into CartoDB" do
+      table = new_table :name => nil
+      table.migrate_existing_table = "exttable"
+      user = User[table.user_id]
+      user.run_pg_query("CREATE TABLE exttable (go VARCHAR, ttoo INT, bed VARCHAR)")
+      user.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
+                         INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 2, 'p')")
+      table.save
+      table.name.should == 'exttable'
+      table.rows_counted.should == 2
+    end
+    it "create and migrate a table containing a the_geom and cartodb_id" do
+      table = new_table :name => nil
+      table.migrate_existing_table = "exttable"
+      user = User[table.user_id]
+      user.run_pg_query("CREATE TABLE exttable (the_geom VARCHAR, cartodb_id INT, bed VARCHAR)")
+      user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
+                         INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
+      table.save
+      table.name.should == 'exttable'
+      table.rows_counted.should == 2
+    end
+    it "create and migrate a table containing a valid the_geom" do
+      table = new_table :name => nil
+      table.migrate_existing_table = "exttable"
+      user = User[table.user_id]
+      user.run_pg_query("CREATE TABLE exttable (cartodb_id INT, bed VARCHAR)")
+      user.run_pg_query("SELECT AddGeometryColumn ('exttable','the_geom',4326,'POINT',2);")
+      user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( GEOMETRYFROMTEXT('POINT(10 14)',4326), 1, 'p');
+                         INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( GEOMETRYFROMTEXT('POINT(22 34)',4326), 2, 'p')")
+      table.save
+      table.name.should == 'exttable'
+      table.rows_counted.should == 2
+      check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]])
     end
   end
   context "merging two+ tables" do

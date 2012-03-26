@@ -1,0 +1,107 @@
+  <% content_for(:js) do %>
+    <%= headjs_include_tag(
+      # PLUGINS
+      "plugins/jquery.min",
+      "plugins/jquery-ui.min",
+      "plugins/jquery.mousewheel",
+      "plugins/jscrollpane.min",
+      "plugins/jquery.color",
+      "plugins/underscore",
+      "plugins/mustache",
+      "plugins/rgbcolor",
+      "plugins/jquery.history.min",
+      # VIEW
+      "public/show/view/loader_queue_messages",
+      "public/show/view/loader_queue",
+      "public/show/view/view_templates",
+      "public/show/view/view",
+      # TABLE
+      "public/show/table/carto_table",
+      "public/show/table/table_templates",
+      # MAP
+      "public/show/map/map",
+      # APP
+      "public/show/helpers",
+      "public/show/app"
+    )%>
+
+    <script type="text/javascript">
+      var table_id = <%= @table.id %>
+      	, table_name = "<%= @table.name %>"
+      	, user = "<%=@table.owner.username %>"
+      	, table_schema = <%= @table.schema.to_json.html_safe %>
+			<% if Rails.env == "development" %>
+        ,	TILEHTTP = "http"
+        ,	TILESERVER = "localhost.lan:8181"
+        ,	SQL_SERVER = 'localhost.lan:8080'
+        ,	global_api_url = '/api/v1/';
+      <% elsif Rails.env == "staging" || Rails.env == "test" %>
+        ,	TILEHTTP = "http"
+        ,	TILESERVER = "ec2-50-16-103-51.compute-1.amazonaws.com"
+        ,	global_api_url = '/api/v1/';
+      <% else %>
+        ,	TILEHTTP = "https"
+        ,	TILESERVER = "cartodb.com"
+        ,	SQL_SERVER = 'cartodb.com'
+        ,	global_api_url = '/api/v1/';
+      <% end %>
+    </script>
+  <% end %>
+
+  <% content_for(:page_title) do %>
+    <%= @table.name %> -
+  <% end %>
+
+  <% content_for(:head) do %>
+    <%= stylesheet_link_tag('reset.css','admin/table/view','admin/table/table', 'admin/table/map' ) %>
+  <% end %>
+
+  <section class="subheader">
+    <div class="outer">
+      <div class="inner_subheader">
+        <div class="left">
+          <span class="normal">
+            <h2><%= @table.name %> <small>by <%= @table.owner.username %></small></h2>
+            <span class="tags">
+              <% unless @table[:tags_names].blank? %>
+                <% tagsSize=@table[:tags_names].split(',').size %>
+                <% @table[:tags_names].split(',').each_with_index do |tag_name,index| %>
+                <% if index==tagsSize-1 %>
+                  <p class="last"><%= tag_name %></p>
+                <% else %>
+                  <p><%= tag_name %></p>
+                <% end %>
+                <% end %>
+              <% end %>
+            </span>
+          </span>
+          <ul class="tab_menu">
+            <li class="selected"><a href="#view_table">Table</a></li>
+            <li><a href="#view_map">Map</a></li>
+          </ul>
+        </div>
+        <div class="right">
+          <p class="settings">
+          	<a class="export" href="#export">export table</a>
+          </p>
+          <span class="paginate">
+            <a id="nextButton"class="next" href="#next_column">Next column</a>
+            <a id="previousButton" class="previous" href="#prev_column">Previous column</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="table_position public">
+    <table border="0" id="carto_table" cellspacing="0"></table>
+  </div>
+  <div class="map_window public">
+  	<div class="map_curtain"></div>
+  	<div class="map_header"></div>
+  	<div id="map"></div>
+  </div>
+
+  <%= content_for(:mamufas) do %>
+    <div class="mamufas"></div>
+  <% end %>

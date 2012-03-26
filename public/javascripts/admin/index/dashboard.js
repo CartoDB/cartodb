@@ -1,7 +1,7 @@
 
 
     head(function(){
-      
+
       // Privacy tooltip
       var p_change;
       var table_name;
@@ -31,7 +31,7 @@
       
       $('span.privacy_window li a').click(function(ev){
         stopPropagation(ev);
-        if (!$(this).parent().hasClass('selected')) {
+        if (!$(this).parent().hasClass('selected') && !$(this).parent().hasClass('disabled')) {
           $('span.privacy_window li').each(function(i,ele){
             $(ele).removeClass('selected');
           });
@@ -53,26 +53,29 @@
             success: function(data) {},
             error: function(e) {}
           });
+        } else {
+        	$('body').click();
         }
       });
 
       
-      // Right column floating effect
+      // Right column floating effect		
       $(window).scroll(
         function(ev) {
-          var right_column = $('div.tables_list div.right');
-          var scrolled = $(window).scrollTop();
-          var right_column_height = right_column.height();
-          var right_column_pos = $('div.tables_list div.left').offset().top;
-          var list_height = $('div.tables_list').height() + right_column_pos - right_column_height;
+          var right_column = $('div.tables_list div.right')
+            , scrolled = $(window).scrollTop()
+            , right_column_height = right_column.height()
+            , right_column_pos = $('div.tables_list div.left').offset().top
+            , list_height = $('div.tables_list').height() + right_column_pos - right_column_height;
+
           if (scrolled>(right_column_pos-30)) {
             if (scrolled<list_height) {
-              right_column.css({'position':'fixed','margin':'-'+(right_column_pos-30)+'px 0 0 20px','display':'inline', 'vertical-align':'top'});
+              right_column.css({'position':'fixed','margin':'-'+(right_column_pos-30)+'px 0 0 19px','display':'inline-block', 'vertical-align':'top'});
             } else {
-              right_column.css({'position':'relative','margin':'0 0 0 16px','display':'inline-block','vertical-align':'bottom'});
+              right_column.css({'position':'relative','margin':'0 0 0 19px','display':'inline-block','vertical-align':'bottom'});
             }
           } else {
-            right_column.css({'position':'relative','margin':'0 0 0 16px','display':'inline-block'});
+            right_column.removeAttr('style');
           }
         }
       );

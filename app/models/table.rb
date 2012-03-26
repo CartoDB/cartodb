@@ -24,15 +24,31 @@ class Table < Sequel::Model(:user_tables)
   def validate
     super
     errors.add(:user_id, 'can\'t be blank') if user_id.blank?
-    #errors.add(:user_id, 'over table quota, please upgrade')  if user.remaining_table_quota <= 0 
+    if self.new? && self.owner.over_table_quota?
+      errors.add(nil, 'over table quota, please upgrade') 
+      if @data_import.nil?
+        @data_import = DataImport.find(:id => self.data_import_id)
+        @data_import.set_error_code(8002)
+        @data_import.log_error( 'over table quota, please upgrade' )
+      end
+    end
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
+    if !self.owner.try(:private_tables_enabled)  
+      errors.add(:privacy, 'unauthorized to create private tables') if self.new? && privacy == PRIVATE          
+      
+      # if the table exists, is private, but the owner no longer has private privalidges
+      if !self.new? && privacy == PRIVATE && self.changed_columns.include?(:privacy)
+        errors.add(:privacy, 'unauthorized to modify privacy status to private') 
+      end  
+    end
     validates_unique [:name, :user_id], :message => 'is already taken'
   end
 
-  def before_validation
-    self.privacy ||= PRIVATE
+  def before_validation  
+    self.privacy ||= owner.private_tables_enabled ? PRIVATE : PUBLIC  
     super
   end
+  
   def append_to_table(options) 
     from_table = options[:from_table]
     self.database_name = owner.database_name   
@@ -81,12 +97,14 @@ class Table < Sequel::Model(:user_tables)
     # => then tableB is append_to_table onto tableA
     # => leaving both in tact while creating a new tthat contains both
   end
+  
+  
   def import_to_cartodb
       if import_from_file.present?     
         @data_import.data_type = 'file'
         @data_import.data_source = import_from_file
         @data_import.upload
-        #@data_import.save
+        @data_import.save
         
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 
@@ -208,6 +226,7 @@ class Table < Sequel::Model(:user_tables)
         return uniname
       end
   end
+  
   def import_cleanup
     owner.in_database do |user_database|
       # If we already have a cartodb_id column let's rename it to an auxiliary column
@@ -269,6 +288,7 @@ class Table < Sequel::Model(:user_tables)
       normalize_timestamp_field!(:updated_at, user_database)
     end
   end
+  
   def before_create
     update_updated_at
     self.database_name = owner.database_name    
@@ -277,10 +297,13 @@ class Table < Sequel::Model(:user_tables)
     if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
       
       #init state machine
-      @data_import = DataImport.new(:user_id => self.user_id)
-      @data_import.updated_at = Time.now
-      @data_import.save
-      self.data_import_id = @data_import.id
+      if self.data_import_id.nil? #needed for non ui-created tables
+        @data_import  = DataImport.new(:user_id => self.user_id)
+        @data_import.updated_at = Time.now
+        @data_import.save
+      else
+        @data_import  = DataImport.find(:id=>self.data_import_id)
+      end
       
       importer_result_name = import_to_cartodb
       
@@ -303,8 +326,15 @@ class Table < Sequel::Model(:user_tables)
     end
     
     
-    # test for exceeding of quota after creation
-    raise CartoDB::QuotaExceeded, "#{owner.quota_overspend / 1024}KB more space is required" if owner.exceeded_quota?
+    # test for exceeding of table quota after creation - needed as no way to test future db size pre-creation
+    if owner.over_disk_quota?
+      unless @data_import.nil?
+        @data_import.reload
+        @data_import.set_error_code(8001)
+        @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
+      end   
+      raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required" 
+    end
 
     # all looks ok, so VACUUM ANALYZE for correct statistics
     owner.in_database.run("VACUUM ANALYZE \"#{self.name}\"")
@@ -352,6 +382,56 @@ class Table < Sequel::Model(:user_tables)
     raise e
   end
 
+  def after_save
+    super
+    manage_tags
+    update_name_changes
+    manage_privacy
+  end
+
+  def after_create
+    super
+    User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
+    owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
+    add_python
+    delete_tile_style    
+    set_trigger_update_updated_at
+    set_trigger_cache_timestamp
+    set_trigger_check_quota
+    set_default_table_privacy
+    make_geom_valid
+    
+    @force_schema = nil
+    $tables_metadata.hset key, "user_id", user_id
+    
+    # finally, close off the data import
+    if data_import_id
+      @data_import = DataImport.find(:id=>data_import_id)
+      @data_import.table_id = id
+      @data_import.finished
+    end
+  end
+    
+  def before_destroy
+    $tables_metadata.del key
+  end
+
+  def after_destroy
+    super
+    Tag.filter(:user_id => user_id, :table_id => id).delete
+    User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
+    owner.in_database(:as => :superuser) do |user_database|
+      begin
+        user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
+      rescue => e
+        CartoDB::Logger.info "Table#after_destroy error", "maybe table #{self.name} doesn't exist: #{e.inspect}"      
+      end
+      user_database.run("DROP TABLE IF EXISTS #{self.name}")
+    end
+  end
+  ## End of Callbacks
+
+
   # adds the column if not exists or cast it to timestamp field
   def normalize_timestamp_field!(field, user_database)
     schema = self.schema(:reload => true)
@@ -373,61 +453,16 @@ class Table < Sequel::Model(:user_tables)
       end
     end
   end
-
-  def after_save
-    super
-    manage_tags
-    update_name_changes
-  end
-
-  def after_create
-    super
-    User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
-    owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
-    add_python
-    delete_tile_style    
-    set_trigger_update_updated_at
-    set_trigger_cache_timestamp
-    set_trigger_check_quota
-    
-    make_geom_valid
-    
-    @force_schema = nil
-    $tables_metadata.multi do
-      $tables_metadata.hset key, "user_id", user_id
-      $tables_metadata.hset key, "privacy", PRIVATE
-    end
-    if data_import_id
-      @data_import = DataImport.find(:id=>data_import_id)
-      @data_import.table_id = id
-      @data_import.finished
-    end
-  end
+  
+  
   def make_geom_valid
     begin 
       owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom) WHERE NOT ST_IsValid(the_geom)")
     rescue => e
-      CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} didn't have geom column"
+      CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} make valid failed: #{e.inspect}"
     end
   end
-  def before_destroy
-    $tables_metadata.del key
-  end
-
-  def after_destroy
-    super
-    Tag.filter(:user_id => user_id, :table_id => id).delete
-    User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
-    owner.in_database(:as => :superuser) do |user_database|
-      begin
-        user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
-      rescue => e
-        CartoDB::Logger.info "Table#after_destroy error", "maybe table #{self.name} doesn't exist: #{e.inspect}"      
-      end
-      user_database.run("DROP TABLE IF EXISTS #{self.name}")
-    end
-  end
-  ## End of Callbacks
+  
 
   def name=(value)
     return if value == self[:name] || value.blank?
@@ -467,19 +502,27 @@ class Table < Sequel::Model(:user_tables)
     !private?
   end
 
+  def set_default_table_privacy
+    self.privacy ||= self.owner.try(:private_tables_enabled) ? PRIVATE : PUBLIC
+    save
+  end
+    
+  def manage_privacy
+    if privacy == PRIVATE
+      owner.in_database(:as => :superuser).run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
+      $tables_metadata.hset key, "privacy", PRIVATE
+    elsif privacy == PUBLIC
+      $tables_metadata.hset key, "privacy", PUBLIC
+      owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
+    end        
+  end
+
+  # enforce standard format for this field
   def privacy=(value)
     if value == "PRIVATE" || value == PRIVATE || value == PRIVATE.to_s
       self[:privacy] = PRIVATE
-      unless new?
-        owner.in_database(:as => :superuser).run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
-        $tables_metadata.hset key, "privacy", PRIVATE
-      end
     elsif value == "PUBLIC" || value == PUBLIC || value == PUBLIC.to_s
       self[:privacy] = PUBLIC
-      unless new?
-        $tables_metadata.hset key, "privacy", PUBLIC
-        owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
-      end
     end
   end
 
@@ -1152,7 +1195,7 @@ TRIGGER
   end
 
   def owner    
-    @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username).filter(:id => self.user_id).first
+    @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => self.user_id).first
   end
 
   private
@@ -1179,7 +1222,7 @@ TRIGGER
   #
   # TODO: Far too clever approach. Just recursivly append "_copy" if duplicate
   def get_valid_name(raw_new_name = nil)
-    
+
     # set defaults and sanity check
     raw_new_name = (raw_new_name || "untitled_table").sanitize
     
@@ -1202,7 +1245,7 @@ TRIGGER
     return raw_new_name if name_available?(raw_new_name)
 
     # increment trailing number (max+1) if dupe
-    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
+    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first  
     
     if max_candidate =~ /(.+)_(\d+)$/
       return $1 + "_#{$2.to_i + 1}"
@@ -1318,6 +1361,13 @@ SQL
 
   def update_the_geom!(attributes, primary_key)
     return unless attributes[THE_GEOM]
+    # TODO: use this once the server geojson is updated
+    # begin
+    #   owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON('#{attributes[THE_GEOM].sanitize_sql}'),#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
+    # rescue => e
+    #   raise CartoDB::InvalidGeoJSONFormat
+    # end    
+
     geo_json = RGeo::GeoJSON.decode(attributes[THE_GEOM], :json_parser => :json).try(:as_text)
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?
     owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
@@ -1387,7 +1437,7 @@ SQL
         http_res = http_req.request_post(request_uri, URI.encode_www_form(form), request_headers)
       when 'DELETE'
         extra_delete_headers = {'Depth' => 'Infinity'}
-        http_res = http_req.delete(request_uri.merge(extra_delete_headers)) 
+        http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers)) 
       else
     end
     http_res

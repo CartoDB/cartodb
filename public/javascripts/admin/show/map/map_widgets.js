@@ -121,8 +121,9 @@
 			 	var css_ = $el.attr('css');
 			 	$el.find('a.control').removeClass('error').css({'background-color':new_color});
 			 	$(this).removeClass('error');
+			 	
 			 	// CHANGE COLOR
-			 	Core.options.change($el,new_color);
+			 	Core._trigger('change',new_color,$el);
 			} else {
 				$(this).addClass('error');
 			 	$el.find('a.control').removeAttr('style').addClass('error');

@@ -7,18 +7,18 @@ class SessionsController < ApplicationController
   before_filter :api_authorization_required, :only => :show
 
   def new
-    if logged_in?
+    if logged_in?(request.subdomain)
       redirect_to dashboard_path and return
     end
   end
 
   def create
-    authenticate!(:password)
+    authenticate!(:password, :scope => request.subdomain)
     redirect_to(session[:return_to] || dashboard_path)
   end
 
   def destroy
-    logout
+    logout(request.subdomain)
     redirect_to "http://www.cartodb.com"
   end
 

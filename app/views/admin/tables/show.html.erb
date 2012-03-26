@@ -45,13 +45,14 @@
     )%>
 
     <script type="text/javascript">
-      var table_id = <%= @table.id %>;
-      var status = "<%= table_privacy_text(@table).downcase %>";
-      var table_name = "<%= @table.name %>";
-      var user_id = "<%= current_user.id %>";
-      var user_name = "<%= current_user.username %>";
-      var map_enabled = <%= current_user.map_enabled.to_s %>;
-      var map_key = "<%= current_user.get_map_key %>";
+      var table_id = <%= @table.id %>
+      	, status = "<%= table_privacy_text(@table).downcase %>"
+      	, table_name = "<%= @table.name %>"
+      	, user_id = "<%= current_user.id %>"
+      	, user_name = "<%= current_user.username %>"
+      	, map_enabled = <%= current_user.map_enabled.to_s %>
+      	, privacy_enabled = <%= current_user.private_tables_enabled.to_s %>
+      	, map_key = "<%= current_user.get_map_key %>";
       <% if flash[:alert] %>
         var error_message = '<%= flash[:alert] %>';
       <% end %>
@@ -78,13 +79,7 @@
           <span class="normal">
             <h2><a href="#change_title"><%= @table.name %></a></h2>
             <p class="status">
-
-              <% if true %>
-                <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
-              <% else %>
-                <em>PUBLIC</em>
-              <% end %>
-
+              <a class="<%= table_privacy_text(@table).downcase %>" href="#change_privacy"><%= table_privacy_text(@table) %></a>
             </p>
             <span class="tags">
               <% unless @table[:tags_names].blank? %>
@@ -104,7 +99,6 @@
             <li class="selected"><a href="#view_table">Table</a></li>
             <li class="<%= ((!current_user.map_enabled)? 'disabled' : '') %>"><a href="#view_map">Map</a></li>
             <li>
-              
               <% if true %>
                 <a href="#share_this_map" class="share <%= 'disabled' if @table.private? %>">SHARE THIS MAP</a>
                 <span class="share_tooltip">
@@ -113,7 +107,6 @@
               <% else %>
                 <a href="#share_this_map" class="share">SHARE THIS MAP</a>
               <% end %>
-
             </li>
           </ul>
         </div>

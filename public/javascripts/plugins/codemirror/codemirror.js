@@ -1,1 +1,2906 @@
-var CodeMirror=(function(){function P(Aa,AX){var Bg={},A4=P.defaults;for(var AL in A4){if(A4.hasOwnProperty(AL)){Bg[AL]=(AX&&AX.hasOwnProperty(AL)?AX:A4)[AL];}}var CJ=Bg.document;var AP=CJ.createElement("div");AP.className="CodeMirror"+(Bg.lineWrapping?" CodeMirror-wrap":"");AP.innerHTML='<div style="overflow: hidden; position: relative; width: 1px; height: 0px;"><textarea style="position: absolute; width: 10000px;" wrap="off" autocorrect="off" autocapitalize="off"></textarea></div><div class="CodeMirror-scroll cm-s-'+Bg.theme+'"><div style="position: relative"><div style="position: relative"><div class="CodeMirror-gutter"><div class="CodeMirror-gutter-text"></div></div><div class="CodeMirror-lines"><div style="position: relative"><div style="position: absolute; width: 100%; height: 0; overflow: hidden; visibility: hidden"></div><pre class="CodeMirror-cursor">&#160;</pre><div></div></div></div></div></div></div>';if(Aa.appendChild){Aa.appendChild(AP);}else{Aa(AP);}var Bd=AP.firstChild,A7=Bd.firstChild,A5=AP.lastChild,BV=A5.firstChild,Bw=BV.firstChild,AU=Bw.firstChild,Al=AU.firstChild,BG=AU.nextSibling.firstChild,AH=BG.firstChild,Ay=AH.nextSibling,AC=Ay.nextSibling;if(!F){BG.draggable=true;}if(Bg.tabindex!=null){A7.tabindex=Bg.tabindex;}if(!Bg.gutter&&!Bg.lineNumbers){AU.style.display="none";}try{B5("x");}catch(Bo){if(Bo.message.match(/unknown runtime/i)){Bo=new Error("A CodeMirror inside a P-style element does not work in Internet Explorer. (innerHTML bug)");}throw Bo;}var Bn=new S(),AI=new S(),CN;var Br,B9=new G([new u([new C("")])]),Bx,Bz;BZ();var CT={from:{line:0,ch:0},to:{line:0,ch:0},inverted:false};var By,CI,BB,Am,Ax;var B2,AN,CK,Ad,A1,Ag;var Az=0,CO=0,BU=0,i=0,BC=null;var Aw,Bk;var BN="",AR;AD(function(){Aj(Bg.value||"");B2=false;})();var Au=new I();var AJ=2000;var A9=(!h&&!b)&&(d||window.opera);if(Bg.pollForIME&&A9){AJ=50;}function Bj(CW){return(h&&((d&&CW==229)||(window.opera&&CW==197)))||(b&&d);}N(A5,"mousedown",AD(B0));N(A5,"dblclick",AD(Bc));N(BG,"dragstart",AW);N(BG,"selectstart",g);if(!d){N(A5,"contextmenu",Ap);}N(A5,"scroll",function(){Bt([]);if(Bg.fixedGutter){AU.style.left=A5.scrollLeft+"px";}if(Bg.onScroll){Bg.onScroll(Bp);}});N(window,"resize",function(){Bt(true);});N(A7,"keyup",AD(B1));N(A7,"input",function(){Ae(BC);});N(A7,"keydown",AD(Bs));N(A7,"keypress",AD(A8));N(A7,"focus",CS);N(A7,"blur",AQ);N(A5,"dragenter",Q);N(A5,"dragover",Q);N(A5,"drop",AD(AA));N(A5,"paste",function(){BL();Ae();});N(A7,"paste",function(){Ae();});N(A7,"cut",function(){Ae();});var B7;try{B7=(CJ.activeElement==A7);}catch(Bo){}if(B7){setTimeout(CS,20);}else{AQ();}function BD(CW){return CW>=0&&CW<B9.size;}var Bp=AP.CodeMirror={getValue:Bh,setValue:AD(Aj),getSelection:Bi,replaceSelection:AD(BE),focus:function(){BL();CS();Ae();},setOption:function(CX,CY){var CW=Bg[CX];Bg[CX]=CY;if(CX=="lineNumbers"||CX=="gutter"||CX=="firstLineNumber"){AD(A0)();}else{if(CX=="mode"||CX=="indentUnit"){BZ();}else{if(CX=="readOnly"&&CY=="nocursor"){A7.blur();}else{if(CX=="theme"){A5.className=A5.className.replace(/cm-s-\w+/,"cm-s-"+CY);}else{if(CX=="lineWrapping"&&CW!=CY){AD(CD)();}else{if(CX=="pollForIME"&&A9){AJ=CY?50:2000;}}}}}}},getOption:function(CW){return Bg[CW];},undo:AD(CR),redo:AD(CF),indentLine:AD(function(CX,CW){if(BD(CX)){BJ(CX,CW==null?"smart":CW?"add":"subtract");}}),historySize:function(){return{undo:Au.done.length,redo:Au.undone.length};},clearHistory:function(){Au=new I();},matchBrackets:AD(function(){Bu(true);}),getTokenAt:AD(function(CW){CW=Ah(CW);return CC(CW.line).getTokenAt(Br,B6(CW.line),CW.ch);}),getStateAfter:function(CW){CW=Be(CW==null?B9.size-1:CW);return B6(CW+1);},cursorCoords:function(CW){if(CW==null){CW=CT.inverted;}return AB(CW?CT.from:CT.to);},charCoords:function(CW){return AB(Ah(CW));},coordsChar:function(CW){var CX=x(BG);return BQ(CW.x-CX.left,CW.y-CX.top);},getSearchCursor:function(CX,CY,CW){return new AV(CX,CY,CW);},markText:AD(BO),setMarker:AD(Bb),clearMarker:AD(AG),setLineClass:AD(A6),hideLine:AD(function(CW){return CG(CW,true);}),showLine:AD(function(CW){return CG(CW,false);}),lineInfo:Ai,addWidget:function(Ca,CY,Cc,CZ,Ce){Ca=CP(Ah(Ca));var Cb=Ca.yBot,CX=Ca.x;CY.style.position="absolute";BV.appendChild(CY);if(CZ=="over"){Cb=Ca.y;}else{if(CZ=="near"){var CW=Math.max(A5.offsetHeight,B9.height*BW()),Cd=Math.max(BV.clientWidth,BG.clientWidth)-As();if(Ca.yBot+CY.offsetHeight>CW&&Ca.y>CY.offsetHeight){Cb=Ca.y-CY.offsetHeight;}if(CX+CY.offsetWidth>Cd){CX=Cd-CY.offsetWidth;}}}CY.style.top=(Cb+B4())+"px";CY.style.left=CY.style.right="";if(Ce=="right"){CX=BV.clientWidth-CY.offsetWidth;CY.style.right="0px";}else{if(Ce=="left"){CX=0;}else{if(Ce=="middle"){CX=(BV.clientWidth-CY.offsetWidth)/2;}}CY.style.left=(CX+As())+"px";}if(Cc){AM(CX,Cb,CX+CY.offsetWidth,Cb+CY.offsetHeight);}},lineCount:function(){return B9.size;},getCursor:function(CW){if(CW==null){CW=CT.inverted;}return o(CW?CT.from:CT.to);},somethingSelected:function(){return !q(CT.from,CT.to);},setCursor:AD(function(CW,CX){if(CX==null&&typeof CW.line=="number"){At(CW.line,CW.ch);}else{At(CW,CX);}}),setSelection:AD(function(CX,CW){BH(Ah(CX),Ah(CW||CX));}),getLine:function(CW){if(BD(CW)){return CC(CW).text;}},setLine:AD(function(CW,CX){if(BD(CW)){BX(CX,{line:CW,ch:0},{line:CW,ch:CC(CW).text.length});}}),removeLine:AD(function(CW){if(BD(CW)){BX("",{line:CW,ch:0},Ah({line:CW+1,ch:0}));}}),replaceRange:AD(BX),getRange:function(CX,CW){return CM(Ah(CX),Ah(CW));},coordsFromIndex:function(CX){var CY=0,CW;B9.iter(0,B9.size,function(CZ){var Ca=CZ.text.length+1;if(Ca>CX){CW=CX;return true;}CX-=Ca;++CY;});return Ah({line:CY,ch:CW});},operation:function(CW){return AD(CW)();},refresh:function(){Bt(true);},getInputField:function(){return A7;},getWrapperElement:function(){return AP;},getScrollerElement:function(){return A5;},getGutterElement:function(){return AU;}};function CC(CW){return V(B9,CW);}function Aq(CX,CW){Ag=true;var CY=CW-CX.height;for(var CZ=CX;CZ;CZ=CZ.parent){CZ.height+=CY;}}function Aj(CW){var CX={line:0,ch:0};Ac(CX,{line:B9.size-1,ch:CC(B9.size-1).text.length},T(CW),CX,CX);B2=true;}function Bh(CW){var CX=[];B9.iter(0,B9.size,function(CY){CX.push(CY.text);});return CX.join("\n");}function B0(Cc){for(var CZ=H(Cc);CZ!=AP;CZ=CZ.parentNode){if(CZ.parentNode==BV&&CZ!=Bw){return ;}}for(var CZ=H(Cc);CZ!=AP;CZ=CZ.parentNode){if(CZ.parentNode==Al){if(Bg.onGutterClick){Bg.onGutterClick(Bp,L(Al.childNodes,CZ)+CO,Cc);}return g(Cc);}}var CW=Ar(Cc);switch(R(Cc)){case 3:if(d&&!b){Ap(Cc);}return ;case 2:if(CW){At(CW.line,CW.ch,true);}return ;}if(!CW){if(H(Cc)==A5){g(Cc);}return ;}if(!Bz){CS();}var CX=+new Date;if(Am&&Am.time>CX-400&&q(Am.pos,CW)){g(Cc);setTimeout(BL,20);return AY(CW.line);}else{if(BB&&BB.time>CX-400&&q(BB.pos,CW)){Am={time:CX,pos:CW};g(Cc);return BR(CW);}else{BB={time:CX,pos:CW};}}var Ce=CW,CY;if(X&&!q(CT.from,CT.to)&&!n(CW,CT.from)&&!n(CT.to,CW)){if(F){BG.draggable=true;}var Cb=N(CJ,"mouseup",AD(function(Cf){if(F){BG.draggable=false;}Ax=false;Cb();if(Math.abs(Cc.clientX-Cf.clientX)+Math.abs(Cc.clientY-Cf.clientY)<10){g(Cf);At(CW.line,CW.ch,true);BL();}}),true);Ax=true;return ;}g(Cc);At(CW.line,CW.ch,true);function Cd(Cf){var Ch=Ar(Cf,true);if(Ch&&!q(Ch,Ce)){if(!Bz){CS();}Ce=Ch;BI(CW,Ch);B2=false;var Cg=BM();if(Ch.line>=Cg.to||Ch.line<Cg.from){CY=setTimeout(AD(function(){Cd(Cf);}),150);}}}var Ca=N(CJ,"mousemove",AD(function(Cf){clearTimeout(CY);g(Cf);Cd(Cf);}),true);var Cb=N(CJ,"mouseup",AD(function(Cf){clearTimeout(CY);var Cg=Ar(Cf);if(Cg){BI(CW,Cg);}g(Cf);BL();B2=true;Ca();Cb();}),true);}function Bc(CW){for(var CY=H(CW);CY!=AP;CY=CY.parentNode){if(CY.parentNode==Al){return g(CW);}}var CX=Ar(CW);if(!CX){return ;}Am={time:+new Date,pos:CX};g(CW);BR(CX);}function AA(Cd){Cd.preventDefault();var Ce=Ar(Cd,true),CW=Cd.dataTransfer.files;if(!Ce||Bg.readOnly){return ;}if(CW&&CW.length&&window.FileReader&&window.File){function Ca(Cj,Ci){var Ch=new FileReader;Ch.onload=function(){Cg[Ci]=Ch.result;if(++CX==CY){Ce=Ah(Ce);AD(function(){var Ck=BX(Cg.join(""),Ce,Ce);BI(Ce,Ck);})();}};Ch.readAsText(Cj);}var CY=CW.length,Cg=Array(CY),CX=0;for(var Cb=0;Cb<CY;++Cb){Ca(CW[Cb],Cb);}}else{try{var Cg=Cd.dataTransfer.getData("Text");if(Cg){var CZ=BX(Cg,Ce,Ce);var Cf=CT.from,Cc=CT.to;BI(Ce,CZ);if(Ax){BX("",Cf,Cc);}BL();}}catch(Cd){}}}function AW(CX){var CW=Bi();e(CW);CX.dataTransfer.setDragImage(v,0,0);CX.dataTransfer.setData("Text",CW);}function Bs(Ca){if(!Bz){CS();}var CZ=Ca.keyCode;if(a&&CZ==27){Ca.returnValue=false;}var CY=(b?Ca.metaKey:Ca.ctrlKey)&&!Ca.altKey,CX=Ca.ctrlKey||Ca.altKey||Ca.metaKey;if(CZ==16||Ca.shiftKey){By=By||(CT.inverted?CT.to:CT.from);}else{By=null;}if(Bg.onKeyEvent&&Bg.onKeyEvent(Bp,c(Ca))){return ;}if(CZ==33||CZ==34){AS(CZ==34);return g(Ca);}if(CY&&((CZ==36||CZ==35)||b&&(CZ==38||CZ==40))){CH(CZ==36||CZ==38);return g(Ca);}if(CY&&CZ==65){BK();return g(Ca);}if(!Bg.readOnly){if(!CX&&CZ==13){return ;}if(!CX&&CZ==9&&CB(Ca.shiftKey)){return g(Ca);}if(CY&&CZ==90){CR();return g(Ca);}if(CY&&((Ca.shiftKey&&CZ==90)||CZ==89)){CF();return g(Ca);}}if(CZ==36){if(Bg.smartHome){Bm();return g(Ca);}}BC=(CY?"c":"")+(Ca.altKey?"a":"")+CZ;if(CT.inverted&&s[BC]===true){var CW=t(A7);if(CW){CI={anchor:CW.start};B(A7,CW.start,CW.start);}}if(!CY&&!Ca.altKey){BC=null;}Ae(BC);if(Bg.pollForIME&&Bj(CZ)){AJ=50;}}function B1(CW){if(Bg.onKeyEvent&&Bg.onKeyEvent(Bp,c(CW))){return ;}if(CI){CI=null;B2=true;}if(CW.keyCode==16){By=null;}if(AJ<2000&&!A9){AJ=2000;}}function A8(CY){if(Bg.onKeyEvent&&Bg.onKeyEvent(Bp,c(CY))){return ;}if(Bg.electricChars&&Br.electricChars){var CW=String.fromCharCode(CY.charCode==null?CY.keyCode:CY.charCode);if(Br.electricChars.indexOf(CW)>-1){setTimeout(AD(function(){BJ(CT.to.line,"smart");}),50);}}var CX=CY.keyCode;if(CX==13){if(!Bg.readOnly){AF();}g(CY);}else{if(!CY.ctrlKey&&!CY.altKey&&!CY.metaKey&&CX==9&&Bg.tabMode!="default"){g(CY);}else{Ae(BC);}}}function CS(){if(Bg.readOnly=="nocursor"){return ;}if(!Bz){if(Bg.onFocus){Bg.onFocus(Bp);}Bz=true;if(AP.className.search(/\bCodeMirror-focused\b/)==-1){AP.className+=" CodeMirror-focused";}if(!A1){B8();}}z();CL();}function AQ(){if(Bz){if(Bg.onBlur){Bg.onBlur(Bp);}Bz=false;AP.className=AP.className.replace(" CodeMirror-focused","");}clearInterval(CN);setTimeout(function(){if(!Bz){By=null;}},150);}function Ac(Cb,Ca,CZ,CX,CW){if(Au){var CY=[];B9.iter(Cb.line,Ca.line+1,function(Cc){CY.push(Cc.text);});Au.addChange(Cb.line,CZ.length,CY);while(Au.done.length>Bg.undoDepth){Au.done.shift();}}AE(Cb,Ca,CZ,CX,CW);}function Bq(Cb,Ca){var CZ=Cb.pop();if(CZ){var CX=[],CW=CZ.start+CZ.added;B9.iter(CZ.start,CW,function(Cc){CX.push(Cc.text);});Ca.push({start:CZ.start,added:CZ.old.length,old:CX});var CY=Ah({line:CZ.start+CZ.old.length-1,ch:k(CX[CX.length-1],CZ.old[CZ.old.length-1])});AE({line:CZ.start,ch:0},{line:CW-1,ch:CC(CW-1).text.length},CZ.old,CY,CY);B2=true;}}function CR(){Bq(Au.done,Au.undone);}function CF(){Bq(Au.undone,Au.done);}function AE(Ci,Ca,Co,CW,Cp){var Cn=false,CZ=BN.length;if(!Bg.lineWrapping){B9.iter(Ci.line,Ca.line,function(Cq){if(Cq.text.length==CZ){Cn=true;return true;}});}var Cf=Ca.line-Ci.line,Ce=CC(Ci.line),CX=CC(Ca.line);if(Ce==CX){if(Co.length==1){Ce.replace(Ci.ch,Ca.ch,Co[0]);}else{CX=Ce.split(Ca.ch,Co[Co.length-1]);var Cd=[];Ce.replace(Ci.ch,null,Co[0]);for(var Ck=1,Cm=Co.length-1;Ck<Cm;++Ck){Cd.push(C.inheritMarks(Co[Ck],Ce));}Cd.push(CX);B9.insert(Ci.line+1,Cd);}}else{if(Co.length==1){Ce.replace(Ci.ch,null,Co[0]);CX.replace(null,Ca.ch,"");Ce.append(CX);B9.remove(Ci.line+1,Cf);}else{var Cd=[];Ce.replace(Ci.ch,null,Co[0]);CX.replace(null,Ca.ch,Co[Co.length-1]);for(var Ck=1,Cm=Co.length-1;Ck<Cm;++Ck){Cd.push(C.inheritMarks(Co[Ck],Ce));}if(Cf>1){B9.remove(Ci.line+1,Cf-1);}B9.insert(Ci.line+1,Cd);}}if(Bg.lineWrapping){var Cb=A5.clientWidth/A3()-3;B9.iter(Ci.line,Ci.line+Co.length,function(Cq){if(Cq.hidden){return ;}var Cr=Math.ceil(Cq.text.length/Cb)||1;if(Cr!=Cq.height){Aq(Cq,Cr);}});}else{B9.iter(Ci.line,Ck+Co.length,function(Cr){var Cq=Cr.text;if(Cq.length>CZ){BN=Cq;CZ=Cq.length;AR=null;Cn=false;}});if(Cn){CZ=0;BN="";AR=null;B9.iter(0,B9.size,function(Cr){var Cq=Cr.text;if(Cq.length>CZ){CZ=Cq.length;BN=Cq;}});}}var CY=[],Cc=Co.length-Cf-1;for(var Ck=0,Ch=Bx.length;Ck<Ch;++Ck){var Cl=Bx[Ck];if(Cl<Ci.line){CY.push(Cl);}else{if(Cl>Ca.line){CY.push(Cl+Cc);}}}var Cj=Ci.line+Math.min(Co.length,500);CE(Ci.line,Cj);CY.push(Cj);Bx=CY;BP(100);AN.push({from:Ci.line,to:Ca.line+1,diff:Cc});CK={from:Ci,to:Ca,text:Co};function Cg(Cq){return Cq<=Math.min(Ca.line,Ca.line+Cc)?Cq:Cq+Cc;}BH(CW,Cp,Cg(CT.from.line),Cg(CT.to.line));BV.style.height=(B9.height*BW()+2*B4())+"px";}function BX(CX,Ca,CZ){Ca=Ah(Ca);if(!CZ){CZ=Ca;}else{CZ=Ah(CZ);}CX=T(CX);function CY(Cd){if(n(Cd,Ca)){return Cd;}if(!n(CZ,Cd)){return CW;}var Cb=Cd.line+CX.length-(CZ.line-Ca.line)-1;var Cc=Cd.ch;if(Cd.line==CZ.line){Cc+=CX[CX.length-1].length-(CZ.ch-(CZ.line==Ca.line?Ca.ch:0));}return{line:Cb,ch:Cc};}var CW;AO(CX,Ca,CZ,function(Cb){CW=Cb;return{from:CY(CT.from),to:CY(CT.to)};});return CW;}function BE(CW,CX){AO(T(CW),CT.from,CT.to,function(CY){if(CX=="end"){return{from:CY,to:CY};}else{if(CX=="start"){return{from:CT.from,to:CT.from};}else{return{from:CT.from,to:CY};}}});}function AO(CZ,Cb,Ca,CW){var CY=CZ.length==1?CZ[0].length+Cb.ch:CZ[CZ.length-1].length;var CX=CW({line:Cb.line+CZ.length-1,ch:CY});Ac(Cb,Ca,CZ,CX.from,CX.to);}function CM(Ca,CZ){var CX=Ca.line,CW=CZ.line;if(CX==CW){return CC(CX).text.slice(Ca.ch,CZ.ch);}var CY=[CC(CX).text.slice(Ca.ch)];B9.iter(CX+1,CW,function(Cb){CY.push(Cb.text);});CY.push(CC(CW).text.slice(0,CZ.ch));return CY.join("\n");}function Bi(){return CM(CT.from,CT.to);}var BF=false;function z(){if(BF){return ;}Bn.set(AJ,function(){Ab();BT();if(Bz){z();}AK();});}function Ae(CY){var CW=false;BF=true;function CX(){Ab();var CZ=BT();if(CZ&&CY){if(CZ=="moved"&&s[CY]==null){s[CY]=true;}if(CZ=="changed"){s[CY]=false;}}if(!CZ&&!CW){CW=true;Bn.set(80,CX);}else{BF=false;z();}AK();}Bn.set(20,CX);}function BT(){if(A1||!Bz){return ;}var Cd=false,Cl=A7.value,Cn=t(A7);if(!Cn){return false;}var Cd=Aw.text!=Cl,Cf=CI;var Ce=Cd||Cn.start!=Aw.start||Cn.end!=(Cf?Aw.start:Aw.end);if(!Ce&&!Cf){return false;}if(Cd){By=CI=null;if(Bg.readOnly){B2=true;return"changed";}}function Ca(Ct,Cr){var Cs=0;for(;;){var Cq=Cl.indexOf("\n",Cs);if(Cq==-1||(Cl.charAt(Cq-1)=="\r"?Cq-1:Cq)>=Ct){return{line:Cr,ch:Ct-Cs};}++Cr;Cs=Cq+1;}}var Cm=Ca(Cn.start,Aw.from),CX=Ca(Cn.end,Aw.from);if(Cf){var Cc=Cn.start==Cf.anchor?CX:Cm;var Cg=By?CT.to:Cn.start==Cf.anchor?Cm:CX;if(CT.inverted=n(Cc,Cg)){Cm=Cc;CX=Cg;}else{CI=null;Cm=Cg;CX=Cc;}}if(Cm.line==CX.line&&Cm.line==CT.from.line&&Cm.line==CT.to.line&&!By){B2=false;}if(Cd){var Cb=0,CZ=Cl.length,Co=Math.min(CZ,Aw.text.length);var Cp,Ci=Aw.from,CY=-1;while(Cb<Co&&(Cp=Cl.charAt(Cb))==Aw.text.charAt(Cb)){++Cb;if(Cp=="\n"){Ci++;CY=Cb;}}var Cj=CY>-1?Cb-CY:Cb,CW=Aw.to-1,Ch=Aw.text.length;for(;;){Cp=Aw.text.charAt(Ch);if(Cl.charAt(CZ)!=Cp){++CZ;++Ch;break;}if(Cp=="\n"){CW--;}if(Ch<=Cb||CZ<=Cb){break;}--CZ;--Ch;}var CY=Aw.text.lastIndexOf("\n",Ch-1),Ck=CY==-1?Ch:Ch-CY-1;Ac({line:Ci,ch:Cj},{line:CW,ch:Ck},T(Cl.slice(Cb,CZ)),Cm,CX);if(Ci!=CW||Cm.line!=Ci){B2=true;}}else{BH(Cm,CX);}Aw.text=Cl;Aw.start=Cn.start;Aw.end=Cn.end;return Cd?"changed":Ce?"moved":false;}function B8(){var CY=[];var Ca=Math.max(0,CT.from.line-1),CZ=Math.min(B9.size,CT.to.line+2);B9.iter(Ca,CZ,function(Cb){CY.push(Cb.text);});CY=A7.value=CY.join(D);var CX=CT.from.ch,CW=CT.to.ch;B9.iter(Ca,CT.from.line,function(Cb){CX+=D.length+Cb.text.length;});B9.iter(Ca,CT.to.line,function(Cb){CW+=D.length+Cb.text.length;});Aw={text:CY,from:Ca,to:CZ,start:CX,end:CW};B(A7,CX,CI?CX:CW);}function BL(){if(Bg.readOnly!="nocursor"){A7.focus();}}function CV(){if(!Ay.getBoundingClientRect){return ;}var CW=Ay.getBoundingClientRect();var CX=window.innerHeight||Math.max(document.body.offsetHeight,document.documentElement.offsetHeight);if(CW.top<0||CW.bottom>CX){Ay.scrollIntoView();}}function Bv(){var CX=CP(CT.inverted?CT.from:CT.to);var CW=Bg.lineWrapping?Math.min(CX.x,BG.offsetWidth):CX.x;return AM(CW,CX.y,CW,CX.yBot);}function AM(CY,Cd,CW,Cc){var Ca=As(),Cj=B4(),Cf=BW();Cd+=Cj;Cc+=Cj;CY+=Ca;CW+=Ca;var Cg=A5.clientHeight,CZ=A5.scrollTop,CX=false,Ci=true;if(Cd<CZ){A5.scrollTop=Math.max(0,Cd-2*Cf);CX=true;}else{if(Cc>CZ+Cg){A5.scrollTop=Cc+Cf-Cg;CX=true;}}var Ce=A5.clientWidth,Ch=A5.scrollLeft;var Cb=Bg.fixedGutter?AU.clientWidth:0;if(CY<Ch+Cb){if(CY<50){CY=0;}A5.scrollLeft=Math.max(0,CY-10-Cb);CX=true;}else{if(CW>Ce+Ch){A5.scrollLeft=CW+10-Ce;CX=true;if(CW>BV.clientWidth){Ci=false;}}}if(CX&&Bg.onScroll){Bg.onScroll(Bp);}return Ci;}function BM(){var CX=BW(),CZ=A5.scrollTop-B4();var CW=Math.max(0,Math.floor(CZ/CX));var CY=Math.ceil((CZ+A5.clientHeight)/CX);return{from:l(B9,CW),to:l(B9,CY)};}function Bt(Ce){if(!A5.clientWidth){CO=BU=Az=0;return ;}var CZ=BM();if(Ce!==true&&Ce.length==0&&CZ.from>=CO&&CZ.to<=BU){return ;}var Cf=Math.max(CZ.from-100,0),Cg=Math.min(B9.size,CZ.to+100);if(CO<Cf&&Cf-CO<20){Cf=CO;}if(BU>Cg&&BU-Cg<20){Cg=Math.min(B9.size,BU);}var Ch=Ce===true?[]:Bf([{from:CO,to:BU,domStart:0}],Ce);var Cd=0;for(var Cb=0;Cb<Ch.length;++Cb){var Cc=Ch[Cb];if(Cc.from<Cf){Cc.domStart+=(Cf-Cc.from);Cc.from=Cf;}if(Cc.to>Cg){Cc.to=Cg;}if(Cc.from>=Cc.to){Ch.splice(Cb--,1);}else{Cd+=Cc.to-Cc.from;}}if(Cd==Cg-Cf){return ;}Ch.sort(function(Cj,Ci){return Cj.domStart-Ci.domStart;});var CY=BW(),CW=AU.style.display;AC.style.display=AU.style.display="none";Af(Cf,Cg,Ch);AC.style.display="";var CX=Cf!=CO||Cg!=BU||i!=A5.clientHeight;if(CX){i=A5.clientHeight;}CO=Cf;BU=Cg;Az=E(B9,Cf);Bw.style.top=(Az*CY)+"px";BV.style.height=(B9.height*CY+2*B4())+"px";if(AC.childNodes.length!=BU-CO){throw new Error("BAD PATCH! "+JSON.stringify(Ch)+" size="+(BU-CO)+" nodes="+AC.childNodes.length);}if(Bg.lineWrapping){AR=A5.clientWidth;var Ca=AC.firstChild;B9.iter(CO,BU,function(Cj){if(!Cj.hidden){var Ci=Math.round(Ca.offsetHeight/CY)||1;if(Cj.height!=Ci){Aq(Cj,Ci);Ag=true;}}Ca=Ca.nextSibling;});}else{if(AR==null){AR=B5(BN);}if(AR>A5.clientWidth){BG.style.width=AR+"px";BV.style.width="";BV.style.width=A5.scrollWidth+"px";}else{BG.style.width=BV.style.width="";}}AU.style.display=CW;if(CX||Ag){AZ();}A2();}function Bf(Cf,Cd){for(var Ca=0,CY=Cd.length||0;Ca<CY;++Ca){var Cc=Cd[Ca],CW=[],Ce=Cc.diff||0;for(var CZ=0,CX=Cf.length;CZ<CX;++CZ){var Cb=Cf[CZ];if(Cc.to<=Cb.from&&Cc.diff){CW.push({from:Cb.from+Ce,to:Cb.to+Ce,domStart:Cb.domStart});}else{if(Cc.to<=Cb.from||Cc.from>=Cb.to){CW.push(Cb);}else{if(Cc.from>Cb.from){CW.push({from:Cb.from,to:Cc.from,domStart:Cb.domStart});}if(Cc.to<Cb.to){CW.push({from:Cc.to+Ce,to:Cb.to+Ce,domStart:Cb.domStart+(Cc.to-Cb.from)});}}}}Cf=CW;}return Cf;}function Af(Cj,Ck,Cm){if(!Cm.length){AC.innerHTML="";}else{function CW(Co){var Cn=Co.nextSibling;Co.parentNode.removeChild(Co);return Cn;}var Cc=0,CZ=AC.firstChild,CX;for(var Cd=0;Cd<Cm.length;++Cd){var Cl=Cm[Cd];while(Cl.domStart>Cc){CZ=CW(CZ);Cc++;}for(var Cb=0,Cf=Cl.to-Cl.from;Cb<Cf;++Cb){CZ=CZ.nextSibling;Cc++;}}while(CZ){CZ=CW(CZ);}}var Ce=Cm.shift(),CZ=AC.firstChild,Cb=Cj;var Ci=CT.from.line,Ch=CT.to.line,Ca=Ci<Cj&&Ch>=Cj;var Cg=CJ.createElement("div"),CY;B9.iter(Cj,Ck,function(Cn){var Cp=null,Co=null;if(Ca){Cp=0;if(Ch==Cb){Ca=false;Co=CT.to.ch;}}else{if(Ci==Cb){if(Ch==Cb){Cp=CT.from.ch;Co=CT.to.ch;}else{Ca=true;Cp=CT.from.ch;}}}if(Ce&&Ce.to==Cb){Ce=Cm.shift();}if(!Ce||Ce.from>Cb){if(Cn.hidden){Cg.innerHTML="<pre></pre>";}else{Cg.innerHTML=Cn.getHTML(Cp,Co,true);}AC.insertBefore(Cg.firstChild,CZ);}else{CZ=CZ.nextSibling;}++Cb;});}function AZ(){if(!Bg.gutter&&!Bg.lineNumbers){return ;}var CW=Bw.offsetHeight,Cd=A5.clientHeight;AU.style.height=(CW-Cd<2?Cd:CW)+"px";var CY=[],CX=CO;B9.iter(CO,Math.max(BU,CO+1),function(Cf){if(Cf.hidden){CY.push("<pre></pre>");}else{var Ce=Cf.gutterMarker;var Ch=Bg.lineNumbers?CX+Bg.firstLineNumber:null;if(Ce&&Ce.text){Ch=Ce.text.replace("%N%",Ch!=null?Ch:"");}else{if(Ch==null){Ch="\u00a0";}}CY.push((Ce&&Ce.style?'<pre class="'+Ce.style+'">':"<pre>"),Ch);for(var Cg=1;Cg<Cf.height;++Cg){CY.push("<br>&nbsp;");}CY.push("</pre>");}++CX;});AU.style.display="none";Al.innerHTML=CY.join("");var Cc=String(B9.size).length,Ca=Al.firstChild,Cb=Y(Ca),CZ="";while(Cb.length+CZ.length<Cc){CZ+="\u00a0";}if(CZ){Ca.insertBefore(CJ.createTextNode(CZ),Ca.firstChild);}AU.style.display="";BG.style.marginLeft=AU.offsetWidth+"px";Ag=false;}function A2(){var CX=CT.inverted?CT.from:CT.to,CW=BW();var CZ=CP(CX,true);var CY=CZ.y+Az*BW();Bd.style.top=Math.max(Math.min(CY,A5.offsetHeight),0)+"px";Bd.style.left=(CZ.x-A5.scrollLeft)+"px";if(q(CT.from,CT.to)){Ay.style.top=CZ.y+"px";Ay.style.left=(Bg.lineWrapping?Math.min(CZ.x,BG.offsetWidth):CZ.x)+"px";Ay.style.display="";}else{Ay.style.display="none";}}function BI(CY,CX){var CW=By&&Ah(By);if(CW){if(n(CW,CY)){CY=CW;}else{if(n(CX,CW)){CX=CW;}}}BH(CY,CX);}function BH(Ca,CZ,CW,CY){if(CW==null){CW=CT.from.line;CY=CT.to.line;}if(q(CT.from,Ca)&&q(CT.to,CZ)){return ;}if(n(CZ,Ca)){var CX=CZ;CZ=Ca;Ca=CX;}if(Ca.line!=CW){Ca=BY(Ca,CW,CT.from.ch);}if(CZ.line!=CY){CZ=BY(CZ,CY,CT.to.ch);}if(q(Ca,CZ)){CT.inverted=false;}else{if(q(Ca,CT.to)){CT.inverted=false;}else{if(q(CZ,CT.from)){CT.inverted=true;}}}if(q(Ca,CZ)){if(!q(CT.from,CT.to)){AN.push({from:CW,to:CY+1});}}else{if(q(CT.from,CT.to)){AN.push({from:Ca.line,to:CZ.line+1});}else{if(!q(Ca,CT.from)){if(Ca.line<CW){AN.push({from:Ca.line,to:Math.min(CZ.line,CW)+1});}else{AN.push({from:CW,to:Math.min(CY,Ca.line)+1});}}if(!q(CZ,CT.to)){if(CZ.line<CY){AN.push({from:Math.max(CW,Ca.line),to:CY+1});}else{AN.push({from:Math.max(Ca.line,CY),to:CZ.line+1});}}}}CT.from=Ca;CT.to=CZ;Ad=true;}function BY(Ca,CX,CY){function CZ(Cd){var Cf=Ca.line+Cd,Cc=Cd==1?B9.size:-1;while(Cf!=Cc){var Cb=CC(Cf);if(!Cb.hidden){var Ce=Ca.ch;if(Ce>CY||Ce>Cb.text.length){Ce=Cb.text.length;}return{line:Cf,ch:Ce};}Cf+=Cd;}}var CW=CC(Ca.line);if(!CW.hidden){return Ca;}if(Ca.line>=CX){return CZ(1)||CZ(-1);}else{return CZ(-1)||CZ(1);}}function At(CW,CY,CX){var CZ=Ah({line:CW,ch:CY||0});(CX?BI:BH)(CZ,CZ);}function Be(CW){return Math.max(0,Math.min(CW,B9.size-1));}function Ah(CY){if(CY.line<0){return{line:0,ch:0};}if(CY.line>=B9.size){return{line:B9.size-1,ch:CC(B9.size-1).text.length};}var CW=CY.ch,CX=CC(CY.line).text.length;if(CW==null||CW>CX){return{line:CY.line,ch:CX};}else{if(CW<0){return{line:CY.line,ch:0};}else{return CY;}}}function AS(CZ){var CW=Math.floor(A5.clientHeight/BW()),CX=CT.inverted?CT.from:CT.to;var CY=E(B9,CX.line)+(Math.max(CW-1,1)*(CZ?1:-1));At(l(B9,CY),CX.ch,true);}function CH(CW){var CX=CW?{line:0,ch:0}:{line:B9.size-1,ch:CC(B9.size-1).text.length};BI(CX,CX);}function BK(){var CW=B9.size-1;BH({line:0,ch:0},{line:CW,ch:CC(CW).text.length});}function BR(CZ){var CX=CC(CZ.line).text;var CY=CZ.ch,CW=CZ.ch;while(CY>0&&/\w/.test(CX.charAt(CY-1))){--CY;}while(CW<CX.length&&/\w/.test(CX.charAt(CW))){++CW;}BI({line:CZ.line,ch:CY},{line:CZ.line,ch:CW});}function AY(CW){BI({line:CW,ch:0},{line:CW,ch:CC(CW).text.length});}function AF(){BE("\n","end");if(Bg.enterMode!="flat"){BJ(CT.from.line,Bg.enterMode=="keep"?"prev":"smart");}}function CB(CW){function CX(Ca){if(q(CT.from,CT.to)){return BJ(CT.from.line,Ca);}var CZ=CT.to.line-(CT.to.ch?0:1);for(var CY=CT.from.line;CY<=CZ;++CY){BJ(CY,Ca);}}By=null;switch(Bg.tabMode){case"default":return false;case"indent":CX("smart");break;case"classic":if(q(CT.from,CT.to)){if(CW){BJ(CT.from.line,"smart");}else{BE("\t","end");}break;}case"shift":CX(CW?"subtract":"add");break;}return true;}function Bm(){var CW=Math.max(0,CC(CT.from.line).text.search(/\S/));At(CT.from.line,CT.from.ch<=CW&&CT.from.ch?0:CW,true);}function BJ(CY,Cf){if(Cf=="smart"){if(!Br.indent){Cf="prev";}else{var CW=B6(CY);}}var Cg=CC(CY),Ca=Cg.indentation(),CX=Cg.text.match(/^\s*/)[0],Cc;if(Cf=="prev"){if(CY){Cc=CC(CY-1).indentation();}else{Cc=0;}}else{if(Cf=="smart"){Cc=Br.indent(CW,Cg.text.slice(CX.length));}else{if(Cf=="add"){Cc=Ca+Bg.indentUnit;}else{if(Cf=="subtract"){Cc=Ca-Bg.indentUnit;}}}}Cc=Math.max(0,Cc);var Ce=Cc-Ca;if(!Ce){if(CT.from.line!=CY&&CT.to.line!=CY){return ;}var Cd=CX;}else{var Cd="",Cb=0;if(Bg.indentWithTabs){for(var CZ=Math.floor(Cc/U);CZ;--CZ){Cb+=U;Cd+="\t";}}while(Cb<Cc){++Cb;Cd+=" ";}}BX(Cd,{line:CY,ch:0},{line:CY,ch:CX.length});}function BZ(){Br=P.getMode(Bg,Bg.mode);B9.iter(0,B9.size,function(CW){CW.stateAfter=null;});Bx=[0];BP();}function A0(){var CW=Bg.gutter||Bg.lineNumbers;AU.style.display=CW?"":"none";if(CW){Ag=true;}else{AC.parentNode.style.marginLeft=0;}}function CD(CY,CX){if(Bg.lineWrapping){AP.className+=" CodeMirror-wrap";var CW=A5.clientWidth/A3()-3;B9.iter(0,B9.size,function(CZ){if(CZ.hidden){return ;}var Ca=Math.ceil(CZ.text.length/CW)||1;if(Ca!=1){Aq(CZ,Ca);}});BG.style.width=BV.style.width="";}else{AP.className=AP.className.replace(" CodeMirror-wrap","");AR=null;BN="";B9.iter(0,B9.size,function(CZ){if(CZ.height!=1&&!CZ.hidden){Aq(CZ,1);}if(CZ.text.length>BN.length){BN=CZ.text;}});}AN.push({from:0,to:B9.size});}function BO(Cc,Cb,CX){Cc=Ah(Cc);Cb=Ah(Cb);var Ca=[];function CZ(Cd,Cg,Cf,Ce){mark=CC(Cd).addMark(Cg,Cf,Ce,Ca);}if(Cc.line==Cb.line){CZ(Cc.line,Cc.ch,Cb.ch,CX);}else{CZ(Cc.line,Cc.ch,null,CX);for(var CW=Cc.line+1,CY=Cb.line;CW<CY;++CW){CZ(CW,0,null,CX);}CZ(Cb.line,0,Cb.ch,CX);}AN.push({from:Cc.line,to:Cb.line+1});return new CU(Ca);}function CU(CW){this.set=CW;}CU.prototype.clear=AD(function(){for(var CY=0,CZ=this.set.length;CY<CZ;++CY){var CW=this.set[CY].marked;if(!CW){continue;}for(var CX=0;CX<CW.length;++CX){if(CW[CX].set==this.set){CW.splice(CX--,1);}}}AN.push({from:0,to:B9.size});});CU.prototype.find=function(){var Cb,Cc;for(var CY=0,Ca=this.set.length;CY<Ca;++CY){var Ce=this.set[CY],CZ=Ce.marked;for(var CX=0;CX<CZ.length;++CX){var CW=CZ[CX];if(CW.set==this.set){if(CW.from!=null||CW.to!=null){var Cd=m(Ce);if(Cd!=null){if(CW.from!=null){Cb={line:Cd,ch:CW.from};}if(CW.to!=null){Cc={line:Cd,ch:CW.to};}}}}}}return{from:Cb,to:Cc};};function Bb(CW,CY,CX){if(typeof CW=="number"){CW=CC(Be(CW));}CW.gutterMarker={text:CY,style:CX};Ag=true;return CW;}function AG(CW){if(typeof CW=="number"){CW=CC(Be(CW));}CW.gutterMarker=null;Ag=true;}function Ak(CX,CZ){var CY=CX,CW=CX;if(typeof CX=="number"){CW=CC(Be(CX));}else{CY=m(CX);}if(CY==null){return null;}if(CZ(CW,CY)){AN.push({from:CY,to:CY+1});}return CW;}function A6(CX,CW){return Ak(CX,function(CY){if(CY.className!=CW){CY.className=CW;return true;}});}function CG(CX,CW){return Ak(CX,function(CY,CZ){if(CY.hidden!=CW){CY.hidden=CW;Aq(CY,CW?0:1);if(CW&&(CT.from.line==CZ||CT.to.line==CZ)){BH(BY(CT.from,CT.from.line,CT.from.ch),BY(CT.to,CT.to.line,CT.to.ch));}return(Ag=true);}});}function Ai(CX){if(typeof CX=="number"){if(!BD(CX)){return null;}var CY=CX;CX=CC(CX);if(!CX){return null;}}else{var CY=m(CX);if(CY==null){return null;}}var CW=CX.gutterMarker;return{line:CY,text:CX.text,markerText:CW&&CW.text,markerClass:CW&&CW.style,lineClass:CX.className};}function B5(CW){AH.innerHTML="<pre><span>x</span></pre>";AH.firstChild.firstChild.firstChild.nodeValue=CW;return AH.firstChild.firstChild.offsetWidth||10;}function AT(Ci,Cc){if(Cc<=0){return 0;}var CZ=CC(Ci),Cf=CZ.text;function Cg(Cj){AH.innerHTML="<pre><span>"+CZ.getHTML(null,null,false,Cj)+"</span></pre>";return AH.firstChild.firstChild.offsetWidth;}var Cd=0,Cb=0,Ce=Cf.length,Ca;var CX=Math.min(Ce,Math.ceil(Cc/A3()));for(;;){var CY=Cg(CX);if(CY<=Cc&&CX<Ce){CX=Math.min(Ce,Math.ceil(CX*1.2));}else{Ca=CY;Ce=CX;break;}}if(Cc>Ca){return Ce;}CX=Math.floor(Ce*0.8);CY=Cg(CX);if(CY<Cc){Cd=CX;Cb=CY;}for(;;){if(Ce-Cd<=1){return(Ca-Cc>Cc-Cb)?Cd:Ce;}var Ch=Math.ceil((Cd+Ce)/2),CW=Cg(Ch);if(CW>Cc){Ce=Ch;Ca=CW;}else{Cd=Ch;Cb=CW;}}}var CA=Math.floor(Math.random()*16777215).toString(16);function Bl(CY,Cb){var CW="";if(Bg.lineWrapping){var CX=CY.text.indexOf(" ",Cb+2);CW=CY.text.slice(Cb+1,CX<0?CY.text.length:CX+(a?5:0));}AH.innerHTML="<pre>"+CY.getHTML(null,null,false,Cb)+'<span id="CodeMirror-temp-'+CA+'">'+(CY.text.charAt(Cb)||" ")+"</span>"+CW+"</pre>";var Ca=document.getElementById("CodeMirror-temp-"+CA);var Cd=Ca.offsetTop,Cc=Ca.offsetLeft;if(a&&Cb&&Cd==0&&Cc==0){var CZ=document.createElement("span");CZ.innerHTML="x";Ca.parentNode.insertBefore(CZ,Ca.nextSibling);Cd=CZ.offsetTop;}return{top:Cd,left:Cc};}function CP(Cb,CZ){var CW,CX=BW(),Ca=CX*(E(B9,Cb.line)-(CZ?Az:0));if(Cb.ch==0){CW=0;}else{var CY=Bl(CC(Cb.line),Cb.ch);CW=CY.left;if(Bg.lineWrapping){Ca+=Math.max(0,CY.top);}}return{x:CW,y:Ca,yBot:Ca+CX};}function BQ(Cf,Ce){if(Ce<0){Ce=0;}var Cc=BW(),Ca=A3(),Cl=Az+Math.floor(Ce/Cc);var Cg=l(B9,Cl);if(Cg>=B9.size){return{line:B9.size-1,ch:0};}var CX=CC(Cg),Ci=CX.text;var Cn=Bg.lineWrapping,Cd=Cn?Cl-E(B9,Cg):0;if(Cf<=0&&Cd==0){return{line:Cg,ch:0};}function Cm(Cp){var Cq=Bl(CX,Cp);if(Cn){var Cr=Math.round(Cq.top/Cc);return Math.max(0,Cq.left+(Cr-Cd)*A5.clientWidth);}return Cq.left;}var Ck=0,Cj=0,CY=Ci.length,CW;var Ch=Math.min(CY,Math.ceil((Cf+Cd*A5.clientWidth*0.9)/Ca));for(;;){var Cb=Cm(Ch);if(Cb<=Cf&&Ch<CY){Ch=Math.min(CY,Math.ceil(Ch*1.2));}else{CW=Cb;CY=Ch;break;}}if(Cf>CW){return{line:Cg,ch:CY};}Ch=Math.floor(CY*0.8);Cb=Cm(Ch);if(Cb<Cf){Ck=Ch;Cj=Cb;}for(;;){if(CY-Ck<=1){return{line:Cg,ch:(CW-Cf>Cf-Cj)?Ck:CY};}var Co=Math.ceil((Ck+CY)/2),CZ=Cm(Co);if(CZ>Cf){CY=Co;CW=CZ;}else{Ck=Co;Cj=CZ;}}}function AB(CY){var CW=CP(CY,true),CX=x(BG);return{x:CX.left+CW.x,y:CX.top+CW.y,yBot:CX.top+CW.yBot};}var Ao,An;function BW(){var CW=AC.offsetHeight;if(CW==An){return Ao;}An=CW;AH.innerHTML="<pre>x<br>x<br>x<br>x<br>x<br>x<br>x<br>x<br>x<br>x</pre>";return(Ao=AH.firstChild.offsetHeight/10||1);}var CQ,An=0;function A3(){if(A5.clientWidth==An){return CQ;}An=A5.clientWidth;return(CQ=B5("x"));}function B4(){return BG.offsetTop;}function As(){return BG.offsetLeft;}function Ar(Ca,CZ){var CY=x(A5,true),CW,Cb;try{CW=Ca.clientX;Cb=Ca.clientY;}catch(Ca){return null;}if(!CZ&&(CW-CY.left>A5.clientWidth||Cb-CY.top>A5.clientHeight)){return null;}var CX=x(BG,true);return BQ(CW-CX.left,Cb-CX.top);}function Ap(CX){var Cb=Ar(CX);if(!Cb||window.opera){return ;}if(q(CT.from,CT.to)||n(Cb,CT.from)||!n(Cb,CT.to)){AD(At)(Cb.line,Cb.ch);}var Ca=A7.style.cssText;Bd.style.position="absolute";A7.style.cssText="position: fixed; width: 30px; height: 30px; top: "+(CX.clientY-5)+"px; left: "+(CX.clientX-5)+"px; z-index: 1000; background: white; border-width: 0; outline: none; overflow: hidden; opacity: .05; filter: alpha(opacity=5);";A1=true;var CZ=A7.value=Bi();BL();B(A7,0,A7.value.length);function CW(){var Cc=T(A7.value).join("\n");if(Cc!=CZ){AD(BE)(Cc,"end");}Bd.style.position="relative";A7.style.cssText=Ca;A1=false;B8();z();}if(d){Q(CX);var CY=N(window,"mouseup",function(){CY();setTimeout(CW,20);},true);}else{setTimeout(CW,50);}}function CL(){clearInterval(CN);var CW=true;Ay.style.visibility="";CN=setInterval(function(){Ay.style.visibility=(CW=!CW)?"":"hidden";},650);}var BA={"(":")>",")":"(<","[":"]>","]":"[<","{":"}>","}":"{<"};function Bu(Cc){var CW=CT.inverted?CT.from:CT.to,Ce=CC(CW.line),CX=CW.ch-1;var Cb=(CX>=0&&BA[Ce.text.charAt(CX)])||BA[Ce.text.charAt(++CX)];if(!Cb){return ;}var Cf=Cb.charAt(0),Cd=Cb.charAt(1)==">",Cp=Cd?1:-1,Ck=Ce.styles;for(var Cq=CX+1,Cm=0,Co=Ck.length;Cm<Co;Cm+=2){if((Cq-=Ck[Cm].length)<=0){var Cn=Ck[Cm+1];break;}}var CZ=[Ce.text.charAt(CX)],Cj=/[(){}[\]]/;function Ch(C2,Cx,Cy){if(!C2.text){return ;}var C1=C2.styles,Cw=Cd?0:C2.text.length-1,Cz;for(var Ct=Cd?0:C1.length-2,Cv=Cd?C1.length:-2;Ct!=Cv;Ct+=2*Cp){var C0=C1[Ct];if(C1[Ct+1]!=null&&C1[Ct+1]!=Cn){Cw+=Cp*C0.length;continue;}for(var Cs=Cd?0:C0.length-1,Cr=Cd?C0.length:-1;Cs!=Cr;Cs+=Cp,Cw+=Cp){if(Cw>=Cx&&Cw<Cy&&Cj.test(Cz=C0.charAt(Cs))){var Cu=BA[Cz];if(Cu.charAt(1)==">"==Cd){CZ.push(Cz);}else{if(CZ.pop()!=Cu.charAt(0)){return{pos:Cw,match:false};}else{if(!CZ.length){return{pos:Cw,match:true};}}}}}}}for(var Cm=CW.line,Co=Cd?Math.min(Cm+100,B9.size):Math.max(-1,Cm-100);Cm!=Co;Cm+=Cp){var Ce=CC(Cm),Ca=Cm==CW.line;var Cg=Ch(Ce,Ca&&Cd?CX+1:0,Ca&&!Cd?CX:Ce.text.length);if(Cg){break;}}if(!Cg){Cg={pos:null,match:false};}var Cn=Cg.match?"CodeMirror-matchingbracket":"CodeMirror-nonmatchingbracket";var Cl=BO({line:CW.line,ch:CX},{line:CW.line,ch:CX+1},Cn),CY=Cg.pos!=null&&BO({line:Cm,ch:Cg.pos},{line:Cm,ch:Cg.pos+1},Cn);var Ci=AD(function(){Cl.clear();CY&&CY.clear();});if(Cc){setTimeout(Ci,800);}else{Bk=Ci;}}function Av(Cc){var Cb,CY;for(var CX=Cc,CZ=Cc-40;CX>CZ;--CX){if(CX==0){return 0;}var CW=CC(CX-1);if(CW.stateAfter){return CX;}var Ca=CW.indentation();if(CY==null||Cb>Ca){CY=CX-1;Cb=Ca;}}return CY;}function B6(CY){var CX=Av(CY),CW=CX&&CC(CX-1).stateAfter;if(!CW){CW=j(Br);}else{CW=K(Br,CW);}B9.iter(CX,CY,function(CZ){CZ.highlight(Br,CW);CZ.stateAfter=K(Br,CW);});if(CX<CY){AN.push({from:CX,to:CY});}if(CY<B9.size&&!CC(CY).stateAfter){Bx.push(CY);}return CW;}function CE(CY,CW){var CX=B6(CY);B9.iter(CY,CW,function(CZ){CZ.highlight(Br,CX);CZ.stateAfter=K(Br,CX);});}function Ba(){var Cc=+new Date+Bg.workTime;var Cf=Bx.length;while(Bx.length){if(!CC(CO).stateAfter){var CZ=CO;}else{var CZ=Bx.pop();}if(CZ>=B9.size){continue;}var CX=Av(CZ),CW=CX&&CC(CX-1).stateAfter;if(CW){CW=K(Br,CW);}else{CW=j(Br);}var Cb=0,CY=Br.compareStates,Ce=false,Cd=CX,Ca=false;B9.iter(Cd,B9.size,function(Cg){var Ch=Cg.stateAfter;if(+new Date>Cc){Bx.push(Cd);BP(Bg.workDelay);if(Ce){AN.push({from:CZ,to:Cd+1});}return(Ca=true);}var Ci=Cg.highlight(Br,CW);if(Ci){Ce=true;}Cg.stateAfter=K(Br,CW);if(CY){if(Ch&&CY(Ch,CW)){return true;}}else{if(Ci!==false||!Ch){Cb=0;}else{if(++Cb>3){return true;}}}++Cd;});if(Ca){return ;}if(Ce){AN.push({from:CZ,to:Cd+1});}}if(Cf&&Bg.onHighlightComplete){Bg.onHighlightComplete(Bp);}}function BP(CW){if(!Bx.length){return ;}AI.set(CW,AD(Ba));}function Ab(){B2=null;AN=[];CK=Ad=false;}function AK(){var CX=false;if(Ad){CX=!Bv();}if(AN.length){Bt(AN);}else{if(Ad){A2();}if(Ag){AZ();}}if(CX){Bv();}if(Ad){CV();CL();}if(Bz&&!A1&&(B2===true||(B2!==false&&Ad))){B8();}if(Ad&&Bg.matchBrackets){setTimeout(AD(function(){if(Bk){Bk();Bk=null;}Bu(false);}),20);}var CW=CK;if(Ad&&Bg.onCursorActivity){Bg.onCursorActivity(Bp);}if(CW&&Bg.onChange&&Bp){Bg.onChange(Bp,CW);}}var B3=0;function AD(CW){return function(){if(!B3++){Ab();}try{var CX=CW.apply(this,arguments);}finally{if(!--B3){AK();}}return CX;};}function AV(CY,Ca,CX){this.atOccurrence=false;if(CX==null){CX=typeof CY=="string"&&CY==CY.toLowerCase();}if(Ca&&typeof Ca=="object"){Ca=Ah(Ca);}else{Ca={line:0,ch:0};}this.pos={from:Ca,to:Ca};if(typeof CY!="string"){this.matches=function(Cd,Ch){if(Cd){var Cb=CC(Ch.line).text.slice(0,Ch.ch),Cc=Cb.match(CY),Cg=0;while(Cc){var Ce=Cb.indexOf(Cc[0]);Cg+=Ce;Cb=Cb.slice(Ce+1);var Cf=Cb.match(CY);if(Cf){Cc=Cf;}else{break;}Cg++;}}else{var Cb=CC(Ch.line).text.slice(Ch.ch),Cc=Cb.match(CY),Cg=Cc&&Ch.ch+Cb.indexOf(Cc[0]);}if(Cc){return{from:{line:Ch.line,ch:Cg},to:{line:Ch.line,ch:Cg+Cc[0].length},match:Cc};}};}else{if(CX){CY=CY.toLowerCase();}var CW=CX?function(Cb){return Cb.toLowerCase();}:function(Cb){return Cb;};var CZ=CY.split("\n");if(CZ.length==1){this.matches=function(Ce,Cf){var Cc=CW(CC(Cf.line).text),Cb=CY.length,Cd;if(Ce?(Cf.ch>=Cb&&(Cd=Cc.lastIndexOf(CY,Cf.ch-Cb))!=-1):(Cd=Cc.indexOf(CY,Cf.ch))!=-1){return{from:{line:Cf.line,ch:Cd},to:{line:Cf.line,ch:Cd+Cb}};}};}else{this.matches=function(Cg,Ci){var Ch=Ci.line,Cj=(Cg?CZ.length-1:0),Ce=CZ[Cj],Ck=CW(CC(Ch).text);var Cf=(Cg?Ck.indexOf(Ce)+Ce.length:Ck.lastIndexOf(Ce));if(Cg?Cf>=Ci.ch||Cf!=Ce.length:Cf<=Ci.ch||Cf!=Ck.length-Ce.length){return ;}for(;;){if(Cg?!Ch:Ch==B9.size-1){return ;}Ck=CW(CC(Ch+=Cg?-1:1).text);Ce=CZ[Cg?--Cj:++Cj];if(Cj>0&&Cj<CZ.length-1){if(Ck!=Ce){return ;}else{continue;}}var Cd=(Cg?Ck.lastIndexOf(Ce):Ck.indexOf(Ce)+Ce.length);if(Cg?Cd!=Ck.length-Ce.length:Cd!=Ce.length){return ;}var Cb={line:Ci.line,ch:Cf},Cc={line:Ch,ch:Cd};return{from:Cg?Cc:Cb,to:Cg?Cb:Cc};}};}}}AV.prototype={findNext:function(){return this.find(false);},findPrevious:function(){return this.find(true);},find:function(CX){var CW=this,CZ=Ah(CX?this.pos.from:this.pos.to);function CY(Ca){var Cb={line:Ca,ch:0};CW.pos={from:Cb,to:Cb};CW.atOccurrence=false;return false;}for(;;){if(this.pos=this.matches(CX,CZ)){this.atOccurrence=true;return this.pos.match||true;}if(CX){if(!CZ.line){return CY(0);}CZ={line:CZ.line-1,ch:CC(CZ.line-1).text.length};}else{if(CZ.line==B9.size-1){return CY(B9.size);}CZ={line:CZ.line+1,ch:0};}}},from:function(){if(this.atOccurrence){return o(this.pos.from);}},to:function(){if(this.atOccurrence){return o(this.pos.to);}},replace:function(CX){var CW=this;if(this.atOccurrence){AD(function(){CW.pos.to=BX(CX,CW.pos.from,CW.pos.to);})();}}};for(var BS in p){if(p.propertyIsEnumerable(BS)&&!Bp.propertyIsEnumerable(BS)){Bp[BS]=p[BS];}}return Bp;}P.defaults={value:"",mode:null,theme:"default",indentUnit:2,indentWithTabs:false,tabMode:"classic",enterMode:"indent",electricChars:true,onKeyEvent:null,lineWrapping:false,lineNumbers:false,gutter:false,fixedGutter:false,firstLineNumber:1,readOnly:false,smartHome:true,onChange:null,onCursorActivity:null,onGutterClick:null,onHighlightComplete:null,onFocus:null,onBlur:null,onScroll:null,matchBrackets:false,workTime:100,workDelay:200,undoDepth:40,tabindex:null,pollForIME:false,document:window.document};var w={},f={};P.defineMode=function(i,z){if(!P.defaults.mode&&i!="null"){P.defaults.mode=i;}w[i]=z;};P.defineMIME=function(z,i){f[z]=i;};P.getMode=function(AA,i){if(typeof i=="string"&&f.hasOwnProperty(i)){i=f[i];}if(typeof i=="string"){var AC=i,z={};}else{if(i!=null){var AC=i.name,z=i;}}var AB=w[AC];if(!AB){if(window.console){console.warn("No mode "+AC+" found, falling back to plain text.");}return P.getMode(AA,"text/plain");}return AB(AA,z||{});};P.listModes=function(){var z=[];for(var i in w){if(w.propertyIsEnumerable(i)){z.push(i);}}return z;};P.listMIMEs=function(){var z=[];for(var i in f){if(f.propertyIsEnumerable(i)){z.push({mime:i,mode:f[i]});}}return z;};var p={};P.defineExtension=function(i,z){p[i]=z;};P.fromTextArea=function(z,AB){if(!AB){AB={};}AB.value=z.value;if(!AB.tabindex&&z.tabindex){AB.tabindex=z.tabindex;}function AD(){z.value=i.getValue();}if(z.form){var AC=N(z.form,"submit",AD,true);if(typeof z.form.submit=="function"){var AA=z.form.submit;function AE(){AD();z.form.submit=AA;z.form.submit();z.form.submit=AE;}z.form.submit=AE;}}z.style.display="none";var i=P(function(AF){z.parentNode.insertBefore(AF,z.nextSibling);},AB);i.save=AD;i.toTextArea=function(){AD();z.parentNode.removeChild(i.getWrapperElement());z.style.display="";if(z.form){AC();if(typeof z.form.submit=="function"){z.form.submit=AA;}}};return i;};function K(AB,i){if(i===true){return i;}if(AB.copyState){return AB.copyState(i);}var AA={};for(var AC in i){var z=i[AC];if(z instanceof Array){z=z.concat([]);}AA[AC]=z;}return AA;}P.copyState=K;function j(AA,z,i){return AA.startState?AA.startState(z,i):true;}P.startState=j;function A(i){this.pos=this.start=0;this.string=i;}A.prototype={eol:function(){return this.pos>=this.string.length;},sol:function(){return this.pos==0;},peek:function(){return this.string.charAt(this.pos);},next:function(){if(this.pos<this.string.length){return this.string.charAt(this.pos++);}},eat:function(i){var AA=this.string.charAt(this.pos);if(typeof i=="string"){var z=AA==i;}else{var z=AA&&(i.test?i.test(AA):i(AA));}if(z){++this.pos;return AA;}},eatWhile:function(i){var z=this.pos;while(this.eat(i)){}return this.pos>z;},eatSpace:function(){var i=this.pos;while(/[\s\u00a0]/.test(this.string.charAt(this.pos))){++this.pos;}return this.pos>i;},skipToEnd:function(){this.pos=this.string.length;},skipTo:function(i){var z=this.string.indexOf(i,this.pos);if(z>-1){this.pos=z;return true;}},backUp:function(i){this.pos-=i;},column:function(){return J(this.string,this.start);},indentation:function(){return J(this.string);},match:function(AB,z,i){if(typeof AB=="string"){function AC(AD){return i?AD.toLowerCase():AD;}if(AC(this.string).indexOf(AC(AB),this.pos)==this.pos){if(z!==false){this.pos+=AB.length;}return true;}}else{var AA=this.string.slice(this.pos).match(AB);if(AA&&z!==false){this.pos+=AA[0].length;}return AA;}},current:function(){return this.string.slice(this.start,this.pos);}};P.StringStream=A;function C(z,i){this.styles=i||[z,null];this.text=z;this.height=1;this.marked=this.gutterMarker=this.className=null;this.stateAfter=this.parent=this.hidden=null;}C.inheritMarks=function(AD,AF){var AC=new C(AD),z=AF.marked;if(z){for(var AB=0;AB<z.length;++AB){if(z[AB].to==null){var AA=AC.marked||(AC.marked=[]),AE=z[AB];AA.push({from:null,to:null,style:AE.style,set:AE.set});AE.set.push(AC);}}}return AC;};C.prototype={replace:function(AE,AD,AJ){if(!AE&&(AD==null||AD==this.text.length)){this.className=this.gutterMarker=null;}var AK=[],AC=this.marked,AF=AD==null?this.text.length:AD;y(0,AE,this.styles,AK);if(AJ){AK.push(AJ,null);}y(AF,this.text.length,this.styles,AK);this.styles=AK;this.text=this.text.slice(0,AE)+AJ+this.text.slice(AF);this.stateAfter=null;if(AC){var AG=AJ.length-(AF-AE),AA=this.text.length;var AH=Math.min(AE,AE+AG);for(var AB=0;AB<AC.length;++AB){var z=AC[AB],AI=false;if(z.from!=null&&z.from>=AA){AI=true;}else{if(z.from!=null&&z.from>=AE){z.from=Math.max(z.from,AF)+AG;if(z.from<=0){z.from=AE==null?null:0;}}else{if(AD==null){z.to=null;}}if(z.to!=null&&z.to>AE){z.to=Math.max(z.to,AF)+AG;if(z.to<=0){AI=true;}}}if(AI||(z.from!=null&&z.to!=null&&z.from>=z.to)){AC.splice(AB--,1);}}}},split:function(AF,AD){var AB=[AD,null],z=this.marked;y(AF,this.text.length,this.styles,AB);var AA=new C(AD+this.text.slice(AF),AB);if(z){for(var AC=0;AC<z.length;++AC){var AE=z[AC];if(AE.to>AF||AE.to==null){if(!AA.marked){AA.marked=[];}AA.marked.push({from:AE.from<AF||AE.from==null?null:AE.from-AF+AD.length,to:AE.to==null?null:AE.to-AF+AD.length,style:AE.style,set:AE.set});AE.set.push(AA);}}}return AA;},append:function(AA){if(!AA.text.length){return ;}var AF=this.text.length,z=AA.marked;this.text+=AA.text;y(0,AA.text.length,AA.styles,this.styles);if(z&&z.length){var AD=this.marked||(this.marked=[]);for(var AE=0;AE<AD.length;++AE){if(AD[AE].to==null){AD[AE].to=AF;}}outer:for(var AE=0;AE<z.length;++AE){var AG=z[AE];if(!AG.from){for(var AC=0;AC<AD.length;++AC){var AB=AD[AC];if(AB.to==AF&&AB.set==AG.set){AB.to=AG.to==null?null:AG.to+AF;continue outer;}}}AD.push(AG);AG.set.push(this);AG.from+=AF;if(AG.to!=null){AG.to+=AF;}}}},addMark:function(AB,AA,i,z){z.push(this);if(this.marked==null){this.marked=[];}this.marked.push({from:AB,to:AA,style:i,set:z});this.marked.sort(function(AD,AC){return(AD.from||0)-(AC.from||0);});},highlight:function(AD,z){var AF=new A(this.text),AH=this.styles,AE=0;var AC=false,AA=AH[0],AG;if(this.text==""&&AD.blankLine){AD.blankLine(z);}while(!AF.eol()){var i=AD.token(AF,z);var AB=this.text.slice(AF.start,AF.pos);AF.start=AF.pos;if(AE&&AH[AE-1]==i){AH[AE-2]+=AB;}else{if(AB){if(!AC&&(AH[AE+1]!=i||(AE&&AH[AE-2]!=AG))){AC=true;}AH[AE++]=AB;AH[AE++]=i;AG=AA;AA=AH[AE];}}if(AF.pos>5000){AH[AE++]=this.text.slice(AF.pos);AH[AE++]=null;break;}}if(AH.length!=AE){AH.length=AE;AC=true;}if(AE&&AH[AE-2]!=AG){AC=true;}return AC||(AH.length<5&&this.text.length<10?null:false);},getTokenAt:function(AD,AB,AA){var i=this.text,AC=new A(i);while(AC.pos<AA&&!AC.eol()){AC.start=AC.pos;var z=AD.token(AC,AB);}return{start:AC.start,end:AC.pos,string:AC.current(),className:z||null,state:AB};},indentation:function(){return J(this.text);},getHTML:function(AM,AQ,AD,AO){var AG=[],AC=true;if(AD){AG.push(this.className?'<pre class="'+this.className+'">':"<pre>");}function AR(AZ,i){if(!AZ){return ;}if(AC&&a&&AZ.charAt(0)==" "){AZ="\u00a0"+AZ.slice(1);}AC=false;if(i){AG.push('<span class="',i,'">',e(AZ),"</span>");}else{AG.push(e(AZ));}}var AL=this.styles,AE=this.text,AK=this.marked;if(AM==AQ){AM=null;}var AT=AE.length;if(AO!=null){AT=Math.min(AO,AT);}if(!AE&&AO==null){AR(" ",AM!=null&&AQ==null?"CodeMirror-selected":null);}else{if(!AK&&AM==null){for(var AS=0,AH=0;AH<AT;AS+=2){var AN=AL[AS],AU=AL[AS+1],AP=AN.length;if(AH+AP>AT){AN=AN.slice(0,AT-AH);}AH+=AP;AR(AN,AU&&"cm-"+AU);}}else{var AB=0,AS=0,AJ="",AU,AX=0;var AV=-1,AF=null;function AW(){if(AK){AV+=1;AF=(AV<AK.length)?AK[AV]:null;}}AW();while(AB<AT){var AI=AT;var AY="";if(AM!=null){if(AM>AB){AI=AM;}else{if(AQ==null||AQ>AB){AY=" CodeMirror-selected";if(AQ!=null){AI=Math.min(AI,AQ);}}}}while(AF&&AF.to!=null&&AF.to<=AB){AW();}if(AF){if(AF.from>AB){AI=Math.min(AI,AF.from);}else{AY+=" "+AF.style;if(AF.to!=null){AI=Math.min(AI,AF.to);}}}for(;;){var AA=AB+AJ.length;var z=AU;if(AY){z=AU?AU+AY:AY;}AR(AA>AI?AJ.slice(0,AI-AB):AJ,z);if(AA>=AI){AJ=AJ.slice(AI-AB);AB=AI;break;}AB=AA;AJ=AL[AS++];AU="cm-"+AL[AS++];}}if(AM!=null&&AQ==null){AR(" ","CodeMirror-selected");}}}if(AD){AG.push("</pre>");}return AG.join("");},cleanUp:function(){this.parent=null;if(this.marked){for(var z=0,AA=this.marked.length;z<AA;++z){var AB=this.marked[z].set;AB.splice(L(AB,this),1);}}}};function y(AF,AG,z,AH){for(var AD=0,AE=0,AA=0;AE<AG;AD+=2){var AB=z[AD],AC=AE+AB.length;if(AA==0){if(AC>AF){AH.push(AB.slice(AF-AE,Math.min(AB.length,AG-AE)),z[AD+1]);}if(AC>=AF){AA=1;}}else{if(AA==1){if(AC>AG){AH.push(AB.slice(0,AG-AE),z[AD+1]);}else{AH.push(AB,z[AD+1]);}}}AE=AC;}}function u(AA){this.lines=AA;this.parent=null;for(var AB=0,AC=AA.length,z=0;AB<AC;++AB){AA[AB].parent=this;z+=AA[AB].height;}this.height=z;}u.prototype={chunkSize:function(){return this.lines.length;},remove:function(z,AD){for(var AB=z,AC=z+AD;AB<AC;++AB){var AA=this.lines[AB];AA.cleanUp();this.height-=AA.height;}this.lines.splice(z,AD);},collapse:function(i){i.splice.apply(i,[i.length,0].concat(this.lines));},insertHeight:function(AA,AB,z){this.height+=z;this.lines.splice.apply(this.lines,[AA,0].concat(AB));for(var AC=0,AD=AB.length;AC<AD;++AC){AB[AC].parent=this;}},iterN:function(i,AB,AA){for(var z=i+AB;i<z;++i){if(AA(this.lines[i])){return true;}}}};function G(AC){this.children=AC;var AB=0,z=0;for(var AA=0,AE=AC.length;AA<AE;++AA){var AD=AC[AA];AB+=AD.chunkSize();z+=AD.height;AD.parent=this;}this.size=AB;this.height=z;this.parent=null;}G.prototype={chunkSize:function(){return this.size;},remove:function(z,AG){this.size-=AG;for(var AB=0;AB<this.children.length;++AB){var AF=this.children[AB],AD=AF.chunkSize();if(z<AD){var AC=Math.min(AG,AD-z),AE=AF.height;AF.remove(z,AC);this.height-=AE-AF.height;if(AD==AC){this.children.splice(AB--,1);AF.parent=null;}if((AG-=AC)==0){break;}z=0;}else{z-=AD;}}if(this.size-AG<25){var AA=[];this.collapse(AA);this.children=[new u(AA)];}},collapse:function(z){for(var AA=0,AB=this.children.length;AA<AB;++AA){this.children[AA].collapse(z);}},insert:function(AA,AB){var z=0;for(var AC=0,AD=AB.length;AC<AD;++AC){z+=AB[AC].height;}this.insertHeight(AA,AB,z);},insertHeight:function(AA,AH,AG){this.size+=AH.length;this.height+=AG;for(var AB=0,AD=this.children.length;AB<AD;++AB){var z=this.children[AB],AE=z.chunkSize();if(AA<=AE){z.insertHeight(AA,AH,AG);if(z.lines&&z.lines.length>50){while(z.lines.length>50){var AC=z.lines.splice(z.lines.length-25,25);var AF=new u(AC);z.height-=AF.height;this.children.splice(AB+1,0,AF);AF.parent=this;}this.maybeSpill();}break;}AA-=AE;}},maybeSpill:function(){if(this.children.length<=10){return ;}var AB=this;do{var z=AB.children.splice(AB.children.length-5,5);var AA=new G(z);if(!AB.parent){var AC=new G(AB.children);AC.parent=AB;AB.children=[AC,AA];AB=AC;}else{AB.size-=AA.size;AB.height-=AA.height;var i=L(AB.parent.children,AB);AB.parent.children.splice(i+1,0,AA);}AA.parent=AB.parent;}while(AB.children.length>10);AB.parent.maybeSpill();},iter:function(AA,z,i){this.iterN(AA,z-AA,i);},iterN:function(z,AG,AF){for(var AA=0,AD=this.children.length;AA<AD;++AA){var AE=this.children[AA],AC=AE.chunkSize();if(z<AC){var AB=Math.min(AG,AC-z);if(AE.iterN(z,AB,AF)){return true;}if((AG-=AB)==0){break;}z=0;}else{z-=AC;}}}};function V(z,AE){for(;;){for(var AA=0,AC=z.children.length;AA<AC;++AA){var AD=z.children[AA],AB=AD.chunkSize();if(AE<AB){z=AD;break;}AE-=AB;}if(z.lines){return z.lines[AE];}}}function m(z){if(z.parent==null){return null;}var AE=z.parent,AD=L(AE.lines,z);for(var AA=AE.parent;AA;AE=AA,AA=AA.parent){for(var AB=0,AC=AA.children.length;;++AB){if(AA.children[AB]==AE){break;}AD+=AA.children[AB].chunkSize();}}return AD;}function l(AF,AD){var AB=0;outer:do{for(var AC=0,AE=AF.children.length;AC<AE;++AC){var AA=AF.children[AC],z=AA.height;if(AD<z){AF=AA;continue outer;}AD-=z;AB+=AA.chunkSize();}return AB;}while(!AF.lines);for(var AC=0,AE=AF.lines.length;AC<AE;++AC){var AH=AF.lines[AC],AG=AH.height;if(AD<AG){break;}AD-=AG;}return AB+AC;}function E(z,AF){var AB=0;outer:do{for(var AA=0,AD=z.children.length;AA<AD;++AA){var AE=z.children[AA],AC=AE.chunkSize();if(AF<AC){z=AE;continue outer;}AF-=AC;AB+=AE.height;}return AB;}while(!z.lines);for(var AA=0;AA<AF;++AA){AB+=z.lines[AA].height;}return AB;}function I(){this.time=0;this.done=[];this.undone=[];}I.prototype={addChange:function(AG,AB,z){this.undone.length=0;var AF=+new Date,AD=this.done[this.done.length-1];if(AF-this.time>400||!AD||AD.start>AG+AB||AD.start+AD.added<AG-AD.added+AD.old.length){this.done.push({start:AG,added:AB,old:z});}else{var AC=0;if(AG<AD.start){for(var AA=AD.start-AG-1;AA>=0;--AA){AD.old.unshift(z[AA]);}AD.added+=AD.start-AG;AD.start=AG;}else{if(AD.start<AG){AC=AG-AD.start;AB+=AC;}}for(var AA=AD.added-AC,AE=z.length;AA<AE;++AA){AD.old.push(z[AA]);}if(AD.added<AB){AD.added=AB;}}this.time=AF;}};function Z(){Q(this);}function c(i){if(!i.stop){i.stop=Z;}return i;}function g(i){if(i.preventDefault){i.preventDefault();}else{i.returnValue=false;}}function W(i){if(i.stopPropagation){i.stopPropagation();}else{i.cancelBubble=true;}}function Q(i){g(i);W(i);}function H(i){return i.target||i.srcElement;}function R(i){if(i.which){return i.which;}else{if(i.button&1){return 1;}else{if(i.button&2){return 3;}else{if(i.button&4){return 2;}}}}}function N(AB,AA,z,i){function AC(AD){z(AD||window.event);}if(typeof AB.addEventListener=="function"){AB.addEventListener(AA,AC,false);if(i){return function(){AB.removeEventListener(AA,AC,false);};}}else{AB.attachEvent("on"+AA,AC);if(i){return function(){AB.detachEvent("on"+AA,AC);};}}}function S(){this.id=null;}S.prototype={set:function(i,z){clearTimeout(this.id);this.id=setTimeout(z,i);}};var X=function(){if(/MSIE [1-8]\b/.test(navigator.userAgent)){return false;}var i=document.createElement("div");return"draggable" in i;}();var d=/gecko\/\d{7}/i.test(navigator.userAgent);var a=/MSIE \d/.test(navigator.userAgent);var F=/WebKit\//.test(navigator.userAgent);var D="\n";(function(){var i=document.createElement("textarea");i.value="foo\nbar";if(i.value.indexOf("\r")>-1){D="\r\n";}}());var U=8;var b=/Mac/.test(navigator.platform);var h=/Win/.test(navigator.platform);var s={};for(var r=35;r<=40;++r){s[r]=s["c"+r]=true;}function J(AA,z){if(z==null){z=AA.search(/[^\s\u00a0]/);if(z==-1){z=AA.length;}}for(var AB=0,AC=0;AB<z;++AB){if(AA.charAt(AB)=="\t"){AC+=U-(AC%U);}else{++AC;}}return AC;}function O(i){if(i.currentStyle){return i.currentStyle;}return window.getComputedStyle(i,null);}function x(z,AH){var AB=z.ownerDocument.body;var AG=0,AF=0,AD=false;for(var i=z;i;i=i.offsetParent){var AE=i.offsetLeft,AA=i.offsetTop;if(i==AB){AG+=Math.abs(AE);AF+=Math.abs(AA);}else{AG+=AE,AF+=AA;}if(AH&&O(i).position=="fixed"){AD=true;}}var AC=AH&&!AD?null:AB;for(var i=z.parentNode;i!=AC;i=i.parentNode){if(i.scrollLeft!=null){AG-=i.scrollLeft;AF-=i.scrollTop;}}return{left:AG,top:AF};}if(document.documentElement.getBoundingClientRect!=null){x=function(AB,i){try{var AA=AB.getBoundingClientRect();AA={top:AA.top,left:AA.left};}catch(AC){AA={top:0,left:0};}if(!i){if(window.pageYOffset==null){var z=document.documentElement||document.body.parentNode;if(z.scrollTop==null){z=document.body;}AA.top+=z.scrollTop;AA.left+=z.scrollLeft;}else{AA.top+=window.pageYOffset;AA.left+=window.pageXOffset;}}return AA;};}function Y(i){return i.textContent||i.innerText||i.nodeValue||"";}function q(z,i){return z.line==i.line&&z.ch==i.ch;}function n(z,i){return z.line<i.line||(z.line==i.line&&z.ch<i.ch);}function o(i){return{line:i.line,ch:i.ch};}var v=document.createElement("pre");function e(i){if(M){v.innerHTML="";v.appendChild(document.createTextNode(i));}else{v.textContent=i;}return v.innerHTML;}var M=e("\t")!="\t";P.htmlEscape=e;function k(AC,AB){if(!AB){return AC?AC.length:0;}if(!AC){return AB.length;}for(var AA=AC.length,z=AB.length;AA>=0&&z>=0;--AA,--z){if(AC.charAt(AA)!=AB.charAt(z)){break;}}return z+1;}function L(AC,z){if(AC.indexOf){return AC.indexOf(z);}for(var AA=0,AB=AC.length;AA<AB;++AA){if(AC[AA]==z){return AA;}}return -1;}var T,t,B;if("\n\nb".split(/\n/).length!=3){T=function(AA){var AB=0,z,i=[];while((z=AA.indexOf("\n",AB))>-1){i.push(AA.slice(AB,AA.charAt(z-1)=="\r"?z-1:z));AB=z+1;}i.push(AA.slice(AB));return i;};}else{T=function(i){return i.split(/\r?\n/);};}P.splitLines=T;if(window.getSelection){t=function(z){try{return{start:z.selectionStart,end:z.selectionEnd};}catch(i){return null;}};if(F){B=function(z,AA,i){if(AA==i){z.setSelectionRange(AA,i);}else{z.setSelectionRange(AA,i-1);window.getSelection().modify("extend","forward","character");}};}else{B=function(AA,AB,i){try{AA.setSelectionRange(AB,i);}catch(z){}};}}else{t=function(AB){try{var AF=AB.ownerDocument.selection.createRange();}catch(AH){return null;}if(!AF||AF.parentElement()!=AB){return null;}var AA=AB.value,AG=AA.length,AI=AB.createTextRange();AI.moveToBookmark(AF.getBookmark());var AD=AB.createTextRange();AD.collapse(false);if(AI.compareEndPoints("StartToEnd",AD)>-1){return{start:AG,end:AG};}var z=-AI.moveStart("character",-AG);for(var AE=AA.indexOf("\r");AE>-1&&AE<z;AE=AA.indexOf("\r",AE+1),z++){}if(AI.compareEndPoints("EndToEnd",AD)>-1){return{start:z,end:AG};}var AC=-AI.moveEnd("character",-AG);for(var AE=AA.indexOf("\r");AE>-1&&AE<AC;AE=AA.indexOf("\r",AE+1),AC++){}return{start:z,end:AC};};B=function(AD,AF,AA){var AB=AD.createTextRange();AB.collapse(true);var z=AB.duplicate();var AC=0,i=AD.value;for(var AE=i.indexOf("\n");AE>-1&&AE<AF;AE=i.indexOf("\n",AE+1)){++AC;}AB.move("character",AF-AC);for(;AE>-1&&AE<AA;AE=i.indexOf("\n",AE+1)){++AC;}z.move("character",AA-AC);AB.setEndPoint("EndToEnd",z);AB.select();};}P.defineMode("null",function(){return{token:function(i){i.skipToEnd();}};});P.defineMIME("text/plain","null");return P;})();
+// All functions that need access to the editor's state live inside
+// the CodeMirror function. Below that, at the bottom of the file,
+// some utilities are defined.
+
+// CodeMirror is the only global var we claim
+var CodeMirror = (function() {
+  // This is the function that produces an editor instance. Its
+  // closure is used to store the editor state.
+  function CodeMirror(place, givenOptions) {
+    // Determine effective options based on given values and defaults.
+    var options = {}, defaults = CodeMirror.defaults;
+    for (var opt in defaults)
+      if (defaults.hasOwnProperty(opt))
+        options[opt] = (givenOptions && givenOptions.hasOwnProperty(opt) ? givenOptions : defaults)[opt];
+
+    // The element in which the editor lives.
+    var wrapper = document.createElement("div");
+    wrapper.className = "CodeMirror" + (options.lineWrapping ? " CodeMirror-wrap" : "");
+    // This mess creates the base DOM structure for the editor.
+    wrapper.innerHTML =
+      '<div style="overflow: hidden; position: relative; width: 3px; height: 0px;">' + // Wraps and hides input textarea
+        '<textarea style="position: absolute; padding: 0; width: 1px; height: 1em" wrap="off" ' +
+          'autocorrect="off" autocapitalize="off"></textarea></div>' +
+      '<div class="CodeMirror-scroll" tabindex="-1">' +
+        '<div style="position: relative">' + // Set to the height of the text, causes scrolling
+          '<div style="position: relative">' + // Moved around its parent to cover visible view
+            '<div class="CodeMirror-gutter"><div class="CodeMirror-gutter-text"></div></div>' +
+            // Provides positioning relative to (visible) text origin
+            '<div class="CodeMirror-lines"><div style="position: relative; z-index: 0">' +
+              '<div style="position: absolute; width: 100%; height: 0; overflow: hidden; visibility: hidden;"></div>' +
+              '<pre class="CodeMirror-cursor">&#160;</pre>' + // Absolutely positioned blinky cursor
+              '<div style="position: relative; z-index: -1"></div><div></div>' + // DIVs containing the selection and the actual code
+            '</div></div></div></div></div>';
+    if (place.appendChild) place.appendChild(wrapper); else place(wrapper);
+    // I've never seen more elegant code in my life.
+    var inputDiv = wrapper.firstChild, input = inputDiv.firstChild,
+        scroller = wrapper.lastChild, code = scroller.firstChild,
+        mover = code.firstChild, gutter = mover.firstChild, gutterText = gutter.firstChild,
+        lineSpace = gutter.nextSibling.firstChild, measure = lineSpace.firstChild,
+        cursor = measure.nextSibling, selectionDiv = cursor.nextSibling,
+        lineDiv = selectionDiv.nextSibling;
+    themeChanged();
+    // Needed to hide big blue blinking cursor on Mobile Safari
+    if (ios) input.style.width = "0px";
+    if (!webkit) lineSpace.draggable = true;
+    lineSpace.style.outline = "none";
+    if (options.tabindex != null) input.tabIndex = options.tabindex;
+    if (!options.gutter && !options.lineNumbers) gutter.style.display = "none";
+
+    // Check for problem with IE innerHTML not working when we have a
+    // P (or similar) parent node.
+    try { stringWidth("x"); }
+    catch (e) {
+      if (e.message.match(/runtime/i))
+        e = new Error("A CodeMirror inside a P-style element does not work in Internet Explorer. (innerHTML bug)");
+      throw e;
+    }
+
+    // Delayed object wrap timeouts, making sure only one is active. blinker holds an interval.
+    var poll = new Delayed(), highlight = new Delayed(), blinker;
+
+    // mode holds a mode API object. doc is the tree of Line objects,
+    // work an array of lines that should be parsed, and history the
+    // undo history (instance of History constructor).
+    var mode, doc = new BranchChunk([new LeafChunk([new Line("")])]), work, focused;
+    loadMode();
+    // The selection. These are always maintained to point at valid
+    // positions. Inverted is used to remember that the user is
+    // selecting bottom-to-top.
+    var sel = {from: {line: 0, ch: 0}, to: {line: 0, ch: 0}, inverted: false};
+    // Selection-related flags. shiftSelecting obviously tracks
+    // whether the user is holding shift.
+    var shiftSelecting, lastClick, lastDoubleClick, lastScrollPos = 0, draggingText,
+        overwrite = false, suppressEdits = false;
+    // Variables used by startOperation/endOperation to track what
+    // happened during the operation.
+    var updateInput, userSelChange, changes, textChanged, selectionChanged, leaveInputAlone,
+        gutterDirty, callbacks;
+    // Current visible range (may be bigger than the view window).
+    var displayOffset = 0, showingFrom = 0, showingTo = 0, lastSizeC = 0;
+    // bracketHighlighted is used to remember that a backet has been
+    // marked.
+    var bracketHighlighted;
+    // Tracks the maximum line length so that the horizontal scrollbar
+    // can be kept static when scrolling.
+    var maxLine = "", maxWidth;
+    var tabCache = {};
+
+    // Initialize the content.
+    operation(function(){setValue(options.value || ""); updateInput = false;})();
+    var history = new History();
+
+    // Register our event handlers.
+    connect(scroller, "mousedown", operation(onMouseDown));
+    connect(scroller, "dblclick", operation(onDoubleClick));
+    connect(lineSpace, "dragstart", onDragStart);
+    connect(lineSpace, "selectstart", e_preventDefault);
+    // Gecko browsers fire contextmenu *after* opening the menu, at
+    // which point we can't mess with it anymore. Context menu is
+    // handled in onMouseDown for Gecko.
+    if (!gecko) connect(scroller, "contextmenu", onContextMenu);
+    connect(scroller, "scroll", function() {
+      lastScrollPos = scroller.scrollTop;
+      updateDisplay([]);
+      if (options.fixedGutter) gutter.style.left = scroller.scrollLeft + "px";
+      if (options.onScroll) options.onScroll(instance);
+    });
+    connect(window, "resize", function() {updateDisplay(true);});
+    connect(input, "keyup", operation(onKeyUp));
+    connect(input, "input", fastPoll);
+    connect(input, "keydown", operation(onKeyDown));
+    connect(input, "keypress", operation(onKeyPress));
+    connect(input, "focus", onFocus);
+    connect(input, "blur", onBlur);
+
+    connect(scroller, "dragenter", e_stop);
+    connect(scroller, "dragover", e_stop);
+    connect(scroller, "drop", operation(onDrop));
+    connect(scroller, "paste", function(){focusInput(); fastPoll();});
+    connect(input, "paste", fastPoll);
+    connect(input, "cut", operation(function(){
+      if (!options.readOnly) replaceSelection("");
+    }));
+
+    // IE throws unspecified error in certain cases, when
+    // trying to access activeElement before onload
+    var hasFocus; try { hasFocus = (document.activeElement == input); } catch(e) { }
+    if (hasFocus) setTimeout(onFocus, 20);
+    else onBlur();
+
+    function isLine(l) {return l >= 0 && l < doc.size;}
+    // The instance object that we'll return. Mostly calls out to
+    // local functions in the CodeMirror function. Some do some extra
+    // range checking and/or clipping. operation is used to wrap the
+    // call so that changes it makes are tracked, and the display is
+    // updated afterwards.
+    var instance = wrapper.CodeMirror = {
+      getValue: getValue,
+      setValue: operation(setValue),
+      getSelection: getSelection,
+      replaceSelection: operation(replaceSelection),
+      focus: function(){window.focus(); focusInput(); onFocus(); fastPoll();},
+      setOption: function(option, value) {
+        var oldVal = options[option];
+        options[option] = value;
+        if (option == "mode" || option == "indentUnit") loadMode();
+        else if (option == "readOnly" && value == "nocursor") {onBlur(); input.blur();}
+        else if (option == "readOnly" && !value) {resetInput(true);}
+        else if (option == "theme") themeChanged();
+        else if (option == "lineWrapping" && oldVal != value) operation(wrappingChanged)();
+        else if (option == "tabSize") updateDisplay(true);
+        if (option == "lineNumbers" || option == "gutter" || option == "firstLineNumber" || option == "theme") {
+          gutterChanged();
+          updateDisplay(true);
+        }
+      },
+      getOption: function(option) {return options[option];},
+      undo: operation(undo),
+      redo: operation(redo),
+      indentLine: operation(function(n, dir) {
+        if (typeof dir != "string") {
+          if (dir == null) dir = options.smartIndent ? "smart" : "prev";
+          else dir = dir ? "add" : "subtract";
+        }
+        if (isLine(n)) indentLine(n, dir);
+      }),
+      indentSelection: operation(indentSelected),
+      historySize: function() {return {undo: history.done.length, redo: history.undone.length};},
+      clearHistory: function() {history = new History();},
+      matchBrackets: operation(function(){matchBrackets(true);}),
+      getTokenAt: operation(function(pos) {
+        pos = clipPos(pos);
+        return getLine(pos.line).getTokenAt(mode, getStateBefore(pos.line), pos.ch);
+      }),
+      getStateAfter: function(line) {
+        line = clipLine(line == null ? doc.size - 1: line);
+        return getStateBefore(line + 1);
+      },
+      cursorCoords: function(start){
+        if (start == null) start = sel.inverted;
+        return pageCoords(start ? sel.from : sel.to);
+      },
+      charCoords: function(pos){return pageCoords(clipPos(pos));},
+      coordsChar: function(coords) {
+        var off = eltOffset(lineSpace);
+        return coordsChar(coords.x - off.left, coords.y - off.top);
+      },
+      markText: operation(markText),
+      setBookmark: setBookmark,
+      setMarker: operation(addGutterMarker),
+      clearMarker: operation(removeGutterMarker),
+      setLineClass: operation(setLineClass),
+      hideLine: operation(function(h) {return setLineHidden(h, true);}),
+      showLine: operation(function(h) {return setLineHidden(h, false);}),
+      onDeleteLine: function(line, f) {
+        if (typeof line == "number") {
+          if (!isLine(line)) return null;
+          line = getLine(line);
+        }
+        (line.handlers || (line.handlers = [])).push(f);
+        return line;
+      },
+      lineInfo: lineInfo,
+      addWidget: function(pos, node, scroll, vert, horiz) {
+        pos = localCoords(clipPos(pos));
+        var top = pos.yBot, left = pos.x;
+        node.style.position = "absolute";
+        code.appendChild(node);
+        if (vert == "over") top = pos.y;
+        else if (vert == "near") {
+          var vspace = Math.max(scroller.offsetHeight, doc.height * textHeight()),
+              hspace = Math.max(code.clientWidth, lineSpace.clientWidth) - paddingLeft();
+          if (pos.yBot + node.offsetHeight > vspace && pos.y > node.offsetHeight)
+            top = pos.y - node.offsetHeight;
+          if (left + node.offsetWidth > hspace)
+            left = hspace - node.offsetWidth;
+        }
+        node.style.top = (top + paddingTop()) + "px";
+        node.style.left = node.style.right = "";
+        if (horiz == "right") {
+          left = code.clientWidth - node.offsetWidth;
+          node.style.right = "0px";
+        } else {
+          if (horiz == "left") left = 0;
+          else if (horiz == "middle") left = (code.clientWidth - node.offsetWidth) / 2;
+          node.style.left = (left + paddingLeft()) + "px";
+        }
+        if (scroll)
+          scrollIntoView(left, top, left + node.offsetWidth, top + node.offsetHeight);
+      },
+
+      lineCount: function() {return doc.size;},
+      clipPos: clipPos,
+      getCursor: function(start) {
+        if (start == null) start = sel.inverted;
+        return copyPos(start ? sel.from : sel.to);
+      },
+      somethingSelected: function() {return !posEq(sel.from, sel.to);},
+      setCursor: operation(function(line, ch, user) {
+        if (ch == null && typeof line.line == "number") setCursor(line.line, line.ch, user);
+        else setCursor(line, ch, user);
+      }),
+      setSelection: operation(function(from, to, user) {
+        (user ? setSelectionUser : setSelection)(clipPos(from), clipPos(to || from));
+      }),
+      getLine: function(line) {if (isLine(line)) return getLine(line).text;},
+      getLineHandle: function(line) {if (isLine(line)) return getLine(line);},
+      setLine: operation(function(line, text) {
+        if (isLine(line)) replaceRange(text, {line: line, ch: 0}, {line: line, ch: getLine(line).text.length});
+      }),
+      removeLine: operation(function(line) {
+        if (isLine(line)) replaceRange("", {line: line, ch: 0}, clipPos({line: line+1, ch: 0}));
+      }),
+      replaceRange: operation(replaceRange),
+      getRange: function(from, to) {return getRange(clipPos(from), clipPos(to));},
+
+      triggerOnKeyDown: operation(onKeyDown),
+      execCommand: function(cmd) {return commands[cmd](instance);},
+      // Stuff used by commands, probably not much use to outside code.
+      moveH: operation(moveH),
+      deleteH: operation(deleteH),
+      moveV: operation(moveV),
+      toggleOverwrite: function() {
+        if(overwrite){
+          overwrite = false;
+          cursor.className = cursor.className.replace(" CodeMirror-overwrite", "");
+        } else {
+          overwrite = true;
+          cursor.className += " CodeMirror-overwrite";
+        }
+      },
+
+      posFromIndex: function(off) {
+        var lineNo = 0, ch;
+        doc.iter(0, doc.size, function(line) {
+          var sz = line.text.length + 1;
+          if (sz > off) { ch = off; return true; }
+          off -= sz;
+          ++lineNo;
+        });
+        return clipPos({line: lineNo, ch: ch});
+      },
+      indexFromPos: function (coords) {
+        if (coords.line < 0 || coords.ch < 0) return 0;
+        var index = coords.ch;
+        doc.iter(0, coords.line, function (line) {
+          index += line.text.length + 1;
+        });
+        return index;
+      },
+      scrollTo: function(x, y) {
+        if (x != null) scroller.scrollLeft = x;
+        if (y != null) scroller.scrollTop = y;
+        updateDisplay([]);
+      },
+
+      operation: function(f){return operation(f)();},
+      refresh: function(){
+        updateDisplay(true);
+        if (scroller.scrollHeight > lastScrollPos)
+          scroller.scrollTop = lastScrollPos;
+      },
+      getInputField: function(){return input;},
+      getWrapperElement: function(){return wrapper;},
+      getScrollerElement: function(){return scroller;},
+      getGutterElement: function(){return gutter;}
+    };
+
+    function getLine(n) { return getLineAt(doc, n); }
+    function updateLineHeight(line, height) {
+      gutterDirty = true;
+      var diff = height - line.height;
+      for (var n = line; n; n = n.parent) n.height += diff;
+    }
+
+    function setValue(code) {
+      var top = {line: 0, ch: 0};
+      updateLines(top, {line: doc.size - 1, ch: getLine(doc.size-1).text.length},
+                  splitLines(code), top, top);
+      updateInput = true;
+    }
+    function getValue(code) {
+      var text = [];
+      doc.iter(0, doc.size, function(line) { text.push(line.text); });
+      return text.join("\n");
+    }
+
+    function onMouseDown(e) {
+      setShift(e_prop(e, "shiftKey"));
+      // Check whether this is a click in a widget
+      for (var n = e_target(e); n != wrapper; n = n.parentNode)
+        if (n.parentNode == code && n != mover) return;
+
+      // See if this is a click in the gutter
+      for (var n = e_target(e); n != wrapper; n = n.parentNode)
+        if (n.parentNode == gutterText) {
+          if (options.onGutterClick)
+            options.onGutterClick(instance, indexOf(gutterText.childNodes, n) + showingFrom, e);
+          return e_preventDefault(e);
+        }
+
+      var start = posFromMouse(e);
+
+      switch (e_button(e)) {
+      case 3:
+        if (gecko && !mac) onContextMenu(e);
+        return;
+      case 2:
+        if (start) setCursor(start.line, start.ch, true);
+        return;
+      }
+      // For button 1, if it was clicked inside the editor
+      // (posFromMouse returning non-null), we have to adjust the
+      // selection.
+      if (!start) {if (e_target(e) == scroller) e_preventDefault(e); return;}
+
+      if (!focused) onFocus();
+
+      var now = +new Date;
+      if (lastDoubleClick && lastDoubleClick.time > now - 400 && posEq(lastDoubleClick.pos, start)) {
+        e_preventDefault(e);
+        setTimeout(focusInput, 20);
+        return selectLine(start.line);
+      } else if (lastClick && lastClick.time > now - 400 && posEq(lastClick.pos, start)) {
+        lastDoubleClick = {time: now, pos: start};
+        e_preventDefault(e);
+        return selectWordAt(start);
+      } else { lastClick = {time: now, pos: start}; }
+
+      var last = start, going;
+      if (dragAndDrop && !options.readOnly && !posEq(sel.from, sel.to) &&
+          !posLess(start, sel.from) && !posLess(sel.to, start)) {
+        // Let the drag handler handle this.
+        if (webkit) lineSpace.draggable = true;
+        var up = connect(document, "mouseup", operation(function(e2) {
+          if (webkit) lineSpace.draggable = false;
+          draggingText = false;
+          up();
+          if (Math.abs(e.clientX - e2.clientX) + Math.abs(e.clientY - e2.clientY) < 10) {
+            e_preventDefault(e2);
+            setCursor(start.line, start.ch, true);
+            focusInput();
+          }
+        }), true);
+        draggingText = true;
+        // IE's approach to draggable
+        if (lineSpace.dragDrop) lineSpace.dragDrop();
+        return;
+      }
+      e_preventDefault(e);
+      setCursor(start.line, start.ch, true);
+
+      function extend(e) {
+        var cur = posFromMouse(e, true);
+        if (cur && !posEq(cur, last)) {
+          if (!focused) onFocus();
+          last = cur;
+          setSelectionUser(start, cur);
+          updateInput = false;
+          var visible = visibleLines();
+          if (cur.line >= visible.to || cur.line < visible.from)
+            going = setTimeout(operation(function(){extend(e);}), 150);
+        }
+      }
+
+      function done(e) {
+        clearTimeout(going);
+        var cur = posFromMouse(e);
+        if (cur) setSelectionUser(start, cur);
+        e_preventDefault(e);
+        focusInput();
+        updateInput = true;
+        move(); up();
+      }
+      var move = connect(document, "mousemove", operation(function(e) {
+        clearTimeout(going);
+        e_preventDefault(e);
+        if (!e_button(e)) done(e);
+        else extend(e);
+      }), true);
+      var up = connect(document, "mouseup", operation(done), true);
+    }
+    function onDoubleClick(e) {
+      for (var n = e_target(e); n != wrapper; n = n.parentNode)
+        if (n.parentNode == gutterText) return e_preventDefault(e);
+      var start = posFromMouse(e);
+      if (!start) return;
+      lastDoubleClick = {time: +new Date, pos: start};
+      e_preventDefault(e);
+      selectWordAt(start);
+    }
+    function onDrop(e) {
+      e.preventDefault();
+      var pos = posFromMouse(e, true), files = e.dataTransfer.files;
+      if (!pos || options.readOnly) return;
+      if (files && files.length && window.FileReader && window.File) {
+        function loadFile(file, i) {
+          var reader = new FileReader;
+          reader.onload = function() {
+            text[i] = reader.result;
+            if (++read == n) {
+	      pos = clipPos(pos);
+	      operation(function() {
+                var end = replaceRange(text.join(""), pos, pos);
+                setSelectionUser(pos, end);
+              })();
+	    }
+          };
+          reader.readAsText(file);
+        }
+        var n = files.length, text = Array(n), read = 0;
+        for (var i = 0; i < n; ++i) loadFile(files[i], i);
+      }
+      else {
+        try {
+          var text = e.dataTransfer.getData("Text");
+          if (text) {
+            var curFrom = sel.from, curTo = sel.to;
+            setSelectionUser(pos, pos);
+            if (draggingText) replaceRange("", curFrom, curTo);
+            replaceSelection(text);
+	    focusInput();
+	  }
+        }
+        catch(e){}
+      }
+    }
+    function onDragStart(e) {
+      var txt = getSelection();
+      e.dataTransfer.setData("Text", txt);
+      
+      // Use dummy image instead of default browsers image.
+      if (gecko || chrome) {
+        var img = document.createElement('img');
+        img.scr = 'data:image/gif;base64,R0lGODdhAgACAIAAAAAAAP///ywAAAAAAgACAAACAoRRADs='; //1x1 image
+        e.dataTransfer.setDragImage(img, 0, 0);
+      }
+    }
+
+    function doHandleBinding(bound, dropShift) {
+      if (typeof bound == "string") {
+        bound = commands[bound];
+        if (!bound) return false;
+      }
+      var prevShift = shiftSelecting;
+      try {
+        if (options.readOnly) suppressEdits = true;
+        if (dropShift) shiftSelecting = null;
+        bound(instance);
+      } catch(e) {
+        if (e != Pass) throw e;
+        return false;
+      } finally {
+        shiftSelecting = prevShift;
+        suppressEdits = false;
+      }
+      return true;
+    }
+    function handleKeyBinding(e) {
+      // Handle auto keymap transitions
+      var startMap = getKeyMap(options.keyMap), next = startMap.auto;
+      clearTimeout(maybeTransition);
+      if (next && !isModifierKey(e)) maybeTransition = setTimeout(function() {
+        if (getKeyMap(options.keyMap) == startMap) {
+          options.keyMap = (next.call ? next.call(null, instance) : next);
+        }
+      }, 50);
+
+      var name = keyNames[e_prop(e, "keyCode")], handled = false;
+      if (name == null || e.altGraphKey) return false;
+      if (e_prop(e, "altKey")) name = "Alt-" + name;
+      if (e_prop(e, "ctrlKey")) name = "Ctrl-" + name;
+      if (e_prop(e, "metaKey")) name = "Cmd-" + name;
+
+      if (e_prop(e, "shiftKey"))
+        handled = lookupKey("Shift-" + name, options.extraKeys, options.keyMap,
+                            function(b) {return doHandleBinding(b, true);});
+      if (!handled)
+        handled = lookupKey(name, options.extraKeys, options.keyMap, doHandleBinding);
+
+      if (handled) {
+        e_preventDefault(e);
+        if (ie) { e.oldKeyCode = e.keyCode; e.keyCode = 0; }
+      }
+      return handled;
+    }
+    function handleCharBinding(e, ch) {
+      var handled = lookupKey("'" + ch + "'", options.extraKeys,
+                              options.keyMap, doHandleBinding);
+      if (handled) e_preventDefault(e);
+      return handled;
+    }
+
+    var lastStoppedKey = null, maybeTransition;
+    function onKeyDown(e) {
+      if (!focused) onFocus();
+      if (ie && e.keyCode == 27) { e.returnValue = false; }
+      if (pollingFast) { if (readInput()) pollingFast = false; }
+      if (options.onKeyEvent && options.onKeyEvent(instance, addStop(e))) return;
+      var code = e_prop(e, "keyCode");
+      // IE does strange things with escape.
+      setShift(code == 16 || e_prop(e, "shiftKey"));
+      // First give onKeyEvent option a chance to handle this.
+      var handled = handleKeyBinding(e);
+      if (window.opera) {
+        lastStoppedKey = handled ? code : null;
+        // Opera has no cut event... we try to at least catch the key combo
+        if (!handled && code == 88 && e_prop(e, mac ? "metaKey" : "ctrlKey"))
+          replaceSelection("");
+      }
+    }
+    function onKeyPress(e) {
+      if (pollingFast) readInput();
+      if (options.onKeyEvent && options.onKeyEvent(instance, addStop(e))) return;
+      var keyCode = e_prop(e, "keyCode"), charCode = e_prop(e, "charCode");
+      if (window.opera && keyCode == lastStoppedKey) {lastStoppedKey = null; e_preventDefault(e); return;}
+      if (window.opera && !e.which && handleKeyBinding(e)) return;
+      var ch = String.fromCharCode(charCode == null ? keyCode : charCode);
+      if (options.electricChars && mode.electricChars && options.smartIndent && !options.readOnly) {
+        if (mode.electricChars.indexOf(ch) > -1)
+          setTimeout(operation(function() {indentLine(sel.to.line, "smart");}), 75);
+      }
+      if (handleCharBinding(e, ch)) return;
+      fastPoll();
+    }
+    function onKeyUp(e) {
+      if (options.onKeyEvent && options.onKeyEvent(instance, addStop(e))) return;
+      if (e_prop(e, "keyCode") == 16) shiftSelecting = null;
+    }
+
+    function onFocus() {
+      if (options.readOnly == "nocursor") return;
+      if (!focused) {
+        if (options.onFocus) options.onFocus(instance);
+        focused = true;
+        if (wrapper.className.search(/\bCodeMirror-focused\b/) == -1)
+          wrapper.className += " CodeMirror-focused";
+        if (!leaveInputAlone) resetInput(true);
+      }
+      slowPoll();
+      restartBlink();
+    }
+    function onBlur() {
+      if (focused) {
+        if (options.onBlur) options.onBlur(instance);
+        focused = false;
+        if (bracketHighlighted)
+          operation(function(){
+            if (bracketHighlighted) { bracketHighlighted(); bracketHighlighted = null; }
+          })();
+        wrapper.className = wrapper.className.replace(" CodeMirror-focused", "");
+      }
+      clearInterval(blinker);
+      setTimeout(function() {if (!focused) shiftSelecting = null;}, 150);
+    }
+
+    // Replace the range from from to to by the strings in newText.
+    // Afterwards, set the selection to selFrom, selTo.
+    function updateLines(from, to, newText, selFrom, selTo) {
+      if (suppressEdits) return;
+      if (history) {
+        var old = [];
+        doc.iter(from.line, to.line + 1, function(line) { old.push(line.text); });
+        history.addChange(from.line, newText.length, old);
+        while (history.done.length > options.undoDepth) history.done.shift();
+      }
+      updateLinesNoUndo(from, to, newText, selFrom, selTo);
+    }
+    function unredoHelper(from, to) {
+      if (!from.length) return;
+      var set = from.pop(), out = [];
+      for (var i = set.length - 1; i >= 0; i -= 1) {
+        var change = set[i];
+        var replaced = [], end = change.start + change.added;
+        doc.iter(change.start, end, function(line) { replaced.push(line.text); });
+        out.push({start: change.start, added: change.old.length, old: replaced});
+        var pos = clipPos({line: change.start + change.old.length - 1,
+                           ch: editEnd(replaced[replaced.length-1], change.old[change.old.length-1])});
+        updateLinesNoUndo({line: change.start, ch: 0}, {line: end - 1, ch: getLine(end-1).text.length}, change.old, pos, pos);
+      }
+      updateInput = true;
+      to.push(out);
+    }
+    function undo() {unredoHelper(history.done, history.undone);}
+    function redo() {unredoHelper(history.undone, history.done);}
+
+    function updateLinesNoUndo(from, to, newText, selFrom, selTo) {
+      if (suppressEdits) return;
+      var recomputeMaxLength = false, maxLineLength = maxLine.length;
+      if (!options.lineWrapping)
+        doc.iter(from.line, to.line, function(line) {
+          if (line.text.length == maxLineLength) {recomputeMaxLength = true; return true;}
+        });
+      if (from.line != to.line || newText.length > 1) gutterDirty = true;
+
+      var nlines = to.line - from.line, firstLine = getLine(from.line), lastLine = getLine(to.line);
+      // First adjust the line structure, taking some care to leave highlighting intact.
+      if (from.ch == 0 && to.ch == 0 && newText[newText.length - 1] == "") {
+        // This is a whole-line replace. Treated specially to make
+        // sure line objects move the way they are supposed to.
+        var added = [], prevLine = null;
+        if (from.line) {
+          prevLine = getLine(from.line - 1);
+          prevLine.fixMarkEnds(lastLine);
+        } else lastLine.fixMarkStarts();
+        for (var i = 0, e = newText.length - 1; i < e; ++i)
+          added.push(Line.inheritMarks(newText[i], prevLine));
+        if (nlines) doc.remove(from.line, nlines, callbacks);
+        if (added.length) doc.insert(from.line, added);
+      } else if (firstLine == lastLine) {
+        if (newText.length == 1)
+          firstLine.replace(from.ch, to.ch, newText[0]);
+        else {
+          lastLine = firstLine.split(to.ch, newText[newText.length-1]);
+          firstLine.replace(from.ch, null, newText[0]);
+          firstLine.fixMarkEnds(lastLine);
+          var added = [];
+          for (var i = 1, e = newText.length - 1; i < e; ++i)
+            added.push(Line.inheritMarks(newText[i], firstLine));
+          added.push(lastLine);
+          doc.insert(from.line + 1, added);
+        }
+      } else if (newText.length == 1) {
+        firstLine.replace(from.ch, null, newText[0]);
+        lastLine.replace(null, to.ch, "");
+        firstLine.append(lastLine);
+        doc.remove(from.line + 1, nlines, callbacks);
+      } else {
+        var added = [];
+        firstLine.replace(from.ch, null, newText[0]);
+        lastLine.replace(null, to.ch, newText[newText.length-1]);
+        firstLine.fixMarkEnds(lastLine);
+        for (var i = 1, e = newText.length - 1; i < e; ++i)
+          added.push(Line.inheritMarks(newText[i], firstLine));
+        if (nlines > 1) doc.remove(from.line + 1, nlines - 1, callbacks);
+        doc.insert(from.line + 1, added);
+      }
+      if (options.lineWrapping) {
+        var perLine = scroller.clientWidth / charWidth() - 3;
+        doc.iter(from.line, from.line + newText.length, function(line) {
+          if (line.hidden) return;
+          var guess = Math.ceil(line.text.length / perLine) || 1;
+          if (guess != line.height) updateLineHeight(line, guess);
+        });
+      } else {
+        doc.iter(from.line, i + newText.length, function(line) {
+          var l = line.text;
+          if (l.length > maxLineLength) {
+            maxLine = l; maxLineLength = l.length; maxWidth = null;
+            recomputeMaxLength = false;
+          }
+        });
+        if (recomputeMaxLength) {
+          maxLineLength = 0; maxLine = ""; maxWidth = null;
+          doc.iter(0, doc.size, function(line) {
+            var l = line.text;
+            if (l.length > maxLineLength) {
+              maxLineLength = l.length; maxLine = l;
+            }
+          });
+        }
+      }
+
+      // Add these lines to the work array, so that they will be
+      // highlighted. Adjust work lines if lines were added/removed.
+      var newWork = [], lendiff = newText.length - nlines - 1;
+      for (var i = 0, l = work.length; i < l; ++i) {
+        var task = work[i];
+        if (task < from.line) newWork.push(task);
+        else if (task > to.line) newWork.push(task + lendiff);
+      }
+      var hlEnd = from.line + Math.min(newText.length, 500);
+      highlightLines(from.line, hlEnd);
+      newWork.push(hlEnd);
+      work = newWork;
+      startWorker(100);
+      // Remember that these lines changed, for updating the display
+      changes.push({from: from.line, to: to.line + 1, diff: lendiff});
+      var changeObj = {from: from, to: to, text: newText};
+      if (textChanged) {
+        for (var cur = textChanged; cur.next; cur = cur.next) {}
+        cur.next = changeObj;
+      } else textChanged = changeObj;
+
+      // Update the selection
+      function updateLine(n) {return n <= Math.min(to.line, to.line + lendiff) ? n : n + lendiff;}
+      setSelection(selFrom, selTo, updateLine(sel.from.line), updateLine(sel.to.line));
+
+      // Make sure the scroll-size div has the correct height.
+      if (scroller.clientHeight)
+        code.style.height = (doc.height * textHeight() + 2 * paddingTop()) + "px";
+    }
+
+    function replaceRange(code, from, to) {
+      from = clipPos(from);
+      if (!to) to = from; else to = clipPos(to);
+      code = splitLines(code);
+      function adjustPos(pos) {
+        if (posLess(pos, from)) return pos;
+        if (!posLess(to, pos)) return end;
+        var line = pos.line + code.length - (to.line - from.line) - 1;
+        var ch = pos.ch;
+        if (pos.line == to.line)
+          ch += code[code.length-1].length - (to.ch - (to.line == from.line ? from.ch : 0));
+        return {line: line, ch: ch};
+      }
+      var end;
+      replaceRange1(code, from, to, function(end1) {
+        end = end1;
+        return {from: adjustPos(sel.from), to: adjustPos(sel.to)};
+      });
+      return end;
+    }
+    function replaceSelection(code, collapse) {
+      replaceRange1(splitLines(code), sel.from, sel.to, function(end) {
+        if (collapse == "end") return {from: end, to: end};
+        else if (collapse == "start") return {from: sel.from, to: sel.from};
+        else return {from: sel.from, to: end};
+      });
+    }
+    function replaceRange1(code, from, to, computeSel) {
+      var endch = code.length == 1 ? code[0].length + from.ch : code[code.length-1].length;
+      var newSel = computeSel({line: from.line + code.length - 1, ch: endch});
+      updateLines(from, to, code, newSel.from, newSel.to);
+    }
+
+    function getRange(from, to) {
+      var l1 = from.line, l2 = to.line;
+      if (l1 == l2) return getLine(l1).text.slice(from.ch, to.ch);
+      var code = [getLine(l1).text.slice(from.ch)];
+      doc.iter(l1 + 1, l2, function(line) { code.push(line.text); });
+      code.push(getLine(l2).text.slice(0, to.ch));
+      return code.join("\n");
+    }
+    function getSelection() {
+      return getRange(sel.from, sel.to);
+    }
+
+    var pollingFast = false; // Ensures slowPoll doesn't cancel fastPoll
+    function slowPoll() {
+      if (pollingFast) return;
+      poll.set(options.pollInterval, function() {
+        startOperation();
+        readInput();
+        if (focused) slowPoll();
+        endOperation();
+      });
+    }
+    function fastPoll() {
+      var missed = false;
+      pollingFast = true;
+      function p() {
+        startOperation();
+        var changed = readInput();
+        if (!changed && !missed) {missed = true; poll.set(60, p);}
+        else {pollingFast = false; slowPoll();}
+        endOperation();
+      }
+      poll.set(20, p);
+    }
+
+    // Previnput is a hack to work with IME. If we reset the textarea
+    // on every change, that breaks IME. So we look for changes
+    // compared to the previous content instead. (Modern browsers have
+    // events that indicate IME taking place, but these are not widely
+    // supported or compatible enough yet to rely on.)
+    var prevInput = "";
+    function readInput() {
+      if (leaveInputAlone || !focused || hasSelection(input) || options.readOnly) return false;
+      var text = input.value;
+      if (text == prevInput) return false;
+      shiftSelecting = null;
+      var same = 0, l = Math.min(prevInput.length, text.length);
+      while (same < l && prevInput[same] == text[same]) ++same;
+      if (same < prevInput.length)
+        sel.from = {line: sel.from.line, ch: sel.from.ch - (prevInput.length - same)};
+      else if (overwrite && posEq(sel.from, sel.to))
+        sel.to = {line: sel.to.line, ch: Math.min(getLine(sel.to.line).text.length, sel.to.ch + (text.length - same))};
+      replaceSelection(text.slice(same), "end");
+      prevInput = text;
+      return true;
+    }
+    function resetInput(user) {
+      if (!posEq(sel.from, sel.to)) {
+        prevInput = "";
+        input.value = getSelection();
+        selectInput(input);
+      } else if (user) prevInput = input.value = "";
+    }
+
+    function focusInput() {
+      if (options.readOnly != "nocursor") input.focus();
+    }
+
+    function scrollEditorIntoView() {
+      if (!cursor.getBoundingClientRect) return;
+      var rect = cursor.getBoundingClientRect();
+      // IE returns bogus coordinates when the instance sits inside of an iframe and the cursor is hidden
+      if (ie && rect.top == rect.bottom) return;
+      var winH = window.innerHeight || Math.max(document.body.offsetHeight, document.documentElement.offsetHeight);
+      if (rect.top < 0 || rect.bottom > winH) cursor.scrollIntoView();
+    }
+    function scrollCursorIntoView() {
+      var cursor = localCoords(sel.inverted ? sel.from : sel.to);
+      var x = options.lineWrapping ? Math.min(cursor.x, lineSpace.offsetWidth) : cursor.x;
+      return scrollIntoView(x, cursor.y, x, cursor.yBot);
+    }
+    function scrollIntoView(x1, y1, x2, y2) {
+      var pl = paddingLeft(), pt = paddingTop(), lh = textHeight();
+      y1 += pt; y2 += pt; x1 += pl; x2 += pl;
+      var screen = scroller.clientHeight, screentop = scroller.scrollTop, scrolled = false, result = true;
+      if (y1 < screentop) {scroller.scrollTop = Math.max(0, y1 - 2*lh); scrolled = true;}
+      else if (y2 > screentop + screen) {scroller.scrollTop = y2 + lh - screen; scrolled = true;}
+
+      var screenw = scroller.clientWidth, screenleft = scroller.scrollLeft;
+      var gutterw = options.fixedGutter ? gutter.clientWidth : 0;
+      if (x1 < screenleft + gutterw) {
+        if (x1 < 50) x1 = 0;
+        scroller.scrollLeft = Math.max(0, x1 - 10 - gutterw);
+        scrolled = true;
+      }
+      else if (x2 > screenw + screenleft - 3) {
+        scroller.scrollLeft = x2 + 10 - screenw;
+        scrolled = true;
+        if (x2 > code.clientWidth) result = false;
+      }
+      if (scrolled && options.onScroll) options.onScroll(instance);
+      return result;
+    }
+
+    function visibleLines() {
+      var lh = textHeight(), top = scroller.scrollTop - paddingTop();
+      var from_height = Math.max(0, Math.floor(top / lh));
+      var to_height = Math.ceil((top + scroller.clientHeight) / lh);
+      return {from: lineAtHeight(doc, from_height),
+              to: lineAtHeight(doc, to_height)};
+    }
+    // Uses a set of changes plus the current scroll position to
+    // determine which DOM updates have to be made, and makes the
+    // updates.
+    function updateDisplay(changes, suppressCallback) {
+      if (!scroller.clientWidth) {
+        showingFrom = showingTo = displayOffset = 0;
+        return;
+      }
+      // Compute the new visible window
+      var visible = visibleLines();
+      // Bail out if the visible area is already rendered and nothing changed.
+      if (changes !== true && changes.length == 0 && visible.from > showingFrom && visible.to < showingTo) return;
+      var from = Math.max(visible.from - 100, 0), to = Math.min(doc.size, visible.to + 100);
+      if (showingFrom < from && from - showingFrom < 20) from = showingFrom;
+      if (showingTo > to && showingTo - to < 20) to = Math.min(doc.size, showingTo);
+
+      // Create a range of theoretically intact lines, and punch holes
+      // in that using the change info.
+      var intact = changes === true ? [] :
+        computeIntact([{from: showingFrom, to: showingTo, domStart: 0}], changes);
+      // Clip off the parts that won't be visible
+      var intactLines = 0;
+      for (var i = 0; i < intact.length; ++i) {
+        var range = intact[i];
+        if (range.from < from) {range.domStart += (from - range.from); range.from = from;}
+        if (range.to > to) range.to = to;
+        if (range.from >= range.to) intact.splice(i--, 1);
+        else intactLines += range.to - range.from;
+      }
+      if (intactLines == to - from) return;
+      intact.sort(function(a, b) {return a.domStart - b.domStart;});
+
+      var th = textHeight(), gutterDisplay = gutter.style.display;
+      lineDiv.style.display = "none";
+      patchDisplay(from, to, intact);
+      lineDiv.style.display = gutter.style.display = "";
+
+      // Position the mover div to align with the lines it's supposed
+      // to be showing (which will cover the visible display)
+      var different = from != showingFrom || to != showingTo || lastSizeC != scroller.clientHeight + th;
+      // This is just a bogus formula that detects when the editor is
+      // resized or the font size changes.
+      if (different) lastSizeC = scroller.clientHeight + th;
+      showingFrom = from; showingTo = to;
+      displayOffset = heightAtLine(doc, from);
+      mover.style.top = (displayOffset * th) + "px";
+      if (scroller.clientHeight)
+        code.style.height = (doc.height * th + 2 * paddingTop()) + "px";
+
+      // Since this is all rather error prone, it is honoured with the
+      // only assertion in the whole file.
+      if (lineDiv.childNodes.length != showingTo - showingFrom)
+        throw new Error("BAD PATCH! " + JSON.stringify(intact) + " size=" + (showingTo - showingFrom) +
+                        " nodes=" + lineDiv.childNodes.length);
+
+      if (options.lineWrapping) {
+        maxWidth = scroller.clientWidth;
+        var curNode = lineDiv.firstChild, heightChanged = false;
+        doc.iter(showingFrom, showingTo, function(line) {
+          if (!line.hidden) {
+            var height = Math.round(curNode.offsetHeight / th) || 1;
+            if (line.height != height) {
+              updateLineHeight(line, height);
+              gutterDirty = heightChanged = true;
+            }
+          }
+          curNode = curNode.nextSibling;
+        });
+        if (heightChanged)
+          code.style.height = (doc.height * th + 2 * paddingTop()) + "px";
+      } else {
+        if (maxWidth == null) maxWidth = stringWidth(maxLine);
+        if (maxWidth > scroller.clientWidth) {
+          lineSpace.style.width = maxWidth + "px";
+          // Needed to prevent odd wrapping/hiding of widgets placed in here.
+          code.style.width = "";
+          code.style.width = scroller.scrollWidth + "px";
+        } else {
+          lineSpace.style.width = code.style.width = "";
+        }
+      }
+      gutter.style.display = gutterDisplay;
+      if (different || gutterDirty) updateGutter();
+      updateSelection();
+      if (!suppressCallback && options.onUpdate) options.onUpdate(instance);
+      return true;
+    }
+
+    function computeIntact(intact, changes) {
+      for (var i = 0, l = changes.length || 0; i < l; ++i) {
+        var change = changes[i], intact2 = [], diff = change.diff || 0;
+        for (var j = 0, l2 = intact.length; j < l2; ++j) {
+          var range = intact[j];
+          if (change.to <= range.from && change.diff)
+            intact2.push({from: range.from + diff, to: range.to + diff,
+                          domStart: range.domStart});
+          else if (change.to <= range.from || change.from >= range.to)
+            intact2.push(range);
+          else {
+            if (change.from > range.from)
+              intact2.push({from: range.from, to: change.from, domStart: range.domStart});
+            if (change.to < range.to)
+              intact2.push({from: change.to + diff, to: range.to + diff,
+                            domStart: range.domStart + (change.to - range.from)});
+          }
+        }
+        intact = intact2;
+      }
+      return intact;
+    }
+
+    function patchDisplay(from, to, intact) {
+      // The first pass removes the DOM nodes that aren't intact.
+      if (!intact.length) lineDiv.innerHTML = "";
+      else {
+        function killNode(node) {
+          var tmp = node.nextSibling;
+          node.parentNode.removeChild(node);
+          return tmp;
+        }
+        var domPos = 0, curNode = lineDiv.firstChild, n;
+        for (var i = 0; i < intact.length; ++i) {
+          var cur = intact[i];
+          while (cur.domStart > domPos) {curNode = killNode(curNode); domPos++;}
+          for (var j = 0, e = cur.to - cur.from; j < e; ++j) {curNode = curNode.nextSibling; domPos++;}
+        }
+        while (curNode) curNode = killNode(curNode);
+      }
+      // This pass fills in the lines that actually changed.
+      var nextIntact = intact.shift(), curNode = lineDiv.firstChild, j = from;
+      var scratch = document.createElement("div"), newElt;
+      doc.iter(from, to, function(line) {
+        if (nextIntact && nextIntact.to == j) nextIntact = intact.shift();
+        if (!nextIntact || nextIntact.from > j) {
+          if (line.hidden) var html = scratch.innerHTML = "<pre></pre>";
+          else {
+            var html = '<pre' + (line.className ? ' class="' + line.className + '"' : '') + '>'
+              + line.getHTML(makeTab) + '</pre>';
+            // Kludge to make sure the styled element lies behind the selection (by z-index)
+            if (line.bgClassName)
+              html = '<div style="position: relative"><pre class="' + line.bgClassName +
+              '" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: -2">&#160;</pre>' + html + "</div>";
+          }
+          scratch.innerHTML = html;
+          lineDiv.insertBefore(scratch.firstChild, curNode);
+        } else {
+          curNode = curNode.nextSibling;
+        }
+        ++j;
+      });
+    }
+
+    function updateGutter() {
+      if (!options.gutter && !options.lineNumbers) return;
+      var hText = mover.offsetHeight, hEditor = scroller.clientHeight;
+      gutter.style.height = (hText - hEditor < 2 ? hEditor : hText) + "px";
+      var html = [], i = showingFrom;
+      doc.iter(showingFrom, Math.max(showingTo, showingFrom + 1), function(line) {
+        if (line.hidden) {
+          html.push("<pre></pre>");
+        } else {
+          var marker = line.gutterMarker;
+          var text = options.lineNumbers ? i + options.firstLineNumber : null;
+          if (marker && marker.text)
+            text = marker.text.replace("%N%", text != null ? text : "");
+          else if (text == null)
+            text = "\u00a0";
+          html.push((marker && marker.style ? '<pre class="' + marker.style + '">' : "<pre>"), text);
+          for (var j = 1; j < line.height; ++j) html.push("<br/>&#160;");
+          html.push("</pre>");
+        }
+        ++i;
+      });
+      gutter.style.display = "none";
+      gutterText.innerHTML = html.join("");
+      var minwidth = String(doc.size).length, firstNode = gutterText.firstChild, val = eltText(firstNode), pad = "";
+      while (val.length + pad.length < minwidth) pad += "\u00a0";
+      if (pad) firstNode.insertBefore(document.createTextNode(pad), firstNode.firstChild);
+      gutter.style.display = "";
+      lineSpace.style.marginLeft = gutter.offsetWidth + "px";
+      gutterDirty = false;
+    }
+    function updateSelection() {
+      var collapsed = posEq(sel.from, sel.to);
+      var fromPos = localCoords(sel.from, true);
+      var toPos = collapsed ? fromPos : localCoords(sel.to, true);
+      var headPos = sel.inverted ? fromPos : toPos, th = textHeight();
+      var wrapOff = eltOffset(wrapper), lineOff = eltOffset(lineDiv);
+      inputDiv.style.top = Math.max(0, Math.min(scroller.offsetHeight, headPos.y + lineOff.top - wrapOff.top)) + "px";
+      inputDiv.style.left = Math.max(0, Math.min(scroller.offsetWidth, headPos.x + lineOff.left - wrapOff.left)) + "px";
+      if (collapsed) {
+        cursor.style.top = headPos.y + "px";
+        cursor.style.left = (options.lineWrapping ? Math.min(headPos.x, lineSpace.offsetWidth) : headPos.x) + "px";
+        cursor.style.display = "";
+        selectionDiv.style.display = "none";
+      } else {
+        var sameLine = fromPos.y == toPos.y, html = "";
+        function add(left, top, right, height) {
+          html += '<div class="CodeMirror-selected" style="position: absolute; left: ' + left +
+            'px; top: ' + top + 'px; right: ' + right + 'px; height: ' + height + 'px"></div>';
+        }
+        if (sel.from.ch && fromPos.y >= 0) {
+          var right = sameLine ? lineSpace.clientWidth - toPos.x : 0;
+          add(fromPos.x, fromPos.y, right, th);
+        }
+        var middleStart = Math.max(0, fromPos.y + (sel.from.ch ? th : 0));
+        var middleHeight = Math.min(toPos.y, lineSpace.clientHeight) - middleStart;
+        if (middleHeight > 0.2 * th)
+          add(0, middleStart, 0, middleHeight);
+        if ((!sameLine || !sel.from.ch) && toPos.y < lineSpace.clientHeight - .5 * th)
+          add(0, toPos.y, lineSpace.clientWidth - toPos.x, th);
+        selectionDiv.innerHTML = html;
+        cursor.style.display = "none";
+        selectionDiv.style.display = "";
+      }
+    }
+
+    function setShift(val) {
+      if (val) shiftSelecting = shiftSelecting || (sel.inverted ? sel.to : sel.from);
+      else shiftSelecting = null;
+    }
+    function setSelectionUser(from, to) {
+      var sh = shiftSelecting && clipPos(shiftSelecting);
+      if (sh) {
+        if (posLess(sh, from)) from = sh;
+        else if (posLess(to, sh)) to = sh;
+      }
+      setSelection(from, to);
+      userSelChange = true;
+    }
+    // Update the selection. Last two args are only used by
+    // updateLines, since they have to be expressed in the line
+    // numbers before the update.
+    function setSelection(from, to, oldFrom, oldTo) {
+      goalColumn = null;
+      if (oldFrom == null) {oldFrom = sel.from.line; oldTo = sel.to.line;}
+      if (posEq(sel.from, from) && posEq(sel.to, to)) return;
+      if (posLess(to, from)) {var tmp = to; to = from; from = tmp;}
+
+      // Skip over hidden lines.
+      if (from.line != oldFrom) from = skipHidden(from, oldFrom, sel.from.ch);
+      if (to.line != oldTo) to = skipHidden(to, oldTo, sel.to.ch);
+
+      if (posEq(from, to)) sel.inverted = false;
+      else if (posEq(from, sel.to)) sel.inverted = false;
+      else if (posEq(to, sel.from)) sel.inverted = true;
+
+      if (options.autoClearEmptyLines && posEq(sel.from, sel.to)) {
+        var head = sel.inverted ? from : to;
+        if (head.line != sel.from.line) {
+          var oldLine = getLine(sel.from.line);
+          if (/^\s+$/.test(oldLine.text))
+            setTimeout(operation(function() {
+              if (oldLine.parent && /^\s+$/.test(oldLine.text)) {
+                var no = lineNo(oldLine);
+                replaceRange("", {line: no, ch: 0}, {line: no, ch: oldLine.text.length});
+              }
+            }, 10));
+        }
+      }
+
+      sel.from = from; sel.to = to;
+      selectionChanged = true;
+    }
+    function skipHidden(pos, oldLine, oldCh) {
+      function getNonHidden(dir) {
+        var lNo = pos.line + dir, end = dir == 1 ? doc.size : -1;
+        while (lNo != end) {
+          var line = getLine(lNo);
+          if (!line.hidden) {
+            var ch = pos.ch;
+            if (ch > oldCh || ch > line.text.length) ch = line.text.length;
+            return {line: lNo, ch: ch};
+          }
+          lNo += dir;
+        }
+      }
+      var line = getLine(pos.line);
+      if (!line.hidden) return pos;
+      if (pos.line >= oldLine) return getNonHidden(1) || getNonHidden(-1);
+      else return getNonHidden(-1) || getNonHidden(1);
+    }
+    function setCursor(line, ch, user) {
+      var pos = clipPos({line: line, ch: ch || 0});
+      (user ? setSelectionUser : setSelection)(pos, pos);
+    }
+
+    function clipLine(n) {return Math.max(0, Math.min(n, doc.size-1));}
+    function clipPos(pos) {
+      if (pos.line < 0) return {line: 0, ch: 0};
+      if (pos.line >= doc.size) return {line: doc.size-1, ch: getLine(doc.size-1).text.length};
+      var ch = pos.ch, linelen = getLine(pos.line).text.length;
+      if (ch == null || ch > linelen) return {line: pos.line, ch: linelen};
+      else if (ch < 0) return {line: pos.line, ch: 0};
+      else return pos;
+    }
+
+    function findPosH(dir, unit) {
+      var end = sel.inverted ? sel.from : sel.to, line = end.line, ch = end.ch;
+      var lineObj = getLine(line);
+      function findNextLine() {
+        for (var l = line + dir, e = dir < 0 ? -1 : doc.size; l != e; l += dir) {
+          var lo = getLine(l);
+          if (!lo.hidden) { line = l; lineObj = lo; return true; }
+        }
+      }
+      function moveOnce(boundToLine) {
+        if (ch == (dir < 0 ? 0 : lineObj.text.length)) {
+          if (!boundToLine && findNextLine()) ch = dir < 0 ? lineObj.text.length : 0;
+          else return false;
+        } else ch += dir;
+        return true;
+      }
+      if (unit == "char") moveOnce();
+      else if (unit == "column") moveOnce(true);
+      else if (unit == "word") {
+        var sawWord = false;
+        for (;;) {
+          if (dir < 0) if (!moveOnce()) break;
+          if (isWordChar(lineObj.text.charAt(ch))) sawWord = true;
+          else if (sawWord) {if (dir < 0) {dir = 1; moveOnce();} break;}
+          if (dir > 0) if (!moveOnce()) break;
+        }
+      }
+      return {line: line, ch: ch};
+    }
+    function moveH(dir, unit) {
+      var pos = dir < 0 ? sel.from : sel.to;
+      if (shiftSelecting || posEq(sel.from, sel.to)) pos = findPosH(dir, unit);
+      setCursor(pos.line, pos.ch, true);
+    }
+    function deleteH(dir, unit) {
+      if (!posEq(sel.from, sel.to)) replaceRange("", sel.from, sel.to);
+      else if (dir < 0) replaceRange("", findPosH(dir, unit), sel.to);
+      else replaceRange("", sel.from, findPosH(dir, unit));
+      userSelChange = true;
+    }
+    var goalColumn = null;
+    function moveV(dir, unit) {
+      var dist = 0, pos = localCoords(sel.inverted ? sel.from : sel.to, true);
+      if (goalColumn != null) pos.x = goalColumn;
+      if (unit == "page") dist = Math.min(scroller.clientHeight, window.innerHeight || document.documentElement.clientHeight);
+      else if (unit == "line") dist = textHeight();
+      var target = coordsChar(pos.x, pos.y + dist * dir + 2);
+      setCursor(target.line, target.ch, true);
+      goalColumn = pos.x;
+    }
+
+    function selectWordAt(pos) {
+      var line = getLine(pos.line).text;
+      var start = pos.ch, end = pos.ch;
+      while (start > 0 && isWordChar(line.charAt(start - 1))) --start;
+      while (end < line.length && isWordChar(line.charAt(end))) ++end;
+      setSelectionUser({line: pos.line, ch: start}, {line: pos.line, ch: end});
+    }
+    function selectLine(line) {
+      setSelectionUser({line: line, ch: 0}, clipPos({line: line + 1, ch: 0}));
+    }
+    function indentSelected(mode) {
+      if (posEq(sel.from, sel.to)) return indentLine(sel.from.line, mode);
+      var e = sel.to.line - (sel.to.ch ? 0 : 1);
+      for (var i = sel.from.line; i <= e; ++i) indentLine(i, mode);
+    }
+
+    function indentLine(n, how) {
+      if (!how) how = "add";
+      if (how == "smart") {
+        if (!mode.indent) how = "prev";
+        else var state = getStateBefore(n);
+      }
+
+      var line = getLine(n), curSpace = line.indentation(options.tabSize),
+          curSpaceString = line.text.match(/^\s*/)[0], indentation;
+      if (how == "prev") {
+        if (n) indentation = getLine(n-1).indentation(options.tabSize);
+        else indentation = 0;
+      }
+      else if (how == "smart") indentation = mode.indent(state, line.text.slice(curSpaceString.length), line.text);
+      else if (how == "add") indentation = curSpace + options.indentUnit;
+      else if (how == "subtract") indentation = curSpace - options.indentUnit;
+      indentation = Math.max(0, indentation);
+      var diff = indentation - curSpace;
+
+      if (!diff) {
+        if (sel.from.line != n && sel.to.line != n) return;
+        var indentString = curSpaceString;
+      }
+      else {
+        var indentString = "", pos = 0;
+        if (options.indentWithTabs)
+          for (var i = Math.floor(indentation / options.tabSize); i; --i) {pos += options.tabSize; indentString += "\t";}
+        while (pos < indentation) {++pos; indentString += " ";}
+      }
+
+      replaceRange(indentString, {line: n, ch: 0}, {line: n, ch: curSpaceString.length});
+    }
+
+    function loadMode() {
+      mode = CodeMirror.getMode(options, options.mode);
+      doc.iter(0, doc.size, function(line) { line.stateAfter = null; });
+      work = [0];
+      startWorker();
+    }
+    function gutterChanged() {
+      var visible = options.gutter || options.lineNumbers;
+      gutter.style.display = visible ? "" : "none";
+      if (visible) gutterDirty = true;
+      else lineDiv.parentNode.style.marginLeft = 0;
+    }
+    function wrappingChanged(from, to) {
+      if (options.lineWrapping) {
+        wrapper.className += " CodeMirror-wrap";
+        var perLine = scroller.clientWidth / charWidth() - 3;
+        doc.iter(0, doc.size, function(line) {
+          if (line.hidden) return;
+          var guess = Math.ceil(line.text.length / perLine) || 1;
+          if (guess != 1) updateLineHeight(line, guess);
+        });
+        lineSpace.style.width = code.style.width = "";
+      } else {
+        wrapper.className = wrapper.className.replace(" CodeMirror-wrap", "");
+        maxWidth = null; maxLine = "";
+        doc.iter(0, doc.size, function(line) {
+          if (line.height != 1 && !line.hidden) updateLineHeight(line, 1);
+          if (line.text.length > maxLine.length) maxLine = line.text;
+        });
+      }
+      changes.push({from: 0, to: doc.size});
+    }
+    function makeTab(col) {
+      var w = options.tabSize - col % options.tabSize, cached = tabCache[w];
+      if (cached) return cached;
+      for (var str = '<span class="cm-tab">', i = 0; i < w; ++i) str += " ";
+      return (tabCache[w] = {html: str + "</span>", width: w});
+    }
+    function themeChanged() {
+      scroller.className = scroller.className.replace(/\s*cm-s-\w+/g, "") +
+        options.theme.replace(/(^|\s)\s*/g, " cm-s-");
+    }
+
+    function TextMarker() { this.set = []; }
+    TextMarker.prototype.clear = operation(function() {
+      var min = Infinity, max = -Infinity;
+      for (var i = 0, e = this.set.length; i < e; ++i) {
+        var line = this.set[i], mk = line.marked;
+        if (!mk || !line.parent) continue;
+        var lineN = lineNo(line);
+        min = Math.min(min, lineN); max = Math.max(max, lineN);
+        for (var j = 0; j < mk.length; ++j)
+          if (mk[j].set == this.set) mk.splice(j--, 1);
+      }
+      if (min != Infinity)
+        changes.push({from: min, to: max + 1});
+    });
+    TextMarker.prototype.find = function() {
+      var from, to;
+      for (var i = 0, e = this.set.length; i < e; ++i) {
+        var line = this.set[i], mk = line.marked;
+        for (var j = 0; j < mk.length; ++j) {
+          var mark = mk[j];
+          if (mark.set == this.set) {
+            if (mark.from != null || mark.to != null) {
+              var found = lineNo(line);
+              if (found != null) {
+                if (mark.from != null) from = {line: found, ch: mark.from};
+                if (mark.to != null) to = {line: found, ch: mark.to};
+              }
+            }
+          }
+        }
+      }
+      return {from: from, to: to};
+    };
+
+    function markText(from, to, className) {
+      from = clipPos(from); to = clipPos(to);
+      var tm = new TextMarker();
+      if (!posLess(from, to)) return tm;
+      function add(line, from, to, className) {
+        getLine(line).addMark(new MarkedText(from, to, className, tm.set));
+      }
+      if (from.line == to.line) add(from.line, from.ch, to.ch, className);
+      else {
+        add(from.line, from.ch, null, className);
+        for (var i = from.line + 1, e = to.line; i < e; ++i)
+          add(i, null, null, className);
+        add(to.line, null, to.ch, className);
+      }
+      changes.push({from: from.line, to: to.line + 1});
+      return tm;
+    }
+
+    function setBookmark(pos) {
+      pos = clipPos(pos);
+      var bm = new Bookmark(pos.ch);
+      getLine(pos.line).addMark(bm);
+      return bm;
+    }
+
+    function addGutterMarker(line, text, className) {
+      if (typeof line == "number") line = getLine(clipLine(line));
+      line.gutterMarker = {text: text, style: className};
+      gutterDirty = true;
+      return line;
+    }
+    function removeGutterMarker(line) {
+      if (typeof line == "number") line = getLine(clipLine(line));
+      line.gutterMarker = null;
+      gutterDirty = true;
+    }
+
+    function changeLine(handle, op) {
+      var no = handle, line = handle;
+      if (typeof handle == "number") line = getLine(clipLine(handle));
+      else no = lineNo(handle);
+      if (no == null) return null;
+      if (op(line, no)) changes.push({from: no, to: no + 1});
+      else return null;
+      return line;
+    }
+    function setLineClass(handle, className, bgClassName) {
+      return changeLine(handle, function(line) {
+        if (line.className != className || line.bgClassName != bgClassName) {
+          line.className = className;
+          line.bgClassName = bgClassName;
+          return true;
+        }
+      });
+    }
+    function setLineHidden(handle, hidden) {
+      return changeLine(handle, function(line, no) {
+        if (line.hidden != hidden) {
+          line.hidden = hidden;
+          updateLineHeight(line, hidden ? 0 : 1);
+          var fline = sel.from.line, tline = sel.to.line;
+          if (hidden && (fline == no || tline == no)) {
+            var from = fline == no ? skipHidden({line: fline, ch: 0}, fline, 0) : sel.from;
+            var to = tline == no ? skipHidden({line: tline, ch: 0}, tline, 0) : sel.to;
+            setSelection(from, to);
+          }
+          return (gutterDirty = true);
+        }
+      });
+    }
+
+    function lineInfo(line) {
+      if (typeof line == "number") {
+        if (!isLine(line)) return null;
+        var n = line;
+        line = getLine(line);
+        if (!line) return null;
+      }
+      else {
+        var n = lineNo(line);
+        if (n == null) return null;
+      }
+      var marker = line.gutterMarker;
+      return {line: n, handle: line, text: line.text, markerText: marker && marker.text,
+              markerClass: marker && marker.style, lineClass: line.className, bgClass: line.bgClassName};
+    }
+
+    function stringWidth(str) {
+      measure.innerHTML = "<pre><span>x</span></pre>";
+      measure.firstChild.firstChild.firstChild.nodeValue = str;
+      return measure.firstChild.firstChild.offsetWidth || 10;
+    }
+    // These are used to go from pixel positions to character
+    // positions, taking varying character widths into account.
+    function charFromX(line, x) {
+      if (x <= 0) return 0;
+      var lineObj = getLine(line), text = lineObj.text;
+      function getX(len) {
+        measure.innerHTML = "<pre><span>" + lineObj.getHTML(makeTab, len) + "</span></pre>";
+        return measure.firstChild.firstChild.offsetWidth;
+      }
+      var from = 0, fromX = 0, to = text.length, toX;
+      // Guess a suitable upper bound for our search.
+      var estimated = Math.min(to, Math.ceil(x / charWidth()));
+      for (;;) {
+        var estX = getX(estimated);
+        if (estX <= x && estimated < to) estimated = Math.min(to, Math.ceil(estimated * 1.2));
+        else {toX = estX; to = estimated; break;}
+      }
+      if (x > toX) return to;
+      // Try to guess a suitable lower bound as well.
+      estimated = Math.floor(to * 0.8); estX = getX(estimated);
+      if (estX < x) {from = estimated; fromX = estX;}
+      // Do a binary search between these bounds.
+      for (;;) {
+        if (to - from <= 1) return (toX - x > x - fromX) ? from : to;
+        var middle = Math.ceil((from + to) / 2), middleX = getX(middle);
+        if (middleX > x) {to = middle; toX = middleX;}
+        else {from = middle; fromX = middleX;}
+      }
+    }
+
+    var tempId = Math.floor(Math.random() * 0xffffff).toString(16);
+    function measureLine(line, ch) {
+      if (ch == 0) return {top: 0, left: 0};
+      var extra = "";
+      // Include extra text at the end to make sure the measured line is wrapped in the right way.
+      if (options.lineWrapping) {
+        var end = line.text.indexOf(" ", ch + 6);
+        extra = htmlEscape(line.text.slice(ch + 1, end < 0 ? line.text.length : end + (ie ? 5 : 0)));
+      }
+      measure.innerHTML = "<pre>" + line.getHTML(makeTab, ch) +
+        '<span id="CodeMirror-temp-' + tempId + '">' + htmlEscape(line.text.charAt(ch) || " ") + "</span>" +
+        extra + "</pre>";
+      var elt = document.getElementById("CodeMirror-temp-" + tempId);
+      var top = elt.offsetTop, left = elt.offsetLeft;
+      // Older IEs report zero offsets for spans directly after a wrap
+      if (ie && top == 0 && left == 0) {
+        var backup = document.createElement("span");
+        backup.innerHTML = "x";
+        elt.parentNode.insertBefore(backup, elt.nextSibling);
+        top = backup.offsetTop;
+      }
+      return {top: top, left: left};
+    }
+    function localCoords(pos, inLineWrap) {
+      var x, lh = textHeight(), y = lh * (heightAtLine(doc, pos.line) - (inLineWrap ? displayOffset : 0));
+      if (pos.ch == 0) x = 0;
+      else {
+        var sp = measureLine(getLine(pos.line), pos.ch);
+        x = sp.left;
+        if (options.lineWrapping) y += Math.max(0, sp.top);
+      }
+      return {x: x, y: y, yBot: y + lh};
+    }
+    // Coords must be lineSpace-local
+    function coordsChar(x, y) {
+      if (y < 0) y = 0;
+      var th = textHeight(), cw = charWidth(), heightPos = displayOffset + Math.floor(y / th);
+      var lineNo = lineAtHeight(doc, heightPos);
+      if (lineNo >= doc.size) return {line: doc.size - 1, ch: getLine(doc.size - 1).text.length};
+      var lineObj = getLine(lineNo), text = lineObj.text;
+      var tw = options.lineWrapping, innerOff = tw ? heightPos - heightAtLine(doc, lineNo) : 0;
+      if (x <= 0 && innerOff == 0) return {line: lineNo, ch: 0};
+      function getX(len) {
+        var sp = measureLine(lineObj, len);
+        if (tw) {
+          var off = Math.round(sp.top / th);
+          return Math.max(0, sp.left + (off - innerOff) * scroller.clientWidth);
+        }
+        return sp.left;
+      }
+      var from = 0, fromX = 0, to = text.length, toX;
+      // Guess a suitable upper bound for our search.
+      var estimated = Math.min(to, Math.ceil((x + innerOff * scroller.clientWidth * .9) / cw));
+      for (;;) {
+        var estX = getX(estimated);
+        if (estX <= x && estimated < to) estimated = Math.min(to, Math.ceil(estimated * 1.2));
+        else {toX = estX; to = estimated; break;}
+      }
+      if (x > toX) return {line: lineNo, ch: to};
+      // Try to guess a suitable lower bound as well.
+      estimated = Math.floor(to * 0.8); estX = getX(estimated);
+      if (estX < x) {from = estimated; fromX = estX;}
+      // Do a binary search between these bounds.
+      for (;;) {
+        if (to - from <= 1) return {line: lineNo, ch: (toX - x > x - fromX) ? from : to};
+        var middle = Math.ceil((from + to) / 2), middleX = getX(middle);
+        if (middleX > x) {to = middle; toX = middleX;}
+        else {from = middle; fromX = middleX;}
+      }
+    }
+    function pageCoords(pos) {
+      var local = localCoords(pos, true), off = eltOffset(lineSpace);
+      return {x: off.left + local.x, y: off.top + local.y, yBot: off.top + local.yBot};
+    }
+
+    var cachedHeight, cachedHeightFor, measureText;
+    function textHeight() {
+      if (measureText == null) {
+        measureText = "<pre>";
+        for (var i = 0; i < 49; ++i) measureText += "x<br/>";
+        measureText += "x</pre>";
+      }
+      var offsetHeight = lineDiv.clientHeight;
+      if (offsetHeight == cachedHeightFor) return cachedHeight;
+      cachedHeightFor = offsetHeight;
+      measure.innerHTML = measureText;
+      cachedHeight = measure.firstChild.offsetHeight / 50 || 1;
+      measure.innerHTML = "";
+      return cachedHeight;
+    }
+    var cachedWidth, cachedWidthFor = 0;
+    function charWidth() {
+      if (scroller.clientWidth == cachedWidthFor) return cachedWidth;
+      cachedWidthFor = scroller.clientWidth;
+      return (cachedWidth = stringWidth("x"));
+    }
+    function paddingTop() {return lineSpace.offsetTop;}
+    function paddingLeft() {return lineSpace.offsetLeft;}
+
+    function posFromMouse(e, liberal) {
+      var offW = eltOffset(scroller, true), x, y;
+      // Fails unpredictably on IE[67] when mouse is dragged around quickly.
+      try { x = e.clientX; y = e.clientY; } catch (e) { return null; }
+      // This is a mess of a heuristic to try and determine whether a
+      // scroll-bar was clicked or not, and to return null if one was
+      // (and !liberal).
+      if (!liberal && (x - offW.left > scroller.clientWidth || y - offW.top > scroller.clientHeight))
+        return null;
+      var offL = eltOffset(lineSpace, true);
+      return coordsChar(x - offL.left, y - offL.top);
+    }
+    function onContextMenu(e) {
+      var pos = posFromMouse(e), scrollPos = scroller.scrollTop;
+      if (!pos || window.opera) return; // Opera is difficult.
+      if (posEq(sel.from, sel.to) || posLess(pos, sel.from) || !posLess(pos, sel.to))
+        operation(setCursor)(pos.line, pos.ch);
+
+      var oldCSS = input.style.cssText;
+      inputDiv.style.position = "absolute";
+      input.style.cssText = "position: fixed; width: 30px; height: 30px; top: " + (e.clientY - 5) +
+        "px; left: " + (e.clientX - 5) + "px; z-index: 1000; background: white; " +
+        "border-width: 0; outline: none; overflow: hidden; opacity: .05; filter: alpha(opacity=5);";
+      leaveInputAlone = true;
+      var val = input.value = getSelection();
+      focusInput();
+      selectInput(input);
+      function rehide() {
+        var newVal = splitLines(input.value).join("\n");
+        if (newVal != val) operation(replaceSelection)(newVal, "end");
+        inputDiv.style.position = "relative";
+        input.style.cssText = oldCSS;
+        if (ie_lt9) scroller.scrollTop = scrollPos;
+        leaveInputAlone = false;
+        resetInput(true);
+        slowPoll();
+      }
+
+      if (gecko) {
+        e_stop(e);
+        var mouseup = connect(window, "mouseup", function() {
+          mouseup();
+          setTimeout(rehide, 20);
+        }, true);
+      } else {
+        setTimeout(rehide, 50);
+      }
+    }
+
+    // Cursor-blinking
+    function restartBlink() {
+      clearInterval(blinker);
+      var on = true;
+      cursor.style.visibility = "";
+      blinker = setInterval(function() {
+        cursor.style.visibility = (on = !on) ? "" : "hidden";
+      }, 650);
+    }
+
+    var matching = {"(": ")>", ")": "(<", "[": "]>", "]": "[<", "{": "}>", "}": "{<"};
+    function matchBrackets(autoclear) {
+      var head = sel.inverted ? sel.from : sel.to, line = getLine(head.line), pos = head.ch - 1;
+      var match = (pos >= 0 && matching[line.text.charAt(pos)]) || matching[line.text.charAt(++pos)];
+      if (!match) return;
+      var ch = match.charAt(0), forward = match.charAt(1) == ">", d = forward ? 1 : -1, st = line.styles;
+      for (var off = pos + 1, i = 0, e = st.length; i < e; i+=2)
+        if ((off -= st[i].length) <= 0) {var style = st[i+1]; break;}
+
+      var stack = [line.text.charAt(pos)], re = /[(){}[\]]/;
+      function scan(line, from, to) {
+        if (!line.text) return;
+        var st = line.styles, pos = forward ? 0 : line.text.length - 1, cur;
+        for (var i = forward ? 0 : st.length - 2, e = forward ? st.length : -2; i != e; i += 2*d) {
+          var text = st[i];
+          if (st[i+1] != null && st[i+1] != style) {pos += d * text.length; continue;}
+          for (var j = forward ? 0 : text.length - 1, te = forward ? text.length : -1; j != te; j += d, pos+=d) {
+            if (pos >= from && pos < to && re.test(cur = text.charAt(j))) {
+              var match = matching[cur];
+              if (match.charAt(1) == ">" == forward) stack.push(cur);
+              else if (stack.pop() != match.charAt(0)) return {pos: pos, match: false};
+              else if (!stack.length) return {pos: pos, match: true};
+            }
+          }
+        }
+      }
+      for (var i = head.line, e = forward ? Math.min(i + 100, doc.size) : Math.max(-1, i - 100); i != e; i+=d) {
+        var line = getLine(i), first = i == head.line;
+        var found = scan(line, first && forward ? pos + 1 : 0, first && !forward ? pos : line.text.length);
+        if (found) break;
+      }
+      if (!found) found = {pos: null, match: false};
+      var style = found.match ? "CodeMirror-matchingbracket" : "CodeMirror-nonmatchingbracket";
+      var one = markText({line: head.line, ch: pos}, {line: head.line, ch: pos+1}, style),
+          two = found.pos != null && markText({line: i, ch: found.pos}, {line: i, ch: found.pos + 1}, style);
+      var clear = operation(function(){one.clear(); two && two.clear();});
+      if (autoclear) setTimeout(clear, 800);
+      else bracketHighlighted = clear;
+    }
+
+    // Finds the line to start with when starting a parse. Tries to
+    // find a line with a stateAfter, so that it can start with a
+    // valid state. If that fails, it returns the line with the
+    // smallest indentation, which tends to need the least context to
+    // parse correctly.
+    function findStartLine(n) {
+      var minindent, minline;
+      for (var search = n, lim = n - 40; search > lim; --search) {
+        if (search == 0) return 0;
+        var line = getLine(search-1);
+        if (line.stateAfter) return search;
+        var indented = line.indentation(options.tabSize);
+        if (minline == null || minindent > indented) {
+          minline = search - 1;
+          minindent = indented;
+        }
+      }
+      return minline;
+    }
+    function getStateBefore(n) {
+      var start = findStartLine(n), state = start && getLine(start-1).stateAfter;
+      if (!state) state = startState(mode);
+      else state = copyState(mode, state);
+      doc.iter(start, n, function(line) {
+        line.highlight(mode, state, options.tabSize);
+        line.stateAfter = copyState(mode, state);
+      });
+      if (start < n) changes.push({from: start, to: n});
+      if (n < doc.size && !getLine(n).stateAfter) work.push(n);
+      return state;
+    }
+    function highlightLines(start, end) {
+      var state = getStateBefore(start);
+      doc.iter(start, end, function(line) {
+        line.highlight(mode, state, options.tabSize);
+        line.stateAfter = copyState(mode, state);
+      });
+    }
+    function highlightWorker() {
+      var end = +new Date + options.workTime;
+      var foundWork = work.length;
+      while (work.length) {
+        if (!getLine(showingFrom).stateAfter) var task = showingFrom;
+        else var task = work.pop();
+        if (task >= doc.size) continue;
+        var start = findStartLine(task), state = start && getLine(start-1).stateAfter;
+        if (state) state = copyState(mode, state);
+        else state = startState(mode);
+
+        var unchanged = 0, compare = mode.compareStates, realChange = false,
+            i = start, bail = false;
+        doc.iter(i, doc.size, function(line) {
+          var hadState = line.stateAfter;
+          if (+new Date > end) {
+            work.push(i);
+            startWorker(options.workDelay);
+            if (realChange) changes.push({from: task, to: i + 1});
+            return (bail = true);
+          }
+          var changed = line.highlight(mode, state, options.tabSize);
+          if (changed) realChange = true;
+          line.stateAfter = copyState(mode, state);
+          if (compare) {
+            if (hadState && compare(hadState, state)) return true;
+          } else {
+            if (changed !== false || !hadState) unchanged = 0;
+            else if (++unchanged > 3 && (!mode.indent || mode.indent(hadState, "") == mode.indent(state, "")))
+              return true;
+          }
+          ++i;
+        });
+        if (bail) return;
+        if (realChange) changes.push({from: task, to: i + 1});
+      }
+      if (foundWork && options.onHighlightComplete)
+        options.onHighlightComplete(instance);
+    }
+    function startWorker(time) {
+      if (!work.length) return;
+      highlight.set(time, operation(highlightWorker));
+    }
+
+    // Operations are used to wrap changes in such a way that each
+    // change won't have to update the cursor and display (which would
+    // be awkward, slow, and error-prone), but instead updates are
+    // batched and then all combined and executed at once.
+    function startOperation() {
+      updateInput = userSelChange = textChanged = null;
+      changes = []; selectionChanged = false; callbacks = [];
+    }
+    function endOperation() {
+      var reScroll = false, updated;
+      if (selectionChanged) reScroll = !scrollCursorIntoView();
+      if (changes.length) updated = updateDisplay(changes, true);
+      else {
+        if (selectionChanged) updateSelection();
+        if (gutterDirty) updateGutter();
+      }
+      if (reScroll) scrollCursorIntoView();
+      if (selectionChanged) {scrollEditorIntoView(); restartBlink();}
+
+      if (focused && !leaveInputAlone &&
+          (updateInput === true || (updateInput !== false && selectionChanged)))
+        resetInput(userSelChange);
+
+      if (selectionChanged && options.matchBrackets)
+        setTimeout(operation(function() {
+          if (bracketHighlighted) {bracketHighlighted(); bracketHighlighted = null;}
+          if (posEq(sel.from, sel.to)) matchBrackets(false);
+        }), 20);
+      var tc = textChanged, cbs = callbacks; // these can be reset by callbacks
+      if (selectionChanged && options.onCursorActivity)
+        options.onCursorActivity(instance);
+      if (tc && options.onChange && instance)
+        options.onChange(instance, tc);
+      for (var i = 0; i < cbs.length; ++i) cbs[i](instance);
+      if (updated && options.onUpdate) options.onUpdate(instance);
+    }
+    var nestedOperation = 0;
+    function operation(f) {
+      return function() {
+        if (!nestedOperation++) startOperation();
+        try {var result = f.apply(this, arguments);}
+        finally {if (!--nestedOperation) endOperation();}
+        return result;
+      };
+    }
+
+    for (var ext in extensions)
+      if (extensions.propertyIsEnumerable(ext) &&
+          !instance.propertyIsEnumerable(ext))
+        instance[ext] = extensions[ext];
+    return instance;
+  } // (end of function CodeMirror)
+
+  // The default configuration options.
+  CodeMirror.defaults = {
+    value: "",
+    mode: null,
+    theme: "default",
+    indentUnit: 2,
+    indentWithTabs: false,
+    smartIndent: true,
+    tabSize: 4,
+    keyMap: "default",
+    extraKeys: null,
+    electricChars: true,
+    autoClearEmptyLines: false,
+    onKeyEvent: null,
+    lineWrapping: false,
+    lineNumbers: false,
+    gutter: false,
+    fixedGutter: false,
+    firstLineNumber: 1,
+    readOnly: false,
+    onChange: null,
+    onCursorActivity: null,
+    onGutterClick: null,
+    onHighlightComplete: null,
+    onUpdate: null,
+    onFocus: null, onBlur: null, onScroll: null,
+    matchBrackets: false,
+    workTime: 100,
+    workDelay: 200,
+    pollInterval: 100,
+    undoDepth: 40,
+    tabindex: null
+  };
+
+  var ios = /AppleWebKit/.test(navigator.userAgent) && /Mobile\/\w+/.test(navigator.userAgent);
+  var mac = ios || /Mac/.test(navigator.platform);
+  var win = /Win/.test(navigator.platform);
+
+  // Known modes, by name and by MIME
+  var modes = {}, mimeModes = {};
+  CodeMirror.defineMode = function(name, mode) {
+    if (!CodeMirror.defaults.mode && name != "null") CodeMirror.defaults.mode = name;
+    modes[name] = mode;
+  };
+  CodeMirror.defineMIME = function(mime, spec) {
+    mimeModes[mime] = spec;
+  };
+  CodeMirror.resolveMode = function(spec) {
+    if (typeof spec == "string" && mimeModes.hasOwnProperty(spec))
+      spec = mimeModes[spec];
+    else if (typeof spec == "string" && /^[\w\-]+\/[\w\-]+\+xml$/.test(spec))
+      return CodeMirror.resolveMode("application/xml");
+    if (typeof spec == "string") return {name: spec};
+    else return spec || {name: "null"};
+  };
+  CodeMirror.getMode = function(options, spec) {
+    var spec = CodeMirror.resolveMode(spec);
+    var mfactory = modes[spec.name];
+    if (!mfactory) {
+      if (window.console) console.warn("No mode " + spec.name + " found, falling back to plain text.");
+      return CodeMirror.getMode(options, "text/plain");
+    }
+    return mfactory(options, spec);
+  };
+  CodeMirror.listModes = function() {
+    var list = [];
+    for (var m in modes)
+      if (modes.propertyIsEnumerable(m)) list.push(m);
+    return list;
+  };
+  CodeMirror.listMIMEs = function() {
+    var list = [];
+    for (var m in mimeModes)
+      if (mimeModes.propertyIsEnumerable(m)) list.push({mime: m, mode: mimeModes[m]});
+    return list;
+  };
+
+  var extensions = CodeMirror.extensions = {};
+  CodeMirror.defineExtension = function(name, func) {
+    extensions[name] = func;
+  };
+
+  var commands = CodeMirror.commands = {
+    selectAll: function(cm) {cm.setSelection({line: 0, ch: 0}, {line: cm.lineCount() - 1});},
+    killLine: function(cm) {
+      var from = cm.getCursor(true), to = cm.getCursor(false), sel = !posEq(from, to);
+      if (!sel && cm.getLine(from.line).length == from.ch) cm.replaceRange("", from, {line: from.line + 1, ch: 0});
+      else cm.replaceRange("", from, sel ? to : {line: from.line});
+    },
+    deleteLine: function(cm) {var l = cm.getCursor().line; cm.replaceRange("", {line: l, ch: 0}, {line: l});},
+    undo: function(cm) {cm.undo();},
+    redo: function(cm) {cm.redo();},
+    goDocStart: function(cm) {cm.setCursor(0, 0, true);},
+    goDocEnd: function(cm) {cm.setSelection({line: cm.lineCount() - 1}, null, true);},
+    goLineStart: function(cm) {cm.setCursor(cm.getCursor().line, 0, true);},
+    goLineStartSmart: function(cm) {
+      var cur = cm.getCursor();
+      var text = cm.getLine(cur.line), firstNonWS = Math.max(0, text.search(/\S/));
+      cm.setCursor(cur.line, cur.ch <= firstNonWS && cur.ch ? 0 : firstNonWS, true);
+    },
+    goLineEnd: function(cm) {cm.setSelection({line: cm.getCursor().line}, null, true);},
+    goLineUp: function(cm) {cm.moveV(-1, "line");},
+    goLineDown: function(cm) {cm.moveV(1, "line");},
+    goPageUp: function(cm) {cm.moveV(-1, "page");},
+    goPageDown: function(cm) {cm.moveV(1, "page");},
+    goCharLeft: function(cm) {cm.moveH(-1, "char");},
+    goCharRight: function(cm) {cm.moveH(1, "char");},
+    goColumnLeft: function(cm) {cm.moveH(-1, "column");},
+    goColumnRight: function(cm) {cm.moveH(1, "column");},
+    goWordLeft: function(cm) {cm.moveH(-1, "word");},
+    goWordRight: function(cm) {cm.moveH(1, "word");},
+    delCharLeft: function(cm) {cm.deleteH(-1, "char");},
+    delCharRight: function(cm) {cm.deleteH(1, "char");},
+    delWordLeft: function(cm) {cm.deleteH(-1, "word");},
+    delWordRight: function(cm) {cm.deleteH(1, "word");},
+    indentAuto: function(cm) {cm.indentSelection("smart");},
+    indentMore: function(cm) {cm.indentSelection("add");},
+    indentLess: function(cm) {cm.indentSelection("subtract");},
+    insertTab: function(cm) {cm.replaceSelection("\t", "end");},
+    transposeChars: function(cm) {
+      var cur = cm.getCursor(), line = cm.getLine(cur.line);
+      if (cur.ch > 0 && cur.ch < line.length - 1)
+        cm.replaceRange(line.charAt(cur.ch) + line.charAt(cur.ch - 1),
+                        {line: cur.line, ch: cur.ch - 1}, {line: cur.line, ch: cur.ch + 1});
+    },
+    newlineAndIndent: function(cm) {
+      cm.replaceSelection("\n", "end");
+      cm.indentLine(cm.getCursor().line);
+    },
+    toggleOverwrite: function(cm) {cm.toggleOverwrite();}
+  };
+
+  var keyMap = CodeMirror.keyMap = {};
+  keyMap.basic = {
+    "Left": "goCharLeft", "Right": "goCharRight", "Up": "goLineUp", "Down": "goLineDown",
+    "End": "goLineEnd", "Home": "goLineStartSmart", "PageUp": "goPageUp", "PageDown": "goPageDown",
+    "Delete": "delCharRight", "Backspace": "delCharLeft", "Tab": "indentMore", "Shift-Tab": "indentLess",
+    "Enter": "newlineAndIndent", "Insert": "toggleOverwrite"
+  };
+  // Note that the save and find-related commands aren't defined by
+  // default. Unknown commands are simply ignored.
+  keyMap.pcDefault = {
+    "Ctrl-A": "selectAll", "Ctrl-D": "deleteLine", "Ctrl-Z": "undo", "Shift-Ctrl-Z": "redo", "Ctrl-Y": "redo",
+    "Ctrl-Home": "goDocStart", "Alt-Up": "goDocStart", "Ctrl-End": "goDocEnd", "Ctrl-Down": "goDocEnd",
+    "Ctrl-Left": "goWordLeft", "Ctrl-Right": "goWordRight", "Alt-Left": "goLineStart", "Alt-Right": "goLineEnd",
+    "Ctrl-Backspace": "delWordLeft", "Ctrl-Delete": "delWordRight", "Ctrl-S": "save", "Ctrl-F": "find",
+    "Ctrl-G": "findNext", "Shift-Ctrl-G": "findPrev", "Shift-Ctrl-F": "replace", "Shift-Ctrl-R": "replaceAll",
+    fallthrough: "basic"
+  };
+  keyMap.macDefault = {
+    "Cmd-A": "selectAll", "Cmd-D": "deleteLine", "Cmd-Z": "undo", "Shift-Cmd-Z": "redo", "Cmd-Y": "redo",
+    "Cmd-Up": "goDocStart", "Cmd-End": "goDocEnd", "Cmd-Down": "goDocEnd", "Alt-Left": "goWordLeft",
+    "Alt-Right": "goWordRight", "Cmd-Left": "goLineStart", "Cmd-Right": "goLineEnd", "Alt-Backspace": "delWordLeft",
+    "Ctrl-Alt-Backspace": "delWordRight", "Alt-Delete": "delWordRight", "Cmd-S": "save", "Cmd-F": "find",
+    "Cmd-G": "findNext", "Shift-Cmd-G": "findPrev", "Cmd-Alt-F": "replace", "Shift-Cmd-Alt-F": "replaceAll",
+    fallthrough: ["basic", "emacsy"]
+  };
+  keyMap["default"] = mac ? keyMap.macDefault : keyMap.pcDefault;
+  keyMap.emacsy = {
+    "Ctrl-F": "goCharRight", "Ctrl-B": "goCharLeft", "Ctrl-P": "goLineUp", "Ctrl-N": "goLineDown",
+    "Alt-F": "goWordRight", "Alt-B": "goWordLeft", "Ctrl-A": "goLineStart", "Ctrl-E": "goLineEnd",
+    "Ctrl-V": "goPageUp", "Shift-Ctrl-V": "goPageDown", "Ctrl-D": "delCharRight", "Ctrl-H": "delCharLeft",
+    "Alt-D": "delWordRight", "Alt-Backspace": "delWordLeft", "Ctrl-K": "killLine", "Ctrl-T": "transposeChars"
+  };
+
+  function getKeyMap(val) {
+    if (typeof val == "string") return keyMap[val];
+    else return val;
+  }
+  function lookupKey(name, extraMap, map, handle) {
+    function lookup(map) {
+      map = getKeyMap(map);
+      var found = map[name];
+      if (found != null && handle(found)) return true;
+      if (map.catchall) return handle(map.catchall);
+      var fallthrough = map.fallthrough;
+      if (fallthrough == null) return false;
+      if (Object.prototype.toString.call(fallthrough) != "[object Array]")
+        return lookup(fallthrough);
+      for (var i = 0, e = fallthrough.length; i < e; ++i) {
+        if (lookup(fallthrough[i])) return true;
+      }
+      return false;
+    }
+    if (extraMap && lookup(extraMap)) return true;
+    return lookup(map);
+  }
+  function isModifierKey(event) {
+    var name = keyNames[e_prop(event, "keyCode")];
+    return name == "Ctrl" || name == "Alt" || name == "Shift" || name == "Mod";
+  }
+
+  CodeMirror.fromTextArea = function(textarea, options) {
+    if (!options) options = {};
+    options.value = textarea.value;
+    if (!options.tabindex && textarea.tabindex)
+      options.tabindex = textarea.tabindex;
+
+    function save() {textarea.value = instance.getValue();}
+    if (textarea.form) {
+      // Deplorable hack to make the submit method do the right thing.
+      var rmSubmit = connect(textarea.form, "submit", save, true);
+      if (typeof textarea.form.submit == "function") {
+        var realSubmit = textarea.form.submit;
+        function wrappedSubmit() {
+          save();
+          textarea.form.submit = realSubmit;
+          textarea.form.submit();
+          textarea.form.submit = wrappedSubmit;
+        }
+        textarea.form.submit = wrappedSubmit;
+      }
+    }
+
+    textarea.style.display = "none";
+    var instance = CodeMirror(function(node) {
+      textarea.parentNode.insertBefore(node, textarea.nextSibling);
+    }, options);
+    instance.save = save;
+    instance.getTextArea = function() { return textarea; };
+    instance.toTextArea = function() {
+      save();
+      textarea.parentNode.removeChild(instance.getWrapperElement());
+      textarea.style.display = "";
+      if (textarea.form) {
+        rmSubmit();
+        if (typeof textarea.form.submit == "function")
+          textarea.form.submit = realSubmit;
+      }
+    };
+    return instance;
+  };
+
+  // Utility functions for working with state. Exported because modes
+  // sometimes need to do this.
+  function copyState(mode, state) {
+    if (state === true) return state;
+    if (mode.copyState) return mode.copyState(state);
+    var nstate = {};
+    for (var n in state) {
+      var val = state[n];
+      if (val instanceof Array) val = val.concat([]);
+      nstate[n] = val;
+    }
+    return nstate;
+  }
+  CodeMirror.copyState = copyState;
+  function startState(mode, a1, a2) {
+    return mode.startState ? mode.startState(a1, a2) : true;
+  }
+  CodeMirror.startState = startState;
+
+  // The character stream used by a mode's parser.
+  function StringStream(string, tabSize) {
+    this.pos = this.start = 0;
+    this.string = string;
+    this.tabSize = tabSize || 8;
+  }
+  StringStream.prototype = {
+    eol: function() {return this.pos >= this.string.length;},
+    sol: function() {return this.pos == 0;},
+    peek: function() {return this.string.charAt(this.pos);},
+    next: function() {
+      if (this.pos < this.string.length)
+        return this.string.charAt(this.pos++);
+    },
+    eat: function(match) {
+      var ch = this.string.charAt(this.pos);
+      if (typeof match == "string") var ok = ch == match;
+      else var ok = ch && (match.test ? match.test(ch) : match(ch));
+      if (ok) {++this.pos; return ch;}
+    },
+    eatWhile: function(match) {
+      var start = this.pos;
+      while (this.eat(match)){}
+      return this.pos > start;
+    },
+    eatSpace: function() {
+      var start = this.pos;
+      while (/[\s\u00a0]/.test(this.string.charAt(this.pos))) ++this.pos;
+      return this.pos > start;
+    },
+    skipToEnd: function() {this.pos = this.string.length;},
+    skipTo: function(ch) {
+      var found = this.string.indexOf(ch, this.pos);
+      if (found > -1) {this.pos = found; return true;}
+    },
+    backUp: function(n) {this.pos -= n;},
+    column: function() {return countColumn(this.string, this.start, this.tabSize);},
+    indentation: function() {return countColumn(this.string, null, this.tabSize);},
+    match: function(pattern, consume, caseInsensitive) {
+      if (typeof pattern == "string") {
+        function cased(str) {return caseInsensitive ? str.toLowerCase() : str;}
+        if (cased(this.string).indexOf(cased(pattern), this.pos) == this.pos) {
+          if (consume !== false) this.pos += pattern.length;
+          return true;
+        }
+      }
+      else {
+        var match = this.string.slice(this.pos).match(pattern);
+        if (match && consume !== false) this.pos += match[0].length;
+        return match;
+      }
+    },
+    current: function(){return this.string.slice(this.start, this.pos);}
+  };
+  CodeMirror.StringStream = StringStream;
+
+  function MarkedText(from, to, className, set) {
+    this.from = from; this.to = to; this.style = className; this.set = set;
+  }
+  MarkedText.prototype = {
+    attach: function(line) { this.set.push(line); },
+    detach: function(line) {
+      var ix = indexOf(this.set, line);
+      if (ix > -1) this.set.splice(ix, 1);
+    },
+    split: function(pos, lenBefore) {
+      if (this.to <= pos && this.to != null) return null;
+      var from = this.from < pos || this.from == null ? null : this.from - pos + lenBefore;
+      var to = this.to == null ? null : this.to - pos + lenBefore;
+      return new MarkedText(from, to, this.style, this.set);
+    },
+    dup: function() { return new MarkedText(null, null, this.style, this.set); },
+    clipTo: function(fromOpen, from, toOpen, to, diff) {
+      if (fromOpen && to > this.from && (to < this.to || this.to == null))
+        this.from = null;
+      else if (this.from != null && this.from >= from)
+        this.from = Math.max(to, this.from) + diff;
+      if (toOpen && (from < this.to || this.to == null) && (from > this.from || this.from == null))
+        this.to = null;
+      else if (this.to != null && this.to > from)
+        this.to = to < this.to ? this.to + diff : from;
+    },
+    isDead: function() { return this.from != null && this.to != null && this.from >= this.to; },
+    sameSet: function(x) { return this.set == x.set; }
+  };
+
+  function Bookmark(pos) {
+    this.from = pos; this.to = pos; this.line = null;
+  }
+  Bookmark.prototype = {
+    attach: function(line) { this.line = line; },
+    detach: function(line) { if (this.line == line) this.line = null; },
+    split: function(pos, lenBefore) {
+      if (pos < this.from) {
+        this.from = this.to = (this.from - pos) + lenBefore;
+        return this;
+      }
+    },
+    isDead: function() { return this.from > this.to; },
+    clipTo: function(fromOpen, from, toOpen, to, diff) {
+      if ((fromOpen || from < this.from) && (toOpen || to > this.to)) {
+        this.from = 0; this.to = -1;
+      } else if (this.from > from) {
+        this.from = this.to = Math.max(to, this.from) + diff;
+      }
+    },
+    sameSet: function(x) { return false; },
+    find: function() {
+      if (!this.line || !this.line.parent) return null;
+      return {line: lineNo(this.line), ch: this.from};
+    },
+    clear: function() {
+      if (this.line) {
+        var found = indexOf(this.line.marked, this);
+        if (found != -1) this.line.marked.splice(found, 1);
+        this.line = null;
+      }
+    }
+  };
+
+  // Line objects. These hold state related to a line, including
+  // highlighting info (the styles array).
+  function Line(text, styles) {
+    this.styles = styles || [text, null];
+    this.text = text;
+    this.height = 1;
+    this.marked = this.gutterMarker = this.className = this.bgClassName = this.handlers = null;
+    this.stateAfter = this.parent = this.hidden = null;
+  }
+  Line.inheritMarks = function(text, orig) {
+    var ln = new Line(text), mk = orig && orig.marked;
+    if (mk) {
+      for (var i = 0; i < mk.length; ++i) {
+        if (mk[i].to == null && mk[i].style) {
+          var newmk = ln.marked || (ln.marked = []), mark = mk[i];
+          var nmark = mark.dup(); newmk.push(nmark); nmark.attach(ln);
+        }
+      }
+    }
+    return ln;
+  }
+  Line.prototype = {
+    // Replace a piece of a line, keeping the styles around it intact.
+    replace: function(from, to_, text) {
+      var st = [], mk = this.marked, to = to_ == null ? this.text.length : to_;
+      copyStyles(0, from, this.styles, st);
+      if (text) st.push(text, null);
+      copyStyles(to, this.text.length, this.styles, st);
+      this.styles = st;
+      this.text = this.text.slice(0, from) + text + this.text.slice(to);
+      this.stateAfter = null;
+      if (mk) {
+        var diff = text.length - (to - from);
+        for (var i = 0; i < mk.length; ++i) {
+          var mark = mk[i];
+          mark.clipTo(from == null, from || 0, to_ == null, to, diff);
+          if (mark.isDead()) {mark.detach(this); mk.splice(i--, 1);}
+        }
+      }
+    },
+    // Split a part off a line, keeping styles and markers intact.
+    split: function(pos, textBefore) {
+      var st = [textBefore, null], mk = this.marked;
+      copyStyles(pos, this.text.length, this.styles, st);
+      var taken = new Line(textBefore + this.text.slice(pos), st);
+      if (mk) {
+        for (var i = 0; i < mk.length; ++i) {
+          var mark = mk[i];
+          var newmark = mark.split(pos, textBefore.length);
+          if (newmark) {
+            if (!taken.marked) taken.marked = [];
+            taken.marked.push(newmark); newmark.attach(taken);
+          }
+        }
+      }
+      return taken;
+    },
+    append: function(line) {
+      var mylen = this.text.length, mk = line.marked, mymk = this.marked;
+      this.text += line.text;
+      copyStyles(0, line.text.length, line.styles, this.styles);
+      if (mymk) {
+        for (var i = 0; i < mymk.length; ++i)
+          if (mymk[i].to == null) mymk[i].to = mylen;
+      }
+      if (mk && mk.length) {
+        if (!mymk) this.marked = mymk = [];
+        outer: for (var i = 0; i < mk.length; ++i) {
+          var mark = mk[i];
+          if (!mark.from) {
+            for (var j = 0; j < mymk.length; ++j) {
+              var mymark = mymk[j];
+              if (mymark.to == mylen && mymark.sameSet(mark)) {
+                mymark.to = mark.to == null ? null : mark.to + mylen;
+                if (mymark.isDead()) {
+                  mymark.detach(this);
+                  mk.splice(i--, 1);
+                }
+                continue outer;
+              }
+            }
+          }
+          mymk.push(mark);
+          mark.attach(this);
+          mark.from += mylen;
+          if (mark.to != null) mark.to += mylen;
+        }
+      }
+    },
+    fixMarkEnds: function(other) {
+      var mk = this.marked, omk = other.marked;
+      if (!mk) return;
+      for (var i = 0; i < mk.length; ++i) {
+        var mark = mk[i], close = mark.to == null;
+        if (close && omk) {
+          for (var j = 0; j < omk.length; ++j)
+            if (omk[j].sameSet(mark)) {close = false; break;}
+        }
+        if (close) mark.to = this.text.length;
+      }
+    },
+    fixMarkStarts: function() {
+      var mk = this.marked;
+      if (!mk) return;
+      for (var i = 0; i < mk.length; ++i)
+        if (mk[i].from == null) mk[i].from = 0;
+    },
+    addMark: function(mark) {
+      mark.attach(this);
+      if (this.marked == null) this.marked = [];
+      this.marked.push(mark);
+      this.marked.sort(function(a, b){return (a.from || 0) - (b.from || 0);});
+    },
+    // Run the given mode's parser over a line, update the styles
+    // array, which contains alternating fragments of text and CSS
+    // classes.
+    highlight: function(mode, state, tabSize) {
+      var stream = new StringStream(this.text, tabSize), st = this.styles, pos = 0;
+      var changed = false, curWord = st[0], prevWord;
+      if (this.text == "" && mode.blankLine) mode.blankLine(state);
+      while (!stream.eol()) {
+        var style = mode.token(stream, state);
+        var substr = this.text.slice(stream.start, stream.pos);
+        stream.start = stream.pos;
+        if (pos && st[pos-1] == style)
+          st[pos-2] += substr;
+        else if (substr) {
+          if (!changed && (st[pos+1] != style || (pos && st[pos-2] != prevWord))) changed = true;
+          st[pos++] = substr; st[pos++] = style;
+          prevWord = curWord; curWord = st[pos];
+        }
+        // Give up when line is ridiculously long
+        if (stream.pos > 5000) {
+          st[pos++] = this.text.slice(stream.pos); st[pos++] = null;
+          break;
+        }
+      }
+      if (st.length != pos) {st.length = pos; changed = true;}
+      if (pos && st[pos-2] != prevWord) changed = true;
+      // Short lines with simple highlights return null, and are
+      // counted as changed by the driver because they are likely to
+      // highlight the same way in various contexts.
+      return changed || (st.length < 5 && this.text.length < 10 ? null : false);
+    },
+    // Fetch the parser token for a given character. Useful for hacks
+    // that want to inspect the mode state (say, for completion).
+    getTokenAt: function(mode, state, ch) {
+      var txt = this.text, stream = new StringStream(txt);
+      while (stream.pos < ch && !stream.eol()) {
+        stream.start = stream.pos;
+        var style = mode.token(stream, state);
+      }
+      return {start: stream.start,
+              end: stream.pos,
+              string: stream.current(),
+              className: style || null,
+              state: state};
+    },
+    indentation: function(tabSize) {return countColumn(this.text, null, tabSize);},
+    // Produces an HTML fragment for the line, taking selection,
+    // marking, and highlighting into account.
+    getHTML: function(makeTab, endAt) {
+      var html = [], first = true, col = 0;
+      function span(text, style) {
+        if (!text) return;
+        // Work around a bug where, in some compat modes, IE ignores leading spaces
+        if (first && ie && text.charAt(0) == " ") text = "\u00a0" + text.slice(1);
+        first = false;
+        if (text.indexOf("\t") == -1) {
+          col += text.length;
+          var escaped = htmlEscape(text);
+        } else {
+          var escaped = "";
+          for (var pos = 0;;) {
+            var idx = text.indexOf("\t", pos);
+            if (idx == -1) {
+              escaped += htmlEscape(text.slice(pos));
+              col += text.length - pos;
+              break;
+            } else {
+              col += idx - pos;
+              var tab = makeTab(col);
+              escaped += htmlEscape(text.slice(pos, idx)) + tab.html;
+              col += tab.width;
+              pos = idx + 1;
+            }
+          }
+        }
+        if (style) html.push('<span class="', style, '">', escaped, "</span>");
+        else html.push(escaped);
+      }
+      var st = this.styles, allText = this.text, marked = this.marked;
+      var len = allText.length;
+      if (endAt != null) len = Math.min(endAt, len);
+      function styleToClass(style) {
+        if (!style) return null;
+        return "cm-" + style.replace(/ +/g, " cm-");
+      }
+
+      if (!allText && endAt == null)
+        span(" ");
+      else if (!marked || !marked.length)
+        for (var i = 0, ch = 0; ch < len; i+=2) {
+          var str = st[i], style = st[i+1], l = str.length;
+          if (ch + l > len) str = str.slice(0, len - ch);
+          ch += l;
+          span(str, styleToClass(style));
+        }
+      else {
+        var pos = 0, i = 0, text = "", style, sg = 0;
+        var nextChange = marked[0].from || 0, marks = [], markpos = 0;
+        function advanceMarks() {
+          var m;
+          while (markpos < marked.length &&
+                 ((m = marked[markpos]).from == pos || m.from == null)) {
+            if (m.style != null) marks.push(m);
+            ++markpos;
+          }
+          nextChange = markpos < marked.length ? marked[markpos].from : Infinity;
+          for (var i = 0; i < marks.length; ++i) {
+            var to = marks[i].to || Infinity;
+            if (to == pos) marks.splice(i--, 1);
+            else nextChange = Math.min(to, nextChange);
+          }
+        }
+        var m = 0;
+        while (pos < len) {
+          if (nextChange == pos) advanceMarks();
+          var upto = Math.min(len, nextChange);
+          while (true) {
+            if (text) {
+              var end = pos + text.length;
+              var appliedStyle = style;
+              for (var j = 0; j < marks.length; ++j)
+                appliedStyle = (appliedStyle ? appliedStyle + " " : "") + marks[j].style;
+              span(end > upto ? text.slice(0, upto - pos) : text, appliedStyle);
+              if (end >= upto) {text = text.slice(upto - pos); pos = upto; break;}
+              pos = end;
+            }
+            text = st[i++]; style = styleToClass(st[i++]);
+          }
+        }
+      }
+      return html.join("");
+    },
+    cleanUp: function() {
+      this.parent = null;
+      if (this.marked)
+        for (var i = 0, e = this.marked.length; i < e; ++i) this.marked[i].detach(this);
+    }
+  };
+  // Utility used by replace and split above
+  function copyStyles(from, to, source, dest) {
+    for (var i = 0, pos = 0, state = 0; pos < to; i+=2) {
+      var part = source[i], end = pos + part.length;
+      if (state == 0) {
+        if (end > from) dest.push(part.slice(from - pos, Math.min(part.length, to - pos)), source[i+1]);
+        if (end >= from) state = 1;
+      }
+      else if (state == 1) {
+        if (end > to) dest.push(part.slice(0, to - pos), source[i+1]);
+        else dest.push(part, source[i+1]);
+      }
+      pos = end;
+    }
+  }
+
+  // Data structure that holds the sequence of lines.
+  function LeafChunk(lines) {
+    this.lines = lines;
+    this.parent = null;
+    for (var i = 0, e = lines.length, height = 0; i < e; ++i) {
+      lines[i].parent = this;
+      height += lines[i].height;
+    }
+    this.height = height;
+  }
+  LeafChunk.prototype = {
+    chunkSize: function() { return this.lines.length; },
+    remove: function(at, n, callbacks) {
+      for (var i = at, e = at + n; i < e; ++i) {
+        var line = this.lines[i];
+        this.height -= line.height;
+        line.cleanUp();
+        if (line.handlers)
+          for (var j = 0; j < line.handlers.length; ++j) callbacks.push(line.handlers[j]);
+      }
+      this.lines.splice(at, n);
+    },
+    collapse: function(lines) {
+      lines.splice.apply(lines, [lines.length, 0].concat(this.lines));
+    },
+    insertHeight: function(at, lines, height) {
+      this.height += height;
+      this.lines.splice.apply(this.lines, [at, 0].concat(lines));
+      for (var i = 0, e = lines.length; i < e; ++i) lines[i].parent = this;
+    },
+    iterN: function(at, n, op) {
+      for (var e = at + n; at < e; ++at)
+        if (op(this.lines[at])) return true;
+    }
+  };
+  function BranchChunk(children) {
+    this.children = children;
+    var size = 0, height = 0;
+    for (var i = 0, e = children.length; i < e; ++i) {
+      var ch = children[i];
+      size += ch.chunkSize(); height += ch.height;
+      ch.parent = this;
+    }
+    this.size = size;
+    this.height = height;
+    this.parent = null;
+  }
+  BranchChunk.prototype = {
+    chunkSize: function() { return this.size; },
+    remove: function(at, n, callbacks) {
+      this.size -= n;
+      for (var i = 0; i < this.children.length; ++i) {
+        var child = this.children[i], sz = child.chunkSize();
+        if (at < sz) {
+          var rm = Math.min(n, sz - at), oldHeight = child.height;
+          child.remove(at, rm, callbacks);
+          this.height -= oldHeight - child.height;
+          if (sz == rm) { this.children.splice(i--, 1); child.parent = null; }
+          if ((n -= rm) == 0) break;
+          at = 0;
+        } else at -= sz;
+      }
+      if (this.size - n < 25) {
+        var lines = [];
+        this.collapse(lines);
+        this.children = [new LeafChunk(lines)];
+        this.children[0].parent = this;
+      }
+    },
+    collapse: function(lines) {
+      for (var i = 0, e = this.children.length; i < e; ++i) this.children[i].collapse(lines);
+    },
+    insert: function(at, lines) {
+      var height = 0;
+      for (var i = 0, e = lines.length; i < e; ++i) height += lines[i].height;
+      this.insertHeight(at, lines, height);
+    },
+    insertHeight: function(at, lines, height) {
+      this.size += lines.length;
+      this.height += height;
+      for (var i = 0, e = this.children.length; i < e; ++i) {
+        var child = this.children[i], sz = child.chunkSize();
+        if (at <= sz) {
+          child.insertHeight(at, lines, height);
+          if (child.lines && child.lines.length > 50) {
+            while (child.lines.length > 50) {
+              var spilled = child.lines.splice(child.lines.length - 25, 25);
+              var newleaf = new LeafChunk(spilled);
+              child.height -= newleaf.height;
+              this.children.splice(i + 1, 0, newleaf);
+              newleaf.parent = this;
+            }
+            this.maybeSpill();
+          }
+          break;
+        }
+        at -= sz;
+      }
+    },
+    maybeSpill: function() {
+      if (this.children.length <= 10) return;
+      var me = this;
+      do {
+        var spilled = me.children.splice(me.children.length - 5, 5);
+        var sibling = new BranchChunk(spilled);
+        if (!me.parent) { // Become the parent node
+          var copy = new BranchChunk(me.children);
+          copy.parent = me;
+          me.children = [copy, sibling];
+          me = copy;
+        } else {
+          me.size -= sibling.size;
+          me.height -= sibling.height;
+          var myIndex = indexOf(me.parent.children, me);
+          me.parent.children.splice(myIndex + 1, 0, sibling);
+        }
+        sibling.parent = me.parent;
+      } while (me.children.length > 10);
+      me.parent.maybeSpill();
+    },
+    iter: function(from, to, op) { this.iterN(from, to - from, op); },
+    iterN: function(at, n, op) {
+      for (var i = 0, e = this.children.length; i < e; ++i) {
+        var child = this.children[i], sz = child.chunkSize();
+        if (at < sz) {
+          var used = Math.min(n, sz - at);
+          if (child.iterN(at, used, op)) return true;
+          if ((n -= used) == 0) break;
+          at = 0;
+        } else at -= sz;
+      }
+    }
+  };
+
+  function getLineAt(chunk, n) {
+    while (!chunk.lines) {
+      for (var i = 0;; ++i) {
+        var child = chunk.children[i], sz = child.chunkSize();
+        if (n < sz) { chunk = child; break; }
+        n -= sz;
+      }
+    }
+    return chunk.lines[n];
+  }
+  function lineNo(line) {
+    if (line.parent == null) return null;
+    var cur = line.parent, no = indexOf(cur.lines, line);
+    for (var chunk = cur.parent; chunk; cur = chunk, chunk = chunk.parent) {
+      for (var i = 0, e = chunk.children.length; ; ++i) {
+        if (chunk.children[i] == cur) break;
+        no += chunk.children[i].chunkSize();
+      }
+    }
+    return no;
+  }
+  function lineAtHeight(chunk, h) {
+    var n = 0;
+    outer: do {
+      for (var i = 0, e = chunk.children.length; i < e; ++i) {
+        var child = chunk.children[i], ch = child.height;
+        if (h < ch) { chunk = child; continue outer; }
+        h -= ch;
+        n += child.chunkSize();
+      }
+      return n;
+    } while (!chunk.lines);
+    for (var i = 0, e = chunk.lines.length; i < e; ++i) {
+      var line = chunk.lines[i], lh = line.height;
+      if (h < lh) break;
+      h -= lh;
+    }
+    return n + i;
+  }
+  function heightAtLine(chunk, n) {
+    var h = 0;
+    outer: do {
+      for (var i = 0, e = chunk.children.length; i < e; ++i) {
+        var child = chunk.children[i], sz = child.chunkSize();
+        if (n < sz) { chunk = child; continue outer; }
+        n -= sz;
+        h += child.height;
+      }
+      return h;
+    } while (!chunk.lines);
+    for (var i = 0; i < n; ++i) h += chunk.lines[i].height;
+    return h;
+  }
+
+  // The history object 'chunks' changes that are made close together
+  // and at almost the same time into bigger undoable units.
+  function History() {
+    this.time = 0;
+    this.done = []; this.undone = [];
+  }
+  History.prototype = {
+    addChange: function(start, added, old) {
+      this.undone.length = 0;
+      var time = +new Date, cur = this.done[this.done.length - 1], last = cur && cur[cur.length - 1];
+      var dtime = time - this.time;
+      if (dtime > 400 || !last) {
+        this.done.push([{start: start, added: added, old: old}]);
+      } else if (last.start > start + old.length || last.start + last.added < start - last.added + last.old.length) {
+        cur.push({start: start, added: added, old: old});
+      } else {
+        var oldoff = 0;
+        if (start < last.start) {
+          for (var i = last.start - start - 1; i >= 0; --i)
+            last.old.unshift(old[i]);
+          last.added += last.start - start;
+          last.start = start;
+        }
+        else if (last.start < start) {
+          oldoff = start - last.start;
+          added += oldoff;
+        }
+        for (var i = last.added - oldoff, e = old.length; i < e; ++i)
+          last.old.push(old[i]);
+        if (last.added < added) last.added = added;
+      }
+      this.time = time;
+    }
+  };
+
+  function stopMethod() {e_stop(this);}
+  // Ensure an event has a stop method.
+  function addStop(event) {
+    if (!event.stop) event.stop = stopMethod;
+    return event;
+  }
+
+  function e_preventDefault(e) {
+    if (e.preventDefault) e.preventDefault();
+    else e.returnValue = false;
+  }
+  function e_stopPropagation(e) {
+    if (e.stopPropagation) e.stopPropagation();
+    else e.cancelBubble = true;
+  }
+  function e_stop(e) {e_preventDefault(e); e_stopPropagation(e);}
+  CodeMirror.e_stop = e_stop;
+  CodeMirror.e_preventDefault = e_preventDefault;
+  CodeMirror.e_stopPropagation = e_stopPropagation;
+
+  function e_target(e) {return e.target || e.srcElement;}
+  function e_button(e) {
+    if (e.which) return e.which;
+    else if (e.button & 1) return 1;
+    else if (e.button & 2) return 3;
+    else if (e.button & 4) return 2;
+  }
+
+  // Allow 3rd-party code to override event properties by adding an override
+  // object to an event object.
+  function e_prop(e, prop) {
+    var overridden = e.override && e.override.hasOwnProperty(prop);
+    return overridden ? e.override[prop] : e[prop];
+  }
+
+  // Event handler registration. If disconnect is true, it'll return a
+  // function that unregisters the handler.
+  function connect(node, type, handler, disconnect) {
+    if (typeof node.addEventListener == "function") {
+      node.addEventListener(type, handler, false);
+      if (disconnect) return function() {node.removeEventListener(type, handler, false);};
+    }
+    else {
+      var wrapHandler = function(event) {handler(event || window.event);};
+      node.attachEvent("on" + type, wrapHandler);
+      if (disconnect) return function() {node.detachEvent("on" + type, wrapHandler);};
+    }
+  }
+  CodeMirror.connect = connect;
+
+  function Delayed() {this.id = null;}
+  Delayed.prototype = {set: function(ms, f) {clearTimeout(this.id); this.id = setTimeout(f, ms);}};
+
+  var Pass = CodeMirror.Pass = {toString: function(){return "CodeMirror.Pass";}};
+
+  var gecko = /gecko\/\d{7}/i.test(navigator.userAgent);
+  var ie = /MSIE \d/.test(navigator.userAgent);
+  var ie_lt9 = /MSIE [1-8]\b/.test(navigator.userAgent);
+  var webkit = /WebKit\//.test(navigator.userAgent);
+  var chrome = /Chrome\//.test(navigator.userAgent);
+
+  // Detect drag-and-drop
+  var dragAndDrop = function() {
+    // There is *some* kind of drag-and-drop support in IE6-8, but I
+    // couldn't get it to work yet.
+    if (ie_lt9) return false;
+    var div = document.createElement('div');
+    return "draggable" in div || "dragDrop" in div;
+  }();
+
+  var lineSep = "\n";
+  // Feature-detect whether newlines in textareas are converted to \r\n
+  (function () {
+    var te = document.createElement("textarea");
+    te.value = "foo\nbar";
+    if (te.value.indexOf("\r") > -1) lineSep = "\r\n";
+  }());
+
+  // Counts the column offset in a string, taking tabs into account.
+  // Used mostly to find indentation.
+  function countColumn(string, end, tabSize) {
+    if (end == null) {
+      end = string.search(/[^\s\u00a0]/);
+      if (end == -1) end = string.length;
+    }
+    for (var i = 0, n = 0; i < end; ++i) {
+      if (string.charAt(i) == "\t") n += tabSize - (n % tabSize);
+      else ++n;
+    }
+    return n;
+  }
+
+  function computedStyle(elt) {
+    if (elt.currentStyle) return elt.currentStyle;
+    return window.getComputedStyle(elt, null);
+  }
+
+  // Find the position of an element by following the offsetParent chain.
+  // If screen==true, it returns screen (rather than page) coordinates.
+  function eltOffset(node, screen) {
+    var bod = node.ownerDocument.body;
+    var x = 0, y = 0, skipBody = false;
+    for (var n = node; n; n = n.offsetParent) {
+      var ol = n.offsetLeft, ot = n.offsetTop;
+      // Firefox reports weird inverted offsets when the body has a border.
+      if (n == bod) { x += Math.abs(ol); y += Math.abs(ot); }
+      else { x += ol, y += ot; }
+      if (screen && computedStyle(n).position == "fixed")
+        skipBody = true;
+    }
+    var e = screen && !skipBody ? null : bod;
+    for (var n = node.parentNode; n != e; n = n.parentNode)
+      if (n.scrollLeft != null) { x -= n.scrollLeft; y -= n.scrollTop;}
+    return {left: x, top: y};
+  }
+  // Use the faster and saner getBoundingClientRect method when possible.
+  if (document.documentElement.getBoundingClientRect != null) eltOffset = function(node, screen) {
+    // Take the parts of bounding client rect that we are interested in so we are able to edit if need be,
+    // since the returned value cannot be changed externally (they are kept in sync as the element moves within the page)
+    try { var box = node.getBoundingClientRect(); box = { top: box.top, left: box.left }; }
+    catch(e) { box = {top: 0, left: 0}; }
+    if (!screen) {
+      // Get the toplevel scroll, working around browser differences.
+      if (window.pageYOffset == null) {
+        var t = document.documentElement || document.body.parentNode;
+        if (t.scrollTop == null) t = document.body;
+        box.top += t.scrollTop; box.left += t.scrollLeft;
+      } else {
+        box.top += window.pageYOffset; box.left += window.pageXOffset;
+      }
+    }
+    return box;
+  };
+
+  // Get a node's text content.
+  function eltText(node) {
+    return node.textContent || node.innerText || node.nodeValue || "";
+  }
+  function selectInput(node) {
+    if (ios) { // Mobile Safari apparently has a bug where select() is broken.
+      node.selectionStart = 0;
+      node.selectionEnd = node.value.length;
+    } else node.select();
+  }
+
+  // Operations on {line, ch} objects.
+  function posEq(a, b) {return a.line == b.line && a.ch == b.ch;}
+  function posLess(a, b) {return a.line < b.line || (a.line == b.line && a.ch < b.ch);}
+  function copyPos(x) {return {line: x.line, ch: x.ch};}
+
+  var escapeElement = document.createElement("pre");
+  function htmlEscape(str) {
+    escapeElement.textContent = str;
+    return escapeElement.innerHTML;
+  }
+  // Recent (late 2011) Opera betas insert bogus newlines at the start
+  // of the textContent, so we strip those.
+  if (htmlEscape("a") == "\na")
+    htmlEscape = function(str) {
+      escapeElement.textContent = str;
+      return escapeElement.innerHTML.slice(1);
+    };
+  // Some IEs don't preserve tabs through innerHTML
+  else if (htmlEscape("\t") != "\t")
+    htmlEscape = function(str) {
+      escapeElement.innerHTML = "";
+      escapeElement.appendChild(document.createTextNode(str));
+      return escapeElement.innerHTML;
+    };
+  CodeMirror.htmlEscape = htmlEscape;
+
+  // Used to position the cursor after an undo/redo by finding the
+  // last edited character.
+  function editEnd(from, to) {
+    if (!to) return 0;
+    if (!from) return to.length;
+    for (var i = from.length, j = to.length; i >= 0 && j >= 0; --i, --j)
+      if (from.charAt(i) != to.charAt(j)) break;
+    return j + 1;
+  }
+
+  function indexOf(collection, elt) {
+    if (collection.indexOf) return collection.indexOf(elt);
+    for (var i = 0, e = collection.length; i < e; ++i)
+      if (collection[i] == elt) return i;
+    return -1;
+  }
+  function isWordChar(ch) {
+    return /\w/.test(ch) || ch.toUpperCase() != ch.toLowerCase();
+  }
+
+  // See if "".split is the broken IE version, if so, provide an
+  // alternative way to split lines.
+  var splitLines = "\n\nb".split(/\n/).length != 3 ? function(string) {
+    var pos = 0, nl, result = [];
+    while ((nl = string.indexOf("\n", pos)) > -1) {
+      result.push(string.slice(pos, string.charAt(nl-1) == "\r" ? nl - 1 : nl));
+      pos = nl + 1;
+    }
+    result.push(string.slice(pos));
+    return result;
+  } : function(string){return string.split(/\r?\n/);};
+  CodeMirror.splitLines = splitLines;
+
+  var hasSelection = window.getSelection ? function(te) {
+    try { return te.selectionStart != te.selectionEnd; }
+    catch(e) { return false; }
+  } : function(te) {
+    try {var range = te.ownerDocument.selection.createRange();}
+    catch(e) {}
+    if (!range || range.parentElement() != te) return false;
+    return range.compareEndPoints("StartToEnd", range) != 0;
+  };
+
+  CodeMirror.defineMode("null", function() {
+    return {token: function(stream) {stream.skipToEnd();}};
+  });
+  CodeMirror.defineMIME("text/plain", "null");
+
+  var keyNames = {3: "Enter", 8: "Backspace", 9: "Tab", 13: "Enter", 16: "Shift", 17: "Ctrl", 18: "Alt",
+                  19: "Pause", 20: "CapsLock", 27: "Esc", 32: "Space", 33: "PageUp", 34: "PageDown", 35: "End",
+                  36: "Home", 37: "Left", 38: "Up", 39: "Right", 40: "Down", 44: "PrintScrn", 45: "Insert",
+                  46: "Delete", 59: ";", 91: "Mod", 92: "Mod", 93: "Mod", 186: ";", 187: "=", 188: ",",
+                  189: "-", 190: ".", 191: "/", 192: "`", 219: "[", 220: "\\", 221: "]", 222: "'", 63276: "PageUp",
+                  63277: "PageDown", 63275: "End", 63273: "Home", 63234: "Left", 63232: "Up", 63235: "Right",
+                  63233: "Down", 63302: "Insert", 63272: "Delete"};
+  CodeMirror.keyNames = keyNames;
+  (function() {
+    // Number keys
+    for (var i = 0; i < 10; i++) keyNames[i + 48] = String(i);
+    // Alphabetic keys
+    for (var i = 65; i <= 90; i++) keyNames[i] = String.fromCharCode(i);
+    // Function keys
+    for (var i = 1; i <= 12; i++) keyNames[i + 111] = keyNames[i + 63235] = "F" + i;
+  })();
+
+  return CodeMirror;
+})();

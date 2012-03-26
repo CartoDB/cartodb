@@ -1,12 +1,14 @@
 module CartoDB
   module Import
-    class Zipper < CartoDB::Import::Decompressor
+    class Gzipper < CartoDB::Import::Decompressor
 
       register_decompressor :zip
       register_decompressor :kmz
 
       def process!
         log "Importing zip file: #{@path}"
+        @data_import = DataImport.find(:id=>@data_import_id)
+        @data_import.log_update("decompressing file #{@path}") 
 
         # generate a temp file for import
         tmp_dir = temporary_filename
@@ -39,7 +41,6 @@ module CartoDB
           # extract
           entry.extract(tmp_path)
         end        
-
         # construct return variables
         to_import_hash
       end  

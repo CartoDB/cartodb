@@ -66,8 +66,33 @@ module CartoDB
                                   GRANT GROUP HAVING ILIKE IN INITIALLY INNER INTERSECT INTO IS ISNULL JOIN LEADING LEFT LIKE LIMIT LOCALTIME 
                                   LOCALTIMESTAMP NATURAL NEW NOT NOTNULL NULL OFF OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING PRIMARY 
                                   REFERENCES RIGHT SELECT SESSION_USER SIMILAR SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION UNIQUE USER 
-                                  USING VERBOSE WHEN WHERE }
+                                  USING VERBOSE WHEN WHERE XMIN XMAX }
   
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
-  
+
+  ERROR_CODES = {
+    1000 => 'File I/O error',
+    1001 => 'Unable to open file',
+    1002 => 'Unsupported file type',
+    1003 => 'Decompression error',
+    1004 => 'File encoding error',
+    2000 => 'File conversion errors',
+    3000 => 'Geometry error',
+    3004 => 'Unable to read SHP file',
+    3005 => 'SHP to PGSQL error',
+    3100 => 'Projection error',
+    3101 => 'Unsupported or missing projection',
+    3102 => 'Unable to force geoetry to 2-dimensions',
+    3200 => 'Unsupported geometry type',
+    3201 => 'Geometry Collection not supported',
+    4000 => 'Raster errors',
+    4001 => 'Raster import error',
+    5000 => 'Database import error',
+    5001 => 'Empty table',
+    5002 => 'Reserved column names',
+    6000 => 'OSM data import error',
+    8000 => 'CartoDB account error',
+    8001 => 'Over account storage limit, please upgrade',
+    8002 => 'Over account table limit, please upgrade',
+    99999 => 'Unknown' }
 end

@@ -74,9 +74,9 @@
       var me = this;
 
       head.js('/javascripts/admin/show/map/overlays/mapCanvasStub.js',
-        '/javascripts/admin/show/map/overlays/CartoTooltip.js?'+createUniqueId(),
-        '/javascripts/admin/show/map/overlays/CartoInfowindow.js?'+createUniqueId(),
-        '/javascripts/admin/show/map/overlays/CartoDeleteWindow.js?'+createUniqueId(),
+        '/javascripts/admin/show/map/overlays/CartoTooltip.js',
+        '/javascripts/admin/show/map/overlays/CartoInfowindow.js',
+        '/javascripts/admin/show/map/overlays/CartoDeleteWindow.js',
         '/javascripts/admin/show/map/tools/polygonEdit.js',
         '/javascripts/admin/show/map/tools/polylineEdit.js',
         '/javascripts/admin/show/map/tools/geometryCreator.js',
@@ -141,18 +141,45 @@
       $.ajax({
         type: "GET",
         dataType: 'jsonp',
-        url: global_api_url+'queries?sql='+escape('SELECT type from geometry_columns where f_table_name = \''+table_name+'\' and f_geometry_column = \'the_geom\''),
+        url: global_api_url+'queries?sql='+escape('SELECT type as geom_type FROM geometry_columns where "f_table_name" = \''+ table_name +'\' AND "f_geometry_column" = \'the_geom\''),
         headers: {"cartodbclient":"true"},
-        success: function(data) {          
-          if (data.rows.length>0) {
-            geom_type = me.geometry_type_ = data.rows[0].type.toLowerCase();
+        success: function(data) {
+          if (data.rows.length>0 && 
+              data.rows[0].geom_type!=undefined &&
+              data.rows[0].geom_type!=null &&
+              data.rows[0].geom_type.toLowerCase()!= "geometry") {
+            geom_type = me.geometry_type_ = data.rows[0].geom_type.toLowerCase();
+            setupTools();
           } else {
-            geom_type = undefined;
+            // Attempt to work out geometry based on data contents
+            $.ajax({
+              type: "GET",
+              dataType: 'jsonp',
+              url: global_api_url+'queries?sql='+escape('SELECT DISTINCT(GeometryType(the_geom)) as geom_type FROM '+table_name+' GROUP BY geom_type'),
+              headers: {"cartodbclient":"true"},
+              success: function(data) {
+                if (data.rows.length>0 && 
+                    data.rows[0].geom_type!=undefined &&
+                    data.rows[0].geom_type!=null &&
+                    data.rows[0].geom_type.toLowerCase()!= "geometry") {
+                  geom_type = me.geometry_type_ = data.rows[0].geom_type.toLowerCase();
+                } else {
+                  // FIXME: This forces table to be points when geometry_columns returns 'geometry' and the table is empty.
+                  // breaks things if data type is actually not point
+                  geom_type = 'point';
+                }
+                setupTools();
+              },
+              error: function(e) {
+                geom_type = 'point';
+                setupTools();
+                console.debug(e);
+              }
+            });
           }
-          
-          setupTools();
         },
         error: function(e) {
+          geom_type = 'point';
           setupTools();
           console.debug(e);
         }
@@ -225,7 +252,13 @@
 
       // Set carto style
       if (str.search('/*carto*/') < 0 && vis_data) {
-        this.css_editor.setValue(str.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   '));
+        this.css_editor.setValue(
+          str.replace(/\n/g,'')
+          .replace(/\{\n?\s*/g,'{\n   ')
+          .replace(/;\n?\s*/g,';\n   ')          
+          .replace(/\s*\}/gi,'\n}\n')
+          .replace(/\/\*carto\*\//g,'')
+        );
       }
 
       // Save styles to "this" object -> Refresh tiles
@@ -243,7 +276,8 @@
         url:TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/style?map_key='+map_key,
         data: {style:str},
         success: function(result) {
-          $('.cartocss_editor span.errors').hide();
+          $('.cartocss_editor').removeClass('error');
+          $('.cartocss_editor').find('.outer_textarea').removeAttr('style');
           if (refresh)
             me.refreshWax();
         },
@@ -252,7 +286,10 @@
           var msg = '';
           _.each(errors,function(ele,i){msg += ele + '<br/>';});
           $('.cartocss_editor span.errors p').html(msg);
-          $('.cartocss_editor span.errors').css({display:'block'});
+
+		      var errors_height = (errors.length * 16) + 23;
+		      $('.cartocss_editor').find('.outer_textarea').css({'bottom':errors_height+'px'});
+		      $('.cartocss_editor').addClass('error');
         }
       });
     }
@@ -446,15 +483,25 @@
       // SQL Map console
       // Clear
       $('a.clear_table').live('click',function(ev){
-        var view_map = ($('body').hasClass('map'));
-        if (view_map) {
-          stopPropagation(ev);
-          $('body').removeClass('query');
-          me.query_mode = false;
-					$('.map_header div.stickies').remove();
-          setAppStatus();
-          me.refresh();
-        }
+        var map_mode = ($('body').hasClass('map'))
+        	, query_mode = ($('body').hasClass('query'));
+
+			  if (map_mode) {
+			    stopPropagation(ev);
+			    if (query_mode) {
+			    	$('body').removeClass('query');
+
+			    	// Reset sql window if there was any problem
+			    	$('div.sql_window').removeClass('error');
+			    	$('div.sql_window div.outer_textarea').removeAttr('style');
+			    	delete editor['errors'];
+
+          	me.query_mode = false;
+						$('.map_header div.stickies').remove();
+          	setAppStatus();
+          	me.refresh();
+          }
+			  }
       });
 
       // Try query
@@ -486,9 +533,11 @@
             headers: {"cartodbclient":"true"},
             success: function(data) {
   			      // Remove error content
-  						$('div.sql_window span.errors').hide();
-  						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
-  						$('div.sql_window').css({'min-height':'199px'});
+  						$('div.sql_window').removeClass('error');
+  						$('div.sql_window div.inner div.outer_textarea').removeAttr('style');
+
+  						// Remove errors from the editor
+  						delete editor['errors'];
   						
   						$('span.query h3').html(data.total_rows + ' row' + ((data.total_rows>1)?'s':'') + ' matching your query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
   						$('span.query p').text('This query took '+data.time.toFixed(3)+' seconds');
@@ -501,18 +550,21 @@
               window.ops_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
   			      $(document).unbind('arrived');
 
+  			      // parse errors
   			      var errors = $.parseJSON(e.responseText).errors;
+
+  			      // set errors in the editor
+  			      editor['errors'] = errors;
+  			      
   			      $('div.sql_window span.errors p').text('');
-  			      _.each(errors,function(error,i){
-  			        $('div.sql_window span.errors p').append(' '+error+'.');
-  			      });
+  			      
+			      	_.each(errors,function(error,i){
+			        	$('div.sql_window span.errors p').append(''+error+'.<br/>');
+			      	});
 
-  			      var new_bottom = 65 + $('div.sql_window span.errors').height();
-  			      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
+							$('div.sql_window').addClass('error');
+				      $('div.sql_window div.inner div.outer_textarea').css({bottom:$('div.sql_window span.errors').outerHeight() +'px'});				      
 
-  			      var new_height = 199 + $('div.sql_window span.errors').height();
-  			      $('div.sql_window').css({'min-height':new_height+'px'});
-  			      $('div.sql_window span.errors').show();
   			      $('.map_header div.stickies').remove();
   			      $('span.query h3').html('No results for this query <a class="clear_table" href="#clear">CLEAR VIEW</a>');
       				$('span.query p').text('');
@@ -574,15 +626,15 @@
         }
       });
 
+
       // Update Carto with the name of the new table
       this.css_editor.setValue(
         this.styles
           .replace(/\n/g,'')
-          .replace(/ /g,'')
           .replace(/#(\w*)\s/g,'#' + table_name + ' ')
-          .replace(/\{/gi,'{\n   ')
-          .replace(/\}/gi,'}\n')
-          .replace(/;/gi,';\n   ')
+          .replace(/\{\n?\s*/g,'{\n   ')
+          .replace(/;\n?\s*/g,';\n   ')          
+          .replace(/\s*\}/gi,'\n}\n')
           .replace(/\/\*carto\*\//g,'')
         ); 
       }
@@ -697,6 +749,12 @@
           me.startWax();
         },
         error: function(e) {
+
+          // Set map to world view
+          me.map_.setZoom(2)
+
+          // Start wax
+          me.startWax();
         }
       });
     }
@@ -719,37 +777,32 @@
       /*
         LIST HEADER VISUALIZATION
       */
-      var visualization_header = (function($, window, undefined){
+      var visualization_header = (function() {
         _setCorrectGeomType(geom_type)
 
         function _setCorrectGeomType(geom_type) {
-          if (geom_type=="point" || geom_type=="multipoint") {
-            $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.lines').remove();
-            $vis_ul.find('> li:eq(0) > a.option').text('Custom points');
-            $vis_ul.find('> li:eq(1) > a.option').text('Bubble map');
-            $vis_ul.find('> li:eq(1) > div.suboptions.cloropeth').remove();
+          if (geom_type=="linestring" || geom_type=="multilinestring") {
+            $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.points').remove();
+            $vis_ul.find('div.suboptions.choropleth span.color').remove();
+            $vis_ul.find('div.suboptions.choropleth span.numeric').css({margin:'0'});
+            $vis_ul.find('> li:eq(0) > a.option').text('Custom lines');
           } else if (geom_type=="polygon" || geom_type=="multipolygon") {
             $vis_ul.find('> li:eq(0) > div.suboptions.points, > li:eq(0) > div.suboptions.lines').remove();
             $vis_ul.find('> li:eq(0) > a.option').text('Custom polygons');
-            $vis_ul.find('> li:eq(1) > a.option').text('Numeric choropleth');
-            $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
           } else {
-            $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.points').remove();
-            $vis_ul.find('div.suboptions.cloropeth span.color').remove();
-            $vis_ul.find('div.suboptions.cloropeth span.numeric').css({margin:'0'});
-            $vis_ul.find('> li:eq(0) > a.option').text('Custom lines');
-            $vis_ul.find('> li:eq(1) > a.option').text('Numeric choropleth');
-            $vis_ul.find('> li:eq(1) > div.suboptions.bubbles').remove();
+            $vis_ul.find('> li:eq(0) > div.suboptions.polygons, > li:eq(0) > div.suboptions.lines').remove();
+            $vis_ul.find('> li:eq(0) > a.option').text('Custom points');
+            $vis_ul.find('> li:eq(2)').remove();
           }
         }
         return {}
-      }(jQuery, window));
+			}());
 
 
       /*
         GEOMETRY OPTIONS
       */
-      var geometry_options = (function($, window, undefined){
+      var geometry_options = (function() {
         _setCorrectGeomType(geom_type)
 
         function _setCorrectGeomType(geom_type) {
@@ -762,13 +815,13 @@
           }
         }
         return {}
-      }(jQuery, window));
+			}());
 
 
       /*
         FEATURES
       */
-      var features = (function($, window, undefined){
+      var features = (function() {
 
         var $feature      = $vis_ul.find('> li:eq(0) div.suboptions')
           , feature_props = {}; 
@@ -913,27 +966,27 @@
         return {
             
         }
-      }(jQuery, window));
+      }());
 
 
       /*
-        BUBBLES | CLOROPETHAS
+        BUBBLES
       */
-      var bubbles_cloropethas = (function($, window, undefined){
+      var bubbles = (function() {
 
-        var $custom       = $vis_ul.find('> li:eq(1) div.suboptions')
+        var $bubbles     	= $vis_ul.find('> li:eq(1) div.suboptions')
           , custom_props  = {}
           , custom_vis    = {};
 
-
         _init();
         
+
           function _init() {
             _setProperties(prev_properties);
             _initElements();
             _bindEvents();
 
-            if (prev_properties.type == "custom") {
+            if (prev_properties.properties['marker-type'] && prev_properties.type == "custom") {
               _activate();
             }
           }
@@ -941,7 +994,7 @@
           function _setProperties(old_properties) {
 
             // Get editable variables (Looping through the $el)
-            $custom.find('span[css]').each(function(i,ele){
+            $bubbles.find('span[css]').each(function(i,ele){
 
               // Get css value
               var css_ = $(ele).attr('css').split(' ');
@@ -959,38 +1012,17 @@
               });
             });
 
-            // Get default variables depending on geom type
-            if (geom_type=="point" || geom_type=="multipoint") {
-              custom_props['marker-placement'] = 'point';
-              custom_props['marker-type'] = 'ellipse';
-              custom_props['marker-allow-overlap'] = true;              
-            } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-              // No custom values
-            } else {
-              custom_props['line-width'] = '4';
-            }
-
+            // Set marker options from the beginning
+            custom_props['marker-placement'] = 'point';
+            custom_props['marker-type'] = 'ellipse';
+            custom_props['marker-allow-overlap'] = true;              
 
             // Get visualization variables
-            if (geom_type=="point" || geom_type=="multipoint") {
-              custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
-              custom_vis['param'] = 'marker-width';
-              custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,1,2,3,4,5,6,7,8,9];
-              custom_vis['n_buckets'] = 10;
-              custom_vis['values'] = old_properties.visualization.values || [1,2,3,4,5,6,7,8,9,10];
-            } else if (geom_type=="polygon" || geom_type=="multipolygon") {
-              custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
-              custom_vis['param'] = 'polygon-fill';
-              custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,2,4,12,24];
-              try {custom_vis['n_buckets'] = old_properties.visualization.v_buckets.length} catch(e) {custom_vis['n_buckets'] = 5};
-              custom_vis['values'] =  old_properties.visualization.values || ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
-            } else {
-              custom_vis['column'] = old_properties.visualization.column || 'cartodb_id';
-              custom_vis['param'] = 'line-color';
-              custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,2,4,12,24];
-              try { custom_vis['n_buckets'] = old_properties.visualization.v_buckets.length} catch(e) {custom_vis['n_buckets'] = 5};
-              custom_vis['values'] = old_properties.visualization.values || ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
-            }
+            custom_vis['column'] = (isNaN(old_properties.visualization.column)) ? old_properties.visualization.column : 'cartodb_id';
+            custom_vis['param'] = 'marker-width';
+            custom_vis['v_buckets'] = old_properties.visualization.v_buckets || [0,1,2,3,4,5,6,7,8,9];
+            custom_vis['n_buckets'] = 10;
+            custom_vis['values'] = (old_properties.visualization.values && typeof old_properties.visualization.values[0] == 'integer') ? old_properties.visualization.values : [4,5,6,7,8,9,10,11,12,13];
 
             // Set type
             custom_vis['type'] = 'custom';
@@ -999,7 +1031,7 @@
 
           function _initElements() {
             // Color inputs
-            $custom.find('span.color').each(function(i,el){
+            $bubbles.find('span.color').each(function(i,el){
               // Get one css element
               var property = $(el).attr('css').split(' ')[0];
 
@@ -1016,7 +1048,7 @@
 
 
             // Alpha sliders
-            $custom.find('span.alpha').each(function(i,el){
+            $bubbles.find('span.alpha').each(function(i,el){
               // Get one css element
               var property = $(el).attr('css').split(' ')[0];
 
@@ -1033,7 +1065,7 @@
 
 
             // Range inputs
-            $custom.find('span.numeric').each(function(i,el){
+            $bubbles.find('span.numeric').each(function(i,el){
               var type = $(el).attr('class').replace('numeric','').replace(' ','')
                 , property = $(el).attr('css') || $(el).attr('data')
                 , value = 0;
@@ -1094,7 +1126,7 @@
 
 
             // Dropdowns
-            $custom.find('span.dropdown').each(function(i,el){
+            $bubbles.find('span.dropdown').each(function(i,el){
 
               if (!$(el).hasClass('buckets')) {
                 // Column dropdown
@@ -1131,14 +1163,271 @@
                     (custom_vis['v_buckets']).push(ele.maxamount);
                   });
 
-                  $custom.find('span.color_ramp').colorRamp('update',value);
+                  $bubbles.find('span.color_ramp').colorRamp('update',value);
+                });
+              }
+            });
+          }
+
+
+
+          function _bindEvents() {
+            $bubbles.closest('li').find('> a.option').click(_activate);
+          }
+
+
+          function _activate(ev) {
+            if (ev) {
+              ev.preventDefault();
+            }
+
+            // Remove all selected
+            var parent = $bubbles.parent();
+            if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
+              $vis_ul.find('li.selected').removeClass('selected special')
+              parent.addClass('selected special');
+              if (ev)
+                _saveProperties();
+            }
+
+            $('div.map_window div.map_header ul li p:eq(1)').text('Bubble map');
+          }
+
+          function _saveProperties() {
+            that.saveTilesStyles(custom_props,custom_vis);
+          }
+
+        return {
+            
+        }
+      }());
+
+
+			/*
+        CHOROPLETHAS
+      */
+      var choroplethas = (function() {
+
+        var $choroplethas = $vis_ul.find('> li:eq(2) div.suboptions')
+          , custom_props  = {}
+          , custom_vis    = {};
+
+
+        if ($choroplethas.length>0) 
+        	_init();
+        
+          function _init() {
+            _setProperties(prev_properties);
+            _initElements();
+            _bindEvents();
+
+            if (!prev_properties.properties["marker-type"] && prev_properties.type == "custom") {
+              _activate();
+            }
+          }
+
+          function _setProperties(old_properties) {
+
+            // Get editable variables (Looping through the $el)
+            $choroplethas.find('span[css]').each(function(i,ele){
+
+              // Get css value
+              var css_ = $(ele).attr('css').split(' ');
+
+
+              // Change default value if there was a previous one
+              if (old_properties.properties[css_[0]]) 
+                $(ele).attr('default',old_properties.properties[css_[0]]);
+
+              var def_ = $(ele).attr('default');
+
+                // If there are more properties in the same span
+              _.each(css_,function(param,i){
+                custom_props[param] = def_;
+              });
+            });
+
+            // Get default variables depending on geom type (only for lines)
+            if (geom_type!="polygon" && geom_type!="multipolygon") {
+              custom_props['line-width'] = '4';
+              delete custom_props['polygon-opacity'];
+            }
+
+
+            // Get visualization variables
+            if (geom_type=="polygon" || geom_type=="multipolygon") {
+              custom_vis['param'] = 'polygon-fill';
+            } else {
+              custom_vis['param'] = 'line-color';
+            }
+
+
+            custom_vis['column'] = (isNaN(old_properties.visualization.column)) ? old_properties.visualization.column : 'cartodb_id';
+            custom_vis['v_buckets'] = 
+            	(old_properties.visualization.v_buckets &&
+            		old_properties.visualization.v_buckets.length<8 &&
+            		old_properties.visualization.v_buckets.length>2 ) ? old_properties.visualization.v_buckets : [0,2,4,12,24];
+						custom_vis['n_buckets'] = 
+            	(old_properties.visualization.values && 
+            		old_properties.visualization.values.length<8 &&
+            		old_properties.visualization.values.length>2 ) ? old_properties.visualization.values.length : 5;
+            custom_vis['values'] = 
+            	(old_properties.visualization.values &&
+            		old_properties.visualization.values.length<8 &&
+            		old_properties.visualization.values.length>2 &&
+                old_properties.visualization.v_buckets.length == old_properties.visualization.values.length) ? old_properties.visualization.values : ['#EDF8FB', '#B2E2E2', '#66C2A4', '#2CA25F', '#006D2C'];
+
+            // Set type
+            custom_vis['type'] = 'custom';
+          }
+
+
+          function _initElements() {
+            // Color inputs
+            $choroplethas.find('span.color').each(function(i,el){
+              // Get one css element
+              var property = $(el).attr('css').split(' ')[0];
+
+              $(el).colorPicker({
+                value: custom_props[property]
+              })
+              .bind('change.colorPicker',function(ev,value){
+                _.each($(this).attr('css').split(' '),function(ele,i){
+                  custom_props[ele] = value;
+                });
+                _saveProperties();
+              });
+            });
+
+
+            // Alpha sliders
+            $choroplethas.find('span.alpha').each(function(i,el){
+              // Get one css element
+              var property = $(el).attr('css').split(' ')[0];
+
+              $(el).customSlider({
+                value: custom_props[property]*100
+              })
+              .bind('change.customSlider',function(ev,value){
+                _.each($(this).attr('css').split(' '),function(ele,i){
+                  if ((geom_type=="linestring" || geom_type=="multilinestring") && ele == "polygon-opacity") {
+										delete custom_props[ele];
+                  } else {
+                    custom_props[ele] = value / 100;                  	
+                  }
+                });
+                _saveProperties();
+              });
+            });
+
+
+            // Range inputs
+            $choroplethas.find('span.numeric').each(function(i,el){
+              var type = $(el).attr('class').replace('numeric','').replace(' ','')
+                , property = $(el).attr('css') || $(el).attr('data')
+                , value = 0;
+
+              if (type=='') {
+                value = custom_props[property];
+              } else {
+                var length = custom_vis[property].length
+                  , values = custom_vis[property];
+
+                if (type=="max") {
+                  value = values[length-1]
+                } else {
+                  value = values[0]
+                }
+              }
+
+              $(el).rangeInput({
+                type: type,
+                value: value
+              })
+              .bind('change.rangeInput',function(ev,value){
+                
+                if (!$(this).hasClass('min') && !$(this).hasClass('max')) {
+                  _.each($(this).attr('css').split(' '),function(ele,i){
+                    custom_props[ele] = value;
+                  });
+                } else {
+                  var values = custom_vis[$(this).attr('data')]
+                    , max , min
+                    , length = values.length - 1;
+
+                  if ($(this).hasClass('max')) {
+                    max = value;
+                    min = parseInt(values[0]);
+                  } else {
+                    min = value;
+                    max = parseInt(values[length])
+                  }
+
+                  // Create the values
+                  var step = (max - min) / 9
+                    , new_values = [];
+                  
+                  new_values.push(min);
+
+                  for (var i = 1, l = 10; i<l+1; i++) {
+                    new_values.push((step*i) + min);
+                  }
+
+                  new_values.push(max);
+                  custom_vis[$(this).attr('data')] = new_values;
+                }
+
+                _saveProperties();
+              });
+            });
+
+
+            // Dropdowns
+            $choroplethas.find('span.dropdown').each(function(i,el){
+
+              if (!$(el).hasClass('buckets')) {
+                // Column dropdown
+                $(el).customDropdown({
+                  source: getColumns(table_name),
+                  unselect: 'Select a column',
+                  value: custom_vis[$(el).attr('data')]
+                })
+                .bind('change.customDropdown',function(ev,value){
+                  custom_vis['column'] = value;
+
+                  custom_vis['v_buckets'] = [];
+
+                  // Create the buckets
+                  _.each(getColumnRange(value,custom_vis['n_buckets']),function(ele,pos){
+                    (custom_vis['v_buckets']).push(ele.maxamount);
+                  });
+
+                  _saveProperties();
+                });
+              } else {
+                // Buckets dropdown
+                $(el).customDropdown({
+                  unselect: 'Select a bucket',
+                  value: custom_vis[$(el).attr('data')].length
+                })
+                .bind('change.customDropdown',function(ev,value){
+
+                  custom_vis['n_buckets'] = value;
+                  custom_vis['v_buckets'] = [];
+
+                  // Create the buckets
+                  _.each(getColumnRange(custom_vis['column'],value),function(ele,pos){
+                    (custom_vis['v_buckets']).push(ele.maxamount);
+                  });
+
+                  $choroplethas.find('span.color_ramp').colorRamp('update',value);
                 });
               }
             });
 
 
             // Color ramps
-            $custom.find('span.color_ramp').each(function(i,el){
+            $choroplethas.find('span.color_ramp').each(function(i,el){
               $(el).colorRamp({
                 value: custom_vis[$(el).attr('data')],
                 buckets: custom_vis['n_buckets']
@@ -1153,7 +1442,7 @@
 
 
           function _bindEvents() {
-            $custom.closest('li').find('> a.option').click(_activate);
+            $choroplethas.closest('li').find('> a.option').click(_activate);
           }
 
 
@@ -1163,7 +1452,7 @@
             }
 
             // Remove all selected
-            var parent = $custom.parent();
+            var parent = $choroplethas.parent();
             if (!parent.hasClass('selected') && !parent.hasClass('disabled')) {
               $vis_ul.find('li.selected').removeClass('selected special')
               parent.addClass('selected special');
@@ -1171,9 +1460,7 @@
                 _saveProperties();
             }
 
-            if (geom_type=="point" || geom_type=="multipoint") {
-              $('div.map_window div.map_header ul li p:eq(1)').text('Bubble map');
-            } else if (geom_type=="polygon" || geom_type=="multipolygon") {
+            if (geom_type=="polygon" || geom_type=="multipolygon") {
               $('div.map_window div.map_header ul li p:eq(1)').text('Numeric choropleth');
             } else {
               $('div.map_window div.map_header ul li p:eq(1)').text('Numeric choropleth');
@@ -1184,16 +1471,14 @@
             that.saveTilesStyles(custom_props,custom_vis);
           }
 
-        return {
-            
-        }
-      })(jQuery, window);
+        return {}
+      }());
 
 
       /*
         COLOR
       */
-      var color = (function($, window, undefined){
+      var color = (function() {
         var $color      = $vis_ul.find('> li:eq(2)')
           , color_props = {}; 
 
@@ -1242,13 +1527,13 @@
           }
 
         return {}
-      }(jQuery, window));
+      }());
 
 
       /*
         CARTO
       */
-      var carto = (function($, window, undefined){
+      var carto = (function() {
 
         var $carto = $('div.cartocss_editor'),
             $carto_editor;
@@ -1269,7 +1554,14 @@
 
           function _setProperties(old_properties) {
             var old_value = old_properties.visualization.style.replace(/\{/gi,'{\n   ').replace(/\}/gi,'}\n').replace(/;/gi,';\n   ');
-            $carto_editor.setValue(old_value);
+            $carto_editor.setValue(
+              old_value
+                .replace(/\n/g,'')
+                .replace(/\{\n?\s*/g,'{\n   ')
+                .replace(/;\n?\s*/g,';\n   ')          
+                .replace(/\s*\}/gi,'\n}\n')
+                .replace(/\/\*carto\*\//g,'')
+            );
             $carto_editor.historyArray.push(old_value);
           }
 
@@ -1298,8 +1590,9 @@
           function _bindEvents() {
 
             // Draggable
-            $carto.draggable({containment:'parent',handle:'h3'});
-            
+            $carto
+            	.draggable({containment:'parent',handle:'h3'})
+            	.resizable({maxWidth:600,maxHeight:600});
             
             /* open cartocss editor */
             $('.general_options.map li a.carto').click(function(ev){
@@ -1416,7 +1709,7 @@
             _addHistory();
             that.saveTilesStyles('/*carto*/' + $carto_editor.getValue());
           }
-      })(jQuery, window)
+      }());
     }
 
     /* Set map styles */
@@ -1728,7 +2021,7 @@
             // Loop over all columns and saving each value that is not present
             //   in the requested infowindow_vars
             _.each(data.schema,function(arr,i) {
-              if (arr[0]!='cartodb_id') {
+              if (arr[0]!='cartodb_id' && arr[0]!='the_geom' && arr[0]!='the_geom_webmercator') {
                 default_infowindow[arr[0]] = true;
                 if (infowindow_vars[arr[0]] == undefined) infowindow_vars[arr[0]] = true;
               }
@@ -1824,7 +2117,6 @@
                 me.hideOverlays();
               }
             },200);
-
           }
         },
         clickAction: 'full'
@@ -1856,7 +2148,7 @@
         this.map_.overlayMapTypes.insertAt(0,this.wax_tile);
 
         // add interaction
-        this.interaction.remove();
+        if ( this.interaction ) this.interaction.remove();
         this.interaction = wax.g.interaction(this.map_, this.tilejson, this.waxOptions);
       }
     }
@@ -2394,7 +2686,7 @@
         },
         error: function(e, textStatus) {
           try {
-            var msg = $.parseJSON(e.responseText).errors[0].error_message;
+            var msg = $.parseJSON(e.responseText).errors[0];
             if (msg == "Invalid rows: the_geom") {
               window.ops_queue.responseRequest(requestId,'error','First georeference your table');
             } else {
@@ -2427,6 +2719,8 @@
 
     /* If request fails */
     CartoMap.prototype.errorRequest = function(params,new_value,old_value,type) {
+      var me = this;
+
       switch (type) {
         case "change_latlng":   var occ_id = params.cartodb_id;
                                 (this.points_[occ_id]).setPosition(old_value);
@@ -2436,6 +2730,9 @@
                                 _.each(array,function(ele,i){
                                     me.points_[ele].setMap(me.map_);
                                 });
+                                break;
+        case "update_geometry": me.refreshWax();
+                                me.removeFakeGeometries();
                                 break;
         default:                break;
       }

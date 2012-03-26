@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8' />
+    <title><%= yield :page_title %>CartoDB</title>
+    <link id="favicon" rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
+    <%= javascript_include_tag "/javascripts/plugins/head.load.min.js" %>
+    <%= yield :js %>
+    <%= yield :head %>
+    <%= csrf_meta_tag %>
+    <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
+    <%= render 'shared/analytics' %>
+  </head>
+  <body>
+    <header>
+      <% if current_user %>
+        <a class="logo" href="/">CartoDB</a>
+      <% else %>
+        <a class="logo" href="http://cartodb.com">CartoDB</a>
+      <% end %>
+      <ul>
+      	<% if current_user %>
+        	<li class="last"><%= link_to current_user.email, account_url, :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
+        <% else %>
+        	<li class="last"><%= link_to "login to CartoDB", "http://cartodb.com/login", :class=>"account" %></li>
+        <% end %>
+      </ul>
+    </header>
+
+    <%= yield %>
+    <%= yield :mamufas %>
+  </body>
+</html>

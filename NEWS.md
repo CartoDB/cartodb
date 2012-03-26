@@ -1,4 +1,4 @@
--- 0.9.0
+-- 0.9.1
 
 * public tables (share the url with anyone)
 * download public table datasets

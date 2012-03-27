@@ -2,7 +2,7 @@
 # Proxies management of a table in the users database
 class Table < Sequel::Model(:user_tables)
 
-  # App constants
+  # Table constants
   PRIVATE = 0
   PUBLIC  = 1
   CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
@@ -21,30 +21,56 @@ class Table < Sequel::Model(:user_tables)
                 :temporal_the_geom_type, :migrate_existing_table
 
   ## Callbacks
+  
+  # Core validation method that is automatically called before create and save
   def validate
     super
-    errors.add(:user_id, 'can\'t be blank') if user_id.blank?
-    if self.new? && self.owner.over_table_quota?
-      errors.add(nil, 'over table quota, please upgrade') 
-      if @data_import.nil?
-        @data_import = DataImport.find(:id => self.data_import_id)
-        @data_import.set_error_code(8002)
-        @data_import.log_error( 'over table quota, please upgrade' )
-      end
-    end
+    
+    ## SANITY CHECKS
+
+    # userid and table name tuple must be unique
+    validates_unique [:name, :user_id], :message => 'is already taken'
+    
+    # tables must have a user
+    errors.add(:user_id, "can't be blank") if user_id.blank?
+  
+    # privacy setting must be a sane value
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
-    if !self.owner.try(:private_tables_enabled)  
-      errors.add(:privacy, 'unauthorized to create private tables') if self.new? && privacy == PRIVATE          
+
+
+    ## QUOTA CHECKS
+
+    # tables cannot be created if the owner has no more table quota
+    if self.new? && self.owner.over_table_quota?
+      
+      # Add basic error to user response
+      errors.add(nil, 'over table quota, please upgrade')       
+      
+      # Add error to data_import object log
+      @data_import ||= DataImport.find(:id => self.data_import_id) # note memoize function
+      @data_import.set_error_code(8002)
+      @data_import.log_error('over table quota, please upgrade')      
+    end
+      
+    # Branch if owner dows not have private table privileges
+    if !self.owner.try(:private_tables_enabled) 
+      
+      # If it's a new table and the user is trying to make it private
+      if self.new? && privacy == PRIVATE
+        errors.add(:privacy, 'unauthorized to create private tables')          
+      end
       
       # if the table exists, is private, but the owner no longer has private privalidges
+      # basically, this should never happen.
       if !self.new? && privacy == PRIVATE && self.changed_columns.include?(:privacy)
         errors.add(:privacy, 'unauthorized to modify privacy status to private') 
       end  
     end
-    validates_unique [:name, :user_id], :message => 'is already taken'
   end
 
+  # runs before each validation phase on create and update
   def before_validation  
+    # ensure privacy variable is set to one of the constants. this is bad.
     self.privacy ||= owner.private_tables_enabled ? PRIVATE : PUBLIC  
     super
   end

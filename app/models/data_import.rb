@@ -32,6 +32,9 @@ class DataImport < Sequel::Model
   # 05001: Empty table
   # 05002: Reserved column names
 
+  # 06 - OSM data errors
+  # 06000 - OSM data error
+
   # 08 - CartoDB account errors
   # 08000 - CartoDB account error
   # 08001 - Over account storage limit
@@ -102,6 +105,7 @@ class DataImport < Sequel::Model
       transition any => :failure
     end
   end
+  
   def after_rollback(*args, &block)
     self.save
     set_callback(:rollback, :after, *args, &block)

@@ -106,10 +106,10 @@ class DataImport < Sequel::Model
     end
   end
   
-  def after_rollback(*args, &block)
-    self.save
-    set_callback(:rollback, :after, *args, &block)
-  end
+  # def after_rollback(*args, &block)
+  #   self.save
+  #   set_callback(:rollback, :after, *args, &block)
+  # end
     
   def updated_now(transition)
     self.updated_at = Time.now

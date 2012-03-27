@@ -363,8 +363,8 @@ class Table < Sequel::Model(:user_tables)
       raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required" 
     end
 
-    # all looks ok, so VACUUM ANALYZE for correct statistics
-    owner.in_database.run("VACUUM ANALYZE \"#{self.name}\"")
+    # all looks ok, so ANALYZE for correct statistics
+    owner.in_database.run("ANALYZE \"#{self.name}\"")
       
     # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
     super

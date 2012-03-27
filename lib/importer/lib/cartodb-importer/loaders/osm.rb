@@ -17,7 +17,7 @@ module CartoDB
         # TODO
         # Create either a dynamic cache size based on user account type or pick a wiser number
         # for everybody
-        allowed_cache_size = 24000
+        allowed_cache_size = 1024000
         random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"
         
         # I tried running the -G or --multi-geometry option to force multigeometries

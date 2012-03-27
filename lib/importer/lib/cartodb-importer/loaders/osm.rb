@@ -22,7 +22,7 @@ module CartoDB
         
         # I tried running the -G or --multi-geometry option to force multigeometries
         # but the result is always a column with mixed types, polygons and multipolgons!
-        full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong --extra-attributes -p #{random_table_prefix} #{@path}"
+        full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong -p #{random_table_prefix} #{@path}"
         
         log "Running osm2pgsql: #{full_osm_command}"
         @data_import.log_update(full_osm_command)
@@ -31,8 +31,9 @@ module CartoDB
   
         #unless (err = stderr.read).empty?
         if $?.exitstatus != 0  
+        #if !(err = stderr.read).empty? or (sout = stdout.read).downcase.include? "failure"
           @data_import.set_error_code(6000)
-          @data_import.log_error(stderr)
+          @data_import.log_error(stderr.read)
           @data_import.log_error("ERROR: failed to import #{@path}")
           raise "ERROR: failed to import #{@path}"
         end

@@ -1061,7 +1061,7 @@ describe Table do
         table.user_id = user.id
         table.import_from_file = "#{Rails.root}/db/fake_data/cp_vizzuality_export.csv"
         table.save
-
+        
         table.rows_counted.should == 19235
       end
   

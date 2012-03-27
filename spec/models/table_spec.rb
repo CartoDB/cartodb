@@ -1113,6 +1113,16 @@ describe Table do
         table.name.should == "esp_adm1"
       end
     end
+    context "osm standard tests" do
+      it "should import guinea.osm.bz2" do
+        table = new_table :name => nil
+        #table.import_from_file = "#{Rails.root}/db/fake_data/EjemploVizzuality.zip"
+        table.import_from_file = "#{Rails.root}/db/fake_data/guinea.osm.bz2"
+        table.save
+        table.rows_counted.should == 308
+        table.name.should == "vizzuality"
+      end
+    end
     context "import exceptions tests" do
       it "should import reserved_names.csv" do
         user = create_user

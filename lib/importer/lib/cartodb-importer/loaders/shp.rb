@@ -51,18 +51,6 @@ module CartoDB
         unless (reg = stdout.read).empty?
           @runlog.stdout << reg
         end
-        
-        # out = `#{full_shp_command}`
-        # 
-        # if $?.exitstatus != 0
-        #   @data_import.log_error("failed to convert shp to sql")
-        #   raise "failed to convert shp to sql"
-        # end
-        # 
-        # if 0 < out.strip.length
-        #   @data_import.log_update(out)
-        #   @runlog.stdout << out
-        # end
 
         # TODO: THIS SHOULD BE UPDATE IF NOT NULL TO PREVENT CRASHING
         #debugger

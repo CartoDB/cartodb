@@ -334,6 +334,7 @@ class Table < Sequel::Model(:user_tables)
       importer_result_name = import_to_cartodb
       
       @data_import.table_name = importer_result_name
+      
       self[:name] = importer_result_name
       
       schema = self.schema(:reload => true)
@@ -1325,7 +1326,23 @@ TRIGGER
       type = "point"
     end
     
-    raise InvalidArgument unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
+    #if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
+    if ["linestring","polygon"].include?(type.to_s.downcase)
+      owner.in_database do |user_database|
+        if type.to_s.downcase == 'polygon'
+          user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'MULTIPOLYGON', 2);")
+        else
+          user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'MULTILINESTRING', 2);")
+        end
+        user_database.run("UPDATE #{self.name} SET the_geom_simple = ST_Multi(the_geom);")
+        user_database.run("SELECT DropGeometryColumn('#{self.name}','the_geom');");
+        user_database.run("ALTER TABLE #{self.name} RENAME COLUMN the_geom_simple TO the_geom;")
+        type = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{self.name} where #{THE_GEOM} is not null limit 1"].first[:geometrytype]
+      end
+    end
+    
+    raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
+    #raise InvalidArgument unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
     updates = false
     type = type.to_s.upcase
     owner.in_database do |user_database|

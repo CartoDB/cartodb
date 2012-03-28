@@ -351,10 +351,9 @@ class User < Sequel::Model
     puts "Loading functions in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        # TODO: how to get absolute path to lib/sql ?
-        dir = 'lib/sql/*'
-        puts " Scanning #{dir}"
-        Dir.glob(dir).each do |f|
+        glob = RAILS_ROOT + '/lib/sql/*.sql'
+        puts " Scanning #{glob}"
+        Dir.glob(glob).each do |f|
           puts "  Loading #{f}"
           @sql = File.new(f).read
           user_database.run(@sql)

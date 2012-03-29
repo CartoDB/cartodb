@@ -82,7 +82,7 @@ module CartoDB
     3005 => 'SHP to PGSQL error',
     3100 => 'Projection error',
     3101 => 'Unsupported or missing projection',
-    3102 => 'Unable to force geoetry to 2-dimensions',
+    3102 => 'Unable to force geometry to 2-dimensions',
     3200 => 'Unsupported geometry type',
     3201 => 'Geometry Collection not supported',
     4000 => 'Raster errors',

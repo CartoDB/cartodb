@@ -73,6 +73,7 @@ module CartoDB
             @data_import.set_error_code(2000)
             @data_import.log_error(msg)
             @data_import.log_error("ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326")
+            raise "ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326"
           end  
         end        
         
@@ -94,6 +95,7 @@ module CartoDB
           @data_import.set_error_code(3102)
           @data_import.log_error(msg)
           @data_import.log_error("ERROR: Unable to force geometry to 2-dimensions")
+          raise "ERROR: Unable to force geometry to 2-dimensions"
         end  
         
         begin
@@ -104,6 +106,7 @@ module CartoDB
           @data_import.set_error_code(5000)
           @data_import.log_error(msg)
           @data_import.log_error("ERROR: unable to rename \"#{random_table_name}\" to \"#{@suggested_name}\"")
+          raise "ERROR: unable to rename \"#{random_table_name}\" to \"#{@suggested_name}\""
         end  
 
         @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?

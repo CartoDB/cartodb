@@ -1,7 +1,16 @@
 namespace :cartodb do
   namespace :db do
 
-
+    ########################
+    # LOAD CARTODB FUNCTIONS
+    ########################
+    desc "Install/upgrade CARTODB SQL functions"
+    task :load_functions => :environment do
+      User.all.each do |user|
+        user.load_cartodb_functions
+      end
+    end
+        
     ##############
     # SET DB PERMS
     ##############
@@ -12,7 +21,7 @@ namespace :cartodb do
 
         # reset perms
         user.set_database_permissions
-        
+
         # rebuild public access perms from redis
         user.tables.all.each do |table|
           

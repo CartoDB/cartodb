@@ -41,9 +41,14 @@ module CartoDB
         #unless (err = stderr.read).empty?
         # I think we may want to run a stdout.downcase.include?(error) here instead
         # will need to test, but shp2pgsql does not appear to throw an exitsta != 0 when an error occurs
-        if $?.exitstatus != 0  
+        if $?.exitstatus != 0 
           @data_import.set_error_code(3005)
-          @data_import.log_error(stderr)
+          @data_import.log_error(stderr.read)
+          @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
+          raise "ERROR: failed to generate SQL from #{@path}"
+        elsif (sdout = stdout.read).downcase.include? "failure"
+          @data_import.set_error_code(3005)
+          @data_import.log_error(sdout)
           @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
           raise "ERROR: failed to generate SQL from #{@path}"
         end
@@ -51,18 +56,6 @@ module CartoDB
         unless (reg = stdout.read).empty?
           @runlog.stdout << reg
         end
-        
-        # out = `#{full_shp_command}`
-        # 
-        # if $?.exitstatus != 0
-        #   @data_import.log_error("failed to convert shp to sql")
-        #   raise "failed to convert shp to sql"
-        # end
-        # 
-        # if 0 < out.strip.length
-        #   @data_import.log_update(out)
-        #   @runlog.stdout << out
-        # end
 
         # TODO: THIS SHOULD BE UPDATE IF NOT NULL TO PREVENT CRASHING
         #debugger
@@ -80,6 +73,7 @@ module CartoDB
             @data_import.set_error_code(2000)
             @data_import.log_error(msg)
             @data_import.log_error("ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326")
+            raise "ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326"
           end  
         end        
         
@@ -100,7 +94,8 @@ module CartoDB
           @runlog.err << msg
           @data_import.set_error_code(3102)
           @data_import.log_error(msg)
-          @data_import.log_error("ERROR: Unable to force geoetry to 2-dimensions")
+          @data_import.log_error("ERROR: Unable to force geometry to 2-dimensions")
+          raise "ERROR: Unable to force geometry to 2-dimensions"
         end  
         
         begin
@@ -111,6 +106,7 @@ module CartoDB
           @data_import.set_error_code(5000)
           @data_import.log_error(msg)
           @data_import.log_error("ERROR: unable to rename \"#{random_table_name}\" to \"#{@suggested_name}\"")
+          raise "ERROR: unable to rename \"#{random_table_name}\" to \"#{@suggested_name}\""
         end  
 
         @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?

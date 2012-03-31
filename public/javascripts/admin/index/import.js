@@ -121,7 +121,7 @@
         element: document.getElementById('uploader'),
         action: '/upload',
         params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz', 'osm', 'bz2'],
         sizeLimit: 0, // max size
         minSizeLimit: 0, // min size
         debug: false,
@@ -151,7 +151,7 @@
       	element: document.getElementById('hugeUploader'),
       	action: '/upload',
       	params: {},
-        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz'],
+        allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz', 'osm', 'bz2'],
       	sizeLimit: 0,
       	minSizeLimit: 0,
       	debug: false,
@@ -244,7 +244,11 @@
             data: params,
             headers: {'cartodbclient':true},
             success: function(data, textStatus, XMLHttpRequest) {
-              window.location.href = "/tables/"+data.id;
+              if (data.tag){
+                  window.location.href = "/dashboard?tag_name="+data.tag;
+              }else{
+                  window.location.href = "/tables/"+data.id;
+              }
             },
             error: function(e) {
 							var json = $.parseJSON(e.responseText);

@@ -1,5 +1,12 @@
--- 0.9.0
+0.9.2
+-----
+* .OSM import
+* show top 100 tags
+* ?q=search_term to dashboard url
 
+
+0.9.1
+-----
 * public tables (share the url with anyone)
 * download public table datasets
 * session issues begone - allows you to login to multiple cartodbs

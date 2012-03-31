@@ -10,10 +10,16 @@ class Admin::TablesController < ApplicationController
   def index
     current_page = params[:page].nil? ? 1 : params[:page].to_i
     per_page = 20
-    @tags = Tag.load_user_tags(current_user.id, :limit => 10)
+    
+    # load top 100 tags
+    @tags = Tag.load_user_tags(current_user.id, :limit => 100)
+
+    # Filter tables by tag, search, or return all. Paginated.
     @tables = if !params[:tag_name].blank?
       Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name]).order(:id).reverse.paginate(current_page, per_page)
-    else
+    elsif !params[:q].blank?
+      Table.filter("\"name\" LIKE ?", "%#{params[:q]}%").order(:id).reverse.paginate(current_page, per_page)
+    else  
       Table.filter({:user_id => current_user.id}).order(:id).reverse.paginate(current_page, per_page)
     end
 
@@ -23,16 +29,9 @@ class Admin::TablesController < ApplicationController
     @table_quota   = current_user.table_quota
     @tables_count  = @tables.pagination_record_count
   end
-  
+
+  # to implement
   def index_public
-    current_page = params[:page].nil? ? 1 : params[:page].to_i
-    per_page = 20
-    @tags = Tag.load_user_tags(current_user.id, :limit => 10)
-    @tables = if !params[:tag_name].blank?
-      Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name]).order(:id).reverse.paginate(current_page, per_page)
-    else
-      Table.filter({:user_id => current_user.id}).order(:id).reverse.paginate(current_page, per_page)
-    end    
   end
 
   def show

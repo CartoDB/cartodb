@@ -7,6 +7,8 @@ namespace :cartodb do
     desc "Install/upgrade CARTODB SQL functions"
     task :load_functions => :environment do
       User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        
         user.load_cartodb_functions
       end
     end

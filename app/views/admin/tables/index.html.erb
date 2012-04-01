@@ -118,10 +118,12 @@
                   found
                 <% end %>  
             </h3>
-            <form action="#">
-              <input type="text" value="<%= params[:q] %>" name="q" />
-              <input type="submit" value="true" name="submit" />
-            </form>
+            <% if @total_tables > 10 %>            
+              <form action="#">
+                <input type="text" value="<%= params[:q] %>" name="q" />
+                <input type="submit" value="true" name="submit" />
+              </form>
+            <% end %>  
           </div>
           <div class="middle_white_medium">
             <ul class="your_tables">

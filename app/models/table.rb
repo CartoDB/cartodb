@@ -1126,7 +1126,7 @@ class Table < Sequel::Model(:user_tables)
       DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
       CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
         BEGIN
-              NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
+              NEW.#{THE_GEOM_WEBMERCATOR} := CDB_TransformToWebmercator(NEW.the_geom);
               RETURN NEW;
         END;
       $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
@@ -1355,7 +1355,7 @@ TRIGGER
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
-        user_database.run("UPDATE #{self.name} SET #{THE_GEOM_WEBMERCATOR}=ST_Transform(#{THE_GEOM},#{CartoDB::GOOGLE_SRID}) WHERE #{THE_GEOM} IS NOT NULL")
+        user_database.run("UPDATE #{self.name} SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL")
         user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
 
         # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")        

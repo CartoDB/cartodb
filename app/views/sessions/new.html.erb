@@ -4,13 +4,28 @@
     <%= form_tag create_session_path do %>
 
       <div class="field margin30">
-        <%= text_field_tag :email, '', :title => "Email or username", :'data-label' => "Email or username" %>
-        <%#= form_error_for :email, @session.errors %>
+        <% @error = @login_error %>
+        <% if @error %>
+          <div class="field_with_errors">
+        <% end %>          
+        <%= text_field_tag :email, '', :title => "Email or username", :'data-label' => "Email or username", :class => (flash[:alert] || @error ? 'error' : nil) %>
+        <% if @error %>  
+          </div>
+          <div class="error"><%= @error %></div>
+        <% end %>                              
+                
       </div>
 
       <div class="field margin20">
-        <%= password_field_tag :password, '', :title => "Password", :'data-label' => "Password" %>
-        <%#= form_error_for :password, @session.errors %>
+        <% if @error %>
+          <div class="field_with_errors">
+        <% end %>          
+        <%= password_field_tag :password, '', :title => "Password", :'data-label' => "Password", :class => (flash[:alert] || @error ? 'error' : nil) %>
+        <% if @error %>  
+          </div>
+          <div class="error"><%= @error %></div>
+        <% end %>                                              
+        
       </div>
 
       <div class="field margin25">

@@ -1122,20 +1122,22 @@ class Table < Sequel::Model(:user_tables)
   end
   
   def set_trigger_the_geom_webmercator
-    owner.in_database(:as => :superuser).run(<<-TRIGGER
-      DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
-      CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
-        BEGIN
-              NEW.#{THE_GEOM_WEBMERCATOR} := CDB_TransformToWebmercator(NEW.the_geom);
-              RETURN NEW;
-        END;
-      $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
+    owner.in_database(:as => :superuser) do |user_database|
+      user_database.run(<<-TRIGGER
+        DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
+        CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
+          BEGIN
+                NEW.#{THE_GEOM_WEBMERCATOR} := CDB_TransformToWebmercator(NEW.the_geom);
+                RETURN NEW;
+          END;
+        $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
 
-      CREATE TRIGGER update_the_geom_webmercator_trigger
-      BEFORE INSERT OR UPDATE OF the_geom ON #{self.name}
-         FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
-TRIGGER
-    )
+        CREATE TRIGGER update_the_geom_webmercator_trigger
+        BEFORE INSERT OR UPDATE OF the_geom ON #{self.name}
+           FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
+  TRIGGER
+        )
+    end  
   end
 
   def set_trigger_update_updated_at

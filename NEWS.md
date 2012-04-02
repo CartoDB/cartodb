@@ -2,6 +2,8 @@
 -----
 * new styles for login etc
 * table search
+* core CartoDB SQL functions added (CDB_*)
+
 
 0.9.2
 -----

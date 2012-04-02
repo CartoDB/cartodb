@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe TableImport do
+describe "FileIO" do
   context "import tables from files" do
     context "preimport tests" do
       it "rename a table to a name that exists should add a _2 to the new name" do

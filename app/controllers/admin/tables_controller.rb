@@ -28,6 +28,8 @@ class Admin::TablesController < ApplicationController
     @database_size = current_user.db_size_in_bytes / 1024 /1024
     @table_quota   = current_user.table_quota
     @tables_count  = @tables.pagination_record_count
+    @total_tables  = current_user.tables.count
+    
   end
 
   # to implement

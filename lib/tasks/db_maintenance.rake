@@ -7,6 +7,8 @@ namespace :cartodb do
     desc "Install/upgrade CARTODB SQL functions"
     task :load_functions => :environment do
       User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        
         user.load_cartodb_functions
       end
     end
@@ -189,27 +191,33 @@ namespace :cartodb do
             end
           end
           if has_the_geom
-            user.in_database(:as => :superuser) do |user_database|
-              user_database.run(<<-TRIGGER     
-                DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{table.name};  
-                CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
-                  BEGIN
-                       NEW.#{Table::THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
-                       RETURN NEW;
-                  END;
-                $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
-
-                CREATE TRIGGER update_the_geom_webmercator_trigger 
-                BEFORE INSERT OR UPDATE OF the_geom ON #{table.name} 
-                  FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();    
-  TRIGGER
-              )
-            end
+            table.set_trigger_the_geom_webmercator
+            
             user.in_database do |user_database|
               user_database.run("ALTER TABLE #{table.name} DROP CONSTRAINT IF EXISTS enforce_srid_the_geom")
-              user_database.run("update #{table.name} set the_geom = ST_Transform(the_geom,#{CartoDB::SRID})")
+              user_database.run("update #{table.name} set the_geom = CDB_TransformToWebmercator(the_geom)")
               user_database.run("ALTER TABLE #{table.name} ADD CONSTRAINT enforce_srid_the_geom CHECK (srid(the_geom) = #{CartoDB::SRID})")
             end
+          end
+        end
+      end
+    end
+
+    desc "Update update_the_geom_webmercator_trigger"
+    task :update_the_geom_webmercator_trigger => :environment do
+      User.all.each do |user|
+        user.load_cartodb_functions 
+        
+        tables = Table.filter(:user_id => user.id).all
+        next if tables.empty?
+        tables.each do |table|
+          has_the_geom = false
+          user.in_database do |user_database|
+            has_the_geom = true if user_database.schema(table.name.to_sym).flatten.include?(:the_geom)
+          end
+          if has_the_geom
+            puts "Updating the_geom_webmercator triggers for #{user.username}:#{table.name}"
+            table.set_trigger_the_geom_webmercator
           end
         end
       end

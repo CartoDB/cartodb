@@ -111,8 +111,19 @@
                 <% if @tag_name %>
                 with the tag <%= @tag_name %>
                 <% end %>
-              </strong> in your account
+              </strong> 
+                <% if !params[:q]%>
+                  in your account
+                <% else %>                
+                  found
+                <% end %>  
             </h3>
+            <% if @total_tables > 10 %>            
+              <form action="#">
+                <input type="text" value="<%= params[:q] %>" name="q" />
+                <input type="submit" value="true" name="submit" />
+              </form>
+            <% end %>  
           </div>
           <div class="middle_white_medium">
             <ul class="your_tables">

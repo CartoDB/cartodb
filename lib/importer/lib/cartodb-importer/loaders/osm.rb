@@ -18,7 +18,8 @@ module CartoDB
         # Create either a dynamic cache size based on user account type or pick a wiser number
         # for everybody
         allowed_cache_size = 1024
-        random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"
+        random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"[0..12]
+        @suggested_name = get_valid_name("_8888888#{@suggested_name}").sub!("_8888888", '') 
         
         # I tried running the -G or --multi-geometry option to force multigeometries
         # but the result is always a column with mixed types, polygons and multipolgons!

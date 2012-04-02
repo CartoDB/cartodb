@@ -3,46 +3,6 @@ class DataImport < Sequel::Model
   include CartoDB::MiniSequel
   include ActiveModel::Validations 
   
-  # PRELIM ERROR CODES
-  # 01 - File I/O errors
-  # 01000 - File I/O error
-  # 01001: Unable to open file
-  # 01002: Unsupported file type
-  # 01003: Decompression error
-  # 01004: File encoding error
-
-  # 02 - File conversion errors
-  # 02000 - File conversion errors
-
-  # 03 - Geometry errors
-  # 03000 - Geometry error
-  # 03004: Unable to read SHP file
-  # 03005: SHP to PGSQL error
-  # 03100: Projection error
-  # 03101: Unsupported or missing projection
-  # 03200: Unsupported geometry type
-  # 03201: Geometry Collection not supported
-
-  # 04 - Raster errors
-  # 04000: Raster errors
-  # 04001: Raster import error
-
-  # 05 - Database import errors
-  # 05000 - Database import error
-  # 05001: Empty table
-  # 05002: Reserved column names
-
-  # 06 - OSM data errors
-  # 06000 - OSM data error
-
-  # 08 - CartoDB account errors
-  # 08000 - CartoDB account error
-  # 08001 - Over account storage limit
-  # 08002 - Over table limit
-  
-  # 99999 - Unknown
-  
-   
   attr_accessor :get_log
   
   state_machine :initial => :preprocessing do
@@ -106,10 +66,10 @@ class DataImport < Sequel::Model
     end
   end
   
-  # def after_rollback(*args, &block)
-  #   self.save
-  #   set_callback(:rollback, :after, *args, &block)
-  # end
+  def after_rollback(*args, &block)
+    self.save
+    set_callback(:rollback, :after, *args, &block)
+  end
     
   def updated_now(transition)
     self.updated_at = Time.now

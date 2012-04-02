@@ -16,8 +16,8 @@ module CartoDB
         @pool[connection_id(configuration)][:connection]
       else
         if @pool.size >= MAX_POOL_SIZE
-          close_connections!
-          #close_oldest_connection!
+          #close_connections!
+          close_oldest_connection!
         end
         connection = yield
         @pool[connection_id(configuration)] = { :connection => connection, :last_accessed => Time.now }

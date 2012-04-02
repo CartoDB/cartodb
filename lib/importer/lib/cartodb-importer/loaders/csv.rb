@@ -4,6 +4,7 @@ module CartoDB
     class CSV < CartoDB::Import::Loader
 
       register_loader :csv
+      register_loader :txt
 
       def process!
         @data_import = DataImport.find(:id=>@data_import_id)

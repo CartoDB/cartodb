@@ -2,7 +2,7 @@ body {position:relative; background:url('/images/admin/common/header_bkg.jpg') r
 
 /*HEADER*/
 header {width:900px; height:58px; margin:0 auto; background:none;}
-header a.logo {float:left; width:70px; height:15px; margin:22px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
+header a.logo {float:left; width:85px; height:17px; margin:22px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
 header ul {float:right; margin: 24px 0 0 0; }
 header ul li {float:left; display: inline; list-style: none; padding: 0 10px 0 0; border-right: solid 1px #949BAB; }
 header ul li.last {padding: 0; border: none; }
@@ -200,7 +200,7 @@ footer section.prefooter div.block p a {color:#8F95A4;}
 footer section.prefooter div.block p a:hover {color:white;}
 footer div.outer_footer {width:100%; height:113px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
 footer section.footer {width:900px; margin:0 auto;}
-footer section.footer a.logo {float:left; width:70px; height:15px; margin:32px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
+footer section.footer a.logo {float:left; width:85px; height:17px; margin:32px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
 footer section.footer div.long {float:left; width:100%;}
 footer section.footer span.poweredby {float:right; width:auto;}
 footer section.footer p.vizzuality {float:left; width:auto; padding:22px 5px 0 0; font:normal 13px Arial; color:#9295A0;}

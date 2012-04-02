@@ -5,7 +5,7 @@ input[type="submit"]::-moz-focus-inner, input[type="button"]::-moz-focus-inner {
 
 /*HEADER*/
 header {width:100%; min-width:880px; height:58px; margin:0 auto; background:none; z-index:1000;}
-header a.logo {float:left; width:70px; height:15px; margin:23px 0 0 40px; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
+header a.logo {float:left; width:85px; height:17px; margin:23px 0 0 40px; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
 header ul {float:right; margin: 24px 40px 0 0; }
 header ul li {float:left; display: inline; list-style: none; padding: 0 10px 0 0; border-right: solid 1px #949BAB; }
 header ul li.last {padding: 0; border: none; }

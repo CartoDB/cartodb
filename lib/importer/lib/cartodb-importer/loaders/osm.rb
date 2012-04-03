@@ -18,7 +18,7 @@ module CartoDB
         # Create either a dynamic cache size based on user account type or pick a wiser number
         # for everybody
         allowed_cache_size = 1024
-        random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"[0..12]
+        random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"
         if @suggested_name.length > 10 #needs to be 8+2 less than normal names because of _polygon_n
           @suggested_name = @suggested_name[0..9]
         end

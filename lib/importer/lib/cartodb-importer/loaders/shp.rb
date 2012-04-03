@@ -76,7 +76,20 @@ module CartoDB
             raise "ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326"
           end  
         end        
-        
+        begin
+          # Sanitize column names where needed
+          # TODO: We need to move this out of all loader methods and into the importer.rb method
+          column_names = @db_connection.schema(random_table_name).map{ |s| s[0].to_s }
+          need_sanitizing = column_names.each do |column_name|
+            debugger
+            if column_name != column_name.sanitize_column_name
+              @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
+            end
+          end
+        rescue
+          @runlog.err << msg
+          @data_import.log_update("ERROR: Failed to sanitize some column names")
+        end
         # KML file imports are creating nasty 4 dim geoms sometimes, or worse, mixed dim
         # This block detects and then fixes those
         begin

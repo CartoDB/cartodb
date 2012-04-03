@@ -286,7 +286,7 @@ class Table < Sequel::Model(:user_tables)
       end
       self.schema(:reload => true, :cartodb_types => false).each do |column|
         if column[1] =~ /^character varying/
-          user_database.run("ALTER TABLE #{self.name} ALTER COLUMN #{column[0]} TYPE text")
+          user_database.run("ALTER TABLE #{self.name} ALTER COLUMN \"#{column[0]}\" TYPE text")
         end
       end
       schema = self.schema(:reload => true)
@@ -333,7 +333,9 @@ class Table < Sequel::Model(:user_tables)
       
       importer_result_name = import_to_cartodb
       
+      @data_import.reload
       @data_import.table_name = importer_result_name
+      @data_import.save
       
       self[:name] = importer_result_name
       

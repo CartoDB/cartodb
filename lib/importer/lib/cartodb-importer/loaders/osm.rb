@@ -19,7 +19,9 @@ module CartoDB
         # for everybody
         allowed_cache_size = 1024
         random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"[0..12]
-        @suggested_name = get_valid_name("_8888888#{@suggested_name}").sub!("_8888888", '') 
+        if @suggested_name.length > 10 #needs to be 8+2 less than normal names because of _polygon_n
+          @suggested_name = @suggested_name[0..9]
+        end
         
         # I tried running the -G or --multi-geometry option to force multigeometries
         # but the result is always a column with mixed types, polygons and multipolgons!

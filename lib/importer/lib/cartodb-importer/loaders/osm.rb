@@ -36,6 +36,7 @@ module CartoDB
         if $?.exitstatus != 0  
         #if !(err = stderr.read).empty? or (sout = stdout.read).downcase.include? "failure"
           @data_import.set_error_code(6000)
+          @data_import.log_update(stdout.read)
           @data_import.log_error(stderr.read)
           @data_import.log_error("ERROR: failed to import #{@path}")
           raise "ERROR: failed to import #{@path}"
@@ -47,15 +48,21 @@ module CartoDB
         
         valid_tables = Array.new
         type_conversions = {"line" => "MULTILINESTRING", "polygon" => "MULTIPOLYGON", "roads" => "MULTILINESTRING", "points" => "POINT"}
-        
-        ["line", "polygon", "roads", "point"].each  do |feature| 
-          old_table_name = "#{random_table_prefix}_#{feature}"
-          rows_imported = @db_connection["SELECT count(*) as count from #{old_table_name}"].first[:count]
-          unless rows_imported.nil? || rows_imported == 0
-            valid_tables << feature
-          else
-            @db_connection.drop_table @old_table_name
+        begin
+          ["line", "polygon", "roads", "point"].each  do |feature| 
+            old_table_name = "#{random_table_prefix}_#{feature}"
+            rows_imported = @db_connection["SELECT count(*) as count from #{old_table_name}"].first[:count]
+            unless rows_imported.nil? || rows_imported == 0
+              valid_tables << feature
+            else
+              @db_connection.drop_table @old_table_name
+            end
           end
+        rescue
+          @data_import.log_update(stdout.read)
+          @data_import.log_update(stderr.read)
+          @data_import.log_error("ERROR: failed to import #{@path}")
+          raise "ERROR: failed to import #{@path}"
         end
         
         import_tag = "#{@suggested_name}_#{Time.now.to_i}"
@@ -93,18 +100,20 @@ module CartoDB
               
               # import_tables << @table_name
               # @last_table = @table_name
+              @data_import.save
               
               @new_table = Table.new :tags => "#{import_tag}"
-              @di = DataImport.new(:user_id => @data_import.user_id)
-              @di.updated_at = Time.now
-              @di.save
+              # @di = DataImport.new(:user_id => @data_import.user_id)
+              # @di.updated_at = Time.now
+              # @di.save
               @new_table.user_id =  @data_import.user_id
-              @new_table.data_import_id = @di.id
+              @new_table.data_import_id = @data_import.id
               @new_table.name = @table_name  
               @new_table.migrate_existing_table = @table_name 
               if @new_table.valid?
                 @new_table.save
               end
+              @data_import.refresh
             
             # rescue
             #   @data_import.set_error_code(5000)
@@ -123,7 +132,6 @@ module CartoDB
             end
           end  
         end
-        
         payload = OpenStruct.new({
                                 :tag => "#{import_tag}"
                               })

@@ -77,7 +77,7 @@ class Api::Json::TablesController < Api::ApplicationController
         render_jsonp({:tag => importer.tag }, 200, :location => '/dashboard')
         
       rescue => e
-        
+        @data_import.refresh
         @data_import.log_error(e)
         @data_import.set_error_code(6000)
         raise "OSM data error"

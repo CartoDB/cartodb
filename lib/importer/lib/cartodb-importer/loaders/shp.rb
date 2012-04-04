@@ -81,7 +81,7 @@ module CartoDB
           # TODO: We need to move this out of all loader methods and into the importer.rb method
           column_names = @db_connection.schema(random_table_name).map{ |s| s[0].to_s }
           need_sanitizing = column_names.each do |column_name|
-            debugger
+            
             if column_name != column_name.sanitize_column_name
               @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
             end

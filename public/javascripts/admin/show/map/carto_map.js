@@ -1,17 +1,17 @@
 
     ////////////////////////////////////////////////////////////////////////////////
-    //																			                                      //      
-    //  	 CLASS TO MANAGE ALL THE STUFF IN THE MAP (variable -> carto_map)	      //                                                                        
-    //          Actually, this is map of the application, and everything that	    //                                                                      
-    //		    occurs on/over/with/in the map will be manage here.				          //                                                          
-    //		 																	                                      //      
-    //		 Overlays:  														                                //                  
-    //			 .selection_area_ 												                            //                          
-    //			 .info_window_    												                            //                          
-    //			 .tooltip_                                                            //                                                                      
-    //       .delete_windsow_                                                  	  //                                                                              
-    //       .map_canvas_                                                      	  //                                                                              
-    //       status -> (add_point,add_polygon,add_polyline,selection,select)      //                                                                              
+    //																			                                      //
+    //  	 CLASS TO MANAGE ALL THE STUFF IN THE MAP (variable -> carto_map)	      //
+    //          Actually, this is map of the application, and everything that	    //
+    //		    occurs on/over/with/in the map will be manage here.				          //
+    //		 																	                                      //
+    //		 Overlays:  														                                //
+    //			 .selection_area_ 												                            //
+    //			 .info_window_    												                            //
+    //			 .tooltip_                                                            //
+    //       .delete_windsow_                                                  	  //
+    //       .map_canvas_                                                      	  //
+    //       status -> (add_point,add_polygon,add_polyline,selection,select)      //
     //																			                                      //
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -712,29 +712,42 @@
         success: function(data) {
 
           if (data.rows[0].st_extent!=null) {
+
+            // TODO: make this code more widely available (pgis->gmaps bounds) -- {
+
             var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-            
+
             var coor1 = coordinates[0].split(' ');
             var coor2 = coordinates[1].split(' ');
-            var bounds = new google.maps.LatLngBounds();
-            
+
+            var lon0 = coor1[0];
+            var lat0 = coor1[1];
+            var lon1 = coor2[0];
+            var lat1 = coor2[1];
+
             // Check bounds
-            if (coor1[0] >  180 
-             || coor1[0] < -180 
-             || coor1[1] >  90 
-             || coor1[1] < -90 
-             || coor2[0] >  180 
-             || coor2[0] < -180 
-             || coor2[1] >  90  
-             || coor2[1] < -90) {
-              coor1[0] = '-30';
-              coor1[1] = '-50'; 
-              coor2[0] = '110'; 
-              coor2[1] =  '80'; 
+
+            var minlat = -85.0511;
+            var maxlat =  85.0511;
+            var minlon = -179;
+            var maxlon =  179;
+
+            /* Clamp X to be between min and max (inclusive) */
+            var clampNum = function(x, min, max) {
+              return x < min ? min : x > max ? max : x;
             }
-            
-            bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
-            bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
+
+            lon0 = clampNum(lon0, minlon, maxlon);
+            lon1 = clampNum(lon1, minlon, maxlon);
+            lat0 = clampNum(lat0, minlat, maxlat);
+            lat1 = clampNum(lat1, minlat, maxlat);
+
+            var sw = new google.maps.LatLng(lat0, lon0);
+            var ne = new google.maps.LatLng(lat1, lon1);
+            var bounds = new google.maps.LatLngBounds(sw, ne);
+
+            // -- }
+
                             
             me.map_.fitBounds(bounds);
             

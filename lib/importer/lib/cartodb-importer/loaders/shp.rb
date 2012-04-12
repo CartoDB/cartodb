@@ -56,6 +56,19 @@ module CartoDB
         unless (reg = stdout.read).empty?
           @runlog.stdout << reg
         end
+        
+        begin
+          rows_imported = @db_connection["SELECT count(*) as count from \"#{random_table_name}\""].first[:count]
+        rescue
+          @data_import.set_error_code(3005)
+          @data_import.log_error(stdout.read)
+          @data_import.log_error(stderr.read)
+          @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
+          raise "ERROR: failed to generate SQL from #{@path}"
+        end
+          
+        
+        
 
         # TODO: THIS SHOULD BE UPDATE IF NOT NULL TO PREVENT CRASHING
         #debugger
@@ -81,7 +94,7 @@ module CartoDB
           # TODO: We need to move this out of all loader methods and into the importer.rb method
           column_names = @db_connection.schema(random_table_name).map{ |s| s[0].to_s }
           need_sanitizing = column_names.each do |column_name|
-            debugger
+            
             if column_name != column_name.sanitize_column_name
               @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
             end
@@ -123,7 +136,6 @@ module CartoDB
         end  
 
         @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?
-        rows_imported = @db_connection["SELECT count(*) as count from \"#{@suggested_name}\""].first[:count]
         @import_from_file.unlink
         
         @data_import.save

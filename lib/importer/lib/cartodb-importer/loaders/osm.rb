@@ -88,12 +88,13 @@ module CartoDB
                 end
               end
       
-              # Sanitize column names where needed
-              column_names = @db_connection.schema(@table_name).map{ |s| s[0].to_s }
-              need_sanitizing = column_names.each do |column_name|
-                if column_name != column_name.sanitize_column_name
-                  @db_connection.run("ALTER TABLE #{@table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
-                end
+              begin
+                # Sanitize column names where needed
+                sanitize_table_columns @table_name
+                column_names = @db_connection.schema(@table_name).map{ |s| s[0].to_s }
+              rescue Exception => msg  
+                @runlog.err << msg
+                @data_import.log_update("ERROR: Failed to sanitize some column names")
               end
               
               @rows_imported = @db_connection["SELECT count(*) as count from #{@table_name}"].first[:count]

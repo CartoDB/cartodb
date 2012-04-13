@@ -71,7 +71,7 @@ module CartoDB
             open(URI.escape(@import_from_file)) do |res| # opens file normally, or open-uri to download/open
               @data_import.file_ready
               file_name = File.basename(@import_from_file)
-              @ext = File.extname(file_name)
+              @ext = File.extname(file_name).downcase
               # Fix for extensionless fusiontables files
               if @ext == "" 
                 if @filesrc == "fusiontables"

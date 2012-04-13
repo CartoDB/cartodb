@@ -47,7 +47,6 @@ module CartoDB
           raise "Empty table"
         end
 
-        column_names = @db_connection.schema(@suggested_name).map{ |s| s[0].to_s }
 
         # Importing CartoDB CSV exports
         # ===============================
@@ -58,6 +57,7 @@ module CartoDB
         # * loop over table and parse geojson into postgis geometries
         # * drop the_geom_orig
         #
+        column_names = @db_connection.schema(@suggested_name).map{ |s| s[0].to_s }
         if column_names.include? "the_geom"
           @data_import.log_update("update the_geom")
           if res = @db_connection["select the_geom from #{@suggested_name} WHERE the_geom is not null and the_geom != '' limit 1"].first

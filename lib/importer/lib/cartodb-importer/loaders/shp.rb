@@ -88,14 +88,6 @@ module CartoDB
           # Sanitize column names where needed
           sanitize_table_columns random_table_name
           column_names = @db_connection.schema(random_table_name).map{ |s| s[0].to_s }
-          # TODO: We need to move this out of all loader methods and into the importer.rb method
-          # column_names = @db_connection.schema(random_table_name).map{ |s| s[0].to_s }
-          # need_sanitizing = column_names.each do |column_name|
-          #   
-          #   if column_name != column_name.sanitize_column_name
-          #     @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
-          #   end
-          # end
         rescue Exception => msg  
           @runlog.err << msg
           @data_import.log_update("ERROR: Failed to sanitize some column names")

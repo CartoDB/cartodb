@@ -94,12 +94,12 @@ module CartoDB
         @db_connection.run("ALTER TABLE #{random_table_name} DROP COLUMN the_geom_orig")
         @db_connection.run("CREATE INDEX \"#{random_table_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
       end
-      def sanitize_table_columns random_table_name
+      def sanitize_table_columns table_name
         # Sanitize column names where needed
-        column_names = @db_connection.schema(random_table_name).map{ |s| s[0].to_s }
+        column_names = @db_connection.schema(table_name).map{ |s| s[0].to_s }
         need_sanitizing = column_names.each do |column_name|
           if column_name != column_name.sanitize_column_name
-            @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
+            @db_connection.run("ALTER TABLE #{table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
           end
         end
       end

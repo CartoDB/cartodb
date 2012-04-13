@@ -159,11 +159,12 @@ class ApplicationController < ActionController::Base
       raise NoHTML5Compliant
     end
 
-    #CHROME
+    # CHROME
     # mozilla/5.0 (macintosh; intel mac os x 10_6_7) applewebkit/534.30 (khtml, like gecko) chrome/12.0.742.91 safari/534.30
-    if user_agent.match(/chrome\/\d[0-1]/)
-      raise NoHTML5Compliant
-    end
+    # This was to flag up chrome 0-12. Currently chrome is on 18
+    # if user_agent.match(/chrome\/\d[0-1]/)
+    #   raise NoHTML5Compliant
+    # end
 
     #SAFARI
     # mozilla/5.0 (macintosh; u; intel mac os x 10_6_7; en-us) applewebkit/533.21.1 (khtml, like gecko) version/5.0.5 safari/533.21.1

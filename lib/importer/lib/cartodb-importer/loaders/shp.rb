@@ -75,12 +75,7 @@ module CartoDB
         if shp_args_command[0] != '4326'
           @data_import.log_update("reprojecting the_geom column from #{shp_args_command[0]} to 4326")
           begin  
-            @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN the_geom TO the_geom_orig;")
-            geom_type = @db_connection["SELECT GeometryType(the_geom_orig) as type from #{random_table_name} WHERE the_geom_orig IS NOT NULL LIMIT 1"].first[:type]
-            @db_connection.run("SELECT AddGeometryColumn('#{random_table_name}','the_geom',4326, '#{geom_type}', 2);")
-            @db_connection.run("UPDATE \"#{random_table_name}\" SET the_geom = ST_Force_2D(ST_Transform(the_geom_orig, 4326)) WHERE the_geom_orig IS NOT NULL")
-            @db_connection.run("ALTER TABLE #{random_table_name} DROP COLUMN the_geom_orig")
-            @db_connection.run("CREATE INDEX \"#{random_table_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
+            reproject_import random_table_name
           rescue Exception => msg  
             @runlog.err << msg
             @data_import.set_error_code(2000)
@@ -91,18 +86,13 @@ module CartoDB
         end        
         begin
           # Sanitize column names where needed
-          # TODO: We need to move this out of all loader methods and into the importer.rb method
+          sanitize_table_columns random_table_name
           column_names = @db_connection.schema(random_table_name).map{ |s| s[0].to_s }
-          need_sanitizing = column_names.each do |column_name|
-            
-            if column_name != column_name.sanitize_column_name
-              @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
-            end
-          end
-        rescue
+        rescue Exception => msg  
           @runlog.err << msg
           @data_import.log_update("ERROR: Failed to sanitize some column names")
         end
+        
         # KML file imports are creating nasty 4 dim geoms sometimes, or worse, mixed dim
         # This block detects and then fixes those
         begin

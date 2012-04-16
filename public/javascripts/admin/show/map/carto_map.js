@@ -703,73 +703,23 @@
     //  MAP HELPERS                     //
     ////////////////////////////////////////
     /* Set bbox for the map */
-    CartoMap.prototype.zoomToBBox = function() {
-      var me = this;
-      $.ajax({
-        method: "GET",
-        url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
-        headers: {"cartodbclient":"true"},
-        success: function(data) {
+    CartoMap.prototype.zoomToBBox = function(corners) {
 
-          if (data.rows[0].st_extent!=null) {
+      // If request getCartoDBBox, get from helpers
+      if (!corners) {
+        gettingTableBounds(table_name,window.map.carto_map.zoomToBBox);
+      } else {
+        if (!$.isEmptyObject(corners)) {
+          var bounds = new google.maps.LatLngBounds(corners.sw, corners.ne);
 
-            // TODO: make this code more widely available (pgis->gmaps bounds) -- {
-
-            var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-
-            var coor1 = coordinates[0].split(' ');
-            var coor2 = coordinates[1].split(' ');
-
-            var lon0 = coor1[0];
-            var lat0 = coor1[1];
-            var lon1 = coor2[0];
-            var lat1 = coor2[1];
-
-            // Check bounds
-
-            var minlat = -85.0511;
-            var maxlat =  85.0511;
-            var minlon = -179;
-            var maxlon =  179;
-
-            /* Clamp X to be between min and max (inclusive) */
-            var clampNum = function(x, min, max) {
-              return x < min ? min : x > max ? max : x;
-            }
-
-            lon0 = clampNum(lon0, minlon, maxlon);
-            lon1 = clampNum(lon1, minlon, maxlon);
-            lat0 = clampNum(lat0, minlat, maxlat);
-            lat1 = clampNum(lat1, minlat, maxlat);
-
-            var sw = new google.maps.LatLng(lat0, lon0);
-            var ne = new google.maps.LatLng(lat1, lon1);
-            var bounds = new google.maps.LatLngBounds(sw, ne);
-
-            // -- }
-
-                            
-            me.map_.fitBounds(bounds);
+          window.map.carto_map.map_.fitBounds(bounds);
             
-            if (me.map_.getZoom()<2) {
-              me.map_.setZoom(2);
-            }
-          } else {
-             me.map_.setZoom(2);
+          if (window.map.carto_map.map_.getZoom()<2) {
+            window.map.carto_map.map_.setZoom(2);
           }
-
-          // After move the map, start wax
-          me.startWax();
-        },
-        error: function(e) {
-
-          // Set map to world view
-          me.map_.setZoom(2)
-
-          // Start wax
-          me.startWax();
         }
-      });
+        window.map.carto_map.startWax();
+      }
     }
     
 

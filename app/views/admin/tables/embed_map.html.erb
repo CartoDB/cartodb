@@ -3,10 +3,13 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
   	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-  	<link rel="shortcut icon" href="https://cartodb.com/favicon/favicon.ico" />
+  	<link rel="shortcut icon" href="https://cartodb.com/assets/favicon.ico" />
     <title>CartoDB - <%= @table.name %> map</title>
-    <link href="https://code.google.com/apis/maps/documentation/javascript/examples/default.css" rel="stylesheet" type="text/css" />
+
     <style type="text/css">
+      html, body {height: 100%; margin: 0; padding: 0;}
+      #map_canvas {height: 100%;}
+      @media print {html, body {height: auto;}#map_canvas {height: 650px;}}
       div#outer_map_cartodb_container {position:relative; width:100%; height:100%; background:white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
       div#map_cartodb_container {position:absolute; top:0; left:0; right:0; bottom:0; z-index:0;}
       span.cartodb_map_controls {position:absolute; top:10px; left:10px; width:26px; height:100px; z-index:10;}
@@ -31,7 +34,7 @@
         background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
       div.cartodb_infowindow div.bottom a:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
         background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
-      a.cartodb_logo {position:absolute; bottom:9px; left:75px; display:block; width:69px; height:27px; background:url('https://cartodb.s3.amazonaws.com/embed/sprite.png') no-repeat -350px -141px;
+      a.cartodb_logo {position:absolute; bottom:7px; left:75px; display:block; width:71px; height:29px; background:url('https://cartodb.s3.amazonaws.com/embed/new_logo.png') no-repeat 0 0;
               text-indent:-9999px; line-height:0; font-size:0; text-transform:capitalize;}
     </style>
 
@@ -75,7 +78,8 @@
 
       <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-      <script type="text/javascript" src="https://cartodb.s3.amazonaws.com/embed/wax.g.js"></script>
+      <script type="text/javascript" src="/javascripts/admin/show/helpers.js"></script>
+      <script type="text/javascript" src="http://cartodb.s3.amazonaws.com/embed/wax.g.js"></script>
 
 
       <script type="text/javascript">
@@ -146,45 +150,16 @@
           addCartoDBInteraction(cartodb_params);
 
 
-          // Zoom to your geometries
-          function getCartoDBBBox() {
-            $.ajax({
-              method: "GET",
-              url: TILEHTTP + '://'+cartodb_user_name+'.' + SQL_SERVER + global_api_url+ 'sql/?q='+escape('select ST_Extent(the_geom) from '+ cartodb_table_name),
-              dataType: 'jsonp',
-              success: function(data) {
-                if (data.rows[0].st_extent!=null) {
-                  var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-
-                  var coor1 = coordinates[0].split(' ');
-                  var coor2 = coordinates[1].split(' ');
-                  var bounds = new google.maps.LatLngBounds();
-
-                  // Check bounds
-                  if (coor1[0] >  180
-                   || coor1[0] < -180
-                   || coor1[1] >  90
-                   || coor1[1] < -90
-                   || coor2[0] >  180
-                   || coor2[0] < -180
-                   || coor2[1] >  90
-                   || coor2[1] < -90) {
-                    coor1[0] = '-30';
-                    coor1[1] = '-50';
-                    coor2[0] = '110';
-                    coor2[1] =  '80';
-                  }
-
-
-                  bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
-                  bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
-
-                  carto_embed_map.fitBounds(bounds);
-                }
-
-              },
-              error: function(e) {}
-            });
+          function getCartoDBBBox(corners) {
+            // If request getCartoDBBox, get from helpers
+            if (!corners) {
+              gettingTableBounds(cartodb_table_name,getCartoDBBBox);
+            } else {
+              if (!$.isEmptyObject(corners)) {
+                var bounds = new google.maps.LatLngBounds(corners.sw, corners.ne);
+                carto_embed_map.fitBounds(bounds);
+              }              
+            }
           }
 
 
@@ -303,16 +278,7 @@
               if (columns) {
                 that.columns_ = parseColumns(columns);
               } else {
-                $.ajax({
-                  // If the table is private, you can't run any api methods without being
-                  method:'get',
-                  url: TILEHTTP + '://'+ that.params_.cartodb_user_name + '.' +  SQL_SERVER + '/api/v1/sql/?q='+escape('select * from '+ that.params_.cartodb_table_name + ' LIMIT 1'),
-                  dataType: 'jsonp',
-                  success: function(columns) {
-                    that.columns_ = parseColumns(columns.rows[0]);
-                  },
-                  error: function(e) {}
-                });
+                that.columns_ = "*";
               }
 
             },

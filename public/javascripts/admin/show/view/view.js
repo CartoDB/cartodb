@@ -1113,45 +1113,16 @@
         });
 		  }
 		  
-		  function zoomToBBox() {
-        var me = this;
-        $.ajax({
-            method: "GET",
-            url: global_api_url+'queries?sql='+encodeURIComponent('select ST_Extent(the_geom) from '+ table_name),
-            headers: {"cartodbclient":"true"},
-            success: function(data) {
-              if (data.rows[0].st_extent!=null) {
-                var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-
-                var coor1 = coordinates[0].split(' ');
-                var coor2 = coordinates[1].split(' ');
-                var bounds = new google.maps.LatLngBounds();
-                
-                // Check bounds
-                if (coor1[0] >  180 
-                 || coor1[0] < -180 
-                 || coor1[1] >  90 
-                 || coor1[1] < -90 
-                 || coor2[0] >  180 
-                 || coor2[0] < -180 
-                 || coor2[1] >  90  
-                 || coor2[1] < -90) {
-                  coor1[0] = '-30';
-                  coor1[1] = '-50'; 
-                  coor2[0] = '110'; 
-                  coor2[1] =  '80'; 
-                }
-
-                bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
-                bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
-
-                embed_map.fitBounds(bounds);
-              }
-
-            },
-            error: function(e) {
-            }
-        });
+		  function zoomToBBox(corners) {
+        // If request getCartoDBBox, get from helpers
+        if (!corners) {
+          gettingTableBounds(table_name,zoomToBBox);
+        } else {
+          if (!$.isEmptyObject(corners)) {
+            var bounds = new google.maps.LatLngBounds(corners.sw, corners.ne);
+            embed_map.fitBounds(bounds);
+          }
+        }
       }
 		  
 			function changeEmbedCode() {

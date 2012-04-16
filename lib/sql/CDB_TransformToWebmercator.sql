@@ -57,21 +57,11 @@ $$
  clipped_input AS
  (
    SELECT 
-     CASE 
-       WHEN GeometryType(geom) LIKE 'MULTI%'
-       THEN
-         ST_Multi(
-           ST_Intersection(
-             geom,
-             ext
-           )
-         )
-       ELSE
-         ST_Intersection(
-           geom,
-           ext
-         )
-     END as geom 
+     ST_Intersection(
+            geom,
+            ext
+     )
+     as geom 
    FROM latlon_input, valid_extent
  ),
 
@@ -84,8 +74,10 @@ $$
 
  -- Finally we convert EMPTY to NULL 
  -- See https://github.com/Vizzuality/cartodb/issues/706
+ -- And retain "multi" status
  SELECT
    CASE WHEN ST_IsEmpty(geom) THEN NULL::geometry
+        WHEN GeometryType($1) LIKE 'MULTI%' THEN ST_Multi(geom)
         ELSE geom
    END as geom
  FROM to_webmercator;

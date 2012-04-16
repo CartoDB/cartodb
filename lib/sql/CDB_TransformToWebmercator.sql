@@ -56,7 +56,6 @@ $$
  -- 
  clipped_input AS
  (
-   -- TODO: clip to the envelope ?
    SELECT 
      CASE 
        WHEN GeometryType(geom) LIKE 'MULTI%'
@@ -74,11 +73,21 @@ $$
          )
      END as geom 
    FROM latlon_input, valid_extent
+ ),
+
+ -- We transform to web mercator
+ to_webmercator AS
+ (
+    SELECT ST_Transform(geom, 3857) as geom
+    FROM clipped_input
  )
 
- -- And finally we transform to web mercator
+ -- Finally we convert EMPTY to NULL 
+ -- See https://github.com/Vizzuality/cartodb/issues/706
  SELECT
- ST_Transform( geom, 3857)
- FROM clipped_input;
+   CASE WHEN ST_IsEmpty(geom) THEN NULL::geometry
+        ELSE geom
+   END as geom
+ FROM to_webmercator;
 
 $$ LANGUAGE 'sql' IMMUTABLE STRICT;

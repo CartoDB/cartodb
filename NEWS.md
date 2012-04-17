@@ -1,3 +1,13 @@
+0.9.4
+-----
+* Improved bounds handling on map
+* Updated core CDB_ sql functions
+* Improve timeout in import stages
+* Dashboard optimizations for large datasets
+* Optimisations in embedded map 
+* Various GUI fixes
+
+
 0.9.3
 -----
 * new styles for login etc

@@ -569,6 +569,10 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database[name.to_sym]
   end
 
+  def rows_estimated
+    owner.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples];
+  end
+
   def rows_counted
     sequel.count
   end

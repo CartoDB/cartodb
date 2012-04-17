@@ -137,7 +137,7 @@
                     <p class="columns">
                       <strong>
                         <%= number_to_human_size table.table_size %> / 
-                        <%= pluralize(table.rows_counted,'row','rows') rescue '' %> /
+                        <%= pluralize(table.rows_estimated,'row','rows') rescue '' %> /
                         <%= table.schema.size rescue '' %> columns:
                     </strong>
                     <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...

@@ -1,7 +1,8 @@
 0.9.4
 -----
 * Improved bounds handling on map
-* Updated core CDB_ sql functions
+* Update CDB_TransformToWebmercator to return NULL for geoms fully
+  outside the valid webmercator boundary
 * Improve timeout in import stages
 * Dashboard optimizations for large datasets
 * Optimisations in embedded map 

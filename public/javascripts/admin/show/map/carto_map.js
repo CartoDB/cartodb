@@ -1,17 +1,17 @@
 
     ////////////////////////////////////////////////////////////////////////////////
-    //																			                                      //      
-    //  	 CLASS TO MANAGE ALL THE STUFF IN THE MAP (variable -> carto_map)	      //                                                                        
-    //          Actually, this is map of the application, and everything that	    //                                                                      
-    //		    occurs on/over/with/in the map will be manage here.				          //                                                          
-    //		 																	                                      //      
-    //		 Overlays:  														                                //                  
-    //			 .selection_area_ 												                            //                          
-    //			 .info_window_    												                            //                          
-    //			 .tooltip_                                                            //                                                                      
-    //       .delete_windsow_                                                  	  //                                                                              
-    //       .map_canvas_                                                      	  //                                                                              
-    //       status -> (add_point,add_polygon,add_polyline,selection,select)      //                                                                              
+    //																			                                      //
+    //  	 CLASS TO MANAGE ALL THE STUFF IN THE MAP (variable -> carto_map)	      //
+    //          Actually, this is map of the application, and everything that	    //
+    //		    occurs on/over/with/in the map will be manage here.				          //
+    //		 																	                                      //
+    //		 Overlays:  														                                //
+    //			 .selection_area_ 												                            //
+    //			 .info_window_    												                            //
+    //			 .tooltip_                                                            //
+    //       .delete_windsow_                                                  	  //
+    //       .map_canvas_                                                      	  //
+    //       status -> (add_point,add_polygon,add_polyline,selection,select)      //
     //																			                                      //
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -703,60 +703,23 @@
     //  MAP HELPERS                     //
     ////////////////////////////////////////
     /* Set bbox for the map */
-    CartoMap.prototype.zoomToBBox = function() {
-      var me = this;
-      $.ajax({
-        method: "GET",
-        url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
-        headers: {"cartodbclient":"true"},
-        success: function(data) {
+    CartoMap.prototype.zoomToBBox = function(corners) {
 
-          if (data.rows[0].st_extent!=null) {
-            var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+      // If request getCartoDBBox, get from helpers
+      if (!corners) {
+        gettingTableBounds(table_name,window.map.carto_map.zoomToBBox);
+      } else {
+        if (!$.isEmptyObject(corners)) {
+          var bounds = new google.maps.LatLngBounds(corners.sw, corners.ne);
+
+          window.map.carto_map.map_.fitBounds(bounds);
             
-            var coor1 = coordinates[0].split(' ');
-            var coor2 = coordinates[1].split(' ');
-            var bounds = new google.maps.LatLngBounds();
-            
-            // Check bounds
-            if (coor1[0] >  180 
-             || coor1[0] < -180 
-             || coor1[1] >  90 
-             || coor1[1] < -90 
-             || coor2[0] >  180 
-             || coor2[0] < -180 
-             || coor2[1] >  90  
-             || coor2[1] < -90) {
-              coor1[0] = '-30';
-              coor1[1] = '-50'; 
-              coor2[0] = '110'; 
-              coor2[1] =  '80'; 
-            }
-            
-            bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
-            bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
-                            
-            me.map_.fitBounds(bounds);
-            
-            if (me.map_.getZoom()<2) {
-              me.map_.setZoom(2);
-            }
-          } else {
-             me.map_.setZoom(2);
+          if (window.map.carto_map.map_.getZoom()<2) {
+            window.map.carto_map.map_.setZoom(2);
           }
-
-          // After move the map, start wax
-          me.startWax();
-        },
-        error: function(e) {
-
-          // Set map to world view
-          me.map_.setZoom(2)
-
-          // Start wax
-          me.startWax();
         }
-      });
+        window.map.carto_map.startWax();
+      }
     }
     
 

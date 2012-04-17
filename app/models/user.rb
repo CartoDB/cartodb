@@ -176,7 +176,7 @@ class User < Sequel::Model
     end
     {
       :time => time.real,
-      :total_rows => pg_size(res),
+      :total_rows => res.ntuples,
       :rows     => pg_to_hash(res, translation_proc),
       :results  => pg_results?(res),
       :modified => pg_modified?(res)

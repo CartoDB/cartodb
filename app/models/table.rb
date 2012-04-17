@@ -896,8 +896,8 @@ class Table < Sequel::Model(:user_tables)
   end  
 
   def records(options = {})
-    rows  = []
-    records_count = rows_counted
+    rows = []
+    records_count = 0
     page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
     order_by_column = options[:order_by] || "cartodb_id"
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'asc' : 'desc'
@@ -929,7 +929,20 @@ class Table < Sequel::Model(:user_tables)
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
       rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
-      records_count = user_database["SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "].get(:total_rows)
+
+      # TODO: counting results can be really expensive
+      # See https://github.com/Vizzuality/cartodb/issues/459
+      # and https://github.com/Vizzuality/cartodb/issues/716
+      if filters.present?
+        records_count = user_database["SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "].get(:total_rows)
+      else
+        # TODO: use min between estimated row count and
+        #       number of rows returned ? We could always
+        #       ask for one additional record to check
+        #       if there's more...
+        records_count = rows_counted
+      end
+
     end
     {
       :id         => id,

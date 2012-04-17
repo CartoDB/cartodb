@@ -56,29 +56,30 @@ $$
  -- 
  clipped_input AS
  (
-   -- TODO: clip to the envelope ?
    SELECT 
-     CASE 
-       WHEN GeometryType(geom) LIKE 'MULTI%'
-       THEN
-         ST_Multi(
-           ST_Intersection(
-             geom,
-             ext
-           )
-         )
-       ELSE
-         ST_Intersection(
-           geom,
-           ext
-         )
-     END as geom 
+     ST_Intersection(
+            geom,
+            ext
+     )
+     as geom 
    FROM latlon_input, valid_extent
+ ),
+
+ -- We transform to web mercator
+ to_webmercator AS
+ (
+    SELECT ST_Transform(geom, 3857) as geom
+    FROM clipped_input
  )
 
- -- And finally we transform to web mercator
+ -- Finally we convert EMPTY to NULL 
+ -- See https://github.com/Vizzuality/cartodb/issues/706
+ -- And retain "multi" status
  SELECT
- ST_Transform( geom, 3857)
- FROM clipped_input;
+   CASE WHEN ST_IsEmpty(geom) THEN NULL::geometry
+        WHEN GeometryType($1) LIKE 'MULTI%' THEN ST_Multi(geom)
+        ELSE geom
+   END as geom
+ FROM to_webmercator;
 
 $$ LANGUAGE 'sql' IMMUTABLE STRICT;

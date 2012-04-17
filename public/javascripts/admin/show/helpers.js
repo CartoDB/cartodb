@@ -370,3 +370,63 @@
 
       return {properties: properties, type: type, visualization:visualization}; 
     }
+
+
+
+    /*============================================================================*/
+    /* Get the bounds from a CartoDB table */
+    /*============================================================================*/
+    function gettingTableBounds(table_name, callback) {
+      $.ajax({
+        method: "GET",
+        url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
+        headers: {"cartodbclient":"true"},
+        success: function(data) {
+
+          var sw = 0
+            , ne = 0;
+
+          if (data.rows[0].st_extent!=null) {
+
+            // TODO: make this code more widely available (pgis->gmaps bounds) -- {
+
+            var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+
+            var coor1 = coordinates[0].split(' ');
+            var coor2 = coordinates[1].split(' ');
+
+            var lon0 = coor1[0];
+            var lat0 = coor1[1];
+            var lon1 = coor2[0];
+            var lat1 = coor2[1];
+
+            // Check bounds
+
+            var minlat = -85.0511;
+            var maxlat =  85.0511;
+            var minlon = -179;
+            var maxlon =  179;
+
+            /* Clamp X to be between min and max (inclusive) */
+            var clampNum = function(x, min, max) {
+              return x < min ? min : x > max ? max : x;
+            }
+
+            lon0 = clampNum(lon0, minlon, maxlon);
+            lon1 = clampNum(lon1, minlon, maxlon);
+            lat0 = clampNum(lat0, minlat, maxlat);
+            lat1 = clampNum(lat1, minlat, maxlat);
+
+            sw = new google.maps.LatLng(lat0, lon0);
+            ne = new google.maps.LatLng(lat1, lon1);
+
+            // -- }
+          }
+
+          callback({sw:sw, ne:ne});
+        },
+        error: function(e) {
+          callback({});
+        }
+      });
+    }

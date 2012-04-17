@@ -569,6 +569,10 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database[name.to_sym]
   end
 
+  def rows_estimated
+    owner.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples];
+  end
+
   def rows_counted
     sequel.count
   end
@@ -892,8 +896,8 @@ class Table < Sequel::Model(:user_tables)
   end  
 
   def records(options = {})
-    rows  = []
-    records_count = rows_counted
+    rows = []
+    records_count = 0
     page, per_page = CartoDB::Pagination.get_page_and_per_page(options)
     order_by_column = options[:order_by] || "cartodb_id"
     mode = (options[:mode] || 'asc').downcase == 'asc' ? 'asc' : 'desc'
@@ -925,7 +929,20 @@ class Table < Sequel::Model(:user_tables)
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
       rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
-      records_count = user_database["SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "].get(:total_rows)
+
+      # TODO: counting results can be really expensive
+      # See https://github.com/Vizzuality/cartodb/issues/459
+      # and https://github.com/Vizzuality/cartodb/issues/716
+      if filters.present?
+        records_count = user_database["SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "].get(:total_rows)
+      else
+        # TODO: use min between estimated row count and
+        #       number of rows returned ? We could always
+        #       ask for one additional record to check
+        #       if there's more...
+        records_count = rows_counted
+      end
+
     end
     {
       :id         => id,
@@ -1124,12 +1141,13 @@ class Table < Sequel::Model(:user_tables)
   end
   
   def set_trigger_the_geom_webmercator
-    owner.in_database(:as => :superuser) do |user_database|
+    owner.in_database(:as => :superuser) do |user_database|      
       user_database.run(<<-TRIGGER
         DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
         CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
           BEGIN
                 NEW.#{THE_GEOM_WEBMERCATOR} := CDB_TransformToWebmercator(NEW.the_geom);
+                --NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
                 RETURN NEW;
           END;
         $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
@@ -1359,7 +1377,7 @@ TRIGGER
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
-        user_database.run("UPDATE #{self.name} SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL")
+        user_database.run("SET statement_timeout TO 0;UPDATE #{self.name} SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL")        
         user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
 
         # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")        

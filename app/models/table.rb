@@ -433,6 +433,8 @@ class Table < Sequel::Model(:user_tables)
     @force_schema = nil
     $tables_metadata.hset key, "user_id", user_id
     
+    update_table_pg_stats
+    
     # finally, close off the data import
     if data_import_id
       @data_import = DataImport.find(:id=>data_import_id)
@@ -1217,6 +1219,11 @@ TRIGGER
     )
   end
 
+  # move to C
+  def update_table_pg_stats
+    owner.in_database["ANALYZE #{self.name};"]
+  end
+  
   # move to C
   def set_trigger_check_quota
     owner.in_database(:as => :superuser).run(<<-TRIGGER

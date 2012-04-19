@@ -98,9 +98,12 @@ module CartoDB
       elsif @export_type == 'shp'
         shp_file_path = build_path(@all_files_dir, "#{@file_name}.shp")
         zip_file_path = build_path(@all_files_dir, "#{@file_name}.zip")
-      
+        
+        
+        geom_type = @db_connection["SELECT GeometryType(the_geom) as type from #{@table_name} WHERE GeometryType(the_geom) IS NOT NULL LIMIT 1"].first[:type]
+            
         ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"ESRI Shapefile\" #{shp_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
+        ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"ESRI Shapefile\" #{shp_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name} WHERE GeometryType(the_geom) = '#{geom_type}'\""
         out = `#{ogr2ogr_command}`
         
         if $?.success?
@@ -169,6 +172,7 @@ module CartoDB
     ensure
       # Always cleanup files    
       FileUtils.rm_rf(@all_files_dir) 
+      @db_connection.disconnect
     end
   end
 end

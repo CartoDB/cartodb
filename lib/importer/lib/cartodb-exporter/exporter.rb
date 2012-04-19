@@ -99,11 +99,14 @@ module CartoDB
         shp_file_path = build_path(@all_files_dir, "#{@file_name}.shp")
         zip_file_path = build_path(@all_files_dir, "#{@file_name}.zip")
         
-        
-        geom_type = @db_connection["SELECT GeometryType(the_geom) as type from #{@table_name} WHERE GeometryType(the_geom) IS NOT NULL LIMIT 1"].first[:type]
-            
+        begin
+          geom_type = @db_connection["SELECT GeometryType(the_geom) as type from #{@table_name} WHERE GeometryType(the_geom) IS NOT NULL LIMIT 1"].first[:type]
+          type_check = "GeometryType(the_geom) = '#{geom_type}'"
+        rescue
+          type_check = ""
+        end
         ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"ESRI Shapefile\" #{shp_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name} WHERE GeometryType(the_geom) = '#{geom_type}'\""
+        ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"ESRI Shapefile\" #{shp_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name} #{type_check}\""
         out = `#{ogr2ogr_command}`
         
         if $?.success?

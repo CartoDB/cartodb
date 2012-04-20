@@ -13,4 +13,3 @@ config/database.yml
 .idea/*
 config/app_config.yml
 src/
-Gemfile.lock

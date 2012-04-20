@@ -930,19 +930,30 @@ class Table < Sequel::Model(:user_tables)
 
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
+      #
+      # NOTE: we fetch one more row to verify estimated rowcount is not short
+      #
+      rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page}+1 OFFSET #{page}"].all
 
-      # TODO: counting results can be really expensive
+      fetched = rows.length
+      fetched += page if page
+
+      have_more = rows.length > per_page
+      rows.pop if have_more
+
+      # Counting results can be really expensive
       # See https://github.com/Vizzuality/cartodb/issues/459
       # and https://github.com/Vizzuality/cartodb/issues/716
       if filters.present?
         records_count = user_database["SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "].get(:total_rows)
       else
-        # TODO: use min between estimated row count and
-        #       number of rows returned ? We could always
-        #       ask for one additional record to check
-        #       if there's more...
-        records_count = rows_counted
+        # Use estimated count, tweaked after actual fetch
+        if have_more
+          records_count = fetched > rows_estimated ? fetched : rows_estimated
+        else
+          records_count = fetched;
+        end
+
       end
 
     end

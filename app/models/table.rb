@@ -571,6 +571,14 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database[name.to_sym]
   end
 
+  def rows_estimated_query(query)
+    owner.in_database do |user_database|
+      rows = user_database["EXPLAIN #{query}"].all
+      est = Integer( rows[0].to_s.match( /rows=(\d+)/ ).values_at( 1 )[0] )
+      return est
+    end
+  end
+
   def rows_estimated
     owner.in_database["SELECT reltuples::integer FROM pg_class WHERE oid = '#{self.name}'::regclass"].first[:reltuples];
   end
@@ -928,33 +936,56 @@ class Table < Sequel::Model(:user_tables)
       end
       select_columns = column_names.join(',')
 
+      # Counting results can be really expensive, so we estimate
+      #
+      # See https://github.com/Vizzuality/cartodb/issues/716
+      #
+      max_countable_rows = 65535 # up to this number we accept to count
+      rows_count = 0
+      rows_count_is_estimated = true
+      if filters.present?
+        query = "SELECT cartodb_id as total_rows FROM #{name} #{where} "
+        rows_count = rows_estimated_query(query)
+        if rows_count <= max_countable_rows
+          query = "SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "
+          rows_count = user_database[query].get(:total_rows)
+          rows_count_is_estimated = false
+        end
+      else
+        rows_count = rows_estimated
+        if rows_count <= max_countable_rows
+          rows_count = rows_counted
+          rows_count_is_estimated = false
+        end
+      end
+
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
       #
       # NOTE: we fetch one more row to verify estimated rowcount is not short
       #
       rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page}+1 OFFSET #{page}"].all
+      CartoDB::Logger.info "Query", "fetch: #{rows.length}"
 
+      # Tweak estimation if needed
       fetched = rows.length
       fetched += page if page
 
       have_more = rows.length > per_page
       rows.pop if have_more
 
-      # Counting results can be really expensive
-      # See https://github.com/Vizzuality/cartodb/issues/459
-      # and https://github.com/Vizzuality/cartodb/issues/716
-      if filters.present?
-        records_count = user_database["SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "].get(:total_rows)
-      else
-        # Use estimated count, tweaked after actual fetch
+      records_count = rows_count
+      if rows_count_is_estimated
         if have_more
-          records_count = fetched > rows_estimated ? fetched : rows_estimated
+          records_count = fetched > rows_count ? fetched : rows_count
         else
-          records_count = fetched;
+          records_count = fetched
         end
-
       end
+
+      # TODO: cache row count !!
+      # See https://github.com/Vizzuality/cartodb/issues/459
+
 
     end
     {

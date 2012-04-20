@@ -1196,10 +1196,10 @@ TRIGGER
               pass
         client = GD.get('varnish', None)
 
-        # table_name = TD["table_name"]
+        table_name = TD["table_name"]
         if client:
           try:
-            client.fetch('purge obj.http.X-Cache-Channel == #{self.database_name}')
+            client.fetch('purge obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
           except:
             # try again
             import varnish

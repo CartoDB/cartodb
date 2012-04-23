@@ -43,8 +43,10 @@ module CartoDB
           @path = "#{@path}.shp"
           @ext = '.shp'
         else
+          @data_import.set_error_code(2000)
           @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
           @runlog.err << "failed to create shp file from #{@ext.sub('.','')}"
+          raise "failed to convert #{@ext.sub('.','')} to shp"
         end
             
        # construct return variables

@@ -42,13 +42,33 @@ module CartoDB
         if File.file?("#{@path}.shp")
           @path = "#{@path}.shp"
           @ext = '.shp'
+        elsif File.directory?("#{@path}.shp") #multi-layer kml support
+          Dir.foreach("#{@path}.shp") do |entry|
+            if File.extname(entry) == ".shp"
+              if File.file?("#{@path}.1.shp")
+                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" -update -append #{@path}.merged.shp #{@path}.shp/#{sys.escape(entry)}}
+              else
+                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{@path}.merged.shp #{@path}.shp/#{sys.escape(entry)}}
+              end
+              stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
+            end
+          end
+          FileUtils.rm_rf "#{@path}.shp"
+          if File.file?("#{@path}.merged.shp")
+            @path = "#{@path}.merged.shp"
+            @ext = '.shp'
+          else
+            @data_import.set_error_code(2000)
+            @data_import.log_error("ERROR: failed to convert multi-layer #{@ext.sub('.','')} to shp")
+            @runlog.err << "failed to create shp file from #{@ext.sub('.','')}"
+            raise "failed to convert #{@ext.sub('.','')} to shp"
+          end
         else
           @data_import.set_error_code(2000)
           @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
           @runlog.err << "failed to create shp file from #{@ext.sub('.','')}"
           raise "failed to convert #{@ext.sub('.','')} to shp"
         end
-            
        # construct return variables
        to_import_hash       
       end  

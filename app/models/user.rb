@@ -202,13 +202,6 @@ class User < Sequel::Model
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
-  # TODO: update without a domain
-  def create_key(domain)
-    raise "domain argument can't be blank" if domain.blank?
-    key = self.class.secure_digest(domain)
-    APIKey.create :api_key => key, :user_id => self.id, :domain => domain
-  end
-
   # create the core user_metadata key that is used in redis
   def key
     "rails:users:#{username}"

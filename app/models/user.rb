@@ -202,13 +202,6 @@ class User < Sequel::Model
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
-  # TODO: update without a domain
-  def create_key(domain)
-    raise "domain argument can't be blank" if domain.blank?
-    key = self.class.secure_digest(domain)
-    APIKey.create :api_key => key, :user_id => self.id, :domain => domain
-  end
-
   # create the core user_metadata key that is used in redis
   def key
     "rails:users:#{username}"
@@ -228,6 +221,17 @@ class User < Sequel::Model
 
   def get_map_key
     $users_metadata.HMGET(key, 'map_key').first
+  end
+  
+  def regenerate_map_key
+    # GET CURRENT KEY
+    old_key = self.get_map_key
+    
+    # SET NEW KEY
+    self.set_map_key
+    
+    # REMOVE OLD KEY FROM KEY SET
+    $users_metadata.SREM "#{key}:map_key", old_key
   end
 
   def reset_client_application!

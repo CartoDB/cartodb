@@ -300,16 +300,6 @@ describe User do
   end
 
 
-  it "can have different keys for accessing via JSONP API requests" do
-    user = create_user
-    lambda {
-      user.create_key ""
-    }.should raise_error
-    key = user.create_key "mymashup.com"
-    api_key = APIKey.filter(:user_id => user.id, :domain => 'http://mymashup.com').first
-    api_key.api_key.should == key.api_key
-  end
-
   it "should create a client_application for each user" do
     user = create_user
     user.client_application.should_not be_nil

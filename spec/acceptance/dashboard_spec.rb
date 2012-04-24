@@ -228,25 +228,4 @@ feature "Dashboard", %q{
     user.reload
   end
 
-  pending "Manage JSONP API keys" do
-    user = create_user
-
-    log_in_as user
-
-    click "Your api keys"
-
-    click "JSONP"
-
-    fill_in "YOUR APP DOMAIN", :with => "http://test-app.heroku.com"
-    click "Get API key"
-
-    page.should have_field("APP", :content => "http://test-app.heroku.com")
-    page.should have_field("API KEY", :content => APIKey.first.api_key)
-
-    click "Remove key"
-    page.find("div.mamufas a.confirm_delete").click
-
-    APIKey.filter(:user_id => user.id).all.size.should == 0
-  end
-
 end

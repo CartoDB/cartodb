@@ -22,11 +22,11 @@
             <div class="end_oauth">
               <p>Use your API key with the CartoDB SQL API and Maps API for full access. Learn more about using the API Key in <a href="<%= APP_CONFIG[:developers_host] %>/api/">our documentation</a>.</p>
             <%= form_tag(regenerate_api_key_path, :method => :post, :id => 'regenerate_api_key') do %>
-              <span class="form_block">
+              <span class="form_block" style="width:350px;">
                 <%= label_tag      :api_key, "YOUR API KEY" %>
-                <%= text_field_tag :api_key, current_user.get_map_key, :readonly => 'readonly'  %>
+                <%= text_field_tag :api_key, current_user.get_map_key, :readonly => 'readonly', :style => "width:350px;"  %>
               </span>
-              <a href="#submit" class="green submit regenerate_api_key"><span>Regenerate API key</span></a>
+              <a href="#submit" class="green submit regenerate_api_key" style="margin-left:25px;" ><span>Regenerate API key</span></a>
             <% end %>
             </div>
           </div>

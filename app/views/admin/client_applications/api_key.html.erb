@@ -28,6 +28,11 @@
               </span>
               <a href="#submit" class="green submit regenerate_api_key" style="margin-left:25px;" ><span>Regenerate API key</span></a>
             <% end %>
+            <p style="background:#eee;font-size:12px;padding:1em;margin-top:10px;">
+              <b class="code_title">example query:</b><br/>              
+              http://<%= current_user.username %>.cartodb.com/api/v1/sql?q=select * from private_table&api_key=<%= current_user.get_map_key%>              
+            </p>
+            
             </div>
           </div>
           <div class="bottom_white_medium"></div>

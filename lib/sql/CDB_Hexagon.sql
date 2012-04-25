@@ -46,6 +46,8 @@ DECLARE
   vend FLOAT8;
   xoff FLOAT8;
   yoff FLOAT8;
+  xgrd FLOAT8;
+  ygrd FLOAT8;
   srid INTEGER;
 BEGIN
 
@@ -57,6 +59,7 @@ BEGIN
   --         /     \ ___ / 
   --
   --
+  RAISE DEBUG 'Side: %', side;
 
   vstep := side * sqrt(3); -- x 2 ?
   hstep := side * 1.5;
@@ -77,7 +80,13 @@ BEGIN
     yoff := ST_Y(origin);
   END IF;
 
-  RAISE DEBUG 'Side: %', side;
+  RAISE DEBUG 'X offset: %', xoff;
+  RAISE DEBUG 'Y offset: %', yoff;
+
+  xgrd := side * 0.5;
+  ygrd := ( side * sqrt(3) ) / 2.0;
+  RAISE DEBUG 'X grid size: %', xgrd;
+  RAISE DEBUG 'Y grid size: %', ygrd;
 
   -- Tweak horizontal start on hstep*2 grid from origin 
   hskip := ceil((ST_XMin(ext)-xoff)/hstep);
@@ -109,8 +118,7 @@ BEGIN
     --RAISE DEBUG 'X loop starts, center point: %', ST_AsText(c);
     WHILE ST_Y(c) < vend LOOP -- over Y
       --RAISE DEBUG 'Center: %', ST_AsText(c);
-      h := CDB_MakeHexagon(c, side);
-      -- TODO: snap to grid !
+      h := ST_SnapToGrid(CDB_MakeHexagon(c, side), xoff, yoff, xgrd, ygrd);
       RETURN NEXT h;
       c := ST_Translate(c, 0, vstep);
     END LOOP;

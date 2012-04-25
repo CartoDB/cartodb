@@ -46,6 +46,8 @@ DECLARE
   vend FLOAT8;
   xoff FLOAT8;
   yoff FLOAT8;
+  xgrd FLOAT8;
+  ygrd FLOAT8;
   srid INTEGER;
 BEGIN
 
@@ -57,9 +59,13 @@ BEGIN
   --         /     \ ___ / 
   --
   --
+  RAISE DEBUG 'Side: %', side;
 
   vstep := side * sqrt(3); -- x 2 ?
   hstep := side * 1.5;
+
+  RAISE DEBUG 'vstep: %', vstep;
+  RAISE DEBUG 'hstep: %', hstep;
 
   srid := ST_SRID(ext);
 
@@ -74,61 +80,50 @@ BEGIN
     yoff := ST_Y(origin);
   END IF;
 
-  RAISE DEBUG 'Side: %', side;
+  RAISE DEBUG 'X offset: %', xoff;
+  RAISE DEBUG 'Y offset: %', yoff;
+
+  xgrd := side * 0.5;
+  ygrd := ( side * sqrt(3) ) / 2.0;
+  RAISE DEBUG 'X grid size: %', xgrd;
+  RAISE DEBUG 'Y grid size: %', ygrd;
 
   -- Tweak horizontal start on hstep*2 grid from origin 
   hskip := ceil((ST_XMin(ext)-xoff)/hstep);
   RAISE DEBUG 'hskip: %', hskip;
   hstart := xoff + hskip*hstep;
+  RAISE DEBUG 'hstart: %', hstart;
+
   -- Tweak vertical start on hstep grid from origin 
   vstart := yoff + ceil((ST_Ymin(ext)-yoff)/vstep)*vstep; 
+  RAISE DEBUG 'vstart: %', vstart;
 
   hend := ST_XMax(ext);
   vend := ST_YMax(ext);
 
-  -- TODO: snap to grid {h,v}{start,end} ?
-
-  vstartidx := abs(hskip)%2;
-  IF vstartidx = 0 THEN
-    vstartary := ARRAY[ vstart + (vstep/2.0) - vstep, vstart ];
+  IF vstart - (vstep/2.0) < ST_YMin(ext) THEN
+    vstartary := ARRAY[ vstart + (vstep/2.0), vstart ];
   ELSE
     vstartary := ARRAY[ vstart - (vstep/2.0), vstart ];
   END IF;
 
-  RAISE DEBUG 'hstart: %', hstart;
-  RAISE DEBUG 'vstart: % : %', vstartary[1], vstartary[2];
+  vstartidx := abs(hskip)%2;
+
+  RAISE DEBUG 'vstartary: % : %', vstartary[1], vstartary[2];
   RAISE DEBUG 'vstartidx: %', vstartidx;
-
-
-  RAISE DEBUG 'hstep: %', hstep;
-  RAISE DEBUG 'vstep: %', vstep;
 
   c := ST_SetSRID(ST_MakePoint(hstart, vstartary[vstartidx+1]), srid);
   vstartidx := (vstartidx + 1) % 2;
-  LOOP -- over X
+  WHILE ST_X(c) < hend LOOP -- over X
     --RAISE DEBUG 'X loop starts, center point: %', ST_AsText(c);
-    LOOP -- over Y
+    WHILE ST_Y(c) < vend LOOP -- over Y
       --RAISE DEBUG 'Center: %', ST_AsText(c);
-      -- this one should only deal with the start, end is taken care of
-      -- by the final check (correct that if we start at the upmost
-      -- or rightmost boundary we end up emitting an hexagon which should
-      -- not be there, but this should only happen for extents which
-      -- are very narrow either dimension).
-      IF ST_Intersects(c, ext) THEN
-        h := CDB_MakeHexagon(c, side);
-        -- TODO: snap to grid !
-        RETURN NEXT h;
-      END IF;
+      h := ST_SnapToGrid(CDB_MakeHexagon(c, side), xoff, yoff, xgrd, ygrd);
+      RETURN NEXT h;
       c := ST_Translate(c, 0, vstep);
-      IF ST_Y(c) >= vend THEN
-        EXIT;
-      END IF;
     END LOOP;
     c := ST_SetSRID(ST_MakePoint(ST_X(c)+hstep, vstartary[vstartidx+1]), srid);
     vstartidx := (vstartidx + 1) % 2;
-    IF ST_X(c) >= hend THEN
-        EXIT;
-    END IF;
   END LOOP;
 
   RETURN;

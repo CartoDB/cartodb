@@ -55,9 +55,6 @@ module CartoDB
       if @export_type == 'sql'
         sql_file_path  = build_path(@all_files_dir, "#{@file_name}.sql")
         zip_file_path  = build_path(@all_files_dir, "#{@file_name}.zip")
-        #ogr2ogr_bin_path = `which ogr2ogr`.strip
-        #ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"PGDump\" #{sql_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
-        #out = `#{ogr2ogr_command}`
         
         pg_dump_bin_path = `which pg_dump`.strip
         pg_dump_command = "#{pg_dump_bin_path} --data-only --table #{@table_name} -U #{@db_configuration[:username]} #{@db_configuration[:database]} -f #{sql_file_path}"
@@ -68,12 +65,6 @@ module CartoDB
             zipfile.add(File.basename(sql_file_path), sql_file_path)
           end
           return File.read(zip_file_path)
-          # return OpenStruct.new({
-          #                         :success => true,
-          #                         :zip_file => File.read(kmz_file_path),
-          #                         :export_type => @export_type,
-          #                         :log => @runlog
-          #                         })    
         end
       elsif @export_type == 'kml'
         kml_file_path  = build_path(@all_files_dir, "#{@file_name}.kml")
@@ -88,25 +79,25 @@ module CartoDB
             zipfile.add(File.basename(kml_file_path), kml_file_path)
           end
           return File.read(kmz_file_path)
-          # return OpenStruct.new({
-          #                         :success => true,
-          #                         :zip_file => File.read(kmz_file_path),
-          #                         :export_type => @export_type,
-          #                         :log => @runlog
-          #                         })    
         end
       elsif @export_type == 'shp'
         shp_file_path = build_path(@all_files_dir, "#{@file_name}.shp")
         zip_file_path = build_path(@all_files_dir, "#{@file_name}.zip")
         
         begin
-          geom_type = @db_connection["SELECT GeometryType(the_geom) as type from #{@table_name} WHERE GeometryType(the_geom) IS NOT NULL LIMIT 1"].first[:type]
-          type_check = "GeometryType(the_geom) = '#{geom_type}'"
+          geom_dat = @db_connection["SELECT GeometryType(the_geom) as type, ST_Srid(the_geom) as srid from #{@table_name} WHERE GeometryType(the_geom) IS NOT NULL LIMIT 1"].first
+          geom_type = geom_dat[:type]
+          srid = geom_dat[:srid]
+          type_check = "WHERE GeometryType(the_geom) = '#{geom_type}' OR GeometryType(the_geom) IS NULL"
+          type_force = "-nlt #{geom_type}"
+          prj_force = "-a_srs EPSG:#{srid}"
         rescue
           type_check = ""
+          type_force = ""
+          prj_force = ""
         end
         ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"ESRI Shapefile\" #{shp_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name} #{type_check}\""
+        ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"ESRI Shapefile\" #{shp_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name} #{type_check}\" #{prj_force} #{type_force}"
         out = `#{ogr2ogr_command}`
         
         if $?.success?
@@ -116,32 +107,12 @@ module CartoDB
             end
           end
           return File.read(zip_file_path)
-          # return OpenStruct.new({
-          #                         :success => true,
-          #                         :zip_file => File.read(zip_file_path),
-          #                         :export_type => @export_type,
-          #                         :log => @runlog
-          #                         })    
         end
       elsif @export_type == 'csv'
         csv_zipped = nil
         csv_file_path = build_path(@all_files_dir, "#{@file_name}.csv")
         zip_file_path = build_path(@all_files_dir, "#{@file_name}.zip")
-         
-        # Setup data export table
-        #@db_connection.run("DROP TABLE IF EXISTS #{@table_name}")
-        #@db_connection.run("CREATE TABLE #{@table_name} AS SELECT #{@export_schema.join(',')} FROM #{@name}")
-        # Configure Postgres COPY command for dumping to CSV
-        #command  = "COPY (SELECT  FROM #{@table_name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '\\\"' HEADER"
-      
-        #cmd = "#{@psql_bin_path} #{@db_configuration[:host]} #{@db_configuration[:port]} -U#{@db_configuration[:username]} -w #{@db_configuration[:database]} -c\"#{command}\" > #{csv_file_path}"      
-        #out = `cmd`
-      
-        #CartoDB::Logger.info "Converted #{table_name} to CSV", cmd            
-    
-        # remove table whatever happened
-        #@db_connection.run("DROP TABLE #{@table_name}")
-    
+        
         # an improved version of what was done before, with table copy read drop
         # Configure Postgres COPY command for dumping to CSV
         #command  = "COPY (SELECT #{@export_schema.join(',')} FROM #{@table_name}) TO STDOUT WITH DELIMITER ',' CSV QUOTE AS '\\\"' HEADER"
@@ -164,12 +135,6 @@ module CartoDB
             zipfile.add(File.basename(csv_file_path), csv_file_path)
           end
           return File.read(zip_file_path)
-          # return OpenStruct.new({
-          #                         :success => true,
-          #                         :zip_file => File.read(zip_file_path),
-          #                         :export_type => @export_type,
-          #                         :log => @runlog
-          #                         })    
         end  
       end
     ensure

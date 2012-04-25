@@ -67,14 +67,15 @@ module CartoDB
           end
           
           is_utf = `file -bi #{@path}`
+          debugger
           unless is_utf.include? 'utf-8'
             # detect encoding for sample
             cd = CharDet.detect(lines.join)
             # Only do non-UTF8 if we're quite sure. (May fail)        
             if (cd.confidence > 0.6)             
               tf = Tempfile.new(@path)                  
-              #{}`iconv -f #{cd.encoding} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
               `iconv -c -f #{cd.encoding} -t UTF-8 #{@path} > #{tf.path}`
+              #{}`iconv -c -f #{cd.encoding} -t UTF-8 #{@path} > #{tf.path}`
               `mv -f #{tf.path} #{@path}`                
               tf.close!
             else          

@@ -8,6 +8,7 @@ AS $$
 DECLARE
   earth_circumference FLOAT8;
   tile_size INTEGER;
+  full_resolution FLOAT8;
 BEGIN
 
   -- Earth equatorial circumference in meters (according to wikipedia)
@@ -16,7 +17,9 @@ BEGIN
   -- Size of each tile in pixels (1:1 aspect ratio)
   tile_size := 256;
 
-  RETURN earth_circumference/tile_size;
+  full_resolution := earth_circumference/tile_size;
+
+  RETURN full_resolution / (power(2,z));
 
 END
 $$ LANGUAGE 'plpgsql' IMMUTABLE STRICT;
@@ -47,7 +50,7 @@ BEGIN
   -- Size of each tile in pixels (1:1 aspect ratio)
   tile_size := 256;
 
-  initial_resolution := CDB_XYZ_Resolution(z);
+  initial_resolution := CDB_XYZ_Resolution(0);
   --RAISE DEBUG 'Initial resolution: %', initial_resolution;
 
   origin_shift := (initial_resolution * tile_size) / 2.0;

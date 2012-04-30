@@ -120,11 +120,9 @@ class User < Sequel::Model
     connection = $pool.fetch(configuration) do
       ::Sequel.connect(configuration)
     end
-#    connection = ::Sequel.connect(configuration)
 
     if block_given?
       yield(connection)
-#     connection.disconnect
     else
       connection
     end

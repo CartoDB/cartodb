@@ -29,6 +29,7 @@ module CartoDB
       @@debug           = options[:debug]
       @data_import      = DataImport.find(:id=>options[:data_import_id])
       @data_import_id   = options[:data_import_id]
+      @remaining_quota  = options[:remaining_quota]
       @append_to_table  = options[:append_to_table] || nil
       @db_configuration = options.slice :database, :username, :password, :host, :port
       @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
@@ -123,7 +124,12 @@ module CartoDB
     #
     def import!
       begin
-        
+        if @remaining_quota < (0.6*File.size(@path))
+          disk_quota_overspend = (File.size(@path) - @remaining_quota).to_int
+          @data_import.set_error_code(8001)
+          @data_import.log_error("#{disk_quota_overspend / 1024}KB more space is required" )
+          raise CartoDB::QuotaExceeded, "#{disk_quota_overspend / 1024}KB more space is required" 
+        end
         # decompress data and update self with results
         decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash) 
         @data_import.log_update('file unzipped') if decompressor

@@ -57,24 +57,27 @@ module CartoDB
 
       def fix_encoding
         begin
-          # sample first 500 lines from source
-          lines = []
-          File.open(@path) do |f|             
-            500.times do
-              line = f.gets || break
-              lines << line
-            end            
+          
+          is_utf = `file -bi #{@path}`
+          unless is_utf.include? 'utf-8'
+            # sample first 500 lines from source
+            lines = []
+            File.open(@path) do |f|             
+              500.times do
+                line = f.gets || break
+                lines << line
+              end            
+            end
+            # detect encoding for sample
+            cd = CharDet.detect(lines.join)
+            # Only do non-UTF8 if we're quite sure. (May fail)        
+            if (cd.confidence > 0.6)             
+              tf = Tempfile.new(@path)                  
+              `iconv -f #{cd.encoding} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
+              `mv -f #{tf.path} #{@path}`                
+              tf.close!
+            end  
           end
-
-          # detect encoding for sample
-          cd = CharDet.detect(lines.join)
-          # Only do non-UTF8 if we're quite sure. (May fail)        
-          if (cd.confidence > 0.6)             
-            tf = Tempfile.new(@path)                  
-            `iconv -f #{cd.encoding}//TRANSLIT//IGNORE -t UTF-8 #{@path} > #{tf.path}`
-            `mv -f #{tf.path} #{@path}`                
-            tf.close!
-          end  
         rescue => e
           #raise e
           #silently fail here and try importing anyway

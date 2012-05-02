@@ -30,11 +30,11 @@
             <% end %>
             <p style="background:#eee;font-size:12px;padding:1em;margin-top:10px;">
               <b>Example write:</b><br/>                                        
-              http://<%= current_user.username %>.cartodb.com/api/v1/sql?q=INSERT INTO table_name (the_geom, observation)
+              http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation)
               VALUES (ST_GeomFromText('POINT(-71.2 42.5)', 4326),'rare bird spotted')&api_key=<%= current_user.get_map_key%><br><br>              
 
               <b>Example private table read:</b><br/>                            
-              http://<%= current_user.username %>.cartodb.com/api/v1/sql?q=SELECT * FROM private_table&api_key=<%= current_user.get_map_key%><br>
+              http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.get_map_key%><br>
             </p>
             
             </div>

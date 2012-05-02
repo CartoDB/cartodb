@@ -442,6 +442,10 @@ class Table < Sequel::Model(:user_tables)
       @data_import.finished
     end
   end
+  
+  def after_update
+    flush_cache
+  end
     
   def before_destroy
     $tables_metadata.del key
@@ -1538,9 +1542,25 @@ SQL
     @name_changed_from = nil
   end
 
+  def delete_tile_style
+    begin
+      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+    rescue => e
+      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"      
+    end  
+  end  
+  
+  def flush_cache
+    begin
+      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+    rescue => e
+      CartoDB::Logger.info "cache#flush error", "#{e.inspect}"      
+    end        
+  end
+
   def tile_request(request_method, request_uri, form = {})
     uri  = "#{owner.username}.#{APP_CONFIG[:tile_host]}"
-    ip  = APP_CONFIG[:tile_ip] || '127.0.0.1'
+    ip   = APP_CONFIG[:tile_ip] || '127.0.0.1'
     port = APP_CONFIG[:tile_port] || 80
     http_req = Net::HTTP.new ip, port
     request_headers = {'Host' => "#{owner.username}.#{APP_CONFIG[:tile_host]}"}
@@ -1556,12 +1576,4 @@ SQL
     end
     http_res
   end
-
-  def delete_tile_style
-    begin
-      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
-    rescue => e
-      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"      
-    end  
-  end  
 end

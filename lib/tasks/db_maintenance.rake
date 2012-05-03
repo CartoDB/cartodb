@@ -12,6 +12,19 @@ namespace :cartodb do
         user.load_cartodb_functions
       end
     end
+
+    ############################
+    # RUN CARTODB FUNCTION TESTS
+    # cartodb:db:test_functions
+    ############################
+    desc "Run CARTODB SQL functions tests"
+    task :test_functions => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        
+        user.test_cartodb_functions
+      end
+    end
         
     ##############
     # SET DB PERMS

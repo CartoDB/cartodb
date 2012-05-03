@@ -371,6 +371,38 @@ class User < Sequel::Model
     end
   end
 
+  # Test cartodb functions
+  def test_cartodb_functions
+    puts "Testing functions in db '#{database_name}' (#{username})"
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        glob = RAILS_ROOT + '/lib/sql/test/*.sql'
+        #puts " Scanning #{glob}"
+        Dir.glob(glob).each do |f|
+          tname = File.basename(f, '.sql')
+          expfile = File.dirname(f) + '/' + tname + '_expect'
+          print "  #{tname} ... "
+          env  = " PGUSER=#{database_username} "
+          env += " PGPORT=5491" # TODO: get from config !
+          env += " PGHOST=localhost" # TODO: get from config !
+          env += " PGPASSWORD=#{database_password}"
+          cmd = "#{env} psql -X -tA -f #{f} #{database_name} | diff -U2 #{expfile} -"
+          result = `#{cmd}`
+          if result != '' 
+            puts "fail"
+            puts "--------------------------------------------------------------------------------"
+            puts "#{result}"
+            puts "--------------------------------------------------------------------------------"
+          else
+            puts "ok"
+          end
+        end
+
+        # yield(something) if block_given?
+      end
+    end
+  end
+
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do

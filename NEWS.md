@@ -12,6 +12,7 @@
 * move geocoder to Yahoo
 * Various GUI fixes
 * HTTP API Key access from API Keys page
+* Add an CDB_QueryTables function to find tables used by a query
 * Improve granularity of caching invalidation to the table level
 
 

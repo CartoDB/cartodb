@@ -113,16 +113,20 @@ BEGIN
   RAISE DEBUG 'vstartidx: %', vstartidx;
 
   c := ST_SetSRID(ST_MakePoint(hstart, vstartary[vstartidx+1]), srid);
+  h := ST_SnapToGrid(CDB_MakeHexagon(c, side), xoff, yoff, xgrd, ygrd);
   vstartidx := (vstartidx + 1) % 2;
   WHILE ST_X(c) < hend LOOP -- over X
     --RAISE DEBUG 'X loop starts, center point: %', ST_AsText(c);
     WHILE ST_Y(c) < vend LOOP -- over Y
       --RAISE DEBUG 'Center: %', ST_AsText(c);
-      h := ST_SnapToGrid(CDB_MakeHexagon(c, side), xoff, yoff, xgrd, ygrd);
+      --h := ST_SnapToGrid(CDB_MakeHexagon(c, side), xoff, yoff, xgrd, ygrd);
       RETURN NEXT h;
-      c := ST_Translate(c, 0, vstep);
+      h := ST_SnapToGrid(ST_Translate(h, 0, vstep), xoff, yoff, xgrd, ygrd);
+      c := ST_Translate(c, 0, vstep);  -- TODO: drop ?
     END LOOP;
+    -- TODO: translate h direcly ...
     c := ST_SetSRID(ST_MakePoint(ST_X(c)+hstep, vstartary[vstartidx+1]), srid);
+    h := ST_SnapToGrid(CDB_MakeHexagon(c, side), xoff, yoff, xgrd, ygrd);
     vstartidx := (vstartidx + 1) % 2;
   END LOOP;
 

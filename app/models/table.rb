@@ -493,7 +493,7 @@ class Table < Sequel::Model(:user_tables)
   
   def make_geom_valid
     begin 
-      owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom) WHERE NOT ST_IsValid(the_geom)")
+      owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom)")
     rescue => e
       CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} make valid failed: #{e.inspect}"
     end

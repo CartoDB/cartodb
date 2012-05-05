@@ -53,7 +53,7 @@
     
     $('a#confirm_regen').click(function(ev){
       stopPropagation(ev);
-      $('form#regenerate_api_key').submit();
+      $('form#regenerate_api_key').submit();      
     });
     
     //Close mamufas

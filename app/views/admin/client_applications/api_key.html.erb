@@ -21,7 +21,7 @@
           <div class="middle_white_medium">
             <div class="end_oauth">
               <p>Use your API key with the SQL API and Maps API for full API access to your CartoDB tables. Learn more about using the API Key in <a href="<%= APP_CONFIG[:developers_host] %>/api/">our documentation</a>.</p>
-            <%= form_tag(regenerate_api_key_path, :method => :post, :id => 'regenerate_api_key') do %>
+            <%= form_tag(regenerate_api_key_path, :method => "POST", :id => 'regenerate_api_key') do %>
               <span class="form_block" style="width:350px;">
                 <%= label_tag      :api_key, "YOUR API KEY" %>
                 <%= text_field_tag :api_key, current_user.get_map_key, :readonly => 'readonly', :style => "width:350px;"  %>

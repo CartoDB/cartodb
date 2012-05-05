@@ -159,7 +159,7 @@ div.mamufas div.delete_window div.inner_ span.top p a:hover {color:#222222;}
 div.mamufas div.delete_window div.inner_ span.bottom {float:left; width:430px; border-top:1px solid white;}
 div.mamufas div.delete_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.delete_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
-div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete, div.mamufas div.delete_window div.inner_ span.bottom a.confirm_regen {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;
   background:linear-gradient(-90deg, #FFFFFF, #CACBCE);
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
@@ -167,7 +167,7 @@ div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete {float:rig
   background: -o-linear-gradient(#FFFFFF,#CACBCE);
   filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');
 }
-div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete:hover {
+div.mamufas div.delete_window div.inner_ span.bottom a.confirm_delete:hover, div.mamufas div.delete_window div.inner_ span.bottom a.confirm_regen:hover {
   background:linear-gradient(-90deg, #CACBCE, #FFFFFF);
   background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF);

@@ -1,12 +1,19 @@
 0.9.4
 -----
-* Improved bounds handling on map
 * Update CDB_TransformToWebmercator to return NULL for geoms fully
   outside the valid webmercator boundary
+* Add CDB_RandomTids function, for fast pseudo-random TID scans
+* Add an hexagon builder functions CDB_Hexagon and CDB_HexagonGrid
 * Improve timeout in import stages
+* Improved Shapefile importing
 * Dashboard optimizations for large datasets
 * Optimisations in embedded map 
+* Improved bounds handling on map
+* move geocoder to Yahoo
 * Various GUI fixes
+* HTTP API Key access from API Keys page
+* Add an CDB_QueryTables function to find tables used by a query
+* Improve granularity of caching invalidation to the table level
 
 
 0.9.3

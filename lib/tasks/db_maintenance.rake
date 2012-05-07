@@ -7,8 +7,7 @@ namespace :cartodb do
     desc "Install/upgrade CARTODB SQL functions"
     task :load_functions => :environment do
       User.all.each do |user|
-        next if !user.respond_to?('database_name') || user.database_name.blank?
-        
+        next if !user.respond_to?('database_name') || user.database_name.blank?        
         user.load_cartodb_functions
       end
     end
@@ -253,6 +252,7 @@ namespace :cartodb do
     desc "update the old cache trigger which was using redis to the varnish one"
     task :update_cache_trigger => :environment do
       User.all.each do |user|
+        puts "Update cache trigger => " + user.username
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.in_database do |user_database|
           user.tables.all.each do |table|

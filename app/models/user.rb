@@ -120,11 +120,9 @@ class User < Sequel::Model
     connection = $pool.fetch(configuration) do
       ::Sequel.connect(configuration)
     end
-#    connection = ::Sequel.connect(configuration)
 
     if block_given?
       yield(connection)
-#     connection.disconnect
     else
       connection
     end
@@ -202,13 +200,6 @@ class User < Sequel::Model
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
-  # TODO: update without a domain
-  def create_key(domain)
-    raise "domain argument can't be blank" if domain.blank?
-    key = self.class.secure_digest(domain)
-    APIKey.create :api_key => key, :user_id => self.id, :domain => domain
-  end
-
   # create the core user_metadata key that is used in redis
   def key
     "rails:users:#{username}"
@@ -228,6 +219,17 @@ class User < Sequel::Model
 
   def get_map_key
     $users_metadata.HMGET(key, 'map_key').first
+  end
+  
+  def regenerate_map_key
+    # GET CURRENT KEY
+    old_key = self.get_map_key
+    
+    # SET NEW KEY
+    self.set_map_key
+    
+    # REMOVE OLD KEY FROM KEY SET
+    $users_metadata.SREM "#{key}:map_key", old_key
   end
 
   def reset_client_application!
@@ -351,15 +353,44 @@ class User < Sequel::Model
 
   # Cartodb functions
   def load_cartodb_functions
-    #puts "Loading functions in db '#{database_name}' (#{username})"
+    puts "Loading functions in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         glob = RAILS_ROOT + '/lib/sql/*.sql'
-        #puts " Scanning #{glob}"
-        Dir.glob(glob).each do |f|
-          #puts "  Loading #{f}"
+
+        Dir.glob(glob).each do |f|          
           @sql = File.new(f).read
           user_database.run(@sql)
+        end
+      end
+    end
+  end
+
+  # Test cartodb functions
+  def test_cartodb_functions
+    puts "Testing functions in db '#{database_name}' (#{username})"
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        glob = RAILS_ROOT + '/lib/sql/test/*.sql'
+        #puts " Scanning #{glob}"
+        Dir.glob(glob).each do |f|
+          tname = File.basename(f, '.sql')
+          expfile = File.dirname(f) + '/' + tname + '_expect'
+          print "  #{tname} ... "
+          env  = " PGUSER=#{database_username} "
+          env += " PGPORT=5491" # TODO: get from config !
+          env += " PGHOST=localhost" # TODO: get from config !
+          env += " PGPASSWORD=#{database_password}"
+          cmd = "#{env} psql -X -tA -f #{f} #{database_name} | diff -U2 #{expfile} -"
+          result = `#{cmd}`
+          if result != '' 
+            puts "fail"
+            puts "--------------------------------------------------------------------------------"
+            puts "#{result}"
+            puts "--------------------------------------------------------------------------------"
+          else
+            puts "ok"
+          end
         end
 
         # yield(something) if block_given?

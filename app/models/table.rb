@@ -423,7 +423,8 @@ class Table < Sequel::Model(:user_tables)
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
     add_python
-    delete_tile_style    
+    delete_tile_style
+    flush_cache    
     set_trigger_update_updated_at
     set_trigger_cache_timestamp
     set_trigger_check_quota
@@ -433,12 +434,18 @@ class Table < Sequel::Model(:user_tables)
     @force_schema = nil
     $tables_metadata.hset key, "user_id", user_id
     
+    update_table_pg_stats
+    
     # finally, close off the data import
     if data_import_id
       @data_import = DataImport.find(:id=>data_import_id)
       @data_import.table_id = id
       @data_import.finished
     end
+  end
+  
+  def after_update
+    flush_cache
   end
     
   def before_destroy
@@ -486,7 +493,7 @@ class Table < Sequel::Model(:user_tables)
   
   def make_geom_valid
     begin 
-      owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom) WHERE NOT ST_IsValid(the_geom)")
+      owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom)")
     rescue => e
       CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} make valid failed: #{e.inspect}"
     end
@@ -567,6 +574,14 @@ class Table < Sequel::Model(:user_tables)
 
   def sequel
     owner.in_database[name.to_sym]
+  end
+
+  def rows_estimated_query(query)
+    owner.in_database do |user_database|
+      rows = user_database["EXPLAIN #{query}"].all
+      est = Integer( rows[0].to_s.match( /rows=(\d+)/ ).values_at( 1 )[0] )
+      return est
+    end
   end
 
   def rows_estimated
@@ -926,22 +941,56 @@ class Table < Sequel::Model(:user_tables)
       end
       select_columns = column_names.join(',')
 
+      # Counting results can be really expensive, so we estimate
+      #
+      # See https://github.com/Vizzuality/cartodb/issues/716
+      #
+      max_countable_rows = 65535 # up to this number we accept to count
+      rows_count = 0
+      rows_count_is_estimated = true
+      if filters.present?
+        query = "SELECT cartodb_id as total_rows FROM #{name} #{where} "
+        rows_count = rows_estimated_query(query)
+        if rows_count <= max_countable_rows
+          query = "SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "
+          rows_count = user_database[query].get(:total_rows)
+          rows_count_is_estimated = false
+        end
+      else
+        rows_count = rows_estimated
+        if rows_count <= max_countable_rows
+          rows_count = rows_counted
+          rows_count_is_estimated = false
+        end
+      end
+
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page} OFFSET #{page}"].all
+      #
+      # NOTE: we fetch one more row to verify estimated rowcount is not short
+      #
+      rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page}+1 OFFSET #{page}"].all
+      CartoDB::Logger.info "Query", "fetch: #{rows.length}"
 
-      # TODO: counting results can be really expensive
-      # See https://github.com/Vizzuality/cartodb/issues/459
-      # and https://github.com/Vizzuality/cartodb/issues/716
-      if filters.present?
-        records_count = user_database["SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "].get(:total_rows)
-      else
-        # TODO: use min between estimated row count and
-        #       number of rows returned ? We could always
-        #       ask for one additional record to check
-        #       if there's more...
-        records_count = rows_counted
+      # Tweak estimation if needed
+      fetched = rows.length
+      fetched += page if page
+
+      have_more = rows.length > per_page
+      rows.pop if have_more
+
+      records_count = rows_count
+      if rows_count_is_estimated
+        if have_more
+          records_count = fetched > rows_count ? fetched : rows_count
+        else
+          records_count = fetched
+        end
       end
+
+      # TODO: cache row count !!
+      # See https://github.com/Vizzuality/cartodb/issues/459
+
 
     end
     {
@@ -1196,10 +1245,10 @@ TRIGGER
               pass
         client = GD.get('varnish', None)
 
-        # table_name = TD["table_name"]
+        table_name = TD["table_name"]
         if client:
           try:
-            client.fetch('purge obj.http.X-Cache-Channel == #{self.database_name}')
+            client.fetch('purge obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
           except:
             # try again
             import varnish
@@ -1217,6 +1266,11 @@ TRIGGER
     )
   end
 
+  # move to C
+  def update_table_pg_stats
+    owner.in_database["ANALYZE #{self.name};"]
+  end
+  
   # move to C
   def set_trigger_check_quota
     owner.in_database(:as => :superuser).run(<<-TRIGGER
@@ -1489,9 +1543,25 @@ SQL
     @name_changed_from = nil
   end
 
+  def delete_tile_style
+    begin
+      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+    rescue => e
+      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"      
+    end  
+  end  
+  
+  def flush_cache
+    begin
+      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+    rescue => e
+      CartoDB::Logger.info "cache#flush error", "#{e.inspect}"      
+    end        
+  end
+
   def tile_request(request_method, request_uri, form = {})
     uri  = "#{owner.username}.#{APP_CONFIG[:tile_host]}"
-    ip  = APP_CONFIG[:tile_ip] || '127.0.0.1'
+    ip   = APP_CONFIG[:tile_ip] || '127.0.0.1'
     port = APP_CONFIG[:tile_port] || 80
     http_req = Net::HTTP.new ip, port
     request_headers = {'Host' => "#{owner.username}.#{APP_CONFIG[:tile_host]}"}
@@ -1507,12 +1577,4 @@ SQL
     end
     http_res
   end
-
-  def delete_tile_style
-    begin
-      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
-    rescue => e
-      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"      
-    end  
-  end  
 end

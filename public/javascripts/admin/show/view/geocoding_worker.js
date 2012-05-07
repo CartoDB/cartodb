@@ -16,8 +16,8 @@
     function geocode() {
       if (places.length>0) {
         place = places.shift();
-        place.address = place.address.toLowerCase().replace(/é/g,'e').replace(/á/g,'a').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u');
-        importScripts('http://maps.google.com/maps/geo?q='+encodeURIComponent(place.address)+'&sensor=true&output=json&callback=onResultGeocode&key=ABQIAAAAnfs7bKE82qgb3Zc2YyS-oBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSySz_REpPq-4WZA27OwgbtyR3VcA');
+        place.address = place.address.toLowerCase().replace(/é/g,'e').replace(/á/g,'a').replace(/í/g,'i').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ /g,'+');
+        importScripts('http://query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + place.address + '&appid=nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--&flags=J"') + '&format=json&callback=onResultGeocode');
       } else {
         self.postMessage("Finish");
       }

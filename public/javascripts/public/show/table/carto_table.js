@@ -236,7 +236,7 @@
       
       
       if (table.mode!="normal") {
-        table.e.find('thead').append('<div class="stickies"><p><strong>'+table.total_r+' result'+((table.total_r>1)?'s':'')+'</strong> for your filter in column "'+defaults.filter_column+'"  with text "'+defaults.filter_value+
+        table.e.find('thead').append('<div class="stickies"><p><strong>~ '+table.total_r+' result'+((table.total_r>1)?'s':'')+'</strong> for your filter in column "'+defaults.filter_column+'"  with text "'+defaults.filter_value+
           '" - <a class="remove_filter" href="#disabled_filter">clear filter</a></p></div>');
       } else {
         table.e.find('thead div.stickies').remove();

@@ -16,6 +16,8 @@ module CartoDB
         Dir.mkdir(tmp_dir)
         if @ext == '.tar'
           tarcmd = "tar -C #{tmp_dir} -xvf #{@path}"
+        elsif @ext == '.gz' and ! @path.include? '.tar'
+          tarcmd = "gzip -d #{@path}"
         else
           tarcmd = "tar -C #{tmp_dir} -zxvf #{@path}"
         end

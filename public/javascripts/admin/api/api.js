@@ -43,6 +43,19 @@
       $('#remove_api_key_'+$(this).attr('key')).submit();
     });
     
+    //API KEY
+    $('a.regenerate_api_key').click(function(ev){
+      stopPropagation(ev);      
+      $('div.mamufas div.delete_window').show();
+      $('div.mamufas').fadeIn();
+      bindESC();
+    });
+    
+    $('a#confirm_regen').click(function(ev){
+      stopPropagation(ev);
+      $('form#regenerate_api_key').submit();      
+    });
+    
     //Close mamufas
     $('a.close_delete,a.cancel').click(function(ev){
       stopPropagation(ev);

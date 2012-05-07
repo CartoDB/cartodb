@@ -52,21 +52,22 @@ class Api::Json::TablesController < Api::ApplicationController
     
     #get info about any import data coming
     multifiles = ['.bz2','.osm']
-    if params[:url]
-        if params[:url] =~ /openstreetmap.org/
-          if params[:url] !~ /api.openstreetmap.org/
-            params[:url] = fix_openstreetmap_url params[:url]
-            @data_import.log_update("Openstreetmaps.org URL converted to API url")
-            @data_import.log_update(params[:url])
-            debugger
-          end
+    if params[:url] || params[:file]
+      src = params[:file] ? params[:file] : params[:url]
+      suggested_name = nil
+      ext = nil
+      if src =~ /openstreetmap.org/
+        if src !~ /api.openstreetmap.org/
+          src = fix_openstreetmap_url src
+          debugger
+          @data_import.log_update("Openstreetmaps.org URL converted to API url")
+          @data_import.log_update(src)
+        end
         suggested_name = "osm_export"
         ext = ".osm"
       else
-        ext = File.extname(params[:url]) 
+        ext =File.extname(src)
       end
-    elsif params[:file]
-      ext = File.extname(params[:file]) 
     end
     
     # Handle OSM imports allowing multi-table creation
@@ -78,7 +79,8 @@ class Api::Json::TablesController < Api::ApplicationController
           :logger => ::Rails.logger,
           "username" => owner.database_username, 
           "password" => owner.database_password,
-          :import_from_file => params[:file] ? params[:file] : params[:url],
+          :import_from_file => src,
+          :suggested_name => suggested_name,
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota,
           :data_import_id => @data_import.id
@@ -235,14 +237,27 @@ class Api::Json::TablesController < Api::ApplicationController
   end
   def fix_openstreetmap_url url
     params = Rack::Utils.parse_query(url.split('?')[1])
-    lon = params['lon']
-    lat = params['lat']
-    zm = params[:zoom]
-    debugger
-    lon1 = lon
-    lat1 = lat
-    lon2 = 172.72684
-    lat2 = -43.59614
+    #2h, 6w
+    lon = params['lon'].to_f
+    lat = params['lat'].to_f
+    zm = params['zoom'].to_i
+    
+    dw = 1200.0/2.0
+    dh = 1000.0/2.0
+    
+    res = 180 / 256.0 / 2**zm
+    py = (180 + lat) / res
+    px = (90 + lon) / res
+    lpx = px - dw
+    lpy = py - dh
+    upx = px + dw
+    upy = py + dh
+    
+    lon1 = -(res * lpx) + 90
+    lat1 = -(res * lpy) + 180
+    lon2 = -(res * upx) + 90
+    lat2 = -(res * upy) + 180
+    
     return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}" 
   end
 end

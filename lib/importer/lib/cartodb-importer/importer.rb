@@ -65,13 +65,6 @@ module CartoDB
           if @import_from_file =~ /fusiontables/
             @filesrc = "fusiontables"
           end
-          if @import_from_file =~ /openstreetmap.org/
-            @filesrc = "openstreetmap"
-            if !@import_from_file.contains('api.openstreetmap.org')
-              @import_from_file = fix_openstreetmap_url @import_from_file
-              debugger
-            end
-          end
           @fromuri = true
           #@import_from_file = URI.escape(@import_from_file) # Ensures open-uri will work
         end
@@ -84,8 +77,6 @@ module CartoDB
               if @ext == "" 
                 if @filesrc == "fusiontables"
                   @ext = ".kml"
-                elsif @filesrc == "openstreetmap"
-                  @ext = ".osm"
                 else
                   @ext = ".csv"
                 end

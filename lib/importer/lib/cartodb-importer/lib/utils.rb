@@ -106,18 +106,6 @@ module CartoDB
           end
         end
       end
-      def fix_openstreetmap_url url
-        params = Rack::Utils.parse_query(url.split('?')[1])
-        lonm = params[:lon]
-        latm = params[:lat]
-        zm = params[:zoom]
-        
-        lon1 = lonm
-        lat1 = latm
-        lon2 = 172.72684
-        lat2 = -43.59614
-        return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}" 
-      end
     end
   end    
 end

@@ -4,6 +4,7 @@
   outside the valid webmercator boundary
 * Add CDB_RandomTids function, for fast pseudo-random TID scans
 * Add an hexagon builder functions CDB_Hexagon and CDB_HexagonGrid
+* CDB_TransformToWebmercator 10x speed improvement
 * Improve timeout in import stages
 * Improved Shapefile importing
 * Dashboard optimizations for large datasets

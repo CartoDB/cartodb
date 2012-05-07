@@ -58,6 +58,7 @@ class Api::Json::TablesController < Api::ApplicationController
       ext = File.extname(params[:file]) 
     end
     
+    # Handle OSM imports allowing multi-table creation
     if ext.present? and multifiles.include?(ext)
       begin
         owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
@@ -75,7 +76,6 @@ class Api::Json::TablesController < Api::ApplicationController
         importer = CartoDB::Importer.new hash_in
         importer = importer.import!
         render_jsonp({:tag => importer.tag }, 200, :location => '/dashboard')
-        
       rescue => e
         @data_import.refresh
         @data_import.log_error(e)
@@ -205,8 +205,7 @@ class Api::Json::TablesController < Api::ApplicationController
   def get_map_metadata
     render_jsonp({:map_metadata => @table.map_metadata})
   end
-
-
+  
   protected
 
   def load_table

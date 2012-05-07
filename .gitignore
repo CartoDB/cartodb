@@ -1,3 +1,4 @@
+Gemfile.lock
 .DS_Store
 .bundle
 db/*.sqlite3
@@ -13,4 +14,3 @@ config/database.yml
 .idea/*
 config/app_config.yml
 src/
-Gemfile.lock

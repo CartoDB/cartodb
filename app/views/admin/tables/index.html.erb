@@ -74,7 +74,7 @@
                   <%= (@database_size.to_f/@quota > 0.75) ? 'danger' : '' %> 
                   <%= (@database_size.to_f/@quota > 0.90 ) ? 'boom' : '' %>
                 ">
-                  <% if @quota > 1024 %>
+                  <% if @quota > 1023 %>
                     <% @database_size = @database_size/1024 %>
                     <p class="big"><%= number_with_precision(@database_size, :precision => 1) %>/<%= @quota/1024 %></p>
                     <label>Used<br/>Gigabytes</label>

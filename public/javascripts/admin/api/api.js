@@ -51,9 +51,9 @@
       bindESC();
     });
     
-    $('a.confirm_delete').click(function(ev){
+    $('a#confirm_regen').click(function(ev){
       stopPropagation(ev);
-      $('#regenerate_api_key').submit();
+      $('form#regenerate_api_key').submit();      
     });
     
     //Close mamufas

@@ -53,7 +53,18 @@ class Api::Json::TablesController < Api::ApplicationController
     #get info about any import data coming
     multifiles = ['.bz2','.osm']
     if params[:url]
-      ext = File.extname(params[:url]) 
+        if params[:url] =~ /openstreetmap.org/
+          if params[:url] !~ /api.openstreetmap.org/
+            params[:url] = fix_openstreetmap_url params[:url]
+            @data_import.log_update("Openstreetmaps.org URL converted to API url")
+            @data_import.log_update(params[:url])
+            debugger
+          end
+        suggested_name = "osm_export"
+        ext = ".osm"
+      else
+        ext = File.extname(params[:url]) 
+      end
     elsif params[:file]
       ext = File.extname(params[:file]) 
     end
@@ -67,7 +78,7 @@ class Api::Json::TablesController < Api::ApplicationController
           :logger => ::Rails.logger,
           "username" => owner.database_username, 
           "password" => owner.database_password,
-          :import_from_file => params[:file], 
+          :import_from_file => params[:file] ? params[:file] : params[:url],
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota,
           :data_import_id => @data_import.id
@@ -222,5 +233,16 @@ class Api::Json::TablesController < Api::ApplicationController
       end
     end
   end
-
+  def fix_openstreetmap_url url
+    params = Rack::Utils.parse_query(url.split('?')[1])
+    lon = params['lon']
+    lat = params['lat']
+    zm = params[:zoom]
+    debugger
+    lon1 = lon
+    lat1 = lat
+    lon2 = 172.72684
+    lat2 = -43.59614
+    return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}" 
+  end
 end

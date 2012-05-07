@@ -52,12 +52,25 @@ class Api::Json::TablesController < Api::ApplicationController
     
     #get info about any import data coming
     multifiles = ['.bz2','.osm']
-    if params[:url]
-      ext = File.extname(params[:url]) 
-    elsif params[:file]
-      ext = File.extname(params[:file]) 
+    if params[:url] || params[:file]
+      src = params[:file] ? params[:file] : params[:url]
+      suggested_name = nil
+      ext = nil
+      if src =~ /openstreetmap.org/
+        if src !~ /api.openstreetmap.org/
+          src = fix_openstreetmap_url src
+          
+          @data_import.log_update("Openstreetmaps.org URL converted to API url")
+          @data_import.log_update(src)
+        end
+        suggested_name = "osm_export"
+        ext = ".osm"
+      else
+        ext =File.extname(src)
+      end
     end
     
+    # Handle OSM imports allowing multi-table creation
     if ext.present? and multifiles.include?(ext)
       begin
         owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
@@ -66,7 +79,8 @@ class Api::Json::TablesController < Api::ApplicationController
           :logger => ::Rails.logger,
           "username" => owner.database_username, 
           "password" => owner.database_password,
-          :import_from_file => params[:file], 
+          :import_from_file => src,
+          :suggested_name => suggested_name,
           :debug => (Rails.env.development?), 
           :remaining_quota => owner.remaining_quota,
           :data_import_id => @data_import.id
@@ -75,7 +89,6 @@ class Api::Json::TablesController < Api::ApplicationController
         importer = CartoDB::Importer.new hash_in
         importer = importer.import!
         render_jsonp({:tag => importer.tag }, 200, :location => '/dashboard')
-        
       rescue => e
         @data_import.refresh
         @data_import.log_error(e)
@@ -205,8 +218,7 @@ class Api::Json::TablesController < Api::ApplicationController
   def get_map_metadata
     render_jsonp({:map_metadata => @table.map_metadata})
   end
-
-
+  
   protected
 
   def load_table
@@ -223,5 +235,29 @@ class Api::Json::TablesController < Api::ApplicationController
       end
     end
   end
-
+  def fix_openstreetmap_url url
+    params = Rack::Utils.parse_query(url.split('?')[1])
+    #2h, 6w
+    lon = params['lon'].to_f
+    lat = params['lat'].to_f
+    zm = params['zoom'].to_i
+    
+    dw = 1200.0/2.0
+    dh = 1000.0/2.0
+    
+    res = 180 / 256.0 / 2**zm
+    py = (90 + lat) / res
+    px = (180 + lon) / res
+    lpx = px - dw
+    lpy = py - dh
+    upx = px + dw
+    upy = py + dh
+    
+    lon1 = (res * lpx) - 180
+    lat1 = (res * lpy) - 90
+    lon2 = (res * upx) - 180
+    lat2 = (res * upy) - 90
+    
+    return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}" 
+  end
 end

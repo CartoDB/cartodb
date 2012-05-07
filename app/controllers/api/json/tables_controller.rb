@@ -59,7 +59,7 @@ class Api::Json::TablesController < Api::ApplicationController
       if src =~ /openstreetmap.org/
         if src !~ /api.openstreetmap.org/
           src = fix_openstreetmap_url src
-          debugger
+          
           @data_import.log_update("Openstreetmaps.org URL converted to API url")
           @data_import.log_update(src)
         end
@@ -246,17 +246,17 @@ class Api::Json::TablesController < Api::ApplicationController
     dh = 1000.0/2.0
     
     res = 180 / 256.0 / 2**zm
-    py = (180 + lat) / res
-    px = (90 + lon) / res
+    py = (90 + lat) / res
+    px = (180 + lon) / res
     lpx = px - dw
     lpy = py - dh
     upx = px + dw
     upy = py + dh
     
-    lon1 = -(res * lpx) + 90
-    lat1 = -(res * lpy) + 180
-    lon2 = -(res * upx) + 90
-    lat2 = -(res * upy) + 180
+    lon1 = (res * lpx) - 180
+    lat1 = (res * lpy) - 90
+    lon2 = (res * upx) - 180
+    lat2 = (res * upy) - 90
     
     return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}" 
   end

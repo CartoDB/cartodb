@@ -21,7 +21,7 @@
           <div class="middle_white_medium">
             <div class="end_oauth">
               <p>Use your API key with the SQL API and Maps API for full API access to your CartoDB tables. Learn more about using the API Key in <a href="<%= APP_CONFIG[:developers_host] %>/api/">our documentation</a>.</p>
-            <%= form_tag(regenerate_api_key_path, :method => :post, :id => 'regenerate_api_key') do %>
+            <%= form_tag(regenerate_api_key_url, :method => "POST", :id => 'regenerate_api_key') do %>
               <span class="form_block" style="width:350px;">
                 <%= label_tag      :api_key, "YOUR API KEY" %>
                 <%= text_field_tag :api_key, current_user.get_map_key, :readonly => 'readonly', :style => "width:350px;"  %>
@@ -30,11 +30,11 @@
             <% end %>
             <p style="background:#eee;font-size:12px;padding:1em;margin-top:10px;">
               <b>Example write:</b><br/>                                        
-              http://<%= current_user.username %>.cartodb.com/api/v1/sql?q=INSERT INTO table_name (the_geom, observation)
+              http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation)
               VALUES (ST_GeomFromText('POINT(-71.2 42.5)', 4326),'rare bird spotted')&api_key=<%= current_user.get_map_key%><br><br>              
 
               <b>Example private table read:</b><br/>                            
-              http://<%= current_user.username %>.cartodb.com/api/v1/sql?q=SELECT * FROM private_table&api_key=<%= current_user.get_map_key%><br>
+              http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.get_map_key%><br>
             </p>
             
             </div>
@@ -59,7 +59,7 @@
           </span>
           <span class="bottom">
             <a href="#close_window" class="cancel">cancel</a>
-            <a href="#confirm_delete" class="confirm_delete" key="">Regenerate API key</a>
+            <a href="#confirm_regen" id="confirm_regen" class="confirm_regen" key="">Regenerate API key</a>
           </span>
         </div>
       </div>

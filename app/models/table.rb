@@ -423,7 +423,8 @@ class Table < Sequel::Model(:user_tables)
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
     add_python
-    delete_tile_style    
+    delete_tile_style
+    flush_cache    
     set_trigger_update_updated_at
     set_trigger_cache_timestamp
     set_trigger_check_quota
@@ -441,6 +442,10 @@ class Table < Sequel::Model(:user_tables)
       @data_import.table_id = id
       @data_import.finished
     end
+  end
+  
+  def after_update
+    flush_cache
   end
     
   def before_destroy
@@ -488,7 +493,7 @@ class Table < Sequel::Model(:user_tables)
   
   def make_geom_valid
     begin 
-      owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom) WHERE NOT ST_IsValid(the_geom)")
+      owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom)")
     rescue => e
       CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} make valid failed: #{e.inspect}"
     end
@@ -1240,10 +1245,10 @@ TRIGGER
               pass
         client = GD.get('varnish', None)
 
-        # table_name = TD["table_name"]
+        table_name = TD["table_name"]
         if client:
           try:
-            client.fetch('purge obj.http.X-Cache-Channel == #{self.database_name}')
+            client.fetch('purge obj.http.X-Cache-Channel ~ "^#{self.database_name}:(.*%s.*)|(table)$"' % table_name)
           except:
             # try again
             import varnish
@@ -1538,9 +1543,25 @@ SQL
     @name_changed_from = nil
   end
 
+  def delete_tile_style
+    begin
+      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
+    rescue => e
+      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"      
+    end  
+  end  
+  
+  def flush_cache
+    begin
+      tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
+    rescue => e
+      CartoDB::Logger.info "cache#flush error", "#{e.inspect}"      
+    end        
+  end
+
   def tile_request(request_method, request_uri, form = {})
     uri  = "#{owner.username}.#{APP_CONFIG[:tile_host]}"
-    ip  = APP_CONFIG[:tile_ip] || '127.0.0.1'
+    ip   = APP_CONFIG[:tile_ip] || '127.0.0.1'
     port = APP_CONFIG[:tile_port] || 80
     http_req = Net::HTTP.new ip, port
     request_headers = {'Host' => "#{owner.username}.#{APP_CONFIG[:tile_host]}"}
@@ -1556,12 +1577,4 @@ SQL
     end
     http_res
   end
-
-  def delete_tile_style
-    begin
-      tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
-    rescue => e
-      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"      
-    end  
-  end  
 end

@@ -256,7 +256,11 @@ namespace :cartodb do
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.in_database do |user_database|
           user.tables.all.each do |table|
-            table.set_trigger_cache_timestamp
+            begin
+              table.set_trigger_cache_timestamp
+            rescue => e
+              puts "error updating #{table.name}: #{e.inspect}"
+            end                
           end
         end
       end

@@ -80,6 +80,8 @@ module CartoDB
                 else
                   @ext = ".csv"
                 end
+              elsif @import_from_file =~ /openstreetmap.org/
+                @ext = ".osm"
               end
               @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
               @import_from_file = Tempfile.new([@suggested_name, @ext])

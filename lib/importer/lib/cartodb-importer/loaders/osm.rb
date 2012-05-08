@@ -137,6 +137,7 @@ module CartoDB
                                 :tag => "#{import_tag}"
                               })
  
+        
         # construct return variables
         [to_import_hash, payload]        
       end  

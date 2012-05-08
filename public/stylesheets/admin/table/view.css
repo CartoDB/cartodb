@@ -1,11 +1,11 @@
 body {position:relative; background:url('/images/admin/common/new_header.png') repeat-x center 0 #2D3451; overflow-x:hidden;}
 body, html {height:100%;} /*table hack*/
 a:focus {outline:none;}
-
+input[type="submit"]::-moz-focus-inner, input[type="button"]::-moz-focus-inner {border:0px;} 
 
 /*HEADER*/
-header {width:100%; min-width:880px; height:58px; margin:0 auto; background:none; z-index:100;}
-header a.logo {float:left; width:70px; height:15px; margin:23px 0 0 40px; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
+header {width:100%; min-width:880px; height:58px; margin:0 auto; background:none; z-index:1000;}
+header a.logo {float:left; width:85px; height:17px; margin:23px 0 0 40px; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
 header ul {float:right; margin: 24px 40px 0 0; }
 header ul li {float:left; display: inline; list-style: none; padding: 0 10px 0 0; border-right: solid 1px #949BAB; }
 header ul li.last {padding: 0; border: none; }
@@ -23,12 +23,14 @@ body.query section.subheader span.normal {display:none}
 body.query section.subheader span.query {display:block}
 
 section.subheader {position:fixed; top:58px; left:0; width:100%; min-width:880px; height:103px; background:url('/images/admin/common/new_header.png') repeat-x center -58px #2D3451; z-index:100;}
+body.map section.subheader {position:absolute;}
 section.subheader div.outer {float:left; width:100%; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
 body.query section.subheader div.outer {background:url('/images/admin/table/sql_border.png') repeat-x 0 0}
 section.subheader div.left {position:relative; float:left; width:500px; height:88px; padding:15px 0 0 0; margin:0 0 0 40px;}
 section.subheader h2 {float:left; width:auto; max-width:85%; font:bold 21px Arial; color:white; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 section.subheader h2 a {color:white; text-decoration:none;}
 section.subheader h2 a:hover {}
+section.subheader h2 small {font:normal 15px Arial; color:white;}
 section.subheader h3 {float:left; width:auto; font:bold 21px Arial; color:white; letter-spacing:-1px}
 section.subheader h3 a {display:inline-block; vertical-align:top; padding:2px 10px 2px 7px; margin:4px 0 0 5px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none; text-transform:uppercase; background:#FF6600}
 section.subheader h3 a:hover {background:#FF4400}
@@ -41,6 +43,7 @@ section.subheader p.status a.save {background:#FFCC00;}
 section.subheader p.status a.selected {background:black; color:white;}
 section.subheader p.status a:hover {background:black;}
 section.subheader p.status a.save:hover {background:#FFCC00;}
+section.subheader p em {float:left; padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none; text-transform:uppercase; background:#6FBE6F;}
 section.subheader span.privacy_window {position:absolute; display:none; top:18px; width:216px; height:108px; background:url('/images/admin/table/privacy_options_bkg.png') no-repeat center center;}
 section.subheader span.privacy_window ul {float:left; width:175px; margin:34px 0 0 20px;}
 section.subheader span.privacy_window ul li {width:161px; padding:5px 7px 6px; margin:0 0 2px; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;}
@@ -52,7 +55,8 @@ section.subheader span.privacy_window ul li.selected a {color:white; background-
 section.subheader span.privacy_window ul li.public:hover {background:#6FBE6F;}
 section.subheader span.privacy_window ul li.private:hover {background:#FF2F1E;}
 section.subheader span.privacy_window ul li:hover a {color:white; background-position:0 2px;}
-section.subheader span.privacy_window ul li.disabled {background:none; opacity:0.3;}
+section.subheader span.privacy_window ul li.disabled {background:none; opacity:0.5; filter:alpha(opacity=50);}
+section.subheader span.privacy_window ul li.selected.disabled a {color:black;  background-position:0 -28px; cursor:default;}
 section.subheader span.privacy_window ul li.disabled:hover {background:none;}
 section.subheader span.privacy_window ul li.disabled:hover a {color:black; background-position:0 -28px; cursor:default;}
 
@@ -69,7 +73,7 @@ section.subheader ul.tab_menu li a {float:left; padding:7px 15px; color:white; f
   text-decoration:none}
 section.subheader ul.tab_menu li a.share {margin:5px 0 0 6px; padding:3px 8px; background:#131723; -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px; font:bold 11px Arial;}
 section.subheader ul.tab_menu li a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
-section.subheader ul.tab_menu li a.share.disabled {opacity:0.5;}
+section.subheader ul.tab_menu li a.share.disabled {opacity:0.5; filter: alpha(opacity=50);}
 section.subheader ul.tab_menu li a.share.disabled:hover {background:#131723; color:white; cursor:default}
 section.subheader ul.tab_menu li span.share_tooltip {position:absolute; display:none; bottom:15px; left:-40px; width:197px; height:95px; background:url('/images/admin/table/share_tooltip.png') no-repeat 0 0;}
 section.subheader ul.tab_menu li span.share_tooltip p {width:153px; margin:25px 0 0 20px; font:normal 13px "Arial"; color:#666666; text-align:center}
@@ -79,14 +83,16 @@ section.subheader ul.tab_menu li.selected a {background-color:rgba(256,256,256,1
 section.subheader ul.tab_menu li.selected a:hover {color:#272E48; text-decoration:none;}
 section.subheader ul.tab_menu li.disabled a {text-decoration:none; color:#999999;}
 section.subheader ul.tab_menu li.disabled a:hover {background:rgba(256,256,256,0.1)!important; cursor:default}
-section.subheader div.right {position:relative; float:right; width:255px; height:88px; padding:15px 0 0 0; margin:0 40px 0 0; color:white!important;}
+section.subheader div.right {position:relative; float:right; width:275px; height:88px; padding:15px 0 0 0; margin:0 40px 0 0; color:white!important;}
 section.subheader div.right p.settings {float:right; font:normal 15px Arial; color:white; z-index:10;}
-section.subheader div.right p.settings a {font:normal 13px Arial; text-shadow:0 1px black;}
+section.subheader div.right p.settings a {font:normal 13px Arial; color:white; text-shadow:0 1px black;}
 section.subheader div.right p.settings a.delete {padding:0 3px 0 0; color:#FF3300;}
 section.subheader div.right p.settings a.delete:hover {color:#FF4400;}
 body.query section.subheader div.right p.settings a.delete, body.query section.subheader div.right p.settings a.open_georeference{display:none}
 section.subheader div.right p.settings a.settings {padding:0 20px 0 3px; color:white; background:url('/images/admin/icons/settings.png') no-repeat right 1px;}
 section.subheader div.right p.settings a.open_georeference, section.subheader div.right p.settings a.georeference_global:visited {font:normal 13px Arial; text-shadow:0 1px black; color: white;}
+section.subheader div.right p.settings a.duplicate {padding:2px 7px; margin:4px 0 0 10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; font:bold 11px Arial; color:white; text-decoration:none; text-transform:uppercase; background:#6FBE6F; text-shadow:none;}
+section.subheader div.right p.settings a.duplicate:hover {background:black;}
 
 section.subheader div.right span.advanced_options {position:absolute; display:none; right:-10px; top:9px; width:122px; z-index:100;}
 section.subheader div.right span.advanced_options a.advanced {position:relative; float:right; padding:7px 29px 7px 9px; font:normal 13px Arial; text-shadow:0 1px black;
@@ -111,16 +117,16 @@ section.subheader div.right span.mapkey a {float:right; margin:5px 0 3px; paddin
 section.subheader div.right span.mapkey a:hover {color:#272E48; background-color:rgba(256,256,256,1); text-decoration:none;}
 section.subheader div.right span.paginate a {float:right; width:27px; height:23px; text-indent:-9999px;}
 section.subheader div.right span.paginate a.previous {margin:0 3px 0 0; background:url('/images/admin/icons/left_button.png') no-repeat 0 0;}
-section.subheader div.right span.paginate a.previous.disabled {background-position:0 -46px;}
+section.subheader div.right span.paginate a.previous.disabled {background-position:0 -46px; opacity:0.5; filter: alpha(opacity=50);}
 section.subheader div.right span.paginate a.next {background:url('/images/admin/icons/right_button.png') no-repeat 0 0;}
-section.subheader div.right span.paginate a.next.disabled {background-position:0 -46px;}
+section.subheader div.right span.paginate a.next.disabled {background-position:0 -46px; opacity:0.5; filter: alpha(opacity=50);}
 section.subheader div.right span.paginate a:hover {background-position:0 -23px;}
 section.subheader div.right span.paginate a.disabled:hover {cursor:default;}
 body.query section.subheader div.right span.paginate a.previous {background:url('/images/admin/icons/sql_paginate.png') no-repeat 0 0;}
 body.query section.subheader div.right span.paginate a.previous:hover {background-position:0 -24px}
-body.query section.subheader div.right span.paginate a.previous.disabled {background-position:0 -46px; opacity:0.5}
+body.query section.subheader div.right span.paginate a.previous.disabled {background-position:0 -46px; opacity:0.5; filter: alpha(opacity=50);}
 body.query section.subheader div.right span.paginate a.next {background:url('/images/admin/icons/sql_paginate.png') -27px 0;}
-body.query section.subheader div.right span.paginate a.next.disabled {background-position:-27px -46px; opacity:0.5}
+body.query section.subheader div.right span.paginate a.next.disabled {background-position:-27px -46px; opacity:0.5; filter: alpha(opacity=50);}
 body.query section.subheader div.right span.paginate a.next:hover {background-position:-27px -23px;}
 body.query section.subheader div.right span.paginate a.disabled:hover {cursor:default;}
 
@@ -230,49 +236,55 @@ div.general_options ul li.all a:hover {background:linear-gradient(-90deg,#CACBCE
 
 
 /*sql console*/
-div.sql_window {position:fixed; display:none; top:50%; left:50%; min-width:610px; min-height:199px; padding:9px; margin:-109px 0 0 -314px; z-index:100; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
+div.sql_window {position:fixed; display:none; top:50%; left:50%; min-width:510px; min-height:230px; padding:9px; margin:-109px 0 0 -255px; z-index:100; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
   -webkit-box-shadow:0 0 10px 3px rgba(0,0,0,0.31); -moz-box-shadow:0 0 50px 3px rgba(0,0,0,0.31); box-shadow:0 0 15px 3px rgba(0,0,0,0.31);}
 div.sql_window a.close {position:absolute; right:-8px; top:-7px; width:23px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0; text-indent:-9999px; z-index:10}
 div.sql_window a.close:hover {background-position:0 -23px;}
 div.sql_window div.inner {position:absolute; top:8px; left:8px; right:8px; bottom:8px; margin:0; border:1px solid #ccc; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0; z-index:1}
-div.sql_window div.inner h3 {display:block; padding:12px 0 0 10px; font:bold 15px Arial; color:#333333; text-shadow:0 1px white;}
-div.sql_window div.inner h3:hover {cursor:move}
-div.sql_window div.inner p {display:block; padding:3px 0 0 10px; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
-div.sql_window div.inner p a {color:#999999;}
-div.sql_window div.inner p a:hover {color:#666666;}
-div.sql_window div.inner div.outer_textarea {position:absolute; top:55px; left:9px; right:9px; bottom:50px; margin:10px 0 0 0; padding:5px ; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
-div.sql_window span.bottom {position:absolute; bottom:10px; left:10px; right:10px; height:28px;}
 
-
+div.sql_window div.inner span.top {position:absolute; top:0; left:0; right:0; bottom:47px; margin:0; padding:9px; border-bottom:1px solid #CCCCCC;}
+div.sql_window div.inner span.top h3 {width:100%; padding:0 0 3px 0; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
+div.sql_window div.inner span.top h3:hover {cursor:move}
+div.sql_window div.inner span.top p {display:block; padding:3px 0 0 0; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
+div.sql_window div.inner span.top p a {color:#666666}
+div.sql_window div.inner span.top p a:hover {color:#333333}
+div.sql_window div.inner span.top div.outer_textarea {position:absolute; top:60px; left:9px; right:9px; bottom:11px; margin:10px 0 0 0; padding:3px ; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
+div.sql_window div.inner span.top textarea {position:relative; min-width:454px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #CDCDCD; webkit-border-radius:5px;
+border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial; color:#333333; line-height:13px; background:white}
+div.sql_window span.bottom {position:absolute; bottom:10px; left:9px; right:9px; height:28px;}
 div.sql_window span.bottom a.reference {float:left; margin:7px 0 0 2px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.sql_window span.bottom a.clear_table {float:right; margin:7px 12px 0 0; font:normal 13px 'Helvetica',Arial; color:#FF6600; text-shadow:0 1px white;}
 div.sql_window span.bottom a.clear_table:hover {color:#FF3300}
-div.sql_window span.bottom a.try_query {float:right; margin:0; height:12px; padding:7px 9px 9px 9px; -webkit-border-radius: 5px; -moz-border-radius:5px; border-radius:5px; border:1px solid #999999; font:bold 12px Arial; text-shadow:0 1px white;
+div.sql_window span.bottom a.try_query {float:right; margin:0; height:12px; padding:7px 9px 9px 9px; -webkit-border-radius: 3px; -moz-border-radius:3px; border-radius:3px; border:1px solid #999999; font:bold 12px Arial; text-shadow:0 1px white;
   color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#DEDEDE\9; text-decoration:none}
 div.sql_window span.bottom a.try_query:hover { background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); background:#CACBCE\9; cursor:pointer;}
-div.sql_window span.errors {position:absolute;display:none;z-index:0;bottom:40px;left:-1px;right:-1px;height:auto;padding:15px 0 7px;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #CDCDCD;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E);
+div.sql_window span.top span.errors {position:absolute;display:none;z-index:0;bottom:10px;left:9px;right:9px;height:auto;padding:15px 0 7px;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #666666;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E);
   background:linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#FFB5A3),to(#FF8A6E));background:-moz-linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-o-linear-gradient(#FFB5A3,#FF8A6E);background:#FFB5A3\9;}
-div.sql_window span.errors p {padding:0 0 0 26px; color:#333333; font:normal 13px Arial; text-shadow:none; background:url('/images/admin/icons/error.png') no-repeat 7px 1px}
-div.sql_window .ui-resizable-handle {position:absolute; right:4px; bottom:4px; width:10px; height:10px; background:url('/images/admin/table/resize.png') no-repeat 0 0}
+div.sql_window span.top span.errors p {padding:0 0 0 26px; color:#333333; font:normal 13px Arial; text-shadow:none; background:url('/images/admin/icons/error.png') no-repeat 7px 1px}
+div.sql_window .ui-resizable-handle {position:absolute; right:4px; bottom:4px; width:10px; height:10px; background:url('/images/admin/table/resize.png') no-repeat 0 0; cursor:se-resize;}
+div.sql_window.error div.inner div.outer_textarea {border-color:#666666!important;}
+div.sql_window.error div.inner span.errors {display:block!important;}
+
 
 /*Codemirror SQL*/
-div.sql_window .CodeMirror{overflow:auto; height:100%;line-height:1em;font-family:monospace;}
-div.sql_window .CodeMirror-scroll{position:absolute;left:0;top:0;overflow:auto;height:100%; position:relative;}
-div.sql_window .CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
-div.sql_window .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;white-space:pre !important;}
-div.sql_window .CodeMirror-lines{padding:.4em; line-height:16px}
-div.sql_window .CodeMirror pre{font-family:Arial!important;font-size:13px!important;-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;padding:0;margin:0;white-space:pre;word-wrap:normal;}
-div.sql_window .CodeMirror-wrap pre{word-wrap:break-word;white-space:pre-wrap;}
-div.sql_window .CodeMirror-wrap .CodeMirror-scroll{overflow-x:hidden;}
-div.sql_window .CodeMirror textarea{font-family:Arial!important;}
-div.sql_window .CodeMirror-cursor{z-index:10;position:absolute;visibility:hidden;border-left:1px solid black !important;}
-div.sql_window .CodeMirror-focused .CodeMirror-cursor{visibility:visible;}
-div.sql_window span.CodeMirror-selected{background:#ccc !important;color:HighlightText !important;}
-div.sql_window .CodeMirror-focused span.CodeMirror-selected{background:Highlight !important;}
-div.sql_window .CodeMirror-matchingbracket{color:#0f0 !important;}
-div.sql_window .CodeMirror-nonmatchingbracket{color:#f22 !important;}
+div.sql_window .CodeMirror {position:absolute; left:3px; right:3px; top:3px; bottom:3px; overflow:auto; line-height:1em;font-family:monospace; z-index:5}
+div.sql_window .CodeMirror-scroll {overflow: auto; height: auto; position: relative; outline: none;}
+div.sql_window .CodeMirror-gutter {position: absolute; left: 0; top: 0; z-index: 10; background-color: #f7f7f7; border-right: 1px solid #eee; min-width: 2em; height: 100%;}
+div.sql_window .CodeMirror-gutter-text {color: #aaa; text-align: right; padding: .4em .2em .4em .4em; white-space: pre !important;}
+div.sql_window .CodeMirror-lines {padding: .4em; white-space: pre;}
+div.sql_window .CodeMirror pre {font:normal 13px Arial!important; -moz-border-radius: 0; -webkit-border-radius: 0; -o-border-radius: 0; border-radius: 0; border-width: 0; margin: 0; padding: 0; background: transparent; font-family: inherit;
+  font-size: inherit; padding: 0; margin: 0; white-space: pre; word-wrap: normal;}
+div.sql_window .CodeMirror-wrap pre {word-wrap: break-word; white-space: pre-wrap;}
+div.sql_window .CodeMirror-wrap .CodeMirror-scroll {overflow-x: hidden;}
+div.sql_window .CodeMirror textarea {outline: none !important;}
+div.sql_window .CodeMirror pre.CodeMirror-cursor {z-index: 10; position: absolute; visibility: hidden; border-left: 1px solid black; border-right:none; width:0;}
+div.sql_window .CodeMirror pre.CodeMirror-cursor.CodeMirror-overwrite {}
+div.sql_window .CodeMirror-focused pre.CodeMirror-cursor {visibility: visible;}
+div.sql_window div.CodeMirror-selected { background: #d9d9d9; }
+.CodeMirror-focused div.CodeMirror-selected { background: #d7d4f0; }
+div.sql_window .CodeMirror-searching {background: #ffa;background: rgba(255, 255, 0, .4);}
 div.sql_window span.cm-plsql-keyword{color:#0099CC; font-weight:bold}
 div.sql_window span.cm-plsql-var{color:red;}
 div.sql_window span.cm-plsql-comment{color:#AA7700;}
@@ -323,18 +335,18 @@ div.mamufas div.save_window.loading div.inner_ span.loading {float:left; display
 div.mamufas div.save_window.loading div.inner_ span.loading h5 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
 div.mamufas div.save_window.loading div.inner_ span.loading p {padding:6px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
 
-div.mamufas div.save_window div.inner_ span.top {float:left; width:357px; padding:14px; border-bottom:1px solid #CCCCCC;}
+div.mamufas div.save_window div.inner_ span.top {float:left; width:360px; padding:14px; border-bottom:1px solid #CCCCCC;}
 div.mamufas div.save_window div.inner_ span.top h3 {float:left; width:100%; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
-div.mamufas div.save_window div.inner_ span.top input {width:341px; height:13px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat 1px 0; border:1px solid #999999; webkit-border-radius:4px;
+div.mamufas div.save_window div.inner_ span.top input {width:344px; height:13px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat 1px 0; border:1px solid #999999; webkit-border-radius:4px;
 border-radius:4px; -moz-border-radius:4px; font:normal 13px Arial; color:#333333; line-height:13px;}
 div.mamufas div.save_window div.inner_ span.top input:focus {outline:none;}
 div.mamufas div.save_window div.inner_ span.top input.error {border-color:#C04E03}
 div.mamufas div.save_window div.inner_ span.top div.error_content {position:absolute; z-index:10; right:22px; top:14px; display:none; width:auto}
 div.mamufas div.save_window div.inner_ span.top div.error_content p {float:left; height:52px; padding:0 0 0 19px!important; background:url('/images/front/home/left_error.png') no-repeat 0 0;}
 div.mamufas div.save_window div.inner_ span.top div.error_content p span {float:left; height:37px; padding:15px 19px 0 0; background:url('/images/front/home/right_error.png') no-repeat right 0; font:normal 11px "Helvetica",Arial; color:white; text-shadow:0 -1px #C55B14;}
-div.mamufas div.save_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; padding:0 0 18px 0; font:normal 13px "Helvetica",Arial; color:#666666;}
+div.mamufas div.save_window div.inner_ span.bottom a.cancel {float:left; margin:18px 0 0 15px; padding:0 0 18px 0; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.save_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
-div.mamufas div.save_window div.inner_ span.bottom a.table_save {float:right; height:14px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+div.mamufas div.save_window div.inner_ span.bottom a.table_save {float:right; height:14px; margin:10px 13px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
 div.mamufas div.save_window div.inner_ span.bottom a.table_save:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
@@ -381,14 +393,14 @@ div.mamufas div.warning_window div.inner_ span.top p {position:relative; float:l
 div.mamufas div.warning_window div.inner_ span.top p a {color:#444444;}
 div.mamufas div.warning_window div.inner_ span.top p a:hover {color:#222222;}
 div.mamufas div.warning_window div.inner_ span.bottom {float:left; width:430px; border-top:1px solid white;}
-div.mamufas div.warning_window div.inner_ span.bottom a.cancel {float:left; margin:15px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}
+div.mamufas div.warning_window div.inner_ span.bottom a.cancel {float:left; margin:17px 0 0 15px; font:normal 13px "Helvetica",Arial; color:#666666;}
 div.mamufas div.warning_window div.inner_ span.bottom a.cancel:hover {color:#333333;}
-div.mamufas div.warning_window div.inner_ span.bottom input.continue {float:right; width:auto; height:26px; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white;
+div.mamufas div.warning_window div.inner_ span.bottom input.continue {float:right; width:auto; margin:10px 10px 0 0; padding:6px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white; line-height:normal;
   -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
   background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
 div.mamufas div.warning_window div.inner_ span.bottom input.continue:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
     background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
-
+div.mamufas div.warning_window div.inner_ span.bottom input.continue:focus {outline:none;}
 
 
 div.mamufas div.import_window {position:absolute; display:none; top:50%; left:50%; width:414px; margin:-107px 0 0 -207px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px;
@@ -641,9 +653,8 @@ div.mamufas div.stop_window div.inner_ span.stop p a {color:#666666;}
 div.mamufas div.stop_window div.inner_ span.stop p a:hover {color:#333333;}
 
 
-
 /* history for sql and carto */ 
-span.history {position:relative; float:left; width:65px; height:28px;}
+span.history {position:relative; float:left; width:65px; height:28px; margin:1px 0 0;}
 span.history a {float:left; width:32px; height:28px; background:url('/images/admin/table/sql_editor_history.png') no-repeat 0 0;}
 span.history a.redo {width:33px; background-position:right 0; cursor:default;}
 span.history a.undo {cursor:default}

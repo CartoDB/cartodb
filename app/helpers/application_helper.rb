@@ -2,6 +2,10 @@
 
 module ApplicationHelper
 
+  def current_user
+    super(request.subdomain)
+  end
+
   def show_footer?
     (controller_name == 'tables' && action_name != 'show') ||
     (controller_name == 'client_applications') || (controller_name == 'users')
@@ -71,12 +75,12 @@ module ApplicationHelper
       "boom"
     end
   end
-  
+
   # capped percent indicator
   def disk_usage_percent(usage, quota)
     return 100 if usage > quota
-    (usage / quota) * 100    
-  end  
+    (usage / quota) * 100
+  end
 
 
   def last_blog_posts
@@ -88,8 +92,11 @@ module ApplicationHelper
 
   def account_url
     if APP_CONFIG[:account_host]
-      request.protocol + CartoDB.account_host + CartoDB.account_path
+      request.protocol + CartoDB.account_host + CartoDB.account_path + '/' + current_user.username
     end
   end
 
+  def upgrade_url
+    account_url + '/upgrade'
+  end
 end

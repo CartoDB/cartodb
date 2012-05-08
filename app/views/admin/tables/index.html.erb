@@ -10,62 +10,94 @@
   <section id="content">
     <div id="hugeUploader"></div>
     <div class="inner_content">
-        <% if @tables_count == 0 %>
-          <div class="requests_info section white_content padding">
-            <a class="close" href="#close_stats">close</a>
-            <h2>Welcome to CartoDB <%= current_user.username %>!</h2>
-            <p>As a beta tester we really appreciate your feedback. Get in touch via <%= link_to "email", "mailto:support@cartodb.com"%> &amp; <%= link_to "twitter", "http://twitter.com/cartodb" %>, or read our <%= link_to "blog", "http://blog.cartodb.com/"%>  for the latest info. Have fun!</p>
-            <span class="block">
-              <label>1</label>
-              <h3>Create your first table</h3>
-              <p>You can import data or start from scratch. <a href="#create_table" class="new_table">Create a table</a></p>
-            </span>
-            <span class="block">
-              <label>2</label>
-              <h3>Read the documentation</h3>
-              <p>Take a look at the <a href="<%= APP_CONFIG[:developers_host] %>">developers area</a> to make the most of CartoDB</p>
-            </span>
-            <span class="block last">
-              <label>3</label>
-              <h3>Give us your feedback</h3>
-              <p>Please <a href="mailto:support@cartodb.com">send us</a> your questions or requests!</p>
-            </span>
-        <% else %>
-          <div class="requests_info section white_content">
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <h2>Hello <%= current_user.username %></h2>
-                    <% if true %>        
-                      <p>Welcome to your <%= current_user.account_type.humanize %> CartoDB</p>
-                    <% else %>
-                      <p>Need more resources? <a href="#todo">Upgrade your account</a></p>
-                    <% end %>
-                  </td>
-                  <td class="<%= ( @database_size.to_f/@quota > 0.75 && @tables_count.to_f/@table_quota < 0.90 ) ? 'danger' : '' %> <%= (@tables_count.to_f/@table_quota > 0.89 ) ? 'boom' : '' %>">
-                    <% if @quota > 1024 %>
-                      <% @database_size = @database_size/1024 %>
-                      <p class="big"><%= number_with_precision(@database_size, :precision => 1) %>/<%= @quota/1024 %></p>
-                      <label>Used<br/>Gigabytes</label>
-                    <% else %>
-                      <p class="big"><%= @database_size.to_i %>/<%= @quota %></p>
-                      <label>Used<br/>Megabytes</label>                                      
-                    <% end %>  
-                  </td>
-                  <td class="<%= (@table_quota.present? && @tables_count.to_f/@table_quota > 0.75 && @tables_count.to_f/@table_quota < 0.90) ? 'danger' : '' %> <%= (@table_quota.present? && @tables_count.to_f/@table_quota > 0.90 ) ? 'boom' : '' %>">
-                    <% if @table_quota.blank? %>
-                      <p class="big"><%= @tables_count %>/&infin;</p>
-                      <label>Tables<br/>created</label>
-                    <% else %>
-                      <p class="big"><%= @tables_count %>/<%= @table_quota %></p>
-                      <label>Tables<br/>created</label>                      
-                    <% end %>    
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          <% end %>
+
+      <% if false %>
+        <div class="requests_info section white_content padding">
+        <a class="close" href="#close_stats">close</a>
+          <div class="left">
+            <h2>Payment received. Welcome to your Macallan server!</h2>
+            <p>Your payment has been received correctly. Your next payment will be on May 1st ($29)</p>
+            <p class="margin">Since now, you will be able to view your payment data in your <%= link_to 'settings panel', account_url, :class=>"settings" %></p>
+          </div>
+          <img src="/images/admin/dashboard/success_payment.png" class="star_table" alt="Hoooray" title=""/>
+        </div>
+      <% end %>
+
+      <% if @tables_count == 0 %>
+        <div class="requests_info section white_content padding">
+          <a class="close" href="#close_stats">close</a>
+          <h2>Welcome to CartoDB <%= current_user.username %>!</h2>
+          <p>We really appreciate your feedback. Get in touch via <%= link_to "email", "mailto:support@cartodb.com"%> &amp; <%= link_to "twitter", "http://twitter.com/cartodb" %>, or read our <%= link_to "blog", "http://blog.cartodb.com/"%>  for the latest info. Have fun!</p>
+          <span class="block">
+            <label>1</label>
+            <h3>Create your first table</h3>
+            <p>You can import data or start from scratch. <a href="#create_table" class="new_table">Create a table</a></p>
+          </span>
+          <span class="block">
+            <label>2</label>
+            <h3>Read the documentation</h3>
+            <p>Take a look at the <a href="<%= APP_CONFIG[:developers_host] %>">developers area</a> to make the most of CartoDB</p>
+          </span>
+          <span class="block last">
+            <label>3</label>
+            <h3>Give us your feedback</h3>
+            <p>Please <a href="mailto:support@cartodb.com">send us</a> your questions or requests!</p>
+          </span>
+      <% else %>
+        <div class="requests_info section white_content">
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <h2>Hello <%= current_user.username %></h2>
+                  <% @dedicated = current_user.try(:account_type).upcase == 'DEDICATED' ? true : false %>
+
+                  <% if @database_size.present? && @quota.present? %>
+                    <% @over_disk =  (@database_size.to_f/@quota) > 0.75  %>
+                  <% else %>
+                    <% @over_disk =  false  %>  
+                  <% end %>
+                  
+                  <% if @tables_count.present? && @table_quota.present?  %>
+                    <% @over_tables =  (@tables_count.to_f/@table_quota) > 0.75  %>
+                  <% else %>
+                    <% @over_tables =  false  %>  
+                  <% end %>
+                    
+                  <% if (@over_disk || @over_tables) && !@dedicated && !current_user.admin %>
+                    <p>Need more resources? <a href="<%= upgrade_url %>">Upgrade your account</a></p>
+                  <% else %>
+                    <p>Welcome to your <%= current_user.account_type.humanize %> CartoDB</p>                  
+                  <% end %>
+                </td>
+                <td class="
+                  <%= (@database_size.to_f/@quota > 0.75) ? 'danger' : '' %> 
+                  <%= (@database_size.to_f/@quota > 0.90 ) ? 'boom' : '' %>
+                ">
+                  <% if @quota > 1023 %>
+                    <% @database_size = @database_size/1024 %>
+                    <p class="big"><%= number_with_precision(@database_size, :precision => 1) %>/<%= @quota/1024 %></p>
+                    <label>Used<br/>Gigabytes</label>
+                  <% else %>
+                    <p class="big"><%= @database_size.to_i %>/<%= @quota %></p>
+                    <label>Used<br/>Megabytes</label>                                      
+                  <% end %>  
+                </td>
+                <td class="
+                <%= (@table_quota.present? && @tables_count.to_f/@table_quota > 0.75) ? 'danger' : '' %> 
+                <%= (@table_quota.present? && @tables_count.to_f/@table_quota > 0.90) ? 'boom' : '' %>">
+                  <% if @table_quota.blank? %>
+                    <p class="big"><%= @tables_count %>/&infin;</p>
+                    <label>Tables<br/>created</label>
+                  <% else %>
+                    <p class="big"><%= @tables_count %>/<%= @table_quota %></p>
+                    <label>Tables<br/>created</label>                      
+                  <% end %>    
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        <% end %>
       </div>
 
       <%= render :partial => 'shared/flash_message' %>
@@ -79,8 +111,19 @@
                 <% if @tag_name %>
                 with the tag <%= @tag_name %>
                 <% end %>
-              </strong> in your account
+              </strong> 
+                <% if !params[:q]%>
+                  in your account
+                <% else %>                
+                  found
+                <% end %>  
             </h3>
+            <% if @total_tables > 10 %>            
+              <form action="#">
+                <input type="text" value="<%= params[:q] %>" name="q" />
+                <input type="submit" value="true" name="submit" />
+              </form>
+            <% end %>  
           </div>
           <div class="middle_white_medium">
             <ul class="your_tables">
@@ -92,7 +135,12 @@
                     <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
                     <p class="delete"> | <a table-name="<%= table.name %>" href="#delete" class="delete">delete table</a></p>
                     <p class="columns">
-                      <strong>XXX Data units</strong> · <%= pluralize(table.rows_counted,'row','rows') rescue '' %> / <%= table.schema.size rescue '' %> columns
+                      <strong>
+                        <%= number_to_human_size table.table_size %> / 
+                        &#126;<%= pluralize(table.rows_estimated,'row','rows') rescue '' %> /
+                        <%= table.schema.size rescue '' %> columns:
+                    </strong>
+                    <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...
                     </p>
                   </span>
                   <span class="tags">
@@ -124,7 +172,11 @@
             <span class="privacy_window">
               <ul>
                 <li class="public"><a href="#public"><strong>Public</strong> (visible to others)</a></li>
-                <li class="private"><a href="#private"><strong>Private</strong> (visible to you)</a></li>
+                <% if !current_user.private_tables_enabled %>
+                	<li class="disabled"><a><strong>Private</strong> (only paid plans)</a></li>
+                <% else %>
+                	<li class="private"><a href="#private"><strong>Private</strong> (visible to you)</a></li>
+               	<% end %>
               </ul>
             </span>
           </div>

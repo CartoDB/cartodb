@@ -69,7 +69,7 @@
                       '<label>Fill</label>'+
                       '<div class="long">'+
                         '<span class="color" css="marker-fill" default="#FF6600"></span>'+
-                        '<span class="numeric" css="marker-width" default="1"></span>'+
+                        '<span class="numeric" css="marker-width" default="5"></span>'+
                       '</div>'+
                       '<label>Border</label>'+
                       '<div class="long">'+
@@ -109,7 +109,7 @@
                     '</div>'+
                   '</li>'+
                   '<li>'+
-                    '<a class="option" href="#special">Bubble map</a>'+
+                    '<a class="option" href="#bubbles">Bubble map</a>'+
                     '<div class="suboptions bubbles">'+
                       '<label>Column</label>'+
                       '<div class="long">'+
@@ -130,11 +130,14 @@
                       '</div>'+
                       '<label>Bubble sizes</label>'+
                       '<div class="long">'+
-                        '<span class="numeric min" data="values" default="1"></span>'+
+                        '<span class="numeric min" data="values" default="4"></span>'+
                         '<span class="numeric max" data="values" default="100"></span>'+
                       '</div>'+
                     '</div>'+
-                    '<div class="suboptions cloropeth">'+
+                  '</li>'+
+                  '<li>'+
+                    '<a class="option" href="#choropleth">Numeric Choropleth</a>'+
+                    '<div class="suboptions choropleth">'+
                       '<label>Column</label>'+
                       '<div class="long">'+
                         '<span class="dropdown" data="column" default="cartodb_id"></span>'+
@@ -158,9 +161,6 @@
                       '</div>'+
                     '</div>'+
                   '</li>'+
-                  //'<li class="disabled">'+
-                  //  '<a class="option disabled" href="#color_map">Category choropleth</a>'+
-                  //'</li>'+
                 '</ul>'+
               '</div>'+
             '</li>'+
@@ -187,29 +187,7 @@
           '</ul>'+
         '</div>'+
         '<p class="georeferencing"></p>'+
-        '<div id="map"></div>'+
-        
-        '<div class="cartocss_editor">'+
-          '<a class="close" href="#close">close</a>'+
-          '<div class="inner_">'+
-            '<span class="top">'+
-              '<h3>Edit your tiles</h3>'+
-              '<p>Get <a target="_blank" href="http://developmentseed.org/blog/2011/feb/09/introducing-carto-css-map-styling-language/">more information</a> about Carto.</p>'+
-              '<textarea id="cartocss_editor"></textarea>'+
-							'<span class="errors"><div><p>Your query is not correct, try again with another ;)</p></div></span>'+
-            '</span>'+
-            '<span class="bottom">'+
-              '<span class="history">'+
-                '<a href="#undo" class="undo"></a><a href="#redo" class="redo"></a>'+
-                '<div class="tooltip">'+
-                  '<p>select</p>'+
-                  '<span class="arrow"></span>'+
-                '</div>'+
-              '</span>'+
-              '<a href="#try" class="try_css">Try style</a>'+
-            '</span>'+
-          '</div>'+
-        '</div>'
+        '<div id="map"></div>'
       );
       
       
@@ -229,6 +207,34 @@
 					'<span class="error">Ooops! Looks like we can\'t find this address</span>'+
 				'</form>'
       );
+
+
+      //////////////////////////////////////
+      // Tiles Carto Editor								//
+      //////////////////////////////////////
+      $('body').append(
+	      '<div class="cartocss_editor">'+
+	          '<a class="close" href="#close">close</a>'+
+	          '<div class="inner_">'+
+	            '<span class="top">'+
+	              '<h3>Edit your tiles</h3>'+
+	              '<p>Check the <a target="_blank" href="http://mapbox.com/carto/">Carto documentation</a> to learn more.</p>'+
+	              '<div class="outer_textarea"><textarea id="cartocss_editor" wrap="hard"></textarea></div>'+
+								'<span class="errors"><div><p>Your query is not correct, try again with another ;)</p></div></span>'+
+	            '</span>'+
+	            '<span class="bottom">'+
+	              '<span class="history">'+
+	                '<a href="#undo" class="undo"></a><a href="#redo" class="redo"></a>'+
+	                '<div class="tooltip">'+
+	                  '<p>select</p>'+
+	                  '<span class="arrow"></span>'+
+	                '</div>'+
+	              '</span>'+
+	              '<a href="#try" class="try_css">Try style</a>'+
+	            '</span>'+
+	          '</div>'+
+	        '</div>'
+	    );
     }
 
     

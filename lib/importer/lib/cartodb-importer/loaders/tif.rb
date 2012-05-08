@@ -6,8 +6,10 @@ module CartoDB
       register_loader :tiff
 
       def process!
+        @data_import = DataImport.find(:id=>@data_import_id)
 
         log "Importing raster file: #{@path}"
+        @data_import.log_update("Importing raster file: #{@path}")
 
         raster2pgsql_bin_path = `which raster2pgsql`.strip
 
@@ -16,6 +18,7 @@ module CartoDB
 
         random_table_name = "importing_#{Time.now.to_i}_#{@suggested_name}"
 
+        @data_import.log_update("getting SRID with GDAL")
         gdal_command = "#{@python_bin_path} -Wignore #{File.expand_path("../../../../misc/srid_from_gdal.py", __FILE__)} #{@path}"
         rast_srid_command = `#{gdal_command}`.strip
 
@@ -26,10 +29,13 @@ module CartoDB
         puts "SRID : #{rast_srid_command}"
         
         blocksize = "256x256"
+        @data_import.log_update("#{raster2pgsql_bin_path} -I -s #{rast_srid_command.strip} -t #{blocksize} #{@path} #{random_table_name}")
         full_rast_command = "#{raster2pgsql_bin_path} -I -s #{rast_srid_command.strip} -t #{blocksize} #{@path} #{random_table_name} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
         log "Running raster2pgsql: #{raster2pgsql_bin_path}  #{full_rast_command}"
         out = `#{full_rast_command}`
         if 0 < out.strip.length
+          @data_import.set_error_code(4001)
+          @data_import.log_error(out)
           @runlog.stdout << out
         end
 
@@ -37,6 +43,8 @@ module CartoDB
           @db_connection.run("CREATE TABLE \"#{@suggested_name}\" AS SELECT * FROM \"#{random_table_name}\"")
           @db_connection.run("DROP TABLE \"#{random_table_name}\"")
         rescue Exception => msg  
+          @data_import.set_error_code(5000)
+          @data_import.log_error(msg)
           @runlog.err << msg
         end  
 
@@ -45,6 +53,7 @@ module CartoDB
         @import_from_file.unlink
         @table_created = true
     
+        @data_import.log_update("table created")
         payload = OpenStruct.new({
                                 :name => @suggested_name, 
                                 :rows_imported => rows_imported,

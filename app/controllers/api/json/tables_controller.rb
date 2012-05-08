@@ -40,31 +40,81 @@ class Api::Json::TablesController < Api::ApplicationController
                           :tags => table[:tags_names],
                           :schema => table.schema,
                           :updated_at => table.updated_at,
-                          :rows_counted => table.rows_counted }
+                          :rows_counted => table.rows_estimated }
                       }
                     })
   end
 
   def create
-    @table = Table.new
-    @table.user_id = current_user.id
-    @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
-    @table.import_from_file = params[:file]              if params[:file]
-    @table.import_from_url = params[:url]                if params[:url]
-    @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
-    @table.importing_SRID = params[:srid] || CartoDB::SRID
-    @table.force_schema   = params[:schema]              if params[:schema]
-    @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
+    @data_import = DataImport.new(:user_id => current_user.id)
+    @data_import.updated_at = Time.now
+    @data_import.save
+    
+    #get info about any import data coming
+    multifiles = ['.bz2','.osm']
+    if params[:url]
+      ext = File.extname(params[:url]) 
+    elsif params[:file]
+      ext = File.extname(params[:file]) 
+    end
+    
+    if ext.present? and multifiles.include?(ext)
+      begin
+        owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
+        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+          "database" => owner.database_name, 
+          :logger => ::Rails.logger,
+          "username" => owner.database_username, 
+          "password" => owner.database_password,
+          :import_from_file => params[:file], 
+          :debug => (Rails.env.development?), 
+          :remaining_quota => owner.remaining_quota,
+          :data_import_id => @data_import.id
+        ).symbolize_keys
+    
+        importer = CartoDB::Importer.new hash_in
+        importer = importer.import!
+        render_jsonp({:tag => importer.tag }, 200, :location => '/dashboard')
         
-    if @table.valid? && @table.save      
-      render_jsonp({ :id => @table.id, 
-                     :name => @table.name, 
-                     :schema => @table.schema }, 200, :location => table_path(@table))
+      rescue => e
+        @data_import.refresh
+        @data_import.log_error(e)
+        @data_import.set_error_code(6000)
+        raise "OSM data error"
+      end
     else
-      CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
-      render_jsonp({ :errors => @table.errors.full_messages }, 400)
+      @table = Table.new
+      @table.user_id = current_user.id
+      @table.data_import_id = @data_import.id
+      @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
+      @table.import_from_file = params[:file]              if params[:file]
+      @table.import_from_url = params[:url]                if params[:url]
+      @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
+      @table.import_from_query = params[:from_query]  if params[:from_query]   
+      @table.migrate_existing_table = params[:migrate_table]  if params[:migrate_table]    
+      @table.importing_SRID = params[:srid] || CartoDB::SRID
+      @table.force_schema   = params[:schema]              if params[:schema]
+      @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
+      
+      if @table.valid? && @table.save      
+        render_jsonp({ :id => @table.id, 
+                       :name => @table.name, 
+                       :schema => @table.schema }, 200, :location => table_path(@table))
+      else
+        @data_import.reload
+        CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
+        if @table.data_import_id
+          render_jsonp({ :description => @data_import.get_error_text ,
+                      :stack =>  @data_import.log_json,
+                      :code=>@data_import.error_code }, 
+                      400)
+        else
+          render_jsonp({ :description => @data_import.get_error_text, :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
+        end
+      end
     end
   rescue => e
+    @data_import.reload
     # Add semantics based on the users creation method. 
     # TODO: The importer should throw these specific errors
     if !e.is_a? CartoDB::QuotaExceeded
@@ -72,9 +122,10 @@ class Api::Json::TablesController < Api::ApplicationController
       e = CartoDB::InvalidFile.new    e.message    if params[:file]    
       e = CartoDB::TableCopyError.new e.message    if params[:table_copy]    
     end  
-    
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
-    render_jsonp(translate_error(e), 400) and return  
+    
+    @data_import.reload
+    render_jsonp({ :description => @data_import.get_error_text, :stack =>  @data_import.log_json, :code => @data_import.error_code }, 400)
   end
 
   def show
@@ -88,6 +139,11 @@ class Api::Json::TablesController < Api::ApplicationController
         send_data @table.to_shp,
           :type => 'application/octet-stream; charset=binary; header=present',
           :disposition => "attachment; filename=#{@table.name}.zip"
+      end
+      format.kml or format.kmz do
+        send_data @table.to_kml,
+          :type => 'application/vnd.google-earth.kml+xml; charset=binary; header=present',
+          :disposition => "attachment; filename=#{@table.name}.kmz"
       end
       format.json do
         render_jsonp({ :id => @table.id,
@@ -106,9 +162,6 @@ class Api::Json::TablesController < Api::ApplicationController
       latitude_column  = params[:latitude_column]  == "nil" ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == "nil" ? nil : params[:longitude_column].try(:to_sym)
       @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
-    # elsif params.keys.include?("address_column")
-    #   address_column = params[:address_column] == "nil" ? nil : params[:address_column]
-    #   @table.set_address_column!(address_column)
     end
     @table.tags = params[:tags] if params[:tags]
     if @table.save

@@ -1,32 +1,31 @@
 # coding: UTF-8
 
 class User < Sequel::Model
+  include CartoDB::MiniSequel
+
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
 
   # Sequel setup & plugins
-  set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type
+  set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled
   plugin :validation_helpers
   plugin :json_serializer
-  
+
   # Restrict to_json attributes
-  @json_serializer_opts = { 
-    :except => [ :crypted_password, 
-                 :salt, 
-                 :invite_token, 
-                 :invite_token_date, 
-                 :admin, 
-                 :enabled, 
-                 :map_enabled, 
-                 :quota_in_bytes, 
-                 :table_quota, 
-                 :account_type ],
+  @json_serializer_opts = {
+    :except => [ :crypted_password,
+                 :salt,
+                 :invite_token,
+                 :invite_token_date,
+                 :admin,
+                 :enabled,
+                 :map_enabled],
     :naked => true # avoid adding json_class to result
   }
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
-  
+
   ## Validations
   def validate
     super
@@ -38,8 +37,8 @@ class User < Sequel::Model
     validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
 
     if password.present? && ( password_confirmation.blank? || password != password_confirmation )
-      errors.add(:password, "doesn't match confirmation") 
-    end  
+      errors.add(:password, "doesn't match confirmation")
+    end
   end
 
   ## Callbacks
@@ -48,13 +47,13 @@ class User < Sequel::Model
     setup_user
     save_metadata
   end
-  
+
   ## Authentication
   AUTH_DIGEST = '47f940ec20a0993b5e9e4310461cc8a6a7fb84e3'
-  
+
   # allow extra vars for auth
   attr_reader :password
-  attr_accessor :password_confirmation  
+  attr_accessor :password_confirmation
 
   def self.password_digest(password, salt)
     digest = AUTH_DIGEST
@@ -71,7 +70,7 @@ class User < Sequel::Model
   def self.make_token
     secure_digest(Time.now, (1..10).map{ rand.to_s })
   end
-  
+
   def password=(value)
     @password = value
     self.salt = new?? self.class.make_token : User.filter(:id => self.id).select(:salt).first.salt
@@ -121,6 +120,7 @@ class User < Sequel::Model
     connection = $pool.fetch(configuration) do
       ::Sequel.connect(configuration)
     end
+
     if block_given?
       yield(connection)
     else
@@ -128,6 +128,8 @@ class User < Sequel::Model
     end
   end
 
+
+  # TODO: delete - superceded by run_pg_query
   def run_query(query)
     rows = []
     time = nil
@@ -145,11 +147,11 @@ class User < Sequel::Model
   rescue => e
     if e.message =~ /^PGError/
       if e.message.include?("does not exist")
-        if e.message.include?("column") 
-          raise CartoDB::ColumnNotExists, e.message 
+        if e.message.include?("column")
+          raise CartoDB::ColumnNotExists, e.message
         else
           raise CartoDB::TableNotExists, e.message
-        end  
+        end
       else
         raise CartoDB::ErrorRunningQuery, e.message
       end
@@ -158,37 +160,77 @@ class User < Sequel::Model
     end
   end
 
+  def run_pg_query(query)
+    time = nil
+    res  = nil
+    translation_proc = nil
+    in_database do |user_database|
+      time = Benchmark.measure {
+        user_database.synchronize do |conn|
+          res = conn.exec query
+        end
+        translation_proc = user_database.conversion_procs
+      }
+    end
+    {
+      :time => time.real,
+      :total_rows => res.ntuples,
+      :rows     => pg_to_hash(res, translation_proc),
+      :results  => pg_results?(res),
+      :modified => pg_modified?(res)
+    }
+    rescue => e
+    if e.is_a? PGError
+      if e.message.include?("does not exist")
+        if e.message.include?("column")
+          raise CartoDB::ColumnNotExists, e.message
+        else
+          raise CartoDB::TableNotExists, e.message
+        end
+      else
+        raise CartoDB::ErrorRunningQuery, e.message
+      end
+    else
+      raise e
+    end
+  end
+
+
   def tables
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
-  # TODO: update without a domain
-  def create_key(domain)
-    raise "domain argument can't be blank" if domain.blank?
-    key = self.class.secure_digest(domain)
-    APIKey.create :api_key => key, :user_id => self.id, :domain => domain
-  end
-  
   # create the core user_metadata key that is used in redis
   def key
     "rails:users:#{username}"
-  end  
-  
+  end
+
   # save users basic metadata to redis for node sql api to use
   def save_metadata
     $users_metadata.HMSET key, 'id', id, 'database_name', database_name
     self.set_map_key
-  end   
-  
+  end
+
   def set_map_key
     token = self.class.make_token
     $users_metadata.HMSET key, 'map_key',  token
     $users_metadata.SADD "#{key}:map_key", token
   end
-  
+
   def get_map_key
     $users_metadata.HMGET(key, 'map_key').first
-  end     
+  end
+  
+  def regenerate_map_key
+    # GET CURRENT KEY
+    old_key = self.get_map_key
+    
+    # SET NEW KEY
+    self.set_map_key
+    
+    # REMOVE OLD KEY FROM KEY SET
+    $users_metadata.SREM "#{key}:map_key", old_key
+  end
 
   def reset_client_application!
     if client_application
@@ -218,7 +260,7 @@ class User < Sequel::Model
     end
   end
   private :database_exists?
-  
+
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
   #
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
@@ -227,27 +269,50 @@ class User < Sequel::Model
     size = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(table_name))
       FROM information_schema.tables
       WHERE table_catalog = '#{database_name}' AND table_schema = 'public'").first[:sum]
-      
+
     # hack for the_geom_webmercator
-    size / 2  
+    size / 2
   end
-  
+
+  def exceeded_quota?
+    self.over_disk_quota? || self.over_table_quota?
+  end
+
   def remaining_quota
     self.quota_in_bytes - self.db_size_in_bytes
-  end  
-  
-  def quota_overspend
-    self.exceeded_quota? ? self.remaining_quota.abs : 0
   end
-  
-  def exceeded_quota?
-    self.remaining_quota < 0      
+
+  def disk_quota_overspend
+    self.over_disk_quota? ? self.remaining_quota.abs : 0
   end
-  
+
+  def over_disk_quota?
+    self.remaining_quota <= 0
+  end
+
+  def over_table_quota?
+    (remaining_table_quota && remaining_table_quota <= 0) ? true : false
+  end
+
+  #can be nil table quotas
   def remaining_table_quota
-    self.table_quota - self.table_count
+    if self.table_quota.present?
+      remaining = self.table_quota - self.table_count
+      (remaining < 0) ? 0 : remaining
+    end
   end
-  
+
+  def table_count
+    Table.filter({:user_id => self.id}).count
+  end
+
+  def rebuild_quota_trigger
+    tables.all.each do |table|
+      table.add_python
+      table.set_trigger_check_quota
+    end
+  end
+
   ## User's databases setup methods
   def setup_user
     return if disabled?
@@ -264,7 +329,7 @@ class User < Sequel::Model
       end
       save
 
-      Thread.new do 
+      Thread.new do
         conn = Rails::Sequel.connection
         begin
           conn.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
@@ -274,7 +339,7 @@ class User < Sequel::Model
         begin
           conn.run("CREATE DATABASE #{self.database_name}
           WITH TEMPLATE = template_postgis
-          OWNER = postgres
+          OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
           ENCODING = 'UTF8'
           CONNECTION LIMIT=-1")
         rescue
@@ -282,13 +347,61 @@ class User < Sequel::Model
         end
       end.join
       set_database_permissions
+      load_cartodb_functions
     end
   end
-  
+
+  # Cartodb functions
+  def load_cartodb_functions
+    puts "Loading functions in db '#{database_name}' (#{username})"
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        glob = RAILS_ROOT + '/lib/sql/*.sql'
+
+        Dir.glob(glob).each do |f|          
+          @sql = File.new(f).read
+          user_database.run(@sql)
+        end
+      end
+    end
+  end
+
+  # Test cartodb functions
+  def test_cartodb_functions
+    puts "Testing functions in db '#{database_name}' (#{username})"
+    in_database(:as => :superuser) do |user_database|
+      user_database.transaction do
+        glob = RAILS_ROOT + '/lib/sql/test/*.sql'
+        #puts " Scanning #{glob}"
+        Dir.glob(glob).each do |f|
+          tname = File.basename(f, '.sql')
+          expfile = File.dirname(f) + '/' + tname + '_expect'
+          print "  #{tname} ... "
+          env  = " PGUSER=#{database_username} "
+          env += " PGPORT=5491" # TODO: get from config !
+          env += " PGHOST=localhost" # TODO: get from config !
+          env += " PGPASSWORD=#{database_password}"
+          cmd = "#{env} psql -X -tA -f #{f} #{database_name} | diff -U2 #{expfile} -"
+          result = `#{cmd}`
+          if result != '' 
+            puts "fail"
+            puts "--------------------------------------------------------------------------------"
+            puts "#{result}"
+            puts "--------------------------------------------------------------------------------"
+          else
+            puts "ok"
+          end
+        end
+
+        # yield(something) if block_given?
+      end
+    end
+  end
+
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|
-      user_database.transaction do         
-        
+      user_database.transaction do
+
         # remove all public and tile user permissions
         user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM PUBLIC")
         user_database.run("REVOKE ALL ON SCHEMA public FROM PUBLIC")
@@ -301,18 +414,18 @@ class User < Sequel::Model
         user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
         user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
         user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM #{CartoDB::PUBLIC_DB_USER}")
-        
+
         user_database.run("REVOKE ALL ON DATABASE #{database_name} FROM #{CartoDB::TILE_DB_USER}")
         user_database.run("REVOKE ALL ON SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
         user_database.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
         user_database.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
         user_database.run("REVOKE ALL ON ALL TABLES IN SCHEMA public FROM #{CartoDB::TILE_DB_USER}")
-        
+
         # grant core permissions to database user
         user_database.run("GRANT ALL ON DATABASE #{database_name} TO #{database_username}")
         user_database.run("GRANT ALL ON SCHEMA public TO #{database_username}")
         user_database.run("GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO #{database_username}")
-        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{database_username}")        
+        user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{database_username}")
         user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
 
         # grant select permissions to public user
@@ -320,19 +433,19 @@ class User < Sequel::Model
         user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
         user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
         user_database.run("GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}")
- 
+
         # grant select permissions to tile user
         user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::TILE_DB_USER}")
         user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::TILE_DB_USER}")
         user_database.run("GRANT SELECT ON ALL TABLES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
         user_database.run("GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
-        user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")        
-                
+        user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")
+
         yield(user_database) if block_given?
-      end  
+      end
     end
   end
-  
+
   # Utility methods
   def fix_permissions
     set_database_permissions do |user_database|
@@ -341,7 +454,7 @@ class User < Sequel::Model
       end
     end
   end
-  
+
   def stats(date = Date.today)
     puts "==========================================="
     puts "Stats for user #{self.email} - #{self.id}"

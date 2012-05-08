@@ -35,7 +35,7 @@ if Rails.env.development?
   table = Table.new :privacy => Table::PUBLIC, :name => 'Foursq check-ins',
                     :tags => '4sq, personal'
   table.user_id = user.id
-  table.force_schema = "name varchar, surname varchar, address varchar, city varchar, country varchar, nif varchar, age integer, twitter_account varchar, postal_code integer"
+  table.force_schema = "name text, surname text, address text, city text, country text, nif text, age integer, twitter_account text, postal_code integer"
   table.save
 
   user.in_database do |user_database|
@@ -47,7 +47,7 @@ if Rails.env.development?
   table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
                     :tags => 'movies, personal'
   table.user_id = user.id
-  table.force_schema = "name varchar, address varchar, latitude float, longitude float"
+  table.force_schema = "name text, address text, latitude float, longitude float"
   table.save
   table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
   table.insert_row!({:name => "El Estocolmo", :address => "Calle de la Palma 72, Madrid, Spain", :latitude => 40.426949, :longitude => -3.708969})

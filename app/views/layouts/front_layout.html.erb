@@ -1,15 +1,26 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]> <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <html>
   <head>
-    <title>CartoDB</title>
-    <%= javascript_include_tag "/javascripts/plugins/head.load.min.js" %>
-    <%= yield :js %>
-    <%= yield :head %>
-    <link rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <title>CartoDB | Login</title>
+    <link href="/stylesheets/new/new.css" media="screen" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <script src="/javascripts/plugins/modernizr-2.0.6.min.js" type="text/javascript"></script>
+    <script src="/javascripts/plugins/jquery.min.js" type="text/javascript"></script>
+    <script src="/javascripts/plugins/selectivizr.min.js" type="text/javascript"></script>
+    <script src="/javascripts/new/widgets.js" type="text/javascript"></script>
+    <script src="/javascripts/front/login.js" type="text/javascript"></script>    
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
     <%= render 'shared/analytics'%>
+    <%= yield :js %>
+    <%= yield :head %>
   </head>
-  <body>
+  <body class="sessions">
     <%= yield %>
   </body>
 </html>

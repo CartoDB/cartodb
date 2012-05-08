@@ -1,6 +1,7 @@
 div.map_window {position:absolute; top:161px; left:0; right:0; bottom:0; width:100%; background:white;}
+div.map_window.public {overflow:hidden;}
 div.map_window div.map_curtain {position:absolute; left:0; right:0; top:0; bottom:0; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5; z-index:12;}
-div.map_window div#map {position:absolute; left:0; right:0; bottom:0; top:51px; width:100%; z-index:5; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;}
+div.map_window div#map {position:absolute; left:0; right:0; bottom:0; top:60px; width:100%; z-index:5; background:url('/images/admin/table/table_bkg.png') repeat-x 0 bottom #F0F1F5;}
 div.map_window div#map div {-webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;}
 
 
@@ -189,10 +190,11 @@ div.map_window div.map_header ul.infowindow_customization div.suboptions ul.colu
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspTrack {background: #dddddd;}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspDrag {background: #999999;}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspHover, div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names .jspActive {background:#666666}
-div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li {width:100%; height:auto; padding:0; margin:0; border:none;}
-div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a {padding:0 0 0 15px; max-width:95px; background:url('/images/admin/icons/checkbox.png') no-repeat -2px -18px!important; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#999999!important; text-shadow:0 1px white}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li {display:block; width:100%; height:auto; padding:0; margin:2px 0; border:none;}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a {display:block; padding:0 0 0 15px; background:url('/images/admin/icons/checkbox.png') no-repeat -2px -18px!important; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:#999999!important; text-shadow:0 1px white;
+text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
 div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a:hover {cursor:pointer!important; color:#666666!important;}
-div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a.on {background-position:-2px -1px!important; color:#666666!important; text-shadow:0 1px white}
+div.map_window div.map_header ul.infowindow_customization div.suboptions ul.column_names li a.on {background-position:-2px -1px!important; color:#666666!important; text-shadow:0 1px white; }
 
 
 /*MARKERS CUSTOMIZATION*/
@@ -240,60 +242,68 @@ div.map_window div.loading span.loader {position:absolute; top:50%; left:50%; wi
 
 
 /* CSS EDITOR */
-div.map_window div.cartocss_editor {position:absolute; display:none; top:50%; left:50%; width:500px; height:auto; margin:-200px 0 0 -250px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 0 10px 3px #666666; box-shadow:0 0 10px 3px #666666; -moz-box-shadow:0 0 10px 3px #666666; z-index:10;}
-div.map_window div.cartocss_editor a.close {position:absolute; right:-9px; top:-7px; width:24px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0; text-indent:-9999px;}
-div.map_window div.cartocss_editor a.close:hover {background-position:0 -23px;}
-div.map_window div.cartocss_editor div.inner_ {float:left; width:498px; height:auto; border:1px solid #CDCDCD; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0;}
-div.map_window div.cartocss_editor div.inner_ span.top {float:left; width:470px; padding:14px; border-bottom:1px solid #CCCCCC;}
-div.map_window div.cartocss_editor div.inner_ span.top h3 {width:100%; padding:0 0 3px 0; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
-div.map_window div.cartocss_editor div.inner_ span.top h3:hover {cursor:move}
-div.map_window div.cartocss_editor div.inner_ span.top p {display:block; padding:3px 0 0 0; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
-div.map_window div.cartocss_editor div.inner_ span.top p a {color:#666666}
-div.map_window div.cartocss_editor div.inner_ span.top p a:hover {color:#333333}
-div.map_window div.cartocss_editor div.inner_ span.top textarea {position:relative; min-width:454px; max-width:454px; max-height:265px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #CDCDCD; webkit-border-radius:5px;
+div.cartocss_editor {position:absolute; display:none; top:55%; left:50%; min-width:450px; min-height:300px; margin:-200px 0 0 -250px; padding:8px; background:white; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; 
+		-webkit-box-shadow:0 0 10px 3px rgba(0,0,0,0.31); -moz-box-shadow:0 0 50px 3px rgba(0,0,0,0.31); box-shadow:0 0 15px 3px rgba(0,0,0,0.31); z-index:110;}
+div.cartocss_editor a.close {position:absolute; right:-9px; top:-7px; width:24px; height:23px; background:url('/images/admin/dashboard/close_settings.png') no-repeat 0 0; text-indent:-9999px; z-index:10;}
+div.cartocss_editor a.close:hover {background-position:0 -23px;}
+div.cartocss_editor div.inner_ {position:absolute; top:8px; left:8px; right:8px; bottom:8px; margin:0; border:1px solid #ccc; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; background:#EDEEF0; z-index:1}
+div.cartocss_editor div.inner_ span.top {position:absolute; top:0; left:0; right:0; bottom:47px; margin:0; padding:9px; border-bottom:1px solid #CCCCCC;}
+div.cartocss_editor div.inner_ span.top h3 {width:100%; padding:0 0 3px 0; font:bold 15px Helvetica,Arial; color:#333333; text-shadow:0 1px white;}
+div.cartocss_editor div.inner_ span.top h3:hover {cursor:move}
+div.cartocss_editor div.inner_ span.top p {display:block; padding:3px 0 0 0; font:normal 11px Helvetica; color:#999999; text-shadow:0 1px white}
+div.cartocss_editor div.inner_ span.top p a {color:#666666}
+div.cartocss_editor div.inner_ span.top p a:hover {color:#333333}
+div.cartocss_editor div.inner_ span.top div.outer_textarea {position:absolute; top:48px; left:9px; right:9px; bottom:11px; margin:10px 0 0 0; padding:3px; background:white; border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px; border:1px solid #CDCDCD; z-index:1}
+div.cartocss_editor div.inner_ span.top textarea {position:relative; min-width:454px; min-height:265px; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0; border:1px solid #CDCDCD; webkit-border-radius:5px;
 border-radius:5px; -moz-border-radius:5px; font:normal 13px Arial; color:#333333; line-height:13px; background:white}
-div.map_window div.cartocss_editor div.inner_ span.top textarea:focus {outline:none;}
-div.map_window div.cartocss_editor div.inner_ span.top span.errors {position:relative; display:none; z-index:-1; height:auto; margin:-10px 0 0 0; padding:15px 7px 7px; border-radius:5px; -webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #CDCDCD;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E); background:linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#FFB5A3),to(#FF8A6E));background:-moz-linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-o-linear-gradient(#FFB5A3,#FF8A6E);background:#FFB5A3\9; z-index:0; }
-div.map_window div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar {width: 8px!important; margin-right:5px;}
-div.map_window div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar-thumb {border-radius:10px!important;background:rgba(0,0,0,0.15)!important;cursor:pointer!important}
-div.map_window div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar-thumb:hover,
-div.map_window div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar-thumb:active {background:rgba(0,0,0,0.3);cursor:pointer!important}
-div.map_window div.cartocss_editor div.inner_ span.top span.errors div {width:100%; overflow:auto; max-height:100px!important;}
-div.map_window div.cartocss_editor div.inner_ span.top span.errors p {padding:0 0 0 23px; color:#333333; font:normal 13px Arial; text-shadow:none; background:url('/images/admin/icons/error.png') no-repeat 2px 1px}
-div.map_window div.cartocss_editor div.inner_ span.bottom {position:relative; float:left; width:470px; padding:10px 14px!important;}
-div.map_window div.cartocss_editor div.inner_ span.bottom a.try_css {float:right; height:12px; padding:7px 9px; font:bold 12px Arial; color:#333333; text-align:center; border:1px solid #999999; text-decoration:none; text-shadow:0 1px white; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;  line-height:12px;  background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE)); background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
-div.map_window div.cartocss_editor div.inner_ span.bottom a.try_css:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
+div.cartocss_editor div.inner_ span.top textarea:focus {outline:none;}
+div.cartocss_editor div.inner_ span.top span.errors {position:absolute; left:9px; right:9px; bottom:10px; display:none; z-index:-1; height:auto; margin:-10px 0 0 0; padding:15px 7px 7px; border-radius:5px; -webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #666666;background:-moz-linear-gradient(100% 100% 90deg,#FFB5A3,#FF8A6E); background:linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-webkit-gradient(linear,50% 0%,50% 100%,from(#FFB5A3),to(#FF8A6E));background:-moz-linear-gradient(-90deg,#FFB5A3,#FF8A6E);background:-o-linear-gradient(#FFB5A3,#FF8A6E);background:#FFB5A3\9; z-index:0; }
+div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar {width: 8px!important; margin-right:5px;}
+div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar-thumb {border-radius:10px!important;background:rgba(0,0,0,0.15)!important;cursor:pointer!important}
+div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar-thumb:hover,
+div.cartocss_editor div.inner_ span.top span.errors div::-webkit-scrollbar-thumb:active {background:rgba(0,0,0,0.3);cursor:pointer!important}
+div.cartocss_editor div.inner_ span.top span.errors div {width:100%; overflow:auto; max-height:100px!important;}
+div.cartocss_editor div.inner_ span.top span.errors p {padding:0 0 0 23px; color:#333333; font:normal 13px Arial; text-shadow:none; background:url('/images/admin/icons/error.png') no-repeat 2px 1px}
+div.cartocss_editor.error div.outer_textarea {border-color:#666666!important;}
+div.cartocss_editor.error div.inner_ span.top span.errors {display:block!important;}
+div.cartocss_editor div.inner_ span.bottom {position:absolute; bottom:0; left:0; right:0; display:block; padding:9px!important;}
+div.cartocss_editor div.inner_ span.bottom a.try_css {float:right; margin:0; height:12px; padding:7px 9px 9px 9px; -webkit-border-radius: 3px; -moz-border-radius:3px; border-radius:3px; border:1px solid #999999; font:bold 12px Arial; text-shadow:0 1px white;
+  color:#333333; background:-moz-linear-gradient(100% 100% 90deg, #cacecb, #ffffff); background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
+  background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); background:#DEDEDE\9; text-decoration:none}
+div.cartocss_editor div.inner_ span.bottom a.try_css:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
   background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
-
+div.cartocss_editor .ui-resizable-handle {position:absolute; right:4px; bottom:4px; width:10px; height:10px; background:url('/images/admin/table/resize.png') no-repeat 0 0; cursor:se-resize;}
 
 /*codemirror CSS*/
-div.map_window .CodeMirror{position:relative; overflow:auto; line-height:1em;font-family:monospace; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; display:block; padding:9px 7px!important; margin:15px 0 0 0; background:url('/images/admin/api/input_bkg.png') repeat-x 1px 0 white; border:1px solid #CDCDCD; webkit-border-radius:5px; z-index:5}
-div.map_window .CodeMirror-scroll{overflow:auto;height:300px;position:relative;}
-div.map_window .CodeMirror-gutter{position:absolute;left:0;top:0;z-index:10;background-color:#f7f7f7;border-right:1px solid #eee;min-width:2em;height:100%;}
-div.map_window .CodeMirror-gutter-text{color:#aaa;text-align:right;padding:.4em .2em .4em .4em;white-space:pre !important;}
-div.map_window .CodeMirror-lines{padding:.4em; line-height:14px}
-div.map_window .CodeMirror pre{font-family:Arial!important;font-size:13px!important;-moz-border-radius:0;-webkit-border-radius:0;-o-border-radius:0;border-radius:0;border-width:0;margin:0;padding:0;background:transparent;padding:0;margin:0;white-space:pre;word-wrap:normal;}
-div.map_window .CodeMirror-wrap pre{word-wrap:break-word;white-space:pre-wrap;}
-div.map_window .CodeMirror-wrap .CodeMirror-scroll{overflow-x:hidden;}
-div.map_window .CodeMirror textarea{font-family:Arial!important;}
-div.map_window .CodeMirror-cursor{z-index:10;position:absolute;visibility:hidden;border-left:1px solid black !important;}
-div.map_window .CodeMirror-focused .CodeMirror-cursor{visibility:visible;}
-div.map_window span.CodeMirror-selected{background:#ccc !important;color:HighlightText !important;}
-div.map_window .CodeMirror-focused span.CodeMirror-selected{background:Highlight !important;}
-div.map_window .CodeMirror-matchingbracket{color:#0f0 !important;}
-div.map_window .CodeMirror-nonmatchingbracket{color:#f22 !important;}
-div.map_window span.cm-css-at {color: #708;}
-div.map_window span.cm-css-unit {color: #281;}
-div.map_window span.cm-css-value {color: #708;}
-div.map_window span.cm-css-identifier {color: #990000;}
-div.map_window span.cm-css-selector {color: #11B;}
-div.map_window span.cm-css-important {color: #00F;}
-div.map_window span.cm-css-colorcode {color: #299;}
-div.map_window span.cm-css-comment {color: #A70;}
-div.map_window span.cm-css-string {color: #A22;}
-div.map_window .CodeMirror ::-webkit-scrollbar {width: 8px;}
-div.map_window .CodeMirror ::-webkit-scrollbar-thumb{border-radius:10px;background:rgba(0,0,0,0.15);cursor:pointer!important}
-div.map_window .CodeMirror ::-webkit-scrollbar-thumb:hover,div.sql_window ::-webkit-scrollbar-thumb:active{background:rgba(0,0,0,0.3);cursor:pointer!important}
+div.cartocss_editor .CodeMirror {position:absolute; left:3px; right:3px; top:3px; bottom:3px; overflow:auto; line-height:1em;font-family:monospace; z-index:5}
+div.cartocss_editor .CodeMirror-scroll {overflow: auto; height: 100%; position: relative; outline: none;}
+div.cartocss_editor .CodeMirror-gutter {position: absolute; left: 0; top: 0; z-index: 10; background-color: #f7f7f7; border-right: 1px solid #eee; min-width: 2em; height: 100%;}
+div.cartocss_editor .CodeMirror-gutter-text {color: #aaa; text-align: right; padding: .4em .2em .4em .4em; white-space: pre !important;}
+div.cartocss_editor .CodeMirror-lines {padding: .4em; white-space: pre;}
+div.cartocss_editor .CodeMirror pre {font:normal 13px Arial!important; -moz-border-radius: 0; -webkit-border-radius: 0; -o-border-radius: 0; border-radius: 0; border-width: 0; margin: 0; padding: 0; background: transparent; font-family: inherit;
+  font-size: inherit; padding: 0; margin: 0; white-space: pre; word-wrap: normal;}
+div.cartocss_editor .CodeMirror-wrap pre {word-wrap: break-word; white-space: pre-wrap;}
+div.cartocss_editor .CodeMirror-wrap .CodeMirror-scroll {overflow-x: hidden;}
+div.cartocss_editor .CodeMirror textarea {outline: none !important;}
+div.cartocss_editor .CodeMirror pre.CodeMirror-cursor {z-index: 10; position: absolute; visibility: hidden; border-left: 1px solid black; border-right:none; width:0;}
+div.cartocss_editor .CodeMirror pre.CodeMirror-cursor.CodeMirror-overwrite {}
+div.cartocss_editor .CodeMirror-focused pre.CodeMirror-cursor {visibility: visible;}
+div.cartocss_editor div.CodeMirror-selected { background: #d9d9d9; }
+.CodeMirror-focused div.CodeMirror-selected { background: #d7d4f0; }
+div.cartocss_editor .CodeMirror-searching {background: #ffa;background: rgba(255, 255, 0, .4);}
+div.cartocss_editor span.cm-css-at {color: #708;}
+div.cartocss_editor span.cm-css-unit {color: #281;}
+div.cartocss_editor span.cm-css-value {color: #708;}
+div.cartocss_editor span.cm-css-identifier {color: #990000;}
+div.cartocss_editor span.cm-css-selector {color: #11B;}
+div.cartocss_editor span.cm-css-important {color: #00F;}
+div.cartocss_editor span.cm-css-colorcode {color: #299;}
+div.cartocss_editor span.cm-css-comment {color: #A70;}
+div.cartocss_editor span.cm-css-string {color: #A22;}
+div.cartocss_editor ::-webkit-scrollbar {width: 8px;}
+div.cartocss_editor ::-webkit-scrollbar-thumb{border-radius:10px;background:rgba(0,0,0,0.15);cursor:pointer!important}
+div.cartocss_editor ::-webkit-scrollbar-thumb:hover,div.sql_window ::-webkit-scrollbar-thumb:active{background:rgba(0,0,0,0.3);cursor:pointer!important}
+
 
 
 

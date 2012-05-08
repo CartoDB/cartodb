@@ -206,15 +206,99 @@ describe User do
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
-  it "can have different keys for accessing via JSONP API requests" do
+
+  it "should run valid queries against his database in pg mode" do
+    # config
     user = create_user
-    lambda {
-      user.create_key ""
-    }.should raise_error
-    key = user.create_key "mymashup.com"
-    api_key = APIKey.filter(:user_id => user.id, :domain => 'http://mymashup.com').first
-    api_key.api_key.should == key.api_key
+    table = new_table(:user_id => user.id)
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
+    table.save
+
+    # initial select tests
+    # tests results and modified flags
+    query_result = user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result[:time].should_not be_blank
+    query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
+    query_result[:total_rows].should == 2
+    query_result[:rows].first.keys.should == [:id, :name_of_species, :kingdom, :family, :lat, :lon, :views, :the_geom, :cartodb_id, :created_at, :updated_at, :the_geom_webmercator]
+    query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
+    query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
+    query_result[:results].should  == true
+    query_result[:modified].should == false
+    
+    # update and reselect
+    query_result = user.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")  
+    query_result[:total_rows].should == 2
+    query_result[:modified].should   == true
+    query_result[:results].should    == false
+
+    query_result = user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result[:total_rows].should == 0
+    query_result[:modified].should   == false
+    query_result[:results].should    == true
+     
+    # # check counts
+    query_result = user.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
+    query_result[:total_rows].should == 2
+    query_result[:results].should    == true
+    
+    # add new table
+    table2 = new_table :name => 'twitts', :user_id => user.id
+    table2.user_id = user.id
+    table2.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+    table2.save
+    
+    # test a product
+    query_result = user.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
+    query_result[:total_rows].should == 10    
+    query_result[:rows].first.keys.should == [:fam, :login]    
+    query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
+    
+    # test counts
+    query_result = user.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
+    query_result[:time].should_not be_blank
+    query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
+    query_result[:total_rows].should == 1
+    query_result[:rows].first.keys.should ==  [:count]
+    query_result[:rows][0].should == {:count => 2}
   end
+
+  it "should raise errors when running invalid queries against his database in pg mode" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
+    table.save
+
+    lambda {
+      user.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
+    }.should raise_error(CartoDB::ErrorRunningQuery)
+  end
+
+  it "should raise errors when invalid table name used in pg mode" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
+    table.save
+
+    lambda {
+      user.run_pg_query("select * from this_table_is_not_here where family='Polynoidae' limit 10")
+    }.should raise_error(CartoDB::TableNotExists)
+  end
+
+  it "should raise errors when invalid column used in pg mode" do
+    user = create_user
+    table = new_table
+    table.user_id = user.id
+    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
+    table.save
+
+    lambda {
+      user.run_pg_query("select not_a_col from import_csv_1 where family='Polynoidae' limit 10")
+    }.should raise_error(CartoDB::TableNotExists)
+  end
+
 
   it "should create a client_application for each user" do
     user = create_user
@@ -253,7 +337,7 @@ describe User do
     table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
     table.save
 
-    query_result = user.run_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = user.run_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
     query_result[:total_rows].should == 3    
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"

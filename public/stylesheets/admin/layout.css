@@ -2,7 +2,7 @@ body {position:relative; background:url('/images/admin/common/header_bkg.jpg') r
 
 /*HEADER*/
 header {width:900px; height:58px; margin:0 auto; background:none;}
-header a.logo {float:left; width:70px; height:15px; margin:22px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
+header a.logo {float:left; width:85px; height:17px; margin:22px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
 header ul {float:right; margin: 24px 0 0 0; }
 header ul li {float:left; display: inline; list-style: none; padding: 0 10px 0 0; border-right: solid 1px #949BAB; }
 header ul li.last {padding: 0; border: none; }
@@ -54,6 +54,8 @@ div.mamufas div.create_window a.close_create.last {background-position:0 -46px;}
 div.mamufas div.create_window a.close_create.last:hover {background-position:0 -69px;}
 div.mamufas div.create_window div.inner_ span.loading {float:left; display:none; opacity:0; width:347px; padding:0 0 0 42px; margin:10px; background:url('/images/admin/icons/loading.gif') no-repeat 2px 7px; overflow:hidden}
 div.mamufas div.create_window div.inner_ span.loading h5 {margin:5px 0 0 0; font:bold 15px "Helvetica"; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.create_window div.inner_ span.loading h6 {margin:10px 0 0 0; font:bold 12px "Helvetica"; color:#333333; text-shadow:0 1px white;}
+div.mamufas div.create_window div.inner_ span.loading dd {padding:4px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
 div.mamufas div.create_window div.inner_ span.loading p {padding:4px 0 0 0; font:normal 13px "Helvetica"; color:#666666; text-shadow:0 1px white;}
 div.mamufas div.create_window div.inner_ span.loading p a {color:#666666; text-decoration:underline; cursor:pointer;}
 div.mamufas div.create_window div.inner_ span.loading p a:hover {color:#333333;}
@@ -145,6 +147,14 @@ div.mamufas div.create_window div.inner_ span.top ul li.finished span.georeferen
 div.mamufas div.create_window div.inner_ span.top ul li.finished span.georeference ul li p {margin:0 0 0 17px; font:normal 11px Arial; color:#434C5D; text-shadow:none;}
 div.mamufas div.create_window div.inner_ span.top ul li.disabled a {opacity:0.3;}
 div.mamufas div.create_window div.inner_ span.top ul li.disabled a:hover {cursor:default; background-position:0 -28px;}
+
+div.mamufas div.create_window div.inner_ span.error_details {display:none; margin:10px 0 0; max-height:150px; overflow:auto; white-space:pre; word-wrap: break-word;}
+div.mamufas div.create_window div.inner_ span.error_details::-webkit-scrollbar {width:8px!important; height:8px!important; margin-right:5px;}
+div.mamufas div.create_window div.inner_ span.error_details::-webkit-scrollbar-thumb {border-radius:10px!important;background:rgba(0,0,0,0.15)!important;cursor:pointer!important}
+div.mamufas div.create_window div.inner_ span.error_details::-webkit-scrollbar-thumb:hover,
+div.mamufas div.create_window div.inner_ span.error_details::-webkit-scrollbar-thumb:active {background:rgba(0,0,0,0.3);cursor:pointer!important}
+
+
 div.mamufas div.create_window div.inner_ span.bottom {float:left; width:394px; padding:10px; border-top:1px solid white;}
 div.mamufas div.create_window div.inner_ span.bottom input {float:right; height:26px; padding:6px 10px; border:1px solid #999; font:bold 12px "Helvetica",Arial; color:#333333; text-align:center;
   text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white;
@@ -190,7 +200,7 @@ footer section.prefooter div.block p a {color:#8F95A4;}
 footer section.prefooter div.block p a:hover {color:white;}
 footer div.outer_footer {width:100%; height:113px; background:url('/images/admin/common/sub_header_bkg.png') repeat-x 0 0;}
 footer section.footer {width:900px; margin:0 auto;}
-footer section.footer a.logo {float:left; width:70px; height:15px; margin:32px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
+footer section.footer a.logo {float:left; width:85px; height:17px; margin:32px 0 0 0; background:url('/images/admin/common/logo.png') no-repeat 0 0; text-indent:-9999px;}
 footer section.footer div.long {float:left; width:100%;}
 footer section.footer span.poweredby {float:right; width:auto;}
 footer section.footer p.vizzuality {float:left; width:auto; padding:22px 5px 0 0; font:normal 13px Arial; color:#9295A0;}

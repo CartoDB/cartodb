@@ -80,8 +80,9 @@
       // New table mode: normal, query or filter
 			var columns,
 			    rows,
-			    ajax_request = 2,
-					msg,
+			    ajax_request = (table.mode!='query')? 2 : 1,
+					modified,
+					time = 0,
           errors = [];
 
 
@@ -90,19 +91,22 @@
         if (table.mode!='query') {
 			    startTable();
 		    } else {
-					if (msg || is_write_query) {
+					if (modified) {
             if (errors.length==0) {
               window.ops_queue.pendingOperations[requestId].type = "query_action";
-              loadingMessages["query_action"] = msg || 'operation completed';
-              $('a.clear_table').click();
+              loadingMessages["query_action"] = 'operation completed';
+              methods.closeTablePopups();
+              methods.restoreTable();
             }
-					} else {
+					} else {					  
 						methods.drawQueryColumns(rows,table.total_r,time,new_query);
 				    methods.drawQueryRows(rows,direction,table.actual_p,new_query);
 					}
 		    }
+
 		    // Remove loader
-		    window.ops_queue.responseRequest(requestId,'ok','');
+		    if (errors.length == 0)
+		    	window.ops_queue.responseRequest(requestId,'ok','');
       });
       
 			if (table.mode!='query') {
@@ -149,34 +153,11 @@
 			  });
 
 			} else {
-			  
+
+			  // Remove empty table if it exists
+				table.e.parent().find('div.empty_table').remove();
+
 			  // QUERY MODE
-				setAppStatus(); // Change app status depending on query mode
-
-				var time,
-						query = editor.getOption('query'),
-						is_write_query = query.search(/^\s*(CREATE|UPDATE|INSERT|ALTER|DROP|DELETE).*/i)!=-1;
-				
-				// Get the total rows of the query
-				if (new_query!=undefined && !is_write_query) {
-					$.ajax({
-				    method: "GET",
-				    url: global_api_url+'queries?sql='+encodeURIComponent('SELECT count(*) FROM ('+query+') as count'),
-				 		headers: {"cartodbclient":"true"},
-				    success: function(data) {
-							table.total_r = data.rows[0].count;
-							$('div.sql_console span h3').html('<strong>'+table.total_r+' results</strong>');
-							requestArrived();
-				    },
-				    error: function(e) {
-				      requestArrived();
-				    }
-				  });
-				} else {
-					requestArrived();
-				}
-
-
 			  $.ajax({
 			    method: "POST",
 			    url: global_api_url+'queries?sql='+encodeURIComponent(editor.getValue()),
@@ -187,32 +168,36 @@
 			 		headers: {"cartodbclient":"true"},
 			    success: function(data) {
 			      // Remove error content
-						$('div.sql_window span.errors').hide();
-						$('div.sql_window div.inner div.outer_textarea').css({bottom:'50px'});
-						$('div.sql_window').css({'min-height':'199px'});
-						
-						msg = data.message;
-						time = data.time.toFixed(3);
-			      rows = data.rows;
+						$('div.sql_window').removeClass('error');
+						$('div.sql_window div.inner div.outer_textarea').removeAttr('style');
+
+						// Remove errors from editor
+						delete editor['errors'];
+
+						modified = data.modified;
+						time    = data.time.toFixed(3);
+			      rows    = data.rows;
+			      table.total_r = data.total_rows
+            
 			      requestArrived();
 			    },
 			    error: function(e) {
             window.ops_queue.responseRequest(requestId,'error','Query error, see details in the sql window...');
 			      
+			      // parse errors
 			      errors = $.parseJSON(e.responseText).errors;
+
+			      // Save errors in the editor
+			      editor['errors'] = errors;
+			      
 			      $('div.sql_window span.errors p').text('');
 			      _.each(errors,function(error,i){
-			        $('div.sql_window span.errors p').append(' '+error+'.');
+			        $('div.sql_window span.errors p').append(''+error+'.<br/>');
 			      });
 			      
-			      var new_bottom = 65 + $('div.sql_window span.errors').height();
-			      $('div.sql_window div.inner div.outer_textarea').css({bottom:new_bottom+'px'});
+			      $('div.sql_window').addClass('error');
+			      $('div.sql_window div.inner div.outer_textarea').css({bottom:$('div.sql_window span.errors').outerHeight() +'px'});
 			      
-			      var new_height = 199 + $('div.sql_window span.errors').height();
-			      $('div.sql_window').css({'min-height':new_height+'px'});
-			      $('div.sql_window span.errors').show();
-			      
-			      methods.drawQueryColumns([]);
             requestArrived();
 			    }
 			  });
@@ -267,6 +252,10 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawColumns: function(data,rows,direction,actualPage,options) {
       table.h = [];
+
+      // Remove previous thead
+      table.e.find('thead').remove();
+
       //Draw the columns headers
       var thead = '<thead style="'+((table.mode!="normal")?'height:91px':'')+'"><tr><th class="first"><div></div></th>';
 
@@ -298,7 +287,7 @@
       
       
       if (table.mode!="normal") {
-        table.e.find('thead').append('<div class="stickies"><p><strong>'+table.total_r+' result'+((table.total_r>1)?'s':'')+'</strong> for your filter in column "'+defaults.filter_column+'"  with text "'+defaults.filter_value+
+        table.e.find('thead').append('<div class="stickies"><p><strong>~ '+table.total_r+' result'+((table.total_r>1)?'s':'')+'</strong> for your filter in column "'+defaults.filter_column+'"  with text "'+defaults.filter_value+
           '" - <a class="remove_filter" href="#disabled_filter">clear filter</a></p></div>');
       } else {
         table.e.find('thead div.stickies').remove();
@@ -330,6 +319,10 @@
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     drawQueryColumns: function(rows,total,time,new_query) {
       if (rows && rows.length>0) {
+
+      	// Remove previous thead
+      	table.e.find('thead').remove();
+
 				if (new_query) {
 					//Draw the columns headers
 		      var thead = '<thead style="height:91px"><tr><th class="first"><div></div></th>';
@@ -367,6 +360,7 @@
 					});
 
 					thead += "</tr></thead>";
+
 					table.e.append(thead);
 					table.e.find('thead').append('<div class="stickies"><p><strong>'+total+' result'+((total>1)?'s':'')+'</strong> - Read-only. <a class="open_console" href="#open_console">Change your query</a> or <a class="clear_table" href="#disable_view">clear view</a></p></div>');
 				}
@@ -791,7 +785,7 @@
           '</div>'+
         '</div>'
       );
-      $('div.filter_window').draggable({containment:'window',handle:'h3'});
+      $('div.filter_window').draggable({containment:'parent',handle:'h3'});
 
       //Mamufas elements belong to the carto table
       $('div.mamufas').append(
@@ -1404,11 +1398,12 @@
       //  Editing selected rows            //
       ///////////////////////////////////////
       $(document).mousedown(function(event){
-        if (table.enabled && table.mode!='query') {
-       		var target = event.target || event.srcElement;
-          var targetElement = target.nodeName.toLowerCase();
+        var target = event.target || event.srcElement;
+        var targetElement = target.nodeName.toLowerCase();
 
-          if (targetElement == "div" && $(target).parent().is('td') && !event.ctrlKey && !event.metaKey) {
+        if (table.enabled && table.mode!='query' && targetElement == "div" && $(target).parent().is('td')) {
+       		
+          if (!event.ctrlKey && !event.metaKey) {
 
             table.e.find('tbody tr td.first div span').hide();
             table.e.find('tbody tr td.first div a.options').removeClass('selected');
@@ -1501,6 +1496,7 @@
           });
         }
       });
+
       $(document).mouseup(function(event){
         if (table.enabled && table.mode!='query') {
        		var target = event.target || event.srcElement;
@@ -2224,10 +2220,17 @@
 				}
       });
 			$('a.clear_table').live('click',function(ev){
-				var table_mode = (!$('body').hasClass('map'));
+				var table_mode = (!$('body').hasClass('map'))
+					, query_mode = ($('body').hasClass('query'));
+
 			  if (table_mode) {
 			    stopPropagation(ev);
-			    methods.restoreTable();
+			    if (query_mode) {
+            delete editor['errors'];
+			    	$('div.sql_window').removeClass('error');
+			    	$('div.sql_window div.outer_textarea').removeAttr('style');
+			    	methods.restoreTable();
+			    }			    	
 			  }
 			});
 
@@ -2332,12 +2335,11 @@
           defaults.filter_column = column_name;
            
           // Show filter window
-          $('div.filter_window').fadeIn(function(ev){
+          $('div.filter_window')
+          	.css({'left': (($(document).width() / 2) - 170) + 'px'})
+          .fadeIn(function(ev){
             $('div.filter_window input[type="text"]').focus();
           });
-          
-          
-
         }
       });
       $('div.filter_window span.top h3 a').live('click',function(ev){
@@ -2463,12 +2465,14 @@
     resizeTable: function(new_) {
       var parent_width = $(window).width();
       table.e.parent().width(parent_width);
-      var width_table_content = ((table.e.find('thead tr th').size()-2)*(table.cell_s+27)) + table.e.find('th[c="cartodb_id"]').width() + 43;
-      var head_element = table.e.find('thead tr th:last div');
-      var body_element = table.e.find('tbody tr');
+
+      var width_table_content = ((table.e.find('thead > tr > th').size()-2)*(table.cell_s+27)) + table.e.find('th[c="cartodb_id"]').width() + 43
+      	, head_element = table.e.find('thead tr th:last div')
+      	, body_element = table.e.find('tbody tr');
 
       //WIDTH
-      if (parent_width>width_table_content || new_) {
+      if (parent_width>width_table_content || new_) {      	
+
         table.last_cell_s = parent_width - width_table_content + table.cell_s;
         if (table.last_cell_s<0) {
           table.last_cell_s = table.cell_s;
@@ -2570,7 +2574,6 @@
     errorRequest: function(params,new_value,old_value,type) {
       switch (type) {
         case "update_cell":   var element;
-															debugger;
  															if (params['row_id']!='') {
 																element = table.e.find('tbody tr[r="'+params.row_id+'"] td[c="'+params.column_id+'"] div');
 															}
@@ -2614,9 +2617,12 @@
     restoreTable : function() {
       table.mode = 'normal';
       /* Don't get width of the last cell in sql view! */
+
       table.last_cell_s = table.cell_s;
       $('body').removeClass('query');
       methods.refreshTable('');
+
+      setAppStatus();
     },
     
     

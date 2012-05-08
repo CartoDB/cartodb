@@ -1,7 +1,30 @@
 namespace :cartodb do
   namespace :db do
 
+    ########################
+    # LOAD CARTODB FUNCTIONS
+    ########################
+    desc "Install/upgrade CARTODB SQL functions"
+    task :load_functions => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?        
+        user.load_cartodb_functions
+      end
+    end
 
+    ############################
+    # RUN CARTODB FUNCTION TESTS
+    # cartodb:db:test_functions
+    ############################
+    desc "Run CARTODB SQL functions tests"
+    task :test_functions => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        
+        user.test_cartodb_functions
+      end
+    end
+        
     ##############
     # SET DB PERMS
     ##############
@@ -12,7 +35,7 @@ namespace :cartodb do
 
         # reset perms
         user.set_database_permissions
-        
+
         # rebuild public access perms from redis
         user.tables.all.each do |table|
           
@@ -110,7 +133,7 @@ namespace :cartodb do
     ##################
     # SET ACCOUNT TYPE
     ##################
-    desc "set users account type"
+    desc "Set users account type. DEDICATED or FREE"
     task :set_user_account_type, [:username, :account_type] => :environment do |t, args|
       usage = "usage: rake cartodb:db:set_user_account_type[username,account_type]"
       raise usage if args[:username].blank? || args[:account_type].blank?
@@ -126,6 +149,29 @@ namespace :cartodb do
       User.all.each do |user|
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.update(:account_type => 'FREE') if user.account_type.blank?
+      end
+    end
+
+
+    ##########################################
+    # SET USER PRIVATE TABLES ENABLED/DISABLED
+    ##########################################
+    desc "set users private tables enabled"
+    task :set_user_private_tables_enabled, [:username, :private_tables_enabled] => :environment do |t, args|
+      usage = "usage: rake cartodb:db:set_user_private_tables_enabled[username,private_tables_enabled]"
+      raise usage if args[:username].blank? || args[:private_tables_enabled].blank?
+      
+      user  = User.filter(:username => args[:username]).first      
+      user.update(:private_tables_enabled => args[:private_tables_enabled])
+                    
+      puts "User: #{user.username} private tables enabled: #{args[:private_tables_enabled]}"
+    end
+
+    desc "reset all Users privacy tables permissions type to false"
+    task :set_all_users_private_tables_enabled_to_false => :environment do
+      User.all.each do |user|
+        next if !user.respond_to?('database_name') || user.database_name.blank?
+        user.update(:private_tables_enabled => false) if user.private_tables_enabled.blank?
       end
     end
 
@@ -152,32 +198,38 @@ namespace :cartodb do
               geometry_type ||= "POINT"
               user_database.run("SELECT AddGeometryColumn('#{table.name}','#{Table::THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{geometry_type}',2)")
               user_database.run("CREATE INDEX #{table.name}_#{Table::THE_GEOM_WEBMERCATOR}_idx ON #{table.name} USING GIST(#{Table::THE_GEOM_WEBMERCATOR})")                      
-              user_database.run("VACUUM ANALYZE #{table.name}")
+              user_database.run("ANALYZE #{table.name}")
               table.save_changes
             end
           end
           if has_the_geom
-            user.in_database(:as => :superuser) do |user_database|
-              user_database.run(<<-TRIGGER     
-                DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{table.name};  
-                CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
-                  BEGIN
-                       NEW.#{Table::THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
-                       RETURN NEW;
-                  END;
-                $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
-
-                CREATE TRIGGER update_the_geom_webmercator_trigger 
-                BEFORE INSERT OR UPDATE OF the_geom ON #{table.name} 
-                  FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();    
-  TRIGGER
-              )
-            end
+            table.set_trigger_the_geom_webmercator
+            
             user.in_database do |user_database|
               user_database.run("ALTER TABLE #{table.name} DROP CONSTRAINT IF EXISTS enforce_srid_the_geom")
-              user_database.run("update #{table.name} set the_geom = ST_Transform(the_geom,#{CartoDB::SRID})")
+              user_database.run("update #{table.name} set the_geom = CDB_TransformToWebmercator(the_geom)")
               user_database.run("ALTER TABLE #{table.name} ADD CONSTRAINT enforce_srid_the_geom CHECK (srid(the_geom) = #{CartoDB::SRID})")
             end
+          end
+        end
+      end
+    end
+
+    desc "Update update_the_geom_webmercator_trigger"
+    task :update_the_geom_webmercator_trigger => :environment do
+      User.all.each do |user|
+        user.load_cartodb_functions 
+        
+        tables = Table.filter(:user_id => user.id).all
+        next if tables.empty?
+        tables.each do |table|
+          has_the_geom = false
+          user.in_database do |user_database|
+            has_the_geom = true if user_database.schema(table.name.to_sym).flatten.include?(:the_geom)
+          end
+          if has_the_geom
+            puts "Updating the_geom_webmercator triggers for #{user.username}:#{table.name}"
+            table.set_trigger_the_geom_webmercator
           end
         end
       end
@@ -200,10 +252,16 @@ namespace :cartodb do
     desc "update the old cache trigger which was using redis to the varnish one"
     task :update_cache_trigger => :environment do
       User.all.each do |user|
+        puts "Update cache trigger => " + user.username
         next if !user.respond_to?('database_name') || user.database_name.blank?
         user.in_database do |user_database|
           user.tables.all.each do |table|
-            table.set_trigger_cache_timestamp
+            puts "\t=> #{table.name} updated"
+            begin
+              table.set_trigger_cache_timestamp
+            rescue => e
+              puts "\t=> [ERROR] #{table.name}: #{e.inspect}"
+            end                
           end
         end
       end

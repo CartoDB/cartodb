@@ -1,14 +1,30 @@
 
-  <% content_for :js do %>
-    <%= headjs_include_tag "plugins/jquery.min", "front/oauth" %>
-  <% end %>
+<section class="sessions shadow">
+  <div class="content">
+    <h1 class="sessions compact"><%= @token.client_application.user.username %> CartoDB</h1>
+    <p class="light margin10"><%= @token.client_application.user.username %> wants to connect to your cartoDB database.This means that <%= @token.client_application.user.username %> will be able to modify, create and delete fields from your database.</p>
+    <% form_tag authorize_url do %>
+      <%= hidden_field_tag "oauth_token", @token.token %>
+      <%- if params[:oauth_callback] -%>
+        <%= hidden_field_tag "oauth_callback", params[:oauth_callback] %>
+      <%- end -%>
+      <p class="center"><%= check_box_tag 'authorize' %> <a href="#authorize">Authorize access</a></p>
+      <%= submit_tag 'Allow connection', :class => "button green border right" %>
+    <% end %>
+  </div>
+  <div class="footer">
+    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "http://cartodb.com/signup" %></p>
+  </div>
+</section>
 
-  <% content_for :head do %>
-    <%= stylesheet_link_tag('reset.css','front/oauth') %>
-  <% end %>
+<footer class="short">
+  <%= link_to 'CartoDB', root_path, :class => "cartodb" %>
+</footer>
 
 
-  <div class="glow">
+
+
+<!--   <div class="glow">
     <div class="section">
       <h1><strong><%= @token.client_application.user.username %></strong>CartoDB</h1>
       <% form_tag authorize_url do %>
@@ -25,3 +41,5 @@
     </div>
   </div>
   <div class="footer">CartoDB is a product from <a href="http://www.vizzuality.com" target="_blank">vizzuality</a> | <a href="http://cartodb.com/terms">Terms of service</a></div>
+
+ -->

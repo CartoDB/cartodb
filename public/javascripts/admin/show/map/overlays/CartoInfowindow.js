@@ -57,12 +57,25 @@
 				window.map.carto_map.createFakeGeometry(me.marker_);
 			});
       
-      google.maps.event.addDomListener(div,'click',function(ev){ev.preventDefault()});
-      google.maps.event.addDomListener(div,'dblclick',function(ev){ev.preventDefault()});
-      google.maps.event.addDomListener(div,'mousedown',function(ev){ev.preventDefault()});
-      google.maps.event.addDomListener(div,'mouseup',function(ev){ev.preventDefault()});
-      google.maps.event.addDomListener(div,'mousewheel',function(ev){ev.stopPropagation()});
-      google.maps.event.addDomListener(div,'DOMMouseScroll',function(ev){ev.stopPropagation()});
+      google.maps.event.addDomListener(div, 'click', function (ev) {
+        ev.preventDefault ? ev.preventDefault() : ev.returnValue = false;
+      });
+      google.maps.event.addDomListener(div, 'dblclick', function (ev) {
+        ev.preventDefault ? ev.preventDefault() : ev.returnValue = false;
+      });
+      google.maps.event.addDomListener(div, 'mousedown', function (ev) {
+        ev.preventDefault ? ev.preventDefault() : ev.returnValue = false;
+        ev.stopPropagation ? ev.stopPropagation() : window.event.cancelBubble = true;
+      });
+      google.maps.event.addDomListener(div, 'mouseup', function (ev) {
+        ev.preventDefault ? ev.preventDefault() : ev.returnValue = false;
+      });
+      google.maps.event.addDomListener(div, 'mousewheel', function (ev) {
+        ev.stopPropagation ? ev.stopPropagation() : window.event.cancelBubble = true;
+      });
+      google.maps.event.addDomListener(div, 'DOMMouseScroll', function (ev) {
+        ev.stopPropagation ? ev.stopPropagation() : window.event.cancelBubble = true;
+      });
 			
 	    var panes = this.getPanes();
 	    panes.floatPane.appendChild(div);
@@ -128,7 +141,7 @@
 					me.pixel = null;
 				}
   	    
-  	    var query_mode = $('body').attr('query_mode') === 'true';
+  	    var query_mode = $('body').hasClass('query');
 
   	    // Reinitialize jscrollpane in the infowindow
      		$('div.marker_infowindow div.scrollPane').jScrollPane().data().jsp.destroy();
@@ -137,7 +150,7 @@
   	    $(div).find('div.top').html('');
         
   	    _.each(info,function(value,label){
-  	      if ((label!='cartodb_id' && variables[label]) || (label!='cartodb_id' && query_mode)) {
+  	      if ((label!='cartodb_id' && variables[label])) {
     				$(div).find('div.top').append('<label>'+label+'</label><p class="'+((info[label]!=null)?'':'empty')+'">'+value+'</p>');
   	      }
   	    });

@@ -1,5 +1,5 @@
   <% content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "plugins/general_functions", "admin/api/api" %>
+    <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers.js", "admin/api/api" %>
   <% end %>
   <% content_for(:head) do %>
     <%= stylesheet_link_tag('reset', 'admin/layout','admin/others/tokens') %>
@@ -15,9 +15,9 @@
       <div class="tables_list">
         <div class="left">
           <div class="top_blue_medium">
-            <h3>Your <strong>api keys</strong></h3>
-            <% if false %>
-            <p><a class="oauth selected" href="<%= oauth_credentials_path %>">OAuth</a><a class="jsonp" href="<%= jsonp_credentials_path %>">JSONP</a></p>
+            <h3>Your <strong>OAuth credentials</strong></h3>
+            <% if true %>
+            <p><a class="oauth" href="<%= api_key_credentials_path %>">API Key</a><a class="jsonp selected" href="<%= oauth_credentials_path %>">OAuth</a></p>
             <% end %>
           </div>
           <div class="middle_white_medium">
@@ -40,12 +40,12 @@
                 </span>
                 <span class="long_block">
                   <label>ACCESS TOKEN URL</label>
-                  <input type="text" value="https://<%=current_user.username%>.cartodb.com/oauth/request_token" readonly="readonly"/>
+                  <input type="text" value="https://<%=current_user.username%>.cartodb.com/oauth/access_token" readonly="readonly"/>
                 </span>
               </div>
 
               <span class="end_key">
-                <a href="#open_confirm_renew" class="open_confirm_renew submit orange">Get new key and secret</a>
+                <a href="#open_confirm_renew" class="open_confirm_renew submit orange">Regenerate key and secret</a>
               </span>
             </div>
           </div>
@@ -65,12 +65,12 @@
         <a href="#close_window" class="close_delete"></a>
         <div class="inner_">
           <span class="top">
-            <h3>You are about to refresh your api key and secret</h3>
-            <p>Doing that you will have to change all your api keys in these applications where you are using CartoDB, think about it!</p>
+            <h3>You are about to regenerate your OAuth key and secret</h3>
+            <p>You will have to update all OAuth keys in apps where you are using CartoDB. Are you sure?</p>
           </span>
           <span class="bottom">
             <a href="#close_window" class="cancel">cancel</a>
-            <a href="#confirm_renew" class="confirm_renew" key="">Renew your keys</a>
+            <a href="#confirm_renew" class="confirm_renew" key="">Regenerate your keys</a>
           </span>
         </div>
       </div>

@@ -104,7 +104,7 @@
 	/*============================================================================*/
 	Geocoding.prototype.processGeocoding = function(directions) {
     var me = this;
-    var worker = new Worker("/javascripts/admin/show/view/geocoding_worker.js");
+    var worker = new Worker("/javascripts/admin/show/view/geocoding_worker.js?891892");
 
     worker.onmessage = function(event){
       
@@ -122,8 +122,8 @@
         window.ops_queue.updateGeoreferencing(null);
         
         var params = {};
-        if (event.data.Placemark != undefined) {
-          params['the_geom'] = {"type":"Point","coordinates":[event.data.Placemark[0].Point.coordinates[0],event.data.Placemark[0].Point.coordinates[1]]};
+        if (event.data.query.results.ResultSet.Found != "0") {
+          params['the_geom'] = {"type":"Point","coordinates":[event.data.query.results.ResultSet.Results.longitude,event.data.query.results.ResultSet.Results.latitude]};
         }
 				params['cartodb_georef_status'] = true;
 				$.ajax({

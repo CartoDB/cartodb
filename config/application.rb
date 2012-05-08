@@ -45,13 +45,16 @@ module CartoDB
     ::Sequel.extension(:pagination)
   end
 end
-
 require 'csv'
+require 'state_machine'
 require 'cartodb/errors'
 require 'cartodb/logger'
 require 'cartodb/sql_parser'
 require 'cartodb/connection_pool'
 require 'cartodb/queries_threshold'
 require 'cartodb/pagination'
+require 'cartodb/mini_sequel'
 require 'importer/lib/cartodb-importer'
+require 'importer/lib/cartodb-migrator'
+require 'importer/lib/cartodb-exporter'
 $pool = CartoDB::ConnectionPool.new

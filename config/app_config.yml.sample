@@ -1,12 +1,15 @@
 development:
+  session_domain: '.localhost.lan'
+  secret_token: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   account_host: 'localhost.lan:4000'
   account_path: '/account'
+  tile_host: 'localhost.lan'
+  tile_port: '8181'
   developers_host: 'http://developers.localhost.lan:3000'
   secret_token: "some_secret"
-  session_domain: '.localhost.lan'
   amazon_access_key: ''
   amazon_secret_key: ''
-  varnish_management: 
+  varnish_management:
     host: '127.0.0.1'
     post: 6082
   redis:
@@ -17,14 +20,15 @@ development:
     password: "monkey"
 
 test:
+  session_domain: '.localhost.lan'
+  secret_token: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
   account_host: 'testhost.lan'
   account_path: '/account'
   developers_host: 'http://developers.testhost.lan:53716'
   secret_token: "some_secret"
-  session_domain: '.testhost.lan'
   amazon_access_key: ''
   amazon_secret_key: ''
-  varnish_management: 
+  varnish_management:
     host: '127.0.0.1'
     post: 6082
   redis:
@@ -33,31 +37,3 @@ test:
   superadmin:
     username: "superadmin"
     password: "monkeytest"
-
-production:
-  account_host: ''
-  account_path: ''
-  developers_host: ''
-  session_domain: ''
-  amazon_access_key: ''
-  amazon_secret_key: ''
-  secret_token: "some_secret"
-  varnish_management: 
-    host:
-    port: 
-  redis: 
-    host: '127.0.0.1'
-    port: 6379
-  superadmin:
-    username: ""
-    password: ""
-  airbrake_api_key: ''
-  action_mailer:
-    delivery_method: smtp
-    smtp_settings:
-      address: "your-smtp-server.com"
-      port: 25
-      user_name: 'username'
-      password: 'password'
-      authentication: 'plain'
-      enable_starttls_auto: false

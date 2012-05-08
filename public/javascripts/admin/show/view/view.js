@@ -40,36 +40,40 @@
 	      if ($('div.sql_window').is(':visible')) {
 	        closeOutTableWindows();
 	      } else {
-	        $('div.sql_window span.errors').hide();
 	        if (editor.getValue() == '') {
 	          editor.setValue('SELECT * FROM ' + table_name);
 	        }
-	        $('div.sql_window,div.outer_textarea').removeAttr('style');
+	        
 	        $('div.sql_window').fadeIn('fast', function () {
 	          editor.refresh();
 	          editor.focus();
 	        });
+
+	        // Set errors size if exists
+	        if (editor.errors) {
+	        	$('div.sql_window div.inner div.outer_textarea').css({bottom:$('div.sql_window span.errors').outerHeight() +'px'});
+	        } else {
+	        	$('div.sql_window div.inner div.outer_textarea').removeAttr('style');
+	        }
+
 	        bindESC();
 	      }
 	    });
 
-	    // Clear sql mode and back to normal state
+	    // Close all the windows
 	    $('a.clear_table').live('click', function (ev) {
 	      closeOutTableWindows();
-	      var query_mode = ($('body').hasClass('query'));
-	      if (query_mode) {
-	        $('body').removeClass('query');
-	        setAppStatus(); // Out function to change app to SQL or NORMAL
-	      }
 	    });
 	    
 	    $('div.sql_window a.close_sql,div.sql_window a.close').live('click', function (ev) {
 	      stopPropagation(ev);
 	      closeOutTableWindows();
+	      if (editor.errors) {
+	      	delete editor['errors'];
+	      	$('a.clear_table:eq(0)').click();
+	      }
 	    });
 
-
-	    
 	    // SQL editor
 	    editor = CodeMirror.fromTextArea(document.getElementById("sql_textarea"), {
 	      lineNumbers: false,
@@ -555,8 +559,14 @@
 	      stopPropagation(ev);
 	      resetSaveWindow();
         closeOutTableWindows();
+
         $('div.mamufas div.save_window').show();
+        
+        // Fill the table name + copy
+        $('div.save_window span.top input').val(table_name + '_copy');
+
         $('div.mamufas').fadeIn('fast');
+
         $('div.save_window span.top input').focus();
         
         $(document).keydown(function(event){
@@ -581,13 +591,23 @@
 	        var requestId = createUniqueId();
           window.ops_queue.newRequest(requestId,'duplicate_table');
 	        
+	        // If we are in a query view
+	        var query = $('body').hasClass('query')
+	        	, data = {};
+
+	        if (query) {
+	        	data = {from_query: editor.getValue(), name: new_table}
+	        } else {
+	        	data = {
+              name: new_table,
+              table_copy: table_name
+            }
+	        }
+
 	        $.ajax({
             type: "POST",
             url: global_api_url+'tables',
-            data: {
-              name: new_table,
-              table_copy: table_name
-            },
+            data: data,
             headers: {"cartodbclient":"true"},
             success: function(result) {
               window.location.href = '/tables/'+ result.name;
@@ -601,21 +621,25 @@
 	        $('div.save_window span.top input').addClass('error');
 	        $('div.save_window span.top div.error_content').fadeIn().delay(3000).fadeOut();
 	      }
-	      
-
 	    });
 	
 	    $('a.export_data').live('click',function(ev){
-	      stopPropagation(ev);
-	      if ($('div.mamufas').is(':visible') && $('div.delete_window').is(':visible')) {
-	        $('div.mamufas div.delete_window').hide();
-	        $('div.mamufas div.export_window').show();
-	      } else {
-	        closeOutTableWindows();
-	        $('div.mamufas div.export_window').show();
-	        $('div.mamufas').fadeIn('fast');
-	        bindESC();
-	      }
+        if (!$(this).parent().hasClass('disabled')) {
+          stopPropagation(ev);
+          if ($('div.mamufas').is(':visible') && $('div.delete_window').is(':visible')) {
+            $('div.mamufas div.delete_window').hide();
+            $('div.mamufas div.export_window').show();
+          } else {
+            closeOutTableWindows();
+            $('div.mamufas div.export_window').show();
+            $('div.mamufas').fadeIn('fast');
+
+            // Set form url correctly before choose a export option
+            $('div.export_window').find('form').attr('action','/tables/' + table_name);
+
+            bindESC();
+          }
+        }
 	    });
 			
 			
@@ -741,6 +765,12 @@
 			// Title window
 	    $('div.inner_subheader div.left').append(window.view_elements.title_window);
 	
+			// Close warning window
+			$('div.warning_window .cancel,div.warning_window .close').click(function(ev){
+				stopPropagation(ev);
+				closeOutTableWindows();
+			});
+
 	    //Bind events
 	    // -Open window
 	    $('section.subheader h2 a, p.status a.save').live('click',function(ev){
@@ -778,25 +808,17 @@
 	          $('span.title_window span').fadeOut();
 	        },1500);
 	      } else {
-	        // If the name of the table is Untitled_table... - not show warning
-	        if ((old_value.name).search('untitled_table')==-1) {
-	          closeOutTableWindows();
-	          $('div.mamufas div.warning_window form').unbind('submit');
-	          $('div.mamufas div.warning_window form').submit(function(ev){
-	            stopPropagation(ev);
-	            changeTableName(new_value,old_value);
-	          });
-	          $('div.mamufas div.warning_window').show();
-	          $('div.mamufas').fadeIn('fast',function(){
-	            $('div.mamufas div.warning_window input').focus();
-	          });
-	          bindESC();
-	        } else {
-	          changeTableName(new_value,old_value);
-	        }
-        
-	        // Function to change the table name final steps
-
+          closeOutTableWindows();
+          $('div.mamufas div.warning_window form').unbind('submit');
+          $('div.mamufas div.warning_window form').submit(function(ev){
+            stopPropagation(ev);
+            changeTableName(new_value,old_value);
+          });
+          $('div.mamufas div.warning_window').show();
+          $('div.mamufas').fadeIn('fast',function(){
+            $('div.mamufas div.warning_window input').focus();
+          });
+          bindESC();
 	      }
 	    });
 	
@@ -823,11 +845,21 @@
 		var table_status = (function() {
 	    $('div.inner_subheader div.left').append(window.view_elements.privacy_window);
 
+	    // Check if the user can make private tables
+	    if (!privacy_enabled) {
+	    	$('div.inner_subheader div.left').find('span.privacy_window > ul > li.private')
+	    		.removeClass('private')
+	    		.addClass('disabled')
+	    		.find('a')
+	    		.html('<strong>Private</strong> (only paid plans)');
+	    }
+
 	    $('span.privacy_window ul li a').live('click',function(ev){
-	      stopPropagation(ev);
+	      ev.preventDefault();
 	      var parent_li = $(this).parent();
 	      if (!parent_li.hasClass('disabled')) {
 	        if (parent_li.hasClass('selected')) {
+	        	ev.stopPropagation();
 	          $('span.privacy_window').hide();
 	        } else {
 	          var old_value = $('span.privacy_window ul li.selected a strong').text().toLowerCase();
@@ -846,11 +878,11 @@
 	            if ($('body').hasClass('map')) {
 	            	style = 'style="display:block"';
 	            }
-	            //$('.inner_subheader div.right').append('<span '+ style +' class="mapkey"><a class="mapkey" href="#get_api_key">MAP KEY</a></span>');
 	          }
-	          
 	          changesRequest('privacy',new_value.toUpperCase(),old_value);
 	        }
+	      } else {
+	      	$('body').click()
 	      }
 	    });
 
@@ -1033,7 +1065,7 @@
 		    
 	      var cartodb_layer = {
           getTileUrl: function(coord, zoom) {
-            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png?sql=' + (($('body').hasClass('query'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
+            return TILEHTTP + '://' + user_name + '.' + TILESERVER + '/tiles/' + table_name + '/'+zoom+'/'+coord.x+'/'+coord.y+'.png?sql=' + encodeURIComponent(($('body').hasClass('query'))?editor.getOption('query') : 'SELECT * FROM ' + table_name);
           },
           tileSize: new google.maps.Size(256, 256)
         };
@@ -1081,49 +1113,20 @@
         });
 		  }
 		  
-		  function zoomToBBox() {
-        var me = this;
-        $.ajax({
-            method: "GET",
-            url: global_api_url+'queries?sql='+escape('select ST_Extent(the_geom) from '+ table_name),
-            headers: {"cartodbclient":"true"},
-            success: function(data) {
-              if (data.rows[0].st_extent!=null) {
-                var coordinates = data.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-
-                var coor1 = coordinates[0].split(' ');
-                var coor2 = coordinates[1].split(' ');
-                var bounds = new google.maps.LatLngBounds();
-                
-                // Check bounds
-                if (coor1[0] >  180 
-                 || coor1[0] < -180 
-                 || coor1[1] >  90 
-                 || coor1[1] < -90 
-                 || coor2[0] >  180 
-                 || coor2[0] < -180 
-                 || coor2[1] >  90  
-                 || coor2[1] < -90) {
-                  coor1[0] = '-30';
-                  coor1[1] = '-50'; 
-                  coor2[0] = '110'; 
-                  coor2[1] =  '80'; 
-                }
-
-                bounds.extend(new google.maps.LatLng(coor1[1],coor1[0]));
-                bounds.extend(new google.maps.LatLng(coor2[1],coor2[0]));
-
-                embed_map.fitBounds(bounds);
-              }
-
-            },
-            error: function(e) {
-            }
-        });
+		  function zoomToBBox(corners) {
+        // If request getCartoDBBox, get from helpers
+        if (!corners) {
+          gettingTableBounds(table_name,zoomToBBox);
+        } else {
+          if (!$.isEmptyObject(corners)) {
+            var bounds = new google.maps.LatLngBounds(corners.sw, corners.ne);
+            embed_map.fitBounds(bounds);
+          }
+        }
       }
 		  
 			function changeEmbedCode() {
-				var sql = (($('body').hasClass('query')) ? '?sql=' + editor.getOption('query') : '');
+				var sql = (($('body').hasClass('query')) ? '?sql=' + encodeURIComponent(editor.getOption('query')) : '');
 				$('div.embed_window span.copy_code input').val('<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map'+ sql +'\'></iframe>');
 				$('div.embed_window div.tiles_code input').val(TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map'+ sql);
 			}
@@ -1216,7 +1219,6 @@
   ////////////////////////////////////////
 	function goToMap() {
 		$('span.paginate').hide();
-		//$('span.mapkey').show();
 		 					
 		// Change list and tools selected
     $('section.subheader ul.tab_menu li').removeClass('selected');
@@ -1234,7 +1236,6 @@
 	
 	function goToTable() {
 		$('span.paginate').show();
-		//$('span.mapkey').hide();
 		
 		// Change list and tools selected
     $('section.subheader ul.tab_menu li').removeClass('selected');
@@ -1383,25 +1384,30 @@
 	function setAppStatus() {
 		var query_mode = ($('body').hasClass('query'));
 		if (query_mode) {
-			if ($('ul.tab_menu li a.share').hasClass('disabled')) {
-				$('ul.tab_menu li a.share').hide();
-			}
 		  $('a.open_georeference').css({opacity:0.5});
 			$.favicon('/favicon/black_32x32.png');
 			var html = $('p.settings').html();
-			$('p.settings').html(html.replace(/\|/g,''));
+			$('p.settings').html(html.replace(/\|/gi,''));
 			$('body').addClass('query');
 			$('body').animate({backgroundColor:'#282828'},500);
+
+      // Change advanced options
+			$('a.save_table').text('Table from query');
+      $('a.export_data').parent().addClass('disabled');
+
 			setTimeout(function(){$('body').css('background-position','0 -160px');},300);
 			$('section.subheader').animate({backgroundColor:'#282828'},500);
 			setTimeout(function(){$('section.subheader').css('background-position','0 -218px');},300);
 		} else {
-			$('ul.tab_menu li a.share').show();
 		  $('a.open_georeference').css({opacity:1});
 			$.favicon('/favicon/blue_32x32.png');
 			$('body').removeClass('query');
-			$('p.settings a:last').before(' | ');
-			$('p.settings a:eq(1)').before(' | ');
+
+      // Change advanced options
+      $('a.save_table').text('Duplicate table as...');
+      $('a.export_data').parent().removeClass('disabled');
+			$('p.settings a:lt(2)').after(' | ');
+
 			$('body').animate({backgroundColor:'#2D3451'},500);
 			setTimeout(function(){$('body').css('background-position','0 0');},300);
 			$('section.subheader').animate({backgroundColor:'#2D3451'},500);

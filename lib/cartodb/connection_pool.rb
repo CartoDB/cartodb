@@ -3,7 +3,7 @@ require 'fiber'
 module CartoDB
   class ConnectionPool
     
-    MAX_POOL_SIZE = 400
+    MAX_POOL_SIZE = 300
     
     def initialize
       @pool = {}
@@ -16,6 +16,7 @@ module CartoDB
         @pool[connection_id(configuration)][:connection]
       else
         if @pool.size >= MAX_POOL_SIZE
+          #close_connections!
           close_oldest_connection!
         end
         connection = yield
@@ -32,7 +33,6 @@ module CartoDB
       @pool = {}
     end
     
-    # TODO: FIXME
     def close_oldest_connection!
       older = nil
       oldest_access = nil
@@ -43,7 +43,7 @@ module CartoDB
         end
       end
       @pool[older][:connection].disconnect
-      @pool[older] = nil
+      @pool.delete(older)
     end
     
     private

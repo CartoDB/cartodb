@@ -45,13 +45,14 @@
     )%>
 
     <script type="text/javascript">
-      var table_id = <%= @table.id %>;
-      var status = "<%= table_privacy_text(@table).downcase %>";
-      var table_name = "<%= @table.name %>";
-      var user_id = "<%= current_user.id %>";
-      var user_name = "<%= current_user.username %>";
-      var map_enabled = <%= current_user.map_enabled.to_s %>;
-      var map_key = "<%= current_user.get_map_key %>";
+      var table_id = <%= @table.id %>
+      	, status = "<%= table_privacy_text(@table).downcase %>"
+      	, table_name = "<%= @table.name %>"
+      	, user_id = "<%= current_user.id %>"
+      	, user_name = "<%= current_user.username %>"
+      	, map_enabled = <%= current_user.map_enabled.to_s %>
+      	, privacy_enabled = <%= current_user.private_tables_enabled.to_s %>
+      	, map_key = "<%= current_user.get_map_key %>";
       <% if flash[:alert] %>
         var error_message = '<%= flash[:alert] %>';
       <% end %>
@@ -98,10 +99,14 @@
             <li class="selected"><a href="#view_table">Table</a></li>
             <li class="<%= ((!current_user.map_enabled)? 'disabled' : '') %>"><a href="#view_map">Map</a></li>
             <li>
-              <a href="#share_this_map" class="share <%= 'disabled' if @table.private? %>">SHARE THIS MAP</a>
-              <span class="share_tooltip">
-                <p>Make your <a href="#make_public">table public</a> for sharing the map</p>
-              </span>
+              <% if true %>
+                <a href="#share_this_map" class="share <%= 'disabled' if @table.private? %>">SHARE THIS MAP</a>
+                <span class="share_tooltip">
+                  <p>Make your <a href="#make_public">table public</a> for sharing the map</p>
+                </span>
+              <% else %>
+                <a href="#share_this_map" class="share">SHARE THIS MAP</a>
+              <% end %>
             </li>
           </ul>
         </div>

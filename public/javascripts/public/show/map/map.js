@@ -1,0 +1,1 @@
+	// MAP //	function initMap() {		$('div#map').append('<iframe width="100%" height="100%" src="/tables/' + table_name + '/embed_map"></iframe>');	}	// Show map function -> carto_map  function showMap() {    $('div.map_window div.map_curtain').hide();  }  	// Hide map function -> carto_map  function hideMap() {		$('div.map_window div.map_curtain').show();  }

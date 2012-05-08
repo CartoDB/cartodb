@@ -24,11 +24,13 @@
 	      '<div class="sql_window">'+
 	      	'<a href="#close_this_view" class="close">close this view</a>'+
 					'<div class="inner">'+
-	       		'<h3>Add your custom SQL query</h3>'+
-						'<p>You can free move or close this window to watch the table. If you want to know more about PostGIS check out this <a href="http://www.postgis.org/docs/" target="_blank">reference</a>. Protip: Alt+RETURN for lauching your query</p>'+
-		        '<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
+						'<span class="top">'+
+	       			'<h3>Add your custom SQL query</h3>'+
+							'<p>You can free move or close this window to watch the table. If you want to know more about PostGIS check out this <a href="http://www.postgis.org/docs/" target="_blank">reference</a>. Protip: Alt+RETURN for lauching your query</p>'+
+		        	'<div class="outer_textarea"><textarea id="sql_textarea"></textarea></div>'+
+		        	'<span class="errors"><p>Your query is not correct, try again with another ;)</p></span>'+
+						'</span>'+
 		        '<span class="bottom">'+
-		          '<span class="errors"><p>Your query is not correct, try again with another ;)</p></span>'+
 		          '<span class="history">'+
 		          	'<a href="#undo" class="undo"></a><a href="#redo" class="redo"></a>'+
 		          	'<div class="tooltip">'+
@@ -47,7 +49,7 @@
           '<div class="inner_">'+
             '<span class="loading">'+
                '<h5>We are georeferencing your columns...</h5>'+
-               '<p>Just some seconds, ok?</p>'+
+               '<p>We\'ll be quick!</p>'+
              '</span>'+
             '<span class="top">'+
               '<h3>Choose your geocoding method for this table</h3>'+
@@ -100,7 +102,7 @@
           '<div class="inner_">'+
             '<span class="loading">'+
               '<h5>We are duplicating your table...</h5>'+
-              '<p>Just some seconds, ok?</p>'+
+              '<p>We\'ll be quick!</p>'+
             '</span>'+
             '<span class="top">'+
               '<h3>Insert a name for your copy of this table</h3>'+
@@ -154,8 +156,9 @@
                 '<p>Select your desired format for downloading the data</p>'+
                 '<ul>'+
                   '<li class="selected"><a class="option" href="#CSV" rel="csv">CSV (Comma separated values)</a></li>'+
-                  '<li class="disabled"><a class="option" href="#KML" rel="kml">KML</a></li>'+
+                  '<li><a class="option" href="#KML" rel="kml">KML</a></li>'+
                   '<li><a class="option" href="#SHP" rel="shp">SHP</a></li>'+
+                  '<li><a class="option" href="#SQL" rel="sql">SQL</a></li>'+
                 '</ul>'+
               '</span>'+
               '<span class="bottom">'+
@@ -173,7 +176,7 @@
         '</span>',
       warning_window : 
         '<div class="warning_window">'+
-          '<a href="#close_window" class="close"></a>'+
+        	'<a href="#close_window" class="close"></a>'+
           '<div class="inner_">'+
             '<form>'+
               '<span class="top">'+

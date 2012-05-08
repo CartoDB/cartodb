@@ -9,8 +9,8 @@ module CartoDB
     
     @@debug = true
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
-    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json}
-      
+    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .tar .gz .tgz .osm .bz2 }
+    
     attr_accessor :import_from_file,              
                   :db_configuration, 
                   :db_connection, 
@@ -27,6 +27,9 @@ module CartoDB
       @psql_bin_path    = `which psql`.strip   
       @runlog           = OpenStruct.new :log => [], :stdout => [], :err => []   
       @@debug           = options[:debug]
+      @data_import      = DataImport.find(:id=>options[:data_import_id])
+      @data_import_id   = options[:data_import_id]
+      @remaining_quota  = options[:remaining_quota]
       @append_to_table  = options[:append_to_table] || nil
       @db_configuration = options.slice :database, :username, :password, :host, :port
       @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
@@ -54,18 +57,44 @@ module CartoDB
       end
       
       # TODO: Explain THIS!
-      if @import_from_file.is_a?(String)
-        if @import_from_file =~ /^http/
-          @import_from_file = URI.escape(@import_from_file)
+      if @import_from_file.is_a?(String) 
+        @filesrc = nil
+        @fromuri = false
+        if @import_from_file =~ /^http/ # Tells us it is a URL
+          # KML from FusionTables urls were not coming with extensions
+          if @import_from_file =~ /fusiontables/
+            @filesrc = "fusiontables"
+          end
+          @fromuri = true
+          #@import_from_file = URI.escape(@import_from_file) # Ensures open-uri will work
         end
-        open(@import_from_file) do |res|
-          file_name = File.basename(@import_from_file)
-          @ext = File.extname(file_name)
-          @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
-          @import_from_file = Tempfile.new([@suggested_name, @ext])
-          @import_from_file.write res.read.force_encoding("UTF-8")
-          @import_from_file.close
-        end
+          begin
+            open(URI.escape(@import_from_file)) do |res| # opens file normally, or open-uri to download/open
+              @data_import.file_ready
+              file_name = File.basename(@import_from_file)
+              @ext = File.extname(file_name).downcase
+              # Fix for extensionless fusiontables files
+              if @ext == "" 
+                if @filesrc == "fusiontables"
+                  @ext = ".kml"
+                else
+                  @ext = ".csv"
+                end
+              end
+              @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
+              @import_from_file = Tempfile.new([@suggested_name, @ext])
+              @import_from_file.write res.read.force_encoding("UTF-8")
+              @import_from_file.close
+            end
+          rescue e
+            if @import_from_file =~ /^http/
+              uri = $!.uri
+              retry
+            else
+              @data_import.log_error(e)
+            end
+          end
+        
       else
         original_filename = if @import_from_file.respond_to?(:original_filename)
           @import_from_file.original_filename
@@ -78,7 +107,9 @@ module CartoDB
       
       # finally setup current path
       @path = @import_from_file.respond_to?(:tempfile) ? @import_from_file.tempfile.path : @import_from_file.path
+      @data_import.file_ready
     rescue => e
+      @data_import.log_error(e)
       log e.inspect
       raise e
     end
@@ -93,26 +124,50 @@ module CartoDB
     #
     def import!
       begin
+        if @remaining_quota < (0.6*File.size(@path))
+          disk_quota_overspend = (File.size(@path) - @remaining_quota).to_int
+          @data_import.set_error_code(8001)
+          @data_import.log_error("#{disk_quota_overspend / 1024}KB more space is required" )
+          raise CartoDB::QuotaExceeded, "#{disk_quota_overspend / 1024}KB more space is required" 
+        end
         # decompress data and update self with results
         decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash) 
+        @data_import.log_update('file unzipped') if decompressor
         update_self decompressor.process! if decompressor
-      
+        @data_import.reload
+        
         # TODO: should this be here...?
         @import_type = @ext        
+        
+        @data_import.log_update("file type set to #{@ext}") 
       
         # Preprocess data and update self with results
         # preprocessors are expected to return a hash datastructure
         preproc = CartoDB::Import::Preprocessor.create(@ext, self.to_import_hash)
+        @data_import.refresh
+        @data_import.log_update('file preprocessed') if preproc
         update_self preproc.process! if preproc
       
         # Load data in
         loader = CartoDB::Import::Loader.create(@ext, self.to_import_hash)
-        raise "no importer for this type of data" if !loader      
+        if !loader
+          @data_import.log_update("no importer for this type of data, #{@ext}")
+          @data_import.set_error_code(1002)
+          raise "no importer for this type of data"          
+        end
+        @data_import.log_update("file successfully loaded") if loader
+        
         i_res, payload = loader.process! 
+        @data_import.refresh
+        @data_import.log_update("file successfully imported")
+        
         update_self i_res if i_res
-      
+        
+        @data_import.save
         return payload
       rescue => e
+        @data_import.refresh #reload incase errors were written
+        #@data_import.log_error(e)
         log "====================="
         log e
         log e.backtrace
@@ -129,6 +184,9 @@ module CartoDB
           File.unlink(@import_from_file)
         elsif @import_from_file.is_a? Tempfile
           @import_from_file.unlink
+        end
+        if @data_import
+          @data_import.save
         end
       end        
     end  

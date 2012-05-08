@@ -3,7 +3,7 @@
   <head>
     <meta charset='utf-8' />
     <title><%= yield :page_title %>CartoDB</title>
-    <link id="favicon" rel="shortcut icon" href="/favicon/favicon_32x32.ico" />
+    <link id="favicon" rel="shortcut icon" href="/favicon/favicon.ico" />
     <%= javascript_include_tag "/javascripts/plugins/head.load.min.js" %>
     <%= yield :js %>
     <%= yield :head %>
@@ -20,7 +20,6 @@
         <% end %>
         <li><a href="<%= APP_CONFIG[:developers_host] %>">developers</a></li>
         <li><a href="http://support.cartodb.com/" target="_blank">support</a></li>
-        <li><a href="http://blog.cartodb.com" target="_blank">blog</a></li>
         <li class="last"><%= link_to current_user.email, account_url, :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
       </ul>
     </header>

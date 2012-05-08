@@ -62,6 +62,73 @@ feature "Superadmin's users API" do
     end
   end
   
+  scenario "user create default account settings" do
+    post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
+      response.status.should == 201
+      response.body[:quota_in_bytes].should == 104857600
+      response.body[:table_quota].should == 5
+      response.body[:account_type].should == 'FREE'
+      response.body[:private_tables_enabled].should == false
+      
+      # Double check that the user has been created properly
+      user = User.filter(:email => @user_atts[:email]).first
+      user.quota_in_bytes.should == 104857600
+      user.table_quota.should == 5
+      user.account_type.should == 'FREE'
+      user.private_tables_enabled.should == false
+    end
+  end
+
+
+  scenario "user create non-default account settings" do
+    @user_atts[:quota_in_bytes] = 2000
+    @user_atts[:table_quota]    = 20
+    @user_atts[:account_type]   = 'Juliet'
+    @user_atts[:private_tables_enabled] = true
+    
+    post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
+      response.status.should == 201
+      response.body[:quota_in_bytes].should == 2000
+      response.body[:table_quota].should == 20
+      response.body[:account_type].should == 'Juliet'
+      response.body[:private_tables_enabled].should == true
+      
+      # Double check that the user has been created properly
+      user = User.filter(:email => @user_atts[:email]).first
+      user.quota_in_bytes.should == 2000
+      user.table_quota.should == 20
+      user.account_type.should == 'Juliet'
+      user.private_tables_enabled.should == true
+    end
+  end
+  
+  
+  scenario "update user account details" do
+    user = create_user
+    @update_atts = {:quota_in_bytes => 2000,
+                    :table_quota    => 20,
+                    :account_type   => 'Juliet',
+                    :private_tables_enabled => true}
+    
+    # test to true
+    put_json superadmin_user_path(user), { :user => @update_atts }, default_headers do |response|
+      response.status.should == 200
+    end
+    user = User[user.id]
+    user.quota_in_bytes.should == 2000
+    user.table_quota.should == 20
+    user.account_type.should == 'Juliet'
+    user.private_tables_enabled.should == true
+    
+    # then test back to false
+    put_json superadmin_user_path(user), { :user => {:private_tables_enabled => false} }, default_headers do |response|
+      response.status.should == 200
+    end    
+    user = User[user.id]
+    user.private_tables_enabled.should == false    
+  end  
+  
+  
   scenario "user update fail" do
     user = create_user
     

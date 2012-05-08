@@ -15,6 +15,10 @@ module NavigationHelpers
     "/dashboard"
   end
 
+  def public_path
+    "/dashboard/public"
+  end  
+
   def api_query_url
     "#{api_url_prefix}/"
   end

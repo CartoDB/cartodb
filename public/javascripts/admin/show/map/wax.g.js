@@ -1054,6 +1054,8 @@ wax.g.interaction = function(map, tilejson, options) {
             this._getTileGrid = null;
         },
 
+
+
         getTile: function(evt) {
             var tile;
             var grid = this.getTileGrid();
@@ -1066,6 +1068,7 @@ wax.g.interaction = function(map, tilejson, options) {
                     break;
                 }
             }
+
             return tile || false;
         },
 
@@ -1207,7 +1210,7 @@ wax.g.connector.prototype.getTile = function(coord, zoom, ownerDocument) {
         var img = this.cache[key] = new Image(256, 256);
         this.cache[key].src = this.getTileUrl(coord, zoom);
         this.cache[key].setAttribute('gTileKey', key);
-        this.cache[key].onerror = function() { img.style.display = 'none'; };
+        this.cache[key].onerror = function() {img.style.display = 'none'; };
     }
     return this.cache[key];
 };

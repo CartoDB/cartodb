@@ -4,38 +4,49 @@ module CartoDB
     class CSV < CartoDB::Import::Loader
 
       register_loader :csv
+      register_loader :txt
 
       def process!
+        @data_import = DataImport.find(:id=>@data_import_id)
 
         # run Chardet + Iconv
         fix_encoding
-
+        
+        @data_import.log_update("ogr2ogr #{@suggested_name}")
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@path} -nln #{@suggested_name}}
-
-        out = `#{ogr2ogr_command}`
-
-        if $?.exitstatus != 0
-          raise "failed to convert import CSV into postgres using ogr2ogr: #{out.inspect}"
+        
+        stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
+  
+        unless (err = stderr.read).empty?
+          if err.downcase.include?('failure')
+            @data_import.set_error_code(2000)
+            @data_import.log_error(err)
+            @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
+          
+            if err.include? "already exists"
+              @data_import.set_error_code(5002)
+              @data_import.log_error("ERROR: #{@path} contains reserved column names")
+            end
+            raise "failed to convert #{@ext.sub('.','')} to shp"
+          else
+            @data_import.log_update(err)
+          end
         end
-
-        if 0 < out.strip.length
-          @runlog.stdout << out
+        
+        unless (reg = stdout.read).empty?
+          @runlog.stdout << reg
         end
 
         # Check if the file had data, if not rise an error because probably something went wrong
         if @db_connection["SELECT * from #{@suggested_name} LIMIT 1"].first.nil?
           @runlog.err << "Empty table"
+          @data_import.set_error_code(5001)
+          @data_import.log_error(err)
+          @data_import.log_error("ERROR: no data could be imported from file")
           raise "Empty table"
         end
 
-        # Sanitize column names where needed
-        column_names = @db_connection.schema(@suggested_name).map{ |s| s[0].to_s }
-        need_sanitizing = column_names.each do |column_name|
-          if column_name != column_name.sanitize_column_name
-            @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
-          end
-        end
 
         # Importing CartoDB CSV exports
         # ===============================
@@ -46,8 +57,10 @@ module CartoDB
         # * loop over table and parse geojson into postgis geometries
         # * drop the_geom_orig
         #
+        column_names = @db_connection.schema(@suggested_name).map{ |s| s[0].to_s }
         if column_names.include? "the_geom"
-          if res = @db_connection["select the_geom from #{@suggested_name} limit 1"].first
+          @data_import.log_update("update the_geom")
+          if res = @db_connection["select the_geom from #{@suggested_name} WHERE the_geom is not null and the_geom != '' limit 1"].first
 
             # attempt to read as geojson. If it fails, continue
             begin
@@ -64,29 +77,44 @@ module CartoDB
                 # TODO: Replace with ST_GeomFromGeoJSON when production has been upgraded to postgis r8692
                 # @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(the_geom_orig),4326) WHERE the_geom_orig IS NOT NULL")
                 # tokumine ticket: http://trac.osgeo.org/postgis/ticket/1434
-                @db_connection["select the_geom_orig from #{@suggested_name}"].each do |res|
+                @data_import.log_update("converting GeoJSON to the_geom")
+                @db_connection["select the_geom_orig from #{@suggested_name} where the_geom_orig != '' and the_geom_orig is not null "].each do |res|
                   begin
                     geojson = RGeo::GeoJSON.decode(res[:the_geom_orig], :json_parser => :json)
-                    @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_GeomFromText('#{geojson.as_text}', 4326) WHERE the_geom_orig = '#{res[:the_geom_orig]}'")
+                    if geojson
+                      @db_connection.run("UPDATE #{@suggested_name} SET the_geom = ST_GeomFromText('#{geojson.as_text}', 4326) WHERE the_geom IS NULL AND the_geom_orig = '#{res[:the_geom_orig]}';");
+                    end
                   rescue => e
                     @runlog.err << "silently fail conversion #{geojson.inspect} to #{@suggested_name}. #{e.inspect}"
+                    @data_import.log_error("ERROR: silently fail conversion #{geojson.inspect} to #{@suggested_name}. #{e.inspect}")
                   end
                 end
-
                 # Drop original the_geom column
                 @db_connection.run("ALTER TABLE #{@suggested_name} DROP COLUMN the_geom_orig")
               end
             rescue => e
+              column_names.delete('the_geom')
+              @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom;")
               @runlog.err << "failed to read geojson for #{@suggested_name}. #{e.inspect}"
+              @data_import.log_error("ERROR: failed to read geojson for #{@suggested_name}. #{e.inspect}")
+            end
+          else
+            begin
+              column_names.delete('the_geom')
+              @db_connection.run("ALTER TABLE #{@suggested_name} RENAME COLUMN the_geom TO invalid_the_geom;")
+            rescue
+              column_names.delete('the_geom')
+              @runlog.err << "failed to convert the_geom to invalid_the_geom"
+              @data_import.log_error("ERROR: failed to convert the_geom to invalid_the_geom")
             end
           end
         end
-
+        
         # if there is no the_geom, and there are latitude and longitude columns, create the_geom
         unless column_names.include? "the_geom"
 
-          latitude_possible_names = "'latitude','lat','latitudedecimal','latitud','lati'"
-          longitude_possible_names = "'longitude','lon','lng','longitudedecimal','longitud','long'"
+          latitude_possible_names = "'latitude','lat','latitudedecimal','latitud','lati','decimallatitude','decimallat'"
+          longitude_possible_names = "'longitude','lon','lng','longitudedecimal','longitud','long','decimallongitude','decimallon'"
 
           matching_latitude = nil
           res = @db_connection["select column_name from information_schema.columns where table_name ='#{@suggested_name}'
@@ -103,6 +131,7 @@ module CartoDB
 
 
           if matching_latitude and matching_longitude
+              @data_import.log_update("converting #{matching_latitude}, #{matching_latitude} to the_geom")
               #we know there is a latitude/longitude columns
               @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
 
@@ -122,7 +151,17 @@ module CartoDB
           end
         end
 
+        begin
+          # Sanitize column names where needed
+          sanitize_table_columns @suggested_name
+        rescue Exception => msg  
+          @runlog.err << msg
+          @data_import.log_update("ERROR: Failed to sanitize some column names")
+        end
+        
+        
         @table_created = true
+        @data_import.log_update("table created")
         FileUtils.rm_rf(Dir.glob(@path))
         rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
 

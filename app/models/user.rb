@@ -381,9 +381,9 @@ class User < Sequel::Model
           env += " PGPORT=5491" # TODO: get from config !
           env += " PGHOST=localhost" # TODO: get from config !
           env += " PGPASSWORD=#{database_password}"
-          cmd = "#{env} psql -X -tA -f #{f} #{database_name} | diff -U2 #{expfile} -"
+          cmd = "#{env} psql -X -tA -f #{f} #{database_name} 2>&1 | diff -U2 #{expfile} - 2>&1"
           result = `#{cmd}`
-          if result != '' 
+          if $? != 0
             puts "fail"
             puts "--------------------------------------------------------------------------------"
             puts "#{result}"

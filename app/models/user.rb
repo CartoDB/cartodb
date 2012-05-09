@@ -371,16 +371,17 @@ class User < Sequel::Model
     puts "Testing functions in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
+	config = ::Rails::Sequel.configuration.environment_for(Rails.env)
+        env  = " PGUSER=#{database_username}"
+        env += " PGPORT=#{config['port']}" 
+        env += " PGHOST=#{config['host']}"
+        env += " PGPASSWORD=#{database_password}"
         glob = RAILS_ROOT + '/lib/sql/test/*.sql'
         #puts " Scanning #{glob}"
         Dir.glob(glob).each do |f|
           tname = File.basename(f, '.sql')
           expfile = File.dirname(f) + '/' + tname + '_expect'
           print "  #{tname} ... "
-          env  = " PGUSER=#{database_username} "
-          env += " PGPORT=5491" # TODO: get from config !
-          env += " PGHOST=localhost" # TODO: get from config !
-          env += " PGPASSWORD=#{database_password}"
           cmd = "#{env} psql -X -tA -f #{f} #{database_name} 2>&1 | diff -U2 #{expfile} - 2>&1"
           result = `#{cmd}`
           if $? != 0

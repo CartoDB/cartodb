@@ -1,0 +1,9 @@
+1|1|SELECT * FROM geometry_columns
+2|1|SELECT * FROM geometry_columns
+3|1|SELECT * FROM geometry_columns
+4|1|CREATE table "my'tab;le" ("$" int)
+4|2|SELECT '1','$$', '$hello$', "$" FROM "my'tab;le"
+4|3|CREATE function "hi'there" ("'" text default '$') returns void as $h$ declare a int; b text; begin b='hi'; return; end; $h$ language 'plpgsql'
+4|4|SELECT 5
+5|1|INSER INTO "my''""t" values ('''','""'';;')
+5|2|SELECT $qu;oted$ hi $qu;oted$

@@ -1,4 +1,7 @@
 -- Return an array of table names used by a given query
+--
+-- Requires PostgreSQL 9.x+
+--
 CREATE OR REPLACE FUNCTION CDB_QueryTables(query text)
 RETURNS name[]
 AS $$

@@ -7,7 +7,12 @@ DECLARE
   tables NAME[];
 BEGIN
   
-  EXECUTE 'EXPLAIN (FORMAT XML) ' || query INTO STRICT exp;
+  BEGIN
+    EXECUTE 'EXPLAIN (FORMAT XML) ' || query INTO STRICT exp;
+  EXCEPTION WHEN others THEN
+    RAISE WARNING 'Cannot explain query: % (%)', query, SQLERRM;
+    return tables;
+  END;
 
   -- Now need to extract all values of <Relation-Name>
 

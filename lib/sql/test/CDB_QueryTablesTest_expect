@@ -1,2 +1,3 @@
 SELECT * FROM geometry_columns|{pg_attribute,pg_type,pg_class,pg_namespace}
 SELECT a.attname FROM pg_class c JOIN pg_attribute a on (a.attrelid = c.oid)|{pg_attribute,pg_class}
+CREATE table "my'tab;le" as select 1|{}

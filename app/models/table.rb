@@ -429,7 +429,7 @@ class Table < Sequel::Model(:user_tables)
     set_trigger_cache_timestamp
     set_trigger_check_quota
     set_default_table_privacy
-    make_geom_valid
+    # make_geom_valid # too expensive to do on import, leave to the user
     
     @force_schema = nil
     $tables_metadata.hset key, "user_id", user_id

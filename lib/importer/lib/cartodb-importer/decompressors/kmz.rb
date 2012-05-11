@@ -1,8 +1,7 @@
 module CartoDB
   module Import
-    class Gzipper < CartoDB::Import::Decompressor
-
-      register_decompressor :zip
+    class KMZ < CartoDB::Import::Decompressor
+      #TODO: do we really need this still?
       register_decompressor :kmz
 
       def process!

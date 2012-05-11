@@ -6,6 +6,7 @@ module CartoDB
       register_decompressor :zip
       register_decompressor :gz
       register_decompressor :tgz
+      
 
       def process!
         @data_import = DataImport.find(:id=>@data_import_id)

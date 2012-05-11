@@ -83,6 +83,10 @@ module CartoDB
               elsif @import_from_file =~ /openstreetmap.org/
                 @ext = ".osm"
               end
+              
+              if @ext==".gz" and @import_from_file.include?(".tar.gz")
+                @ext=".tgz"
+              end
               @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
               @import_from_file = Tempfile.new([@suggested_name, @ext])
               @import_from_file.write res.read.force_encoding("UTF-8")

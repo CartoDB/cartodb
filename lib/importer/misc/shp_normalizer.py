@@ -92,6 +92,9 @@ try:
     encoding = detector.result["encoding"]
     if encoding=="ascii":
         encoding="LATIN1"
+except IOError as err:
+    print err
+    sys.exit(1)
 except:
     #if encoding detection fails, attempt default UTF8
     encoding = "UTF8"

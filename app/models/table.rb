@@ -493,7 +493,9 @@ class Table < Sequel::Model(:user_tables)
   
   def make_geom_valid
     begin 
-      owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom)")
+      # make timeout here long, but not infinite. 10mins = 600000 ms. 
+      # TODO: extend .run to take a "long_running" indicator? See #730.
+      owner.in_database.run("SET statement_timeout TO 600000;UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom);SET statement_timeout TO DEFAULT")
     rescue => e
       CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} make valid failed: #{e.inspect}"
     end

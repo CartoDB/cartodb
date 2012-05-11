@@ -1,10 +1,12 @@
 module CartoDB
   module Import
-    class Zipper < CartoDB::Import::Decompressor
+    class UNP < CartoDB::Import::Decompressor
       
       register_decompressor :tar
+      register_decompressor :zip
       register_decompressor :gz
       register_decompressor :tgz
+      
 
       def process!
         @data_import = DataImport.find(:id=>@data_import_id)
@@ -14,14 +16,12 @@ module CartoDB
         tmp_dir = temporary_filename
         
         Dir.mkdir(tmp_dir)
-        if @ext == '.tar'
-          tarcmd = "tar -C #{tmp_dir} -xvf #{@path}"
-        elsif @ext == '.gz' and ! @path.include? '.tar'
-          tarcmd = "gzip -d #{@path}"
-        else
-          tarcmd = "tar -C #{tmp_dir} -zxvf #{@path}"
-        end
+        curdir = Dir.pwd
+        Dir.chdir(tmp_dir)
+        tarcmd = "unp #{@path}"
         utr = `#{tarcmd}`
+        Dir.chdir(curdir)
+        
         Dir.foreach(tmp_dir) do |name|
           # temporary filename. no collisions. 
           tmp_path = "#{tmp_dir}/#{name}"

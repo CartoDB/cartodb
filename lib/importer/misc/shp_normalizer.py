@@ -1,4 +1,5 @@
 from chardet.universaldetector import UniversalDetector
+import itertools
 import os.path
 import sys
 import dbfUtils
@@ -94,16 +95,13 @@ try:
    
     detector = UniversalDetector()
 
-    i = 0
-    for row in db:
+    # 100 rows should be enough to figure encoding
+    # TODO: more broader and automated testing, allow 
+    #       setting limit by command line param
+    for row in itertools.islice(db, 100):
       # Feed detector with concatenated string fields
       detector.feed( ''.join(row[fno] for fno in sfields) )
-      if detector.done: break
-      i += 1
-      # 100 rows should be enough to figure encoding
-      # TODO: more broader and automated testing, allow 
-      #       setting limit by command line param
-      if i > 100: break
+      if detector.done: break 
     dbf.close()
     detector.close()
     encoding = detector.result["encoding"]

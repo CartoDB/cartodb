@@ -78,20 +78,37 @@ if os.path.isfile(prj_file):
         srid = int(jres['codes'][0]['code'])
     except:
       srid=4326 # ensure set back to 4326 whatever happens    
-    
+
 try:
     #Try to detect the encoding
     dbf = open(dbf_file, 'rb')
     db = dbfUtils.dbfreader(dbf)
+
+    fnames = db.next()
+    ftypes = db.next()
+
+    # find string fields
+    sfields = []
+    for fno in range(len(fnames)):
+      if ( ftypes[fno][0] == 'C' ) : sfields.append(fno)
+   
     detector = UniversalDetector()
+
+    i = 0
     for row in db:
-      detector.feed(str(row))
+      # Feed detector with concatenated string fields
+      detector.feed( ''.join(row[fno] for fno in sfields) )
       if detector.done: break
-    detector.close()
+      i += 1
+      # 100 rows should be enough to figure encoding
+      # TODO: more broader and automated testing, allow 
+      #       setting limit by command line param
+      if i > 100: break
     dbf.close()
+    detector.close()
     encoding = detector.result["encoding"]
     if encoding=="ascii":
-        encoding="LATIN1"
+        encoding="LATIN1" # why not UTF8 here ?
 except IOError as err:
     print err
     sys.exit(1)

@@ -37,7 +37,7 @@ class ApplicationController < ActionController::Base
   def render_403
     respond_to do |format|
       format.html { render :file => "public/403.html", :status => 403, :layout => false }
-      format.all  { head :forbidden }      
+      format.all  { head :forbidden }
     end
   end
 
@@ -67,6 +67,7 @@ class ApplicationController < ActionController::Base
   def not_authorized
     respond_to do |format|
       format.html do
+        session[:return_to] = request.url
         redirect_to login_url(:host => CartoDB.account_host) and return
       end
       format.json do
@@ -84,7 +85,7 @@ class ApplicationController < ActionController::Base
      port       = ":#{request.port}"
     end
     app_domain = CartoDB.session_domain
-    
+
     if logged_in?
       if current_user.present? and request.host !~ /^#{current_user.username}#{app_domain}$/
         redirect_to "#{protocol}://#{current_user.username}#{app_domain}#{port}"

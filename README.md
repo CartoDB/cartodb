@@ -40,12 +40,12 @@ and code.
   - A geospatial database built on PostgreSQL and PostGIS 2.0
   - An SQL API for running SQL queries over HTTP with results formatted
     using GeoJSON and KML
-  - A Map tiler that supports SQL and tile styling using CartoCSS 
-  - Authentication using OAuth if required  
- 
+  - A Map tiler that supports SQL and tile styling using CartoCSS
+  - Authentication using OAuth if required
+
 # What does CartoDB depend on? #
 
-  - CartoDB-SQL-API  
+  - CartoDB-SQL-API
   - Mapnik 2.0
   - NodeJS 0.4.10+
   - PostGIS 2.0
@@ -54,12 +54,12 @@ and code.
   - Varnish 3.0+
   - Ruby 1.9.2+
   - Windshaft-cartodb
-  
+
 # How do I install CartoDB? #
 
 CartoDB is under heavy development, so the installation process is only
 for hardy souls.
-That said, there are many successful installations on Amazon EC2, Linode, 
+That said, there are many successful installations on Amazon EC2, Linode,
 dedicated instances and development machines running OS X and Ubuntu 10.04+.
 
 If you want to give it a try, download CartoDB by cloning this repository:
@@ -108,7 +108,7 @@ that powers CartoDB. [PostGIS](http://postgis.refractions.net) is
 the geospatial extension that allows PostgreSQL to support geospatial
 queries. This is the heart of CartoDB!
 
-First you'll need to install a few dependencies. 
+First you'll need to install a few dependencies.
 
   - [GDAL](http://www.gdal.org) is requires for raster support.
   - [GEOS](http://trac.osgeo.org/geos) is required for geometry function
@@ -130,14 +130,14 @@ instead of in the `./postgis` directory:
 ```bash
 #!/usr/bin/env bash
 POSTGIS_SQL_PATH='pg_config --sharedir'/contrib/postgis-2.0
-createdb -E UTF8 template_postgis 
-createlang -d template_postgis plpgsql 
+createdb -E UTF8 template_postgis
+createlang -d template_postgis plpgsql
 psql -d postgres -c \
  "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis'"
-psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql 
+psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql
 psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
 psql -d template_postgis -f $POSTGIS_SQL_PATH/legacy.sql
-psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;" 
+psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
 psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
 ```
 
@@ -148,16 +148,16 @@ Basically it's a really fast key-value datastore used for caching.
 
 To install Redis 2.2+, You can [download it here](http://redis.io/download)
 or you can use `brew install redis`.
-  
+
 ## Install Python dependencies ##
 
 To install the Python modules that CartoDB depends on, you can use
 `easy_install`, which is easy!
 
 ```bash
-$ easy_install pip 
+$ easy_install pip
 $ pip install -r python_requirements.txt
-```      
+```
 
 If this fails, try doing `export ARCHFLAGS='-arch i386 -arch x86_64'`
 beforehand.
@@ -194,8 +194,8 @@ recipe](http://trac.mapnik.org/wiki/MacInstallation/Homebrew).
 ## Install CartoDB SQL API ##
 
 The CartoDB SQL API component powers the SQL queries over HTTP. To install it:
-    
-```bash            
+
+```bash
 $ git clone git@github.com:Vizzuality/CartoDB-SQL-API.git
 $ cd CartoDB-SQL-API
 $ npm install
@@ -236,7 +236,7 @@ Celebrate by drinking a cold beer before continuing. :)
 Time to run your development version of CartoDB.
 
 ```bash
-# [mysubdomain] = replace with the subdomain/username of your choice 
+# [mysubdomain] = replace with the subdomain/username of your choice
 #                 (in cartodb, username == subdomain)
 
 # Enter the `cartodb` directory.
@@ -245,7 +245,7 @@ cd cartodb
 # Create a new gemset
 rvm use 1.9.2@cartodb --create
 
-# Install local dependencies 
+# Install local dependencies
 bundle install --binstubs
 
 # Configure the application constants
@@ -289,6 +289,17 @@ For a full list of CartoDB utility tests:
 bundle exec rake -T
 ```
 
+
+# Using foreman #
+
+You can also use foreman to run the full stack (cartodb server, sql api, tiler, redis and resque), using a single command:
+
+```
+bundle exec foreman start -p $PORT
+```
+
+where $PORT is the port you want to attach the rails server to.
+
 # Note on tiling, SQL API and Redis #
 
 Please ensure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all
@@ -297,7 +308,7 @@ running for full experience.
 Manual configuration is needed for the
 `public/javascripts/environments/development.js` file which configures
 Windshaft-cartodb tile server URLs.
-  
+
 ### Contributors ###
 
   - Fernando Blat (@ferblape)

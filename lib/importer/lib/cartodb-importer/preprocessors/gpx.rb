@@ -44,7 +44,6 @@ module CartoDB
          @ext = '.shp'
        else
          @data_import.set_error_code(2000)
-         @data_import.log_error(stderr.read)
          @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
          @runlog.err << "failed to create shp file from GPX"
          raise "failed to convert #{@ext.sub('.','')} to shp"

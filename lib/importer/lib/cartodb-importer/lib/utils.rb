@@ -49,6 +49,10 @@ module CartoDB
         testn = 1
         uniname = name
         while true==existing_names.include?("#{uniname}")
+          if name.length > 20-testn
+            n = 19-testn
+            name = name[0..n]
+          end
           uniname = "#{name}_#{testn}"
           testn = testn + 1
         end

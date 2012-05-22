@@ -1327,7 +1327,6 @@ TRIGGER
   #
   # TODO: Far too clever approach. Just recursivly append "_copy" if duplicate
   def get_valid_name(raw_new_name = nil)
-
     # set defaults and sanity check
     raw_new_name = (raw_new_name || "untitled_table").sanitize
     

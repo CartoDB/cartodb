@@ -45,10 +45,14 @@ module CartoDB
         if name.length > 20
           name = name[0..19]
         end
-        existing_names = @db_connection["select relname from pg_stat_user_tables WHERE schemaname='public' and relname ilike '#{name}%'"].map(:relname)
+        existing_names = @db_connection["select relname from pg_stat_user_tables WHERE schemaname='public'"].map(:relname)
         testn = 1
         uniname = name
         while true==existing_names.include?("#{uniname}")
+          if "#{name}_#{testn}".length > 20
+            n = 19-("#{name}_#{testn}".length - 20)
+            name = name[0..n]
+          end
           uniname = "#{name}_#{testn}"
           testn = testn + 1
         end

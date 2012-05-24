@@ -70,8 +70,8 @@ class Api::Json::TablesController < Api::ApplicationController
       end
     end
     
-    # Handle OSM imports allowing multi-table creation
     if ext.present? and multifiles.include?(ext)
+      # Handle OSM imports allowing multi-table creation
       begin
         owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
@@ -95,6 +95,31 @@ class Api::Json::TablesController < Api::ApplicationController
         @data_import.set_error_code(6000)
         raise "OSM data error"
       end
+    elsif params[:append].present?
+      #handle table appending. table appending doesn't work with OSM files, so after the multi check
+      @new_table = Table.new
+      
+      @data_import = DataImport.new(:user_id => current_user.id)
+      @data_import.updated_at = Time.now
+      @data_import.save
+      
+      @new_table.user_id = current_user.id
+      @new_table.data_import_id = @data_import.id
+      @new_table.name = params[:name]                          if params[:name]# && !params[:table_copy]
+      @new_table.import_from_file = params[:file]              if params[:file]
+      @new_table.import_from_url = params[:url]                if params[:url]
+      @new_table.save
+      #if @new_table.valid? && @new_table.save      
+        @new_table.reload
+        @table = Table.filter(:user_id => current_user.id, :id => params[:table_id]).first
+        @table.append_to_table(:from_table => @new_table)
+        @table.save.reload
+      #   # append_to_table doesn't automatically destroy the table
+        @new_table.destroy
+      
+        render_jsonp({:id => @table.id, 
+                     :name => @table.name, 
+                     :schema => @table.schema}, 200, :location => table_path(@table))
     else
       @table = Table.new
       @table.user_id = current_user.id

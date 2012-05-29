@@ -1,3 +1,11 @@
+0.9.5
+-----
+* CDB_RectangleGrid function, for simpler grids
+* CDB_QueryTables accept concatenated statements and removes dupes
+* improved speed, robustness and file type handling for imports
+* documentation fixes
+* bugfixes for oauth authentication
+
 0.9.4
 -----
 * Update CDB_TransformToWebmercator to return NULL for geoms fully

@@ -218,16 +218,6 @@ describe CartoDB::Importer do
           end
         end
         context "shp standard tests" do
-          it "should import EjemploVizzuality.zip" do
-            table = new_table :name => nil
-            table.import_from_file = "#{Rails.root}/db/fake_data/EjemploVizzuality.zip"
-            table.importing_encoding = 'LATIN1'
-            table.save
-
-            table.rows_counted.should == 11
-            table.name.should == "vizzuality"
-          end
-  
           it "should import SHP1.zip" do
             table = new_table :name => nil
             table.import_from_file = "#{Rails.root}/db/fake_data/SHP1.zip"

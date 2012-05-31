@@ -27,7 +27,13 @@ module CartoDB
       @psql_bin_path    = `which psql`.strip   
       @runlog           = OpenStruct.new :log => [], :stdout => [], :err => []   
       @@debug           = options[:debug]
-      @data_import      = DataImport.find(:id=>options[:data_import_id])
+      if options[:date_import_id]
+        @data_import      = DataImport.find(:id=>options[:data_import_id])
+      else
+        @data_import  = DataImport.new(:user_id => 0)
+        @data_import.updated_at = Time.now
+        @data_import.save
+      end
       @data_import_id   = options[:data_import_id]
       @remaining_quota  = options[:remaining_quota]
       @append_to_table  = options[:append_to_table] || nil
@@ -115,7 +121,8 @@ module CartoDB
       @path = @import_from_file.respond_to?(:tempfile) ? @import_from_file.tempfile.path : @import_from_file.path
       @data_import.file_ready
     rescue => e
-      @data_import.log_error(e)
+      p e
+      #@data_import.log_error(e)
       log e.inspect
       raise e
     end

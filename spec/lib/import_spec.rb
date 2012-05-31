@@ -272,7 +272,7 @@ describe CartoDB::Importer do
             table.rows_counted.should == 7
             check_schema(table, [
               [:cartodb_id, "integer"], [:url, "text"], [:login, "text"], 
-              [:country, "text"], [:followers_count, "text"], [:field_5, "text"], 
+              [:country, "text"], [:followers_count, "text"], 
               [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]
             ])
     

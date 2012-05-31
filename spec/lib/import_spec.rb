@@ -230,7 +230,6 @@ describe CartoDB::Importer do
         context "osm standard tests" do
           it "should import guinea.osm.bz2" do
             table = new_table :name => nil
-            #table.import_from_file = "#{Rails.root}/db/fake_data/EjemploVizzuality.zip"
             table.import_from_file = "#{Rails.root}/db/fake_data/guinea.osm.bz2"
             table.save
             table.rows_counted.should == 308

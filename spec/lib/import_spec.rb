@@ -15,7 +15,7 @@ describe CartoDB::Importer do
 
             check_schema(table, [
               [:cartodb_id, "integer"], [:url, "text"], [:login, "text"], 
-              [:country, "text"], [:followers_count, "text"], [:field_5, "text"], 
+              [:country, "text"], [:followers_count, "text"],  
               [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
               [:the_geom, "geometry", "geometry", "point"]
             ])
@@ -54,10 +54,9 @@ describe CartoDB::Importer do
     
             # parse constructed CSV and test
             parsed = CSV.parse(csv_content)
-            parsed[0].should == ["cartodb_id", "country", "field_5", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
+            parsed[0].should == ["cartodb_id", "country", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
             parsed[1].first.should == "1"
           end
-
           it "should import file import_csv_1.csv" do
             table = new_table :name => nil
             table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
@@ -76,7 +75,6 @@ describe CartoDB::Importer do
             row[:lon].should == "2.8"
             row[:views].should == "540"
           end
-
           it "should import file import_csv_2.csv" do
             table = new_table :name => nil
             table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_2.csv"
@@ -95,7 +93,6 @@ describe CartoDB::Importer do
             row[:lon].should == "2.8"
             row[:views].should == "540"
           end
-  
           it "should import file flights-bad-encoding.csv" do
             table = new_table
             table.import_from_file = "#{Rails.root}/db/fake_data/flights-bad-encoding.csv"
@@ -105,7 +102,6 @@ describe CartoDB::Importer do
             row = table.record(1)
             row[:vuelo].should == "A31762"
           end
-  
           it "should handle an empty file empty_file.csv" do
             user = create_user
             table = new_table
@@ -119,7 +115,6 @@ describe CartoDB::Importer do
             tables = user.run_query("select relname from pg_stat_user_tables WHERE schemaname='public'")
             tables[:rows].should_not include({:relname => "empty_table"})
           end
-  
           # It has strange line breaks
           it "should import file arrivals_BCN.csv" do
             table = new_table :name => nil
@@ -129,7 +124,6 @@ describe CartoDB::Importer do
             table.name.should == 'arrivals_bcn'
             table.rows_counted.should == 3855
           end
-  
           it "should import file clubbing.csv" do
             table = new_table :name => nil
             table.import_from_file = "#{Rails.root}/db/fake_data/clubbing.csv"

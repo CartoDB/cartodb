@@ -56,8 +56,10 @@ module CartoDB
           uniname = "#{name}_#{testn}"
           testn = testn + 1
         end
-        
-        return uniname.sub("__","_")
+        while uniname.include? "__"
+          uniname = uniname.sub("__","_")
+        end
+        return uniname
       end
 
       def fix_encoding

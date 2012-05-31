@@ -1,5 +1,17 @@
 module CartoDB
+  @default_test_user = nil
   module Factories
+    def default_user(attributes={})
+      user = nil
+      unless @default_test_username.nil?
+        user = User.find(:username => @default_test_username)
+      end
+      if user.nil?
+        user = new_user(attributes)
+        @default_test_username = user.username
+      end
+      user
+    end
     def new_user(attributes = {})
       attributes = attributes.dup
       user = User.new

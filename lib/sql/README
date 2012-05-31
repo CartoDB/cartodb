@@ -1,0 +1,16 @@
+SQL files in this directory (*.sql) will be loaded into newly
+created user databases.
+
+You can install/upgrade functions in all known users databases
+with the cartodb:db:load_function rake target:
+
+  rake cartodb:db:load_functions
+
+The test/ directory contains regression testing for the functions
+you can run against all user databases using:
+
+  rake cartodb:db:test_functions
+
+This is how you can upgrade & test functions in a single run:
+
+  rake cartodb:db:load_functions cartodb:db:test_functions

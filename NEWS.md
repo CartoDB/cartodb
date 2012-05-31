@@ -1,9 +1,18 @@
+0.9.5
+-----
+* CDB_RectangleGrid function, for simpler grids
+* CDB_QueryTables accept concatenated statements and removes dupes
+* improved speed, robustness and file type handling for imports
+* documentation fixes
+* bugfixes for oauth authentication
+
 0.9.4
 -----
 * Update CDB_TransformToWebmercator to return NULL for geoms fully
   outside the valid webmercator boundary
 * Add CDB_RandomTids function, for fast pseudo-random TID scans
 * Add an hexagon builder functions CDB_Hexagon and CDB_HexagonGrid
+* CDB_TransformToWebmercator 10x speed improvement
 * Improve timeout in import stages
 * Improved Shapefile importing
 * Dashboard optimizations for large datasets

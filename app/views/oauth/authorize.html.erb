@@ -8,8 +8,8 @@
       <%- if params[:oauth_callback] -%>
         <%= hidden_field_tag "oauth_callback", params[:oauth_callback] %>
       <%- end -%>
-      <p class="center"><%= check_box_tag 'authorize' %> <a href="#authorize">Authorize access</a></p>
-      <%= submit_tag 'Allow connection', :class => "button green border right" %>
+      <p class="margin20"><%= check_box_tag 'authorize' %> <a href="#authorize">Authorize access</a></p>
+      <%= submit_tag 'Allow connection', :class => "button green border margin10" %>
     <% end %>
   </div>
   <div class="footer">

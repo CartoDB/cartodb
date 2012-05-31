@@ -40,5 +40,5 @@ CartoDB Importer has a suite of specs which define its specification. To run thi
 
 Then, to run the specs just run this command:
 
-    bundle exec rspec spec/import_spec.rb
+    bundle exec rspec spec/lib/import_spec.rb
     

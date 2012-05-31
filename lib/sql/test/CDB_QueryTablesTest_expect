@@ -1,0 +1,5 @@
+SELECT * FROM geometry_columns|{pg_attribute,pg_class,pg_namespace,pg_type}
+SELECT a.attname FROM pg_class c JOIN pg_attribute a on (a.attrelid = c.oid)|{pg_attribute,pg_class}
+CREATE table "my'tab;le" as select 1|{}
+SELECT a.oid, b.oid FROM pg_class a, pg_class b|{pg_class}
+SELECT 1 as col1; select 2 as col2|{}

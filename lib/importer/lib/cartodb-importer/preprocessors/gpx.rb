@@ -20,10 +20,7 @@ module CartoDB
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
         unless (err = stderr.read).empty?
-          @data_import.set_error_code(2000)
           @data_import.log_error(err)
-          @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
-          raise "failed to convert #{@ext.sub('.','')} to shp"
         end
         
        # out = `#{ogr2ogr_command}`
@@ -32,8 +29,7 @@ module CartoDB
        #   raise "failed to convert gpx to shp"
        # end
        # 
-       # track_points = "#{shp_file}/track_points.shp"
-       # @runlog.stdout << track_points
+       track_points = "#{shp_file}/track_points.shp"
 
        # then choose the track_points file to import
        if Dir.exists?(shp_file) and File.file?(track_points)
@@ -47,8 +43,10 @@ module CartoDB
          # get the file to import and set extension to shp
          @ext = '.shp'
        else
+         @data_import.set_error_code(2000)
          @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
          @runlog.err << "failed to create shp file from GPX"
+         raise "failed to convert #{@ext.sub('.','')} to shp"
        end
        
        # construct return variables

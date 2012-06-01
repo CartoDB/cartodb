@@ -744,6 +744,281 @@ describe Table do
     end
   
   end
+  context "post import processing tests" do
+    it "should add a point the_geom column after importing a CSV" do
+      table = new_table :name => nil
+      table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+      table.save.reload
+      table.name.should match(/^twitters/)
+      table.rows_counted.should == 7
+      check_schema(table, [
+        [:cartodb_id, "integer"], [:url, "text"], [:login, "text"], 
+        [:country, "text"], [:followers_count, "text"], 
+        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"]
+      ])
+
+      row = table.records[:rows][0]
+      row[:url].should == "http://twitter.com/vzlaturistica/statuses/23424668752936961"
+      row[:login].should == "vzlaturistica "
+      row[:country].should == " Venezuela "
+      row[:followers_count].should == "211"
+    end
+
+    it "should not drop a table that exists when upload fails" do
+      user = create_user
+      table = new_table :name => 'empty_file', :user_id => user.id
+      table.save.reload
+      table.name.should == 'empty_file'
+
+      table2 = new_table :name => nil, :user_id => user.id
+      table2.import_from_file = "#{Rails.root}/db/fake_data/empty_file.csv"
+      lambda {
+        table2.save
+      }.should raise_error
+
+      user.in_database do |user_database|
+        user_database.table_exists?(table.name.to_sym).should be_true
+      end
+    end
+
+    it "should not drop a table that exists when upload does not fail" do
+      user = create_user
+      table = new_table :name => 'empty_file', :user_id => user.id
+      table.save.reload
+      table.name.should == 'empty_file'
+
+      table2 = new_table :name => 'empty_file', :user_id => user.id
+      table2.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
+      table2.save.reload
+      table2.name.should == 'csv_no_quotes'
+
+      user.in_database do |user_database|
+        user_database.table_exists?(table.name.to_sym).should be_true
+        user_database.table_exists?(table2.name.to_sym).should be_true
+      end
+    end
+
+    it "should remove the user_table even when phisical table does not exist" do
+      user = create_user
+      table = new_table :name => 'empty_file', :user_id => user.id
+      table.save.reload
+      table.name.should == 'empty_file'
+
+      user.in_database do |user_database|
+        user_database.drop_table(table.name.to_sym)
+      end
+
+      table.destroy
+      Table[table.id].should be_nil
+    end
+
+    # Not supported by cartodb-importer v0.2.1
+    pending "should escape reserved column names" do
+      user = create_user
+      table = new_table :user_id => user.id
+      table.import_from_file = "#{Rails.root}/db/fake_data/reserved_columns.csv"
+      table.save.reload
+
+      table.schema.should include([:_xmin, "number"])
+    end
+
+    it "should raise an error when creating a column with reserved name" do
+      table = create_table
+      lambda {
+        table.add_column!(:name => "xmin", :type => "number")
+      }.should raise_error(CartoDB::InvalidColumnName)
+    end
+
+    it "should raise an error when renaming a column with reserved name" do 
+      table = create_table
+      lambda {
+        table.modify_column!(:old_name => "name", :new_name => "xmin")
+      }.should raise_error(CartoDB::InvalidColumnName)
+    end
+
+    it "should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id" do
+      user = create_user
+      table = new_table :user_id => user.id
+      table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+      table.save.reload
+      user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
+      table_schema = user.in_database.schema(table.name)
+
+      cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
+      cartodb_id_schema.should be_present
+      cartodb_id_schema = cartodb_id_schema[1]
+      cartodb_id_schema[:db_type].should == "integer"
+      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
+      cartodb_id_schema[:primary_key].should == true
+      cartodb_id_schema[:allow_null].should == false
+    end
+
+    it "should copy cartodb_id values to a new cartodb_id serial column when importing a file which already has a cartodb_id column" do
+      user = create_user
+      table = new_table :user_id => user.id
+      table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+      table.save.reload
+
+      check_schema(table, [
+        [:cartodb_id, "number"], [:name, "string"], [:the_geom, "geometry", "geometry", "point"], 
+        [:invalid_the_geom, "string"], [:created_at, "date"], [:updated_at, "date"]
+      ], :cartodb_types => true)
+
+      user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
+      table_schema = user.in_database.schema(table.name)
+      cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
+      cartodb_id_schema.should be_present
+      cartodb_id_schema = cartodb_id_schema[1]
+      cartodb_id_schema[:db_type].should == "integer"
+      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
+      cartodb_id_schema[:primary_key].should == true
+      cartodb_id_schema[:allow_null].should == false
+
+      # CSV has this data:
+      # 3,Row 3,2011-08-29 16:18:37.114106,2011-08-29 16:19:07.61527,
+      # 5,Row 5,2011-08-29 16:18:37.114106,2011-08-29 16:19:16.216058,
+      # 7,Row 7,2011-08-29 16:18:37.114106,2011-08-29 16:19:31.380103,
+
+      # cartodb_id values should be preserved
+      rows = table.records(:order_by => "cartodb_id", :mode => "asc")[:rows]
+      rows.size.should == 3
+      rows[0][:cartodb_id].should == 3
+      rows[0][:name].should == "Row 3"
+      rows[1][:cartodb_id].should == 5
+      rows[1][:name].should == "Row 5"
+      rows[2][:cartodb_id].should == 7
+      rows[2][:name].should == "Row 7"
+
+      table.insert_row!(:name => "Row 8")
+      rows = table.records(:order_by => "cartodb_id", :mode => "asc")[:rows]
+      rows.size.should == 4
+      rows.last[:cartodb_id].should == 8
+      rows.last[:name].should == "Row 8"
+    end
+
+    it "should make sure it converts created_at and updated at to date types when importing from CSV" do
+      user = create_user
+      table = new_table :user_id => user.id
+      table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+      table.save.reload
+      schema = table.schema(:cartodb_types => true)
+      schema.include?([:updated_at, "date"]).should == true
+      schema.include?([:created_at, "date"]).should == true
+    end  
+    it "should normalize strings if there is a non-convertible entry when converting string to number" do
+      user = create_user
+      table = new_table
+      table.user_id = user.id
+      table.name = "elecciones2008"
+      table.import_from_file = "#{Rails.root}/spec/support/data/column_string_to_number.csv"
+      table.save    
+
+      table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil
+
+      table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 1
+      table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == 2
+      table.sequel.select(:f1).where(:test_id => '3').first[:f1].should == nil
+      table.sequel.select(:f1).where(:test_id => '4').first[:f1].should == 1234
+      table.sequel.select(:f1).where(:test_id => '5').first[:f1].should == 45345
+      table.sequel.select(:f1).where(:test_id => '6').first[:f1].should == -41234
+      table.sequel.select(:f1).where(:test_id => '7').first[:f1].should == 21234.2134
+      table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == 2345.2345
+      table.sequel.select(:f1).where(:test_id => '9').first[:f1].should == -1234.3452
+      table.sequel.select(:f1).where(:test_id => '10').first[:f1].should == nil
+      table.sequel.select(:f1).where(:test_id => '11').first[:f1].should == nil
+      table.sequel.select(:f1).where(:test_id => '12').first[:f1].should == nil                                
+    end
+
+    it "should normalize string if there is a non-convertible entry when converting string to boolean" do
+      user = create_user
+      table = new_table
+      table.user_id = user.id
+      table.name = "my_precious"
+      table.import_from_file = "#{Rails.root}/spec/support/data/column_string_to_boolean.csv"
+      table.save    
+
+      # configure nil column
+      table.sequel.where(:test_id => '11').update(:f1 => nil)                              
+
+      # configure blank column
+      table.sequel.insert(:test_id => '12', :f1 => "")                              
+
+      # update datatype
+      table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil
+
+      # test
+      table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == true
+      table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == true
+      table.sequel.select(:f1).where(:test_id => '3').first[:f1].should == true
+      table.sequel.select(:f1).where(:test_id => '4').first[:f1].should == true
+      table.sequel.select(:f1).where(:test_id => '5').first[:f1].should == true
+      table.sequel.select(:f1).where(:test_id => '6').first[:f1].should == true
+      table.sequel.select(:f1).where(:test_id => '7').first[:f1].should == true
+      table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == false
+      table.sequel.select(:f1).where(:test_id => '9').first[:f1].should == false
+      table.sequel.select(:f1).where(:test_id => '10').first[:f1].should == false
+      table.sequel.select(:f1).where(:test_id => '11').first[:f1].should == nil
+      table.sequel.select(:f1).where(:test_id => '12').first[:f1].should == nil    
+    end
+
+    it "should normalize boolean if there is a non-convertible entry when converting boolean to string" do
+      user = create_user
+      table = new_table
+      table.user_id = user.id
+      table.name = "my_precious"
+      table.import_from_file = "#{Rails.root}/spec/support/data/column_boolean_to_string.csv"
+      table.save    
+      table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil    
+      table.modify_column! :name=>"f1", :type=>"string", :old_name=>"f1", :new_name=>nil
+
+      table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 'true'                              
+      table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == 'false'                              
+    end
+
+    it "should normalize boolean if there is a non-convertible entry when converting boolean to number" do
+      user = create_user
+      table = new_table
+      table.user_id = user.id
+      table.name = "my_precious"
+      table.import_from_file = "#{Rails.root}/spec/support/data/column_boolean_to_string.csv"
+      table.save    
+      table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil    
+      table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil
+
+      table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 1                              
+      table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == 0                              
+    end
+
+    it "should normalize number if there is a non-convertible entry when converting number to string" do
+      user = create_user
+      table = new_table
+      table.user_id = user.id
+      table.name = "my_precious"
+      table.import_from_file = "#{Rails.root}/spec/support/data/column_number_to_string.csv"
+      table.save    
+      table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil    
+      table.modify_column! :name=>"f1", :type=>"string", :old_name=>"f1", :new_name=>nil
+
+      table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == '1'                              
+      table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == '2'                              
+    end
+
+    it "should normalize number if there is a non-convertible entry when converting number to boolean" do
+      user = create_user
+      table = new_table
+      table.user_id = user.id
+      table.name = "my_precious"
+      table.import_from_file = "#{Rails.root}/spec/support/data/column_number_to_boolean.csv"
+      table.save    
+      table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil    
+      table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil
+
+      table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == true                              
+      table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == false                              
+      table.sequel.select(:f1).where(:test_id => '3').first[:f1].should == true                              
+      table.sequel.select(:f1).where(:test_id => '4').first[:f1].should == true                                  
+    end
+  end
   context "geoms and projections" do
     it "should set valid geometry types" do
       user = create_user

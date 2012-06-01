@@ -262,30 +262,16 @@ describe CartoDB::Importer do
       end
       
       pending "should import GeoJSON files from URLs with non-UTF-8 chars converting if needed" do
-        url = {:import_from_url => "https://raw.github.com/gist/1374824/d508009ce631483363e1b493b00b7fd743b8d008/unicode.json", :suggested_name => 'geojson_utf8'}
-        importer = CartoDB::Importer.new @db_opts.reverse_merge(url)
+        #url = {:import_from_url => "https://raw.github.com/gist/1374824/d508009ce631483363e1b493b00b7fd743b8d008/unicode.json", :suggested_name => 'geojson_utf8'}
+        importer = create_importer "https://raw.github.com/gist/1374824/d508009ce631483363e1b493b00b7fd743b8d008/unicode.json", 'geojson_utf8', true
+        #importer = CartoDB::Importer.new @db_opts.reverse_merge(url)
         result = importer.import!
 
-        @db[:geojson_utf8].get(:reg_symbol).should == "In here -> ® <-- this here"
+        @db[:geojson_utf8].get(:tm_symbol).should == "In here -> ® <-- this here"
       end      
     end
   
-    describe "#SHP" do
-      it "should import a SHP file in the given database in a table named like the file" do
-        importer = create_importer 'EjemploVizzuality.zip'
-        result   = importer.import!
-
-        columns = @db.schema(:vizzuality).map{|s| s[0].to_s}        
-        expected_columns = %w(gid subclass x y length area angle name pid lot_navteq version_na vitesse_sp id nombrerest tipocomida)
-
-        result.name.should          == 'vizzuality'
-        result.rows_imported.should == 11
-        result.import_type.should   == '.shp'
-      
-        @db.tables.should include(:vizzuality)
-        (expected_columns - columns).should be_empty
-      end
-    
+    describe "#SHP" do    
       it "should import SHP file TM_WORLD_BORDERS_SIMPL-0.3.zip" do
         importer = create_importer 'TM_WORLD_BORDERS_SIMPL-0.3.zip'
         result = importer.import!
@@ -942,12 +928,16 @@ describe CartoDB::Importer do
     File.expand_path("../../support/data/#{file}", __FILE__)    
   end
   
-  def create_importer file_name, suggested_name=nil
+  def create_importer file_name, suggested_name=nil, is_url=false
     # sanity check
     throw "filename required" unless file_name
     
     # configure opts    
-    opts = {:import_from_file => file(file_name)}
+    if is_url
+      opts = {:import_from_url => file_name}
+    else
+      opts = {:import_from_file => file(file_name)}
+    end
     opts[:suggested_name] = suggested_name if suggested_name.present?
     opts[:data_import_id] = get_data_import_id()
     opts[:remaining_quota] = 50000000

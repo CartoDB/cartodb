@@ -1,5 +1,12 @@
 # coding: UTF-8
 
+# NOTE that these tests are very sensitive to precisce versions of GDAL (1.9.0)
+# 747 # Table post import processing tests should add a point the_geom column after importing a CSV
+# 1210 # Table merging two+ tables should import and then export file twitters.csv
+# 1235 # Table merging two+ tables should import and then export file SHP1.zip
+# 1256 # Table merging two+ tables should import and then export file SHP1.zip as kml
+# 1275 # Table merging two+ tables should import and then export file SHP1.zip as sql
+
 require 'spec_helper'
 
 describe Table do

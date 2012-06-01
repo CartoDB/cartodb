@@ -76,6 +76,8 @@ file](https://github.com/Vizzuality/cartodb/zipball/master).
 We implemented CartoDB in the [Ruby](ruby-lang.org) programming language,
 so you'll need to install Ruby 1.9.2+.
 
+  - unp is required for archive file upload support (e.g., `sudo apt-get install unp`)
+    
 ## Install Node.js ##
 
 Components of CartoDB, like Windshaft, depend on [Node.js](nodejs.org)

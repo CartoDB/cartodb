@@ -115,7 +115,8 @@ module CartoDB
       @path = @import_from_file.respond_to?(:tempfile) ? @import_from_file.tempfile.path : @import_from_file.path
       @data_import.file_ready
     rescue => e
-      @data_import.log_error(e)
+      p e
+      #@data_import.log_error(e)
       log e.inspect
       raise e
     end

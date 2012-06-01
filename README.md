@@ -80,8 +80,7 @@ so you'll need to install Ruby 1.9.2+.
 
 Components of CartoDB, like Windshaft, depend on [Node.js](nodejs.org)
 (version greater than or equal to 0.4.1 but less than version
-0.5.0). Basically it's a highly-scalable web server that leverages
-Google's V8 JavaScript engine.
+0.5.0). 
 
 You can install Node.js and NPM (the
 Node.js package manager) by [following these
@@ -91,15 +90,11 @@ GitHub wiki site.
 Alternatively, you can install Node.js using `brew install node`, but
 NPM has to be installed using the wiki instructions above.
 
-
-You may run into a few annoying NPM version issuess. If so, don't
-worry! Just run:
-
-```bash
-$ curl http://npmjs.org/install.sh | sh
-```
-
-And you will be good to GO.
+** WARNING. CartoDB only supports node 0.4.x at this time. master npm no longer 
+supports this version of node so you will need to manually install the correct 
+version of npm. We're updating our packages to hit node 0.6, but in the meantime 
+recommend you use the nvm (node version manager) to install the 0.4.11 version of nodejs 
+CartoDB needs.**
 
 ## Install PostgreSQL and PostGIS ##
 
@@ -123,9 +118,7 @@ Next install PostgreSQL 9.1.x and PostGIS 2.0.x.
 
 Finally, CartoDB depends on a geospatial database template named
 `template_postgis`. In the example script below, make sure that the
-path to each SQL file is correct. As of PostGIS r8242 for example,
-spatial_ref_sys.sql is now located in the `root` installation directory,
-instead of in the `./postgis` directory:
+path to each SQL file is correct:
 
 ```bash
 #!/usr/bin/env bash
@@ -144,29 +137,30 @@ psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
 ## Install Redis ##
 
 Components of CartoDB, like Windshaft, depend on [Redis](http://redis.io).
-Basically it's a really fast key-value datastore used for caching.
 
 To install Redis 2.2+, You can [download it here](http://redis.io/download)
 or you can use `brew install redis`.
 
+
 ## Install Python dependencies ##
 
 To install the Python modules that CartoDB depends on, you can use
-`easy_install`, which is easy!
+`easy_install`:
 
 ```bash
 $ easy_install pip
 $ pip install -r python_requirements.txt
 ```
 
-If this fails, try doing `export ARCHFLAGS='-arch i386 -arch x86_64'`
+If this fails, try doing `export ARCHFLAGS='-arch i386 -arch x86_64'` 
 beforehand.
+
 
 ## Install Varnish
 
 [Varish](https://www.varnish-cache.org) is a web application
 accelerator. Components like Windshaft use it to speed up serving tiles
-via the Maps API. Installing it is speedy too!
+via the Maps API. 
 
 ```bash
 $ pip install -e
@@ -175,21 +169,13 @@ $ git+https://github.com/RealGeeks/python-varnish.git@0971d6024fbb2614350853a5e0
 
 ## Install Mapnik ##
 
-Mapnik is an API for creating beautiful maps. CartoDB uses Mapnik 2.0.x
-for creating and syling map tiles.
-
-To install it using Ubuntu:
-
-
-```bash
-$ sudo apt-get install build-essential curl wget python-software-properties
-$ sudo add-apt-repository ppa:mapnik/nightly-trunk
-$ sudo apt-get update
-$ sudo apt-get install libmapnik libmapnik-dev mapnik-utils
-```
+Mapnik is an API for creating beautiful maps. CartoDB uses Mapnik 2.0
+for creating and styling map tiles.
 
 To install it using OS X, here is a nice [Homebrew
 recipe](http://trac.mapnik.org/wiki/MacInstallation/Homebrew).
+
+To install it using ubuntu, you can check the [mapnik website](http://mapnik.org/download/)
 
 ## Install CartoDB SQL API ##
 
@@ -300,6 +286,7 @@ bundle exec foreman start -p $PORT
 
 where $PORT is the port you want to attach the rails server to.
 
+
 # Note on tiling, SQL API and Redis #
 
 Please ensure CartoDB-SQL-API, Windshaft-cartodb, and Redis are all
@@ -308,6 +295,7 @@ running for full experience.
 Manual configuration is needed for the
 `public/javascripts/environments/development.js` file which configures
 Windshaft-cartodb tile server URLs.
+
 
 ### Contributors ###
 

@@ -251,7 +251,7 @@
       }
 
       // Set carto style
-      if (str.search('/*carto*/') < 0 && vis_data) {
+      if (str.search('/*carto*/') < 0) {
         this.css_editor.setValue(
           str.replace(/\n/g,'')
           .replace(/\{\n?\s*/g,'{\n   ')

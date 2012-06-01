@@ -682,15 +682,18 @@
     /* Set map status */
     CartoMap.prototype.setMapStatus = function(status) {
 
+      // If carto, don't change the status!
+      if (status == "carto") {return false}
+
       this.status_ = status;
 
       $('div.general_options li.map').each(function(i,ele){
-          $(ele).removeClass('selected');
+        $(ele).removeClass('selected');
       });
       $('div.general_options li.map a.'+status).parent().addClass('selected');
 
       // New special geometry (multipolygon or multipolyline==multilinestring)
-     if (status == "add_polygon" || status == "add_polyline") {
+      if (status == "add_polygon" || status == "add_polyline") {
         this.geometry_creator_ = new GeometryCreator(this.map_,(this.status_=="add_polygon")?"MultiPolygon":"MultiLineString");
       }
 
@@ -2100,8 +2103,9 @@
     CartoMap.prototype.refreshWax = function() {
       // Add again wax layer
       if (this.map_) {
+
         // update tilejson with cache buster
-        this.cache_buster++;
+        this.cache_buster = this.cache_buster + 1;
         this.map_.overlayMapTypes.clear();
 
         this.tilejson.grids = wax.util.addUrlData(this.tilejson.grids_base,  'cache_buster=' + this.cache_buster);

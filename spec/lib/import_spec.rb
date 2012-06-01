@@ -276,7 +276,7 @@ describe CartoDB::Importer do
         importer = create_importer 'TM_WORLD_BORDERS_SIMPL-0.3.zip'
         result = importer.import!
       
-        result.name.should          == 'tm_world_borders_simpl_0_3'
+        result.name.should          == 'tm_world_borders_sim'
         result.rows_imported.should == 246
         result.import_type.should   == '.shp'
       end

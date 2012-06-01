@@ -1294,7 +1294,6 @@ describe Table do
       file_ct.should == 1
     end
   end
-  
   context "retrieving tables from ids" do
     it "should be able to find a table by name or by identifier" do
       user = create_user

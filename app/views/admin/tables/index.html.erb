@@ -1,3 +1,7 @@
+  <% content_for(:page_title) do %>
+    <%= current_user.username %> |
+  <% end %>
+
   <%= content_for(:js) do %>
     <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers", "plugins/file_uploader", "admin/index/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/index/import"  %>
   <% end %>

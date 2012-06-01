@@ -1297,7 +1297,7 @@ describe Table do
     it "should be able to find a table by name or by identifier" do
       user = create_user
       table = new_table :user_id => user.id
-      table.name = 'Fucking awesome name'
+      table.name = 'awesome name'
       table.save.reload
     
       Table.find_by_identifier(user.id, table.id).id.should == table.id

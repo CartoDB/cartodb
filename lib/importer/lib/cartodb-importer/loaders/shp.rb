@@ -8,6 +8,15 @@ module CartoDB
         @data_import = DataImport.find(:id=>@data_import_id)
 
         log "processing shp"
+        
+        #check for available PRJ file
+        unless File.exists?(@path.gsub(".shp",".prj"))
+          @runlog.log << "Error finding a PRJ file for uploaded SHP"
+          @data_import.set_error_code(3101)
+          @data_import.log_error("ERROR: CartoDB requires all SHP files to also contain a PRJ file")
+          raise "Error finding a PRJ file for uploaded SHP"
+        end
+        
         shp2pgsql_bin_path = `which shp2pgsql`.strip
 
         host = @db_configuration[:host] ? "-h #{@db_configuration[:host]}" : ""

@@ -228,7 +228,6 @@ describe User do
     
     # update and reselect
     query_result = user.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")  
-    query_result[:total_rows].should == 2
     query_result[:modified].should   == true
     query_result[:results].should    == false
 

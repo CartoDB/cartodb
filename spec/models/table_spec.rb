@@ -1,5 +1,12 @@
 # coding: UTF-8
 
+# NOTE that these tests are very sensitive to precisce versions of GDAL (1.9.0)
+# 747 # Table post import processing tests should add a point the_geom column after importing a CSV
+# 1210 # Table merging two+ tables should import and then export file twitters.csv
+# 1235 # Table merging two+ tables should import and then export file SHP1.zip
+# 1256 # Table merging two+ tables should import and then export file SHP1.zip as kml
+# 1275 # Table merging two+ tables should import and then export file SHP1.zip as sql
+
 require 'spec_helper'
 
 describe Table do
@@ -1297,7 +1304,7 @@ describe Table do
     it "should be able to find a table by name or by identifier" do
       user = create_user
       table = new_table :user_id => user.id
-      table.name = 'Fucking awesome name'
+      table.name = 'awesome name'
       table.save.reload
     
       Table.find_by_identifier(user.id, table.id).id.should == table.id

@@ -481,13 +481,12 @@ describe Table do
     
       Table.any_instance.stubs(:schema).raises(CartoDB::QueryNotAllowed)
     
-      table = new_table :user_id => user.id
+      table = new_table({:name=>'rescol', :user_id => user.id})
       table.import_from_file = "#{Rails.root}/db/fake_data/reserved_columns.csv"
 
       lambda {
-        table.save
-      }.should raise_error(CartoDB::QueryNotAllowed)
-    
+         table.save
+      }.should raise_error()
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
     end
   end
@@ -1229,7 +1228,7 @@ describe Table do
     
       # parse constructed CSV and test
       parsed = CSV.parse(csv_content)
-      parsed[0].should == ["cartodb_id", "country", "field_5", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
+      parsed[0].should == ["cartodb_id", "country", "followers_count", "login", "url", "created_at", "updated_at", "the_geom"]
       parsed[1].first.should == "1"
     end
   

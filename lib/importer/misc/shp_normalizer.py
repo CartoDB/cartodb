@@ -107,11 +107,8 @@ try:
     encoding = detector.result["encoding"]
     if encoding=="ascii":
         encoding="LATIN1" # why not UTF8 here ?
-except IOError as err:
-    print err
+except Exception as err:
+    sys.stderr.write(repr(err)+'\n')
     sys.exit(1)
-except:
-    #if encoding detection fails, attempt default UTF8
-    encoding = "UTF8"
 
 print "%s,%s,%s,%s" % (srid,encoding,shp_file,name)

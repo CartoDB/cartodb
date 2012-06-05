@@ -44,7 +44,11 @@ def dbfreader(f):
                 if value == '':
                     value = 0
                 elif deci:
-                    value = decimal.Decimal(value)
+                    try:
+                       value = decimal.Decimal(value)
+                    except decimal.InvalidOperation:
+                       # Could be '************************' (for NULL)
+                       value = 0
                 else:
                     value = value
             elif typ == 'D':

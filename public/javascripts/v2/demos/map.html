@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cartodb demo template</title>
+
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="http://leaflet.cloudmade.com/dist/leaflet.css" />
+  </head>
+
+  <body>
+    <div id="map"></div>
+  </body>
+
+  <script src="../cartodb.js"></script>
+  <script>
+    window.onload = function() {
+      cdb.load('../', function() {
+        // create a map
+        var map = new cdb.geo.Map();
+        var mapView = new cdb.geo.LeafletMapView({
+          el: $('#map'),
+          map: map
+        });
+
+        map.bind('change:center', function(model, center) {
+          console.log(center[0], center[1]);
+        });
+
+        var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
+        //URL = 'http://c.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{x}/4094/2724.png';
+
+        map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
+        window.map = map; // to play in console
+      });
+    };
+  </script>
+</html>

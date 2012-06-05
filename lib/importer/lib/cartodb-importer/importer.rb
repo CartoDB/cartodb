@@ -73,20 +73,17 @@ module CartoDB
               @data_import.file_ready
               file_name = File.basename(@import_from_file)
               @ext = File.extname(file_name).downcase
+              
+              
               # Fix for extensionless fusiontables files
-              if @ext == "" 
-                if @filesrc == "fusiontables"
-                  @ext = ".kml"
-                else
-                  @ext = ".csv"
-                end
+              if @filesrc == "fusiontables"
+                @ext = ".kml"
               elsif @import_from_file =~ /openstreetmap.org/
                 @ext = ".osm"
-              end
-              
-              if @ext==".gz" and @import_from_file.include?(".tar.gz")
+              elsif @ext==".gz" and @import_from_file.include?(".tar.gz")
                 @ext=".tgz"
               end
+              
               @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
               @import_from_file = Tempfile.new([@suggested_name, @ext])
               @import_from_file.write res.read.force_encoding("UTF-8")
@@ -113,9 +110,17 @@ module CartoDB
       
       # finally setup current path
       @path = @import_from_file.respond_to?(:tempfile) ? @import_from_file.tempfile.path : @import_from_file.path
+      #final ext check in case the file was falsely transfered as .SHP for example
+      if ['','.shp','.csv'].include? @ext
+        @ext = check_if_archive(@path, @ext)
+        if @ext==""
+          @ext=".csv"
+        end
+      end
       @data_import.file_ready
     rescue => e
-      @data_import.log_error(e)
+      p e
+      #@data_import.log_error(e)
       log e.inspect
       raise e
     end
@@ -196,5 +201,15 @@ module CartoDB
         end
       end        
     end  
+    #https://viz2.cartodb.com/tables/1255.shp
+  def check_if_archive(path, ext)
+    is_utf = `file -bi #{@path}`
+    if is_utf.include? 'zip'
+      ext = '.zip'
+    elsif is_utf.include? 'gzip'
+      ext = '.gz'
+    end
+    ext
+  end
   end
 end

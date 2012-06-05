@@ -1597,9 +1597,14 @@
             return false;
           }
         } else if (type=="point") {
-          var new_value = $('input#longitude_value').val() + ', ' + $('input#latitude_value').val();
+          var new_value = $('input#longitude_value').val().replace(/ /g,'') + ', ' + $('input#latitude_value').val().replace(/ /g,'');
           if ($('tbody tr td[r="'+row+'"][c="'+column+'"] div').text()!=new_value) {
             var errors = '';
+
+            // Remove white spaces
+            $('input#longitude_value').val($('input#longitude_value').val().replace(/ /g,""))
+            $('input#latitude_value').val($('input#latitude_value').val().replace(/ /g,""))
+
             //TODO - Check pattern numbers!
          		var pattern = /^([+-]?(((\d+(\.)?)|(\d*\.\d+))([eE][+-]?\d+)?))$/;
             if (!pattern.test($('input#longitude_value').val())) {
@@ -1618,7 +1623,7 @@
             if (errors=='') {
               var old_value = $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text();
               $('tbody tr td[r="'+row+'"][c="'+column+'"] div').text(new_value);
-              var point_values = new_value.replace(' ','').split(',');
+              var point_values = new_value.split(',');
               new_value = {"type":"Point","coordinates":[point_values[0], point_values[1]]};
               $('input#longitude_value').removeClass('error');
               $('input#latitude_value').removeClass('error');

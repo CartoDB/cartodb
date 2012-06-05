@@ -32,7 +32,5 @@ describe("log", function() {
       var err = new cdb.core.Error({});
       expect(err.get('browser')).toEqual(JSON.stringify($.browser));
     });
-
   });
-
 });

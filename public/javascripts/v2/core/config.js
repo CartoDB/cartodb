@@ -9,7 +9,7 @@
 
         //error track
         REPORT_ERROR_URL: '/api/v0/error',
-        ERROR_TRACK_ENABLED: true
+        ERROR_TRACK_ENABLED: false
 
     });
 

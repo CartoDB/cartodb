@@ -1,3 +1,12 @@
+0.9.6 (05/06/12)
+-----
+* Improvements on import file type checking
+* Better encoding detection across all import types
+* UI bugfixes 
+* Improved navigation when lots of tabs open
+* testing review and refactoring
+* Improve the mapping of geometry at N/S extremes
+
 0.9.5
 -----
 * CDB_RectangleGrid function, for simpler grids

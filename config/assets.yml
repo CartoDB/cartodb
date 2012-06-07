@@ -3,7 +3,7 @@ compress_assets: on
 embed_assets: off
 javascripts:
   common:
-    - public/javascripts/jquery.js
+    - public/js/rails.js
 stylesheets:
   common:
-    - public/css/style.css
+    - public/css/ie.css

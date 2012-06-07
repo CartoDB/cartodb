@@ -1,7 +1,15 @@
+<!--  TODO design:
+
+    - If there is no tables in the view (We used to have a 3 steps list)
+    - If there is less than 3 tables in the view
+    - Change to public or private a table
+    - Delete a table confirmation
+    - If the user changes to a new better instance :)
+-->
+
   <% content_for(:page_title) do %>
     <%= current_user.username %> |
   <% end %>
-
   <%= content_for(:js) do %>
     <%= include_javascripts :common, :cartodb %>
   <% end %>
@@ -11,306 +19,74 @@
 
   <%= render 'admin/shared/subheader' %>
 
-  <section id="content">
-    <div id="hugeUploader"></div>
-    <div class="inner_content">
-
-      <% if false %>
-        <div class="requests_info section white_content padding">
-        <a class="close" href="#close_stats">close</a>
-          <div class="left">
-            <h2>Payment received. Welcome to your Macallan server!</h2>
-            <p>Your payment has been received correctly. Your next payment will be on May 1st ($29)</p>
-            <p class="margin">Since now, you will be able to view your payment data in your <%= link_to 'settings panel', account_url, :class=>"settings" %></p>
-          </div>
-          <img src="/images/admin/dashboard/success_payment.png" class="star_table" alt="Hoooray" title=""/>
-        </div>
-      <% end %>
-
-      <% if @tables_count == 0 %>
-        <div class="requests_info section white_content padding">
-          <a class="close" href="#close_stats">close</a>
-          <h2>Welcome to CartoDB <%= current_user.username %>!</h2>
-          <p>We really appreciate your feedback. Get in touch via <%= link_to "email", "mailto:support@cartodb.com"%> &amp; <%= link_to "twitter", "http://twitter.com/cartodb" %>, or read our <%= link_to "blog", "http://blog.cartodb.com/"%>  for the latest info. Have fun!</p>
-          <span class="block">
-            <label>1</label>
-            <h3>Create your first table</h3>
-            <p>You can import data or start from scratch. <a href="#create_table" class="new_table">Create a table</a></p>
-          </span>
-          <span class="block">
-            <label>2</label>
-            <h3>Read the documentation</h3>
-            <p>Take a look at the <a href="<%= APP_CONFIG[:developers_host] %>">developers area</a> to make the most of CartoDB</p>
-          </span>
-          <span class="block last">
-            <label>3</label>
-            <h3>Give us your feedback</h3>
-            <p>Please <a href="mailto:support@cartodb.com">send us</a> your questions or requests!</p>
-          </span>
-      <% else %>
-        <div class="requests_info section white_content">
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <h2>Hello <%= current_user.username %></h2>
-                  <% @dedicated = current_user.try(:account_type).upcase == 'DEDICATED' ? true : false %>
-
-                  <% if @database_size.present? && @quota.present? %>
-                    <% @over_disk =  (@database_size.to_f/@quota) > 0.75  %>
-                  <% else %>
-                    <% @over_disk =  false  %>  
-                  <% end %>
-                  
-                  <% if @tables_count.present? && @table_quota.present?  %>
-                    <% @over_tables =  (@tables_count.to_f/@table_quota) > 0.75  %>
-                  <% else %>
-                    <% @over_tables =  false  %>  
-                  <% end %>
-                    
-                  <% if (@over_disk || @over_tables) && !@dedicated && !current_user.admin %>
-                    <p>Need more resources? <a href="<%= upgrade_url %>">Upgrade your account</a></p>
-                  <% else %>
-                    <p>Welcome to your <%= current_user.account_type.humanize %> CartoDB</p>                  
-                  <% end %>
-                </td>
-                <td class="
-                  <%= (@database_size.to_f/@quota > 0.75) ? 'danger' : '' %> 
-                  <%= (@database_size.to_f/@quota > 0.90 ) ? 'boom' : '' %>
-                ">
-                  <% if @quota > 1023 %>
-                    <% @database_size = @database_size/1024 %>
-                    <p class="big"><%= number_with_precision(@database_size, :precision => 1) %>/<%= @quota/1024 %></p>
-                    <label>Used<br/>Gigabytes</label>
-                  <% else %>
-                    <p class="big"><%= @database_size.to_i %>/<%= @quota %></p>
-                    <label>Used<br/>Megabytes</label>                                      
-                  <% end %>  
-                </td>
-                <td class="
-                <%= (@table_quota.present? && @tables_count.to_f/@table_quota > 0.75) ? 'danger' : '' %> 
-                <%= (@table_quota.present? && @tables_count.to_f/@table_quota > 0.90) ? 'boom' : '' %>">
-                  <% if @table_quota.blank? %>
-                    <p class="big"><%= @tables_count %>/&infin;</p>
-                    <label>Tables<br/>created</label>
-                  <% else %>
-                    <p class="big"><%= @tables_count %>/<%= @table_quota %></p>
-                    <label>Tables<br/>created</label>                      
-                  <% end %>    
-                </td>
-              </tr>
-            </tbody>
-          </table>
+  <article>
+    <section class="left tables">
+      <div class="head">
+        <h3>
+          <strong>
+            <%= pluralize(@tables_count, 'table', 'tables') %>
+            <% if @tag_name %>
+            with the tag <%= @tag_name %>
+            <% end %>
+          </strong> 
+          <% if !params[:q]%>
+            in your account
+          <% else %>                
+            found
+          <% end %>
+        </h3>
+        <% if @total_tables > 10 %>            
+          <form action="#">
+            <input type="text" value="<%= params[:q] %>" name="q" />
+            <input type="submit" value="true" name="submit" />
+          </form>
         <% end %>
       </div>
-
-      <%= render :partial => 'shared/flash_message' %>
-
-      <div class="tables_list">
-        <div class="left">
-          <div class="top_blue_medium">
-            <h3>
-              <strong>
-                <%= pluralize(@tables_count, 'table', 'tables') %>
-                <% if @tag_name %>
-                with the tag <%= @tag_name %>
+      <div class="content">
+        <ul>
+          <%= render :partial => 'shared/flash_message' %>
+          <% @tables.each_with_index do |table, i| %>
+          <li>
+            <div class="meta_info">
+              <span class="info">
+                <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
+                <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
+                <p class="delete"> | <a table-name="<%= table.name %>" href="#delete" class="delete">delete table</a></p>
+                <p class="columns">
+                  <strong>
+                    <%= number_to_human_size table.table_size %> / 
+                    &#126;<%= pluralize(table.rows_estimated,'row','rows') rescue '' %> /
+                    <%= table.schema.size rescue '' %> columns:
+                </strong>
+                <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...
+                </p>
+              </span>
+              <span class="tags">
+                <% unless table.updated_at.blank? %>
+                <p class="last_op"><%= time_ago_in_words(table.updated_at) %> ago</p>
                 <% end %>
-              </strong> 
-                <% if !params[:q]%>
-                  in your account
-                <% else %>                
-                  found
-                <% end %>  
-            </h3>
-            <% if @total_tables > 10 %>            
-              <form action="#">
-                <input type="text" value="<%= params[:q] %>" name="q" />
-                <input type="submit" value="true" name="submit" />
-              </form>
-            <% end %>  
-          </div>
-          <div class="middle_white_medium">
-            <ul class="your_tables">
-              <% @tables.each_with_index do |table, i| %>
-              <li>
-                <div class="meta_info">
-                  <span class="info">
-                    <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
-                    <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
-                    <p class="delete"> | <a table-name="<%= table.name %>" href="#delete" class="delete">delete table</a></p>
-                    <p class="columns">
-                      <strong>
-                        <%= number_to_human_size table.table_size %> / 
-                        &#126;<%= pluralize(table.rows_estimated,'row','rows') rescue '' %> /
-                        <%= table.schema.size rescue '' %> columns:
-                    </strong>
-                    <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...
-                    </p>
-                  </span>
-                  <span class="tags">
-                    <% unless table.updated_at.blank? %>
-                    <p class="last_op"><%= time_ago_in_words(table.updated_at) %> ago</p>
-                    <% end %>
-                    <% unless table.tags.blank? %>
-                      <% table.tags.split(',').each do |tag_name| %>
-                      <a href="<%= dashboard_path(:tag_name => tag_name) %>"><%= tag_name %></a>
-                      <% end %>
-                    <% end %>
-                  </span>
-                </div>
-              </li>
-              <% end %>
-            </ul>
-            <% if @tables_count<3 %>
-              <div class="no_tables">
-                <% if @tables_count>0 && @tables_count<3 %>
-                  <h5>More tables if you want.</h5>
-                  <p>Time to <a href="#create_table" class="new_table">create another table</a>?</p>
-                <% else %>
-                  <h5>Hey! You don't have any tables</h5>
-                  <p>Why don't you start by <a href="#create_table" class="new_table">creating a new table</a>?</p>
+                <% unless table.tags.blank? %>
+                  <% table.tags.split(',').each do |tag_name| %>
+                  <a href="<%= dashboard_path(:tag_name => tag_name) %>"><%= tag_name %></a>
+                  <% end %>
                 <% end %>
-              </div>
-            <% end %>
-
-            <span class="privacy_window">
-              <ul>
-                <li class="public"><a href="#public"><strong>Public</strong> (visible to others)</a></li>
-                <% if !current_user.private_tables_enabled %>
-                	<li class="disabled"><a><strong>Private</strong> (only paid plans)</a></li>
-                <% else %>
-                	<li class="private"><a href="#private"><strong>Private</strong> (visible to you)</a></li>
-               	<% end %>
-              </ul>
-            </span>
-          </div>
-          <div class="bottom_white_medium"></div>
-          <%= paginate(@tables) %>
-        </div>
-        <div class="right">
-          <div class="banner">
-            <div class="top_white_short"></div>
-            <div class="middle_white_short">
-              <h3>Wondering how to start with CartoDB?</h3>
-              <p>Upload your data to a new table</p>
-              <a href="#create_table" class="new_table <%= 'disabled' if current_user.exceeded_quota? %>">Create a new table</a>
+              </span>
             </div>
-            <div class="bottom_white_short"></div>
-          </div>
-
-          <h4>BROWSE BY TAGS</h4>
-          <% if @tags.count==0 %>
-            <span class="no_tags">
-              <p>You have not added any tags yet.</p>
-              <p>Tags are useful for organizing and filtering your tables.</p>
-              <p>To add tags to your tables, open them and enter them under the name.</p>
-            </span>
-          <% else %>
-            <ul>
-              <% if params[:tag_name]%>
-                <li class="all"><a href="/dashboard">view all tables</a></li>
-              <% end %>
-              <% @tags.each do |tag| %>
-                <li><a href="<%= dashboard_path(:tag_name => tag[:name]) %>"><span style="background-position:<%= tag_width(tag[:count], @tags.last[:count], @tags.first[:count]) %>px 0"><%= tag[:name] %></span></a></li>
-              <% end %>
-            </ul>
+          </li>
           <% end %>
-        </div>
+        </ul>
       </div>
-    </div>
-  </section>
+    </section>
+    <aside class="right">
+      <ul>
+        <% if params[:tag_name]%>
+          <li class="all"><a href="/dashboard">view all tables</a></li>
+        <% end %>
+        <% @tags.each do |tag| %>
+          <li><a href="<%= dashboard_path(:tag_name => tag[:name]) %>"><span style="background-position:<%= tag_width(tag[:count], @tags.last[:count], @tags.first[:count]) %>px 0"><%= tag[:name] %></span></a></li>
+        <% end %>
+      </ul>
+    </aside>
 
-
-  <%= content_for(:mamufas) do %>
-    <div class="mamufas">
-      <div class="create_window">
-        <a href="#close_window" class="close_create"></a>
-        <div class="inner_">
-          <span class="loading">
-            <h5>We are creating your table...</h5>
-            <p>It shouldn't take long, just a few more seconds ok?</p>
-          </span>
-          <form action="#import_file" id="import_file" enctype="multipart/form-data" method="post">
-            <span class="top">
-              <h4>Do you want to import some data to the new table now?</h4>
-              <p>You will also be able to do it later.</p>
-              <ul>
-                <li class="selected">
-                  <a href="#">I want to create an empty table</a>
-                  <div class="geom_type">
-                    <span class="selected"><a href="#point">Point</a></span>
-                    <span><a href="#line">Line</a></span>
-                    <span><a href="#polygon">Polygon</a></span>
-                  </div>
-                </li>
-                <li>
-                  <a href="#">I want to start with some imported data</a>
-                  <span class="file">
-                    <div class="select_file">
-                      <div id="uploader"></div>
-                      <p>We support xls, csv, gpx, shp, zip, etc...</p>
-                    </div>
-                    <div class="progress">
-                      <p>Uploading your file...</p>
-                      <span class="progress"></span>
-                    </div>
-                  </span>
-                </li>
-                <li>
-                  <a href="#">I want to add some data from a URL</a>
-                  <span class="file">
-                    <div class="select_file">
-                      <input id="url_txt" type="text" name="url_value" value="Insert a valid URL..."/>
-                      <div class="error_url">
-                        <p><span>This URL is not valid</span></p>
-                      </div>
-                    </div>
-                  </span>
-                </li>
-              </ul>
-            </span>
-            <span class="bottom">
-              <a href="#" class="cancel">cancel</a>
-              <input id="create_table" type="submit" name="submit" value="Create table"/>
-            </span>
-          </form>
-        </div>
-      </div>
-
-      <div class="delete_window">
-        <a href="#close_window" class="close_delete"></a>
-        <div class="inner_">
-          <span class="top">
-            <h3>You are about to delete this table</h3>
-            <p>You will not be able to recover this information. We really recommend you <a class="export_data" href="#export_data">export the data</a> before deleting it.</p>
-          </span>
-          <span class="bottom">
-            <a href="#close_window" class="cancel">cancel</a>
-            <a href="#confirm_delete" class="confirm_delete">Delete this table</a>
-          </span>
-        </div>
-      </div>
-
-      <div class="export_window">
-        <a href="#close_window" class="close"></a>
-        <div class="inner_">
-          <form action="/tables/" method="get">
-            <input id="export_format" type="hidden" name="format" />
-            <span class="top">
-              <h3>Export your data</h3>
-              <p>Select your desired format for downloading the data</p>
-              <ul>
-                <li class="selected"><a class="option" href="#CSV" rel="csv">CSV (Comma separated values)</a></li>
-                <li class="disabled"><a class="option" href="#KML" rel="kml">KML</a></li>
-                <li><a class="option" href="#SHP"rel="shp">SHP</a></li>
-              </ul>
-            </span>
-            <span class="bottom">
-              <a href="#close_window" class="cancel">cancel</a>
-              <input type="submit" class="download" value="Download" />
-            </span>
-        </div>
-      </div>
-    </div>
-
-  <% end %>
+    <%= paginate(@tables) %>
+  </article>

@@ -39,8 +39,8 @@ describe CartoDB::Importer do
           else
             importer = create_importer local_path, 'import_file'
             result   = importer.import!
-            result.name.should          == 'import_file'
-            if result.name == 'import_file'
+            result.name.length.should > 0
+            if result.name.length > 0
               File.delete(local_path)
               remote_object.delete
             end

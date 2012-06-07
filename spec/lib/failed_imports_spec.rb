@@ -16,7 +16,6 @@ describe CartoDB::Importer do
     bucket = s3.buckets[:failed_imports]
     
     it "test failed files from S3" do
-      #remote_object = bucket.objects['temp/wri-test-input_1334689661.csv']
       bucket.objects.each do |remote_object|
         if remote_object.content_length == 0
           remote_object.delete
@@ -27,7 +26,11 @@ describe CartoDB::Importer do
           local_path = "#{local_storage_dir}/#{name}"
           p local_path
           #remote_object = bucket.objects[key]
-          File.open(local_path,'w+').write(remote_object.read())
+          begin
+            File.open(local_path,'w+').write(remote_object.read())
+          rescue
+            File.open(local_path,'w+').write(remote_object.read().force_encoding('UTF-8'))
+          end
           importer = create_importer local_path, 'import_file'
           result   = importer.import!
           result.name.should          == 'import_file'
@@ -56,6 +59,9 @@ describe CartoDB::Importer do
   after(:all) do
     CartoDB::ImportDatabaseConnection.drop
   end
+  def file file
+    File.expand_path("../../../#{file}", __FILE__)    
+  end
   def create_importer file_name, suggested_name=nil, is_url=false
     # sanity check
     throw "filename required" unless file_name
@@ -64,7 +70,7 @@ describe CartoDB::Importer do
     if is_url
       opts = {:import_from_url => file_name}
     else
-      opts = {:import_from_file => file_name}
+      opts = {:import_from_file => file(file_name)}
     end
     opts[:suggested_name] = suggested_name if suggested_name.present?
     opts[:data_import_id] = get_data_import_id()

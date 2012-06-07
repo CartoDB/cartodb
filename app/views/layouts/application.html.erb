@@ -3,10 +3,9 @@
   <head>
     <meta charset='utf-8' />
     <title><%= yield :page_title %>CartoDB</title>
-    <link id="favicon" rel="shortcut icon" href="/favicon/favicon.ico" />
-    <%= javascript_include_tag "/javascripts/plugins/head.load.min.js" %>
+    <link id="favicon" rel="shortcut icon" href="/img/favicon.ico" />
+    <%= yield :css %>
     <%= yield :js %>
-    <%= yield :head %>
     <%= csrf_meta_tag %>
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
     <%= render 'shared/analytics' %>

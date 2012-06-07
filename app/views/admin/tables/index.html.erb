@@ -6,7 +6,8 @@
     <%= include_javascripts :common, :cartodb %>
   <% end %>
   <%= content_for(:css) do %>
-    <%= include_stylesheets :common, :media => 'all' %>
+    <%= include_stylesheets :common :media => 'all' %>
+
   <% end %>
 
   <%= render 'admin/shared/subheader' %>

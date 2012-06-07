@@ -56,6 +56,10 @@
             _console.log.apply(_console, arguments);
         },
 
+        info: function() {
+            _console.log.apply(_console, arguments);
+        },
+
         debug: function() {
             _console.log.apply(_console, arguments);
         }

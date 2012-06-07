@@ -7,9 +7,14 @@
   var View = cdb.core.View = Backbone.View.extend({
     constructor: function(options) {
       Backbone.View.call(this, options);
+      this._models = [];
       View.viewCount++;
       View.views[this.cid] = this;
       this._created_at = new Date();
+    },
+
+    add_related_model: function(m) {
+        this._models.push(m);
     },
 
     /**
@@ -18,8 +23,13 @@
      * the view is not going to be used anymore
      */
     clean: function() {
+      var self = this;
       this.remove();
       this.unbind();
+      // remove model binding
+      _(this._models).each(function(m) {
+          m.unbind(null, null, self);
+      });
       View.viewCount--;
       delete View.views[this.cid];
     }

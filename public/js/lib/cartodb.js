@@ -6,11 +6,11 @@
     window.cdb.geo = {};
 
     cdb.files = [
-        "lib/jquery.min.js",
-        "lib/underscore-min.js",
-        "lib/backbone-min.js",
+        "../vendor/jquery.min.js",
+        "../vendor/underscore-min.js",
+        "../vendor/backbone-min.js",
 
-        "lib/leaflet.js",
+        "../vendor/leaflet.js",
 
         'core/config.js',
         'core/log.js',

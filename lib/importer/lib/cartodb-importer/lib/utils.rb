@@ -71,6 +71,7 @@ module CartoDB
             # text/plain; charset=iso-8859-1
             charset = nil
             charset_data = is_utf.split('harset=')
+            
             if 1<charset_data.length
               charset = charset_data[1].split(';')[0].strip
               if charset == ""
@@ -92,7 +93,6 @@ module CartoDB
               end
               # detect encoding for sample
               cd = CharDet.detect(lines.join)
-              p cd.encoding
               # Only do non-UTF8 if we're quite sure. (May fail)        
               if (cd.confidence > 0.6)             
                 tf = Tempfile.new(@path)                  

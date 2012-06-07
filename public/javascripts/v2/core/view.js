@@ -6,8 +6,8 @@
    */
   var View = cdb.core.View = Backbone.View.extend({
     constructor: function(options) {
-      Backbone.View.call(this, options);
       this._models = [];
+      Backbone.View.call(this, options);
       View.viewCount++;
       View.views[this.cid] = this;
       this._created_at = new Date();
@@ -30,6 +30,7 @@
       _(this._models).each(function(m) {
           m.unbind(null, null, self);
       });
+      this._models = [];
       View.viewCount--;
       delete View.views[this.cid];
     }

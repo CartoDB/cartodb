@@ -67,6 +67,7 @@ cdb.geo.MapView = cdb.core.View.extend({
             throw new Exception("you should specify a map model");
         }
         this.map = this.options.map;
+        this.add_related_model(this.map);
     }
 
 });
@@ -92,23 +93,23 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
         this.map_leaflet.on('zoomend', function() {
             self._setModelProperty({zoom: self.map_leaflet.getZoom()});
 
-        });
+        }, this);
         this.map_leaflet.on('drag', function () {
             var c = self.map_leaflet.getCenter();
             self._setModelProperty({center: [c.lat, c.lng]});
-        });
+        }, this);
     },
 
     /** bind model properties */
     _bindModel: function() {
-        this.map.bind('change:zoom', this._setZoom);
-        this.map.bind('change:center', this._setCenter);
+        this.map.bind('change:zoom', this._setZoom, this);
+        this.map.bind('change:center', this._setCenter, this);
     },
 
     /** unbind model properties */
     _unbindModel: function() {
-        this.map.unbind('change:zoom', this._setZoom);
-        this.map.unbind('change:center', this._setCenter);
+        this.map.unbind('change:zoom', this._setZoom, this);
+        this.map.unbind('change:center', this._setCenter, this);
     },
 
     /**

@@ -78,7 +78,7 @@ module CartoDB
                 charset = nil
               end
             end
-            unless charset.nil?   
+            unless ['unknown-8bit','',nil,'binary'].include? charset  
               tf = Tempfile.new(@path)                  
               `iconv -f #{charset} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
               `mv -f #{tf.path} #{@path}`                

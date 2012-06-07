@@ -85,7 +85,7 @@ describe CartoDB::Importer do
     end
     opts[:suggested_name] = suggested_name if suggested_name.present?
     opts[:data_import_id] = get_data_import_id()
-    opts[:remaining_quota] = 5000000
+    opts[:remaining_quota] = 15000000
     # build importer
     CartoDB::Importer.new opts.reverse_merge(@db_opts)
   end        

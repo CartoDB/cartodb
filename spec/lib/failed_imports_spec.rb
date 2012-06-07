@@ -7,7 +7,7 @@ describe CartoDB::Importer do
   if File.exists? "#{homepath}/Dropbox/ec2-keys/.amazon_key"
     require 'aws-sdk'
     
-    local_storage_dir = "/tmp/failed_files"
+    local_storage_dir = "../../support/data/failed_remote"
     unless File.directory? local_storage_dir
       Dir.mkdir(local_storage_dir)
     end

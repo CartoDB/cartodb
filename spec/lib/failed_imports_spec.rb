@@ -19,22 +19,25 @@ describe CartoDB::Importer do
     bucket = s3.buckets[:failed_imports]
     
     it "test failed files from S3" do
+      #remote_object = bucket.objects['temp/wri-test-input_1334689661.csv']
       bucket.objects.each do |remote_object|
-        debugger
-        #key = "temp/test_1333394922.csv"
-        key = object.key
-        name = key.split('/').last
-        local_path = "/#{local_storage_dir}/#{name}"
-        #remote_object = bucket.objects[key]
-        remote_object.write(File.open(local_path,'w+'))
-        if 0 == %x{wc -l #{local_path}}.split.first.to_i
-          File.delete(local_path)
-          #remote_object.delete
-          warn 'empty file, skipping'
+        if remote_object.content_length == 0
+          remote_object.delete
+          warn 'empty file, removing from tests'
         else
+          key = remote_object.key
+          name = key.split('/').last
+          local_path = "#{local_storage_dir}/#{name}"
+          p local_path
+          #remote_object = bucket.objects[key]
+          File.open(local_path,'w+').write(remote_object.read())
           importer = create_importer local_path, 'import_file'
           result   = importer.import!
           result.name.should          == 'import_file'
+          if true
+            File.delete(local_path)
+            #remote_object.delete
+          end
         end
       end
     end
@@ -56,11 +59,6 @@ describe CartoDB::Importer do
   after(:all) do
     CartoDB::ImportDatabaseConnection.drop
   end
-  def file file
-    # File.expand_path("../../support/data/#{file}", __FILE__)    
-    File.expand_path("/tmp/#{file}", __FILE__)    
-  end
-  
   def create_importer file_name, suggested_name=nil, is_url=false
     # sanity check
     throw "filename required" unless file_name

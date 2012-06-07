@@ -16,19 +16,19 @@ module CartoDB
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@path} -nln #{@suggested_name}}
         p ogr2ogr_command
+        
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
         unless (err = stderr.read).empty?
           if err.downcase.include?('failure')
-            @data_import.set_error_code(2000)
+            @data_import.set_error_code(3006)
             @data_import.log_error(err)
             @data_import.log_error("ERROR: failed to import #{@ext.sub('.','')} to database")
-          
             if err.include? "already exists"
               @data_import.set_error_code(5002)
               @data_import.log_error("ERROR: #{@path} contains reserved column names")
             end
-            raise "failed to convert #{@ext.sub('.','')} to shp"
+            #raise "failed to import #{@ext.sub('.','')} to database"
           else
             @data_import.log_update(err)
           end

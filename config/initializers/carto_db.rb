@@ -80,6 +80,7 @@ module CartoDB
     3000 => 'Geometry error',
     3004 => 'Unable to read SHP file',
     3005 => 'SHP to PGSQL error',
+    3006 => 'CSV to PGSQL error',
     3100 => 'Projection error',
     3101 => 'Missing projection (.prj) file',
     3102 => 'Unsupported projection',

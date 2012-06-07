@@ -1,0 +1,9 @@
+package_assets: on
+compress_assets: on
+embed_assets: off
+javascripts:
+  common:
+    - public/javascripts/jquery.js
+stylesheets:
+  common:
+    - public/css/style.css

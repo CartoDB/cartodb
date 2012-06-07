@@ -11,38 +11,9 @@
     <%= render 'shared/analytics' %>
   </head>
   <body>
-    <header>
-      <a class="logo" href="/">CartoDB</a>
-      <ul>
-        <% if current_user.admin %>
-        <li><%= link_to 'superadmin', superadmin_users_path %></li>
-        <% end %>
-        <li><a href="<%= APP_CONFIG[:developers_host] %>">developers</a></li>
-        <li><a href="http://support.cartodb.com/" target="_blank">support</a></li>
-        <li class="last"><%= link_to current_user.email, account_url, :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
-      </ul>
-    </header>
-
+    <%= render 'admin/shared/header' %>
     <%= yield %>
-
-    <% if show_footer? %>
-    <footer>
-      <section class="prefooter">
-        <%= last_blog_posts %>
-      </section>
-      <div class="outer_footer">
-        <section class="footer">
-          <a class="logo" href="/">CartoDB</a>
-          <div class="long">
-            <p class="rights">&copy; <%= link_to "Vizzuality", "http://www.vizzuality.com" %> 2012. All rights reserved. <a href="mailto:support@cartodb.com">support@cartodb.com</a> / <a href="http://support.cartodb.com/">Support</a></p>
-            <span class="poweredby">
-            <p class="vizzuality">A product by </p><a href="http://www.vizzuality.com" target="_blank">Vizzuality</a>
-            </span>
-          </div>
-        </section>
-      </div>
-    </footer>
-    <% end %>
-    <%= yield :mamufas %>
+    <%= render 'admin/shared/footer', :visible => true %>
+    <%#= yield :mamufas %>
   </body>
 </html>

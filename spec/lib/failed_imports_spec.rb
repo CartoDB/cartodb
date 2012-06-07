@@ -7,10 +7,7 @@ describe CartoDB::Importer do
   if File.exists? "#{homepath}/Dropbox/ec2-keys/.amazon_key"
     require 'aws-sdk'
     
-    local_storage_dir = "../../support/data/failed_remote"
-    unless File.directory? local_storage_dir
-      Dir.mkdir(local_storage_dir)
-    end
+    local_storage_dir = "spec/support/data/failed_remote"
     
     s3 = AWS::S3.new({
       :access_key_id => File.open("#{homepath}/Dropbox/ec2-keys/.amazon_key", "rb").read.strip,
@@ -34,9 +31,9 @@ describe CartoDB::Importer do
           importer = create_importer local_path, 'import_file'
           result   = importer.import!
           result.name.should          == 'import_file'
-          if true
+          if result.name == 'import_file'
             File.delete(local_path)
-            #remote_object.delete
+            remote_object.delete
           end
         end
       end

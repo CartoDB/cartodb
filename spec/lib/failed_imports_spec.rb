@@ -24,19 +24,26 @@ describe CartoDB::Importer do
           key = remote_object.key
           name = key.split('/').last
           local_path = "#{local_storage_dir}/#{name}"
+          
           p local_path
-          #remote_object = bucket.objects[key]
+          
           begin
             File.open(local_path,'w+').write(remote_object.read())
           rescue
             File.open(local_path,'w+').write(remote_object.read().force_encoding('UTF-8'))
           end
-          importer = create_importer local_path, 'import_file'
-          result   = importer.import!
-          result.name.should          == 'import_file'
-          if result.name == 'import_file'
-            File.delete(local_path)
+          if remote_object.content_length > 7500000
             remote_object.delete
+            warn 'very large file, examine locally first'
+            warn "see #{local_path}"
+          else
+            importer = create_importer local_path, 'import_file'
+            result   = importer.import!
+            result.name.should          == 'import_file'
+            if result.name == 'import_file'
+              File.delete(local_path)
+              remote_object.delete
+            end
           end
         end
       end
@@ -74,7 +81,7 @@ describe CartoDB::Importer do
     end
     opts[:suggested_name] = suggested_name if suggested_name.present?
     opts[:data_import_id] = get_data_import_id()
-    opts[:remaining_quota] = 50000000
+    opts[:remaining_quota] = 5000000
     # build importer
     CartoDB::Importer.new opts.reverse_merge(@db_opts)
   end        

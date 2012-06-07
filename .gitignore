@@ -15,4 +15,5 @@ config/database.yml
 config/app_config.yml
 src/
 *.swp
+*.swo
 cartodb-importer

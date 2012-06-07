@@ -3,7 +3,7 @@
   <% end %>
 
   <%= content_for(:js) do %>
-    <%= include_javascripts :common %>
+    <%= include_javascripts :common, :cartodb %>
   <% end %>
   <%= content_for(:css) do %>
     <%= include_stylesheets :common, :media => 'all' %>

@@ -3,7 +3,20 @@ compress_assets: on
 embed_assets: off
 javascripts:
   common:
+    - public/js/vendor/jquery.min.js
     - public/js/rails.js
+    - public/js/vendor/underscore-min.js
+    - public/js/vendor/backbone.js
+    - public/js/vendor/leaflet.js
+
+  cartodb:
+    - public/js/lib/cartodb.js
+    - public/js/lib/core/config.js
+    - public/js/lib/core/log.js
+    - public/js/lib/core/view.js
+    - public/js/lib/geo/map.js
+
 stylesheets:
   common:
     - public/css/ie.css
+    - public/css/leaflet.css

@@ -20,6 +20,12 @@ gem "yajl-ruby", :require => "yajl"
 gem "airbrake", '~> 3.0.4'
 gem "nokogiri", '~> 1.5.2'
 gem "statsd-client", :require => "statsd"
+gem 'jammit', '~> 0.6.5'
+
+# assets
+group :assets do
+  gem 'compass-rails'
+end
 
 # importer
 gem "ruby-ole", "~> 1.2.11.3"

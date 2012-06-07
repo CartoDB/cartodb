@@ -4,11 +4,15 @@
     window.cdb.config = {};
     window.cdb.core = {};
     window.cdb.geo = {};
+    window.cdb.ui = {};
+    window.cdb.ui.common = {};
+
+    window.JST = window.JST || {};
 
     cdb.files = [
         "../vendor/jquery.min.js",
         "../vendor/underscore-min.js",
-        "../vendor/backbone-min.js",
+        "../vendor/backbone.js",
 
         "../vendor/leaflet.js",
 
@@ -16,7 +20,9 @@
         'core/log.js',
         'core/view.js',
 
-        'geo/map.js'
+        'geo/map.js',
+
+        'ui/common/dialog.js'
     ];
 
     /**

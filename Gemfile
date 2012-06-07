@@ -58,7 +58,7 @@ group :development, :test do
   gem "rack-reverse-proxy", "~> 0.4.1", :require => 'rack/reverse_proxy'
   gem 'minitest', '~> 2.0.2'
   gem 'foreman'
-  gem 'aws-s3'
+  gem 'aws-sdk'
 end
 
 

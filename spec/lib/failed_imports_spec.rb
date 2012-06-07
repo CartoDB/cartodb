@@ -3,11 +3,17 @@
 require 'spec_helper'
 
 describe CartoDB::Importer do
-  
-  context "test failed files from S3" do
-    it "this should pass" do
-      'pass'.should == 'pass'
+  homepath = File.expand_path('~')
+  if File.exists? "#{homepath}/Dropbox/ec2-keys/id-vizzuality"
+    context "test failed files from S3" do
+      require 'aws/s3'
+      it "this should pass" do
+        'pass'.should == 'pass'
+      end
     end
+  else 
+    warn "You don't have Vizzuality S3 keys available."
+    warn "If you aren't from Vizzuality, this is normal."
   end
   ##################################################
   # configuration & helpers for tests

@@ -23,7 +23,7 @@ describe CartoDB::Importer do
         else
           key = remote_object.key
           name = key.split('/').last
-          local_path = "#{local_storage_dir}/#{name}"
+          local_path = "#{local_storage_dir}/#{name.gsub!(/[^0-9A-Za-z.\-]/, '_')}"
           
           p local_path
           

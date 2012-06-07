@@ -15,7 +15,6 @@ module CartoDB
         @data_import.log_update("ogr2ogr #{@suggested_name}")
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@path} -nln #{@suggested_name}}
-        p ogr2ogr_command
         
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
@@ -134,7 +133,7 @@ module CartoDB
               @data_import.log_update("converting #{matching_latitude}, #{matching_latitude} to the_geom")
               #we know there is a latitude/longitude columns
               @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
-
+              
               @db_connection.run(<<-GEOREF
               UPDATE \"#{@suggested_name}\"
               SET the_geom =
@@ -144,9 +143,14 @@ module CartoDB
               WHERE
               trim(CAST(\"#{matching_longitude}\" AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
               AND
-              trim(CAST(\"#{matching_latitude}\" AS text))  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+              trim(CAST(\"#{matching_latitude}\" AS text))  ~   
+              '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+              AND
+              trim(CAST(\"#{matching_latitude}\" AS text))  ~ 
+              '[+-]?((\d+(\.\d*)?)|\.\d+)([eE][+-]?[0-9]+)?'
               GEOREF
               )
+              
               @db_connection.run("CREATE INDEX \"#{@suggested_name}_the_geom_gist\" ON \"#{@suggested_name}\" USING GIST (the_geom)")
           end
         end

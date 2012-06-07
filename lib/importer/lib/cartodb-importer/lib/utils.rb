@@ -69,9 +69,13 @@ module CartoDB
           unless is_utf.include? 'utf-8'
             # sample first 500 lines from source
             # text/plain; charset=iso-8859-1
+            charset = nil
             charset_data = is_utf.split('harset=')
             if 1<charset_data.length
               charset = charset_data[1].split(';')[0].strip
+              if charset == ""
+                charset = nil
+              end
             end
             unless charset.nil?   
               tf = Tempfile.new(@path)                  

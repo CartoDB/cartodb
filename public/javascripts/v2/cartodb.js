@@ -25,20 +25,21 @@
     cdb.load = function(prefix, ready) {
         var c = 0;
 
-        var _ready = function() {
+        var next = function() {
+            var script = document.createElement('script');
+            script.src = prefix + cdb.files[c];
+            document.body.appendChild(script);
             ++c;
             if(c == cdb.files.length) {
-                if(ready)
-                    ready();
+                if(ready) {
+                    script.onload = ready;
+                }
+            } else {
+                script.onload = next;
             }
-
         };
 
-        for(var i in cdb.files) {
-            var script = document.createElement('script');
-            script.src = prefix + cdb.files[i];
-            script.onload = _ready;
-            document.body.appendChild(script);
-        }
+        next();
+
     };
 })();

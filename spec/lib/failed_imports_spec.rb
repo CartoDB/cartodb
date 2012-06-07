@@ -28,11 +28,15 @@ describe CartoDB::Importer do
           p local_path
           
           begin
-            File.open(local_path,'w+').write(remote_object.read())
+            file = File.open(local_path,'w+')
+            file.write(remote_object.read())
+            file.close
           rescue
-            File.open(local_path,'w+').write(remote_object.read().force_encoding('UTF-8'))
+            file = File.open(local_path,'w+')
+            file.write(remote_object.read().force_encoding('UTF-8'))
+            file.close
           end
-          if remote_object.content_length > 7500000
+          if remote_object.content_length > 15000000
             remote_object.delete
             warn 'very large file, examine locally first'
             warn "see #{local_path}"

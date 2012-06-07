@@ -133,7 +133,10 @@ module CartoDB
               @data_import.log_update("converting #{matching_latitude}, #{matching_latitude} to the_geom")
               #we know there is a latitude/longitude columns
               @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
-              
+              #TODO
+              # reconcile the two matching_latitude regex below
+              # the first one wasn't stringent enough, but i realize
+              # the second one doesn't bother with absolute extent check
               @db_connection.run(<<-GEOREF
               UPDATE \"#{@suggested_name}\"
               SET the_geom =

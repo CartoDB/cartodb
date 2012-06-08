@@ -18,5 +18,10 @@ javascripts:
 
 stylesheets:
   common:
-    - public/css/ie.css
+    - public/css/core.css
+    - public/css/header.css
+    - public/css/subheader.css
+    - public/css/tables.css
+    - public/css/footer.css
+    - public/css/sprites.css
     - public/css/leaflet.css

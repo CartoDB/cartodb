@@ -14,7 +14,7 @@ module CartoDB
         fix_encoding 
         
         ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{@path}.shp #{@path}}
+        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{@path}.shp #{@path}}
         #-lco DIM=*2* 
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
@@ -45,10 +45,12 @@ module CartoDB
         elsif File.directory?("#{@path}.shp") #multi-layer kml support
           Dir.foreach("#{@path}.shp") do |entry|
             if File.extname(entry) == ".shp"
+              #ent = sys.escape(entry)
+              ent = entry
               if File.file?("#{@path}.1.shp")
-                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" -update -append #{@path}.merged.shp #{@path}.shp/#{sys.escape(entry)}}
+                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" -update -append #{@path}.merged.shp "#{@path}.shp/#{ent}"}
               else
-                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{@path}.merged.shp #{@path}.shp/#{sys.escape(entry)}}
+                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{@path}.merged.shp "#{@path}.shp/#{ent}"}
               end
               stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
             end

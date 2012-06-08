@@ -68,22 +68,39 @@ module CartoDB
           is_utf = `file -bi #{@path}`
           unless is_utf.include? 'utf-8'
             # sample first 500 lines from source
-            lines = []
-            File.open(@path) do |f|             
-              500.times do
-                line = f.gets || break
-                lines << line
-              end            
+            # text/plain; charset=iso-8859-1
+            charset = nil
+            charset_data = is_utf.split('harset=')
+            
+            if 1<charset_data.length
+              charset = charset_data[1].split(';')[0].strip
+              if charset == ""
+                charset = nil
+              end
             end
-            # detect encoding for sample
-            cd = CharDet.detect(lines.join)
-            # Only do non-UTF8 if we're quite sure. (May fail)        
-            if (cd.confidence > 0.6)             
+            unless ['unknown-8bit','',nil,'binary'].include? charset  
               tf = Tempfile.new(@path)                  
-              `iconv -f #{cd.encoding} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
+              `iconv -f #{charset} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
               `mv -f #{tf.path} #{@path}`                
               tf.close!
-            end  
+            else
+              lines = []
+              File.open(@path) do |f|             
+                1000.times do
+                  line = f.gets || break
+                  lines << line
+                end            
+              end
+              # detect encoding for sample
+              cd = CharDet.detect(lines.join)
+              # Only do non-UTF8 if we're quite sure. (May fail)        
+              if (cd.confidence > 0.6)             
+                tf = Tempfile.new(@path)                  
+                `iconv -f #{cd.encoding} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
+                `mv -f #{tf.path} #{@path}`                
+                tf.close!
+              end  
+            end
           end
         rescue => e
           #raise e

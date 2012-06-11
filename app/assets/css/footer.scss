@@ -1,0 +1,22 @@
+
+  footer {
+    display:block;
+    width:100%;
+    height:16px;
+    padding:40px 0;
+    background:white;
+    border-top:1px solid #E5E5E5;
+
+    nav a {
+      vertical-align:top;
+      font-size:13px;
+      margin-right:22px;
+    }
+
+    p {
+      width:279px;
+      font-size:13px;
+      color:#999999;
+      a {color:#999999; &:hover {color:#C8E09F}}
+    }
+  }

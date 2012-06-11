@@ -1,56 +1,60 @@
 <section class="subheader">
-  <ul>
-    <%# Check if the user needs more resources or not %>
-    <% @danger = false %>
+  <div class="inner">
+    <ul>
+      <%# Check if the user needs more resources or not %>
+      <% @danger = false %>
 
-    <li>
-      <% if @table_quota.blank? && @tables_count.blank? %>
-        <% @total_tables = "&infin;" %>
-        <% @tables_status = 1 %>
-        <% @tables_class = "special" %>
-      <% else %>
-        <% @tables_status = @tables_count.to_f/@table_quota %>
-        <% if @tables_status > 0.75 %>
-          <% @tables_class = (@tables_status > 0.90) ? "boom" : "danger" %>
+      <li>
+        <% if @table_quota.blank? && @tables_count.blank? %>
+          <% @total_tables = "&infin;" %>
+          <% @tables_status = 1 %>
+          <% @tables_class = "special" %>
+        <% else %>
+          <% @tables_status = @tables_count.to_f/@table_quota %>
+          <% if @tables_status > 0.75 %>
+            <% @tables_class = (@tables_status > 0.90) ? "boom" : "danger" %>
+          <% end %>
+          <% @total_tables = @table_quota %>
+          <% @danger = true %>
         <% end %>
-        <% @total_tables = @table_quota %>
-        <% @danger = true %>
-      <% end %>
-      
-      <div class="progress">
-        <span class="<%= @tables_class %>" style="width:<%= @tables_status*100 %>%"></span>
-      </div>
-      <p class="center"><strong><%= @tables_count %> of <%= @total_tables %></strong> tables created</p>
-    </li>
-    <li>
-      <% if @quota > 1023 %>
-        <% @used_disk = number_with_precision(@database_size/1024, :precision => 1) %>
-        <% @total_disk = @quota/1024 %>
-        <% @bytes = "gigabytes" %>
-      <% else %>
-        <% @used_disk = @database_size.to_i %>
-        <% @total_disk = @quota %>
-        <% @bytes = "megabytes" %>
-      <% end %>
+        
+        <div class="progress">
+          <span class="<%= @tables_class %>" style="width:<%= @tables_status*100 %>%"></span>
+        </div>
+        <p class="center"><strong><%= @tables_count %> of <%= @total_tables %></strong> tables created</p>
+      </li>
+      <li>
+        <% if @quota > 1023 %>
+          <% @used_disk = number_with_precision(@database_size/1024, :precision => 1) %>
+          <% @total_disk = @quota/1024 %>
+          <% @bytes = "gigabytes" %>
+        <% else %>
+          <% @used_disk = @database_size.to_i %>
+          <% @total_disk = @quota %>
+          <% @bytes = "megabytes" %>
+        <% end %>
 
-      <% @disk_status = @database_size.to_f/@quota %>
+        <% @disk_status = @database_size.to_f/@quota %>
 
-      <% if @disk_status > 0.75 %>
-        <% @disk_class = (@disk_status > 0.90) ? 'boom' : 'danger' %>
-        <% @danger = true %>
-      <% end %>
+        <% if @disk_status > 0.75 %>
+          <% @disk_class = (@disk_status > 0.90) ? 'boom' : 'danger' %>
+          <% @danger = true %>
+        <% end %>
 
-      <div class="progress">
-        <span class="<%= @disk_class %>" style="width:<%= @disk_status*100 %>%"></span>
-      </div>
-      <p class="center"><strong><%= @used_disk %> of <%= @total_disk %></strong> used <%= @bytes %></p>
-    </li>
+        <div class="progress">
+          <span class="<%= @disk_class %>" style="width:<%= @disk_status*100 %>%"></span>
+        </div>
+        <p class="center"><strong><%= @used_disk %> of <%= @total_disk %></strong> used <%= @bytes %></p>
+      </li>
 
-    <li>
-      <div class="stats"></div>
-      <p class="center"><strong>1,981</strong> API calls the last 21 days</p>
-    </li>
-  </ul>
+      <li>
+        <div class="stats">
+          <!-- D3 -->
+        </div>
+        <p class="center"><strong>1,981</strong> API calls the last 21 days</p>
+      </li>
+    </ul>
+  </div>
 </section>
 
 <%# Hey guy, you need more power! %>

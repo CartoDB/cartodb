@@ -19,6 +19,7 @@ javascripts:
 stylesheets:
   common:
     - public/css/core.css
+    - public/css/fonts.css
     - public/css/header.css
     - public/css/subheader.css
     - public/css/tables.css

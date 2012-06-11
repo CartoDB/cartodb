@@ -1,11 +1,3 @@
-<!--  TODO design:
-
-    - If there is no tables in the view (We used to have a 3 steps list)
-    - If there is less than 3 tables in the view
-    - Change to public or private a table
-    - Delete a table confirmation
-    - If the user changes to a new better instance :)
--->
 
   <% content_for(:page_title) do %>
     <%= current_user.username %> |
@@ -20,73 +12,73 @@
   <%= render 'admin/shared/subheader' %>
 
   <article>
-    <section class="left tables">
-      <div class="head">
-        <h3>
-          <strong>
+    <div class="inner">
+      <section class="left tables">
+        <div class="head">
+          <h3>
             <%= pluralize(@tables_count, 'table', 'tables') %>
             <% if @tag_name %>
             with the tag <%= @tag_name %>
             <% end %>
-          </strong> 
-          <% if !params[:q]%>
-            in your account
-          <% else %>                
-            found
+            <% if !params[:q]%>
+              in your account
+            <% else %>                
+              found
+            <% end %>
+          </h3>
+          <% if @total_tables > 10 %>            
+            <form action="#">
+              <input type="text" value="<%= params[:q] %>" name="q" />
+              <input type="submit" value="true" name="submit" />
+            </form>
           <% end %>
-        </h3>
-        <% if @total_tables > 10 %>            
-          <form action="#">
-            <input type="text" value="<%= params[:q] %>" name="q" />
-            <input type="submit" value="true" name="submit" />
-          </form>
-        <% end %>
-      </div>
-      <div class="content">
-        <ul>
-          <%= render :partial => 'shared/flash_message' %>
-          <% @tables.each_with_index do |table, i| %>
-          <li>
-            <div class="meta_info">
-              <span class="info">
-                <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
-                <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
-                <p class="delete"> | <a table-name="<%= table.name %>" href="#delete" class="delete">delete table</a></p>
-                <p class="columns">
-                  <strong>
-                    <%= number_to_human_size table.table_size %> / 
-                    &#126;<%= pluralize(table.rows_estimated,'row','rows') rescue '' %> /
-                    <%= table.schema.size rescue '' %> columns:
-                </strong>
-                <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...
-                </p>
-              </span>
-              <span class="tags">
-                <% unless table.updated_at.blank? %>
-                <p class="last_op"><%= time_ago_in_words(table.updated_at) %> ago</p>
-                <% end %>
-                <% unless table.tags.blank? %>
-                  <% table.tags.split(',').each do |tag_name| %>
-                  <a href="<%= dashboard_path(:tag_name => tag_name) %>"><%= tag_name %></a>
+        </div>
+        <div class="content">
+          <ul>
+            <%= render :partial => 'shared/flash_message' %>
+            <% @tables.each_with_index do |table, i| %>
+            <li>
+              <div class="meta_info">
+                <span class="info">
+                  <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
+                  <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
+                  <p class="delete"> | <a table-name="<%= table.name %>" href="#delete" class="delete">delete table</a></p>
+                  <p class="columns">
+                    <strong>
+                      <%= number_to_human_size table.table_size %> / 
+                      &#126;<%= pluralize(table.rows_estimated,'row','rows') rescue '' %> /
+                      <%= table.schema.size rescue '' %> columns:
+                  </strong>
+                  <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...
+                  </p>
+                </span>
+                <span class="tags">
+                  <% unless table.updated_at.blank? %>
+                  <p class="last_op"><%= time_ago_in_words(table.updated_at) %> ago</p>
                   <% end %>
-                <% end %>
-              </span>
-            </div>
-          </li>
+                  <% unless table.tags.blank? %>
+                    <% table.tags.split(',').each do |tag_name| %>
+                    <a href="<%= dashboard_path(:tag_name => tag_name) %>"><%= tag_name %></a>
+                    <% end %>
+                  <% end %>
+                </span>
+              </div>
+            </li>
+            <% end %>
+          </ul>
+        </div>
+      </section>
+      <aside class="right">
+        <ul>
+          <% if params[:tag_name]%>
+            <li class="all"><a href="/dashboard">view all tables</a></li>
+          <% end %>
+          <% @tags.each do |tag| %>
+            <li><a href="<%= dashboard_path(:tag_name => tag[:name]) %>"><span style="background-position:<%= tag_width(tag[:count], @tags.last[:count], @tags.first[:count]) %>px 0"><%= tag[:name] %></span></a></li>
           <% end %>
         </ul>
-      </div>
-    </section>
-    <aside class="right">
-      <ul>
-        <% if params[:tag_name]%>
-          <li class="all"><a href="/dashboard">view all tables</a></li>
-        <% end %>
-        <% @tags.each do |tag| %>
-          <li><a href="<%= dashboard_path(:tag_name => tag[:name]) %>"><span style="background-position:<%= tag_width(tag[:count], @tags.last[:count], @tags.first[:count]) %>px 0"><%= tag[:name] %></span></a></li>
-        <% end %>
-      </ul>
-    </aside>
+      </aside>
 
-    <%= paginate(@tables) %>
+      <%= paginate(@tables) %>
+    </div>
   </article>

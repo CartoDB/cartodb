@@ -1,0 +1,50 @@
+@import "compass";
+
+  section.subheader {
+    position:relative;
+    @include inline-block();
+    width:100%;
+    background:white;
+    border-bottom:1px solid #CDCDCD;
+    @include single-box-shadow(rgba(0,0,0,0.07), 0, 4px, 3px, 0, false);
+
+    ul {
+      letter-spacing:-4px;
+      li {
+        @include inline-block();
+        width:239px;
+        padding:40px;
+        border-right: 1px solid #E5E5E5;
+        letter-spacing:0;
+
+        &:first-child {width:279px; padding-left:0}
+        &:last-child {width:279px; padding-right:0; border:none;}
+
+        div.progress {
+          display:block;
+          height:36px;
+          background:#E7E7E7; //IE
+          @include background(linear-gradient(#E5E5E5,#E9E9E9));
+          @include border-radius(3px);
+          span {
+            @include inline-block();
+            width:0;
+            height:36px;
+            @include border-radius(3px);
+            @include background(linear-gradient(left,#85ACDC,#5990CE));
+            @include transform-style("linear");
+            @include transition-property("width");
+            @include transition-duration(500ms);
+            &.boom {@include background(linear-gradient(left,#CB2828,#FF5255));}
+            &.danger {@include background(linear-gradient(left,#F8B85C,#F49000));}
+          }
+        }
+        p {
+          margin:10px 0 0 0;
+          font-size:15px;
+          color:#666666;
+          strong {font-weight:bold}
+        }
+      }
+    }
+  }

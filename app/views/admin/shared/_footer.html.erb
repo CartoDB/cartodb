@@ -1,12 +1,14 @@
 <% if visible %>
   <footer>
-    <nav class="left">
-      <%= link_to "Feature tour", "http://cartodb.com/tour" %>
-      <%= link_to "Getting started", "http://cartodb.com/tutorial/" %>
-      <%= link_to "Developers", APP_CONFIG[:developers_host] %>
-      <%= link_to "Support", "http://support.cartodb.com" %>
-      <%= link_to "Contact", "mailto:contact@cartodb.com" %>
-    </nav>
-    <p class="right">CartoDB is a product of <%= link_to "Vizzuality", "http://vizzuality.com", :target => "blank" %></p>
+    <div class="inner">
+      <nav class="left">
+        <%= link_to "Feature tour", "http://cartodb.com/tour" %>
+        <%= link_to "Getting started", "http://cartodb.com/tutorial/" %>
+        <%= link_to "Developers", APP_CONFIG[:developers_host] %>
+        <%= link_to "Support", "http://support.cartodb.com" %>
+        <%= link_to "Contact", "mailto:contact@cartodb.com" %>
+      </nav>
+      <p class="right">CartoDB is a product of <%= link_to "Vizzuality", "http://vizzuality.com", :target => "blank" %></p>
+    </div>
   </footer>
 <% end %>

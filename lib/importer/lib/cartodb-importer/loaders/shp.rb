@@ -39,7 +39,7 @@ module CartoDB
           @data_import.log_error("#{normalizer_command}")
           @data_import.log_error(out)
           @data_import.log_error("ERROR: shp_normalizer script failed")
-          raise "Error running python shp_normalizer script: #{normalizer_command}"
+          raise "Error running python shp_normalizer script"
         end
 
         @data_import.log_update("#{shp2pgsql_bin_path} -s #{shp_args_command[0]} -D -i -g the_geom -W #{shp_args_command[1]} \"#{shp_args_command[2]}\" #{shp_args_command[3].strip}")

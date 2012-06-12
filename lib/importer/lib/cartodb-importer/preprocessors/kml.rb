@@ -20,16 +20,19 @@ module CartoDB
   
         unless (err = stderr.read).empty?
           if err.downcase.include?('failure')
-            @data_import.set_error_code(2000)
-            @data_import.log_error(err)
-            @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
-          
             if err.include? "Geometry Collection"
               @data_import.set_error_code(3201)
               @data_import.log_error("ERROR: geometry contains Geometry Collection")
+            elsif ['.json','.geojson','.js'].include? @ext
+              @data_import.set_error_code(3007)
+              @data_import.log_error(err)
+              @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
+            else
+              @data_import.set_error_code(2000)
+              @data_import.log_error(err)
+              @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
             end
-          
-            raise "failed to convert #{@ext.sub('.','')} to shp"
+            raise "failed to convert file to shp"
           else
             @data_import.log_update(err)
           end

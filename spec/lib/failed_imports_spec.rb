@@ -42,11 +42,20 @@ describe CartoDB::Importer do
             warn "see #{local_path}"
           else
             importer = create_importer local_path, 'import_file'
-            result   = importer.import!
-            result.name.length.should > 0
-            if result.name.length > 0
-              File.delete(local_path)
-              remote_object.delete
+            begin
+              result   = importer.import!
+              result.name.length.should > 0
+              if result.name.length > 0
+                File.delete(local_path)
+                remote_object.delete
+              end
+            rescue Exception => e
+              if ['Error finding a PRJ file for uploaded SHP', 'Error running python shp_normalizer script','invalid byte sequence in UTF-8', 'failed to convert kml to shp','no importer for this type of data','Empty table','failed to import table','Zip consistency problem while reading eocd structure'].include? e.message
+                File.delete(local_path)
+                remote_object.delete
+              else
+                raise e
+              end
             end
           end
         end

@@ -21,6 +21,7 @@
 	/*============================================================================*/
 	Geocoding.prototype.getTotalRecords = function() {
 	  var me = this;
+    this.from = 0;
 
 		$.ajax({
       method: "GET",
@@ -75,15 +76,16 @@
 	
 		$.ajax({
       method: "GET",
-      url: global_api_url+'queries?sql='+escape("SELECT * from "+this.table+" where cartodb_georef_status is NULL OR cartodb_georef_status=false"),
+      url: global_api_url+'queries?sql='+escape("SELECT * from "+this.table+" WHERE ( cartodb_georef_status is NULL OR cartodb_georef_status=false ) AND cartodb_id>" + me.from ),
       headers: {'cartodbclient':true},
       dataType:'jsonp',
-      data: {rows_per_page:100},
+      data: {rows_per_page:100, mode:'asc'},
       success: function(result) {
         var rows = result.rows,
 						addresses = [];
 				_.each(rows,function(row,i){
 					addresses.push({cartodb_id:row.cartodb_id,address:_.template(me.address,row)});
+          me.from = row.cartodb_id;
 				});
 
         if (result.rows!=null && result.rows.length>0) {
@@ -104,7 +106,7 @@
 	/*============================================================================*/
 	Geocoding.prototype.processGeocoding = function(directions) {
     var me = this;
-    var worker = new Worker("/javascripts/admin/show/view/geocoding_worker.js?891892");
+    var worker = new Worker("/javascripts/admin/show/view/geocoding_worker.js");
 
     worker.onmessage = function(event){
       
@@ -122,10 +124,13 @@
         window.ops_queue.updateGeoreferencing(null);
         
         var params = {};
+        params['cartodb_georef_status'] = false;
+
         if (event.data.query.results.ResultSet.Found != "0") {
           params['the_geom'] = {"type":"Point","coordinates":[event.data.query.results.ResultSet.Results.longitude,event.data.query.results.ResultSet.Results.latitude]};
+          params['cartodb_georef_status'] = true;
         }
-				params['cartodb_georef_status'] = true;
+				
 				$.ajax({
           dataType: 'json',
           type: 'PUT',

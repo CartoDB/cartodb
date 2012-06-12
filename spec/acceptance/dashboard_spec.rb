@@ -96,7 +96,7 @@ feature "Dashboard", %q{
     page.should have_no_selector("footer")
 
     visit '/dashboard'
-    click_link_or_button('close session')
+    click_link_or_button('log out')
     page.current_path.should == '/login'
   end
 

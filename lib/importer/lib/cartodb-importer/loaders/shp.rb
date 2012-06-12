@@ -28,7 +28,9 @@ module CartoDB
         normalizer_command = "#{@python_bin_path} -Wignore #{File.expand_path("../../../../misc/shp_normalizer.py", __FILE__)} \"#{@path}\" #{random_table_name}"
         out = `#{normalizer_command}`
         shp_args_command = out.split( /, */, 4 )
-        
+        if shp_args_command[1]=="None"
+          shp_args_command[1]='LATIN1'
+        end
         if shp_args_command.length != 4
           @runlog.log << "Error running python shp_normalizer script: #{normalizer_command}"
           @runlog.stdout << out
@@ -75,9 +77,6 @@ module CartoDB
           @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
           raise "ERROR: failed to generate SQL from #{@path}"
         end
-          
-        
-        
 
         # TODO: THIS SHOULD BE UPDATE IF NOT NULL TO PREVENT CRASHING
         #debugger

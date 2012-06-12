@@ -68,22 +68,39 @@ module CartoDB
           is_utf = `file -bi #{@path}`
           unless is_utf.include? 'utf-8'
             # sample first 500 lines from source
-            lines = []
-            File.open(@path) do |f|             
-              500.times do
-                line = f.gets || break
-                lines << line
-              end            
+            # text/plain; charset=iso-8859-1
+            charset = nil
+            charset_data = is_utf.split('harset=')
+            
+            if 1<charset_data.length
+              charset = charset_data[1].split(';')[0].strip
+              if charset == ""
+                charset = nil
+              end
             end
-            # detect encoding for sample
-            cd = CharDet.detect(lines.join)
-            # Only do non-UTF8 if we're quite sure. (May fail)        
-            if (cd.confidence > 0.6)             
+            unless ['unknown-8bit','',nil,'binary'].include? charset  
               tf = Tempfile.new(@path)                  
-              `iconv -f #{cd.encoding} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
+              `iconv -f #{charset} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
               `mv -f #{tf.path} #{@path}`                
               tf.close!
-            end  
+            else
+              lines = []
+              File.open(@path) do |f|             
+                1000.times do
+                  line = f.gets || break
+                  lines << line
+                end            
+              end
+              # detect encoding for sample
+              cd = CharDet.detect(lines.join)
+              # Only do non-UTF8 if we're quite sure. (May fail)        
+              if (cd.confidence > 0.6)             
+                tf = Tempfile.new(@path)                  
+                `iconv -f #{cd.encoding} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
+                `mv -f #{tf.path} #{@path}`                
+                tf.close!
+              end  
+            end
           end
         rescue => e
           #raise e
@@ -98,7 +115,7 @@ module CartoDB
       
       def reproject_import random_table_name
         @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN the_geom TO the_geom_orig;")
-        geom_type = @db_connection["SELECT GeometryType(the_geom_orig) as type from #{random_table_name} WHERE the_geom_orig IS NOT NULL LIMIT 1"].first[:type]
+        geom_type = @db_connection["SELECT GeometryType(ST_Force_2D(the_geom_orig)) as type from #{random_table_name} WHERE the_geom_orig IS NOT NULL LIMIT 1"].first[:type]
         @db_connection.run("SELECT AddGeometryColumn('#{random_table_name}','the_geom',4326, '#{geom_type}', 2);")
         @db_connection.run("UPDATE \"#{random_table_name}\" SET the_geom = ST_Force_2D(ST_Transform(the_geom_orig, 4326)) WHERE the_geom_orig IS NOT NULL")
         @db_connection.run("ALTER TABLE #{random_table_name} DROP COLUMN the_geom_orig")

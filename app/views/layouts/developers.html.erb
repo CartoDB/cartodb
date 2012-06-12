@@ -41,7 +41,7 @@
         <li class="last">
           <% if env['warden'].authenticated?(request.subdomain) %>
             <a href="<%= CartoDB.hostname %>/dashboard"><%= env['warden'].user.email %></a>
-            <span><a href="<%= CartoDB.hostname %>/logout">(close session)</a></span>
+            <span><a href="<%= CartoDB.hostname %>/logout">(log out)</a></span>
           <% else %>
             <a href="<%= CartoDB.hostname %>/login">Login</a>
           <% end %>

@@ -137,7 +137,7 @@ module CartoDB
     def import!
       begin
         fs = File.size(@path)
-        if fs.to_i = 0
+        if fs.to_i == 0
           @data_import.set_error_code(1005)
           @data_import.log_error("File contains no information, check it locally" )
           raise CartoDB::QuotaExceeded, "File contains no information, check it locally" 

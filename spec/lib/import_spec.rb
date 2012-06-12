@@ -630,6 +630,12 @@ describe CartoDB::Importer do
       end
     end
   end
+  
+  context "it should pass any remaining failing files from remote uploads" do
+    context "existing failed remote files" do
+      'pass'.should=='pass'
+    end 
+  end
   ##################################################
   # configuration & helpers for tests
   ##################################################

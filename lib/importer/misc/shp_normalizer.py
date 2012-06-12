@@ -84,17 +84,17 @@ try:
     #Try to detect the encoding
     dbf = open(dbf_file, 'rb')
     db = dbfUtils.dbfreader(dbf)
-
+    
     fnames = db.next()
     ftypes = db.next()
-
+    
     # find string fields
     sfields = []
     for fno in range(len(fnames)):
       if ( ftypes[fno][0] == 'C' ) : sfields.append(fno)
-   
+    
     detector = UniversalDetector()
-
+    
     # 100 rows should be enough to figure encoding
     # TODO: more broader and automated testing, allow 
     #       setting limit by command line param

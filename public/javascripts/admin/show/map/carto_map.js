@@ -298,7 +298,7 @@
     CartoMap.prototype.saveMapStyle = function(map_styles,map_properties) {
       // Compose array for map style      
       var styles = [];
-      var type = ''
+      var type = '';
             
       if (map_styles.type!="roadmap") {
         _.each(map_styles,function(value,style){
@@ -1745,7 +1745,7 @@
                                  
             // Do action
             if (map_type=="Satellite") {
-              map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+              map.setOptions({mapTypeId: google.maps.MapTypeId.HYBRID});
               $('.map_header ul.main li.first p').text('Satellite');
             } else if (map_type=="Terrain") {
               map.setOptions({mapTypeId: google.maps.MapTypeId.TERRAIN});
@@ -1860,7 +1860,7 @@
           } else if (map_type=="satellite") {
             $('.map_header ul.map_type li a.option:contains("Satellite")').parent().addClass('selected');
             $('.map_header ul.main li.first p').text('Satellite');
-            map.setOptions({mapTypeId: google.maps.MapTypeId.SATELLITE});
+            map.setOptions({mapTypeId: google.maps.MapTypeId.HYBRID});
             custom_map_style.type = 'satellite';
           } else {
             map.setOptions({mapTypeId: google.maps.MapTypeId.ROADMAP});

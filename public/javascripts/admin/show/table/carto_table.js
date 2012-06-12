@@ -1149,7 +1149,7 @@
             methods.closeTablePopups();
             methods.bindESCkey();
 
-            var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).html()};
+            var data = {row: $(target).parent().attr('r'),column:$(target).parent().attr('c'),value:$(target).text()};
             var geo_column = $('p.geo').closest('th').attr('c');
 
 
@@ -1178,7 +1178,6 @@
             } else {
               $('div.edit_cell').css('left',table.e.parent().scrollLeft()+target_position.left-128+($(target).width()/2)+'px');
             }
-
 
             // Hide all possibilities
             $('div.edit_cell div.free').hide();
@@ -1283,9 +1282,6 @@
               $('div.edit_cell div.free textarea').val(data.value);
               $('div.edit_cell').show();
             }
-
-
-
 
 						
 						// If click out of edit_cell close it

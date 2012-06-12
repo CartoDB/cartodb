@@ -50,7 +50,8 @@ describe CartoDB::Importer do
                 remote_object.delete
               end
             rescue Exception => e
-              if ['Error finding a PRJ file for uploaded SHP', 'Error running python shp_normalizer script','invalid byte sequence in UTF-8', 'failed to convert kml to shp','no importer for this type of data','Empty table','failed to import table','Zip consistency problem while reading eocd structure'].include? e.message
+              # 'Error running python shp_normalizer script',
+              if ['Error finding a PRJ file for uploaded SHP', 'invalid byte sequence in UTF-8', 'failed to convert kml to shp','no importer for this type of data','Empty table','failed to import table','Zip consistency problem while reading eocd structure','Zip end of central directory signature not found', 'failed to convert geojson to shp'].include? e.message
                 File.delete(local_path)
                 remote_object.delete
               else

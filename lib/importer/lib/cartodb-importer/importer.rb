@@ -136,7 +136,12 @@ module CartoDB
     #
     def import!
       begin
-        if @remaining_quota < (0.6*File.size(@path))
+        fs = File.size(@path)
+        if fs.to_i == 0
+          @data_import.set_error_code(1005)
+          @data_import.log_error("File contains no information, check it locally" )
+          raise CartoDB::QuotaExceeded, "File contains no information, check it locally" 
+        elsif @remaining_quota < (0.6*fs)
           disk_quota_overspend = (File.size(@path) - @remaining_quota).to_int
           @data_import.set_error_code(8001)
           @data_import.log_error("#{disk_quota_overspend / 1024}KB more space is required" )

@@ -1,17 +1,21 @@
 <header>
-  <h1><%= link_to "CartoDB", root_path %></h1>
-  <ul>
-    <% if current_user.admin %>
-      <li><%= link_to 'sheriff', superadmin_users_path %></li>
-    <% end %>
-    <li><%= link_to 'dashboard', dashboard_path, :class => selected_if(current_path == dashboard_path) %></li>
-    <% if true %>
-      <form action="#">
-        <input type="text" value="<%= params[:q] %>" name="q" />
-        <input type="submit" value="Search" />
-      </form>
-    <% end %>
-    <li><%= link_to 'developers', APP_CONFIG[:developers_host] %></a></li>
-    <li><%= link_to current_user.email, account_url, :class=>"account" %></li>
-  </ul>
+  <div class="inner">
+    <h1 class="left"><%= link_to "CartoDB", root_path %></h1>
+    <ul class="right">
+      <% if current_user.admin %>
+        <li><%= link_to 'sheriff', superadmin_users_path %></li>
+      <% end %>
+      <li><%= link_to 'dashboard', dashboard_path, :class => selected_if(current_path == dashboard_path) %></li>
+      <% if true %>
+      <li>
+        <form action="#">
+          <input type="text" value="<%= params[:q] %>" name="q" placeholder="Search tables" />
+          <input type="submit" value="Search" />
+        </form>
+      </li>
+      <% end %>
+      <li><%= link_to 'developers', APP_CONFIG[:developers_host] %></a></li>
+      <li><%= link_to current_user.username, account_url, :class=>"account" %></li>
+    </ul>
+  </div>
 </header>

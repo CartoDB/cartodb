@@ -1,0 +1,31 @@
+@import "compass";
+@import "compass/reset";
+@import "compass/css3";
+@import "sprites";
+
+  // VARS
+  $text_fonts: "Helvetica Neue", "Helvetica", Arial;
+  $title_fonts: "Segoe UI Bold","Helvetica Bold", "Helvetica", Arial;
+  $w: 960px; // Min width
+
+  // GENERAL DOM ELEMENTS
+  a {color:#2483B4; text-decoration:none; &:hover {text-decoration:underline; color:#1B668B}}
+
+  // GENERAL CLASSES
+  .left {float:left}
+  .right {float:right}
+  .inner {width:$w; margin:0 auto;}
+  .center {text-align:center}
+
+  // BODIR!
+  body {
+    background:white;
+    min-width: $w;
+    font-family: $text_fonts;
+  }
+
+  // MIXINS
+  @mixin text-indent() {
+    text-indent:-9999px;
+    text-transform:uppercase;
+  }

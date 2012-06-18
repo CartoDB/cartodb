@@ -57,7 +57,7 @@ def to_epsg(srs):
             except:
                 return None
 
-srid = 4326
+srid = None
 #Try detecting the SRID
 if os.path.isfile(prj_file):
   prj_string = open(prj_file,'r').read()
@@ -75,10 +75,12 @@ if os.path.isfile(prj_file):
           'terms' : prj_string})
       webres = urlopen('http://prj2epsg.cloudfoundry.com/search.json', query)
       jres = json.loads(webres.read())
+      if jres['errors'] and 0<length(jres['errors']):
+        srid = None
       if jres['codes']:
         srid = int(jres['codes'][0]['code'])
     except:
-      srid=4326 # ensure set back to 4326 whatever happens    
+      srid=None # ensure set back to 4326 whatever happens    
 
 try:
     #Try to detect the encoding

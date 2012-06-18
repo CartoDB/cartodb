@@ -31,10 +31,15 @@ module CartoDB
         if shp_args_command[1]=="None"
           shp_args_command[1]='LATIN1'
         end
+        if shp_args_command[0] == 'None'
+          @data_import.set_error_code(3102)
+          @data_import.log_error(stderr.read)
+          @data_import.log_error("ERROR: we could not detect a known projection from your file")
+          raise "ERROR: no known projection for #{@path}"
+        end
         if shp_args_command.length != 4
           @runlog.log << "Error running python shp_normalizer script: #{normalizer_command}"
           @runlog.stdout << out
-          
           @data_import.set_error_code(3005)
           @data_import.log_error("#{normalizer_command}")
           @data_import.log_error(out)

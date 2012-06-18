@@ -100,41 +100,36 @@ module CartoDB
         end
         
         # TODO: THIS SHOULD BE UPDATE IF NOT NULL TO PREVENT CRASHING
-        #debugger
-        if shp_args_command[0] != '4326'
-          @data_import.log_update("reprojecting the_geom column from #{shp_args_command[0]} to 4326")
-          begin  
-            reproject_import random_table_name
-          rescue Exception => msg  
-            @runlog.err << msg
-            @data_import.set_error_code(2000)
-            @data_import.log_error(msg)
-            @data_import.log_error("ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326")
-            raise "ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326"
-          end  
-        end
-        
-        # KML file imports are creating nasty 4 dim geoms sometimes, or worse, mixed dim
-        # This block detects and then fixes those
-        begin
-          dimensions = @db_connection["SELECT max(st_ndims(the_geom)) as dim from \"#{random_table_name}\""].first[:dim]
-          unless dimensions.nil?
-            if 2 < dimensions
-              @data_import.log_update("reprojecting the_geom column #{shp_args_command[0]} to 2D")              
-              @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN the_geom TO the_geom_orig;")
-              geom_type = @db_connection["SELECT GeometryType(the_geom_orig) as type from #{random_table_name} LIMIT 1"].first[:type]
-              @db_connection.run("SELECT AddGeometryColumn('#{random_table_name}','the_geom',4326, '#{geom_type}', 2);")
-              @db_connection.run("UPDATE \"#{random_table_name}\" SET the_geom = ST_Force_2D(ST_Transform(the_geom_orig, 4326))")
-              @db_connection.run("ALTER TABLE #{random_table_name} DROP COLUMN the_geom_orig")
-              @db_connection.run("CREATE INDEX \"#{random_table_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
-            end
-          end
+        # if shp_args_command[0] != '4326'
+        # Forcing it to run the reproject EVERY time so that we can enforce the 2D issue
+        @data_import.log_update("reprojecting the_geom column from #{shp_args_command[0]} to 4326")
+        begin  
+          reproject_import random_table_name
         rescue Exception => msg  
           @runlog.err << msg
-          @data_import.set_error_code(3102)
+          @data_import.set_error_code(2000)
           @data_import.log_error(msg)
-          @data_import.log_error("ERROR: Unable to force geometry to 2-dimensions")
-          raise "ERROR: Unable to force geometry to 2-dimensions"
+          @data_import.log_error("ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326")
+          raise "ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326"
+        end  
+        # else  
+        #   # Even if the table is in the right projection, we need to ensure it is 2D
+        #   begin  
+        #     force_table_2d random_table_name
+        #   rescue Exception => msg  
+        #     @runlog.err << msg
+        #     @data_import.set_error_code(3110)
+        #     @data_import.log_error(msg)
+        #     @data_import.log_error("ERROR: unable to force EPSG:#{shp_args_command[0]} to 2D")
+        #     raise "ERROR: unable to force EPSG:#{shp_args_command[0]} to 2D"
+        #   end
+        # end
+        
+        begin  
+          add_index random_table_name
+        rescue Exception => msg  
+          @data_import.log_error(msg)
+          @data_import.log_error("ERROR: failed adding index")
         end  
         
         begin

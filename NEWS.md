@@ -1,3 +1,12 @@
+0.9.7 (12/06/12)
+-----
+* Allow .geojson imports
+* UI tweaks
+* Fix support for 3D shapefiles (force 2D) 
+* upload failed imports to S3 for offline inspection
+* improvements to import (encoding, geom checks)
+* warnings for table rename collisions
+
 0.9.6 (05/06/12)
 -----
 * Improvements on import file type checking

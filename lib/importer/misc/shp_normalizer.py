@@ -63,6 +63,7 @@ if os.path.isfile(prj_file):
   prj_string = open(prj_file,'r').read()
   srid = 4326
   code = to_epsg(get_spatial_reference(shp_file))
+  #code = False
   if code:
     srid = code
   else:

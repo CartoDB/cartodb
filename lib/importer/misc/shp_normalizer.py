@@ -63,7 +63,6 @@ if os.path.isfile(prj_file):
   prj_string = open(prj_file,'r').read()
   srid = 4326
   code = to_epsg(get_spatial_reference(shp_file))
-  #code = False
   if code:
     srid = code
   else:
@@ -74,7 +73,7 @@ if os.path.isfile(prj_file):
           'error' : True,
           'mode' : 'wkt',
           'terms' : prj_string})
-      webres = urlopen('http://prj2epsg.org/search.json', query)
+      webres = urlopen('http://prj2epsg.cloudfoundry.com/search.json', query)
       jres = json.loads(webres.read())
       if jres['codes']:
         srid = int(jres['codes'][0]['code'])

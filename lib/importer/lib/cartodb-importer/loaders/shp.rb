@@ -83,7 +83,22 @@ module CartoDB
           @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
           raise "ERROR: failed to generate SQL from #{@path}"
         end
-
+        
+        begin
+          # Sanitize column names where needed
+          sanitize_table_columns random_table_name
+          column_names = @db_connection.schema(random_table_name).map{ |s| s[0].to_s }
+        rescue Exception => msg  
+          @runlog.err << msg
+          @data_import.log_update("ERROR: Failed to sanitize some column names")
+        end
+        
+        unless column_names.include? 'the_geom'
+          @data_import.set_error_code(1006)
+          @data_import.log_update("ERROR: Not a valid or recognized SHP file")
+          raise "ERROR: Not a valid or recognized SHP file"
+        end
+        
         # TODO: THIS SHOULD BE UPDATE IF NOT NULL TO PREVENT CRASHING
         #debugger
         if shp_args_command[0] != '4326'
@@ -97,14 +112,6 @@ module CartoDB
             @data_import.log_error("ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326")
             raise "ERROR: unable to convert EPSG:#{shp_args_command[0]} to EPSG:4326"
           end  
-        end        
-        begin
-          # Sanitize column names where needed
-          sanitize_table_columns random_table_name
-          column_names = @db_connection.schema(random_table_name).map{ |s| s[0].to_s }
-        rescue Exception => msg  
-          @runlog.err << msg
-          @data_import.log_update("ERROR: Failed to sanitize some column names")
         end
         
         # KML file imports are creating nasty 4 dim geoms sometimes, or worse, mixed dim

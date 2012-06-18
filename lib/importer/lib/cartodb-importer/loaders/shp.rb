@@ -27,16 +27,17 @@ module CartoDB
         @data_import.log_update("running shp normalizer")
         normalizer_command = "#{@python_bin_path} -Wignore #{File.expand_path("../../../../misc/shp_normalizer.py", __FILE__)} \"#{@path}\" #{random_table_name}"
         out = `#{normalizer_command}`
+        
         shp_args_command = out.split( /, */, 4 )
         if shp_args_command[1]=="None"
           shp_args_command[1]='LATIN1'
         end
         if shp_args_command[0] == 'None'
           @data_import.set_error_code(3102)
-          @data_import.log_error(stderr.read)
           @data_import.log_error("ERROR: we could not detect a known projection from your file")
           raise "ERROR: no known projection for #{@path}"
         end
+        
         if shp_args_command.length != 4
           @runlog.log << "Error running python shp_normalizer script: #{normalizer_command}"
           @runlog.stdout << out

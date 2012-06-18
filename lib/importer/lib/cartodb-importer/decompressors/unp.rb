@@ -48,13 +48,15 @@ module CartoDB
         # find out if we have a winner
         files.each do |tmp_path| 
           if File.file?(tmp_path)
-            name = tmp_path.split("/").last
+            dirname = File.dirname(tmp_path) 
+            name = File.basename(tmp_path) 
             next if name =~ /^(\.|\_{2})/
             if name.include? ' '
               name = name.gsub(' ','_')
             end
-
+            
             #fixes problem of different SHP archive files with different case patterns
+            FileUtils.mv("#{dirname}/#{name}", "#{dirname}/#{name.downcase}") unless name == name.downcase
             name = name.downcase
             
             # add to delete queue
@@ -62,7 +64,7 @@ module CartoDB
             if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name).downcase)
               @ext            = File.extname(name)
               @suggested_name = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
-              @path           = tmp_path
+              @path           = "#{dirname}/#{name}"
               log "Found original @ext file named #{name} in path #{@path}"
               
             end           

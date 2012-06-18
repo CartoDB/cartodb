@@ -18,7 +18,7 @@ module CartoDB
         end
         
         shp2pgsql_bin_path = `which shp2pgsql`.strip
-
+        
         host = @db_configuration[:host] ? "-h #{@db_configuration[:host]}" : ""
         port = @db_configuration[:port] ? "-p #{@db_configuration[:port]}" : ""
 

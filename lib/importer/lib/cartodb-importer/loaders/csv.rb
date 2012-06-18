@@ -40,7 +40,6 @@ module CartoDB
         # Check if the file had data, if not rise an error because probably something went wrong
         begin
           row = @db_connection["SELECT * from #{@suggested_name} LIMIT 1"]
-          raise "Empty table"  
         rescue Exception => e
           @runlog.err << "Empty table"
           @data_import.set_error_code(3006)

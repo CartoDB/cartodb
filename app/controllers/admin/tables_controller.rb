@@ -16,12 +16,19 @@ class Admin::TablesController < ApplicationController
 
     # Filter tables by tag, search, or return all. Paginated.
     @tables = if !params[:tag_name].blank?
-      Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name]).order(:id).reverse.paginate(current_page, per_page)
+      Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name])
     elsif !params[:q].blank?
-      Table.filter("\"name\" ILIKE ? AND \"user_id\" = ?", "%#{params[:q]}%", current_user.id).order(:id).reverse.paginate(current_page, per_page)
+      Table.filter("\"name\" ILIKE ? AND \"user_id\" = ?", "%#{params[:q]}%", current_user.id)
     else  
-      Table.filter({:user_id => current_user.id}).order(:id).reverse.paginate(current_page, per_page)
+      Table.filter({:user_id => current_user.id})
     end
+
+    # TODO: strip tables which do not exist ?
+    # See https://github.com/Vizzuality/cartodb/issues/824
+    #@tables = @tables.filter("name NOT IN ('_2012slurry')")
+
+    # Order by identifier and paginate
+    @tables = @tables.order(:id).reverse.paginate(current_page, per_page)
 
     # Quota (in Mb and Tables)
     @quota         = current_user.quota_in_bytes / 1024 / 1024

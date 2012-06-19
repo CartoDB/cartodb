@@ -18,11 +18,12 @@
 /**
  * represents a table row
  */
-var Row = Backbone.Model.extend({
+cdb.ui.common.Row = Backbone.Model.extend({
+  url: 'test'
 });
 
 cdb.ui.common.TableData = Backbone.Collection.extend({
-    model: Row,
+    model: cdb.ui.common.Row,
 
     /** 
      * get value for row index and columnName
@@ -51,6 +52,7 @@ cdb.ui.common.RowView = cdb.core.View.extend({
 
   initialize: function() {
     this.model.bind('change', this.render, this);
+    this.model.bind('destroy', this.clean, this);
     this.add_related_model(this.model);
   },
 
@@ -93,6 +95,10 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
     // binding
     this.dataModel.bind('reset', this.render, this);
+    this.dataModel.bind('add', this.addRow, this);
+
+    // assert the rows are removed when table is removed
+    this.bind('clean', this.clear_rows, this);
 
     // prepare for cleaning
     this.add_related_model(this.dataModel);
@@ -119,6 +125,19 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.rowViews = [];
   },
 
+  /**
+   * add rows
+   */
+  addRow: function(row) {
+    var self = this;
+    var tr = new cdb.ui.common.RowView({ model: row });
+    self.$el.append(tr.render().el);
+    self.rowViews.push(tr);
+  },
+
+  /**
+   * render table
+   */
   render: function() {
     var self = this;
     self.clear_rows();
@@ -129,9 +148,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
     // render data
     this.dataModel.each(function(row) {
-        var tr = new cdb.ui.common.RowView({ model: row });
-        self.$el.append(tr.render().el);
-        self.rowViews.push(tr);
+      self.addRow(row);
     });
     return this;
   }

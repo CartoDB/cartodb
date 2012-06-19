@@ -123,8 +123,12 @@ module CartoDB
       # def force_table_2d random_table_name
       #   @db_connection.run("UPDATE \"#{random_table_name}\" SET the_geom = ST_Force_2D(the_geom)")
       # end
-      def add_index random_table_name
-        @db_connection.run("CREATE INDEX \"#{random_table_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
+      def add_index random_table_name, index_name=nil
+        if index_name.nil?
+          @db_connection.run("CREATE INDEX \"#{random_table_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
+        else
+          @db_connection.run("CREATE INDEX \"#{index_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
+        end
       end
       def sanitize_table_columns table_name
         # Sanitize column names where needed

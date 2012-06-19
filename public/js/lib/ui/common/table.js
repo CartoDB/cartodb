@@ -44,6 +44,33 @@ cdb.ui.common.TableProperties = Backbone.Model.extend({
 });
 
 /**
+ * renders a table row
+ */
+cdb.ui.common.RowView = cdb.core.View.extend({
+  tagName: 'tr',
+
+  initialize: function() {
+    this.model.bind('change', this.render, this);
+    this.add_related_model(this.model);
+  },
+
+  render: function() {
+    var tr = this.$el;
+    tr.html('');
+    var row = this.model;
+    tr.attr('id', 'row_' + row.get('id'));
+    _(row.attributes).each(function(value, key) {
+      var td = $('<td>');
+      td.attr('id', 'cell_' + row.get('id') + '_' + key);
+      td.append(value);
+      tr.append(td);
+    });
+    return this;
+  }
+
+});
+
+/**
  * render a table
  * this widget needs two data sources
  * - the table model which contains information about the table (columns and so on). See TableProperties
@@ -62,24 +89,14 @@ cdb.ui.common.Table = cdb.core.View.extend({
   initialize: function() {
     _.defaults(this.options, this.default_options);
     this.dataModel = this.options.dataModel;
-    this.dataModel.bind('change', this._changeCell, this);
-  },
+    this.rowViews = [];
 
-  _changeCell: function(row) {
-    var id = 'cell_' + row.get('id') + '_' +
-    this.$('#row_' + row.get('id')).html(this._renderRow(row));
-  },
+    // binding
+    this.dataModel.bind('reset', this.render, this);
 
-  _renderRow: function(row) {
-    var tr = $('<tr>');
-    tr.attr('id', 'row_' + row.get('id'));
-    _(row.attributes).each(function(value, key) {
-      var td = $('<td>');
-      td.attr('id', 'cell_' + row.get('id') + '_' + key);
-      td.append(value);
-      tr.append(td);
-    });
-    return tr;
+    // prepare for cleaning
+    this.add_related_model(this.dataModel);
+    this.add_related_model(this.model);
   },
 
   _renderHeader: function() {
@@ -92,8 +109,19 @@ cdb.ui.common.Table = cdb.core.View.extend({
     return thead;
   },
 
+  /**
+   * remove all rows
+   */
+  clear_rows: function() {
+    _(this.rowViews).each(function(tr) {
+      tr.clean();
+    });
+    this.rowViews = [];
+  },
+
   render: function() {
     var self = this;
+    self.clear_rows();
     self.$el.html('');
 
     // render header
@@ -101,8 +129,9 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
     // render data
     this.dataModel.each(function(row) {
-        var tr = self._renderRow(row);
-        self.$el.append(tr);
+        var tr = new cdb.ui.common.RowView({ model: row });
+        self.$el.append(tr.render().el);
+        self.rowViews.push(tr);
     });
     return this;
   }

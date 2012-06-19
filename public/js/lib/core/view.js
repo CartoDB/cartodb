@@ -24,6 +24,7 @@
      */
     clean: function() {
       var self = this;
+      this.trigger('clean');
       this.remove();
       this.unbind();
       // remove model binding

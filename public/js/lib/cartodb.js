@@ -18,6 +18,7 @@
 
         'core/config.js',
         'core/log.js',
+        'core/profiler.js',
         'core/view.js',
 
         'geo/map.js',

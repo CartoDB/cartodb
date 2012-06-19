@@ -4,6 +4,19 @@
 
   <%= content_for(:js) do %>
     <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers", "plugins/file_uploader", "admin/index/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/index/import"  %>
+    <% 
+      # Get the user space to set the uploader max file size
+      if @table_quota.blank?
+        @userSpaceLimit = 0
+      else
+        if @quota && @database_size
+          @userSpaceLimit = (@quota - @database_size.to_i) * 1024 * 1024
+        else
+          @userSpaceLimit = 0
+        end
+      end
+    %>
+    <script type="text/javascript">var userSpaceLimit = <%= @userSpaceLimit %>;</script>
   <% end %>
   <%= content_for(:head) do %>
     <%= stylesheet_link_tag('reset.css','admin/layout','admin/tables/dashboard') %>
@@ -79,12 +92,12 @@
                   <%= (@database_size.to_f/@quota > 0.90 ) ? 'boom' : '' %>
                 ">
                   <% if @quota > 1023 %>
-                    <% @database_size = @database_size/1024 %>
-                    <p class="big"><%= number_with_precision(@database_size, :precision => 1) %>/<%= @quota/1024 %></p>
+                    <% @database_size_g = @database_size/1024 %>
+                    <p class="big"><%= number_with_precision(@database_size_g, :precision => 1) %>/<%= @quota/1024 %></p>
                     <label>Used<br/>Gigabytes</label>
                   <% else %>
                     <p class="big"><%= @database_size.to_i %>/<%= @quota %></p>
-                    <label>Used<br/>Megabytes</label>                                      
+                    <label>Used<br/>Megabytes</label>
                   <% end %>  
                 </td>
                 <td class="

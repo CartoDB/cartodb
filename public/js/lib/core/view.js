@@ -11,6 +11,7 @@
       View.viewCount++;
       View.views[this.cid] = this;
       this._created_at = new Date();
+      cdb.core.Profiler.new_value('total_views', View.viewCount);
     },
 
     add_related_model: function(m) {

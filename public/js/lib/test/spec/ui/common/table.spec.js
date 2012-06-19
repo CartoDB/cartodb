@@ -31,6 +31,7 @@ describe("common.ui.Table", function() {
   describe("Table", function() {
     var table;
     beforeEach(function() {
+      cdb.ui.common.Row.url = 'test';
       cols = new cdb.ui.common.TableData();
 
       tableMetadata = new cdb.ui.common.TableProperties({
@@ -50,6 +51,8 @@ describe("common.ui.Table", function() {
         dataModel: cols,
         model: tableMetadata
       });
+
+      this.server = sinon.fakeServer.create();
 
 
     });
@@ -86,6 +89,18 @@ describe("common.ui.Table", function() {
         {'id': 1, 'col1': 1, 'col2': 2, 'col3': 3}
       ]);
       expect(table.$('tr').length).toEqual(2);
+    });
+
+    it("should remove rows on remove", function() {
+      table.render();
+      cols.at(0).destroy();
+      expect(table.$('tr').length).toEqual(2);
+    });
+
+    it("should add rows", function() {
+      table.render();
+      cols.add({'id': 4, 'col1': 1, 'col2': 2, 'col3': 3});
+      expect(table.$('tr').length).toEqual(4);
     });
 
   });

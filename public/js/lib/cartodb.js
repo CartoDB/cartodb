@@ -22,7 +22,8 @@
 
         'geo/map.js',
 
-        'ui/common/dialog.js'
+        'ui/common/dialog.js',
+        'ui/common/notification.js'
     ];
 
     /**

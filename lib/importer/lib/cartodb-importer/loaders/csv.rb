@@ -136,9 +136,8 @@ module CartoDB
             matching_longitude= res.first[:column_name]
           end
 
-
           if matching_latitude and matching_longitude
-              @data_import.log_update("converting #{matching_latitude}, #{matching_latitude} to the_geom")
+              @data_import.log_update("converting #{matching_latitude}, #{matching_longitude} to the_geom")
               #we know there is a latitude/longitude columns
               @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
               #TODO
@@ -156,13 +155,9 @@ module CartoDB
               AND
               trim(CAST(\"#{matching_latitude}\" AS text))  ~
               '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
-              AND
-              trim(CAST(\"#{matching_latitude}\" AS text))  ~
-              '[+-]?((\d+(\.\d*)?)|\.\d+)([eE][+-]?[0-9]+)?'
               GEOREF
               )
-
-              @db_connection.run("CREATE INDEX \"#{@suggested_name}_the_geom_gist\" ON \"#{@suggested_name}\" USING GIST (the_geom)")
+              add_index @suggested_name, "importing_#{Time.now.to_i}_#{@suggested_name}"
           end
         end
 

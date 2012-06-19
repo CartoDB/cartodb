@@ -46,12 +46,12 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def create
-    @data_import = DataImport.new(:user_id => current_user.id)
+    @data_import  = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
     
-    #get info about any import data coming
-    multifiles = ['.bz2','.osm']
+    # the very particular case of osm.org url imports
+    # MOVE THIS TO importer.rb
     if params[:url] || params[:file]
       src = params[:file] ? params[:file] : params[:url]
       suggested_name = nil
@@ -70,32 +70,7 @@ class Api::Json::TablesController < Api::ApplicationController
       end
     end
     
-    if ext.present? and multifiles.include?(ext)
-      # Handle OSM imports allowing multi-table creation
-      begin
-        owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
-        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          "database" => owner.database_name, 
-          :logger => ::Rails.logger,
-          "username" => owner.database_username, 
-          "password" => owner.database_password,
-          :import_from_file => src,
-          :suggested_name => suggested_name,
-          :debug => (Rails.env.development?), 
-          :remaining_quota => owner.remaining_quota,
-          :data_import_id => @data_import.id
-        ).symbolize_keys
-    
-        importer = CartoDB::Importer.new hash_in
-        importer = importer.import!
-        render_jsonp({:tag => importer.tag }, 200, :location => '/dashboard')
-      rescue => e
-        @data_import.refresh
-        @data_import.log_error(e)
-        @data_import.set_error_code(6000)
-        raise "OSM data error"
-      end
-    elsif params[:append].present?
+    if params[:append].present?
       #handle table appending. table appending doesn't work with OSM files, so after the multi check
       @new_table = Table.new
       
@@ -109,45 +84,85 @@ class Api::Json::TablesController < Api::ApplicationController
       @new_table.import_from_file = params[:file]              if params[:file]
       @new_table.import_from_url = params[:url]                if params[:url]
       @new_table.save
-      #if @new_table.valid? && @new_table.save      
-        @new_table.reload
-        @table = Table.filter(:user_id => current_user.id, :id => params[:table_id]).first
-        @table.append_to_table(:from_table => @new_table)
-        @table.save.reload
-      #   # append_to_table doesn't automatically destroy the table
-        @new_table.destroy
-      
-        render_jsonp({:id => @table.id, 
-                     :name => @table.name, 
-                     :schema => @table.schema}, 200, :location => table_path(@table))
-    else
-      @table = Table.new
-      @table.user_id = current_user.id
-      @table.data_import_id = @data_import.id
-      @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
-      @table.import_from_file = params[:file]              if params[:file]
-      @table.import_from_url = params[:url]                if params[:url]
-      @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
-      @table.import_from_query = params[:from_query]  if params[:from_query]   
-      @table.migrate_existing_table = params[:migrate_table]  if params[:migrate_table]    
-      @table.importing_SRID = params[:srid] || CartoDB::SRID
-      @table.force_schema   = params[:schema]              if params[:schema]
-      @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
-      
-      if @table.valid? && @table.save      
-        render_jsonp({ :id => @table.id, 
-                       :name => @table.name, 
-                       :schema => @table.schema }, 200, :location => table_path(@table))
+          
+      @new_table.reload
+      @table = Table.filter(:user_id => current_user.id, :id => params[:table_id]).first
+      @table.append_to_table(:from_table => @new_table)
+      @table.save.reload
+      # append_to_table doesn't automatically destroy the table
+      @new_table.destroy
+    
+      render_jsonp({:id => @table.id, 
+                   :name => @table.name, 
+                   :schema => @table.schema}, 200, :location => table_path(@table))
+    elsif params[:migrate_table].present?
+      #the below is redudant with the method below after import.nil?, should factor
+      @new_table = Table.new 
+      @new_table.name = params[:migrate_table]  if params[:migrate_table]
+      @new_table.user_id =  @data_import.user_id
+      @new_table.data_import_id = @data_import.id
+      @new_table.importing_SRID = params[:srid] || CartoDB::SRID
+      @new_table.migrate_existing_table = params[:migrate_table]
+      if @new_table.valid?
+        @new_table.save
+        @data_import.refresh
+        render_jsonp({:id => @new_table.id, 
+                        :name => @new_table.name, 
+                        :schema => @new_table.schema}, 200, 
+                      :location => table_path(@new_table))
       else
         @data_import.reload
-        CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
-        if @table.data_import_id
+        CartoDB::Logger.info "Errors on tables#create", @new_table.errors.full_messages
+        if @new_table.data_import_id
           render_jsonp({ :description => @data_import.get_error_text ,
                       :stack =>  @data_import.log_json,
                       :code=>@data_import.error_code }, 
                       400)
         else
           render_jsonp({ :description => @data_import.get_error_text, :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
+        end
+      end
+    else
+      if params[:url].present?
+        import = import_to_cartodb 'url', params[:url]
+      elsif params[:file].present?
+        import = import_to_cartodb 'file', params[:file]
+      elsif params[:table_copy].present?
+        import = import_to_cartodb 'table_copy', params[:table_copy]
+      elsif params[:from_query].present?
+        import = import_to_cartodb 'from_query', params[:from_query]
+      end
+      unless import.nil?
+        if import.length == 1
+          @new_table = Table.new 
+          @new_table.name = params[:name]  if params[:name] || import.first.name # && !params[:table_copy]
+          @new_table.user_id =  @data_import.user_id
+          @new_table.data_import_id = @data_import.id
+          @new_table.importing_SRID = params[:srid] || CartoDB::SRID
+          # @new_table.name = import.first.name  
+          @new_table.migrate_existing_table = import.first.name
+          if @new_table.valid?
+            @new_table.save
+            @data_import.refresh
+            render_jsonp({:id => @new_table.id, 
+                            :name => @new_table.name, 
+                            :schema => @new_table.schema}, 200, 
+                          :location => table_path(@new_table))
+          else
+            @data_import.reload
+            CartoDB::Logger.info "Errors on tables#create", @new_table.errors.full_messages
+            if @new_table.data_import_id
+              render_jsonp({ :description => @data_import.get_error_text ,
+                          :stack =>  @data_import.log_json,
+                          :code=>@data_import.error_code }, 
+                          400)
+            else
+              render_jsonp({ :description => @data_import.get_error_text, :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
+            end
+          end
+        else
+          #handle multi tables with a tag
+          #render_jsonp({:tag => importer.tag }, 200, :location => '/dashboard')
         end
       end
     end
@@ -258,6 +273,100 @@ class Api::Json::TablesController < Api::ApplicationController
   
   protected
 
+  def import_to_cartodb method, import_source
+    if method == 'file'    
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => current_user.database_name, 
+        :logger => ::Rails.logger,
+        "username" => current_user.database_username, 
+        "password" => current_user.database_password,
+        :import_from_file => import_source, 
+        :debug => (Rails.env.development?), 
+        :remaining_quota => current_user.remaining_quota,
+        :data_import_id => @data_import.id
+      ).symbolize_keys
+      importer = CartoDB::Importer.new hash_in
+      importer = importer.import!
+      @data_import.reload
+      @data_import.imported
+      return importer
+    end
+    #import from URL
+    if method == 'url' 
+      @data_import.data_type = 'url'
+      @data_import.data_source = import_from_url
+      @data_import.download
+      @data_import.save
+      importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => database_name, 
+        :logger => ::Rails.logger,
+        "username" => owner.database_username, 
+        "password" => owner.database_password,
+        :import_from_url => import_from_url, 
+        :debug => (Rails.env.development?), 
+        :remaining_quota => owner.remaining_quota,
+        :data_import_id => @data_import.id
+      ).symbolize_keys
+      importer = importer.import!
+      @data_import.reload
+      @data_import.imported
+      @data_import.save
+      return importer.name
+    end
+    #Import from the results of a query
+    if method == 'from_query'
+      @data_import.data_type = 'query'
+      @data_import.data_source = import_from_query
+      @data_import.migrate
+      @data_import.save
+              
+      # ensure unique name
+      uniname = get_valid_name(self.name)
+      
+      # create a table based on the query
+      owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
+      
+      # with table #{uniname} table created now run migrator to CartoDBify
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => database_name, 
+        :logger => ::Rails.logger,
+        "username" => owner.database_username, 
+        "password" => owner.database_password,
+        :current_name => uniname, 
+        :suggested_name => uniname, 
+        :debug => (Rails.env.development?), 
+        :remaining_quota => owner.remaining_quota,
+        :data_import_id => @data_import.id
+      ).symbolize_keys
+      importer = CartoDB::Migrator.new hash_in
+      importer = importer.migrate!
+      @data_import.reload
+      @data_import.migrated
+      @data_import.save
+      return importer.name
+    end
+    
+    #Import from copying another table
+    if method == 'table_copy'
+      @data_import.data_type = 'table'
+      @data_import.data_source = migrate_existing_table
+      @data_import.migrate
+      @data_import.save
+      # ensure unique name
+      uniname = get_valid_name(self.name)
+      owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
+      @data_import.imported
+      owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
+      owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
+      owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
+      owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
+      owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
+      set_trigger_the_geom_webmercator
+      @data_import.migrated
+      return uniname
+    end
+  end
+  
   def load_table
     @table = Table.find_by_identifier(current_user.id, params[:id])
   end

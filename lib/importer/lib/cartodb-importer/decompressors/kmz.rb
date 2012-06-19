@@ -37,14 +37,7 @@ module CartoDB
             @path           = tmp_path
             log "Found original @ext file named #{name} in path #{@path}"
           end
-          # elsif name.include? '.osm.xml' #specific check for osm.xml files
-          #   @ext            = '.osm'
-          #   @suggested_name = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
-          #   @path           = tmp_path
-          #   log "Found original @ext file named #{name} in path #{@path}"
-          # end
           
-          # extract
           entry.extract(tmp_path)
           
         end        

@@ -41,16 +41,16 @@ describe("common.ui.Table", function() {
           ['col3','number']
         ]
       });
+      cols.reset([
+        {'id': 1, 'col1': 1, 'col2': 2, 'col3': 3},
+        {'id': 2, 'col1': 4, 'col2': 5, 'col3': 6}
+      ]);
 
       table = new cdb.ui.common.Table({
         dataModel: cols,
         model: tableMetadata
       });
 
-      cols.reset([
-        {'id': 1, 'col1': 1, 'col2': 2, 'col3': 3},
-        {'id': 2, 'col1': 4, 'col2': 5, 'col3': 6}
-      ]);
 
     });
 
@@ -81,12 +81,11 @@ describe("common.ui.Table", function() {
     });
 
     it("should rerender on data reset", function() {
-      table.render();
       expect(table.render().$('tr').length).toEqual(3);
       cols.reset([
         {'id': 1, 'col1': 1, 'col2': 2, 'col3': 3}
       ]);
-      expect(table.render().$('tr').length).toEqual(2);
+      expect(table.$('tr').length).toEqual(2);
     });
 
   });

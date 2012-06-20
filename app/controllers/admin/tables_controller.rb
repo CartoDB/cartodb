@@ -23,9 +23,10 @@ class Admin::TablesController < ApplicationController
       Table.filter({:user_id => current_user.id})
     end
 
-    # TODO: strip tables which do not exist ?
+    # strip tables which do not exist anymore
     # See https://github.com/Vizzuality/cartodb/issues/824
-    #@tables = @tables.filter("name NOT IN ('_2012slurry')")
+    @tables = @tables.filter( { :name => current_user.tables_effective } ) 
+    # TODO: see what's missing both ways and handle somehow
 
     # Order by identifier and paginate
     @tables = @tables.order(:id).reverse.paginate(current_page, per_page)

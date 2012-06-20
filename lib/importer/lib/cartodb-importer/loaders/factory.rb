@@ -14,9 +14,10 @@ module CartoDB
       def process!
       end  
 
-      def self.create type, options = {}
+      def self.create type, data = {}, options = {}
         type = type.downcase.gsub(/(\.|\s)/,"").to_sym if type.is_a? String
         c = @@subclasses[type]
+        c ? c.new(data) : false
         c ? c.new(options) : false
       end
 

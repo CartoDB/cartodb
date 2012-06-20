@@ -11,6 +11,7 @@ module CartoDB
       def process!
         @data_import = DataImport.find(:id=>@data_import_id)
         @data_import.log_update("untar file #{@path}") 
+        import_data = []
         
         # generate a temp file for import
         tmp_dir = temporary_filename
@@ -56,23 +57,26 @@ module CartoDB
             end
             
             #fixes problem of different SHP archive files with different case patterns
-            FileUtils.mv("#{dirname}/#{name}", "#{dirname}/#{name.downcase}") unless name == name.downcase
+            FileUtils.mv("#{tmp_path}", "#{dirname}/#{name.downcase}") unless File.basename(tmp_path) == name.downcase
             name = name.downcase
-            
+            import_data << {
+              :ext => File.extname(name),
+              :suggested_name => name.sanitize,
+              :path => "#{dirname}/#{name}"
+            }
             # add to delete queue
-            @entries << tmp_path
-            if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name).downcase)
-              @ext            = File.extname(name)
-              @suggested_name = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
-              @path           = "#{dirname}/#{name}"
-              log "Found original @ext file named #{name} in path #{@path}"
-              
-            end           
+            # @entries << tmp_path
+            # if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name).downcase)
+            #   @ext            = File.extname(name)
+            #   @suggested_name = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
+            #   @path           = "#{dirname}/#{name}"
+            #   log "Found original @ext file named #{name} in path #{@path}"
+            # end           
           end
         end
 
         # construct return variables
-        to_import_hash
+        import_data
       end  
     end
   end    

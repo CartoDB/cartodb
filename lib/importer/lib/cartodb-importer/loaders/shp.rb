@@ -156,7 +156,8 @@ module CartoDB
                               })
  
         # construct return variables
-        [to_import_hash, payload]        
+        # [to_import_hash, payload] 
+        payload       
       end  
     end
   end    

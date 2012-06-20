@@ -11,7 +11,7 @@ module CartoDB
 
         # generate a temp file for import
         tmp_dir = temporary_filename
-
+        
         Zip::ZipFile.foreach(@path) do |entry|
           name = entry.name.split('/').last
           next if name =~ /^(\.|\_{2})/
@@ -37,7 +37,6 @@ module CartoDB
             @path           = tmp_path
             log "Found original @ext file named #{name} in path #{@path}"
           end
-          
           entry.extract(tmp_path)
           
         end        

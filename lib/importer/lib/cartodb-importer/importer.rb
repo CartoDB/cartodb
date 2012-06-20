@@ -33,7 +33,8 @@ module CartoDB
       @append_to_table  = options[:append_to_table] || nil
       @db_configuration = options.slice :database, :username, :password, :host, :port
       @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
-      @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")      
+      @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")     
+      @working_data = nil; 
 
       # Setup candidate file
       @import_from_file = options[:import_from_file]
@@ -147,41 +148,58 @@ module CartoDB
           @data_import.log_error("#{disk_quota_overspend / 1024}KB more space is required" )
           raise CartoDB::QuotaExceeded, "#{disk_quota_overspend / 1024}KB more space is required" 
         end
+        import_data = [{
+          :ext            => @ext,
+          :suggested_name => @suggested_name,
+          :path           => @path 
+        }]
+        
+        # set our multi file handlers
         # decompress data and update self with results
         decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash) 
         @data_import.log_update('file unzipped') if decompressor
-        update_self decompressor.process! if decompressor
+        import_data = decompressor.process! if decompressor
+        
         @data_import.reload
         
         # TODO: should this be here...?
-        @import_type = @ext        
+        # @import_type = @ext        
         
-        @data_import.log_update("file type set to #{@ext}") 
-      
+        # @data_import.log_update("file type set to #{@ext}") 
+        
         # Preprocess data and update self with results
         # preprocessors are expected to return a hash datastructure
-        preproc = CartoDB::Import::Preprocessor.create(@ext, self.to_import_hash)
-        @data_import.refresh
-        @data_import.log_update('file preprocessed') if preproc
-        update_self preproc.process! if preproc
-      
+        processed_imports = new Array
+        import_data.each { |data|
+          @working_data = data
+          preproc = CartoDB::Import::Preprocessor.create(data[:ext], self.to_import_hash)
+          @data_import.refresh
+          @data_import.log_update('file preprocessed') if preproc
+          processed_imports << preproc.process! if preproc
+        }
+        debugger
+        import_data = import_data | processed_imports
+        debugger
         # Load data in
-        loader = CartoDB::Import::Loader.create(@ext, self.to_import_hash)
-        if !loader
-          @data_import.log_update("no importer for this type of data, #{@ext}")
-          @data_import.set_error_code(1002)
-          raise "no importer for this type of data"          
-        end
-        @data_import.log_update("file successfully loaded") if loader
-        
-        i_res, payload = loader.process! 
+        payloads = new Array
+        import_data.each { |data|
+          @working_data = data
+          loader = CartoDB::Import::Loader.create(data[:ext], self.to_import_hash)
+          if !loader
+            @data_import.log_update("no importer for this type of data, #{@ext}")
+            @data_import.set_error_code(1002)
+            raise "no importer for this type of data"          
+          end
+          @data_import.log_update("file successfully loaded") if loader
+          payloads << loader.process! 
+        }
         @data_import.refresh
         @data_import.log_update("file successfully imported")
         
-        update_self i_res if i_res
+        # update_self i_res if i_res
         
         @data_import.save
-        return [payload]
+        return payloads
       rescue => e
         @data_import.refresh #reload incase errors were written
         #@data_import.log_error(e)

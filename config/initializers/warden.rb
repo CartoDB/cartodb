@@ -50,6 +50,32 @@ Warden::Strategies.add(:api_authentication) do
   end
 end
 
+Warden::Strategies.add(:api_key) do
+  def valid?
+    params[:api_key].present?
+  end
+
+  def authenticate!
+    begin
+      if (api_key = params[:api_key]) && api_key.present?
+        user_name = request.subdomain
+        if $users_metadata.SISMEMBER "rails:users:#{user_name}:map_key", api_key
+          user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
+          return fail! if user_id.blank?
+          user    = User[user_id]
+          success!(user)
+        else
+          fail!
+        end
+      else
+        fail!
+      end
+    rescue
+      fail!
+    end
+  end
+end
+
 Warden::Manager.after_authentication do |user,auth,opts|
   user.set_map_key
 end

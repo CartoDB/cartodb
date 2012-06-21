@@ -169,7 +169,8 @@ module CartoDB
         
         # Preprocess data and update self with results
         # preprocessors are expected to return a hash datastructure
-        processed_imports = new Array
+        
+        processed_imports = Array.new
         import_data.each { |data|
           @working_data = data
           preproc = CartoDB::Import::Preprocessor.create(data[:ext], self.to_import_hash)
@@ -177,21 +178,21 @@ module CartoDB
           @data_import.log_update('file preprocessed') if preproc
           processed_imports << preproc.process! if preproc
         }
-        debugger
         import_data = import_data | processed_imports
-        debugger
+        
         # Load data in
-        payloads = new Array
+        payloads = Array.new
         import_data.each { |data|
           @working_data = data
           loader = CartoDB::Import::Loader.create(data[:ext], self.to_import_hash)
           if !loader
             @data_import.log_update("no importer for this type of data, #{@ext}")
             @data_import.set_error_code(1002)
-            raise "no importer for this type of data"          
+            #raise "no importer for this type of data"  
+          else
+            @data_import.log_update("#{ext} successfully loaded")        
+            payloads << loader.process! 
           end
-          @data_import.log_update("file successfully loaded") if loader
-          payloads << loader.process! 
         }
         @data_import.refresh
         @data_import.log_update("file successfully imported")

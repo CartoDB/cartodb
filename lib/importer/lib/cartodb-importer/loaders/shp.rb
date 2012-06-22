@@ -6,11 +6,11 @@ module CartoDB
 
       def process!
         @data_import = DataImport.find(:id=>@data_import_id)
-
+        
         log "processing shp"
         
         #check for available PRJ file
-        unless File.exists?(@path.gsub(".shp",".prj"))
+        unless File.exists?(@working_data[:path].gsub(".shp",".prj"))
           @runlog.log << "Error finding a PRJ file for uploaded SHP"
           @data_import.set_error_code(3101)
           @data_import.log_error("ERROR: CartoDB requires all SHP files to also contain a PRJ file")
@@ -22,10 +22,10 @@ module CartoDB
         host = @db_configuration[:host] ? "-h #{@db_configuration[:host]}" : ""
         port = @db_configuration[:port] ? "-p #{@db_configuration[:port]}" : ""
 
-        random_table_name = "importing_#{Time.now.to_i}_#{@suggested_name}"
+        random_table_name = "importing_#{Time.now.to_i}_#{@working_data[:suggested_name]}"
 
         @data_import.log_update("running shp normalizer")
-        normalizer_command = "#{@python_bin_path} -Wignore #{File.expand_path("../../../../misc/shp_normalizer.py", __FILE__)} \"#{@path}\" #{random_table_name}"
+        normalizer_command = "#{@python_bin_path} -Wignore #{File.expand_path("../../../../misc/shp_normalizer.py", __FILE__)} \"#{@working_data[:path]}\" #{random_table_name}"
         out = `#{normalizer_command}`
         
         shp_args_command = out.split( /, */, 4 )
@@ -35,7 +35,7 @@ module CartoDB
         if shp_args_command[0] == 'None'
           @data_import.set_error_code(3102)
           @data_import.log_error("ERROR: we could not detect a known projection from your file")
-          raise "ERROR: no known projection for #{@path}"
+          raise "ERROR: no known projection for #{@working_data[:path]}"
         end
         
         if shp_args_command.length != 4
@@ -61,13 +61,13 @@ module CartoDB
         if $?.exitstatus != 0 
           @data_import.set_error_code(3005)
           @data_import.log_error(stderr.read)
-          @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
-          raise "ERROR: failed to generate SQL from #{@path}"
+          @data_import.log_error("ERROR: failed to generate SQL from #{@working_data[:path]}")
+          raise "ERROR: failed to generate SQL from #{@working_data[:path]}"
         elsif (sdout = stdout.read).downcase.include? "failure"
           @data_import.set_error_code(3005)
           @data_import.log_error(sdout)
-          @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
-          raise "ERROR: failed to generate SQL from #{@path}"
+          @data_import.log_error("ERROR: failed to generate SQL from #{@working_data[:path]}")
+          raise "ERROR: failed to generate SQL from #{@working_data[:path]}"
         end
         
         unless (reg = stdout.read).empty?
@@ -80,8 +80,8 @@ module CartoDB
           @data_import.set_error_code(3005)
           @data_import.log_error(stdout.read)
           @data_import.log_error(stderr.read)
-          @data_import.log_error("ERROR: failed to generate SQL from #{@path}")
-          raise "ERROR: failed to generate SQL from #{@path}"
+          @data_import.log_error("ERROR: failed to generate SQL from #{@working_data[:path]}")
+          raise "ERROR: failed to generate SQL from #{@working_data[:path]}"
         end
         
         begin
@@ -133,14 +133,14 @@ module CartoDB
         end  
         
         begin
-          @db_connection.run("ALTER TABLE \"#{random_table_name}\" RENAME TO \"#{@suggested_name}\"")
+          @db_connection.run("ALTER TABLE \"#{random_table_name}\" RENAME TO \"#{@working_data[:suggested_name]}\"")
           @table_created = true
         rescue Exception => msg  
           @runlog.err << msg
           @data_import.set_error_code(5000)
           @data_import.log_error(msg)
-          @data_import.log_error("ERROR: unable to rename \"#{random_table_name}\" to \"#{@suggested_name}\"")
-          raise "ERROR: unable to rename \"#{random_table_name}\" to \"#{@suggested_name}\""
+          @data_import.log_error("ERROR: unable to rename \"#{random_table_name}\" to \"#{@working_data[:suggested_name]}\"")
+          raise "ERROR: unable to rename \"#{random_table_name}\" to \"#{@working_data[:suggested_name]}\""
         end  
 
         @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?
@@ -149,7 +149,7 @@ module CartoDB
         @data_import.save
         
         payload = OpenStruct.new({
-                                :name => @suggested_name, 
+                                :name => @working_data[:suggested_name], 
                                 :rows_imported => rows_imported,
                                 :import_type => @import_type,
                                 :log => @runlog

@@ -124,15 +124,15 @@ class Api::Json::TablesController < Api::ApplicationController
       end
     else
       if params[:url].present?
-        import = import_to_cartodb 'url', params[:url]
+        imports = import_to_cartodb 'url', params[:url]
       elsif params[:file].present?
-        import = import_to_cartodb 'file', params[:file]
+        imports = import_to_cartodb 'file', params[:file]
       elsif params[:table_copy].present?
-        import = import_to_cartodb 'table_copy', params[:table_copy]
+        imports = import_to_cartodb 'table_copy', params[:table_copy]
       elsif params[:from_query].present?
-        import = import_to_cartodb 'from_query', params[:from_query]
+        imports = import_to_cartodb 'from_query', params[:from_query]
       end
-      unless import.nil?
+      unless imports.nil?
         if import.length == 1
           @new_table = Table.new 
           @new_table.name = params[:name]  if params[:name] || import.first.name # && !params[:table_copy]
@@ -141,13 +141,14 @@ class Api::Json::TablesController < Api::ApplicationController
           @new_table.importing_SRID = params[:srid] || CartoDB::SRID
           # @new_table.name = import.first.name  
           @new_table.migrate_existing_table = import.first.name
+          
           if @new_table.valid?
             @new_table.save
             @data_import.refresh
             render_jsonp({:id => @new_table.id, 
                             :name => @new_table.name, 
                             :schema => @new_table.schema}, 200, 
-                          :location => table_path(@new_table))
+                            :location => table_path(@new_table))
           else
             @data_import.reload
             CartoDB::Logger.info "Errors on tables#create", @new_table.errors.full_messages

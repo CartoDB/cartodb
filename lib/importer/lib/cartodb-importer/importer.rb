@@ -178,9 +178,10 @@ module CartoDB
           @data_import.log_update('file preprocessed') if preproc
           processed_imports << preproc.process! if preproc
         }
-        import_data = import_data | processed_imports
         
+        import_data = import_data.zip(processed_imports).flatten.compact
         # Load data in
+        
         payloads = Array.new
         import_data.each { |data|
           @working_data = data
@@ -190,10 +191,11 @@ module CartoDB
             @data_import.set_error_code(1002)
             #raise "no importer for this type of data"  
           else
-            @data_import.log_update("#{ext} successfully loaded")        
-            payloads << loader.process! 
+            payloads << loader.process!
+            @data_import.log_update("#{data[:ext]} successfully loaded")  
           end
         }
+        
         @data_import.refresh
         @data_import.log_update("file successfully imported")
         

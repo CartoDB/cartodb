@@ -7,7 +7,7 @@ module CartoDB
       def process!    
       
        @data_import = DataImport.find(:id=>@data_import_id)
-       import_data = []
+       file_data = Array.new
        
        # generate a temporally filename 
        shp_file = temporary_filename(@working_data[:path])
@@ -37,7 +37,7 @@ module CartoDB
           #fixes problem of different SHP archive files with different case patterns
           FileUtils.mv("#{dirname}/#{tmp_path}", "#{dirname}/#{name.downcase}") unless File.basename(tmp_path) == name.downcase
           name = name.downcase
-          import_data << {
+          file_data << {
             :ext => File.extname(name),
             :suggested_name =>name.sanitize,
             :path => "#{dirname}/#{name}"
@@ -45,7 +45,7 @@ module CartoDB
        end
        
        # construct return variables
-       import_data       
+       file_data       
       end  
     end
   end    

@@ -25,6 +25,7 @@
 
         'ui/common/dialog.js',
         'ui/common/notification.js',
+        'ui/common/settings.js',
         'ui/common/table.js'
     ];
 

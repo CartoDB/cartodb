@@ -17,10 +17,10 @@
     <div id="map"></div>
   </body>
 
-  <script src="../cartodb.js"></script>
+  <script src="../../cartodb.js"></script>
   <script>
     window.onload = function() {
-      cdb.load('../', function() {
+      cdb.load('../../', function() {
         // create a map
         var map = new cdb.geo.Map();
         var mapView = new cdb.geo.LeafletMapView({

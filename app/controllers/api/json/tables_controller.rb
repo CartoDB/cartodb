@@ -133,37 +133,36 @@ class Api::Json::TablesController < Api::ApplicationController
         imports = import_to_cartodb 'from_query', params[:from_query]
       end
       unless imports.nil?
-        if import.length == 1
+        imports.each do | import |
           @new_table = Table.new 
-          @new_table.name = params[:name]  if params[:name] || import.first.name # && !params[:table_copy]
+          @new_table.name = params[:name]  if params[:name] || import.name # && !params[:table_copy]
           @new_table.user_id =  @data_import.user_id
           @new_table.data_import_id = @data_import.id
           @new_table.importing_SRID = params[:srid] || CartoDB::SRID
           # @new_table.name = import.first.name  
-          @new_table.migrate_existing_table = import.first.name
+          @new_table.migrate_existing_table = import.name
           
-          if @new_table.valid?
-            @new_table.save
-            @data_import.refresh
-            render_jsonp({:id => @new_table.id, 
-                            :name => @new_table.name, 
-                            :schema => @new_table.schema}, 200, 
-                            :location => table_path(@new_table))
-          else
-            @data_import.reload
-            CartoDB::Logger.info "Errors on tables#create", @new_table.errors.full_messages
-            if @new_table.data_import_id
-              render_jsonp({ :description => @data_import.get_error_text ,
-                          :stack =>  @data_import.log_json,
-                          :code=>@data_import.error_code }, 
-                          400)
+          if imports.length == 1
+            if @new_table.valid?
+              @new_table.save
+              @data_import.refresh
+              render_jsonp({:id => @new_table.id, 
+                              :name => @new_table.name, 
+                              :schema => @new_table.schema}, 200, 
+                              :location => table_path(@new_table))
             else
-              render_jsonp({ :description => @data_import.get_error_text, :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
+              @data_import.reload
+              CartoDB::Logger.info "Errors on tables#create", @new_table.errors.full_messages
+              if @new_table.data_import_id
+                render_jsonp({ :description => @data_import.get_error_text ,
+                            :stack =>  @data_import.log_json,
+                            :code=>@data_import.error_code }, 
+                            400)
+              else
+                render_jsonp({ :description => @data_import.get_error_text, :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
+              end
             end
           end
-        else
-          #handle multi tables with a tag
-          #render_jsonp({:tag => importer.tag }, 200, :location => '/dashboard')
         end
       end
     end
@@ -346,16 +345,16 @@ class Api::Json::TablesController < Api::ApplicationController
       @data_import.save
       return importer.name
     end
-    
     #Import from copying another table
     if method == 'table_copy'
+      debugger
       @data_import.data_type = 'table'
-      @data_import.data_source = migrate_existing_table
+      @data_import.data_source = import_source
       @data_import.migrate
       @data_import.save
       # ensure unique name
-      uniname = get_valid_name(self.name)
-      owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
+      uniname = get_valid_name(import_source)
+      owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_source}")
       @data_import.imported
       owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
       owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")

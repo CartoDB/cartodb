@@ -129,7 +129,7 @@
 	    var pixPosition = this.getProjection().fromLatLngToDivPixel(latlng);
 	    if (pixPosition) {
 				if (this.markers_ == feature) {
-					$(div).animate({left:(pixPosition.x + this.offsetHorizontal_) + "px",top:(pixPosition.y + this.offsetVertical_ - 7) - 208 + "px"},{queue:false,duration:150});
+					$(div).animate({left:(pixPosition.x + this.offsetHorizontal_ + 4) + "px",top:(pixPosition.y + this.offsetVertical_ - 7) - 208 + "px"},{queue:false,duration:150});
 				} else {
 					this.markers_ = feature;
 					div.style.left = (pixPosition.x + this.offsetHorizontal_) + "px";

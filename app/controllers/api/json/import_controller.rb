@@ -114,16 +114,18 @@ class Api::Json::ImportController < Api::ApplicationController
     table_owner.in_database.run("CREATE TABLE #{uniname} AS #{query}")
     return uniname
   end
-  def migrate_existing name
+  def migrate_existing table, name = nil
+    
+    new_name = name.nil? ? table : name
     
     #the below is redudant with the method below after import.nil?, should factor
     @new_table = Table.new 
     @new_table.user_id = current_user.id
-    @new_table.name = name
+    @new_table.name = new_name
     
     @new_table.user_id =  @data_import.user_id
     @new_table.data_import_id = @data_import.id
-    @new_table.migrate_existing_table = name
+    @new_table.migrate_existing_table = table
     
     if @new_table.valid?
       @new_table.save

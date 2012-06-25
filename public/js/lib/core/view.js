@@ -15,7 +15,7 @@
     },
 
     add_related_model: function(m) {
-        this._models.push(m);
+      this._models.push(m);
     },
 
     /**
@@ -30,7 +30,7 @@
       this.unbind();
       // remove model binding
       _(this._models).each(function(m) {
-          m.unbind(null, null, self);
+        m.unbind(null, null, self);
       });
       this._models = [];
       View.viewCount--;

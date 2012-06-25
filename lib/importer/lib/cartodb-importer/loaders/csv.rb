@@ -156,9 +156,6 @@ module CartoDB
               AND
               trim(CAST(\"#{matching_latitude}\" AS text))  ~   
               '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
-              AND
-              trim(CAST(\"#{matching_latitude}\" AS text))  ~ 
-              '[+-]?((\d+(\.\d*)?)|\.\d+)([eE][+-]?[0-9]+)?'
               GEOREF
               )
               

@@ -55,36 +55,16 @@ class Api::Json::ImportController < Api::ApplicationController
       src = params[:file] ? params[:file] : params[:url]
       imports = import_to_cartodb method, src
       unless imports.nil?
+        results = Array.new
         imports.each do | import |
-          @new_table = Table.new 
-          @new_table.name = params[:name]  if params[:name] || import.name # && !params[:table_copy]
-          @new_table.user_id =  @data_import.user_id
-          @new_table.data_import_id = @data_import.id
-          @new_table.importing_SRID = params[:srid] || CartoDB::SRID
-          # @new_table.name = import.first.name  
-          @new_table.migrate_existing_table = import.name
-          
-          if imports.length == 1
-            if @new_table.valid?
-              @new_table.save
-              @data_import.refresh
-              render_jsonp({:id => @new_table.id, 
-                              :name => @new_table.name, 
-                              :schema => @new_table.schema}, 200, 
-                              :location => table_path(@new_table))
-            else
-              @data_import.reload
-              CartoDB::Logger.info "Errors on tables#create", @new_table.errors.full_messages
-              if @new_table.data_import_id
-                render_jsonp({ :description => @data_import.get_error_text ,
-                            :stack =>  @data_import.log_json,
-                            :code=>@data_import.error_code }, 
-                            400)
-              else
-                render_jsonp({ :description => @data_import.get_error_text, :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
-              end
-            end
-          end
+          table_name = params[:name]  if params[:name] || import.name
+          results << migrate_existing import.name table_name
+        end
+        payload, location = results[0]
+        unless location.nil?
+          render_jsonp(payload, 200, :location => location)
+        else
+          render_jsonp(payload, 400)
         end
       end
     end

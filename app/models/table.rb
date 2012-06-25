@@ -453,6 +453,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def after_destroy
+    # TODO add a delete table check in the cases where a table has become ghost
     super
     Tag.filter(:user_id => user_id, :table_id => id).delete
     User.filter(:id => user_id).update(:tables_count => :tables_count - 1)

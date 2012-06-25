@@ -42,11 +42,8 @@ class Api::Json::ImportController < Api::ApplicationController
         render_jsonp(payload, 400)
       end
     elsif params[:table_copy].present? or params[:from_query].present?
-      debugger
-      query = "SELECT * FROM #{self.name}" ? params[:table_copy] : params[:from_query]
-      debugger
+      query = params[:table_copy] ? "SELECT * FROM #{params[:table_copy]}" : params[:from_query]
       new_table_name = import_from_query params[:name], query
-      debugger
       payload, location = migrate_existing new_table_name
       unless location.nil?
         render_jsonp(payload, 200, :location => location)
@@ -54,7 +51,7 @@ class Api::Json::ImportController < Api::ApplicationController
         render_jsonp(payload, 400)
       end
     elsif params[:url].present? or params[:file].present?
-      method = 'url' ? params[:file] : 'file'
+      method = params[:file] ? 'url': 'file'
       src = params[:file] ? params[:file] : params[:url]
       imports = import_to_cartodb method, src
       unless imports.nil?
@@ -114,17 +111,20 @@ class Api::Json::ImportController < Api::ApplicationController
     # ensure unique name
     uniname = get_valid_name(name)
     # create a table based on the query
-    owner.in_database.run("CREATE TABLE #{uniname} AS #{query}")
+    table_owner.in_database.run("CREATE TABLE #{uniname} AS #{query}")
     return uniname
   end
   def migrate_existing name
+    
     #the below is redudant with the method below after import.nil?, should factor
     @new_table = Table.new 
+    @new_table.user_id = current_user.id
     @new_table.name = name
+    
     @new_table.user_id =  @data_import.user_id
     @new_table.data_import_id = @data_import.id
-    @new_table.importing_SRID = params[:srid] || CartoDB::SRID
     @new_table.migrate_existing_table = name
+    
     if @new_table.valid?
       @new_table.save
       @data_import.refresh
@@ -134,7 +134,7 @@ class Api::Json::ImportController < Api::ApplicationController
       location = table_path(@new_table)
     else
       @data_import.reload
-      CartoDB::Logger.info "Errors on tables#create", @new_table.errors.full_messages
+      CartoDB::Logger.info "Errors on import#create", @new_table.errors.full_messages
       if @new_table.data_import_id
         payload = { :description => @data_import.get_error_text ,
                     :stack =>  @data_import.log_json,
@@ -150,12 +150,11 @@ class Api::Json::ImportController < Api::ApplicationController
   end
   def append_to_existing params
     #handle table appending. table appending doesn't work with OSM files, so after the multi check
-    @new_table = Table.new
-    
     @data_import = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
     
+    @new_table = Table.new
     @new_table.user_id = current_user.id
     @new_table.data_import_id = @data_import.id
     @new_table.name = params[:name]                          if params[:name]# && !params[:table_copy]
@@ -201,11 +200,11 @@ class Api::Json::ImportController < Api::ApplicationController
       importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
         "database" => database_name, 
         :logger => ::Rails.logger,
-        "username" => owner.database_username, 
-        "password" => owner.database_password,
+        "username" => table_owner.database_username, 
+        "password" => table_owner.database_password,
         :import_from_url => import_from_url, 
         :debug => (Rails.env.development?), 
-        :remaining_quota => owner.remaining_quota,
+        :remaining_quota => table_owner.remaining_quota,
         :data_import_id => @data_import.id
       ).symbolize_keys
       importer = importer.import!
@@ -225,18 +224,18 @@ class Api::Json::ImportController < Api::ApplicationController
       uniname = get_valid_name(self.name)
       
       # create a table based on the query
-      owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
+      table_owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
       return uniname
       # # with table #{uniname} table created now run migrator to CartoDBify
       # hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
       #   "database" => database_name, 
       #   :logger => ::Rails.logger,
-      #   "username" => owner.database_username, 
-      #   "password" => owner.database_password,
+      #   "username" => table_owner.database_username, 
+      #   "password" => table_owner.database_password,
       #   :current_name => uniname, 
       #   :suggested_name => uniname, 
       #   :debug => (Rails.env.development?), 
-      #   :remaining_quota => owner.remaining_quota,
+      #   :remaining_quota => table_owner.remaining_quota,
       #   :data_import_id => @data_import.id
       # ).symbolize_keys
       # importer = CartoDB::Migrator.new hash_in
@@ -255,19 +254,64 @@ class Api::Json::ImportController < Api::ApplicationController
       @data_import.save
       # ensure unique name
       uniname = get_valid_name(import_source)
-      owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_source}")
+      table_owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_source}")
       @data_import.imported
-      owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
-      owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
-      owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
-      owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
-      owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
+      table_owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
+      table_owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
+      table_owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
+      table_owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
+      table_owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
       set_trigger_the_geom_webmercator
       @data_import.migrated
       return uniname
     end
   end
   
+  def get_valid_name(raw_new_name = nil)
+    # TODO add a delete table check in the cases where a table has become ghost
+    # probably in the after_destroy method in table.rb
+    
+    # set defaults and sanity check
+    raw_new_name = (raw_new_name || "untitled_table").sanitize
+    
+    # tables cannot be blank, start with numbers or underscore
+    raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
+    raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
+    raw_new_name = "untitled_table"        if raw_new_name.blank?
+    
+    # Do a basic check for the new name. If it doesn't exist, let it through (sanitized)
+    return raw_new_name if name_available?(raw_new_name)
+        
+    # Happens if we're duplicating a table.
+    # First get candidates from the base name
+    # eg: "simon_24" => "simon"
+    if match = /(.+)_\d+$/.match(raw_new_name)
+      raw_new_name = match[1]
+    end  
+    
+    # return if no dupe
+    return raw_new_name if name_available?(raw_new_name)
+
+    # increment trailing number (max+1) if dupe
+    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first  
+    
+    if max_candidate =~ /(.+)_(\d+)$/
+      return $1 + "_#{$2.to_i + 1}"
+    else
+      return max_candidate + "_2"
+    end
+  end
+  
+  # return name if no dupe, else false
+  def name_available?(name)                 
+    name_candidates(name).include?(name) ? false : name 
+  end    
+
+  def name_candidates(name)
+    # FYI: Native sequel (table_owner.in_database.tables) filters tables that start with sql or pg
+    table_owner.tables.filter(:name.like(/^#{name}/)).select_map(:name)
+  end  
+
   def load_table
     @table = Table.find_by_identifier(current_user.id, params[:id])
   end
@@ -301,5 +345,8 @@ class Api::Json::ImportController < Api::ApplicationController
     lat2 = (res * upy) - 90
     
     return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}" 
+  end
+  def table_owner    
+    table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
   end
 end

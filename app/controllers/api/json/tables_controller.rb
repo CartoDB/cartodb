@@ -1,7 +1,7 @@
 # coding: UTF-8
 
 class Api::Json::TablesController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :destroy, :set_infowindow, :duplicate, :set_map_metadata, :get_map_metadata
+  ssl_required :index, :show, :update, :destroy, :set_infowindow, :duplicate, :set_map_metadata, :get_map_metadata
 
   before_filter :load_table, :except => [:index, :create]
   before_filter :set_start_time
@@ -45,7 +45,7 @@ class Api::Json::TablesController < Api::ApplicationController
                     })
   end
 
-  def create
+  def createx
     @data_import  = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
@@ -347,7 +347,6 @@ class Api::Json::TablesController < Api::ApplicationController
     end
     #Import from copying another table
     if method == 'table_copy'
-      debugger
       @data_import.data_type = 'table'
       @data_import.data_source = import_source
       @data_import.migrate

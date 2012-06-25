@@ -171,7 +171,7 @@
 
 
     ///////////////////////////////////////
-    //  Bottom bar with tools (SQL,...)  //
+    //  Georeference window              //
     ///////////////////////////////////////
 		var georeference_window = (function() {
 			
@@ -871,7 +871,6 @@
 	          
 	          if (new_value=='public') {
 	            $('ul.tab_menu li a.share').removeClass('disabled');
-	            //$('span.mapkey').remove();
 	          } else {
 	            $('ul.tab_menu li a.share').addClass('disabled');
 	            var style="";
@@ -1008,8 +1007,8 @@
 	        $("div.embed_window .inner_ span.top div span a.copy").zclip({
             path: "/javascripts/plugins/ZeroClipboard.swf",
             copy: function(){
-							$(this).parent().find('input').select();
-              return $(this).parent().find('input').val();
+							$(this).parent().find('p').select();
+              return $(this).parent().find('p').text();
             }
           });
 	      });

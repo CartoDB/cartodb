@@ -16,6 +16,9 @@ javascripts:
     - public/js/lib/core/view.js
     - public/js/lib/geo/map.js
 
+  dashboard:
+    - public/js/lib/dashboad/dashboard.js
+
 stylesheets:
   common:
     - public/css/core.css

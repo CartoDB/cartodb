@@ -38,14 +38,22 @@ module CartoDB
         end
 
         # Check if the file had data, if not rise an error because probably something went wrong
-        if @db_connection["SELECT * from #{@suggested_name} LIMIT 1"].first.nil?
+        begin
+          row = @db_connection["SELECT * from #{@suggested_name} LIMIT 1"]
+        rescue Exception => e
+          @runlog.err << "Empty table"
+          @data_import.set_error_code(3006)
+          @data_import.log_error(err)
+          @data_import.log_error("ERROR: failed to import #{@ext.sub('.','')} to database")
+          raise "failed to import table"
+        end
+        if row.first.nil?
           @runlog.err << "Empty table"
           @data_import.set_error_code(5001)
           @data_import.log_error(err)
           @data_import.log_error("ERROR: no data could be imported from file")
-          raise "Empty table"
+          raise "empty table"
         end
-
 
         # Importing CartoDB CSV exports
         # ===============================
@@ -148,9 +156,6 @@ module CartoDB
               AND
               trim(CAST(\"#{matching_latitude}\" AS text))  ~   
               '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
-              AND
-              trim(CAST(\"#{matching_latitude}\" AS text))  ~ 
-              '[+-]?((\d+(\.\d*)?)|\.\d+)([eE][+-]?[0-9]+)?'
               GEOREF
               )
               

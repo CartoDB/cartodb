@@ -9,7 +9,7 @@ module CartoDB
     
     @@debug = true
     RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
-    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .tar .gz .tgz .osm .bz2 }
+    SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .tar .gz .tgz .osm .bz2 .geojson }
     
     attr_accessor :import_from_file,              
                   :db_configuration, 
@@ -136,7 +136,12 @@ module CartoDB
     #
     def import!
       begin
-        if @remaining_quota < (0.6*File.size(@path))
+        fs = File.size(@path)
+        if fs.to_i == 0
+          @data_import.set_error_code(1005)
+          @data_import.log_error("File contains no information, check it locally" )
+          raise "File contains no information, check it locally" 
+        elsif @remaining_quota < (0.6*fs)
           disk_quota_overspend = (File.size(@path) - @remaining_quota).to_int
           @data_import.set_error_code(8001)
           @data_import.log_error("#{disk_quota_overspend / 1024}KB more space is required" )

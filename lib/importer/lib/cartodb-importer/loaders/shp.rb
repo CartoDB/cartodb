@@ -167,7 +167,7 @@ module CartoDB
  
           # construct return variables
           # [to_import_hash, payload] 
-          payload    
+          [payload]   
 
         rescue => e
           @data_import.refresh #reload incase errors were written

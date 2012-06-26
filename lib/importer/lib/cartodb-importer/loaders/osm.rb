@@ -67,6 +67,7 @@ module CartoDB
         
         import_tag = "#{@working_data[:suggested_name]}_#{Time.now.to_i}"
         import_tables = Array.new
+        payloads = Array.new
         valid_tables.each do |feature|
           @old_table_name = "#{random_table_prefix}_#{feature}"
           @table_name = get_valid_name("#{@working_data[:suggested_name]}_#{feature}")
@@ -113,6 +114,13 @@ module CartoDB
               @new_table.migrate_existing_table = @table_name 
               if @new_table.valid?
                 @new_table.save
+                
+                payloads << OpenStruct.new({
+                                        :name => @new_table.name, 
+                                        :rows_imported => @rows_imported,
+                                        :import_type => 'OSM',
+                                        :log => ''
+                                      })
               end
               @data_import.refresh
             
@@ -133,13 +141,10 @@ module CartoDB
             end
           end  
         end
-        payload = OpenStruct.new({
-                                :tag => "#{import_tag}"
-                              })
  
         
         # construct return variables
-        [to_import_hash, payload]        
+        payloads       
       end  
     end
   end    

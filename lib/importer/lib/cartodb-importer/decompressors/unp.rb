@@ -59,22 +59,17 @@ module CartoDB
             #fixes problem of different SHP archive files with different case patterns
             FileUtils.mv("#{tmp_path}", "#{dirname}/#{name.downcase}") unless File.basename(tmp_path) == name.downcase
             name = name.downcase
-            import_data << {
-              :ext => File.extname(name),
-              :suggested_name => name.sanitize,
-              :path => "#{dirname}/#{name}"
-            }
-            # add to delete queue
-            # @entries << tmp_path
-            # if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name).downcase)
-            #   @ext            = File.extname(name)
-            #   @suggested_name = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
-            #   @path           = "#{dirname}/#{name}"
-            #   log "Found original @ext file named #{name} in path #{@path}"
-            # end           
+            if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
+              suggested = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
+              import_data << {
+                :ext => File.extname(name),
+                :suggested_name => suggested,
+                :path => "#{dirname}/#{name}"
+              }
+            end    
           end
         end
-
+        
         # construct return variables
         import_data
       end  

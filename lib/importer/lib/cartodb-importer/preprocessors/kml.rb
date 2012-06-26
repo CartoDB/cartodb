@@ -10,11 +10,12 @@ module CartoDB
 
       def process!    
         @data_import = DataImport.find(:id=>@data_import_id)
+        import_data = Array.new
         # run Chardet + Iconv
         fix_encoding 
         
         ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{@path}.shp #{@path}}
+        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{@working_data[:path]}.shp #{@working_data[:path]}}
         #-lco DIM=*2* 
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
@@ -23,14 +24,14 @@ module CartoDB
             if err.include? "Geometry Collection"
               @data_import.set_error_code(3201)
               @data_import.log_error("ERROR: geometry contains Geometry Collection")
-            elsif ['.json','.geojson','.js'].include? @ext
+            elsif ['.json','.geojson','.js'].include? @working_data[:ext]
               @data_import.set_error_code(3007)
               @data_import.log_error(err)
-              @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
+              @data_import.log_error("ERROR: failed to convert #{@working_data[:ext].sub('.','')} to shp")
             else
               @data_import.set_error_code(2000)
               @data_import.log_error(err)
-              @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
+              @data_import.log_error("ERROR: failed to convert #{@working_data[:ext].sub('.','')} to shp")
             end
             raise "failed to convert file to shp"
           else
@@ -41,41 +42,49 @@ module CartoDB
         unless (reg = stdout.read).empty?
           @runlog.stdout << reg
         end
-
-        if File.file?("#{@path}.shp")
-          @path = "#{@path}.shp"
-          @ext = '.shp'
-        elsif File.directory?("#{@path}.shp") #multi-layer kml support
-          Dir.foreach("#{@path}.shp") do |entry|
-            if File.extname(entry) == ".shp"
-              #ent = sys.escape(entry)
-              ent = entry
-              if File.file?("#{@path}.1.shp")
-                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" -update -append #{@path}.merged.shp "#{@path}.shp/#{ent}"}
-              else
-                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{@path}.merged.shp "#{@path}.shp/#{ent}"}
-              end
-              stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
-            end
+        
+        if File.file?("#{@working_data[:path]}.shp")
+          dirname = File.dirname("#{@working_data[:path]}.shp") 
+          orig = File.basename("#{@working_data[:path]}.shp")
+          name = File.basename("#{@working_data[:path]}.shp") 
+          if name.include? ' '
+            name = name.gsub(' ','_')
           end
-          FileUtils.rm_rf "#{@path}.shp"
-          if File.file?("#{@path}.merged.shp")
-            @path = "#{@path}.merged.shp"
-            @ext = '.shp'
-          else
-            @data_import.set_error_code(2000)
-            @data_import.log_error("ERROR: failed to convert multi-layer #{@ext.sub('.','')} to shp")
-            @runlog.err << "failed to create shp file from #{@ext.sub('.','')}"
-            raise "failed to convert #{@ext.sub('.','')} to shp"
+          #fixes problem of different SHP archive files with different case patterns
+          FileUtils.mv("#{dirname}/#{orig}", "#{dirname}/#{name.downcase}") unless orig == name.downcase
+          name = name.downcase
+          import_data << {
+            :ext => File.extname(name),
+            :suggested_name => "#{@working_data[:suggested_name]}",
+            :path => "#{dirname}/#{name}"
+          }
+        elsif File.directory?("#{@working_data[:path]}.shp") #multi-layer kml support
+          Dir.foreach("#{@working_data[:path]}.shp") do |entry|
+            if File.extname(entry) == ".shp"
+              dirname = File.dirname("#{@working_data[:path]}.shp/#{entry}") 
+              orig = File.basename("#{@working_data[:path]}.shp/#{entry}")
+              name = File.basename("#{@working_data[:path]}.shp/#{entry}") 
+              if name.include? ' '
+                name = name.gsub(' ','_')
+              end
+              #fixes problem of different SHP archive files with different case patterns
+              FileUtils.mv("#{dirname}/#{orig}", "#{dirname}/#{name.downcase}") unless orig == name.downcase
+              name = name.downcase
+              import_data << {
+                :ext => '.shp',
+                :suggested_name => "#{@working_data[:suggested_name]}",
+                :path => "#{dirname}/#{name}"
+              }
+            end
           end
         else
           @data_import.set_error_code(2000)
-          @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
-          @runlog.err << "failed to create shp file from #{@ext.sub('.','')}"
-          raise "failed to convert #{@ext.sub('.','')} to shp"
+          @data_import.log_error("ERROR: failed to convert #{@working_data[:ext].sub('.','')} to shp")
+          @runlog.err << "failed to create shp file from #{@working_data[:ext].sub('.','')}"
+          raise "failed to convert #{@working_data[:ext].sub('.','')} to shp"
         end
        # construct return variables
-       to_import_hash       
+       import_data       
       end  
     end
   end    

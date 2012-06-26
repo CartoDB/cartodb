@@ -27,16 +27,29 @@
           @include background(linear-gradient(#E5E5E5,#E9E9E9));
           @include border-radius(3px);
           span {
+            position:relative;
             @include inline-block();
             width:0;
+            min-width:5px;
             height:36px;
             @include border-radius(3px);
-            @include background(linear-gradient(left,#85ACDC,#5990CE));
-            @include transform-style("linear");
-            @include transition-property("width");
-            @include transition-duration(500ms);
-            &.boom {@include background(linear-gradient(left,#CB2828,#FF5255));}
-            &.danger {@include background(linear-gradient(left,#F8B85C,#F49000));}
+            @include background(linear-gradient(#85ACDC,#5990CE));
+            // @include transform-style("linear");
+            // @include transition-property("width");
+            // @include transition-duration(500ms);
+            &.boom {@include background(linear-gradient(#CB2828,#FF5255));}
+            &.danger {@include background(linear-gradient(#F8B85C,#F49000));}
+
+            &:after {
+              position:absolute;
+              content:' ';
+              width:100%;
+              height:100%;
+              top:0;
+              left:0;
+              @include border-radius(3px);
+              @include background(linear-gradient(left,rgba(255,255,255,0.35), rgba(255,255,255,0)));
+            }
           }
         }
         p {

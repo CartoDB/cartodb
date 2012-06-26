@@ -2,9 +2,6 @@
   <div class="inner">
     <h1 class="left"><%= link_to "CartoDB", root_path %></h1>
     <ul class="right">
-      <% if current_user.admin %>
-        <li><%= link_to 'sheriff', superadmin_users_path %></li>
-      <% end %>
       <li><%= link_to 'dashboard', dashboard_path, :class => selected_if(current_path == dashboard_path) %></li>
       <% if true %>
       <li>
@@ -15,7 +12,12 @@
       </li>
       <% end %>
       <li><%= link_to 'developers', APP_CONFIG[:developers_host] %></a></li>
-      <li><%= link_to current_user.username, account_url, :class=>"account" %></li>
+      <% if current_user.admin %>
+        <li><%= link_to 'sheriff', superadmin_users_path %></li>
+      <% end %>
+      <li>
+        <a class="account" href="<%= account_url %>"><%= current_user.username %></a>
+      </li>
     </ul>
   </div>
 </header>

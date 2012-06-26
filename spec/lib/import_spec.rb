@@ -50,21 +50,22 @@ describe CartoDB::Importer do
     it "should suggest a new table name of the format _n if the previous table exists" do
       # import twice
       importer = create_importer 'clubbing.csv', 'clubs'
-      result   = importer.import!
+      results, errors   = importer.import!
     
       # have to recreate to set up the general file harnesses
       importer = create_importer 'clubbing.csv', 'clubs'
-      result   = importer.import!
-    
+      results, errors   = importer.import!
+      
       # Assert new duplicate
-      result.name.should          == 'clubs_1'
-      result.rows_imported.should == 1998
-      result.import_type.should   == '.csv'
+      errors.length.should            == 0
+      results[0].name.should          == 'clubs_1'
+      results[0].rows_imported.should == 1998
+      results[0].import_type.should   == '.csv'
     end
     
     it "should sanitize column names" do
       importer = create_importer 'twitters.csv', 'twitters'
-      result   = importer.import!
+      results, errors   = importer.import!
     
       # grab column names from twitters table
       columns          = @db.schema(:twitters).map{|s| s[0].to_s}    

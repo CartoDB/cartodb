@@ -86,8 +86,8 @@ module CartoDB
                 @ext=".tgz"
               end
               
-              @suggested_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
-              @import_from_file = Tempfile.new([@suggested_name, @ext])
+              name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
+              @import_from_file = Tempfile.new([name, @ext])
               @import_from_file.write res.read.force_encoding("UTF-8")
               @import_from_file.close
             end
@@ -151,10 +151,8 @@ module CartoDB
         errors = Array.new
         import_data = [{
           :ext            => @ext,
-          :suggested_name => @suggested_name,
           :path           => @path 
         }]
-        
         # set our multi file handlers
         # decompress data and update self with results
         decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash) 
@@ -193,7 +191,7 @@ module CartoDB
         processed_imports.each { |data|
           @working_data = data
           # re-check suggested_name in the case that it has been taken by another in this import
-          @working_data[:suggested_name] = get_valid_name(@working_data[:suggested_name])
+          @working_data[:suggested_name] = @suggested_name ? get_valid_name(@suggested_name) : get_valid_name(@working_data[:suggested_name])
           loader = CartoDB::Import::Loader.create(data[:ext], self.to_import_hash)
           
           if !loader

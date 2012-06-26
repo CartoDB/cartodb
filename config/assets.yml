@@ -18,6 +18,7 @@ javascripts:
 
   dashboard:
     - public/js/lib/dashboad/dashboard.js
+    - public/js/lib/ui/common/settings.js    
 
 stylesheets:
   common:

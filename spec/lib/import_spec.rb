@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe CartoDB::Importer do
   
-  context "original tests" do
+  context "basic functionality" do
     it "should raise an error if :import_from_file option is blank" do
       lambda { 
         CartoDB::Importer.new 
@@ -12,18 +12,20 @@ describe CartoDB::Importer do
     end
     it "should get the table name from the options" do
       importer = create_importer 'clubbing.csv', 'prefered_name'
-      result   = importer.import!
+      results, errors   = importer.import!
     
       # Assertions
-      result.name.should          == 'prefered_name'
-      result.rows_imported.should == 1998
-      result.import_type.should   == '.csv'
+      results.length.should           == 1
+      results[0].name.should          == 'prefered_name'
+      results[0].rows_imported.should == 1998
+      results[0].import_type.should   == '.csv'
+      errors.length.should            == 0
     end
     it "should remove the table from the database if an exception happens" do
       importer = create_importer 'empty.csv'
-    
+      results, errors = importer.import!
       # Assertions
-      lambda { importer.import! }.should raise_error    
+      errors.length.should            == 1  
       @db.tables.should_not include(:empty)    
     end
   
@@ -31,14 +33,15 @@ describe CartoDB::Importer do
     # TODO: Is this really the intended behaviour??
     it "should keep first imported table when importing again with same name" do
       importer = create_importer 'clubbing.csv', 'testing'
-      result   = importer.import!
+      results, errors   = importer.import!
 
       # initial assertion
-      result.import_type.should == '.csv'
+      results[0].import_type.should == '.csv'
     
       # second creation should fail with exception
       importer = create_importer 'empty.csv', 'testing'
-      lambda { importer.import! }.should raise_error
+      res, err = importer.import!
+      err.length.should == 1
   
       # Assert has first import
       @db.tables.should include(:testing)

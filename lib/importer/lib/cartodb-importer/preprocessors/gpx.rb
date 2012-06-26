@@ -40,7 +40,7 @@ module CartoDB
           if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
             import_data << {
               :ext => File.extname(name),
-              :suggested_name =>name.sanitize,
+              :suggested_name => File.basename( name, File.extname(name)).sanitize,
               :path => "#{dirname}/#{name}"
             }
           end

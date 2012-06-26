@@ -8,32 +8,37 @@ module CartoDB
 
       def process!
         @data_import = DataImport.find(:id=>@data_import_id)
-        new_path = "/tmp/#{@suggested_name}.csv"
+        new_path = "/tmp/#{@working_data[:suggested_name]}.csv"
+        import_data = Array.new
         begin
-          case @ext
+          case @working_data[:ext]
             when '.xls'
-              Excel.new(@path)
+              Excel.new(@working_data[:path])
             when '.xlsx'
-              Excelx.new(@path)
+              Excelx.new(@working_data[:path])
             when '.ods'
-              Openoffice.new(@path)
+              Openoffice.new(@working_data[:path])
             else
               @data_import.set_error_code(5000)
-              @data_import.log_error("ERROR: unable to open spreadsheet #{@path}")
-              @runlog.log << "Don't know how to open spreadsheet #{@path}"
-              raise ArgumentError, "Don't know how to open spreadsheet #{@path}"
+              @data_import.log_error("ERROR: unable to open spreadsheet #{@working_data[:path]}")
+              @runlog.log << "Don't know how to open spreadsheet #{@working_data[:path]}"
+              raise ArgumentError, "Don't know how to open spreadsheet #{@working_data[:path]}"
           end.to_csv(new_path)
         
           @import_from_file = File.open(new_path,'r')
-          @ext = '.csv'
-          @path = @import_from_file.path
+          import_data << {
+            :ext => '.csv',
+            :suggested_name => @working_data[:suggested_name],
+            :path => @import_from_file.path
+          }
+          
         rescue
           @data_import.set_error_code(5000)
-          @data_import.log_error("ERROR: unable to open spreadsheet #{@path}")
-          @runlog.log << "Don't know how to open spreadsheet #{@path}"
+          @data_import.log_error("ERROR: unable to open spreadsheet #{@working_data[:path]}")
+          @runlog.log << "Don't know how to open spreadsheet #{@working_data[:path]}"
         end
         # construct return variables
-        to_import_hash        
+        import_data        
       end  
     end
   end    

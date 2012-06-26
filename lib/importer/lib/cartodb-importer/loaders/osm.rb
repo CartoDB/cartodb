@@ -18,14 +18,14 @@ module CartoDB
         # Create either a dynamic cache size based on user account type or pick a wiser number
         # for everybody
         allowed_cache_size = 1024
-        random_table_prefix = "importing_#{Time.now.to_i}_#{@suggested_name}"
-        if @suggested_name.length > 10 #needs to be 8+2 less than normal names because of _polygon_n
-          @suggested_name = @suggested_name[0..9]
+        random_table_prefix = "importing_#{Time.now.to_i}_#{@working_data[:suggested_name]}"
+        if @working_data[:suggested_name].length > 10 #needs to be 8+2 less than normal names because of _polygon_n
+          @working_data[:suggested_name] = @working_data[:suggested_name][0..9]
         end
         
         # I tried running the -G or --multi-geometry option to force multigeometries
         # but the result is always a column with mixed types, polygons and multipolgons!
-        full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong -p #{random_table_prefix} #{@path}"
+        full_osm_command = "#{osm2pgsql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -d #{@db_configuration[:database]} -u -I -C #{allowed_cache_size} --multi-geometry --latlong -p #{random_table_prefix} #{@working_data[:path]}"
         
         log "Running osm2pgsql: #{full_osm_command}"
         @data_import.log_update(full_osm_command)
@@ -38,8 +38,8 @@ module CartoDB
           @data_import.set_error_code(6000)
           @data_import.log_update(stdout.read)
           @data_import.log_error(stderr.read)
-          @data_import.log_error("ERROR: failed to import #{@path}")
-          raise "ERROR: failed to import #{@path}"
+          @data_import.log_error("ERROR: failed to import #{@working_data[:path]}")
+          raise "ERROR: failed to import #{@working_data[:path]}"
         end
         
         unless (reg = stdout.read).empty?
@@ -61,15 +61,15 @@ module CartoDB
         rescue
           @data_import.log_update(stdout.read)
           @data_import.log_update(stderr.read)
-          @data_import.log_error("ERROR: failed to import #{@path}")
-          raise "ERROR: failed to import #{@path}"
+          @data_import.log_error("ERROR: failed to import #{@working_data[:path]}")
+          raise "ERROR: failed to import #{@working_data[:path]}"
         end
         
-        import_tag = "#{@suggested_name}_#{Time.now.to_i}"
+        import_tag = "#{@working_data[:suggested_name]}_#{Time.now.to_i}"
         import_tables = Array.new
         valid_tables.each do |feature|
           @old_table_name = "#{random_table_prefix}_#{feature}"
-          @table_name = get_valid_name("#{@suggested_name}_#{feature}")
+          @table_name = get_valid_name("#{@working_data[:suggested_name]}_#{feature}")
           begin
             @db_connection.run("ALTER TABLE \"#{@old_table_name}\" RENAME TO \"#{@table_name}\"")
             @table_created = true

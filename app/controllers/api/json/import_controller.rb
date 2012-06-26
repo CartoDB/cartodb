@@ -7,29 +7,10 @@ class Api::Json::ImportController < Api::ApplicationController
   after_filter  :record_query_threshold
   
   def create
+    # create a ne import log
     @data_import  = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
-    
-    # the very particular case of osm.org url imports
-    # MOVE THIS TO importer.rb
-    if params[:url] || params[:file]
-      src = params[:file] ? params[:file] : params[:url]
-      suggested_name = nil
-      ext = nil
-      if src =~ /openstreetmap.org/
-        if src !~ /api.openstreetmap.org/
-          src = fix_openstreetmap_url src
-          
-          @data_import.log_update("Openstreetmaps.org URL converted to API url")
-          @data_import.log_update(src)
-        end
-        suggested_name = "osm_export"
-        ext = ".osm"
-      else
-        ext =File.extname(src)
-      end
-    end
     
     if params[:append].present?
       payload, location = append_to_existing params
@@ -51,20 +32,36 @@ class Api::Json::ImportController < Api::ApplicationController
         render_jsonp(payload, 400)
       end
     elsif params[:url].present? or params[:file].present?
-      method = params[:file] ? 'url': 'file'
+      method = params[:file] ? 'file': 'url'
       src = params[:file] ? params[:file] : params[:url]
       imports = import_to_cartodb method, src
       unless imports.nil?
         results = Array.new
+        
         imports.each do | import |
-          table_name = params[:name]  if params[:name] || import.name
-          results << migrate_existing import.name table_name
+          payload, location = migrate_existing import.name, params[:name]
+          results << [payload,location]
         end
-        payload, location = results[0]
-        unless location.nil?
-          render_jsonp(payload, 200, :location => location)
+        if results.length == 1
+          payload, location = results[0]
+          unless location.nil?
+            render_jsonp(payload, 200, :location => location)
+          else
+            render_jsonp(payload, 400)
+          end
         else
-          render_jsonp(payload, 400)
+          # TODO add method for all failed
+          warnings = Array.new
+          table_count = 0
+          results.each { | payload, location |
+            if location.nil?
+              warnings << payload[:description]
+            else
+              table_count = table_count+1
+            end
+          }
+          message = "#{table_count} table(s) successfully created"
+          render_jsonp({:message => message, :warnings => warnings}, 200, :location => '/dashboard')
         end
       end
     end
@@ -172,9 +169,8 @@ class Api::Json::ImportController < Api::ApplicationController
       @data_import.reload
       @data_import.imported
       return importer
-    end
     #import from URL
-    if method == 'url' 
+    elsif method == 'url' 
       @data_import.data_type = 'url'
       @data_import.data_source = import_from_url
       @data_import.download
@@ -193,59 +189,7 @@ class Api::Json::ImportController < Api::ApplicationController
       @data_import.reload
       @data_import.imported
       @data_import.save
-      return importer.name
-    end
-    #Import from the results of a query
-    if method == 'from_query'
-      @data_import.data_type = 'query'
-      @data_import.data_source = import_from_query
-      @data_import.migrate
-      @data_import.save
-              
-      # ensure unique name
-      uniname = get_valid_name(self.name)
-      
-      # create a table based on the query
-      table_owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
-      return uniname
-      # # with table #{uniname} table created now run migrator to CartoDBify
-      # hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      #   "database" => database_name, 
-      #   :logger => ::Rails.logger,
-      #   "username" => table_owner.database_username, 
-      #   "password" => table_owner.database_password,
-      #   :current_name => uniname, 
-      #   :suggested_name => uniname, 
-      #   :debug => (Rails.env.development?), 
-      #   :remaining_quota => table_owner.remaining_quota,
-      #   :data_import_id => @data_import.id
-      # ).symbolize_keys
-      # importer = CartoDB::Migrator.new hash_in
-      # importer = importer.migrate!
-      # @data_import.reload
-      # @data_import.migrated
-      # @data_import.save
-      # return importer.name
-    end
-    #Import from copying another table
-    if method == 'table_copy'
-      debugger
-      @data_import.data_type = 'table'
-      @data_import.data_source = import_source
-      @data_import.migrate
-      @data_import.save
-      # ensure unique name
-      uniname = get_valid_name(import_source)
-      table_owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_source}")
-      @data_import.imported
-      table_owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
-      table_owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
-      table_owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
-      table_owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
-      table_owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
-      set_trigger_the_geom_webmercator
-      @data_import.migrated
-      return uniname
+      return importer
     end
   end
   
@@ -304,6 +248,27 @@ class Api::Json::ImportController < Api::ApplicationController
     end
   end
   def fix_openstreetmap_url url
+    
+    # the very particular case of osm.org url imports
+    # MOVE THIS TO importer.rb
+    # if params[:url] || params[:file]
+    #   src = params[:file] ? params[:file] : params[:url]
+    #   suggested_name = nil
+    #   ext = nil
+    #   if src =~ /openstreetmap.org/
+    #     if src !~ /api.openstreetmap.org/
+    #       src = fix_openstreetmap_url src
+    #       
+    #       @data_import.log_update("Openstreetmaps.org URL converted to API url")
+    #       @data_import.log_update(src)
+    #     end
+    #     suggested_name = "osm_export"
+    #     ext = ".osm"
+    #   else
+    #     ext =File.extname(src)
+    #   end
+    # end
+    
     params = Rack::Utils.parse_query(url.split('?')[1])
     #2h, 6w
     lon = params['lon'].to_f

@@ -12,8 +12,10 @@ module CartoDB
         # generate a temp file for import
         tmp_dir = temporary_filename
         
+        import_data = []
         Zip::ZipFile.foreach(@path) do |entry|
           name = entry.name.split('/').last
+          orig = name
           next if name =~ /^(\.|\_{2})/
           
           # cleans spaces out of archived file names
@@ -22,8 +24,8 @@ module CartoDB
           end
           
           #fixes problem of different SHP archive files with different case patterns
+          FileUtils.mv("#{path}/#{orig}", "#{path}/#{name.downcase}") unless name == orig.downcase
           name = name.downcase
-          
           
           # temporary filename. no collisions. 
           tmp_path = "#{tmp_dir}.#{name}"
@@ -31,17 +33,20 @@ module CartoDB
           # add to delete queue
           @entries << tmp_path
     
-          if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name).downcase)
-            @ext            = File.extname(name)
-            @suggested_name = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
-            @path           = tmp_path
+          if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
+            suggested = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
+            import_data << {
+              :ext => File.extname(name),
+              :suggested_name => suggested,
+              :path => tmp_path
+            }
             log "Found original @ext file named #{name} in path #{@path}"
           end
           entry.extract(tmp_path)
-          
         end        
+        
         # construct return variables
-        to_import_hash
+        import_data
       end  
     end
   end    

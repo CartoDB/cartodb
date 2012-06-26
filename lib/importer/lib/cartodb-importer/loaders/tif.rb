@@ -8,18 +8,18 @@ module CartoDB
       def process!
         @data_import = DataImport.find(:id=>@data_import_id)
 
-        log "Importing raster file: #{@path}"
-        @data_import.log_update("Importing raster file: #{@path}")
+        log "Importing raster file: #{@working_data[:path]}"
+        @data_import.log_update("Importing raster file: #{@working_data[:path]}")
 
         raster2pgsql_bin_path = `which raster2pgsql`.strip
 
         host = @db_configuration[:host] ? "-h #{@db_configuration[:host]}" : ""
         port = @db_configuration[:port] ? "-p #{@db_configuration[:port]}" : ""
 
-        random_table_name = "importing_#{Time.now.to_i}_#{@suggested_name}"
+        random_table_name = "importing_#{Time.now.to_i}_#{@working_data[:suggested_name]}"
 
         @data_import.log_update("getting SRID with GDAL")
-        gdal_command = "#{@python_bin_path} -Wignore #{File.expand_path("../../../../misc/srid_from_gdal.py", __FILE__)} #{@path}"
+        gdal_command = "#{@python_bin_path} -Wignore #{File.expand_path("../../../../misc/srid_from_gdal.py", __FILE__)} #{@working_data[:path]}"
         rast_srid_command = `#{gdal_command}`.strip
 
         if 0 < rast_srid_command.strip.length
@@ -29,8 +29,8 @@ module CartoDB
         puts "SRID : #{rast_srid_command}"
         
         blocksize = "256x256"
-        @data_import.log_update("#{raster2pgsql_bin_path} -I -s #{rast_srid_command.strip} -t #{blocksize} #{@path} #{random_table_name}")
-        full_rast_command = "#{raster2pgsql_bin_path} -I -s #{rast_srid_command.strip} -t #{blocksize} #{@path} #{random_table_name} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
+        @data_import.log_update("#{raster2pgsql_bin_path} -I -s #{rast_srid_command.strip} -t #{blocksize} #{@working_data[:path]} #{random_table_name}")
+        full_rast_command = "#{raster2pgsql_bin_path} -I -s #{rast_srid_command.strip} -t #{blocksize} #{@working_data[:path]} #{random_table_name} | #{@psql_bin_path} #{host} #{port} -U #{@db_configuration[:username]} -w -d #{@db_configuration[:database]}"
         log "Running raster2pgsql: #{raster2pgsql_bin_path}  #{full_rast_command}"
         out = `#{full_rast_command}`
         if 0 < out.strip.length
@@ -40,7 +40,7 @@ module CartoDB
         end
 
         begin
-          @db_connection.run("CREATE TABLE \"#{@suggested_name}\" AS SELECT * FROM \"#{random_table_name}\"")
+          @db_connection.run("CREATE TABLE \"#{@working_data[:suggested_name]}\" AS SELECT * FROM \"#{random_table_name}\"")
           @db_connection.run("DROP TABLE \"#{random_table_name}\"")
         rescue Exception => msg  
           @data_import.set_error_code(5000)
@@ -49,13 +49,13 @@ module CartoDB
         end  
 
         @entries.each{ |e| FileUtils.rm_rf(e) } if @entries.any?
-        rows_imported = @db_connection["SELECT count(*) as count from \"#{@suggested_name}\""].first[:count]
+        rows_imported = @db_connection["SELECT count(*) as count from \"#{@working_data[:suggested_name]}\""].first[:count]
         @import_from_file.unlink
         @table_created = true
     
         @data_import.log_update("table created")
         payload = OpenStruct.new({
-                                :name => @suggested_name, 
+                                :name => @working_data[:suggested_name], 
                                 :rows_imported => rows_imported,
                                 :import_type => @import_type,
                                 :log => @runlog

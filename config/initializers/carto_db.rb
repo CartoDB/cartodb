@@ -78,6 +78,7 @@ module CartoDB
     1004 => 'File encoding error',
     1005 => 'Zero byte file',
     1006 => 'Invalid SHP file',
+    1007 => 'Multifile import errors',
     2000 => 'File conversion errors',
     3000 => 'Geometry error',
     3004 => 'Unable to read SHP file',

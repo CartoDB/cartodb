@@ -183,7 +183,7 @@ module CartoDB
                                 })
 
         # construct return variables
-        payload
+        [payload]
       end
     end
   end

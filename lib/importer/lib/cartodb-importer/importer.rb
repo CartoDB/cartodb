@@ -148,6 +148,7 @@ module CartoDB
           @data_import.log_error("#{disk_quota_overspend / 1024}KB more space is required" )
           raise CartoDB::QuotaExceeded, "#{disk_quota_overspend / 1024}KB more space is required" 
         end
+        errors = Array.new
         import_data = [{
           :ext            => @ext,
           :suggested_name => @suggested_name,
@@ -172,9 +173,16 @@ module CartoDB
           preproc = CartoDB::Import::Preprocessor.create(data[:ext], self.to_import_hash)
           @data_import.refresh
           if preproc
-            out = preproc.process!
-            out.each{ |d| processed_imports << d }
-            @data_import.log_update('file preprocessed')
+            begin
+              out = preproc.process!
+              out.each{ |d| processed_imports << d }
+              @data_import.log_update('file preprocessed')
+            rescue
+              @data_import.reload
+              errors << OpenStruct.new({ :description => @data_import.get_error_text,
+                                           :stack =>  @data_import.log_json,
+                                           :code=>@data_import.error_code })
+            end
           else
             processed_imports << data
           end
@@ -193,8 +201,15 @@ module CartoDB
             @data_import.set_error_code(1002)
             #raise "no importer for this type of data"  
           else
-            payloads << loader.process!
-            @data_import.log_update("#{data[:ext]} successfully loaded")  
+            begin
+              payloads << loader.process!
+              @data_import.log_update("#{data[:ext]} successfully loaded")  
+            rescue
+              @data_import.reload
+              errors << OpenStruct.new({ :description => @data_import.get_error_text,
+                                           :stack =>  @data_import.log_json,
+                                           :code=>@data_import.error_code })
+            end
           end
         }
         
@@ -204,7 +219,7 @@ module CartoDB
         # update_self i_res if i_res
         
         @data_import.save
-        return payloads
+        return [payloads, errors]
       rescue => e
         @data_import.refresh #reload incase errors were written
         #@data_import.log_error(e)

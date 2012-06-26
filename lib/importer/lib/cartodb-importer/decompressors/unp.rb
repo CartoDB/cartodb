@@ -61,7 +61,7 @@ module CartoDB
             FileUtils.mv("#{tmp_path}", "#{dirname}/#{name.downcase}") unless File.basename(tmp_path) == name.downcase
             name = name.downcase
             if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
-              suggested = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
+              suggested = @suggested_name.nil? ? File.basename( name, File.extname(name)).sanitize : @suggested_name
               import_data << {
                 :ext => File.extname(name),
                 :suggested_name => suggested,

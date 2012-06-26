@@ -1,3 +1,11 @@
+0.9.8 (26/06/12)
+-----
+* Fixes when DROP table on the SQL API
+* Change the ESPG service used for finding projection to a more stable one provided by cloudfoundry.
+* Make clicks on features more reliable on maps
+* Improved testing, faster and and easier to run
+* Check file size before uploading on client side
+
 0.9.7 (12/06/12)
 -----
 * Allow .geojson imports

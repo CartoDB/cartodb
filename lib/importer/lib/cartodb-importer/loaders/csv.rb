@@ -40,7 +40,7 @@ module CartoDB
 
           # Check if the file had data, if not rise an error because probably something went wrong
           begin
-            rows_imported = @db_connection["SELECT * from #{@working_data[:suggested_name]} LIMIT 1"].first[:count]
+            rows_imported = @db_connection["SELECT count(*) from #{@working_data[:suggested_name]} LIMIT 1"].first[:count]
           rescue Exception => e
             @runlog.err << "Empty table"
             @data_import.set_error_code(3006)
@@ -174,12 +174,10 @@ module CartoDB
           @table_created = true
           @data_import.log_update("table created")
           FileUtils.rm_rf(Dir.glob(@working_data[:path]))
-
           payload = OpenStruct.new({
                                   :name => @working_data[:suggested_name],
                                   :rows_imported => rows_imported,
-                                  :import_type => @working_data[:ext],
-                                  :log => @runlog
+                                  :import_type => @working_data[:ext]
                                   })
 
           # construct return variables

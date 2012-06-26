@@ -28,8 +28,6 @@ describe CartoDB::Importer do
       errors.length.should            == 1  
       @db.tables.should_not include(:empty)    
     end
-  
-  
     # TODO: Is this really the intended behaviour??
     it "should keep first imported table when importing again with same name" do
       importer = create_importer 'clubbing.csv', 'testing'
@@ -79,86 +77,86 @@ describe CartoDB::Importer do
     describe "#ZIP" do
       it "should import CSV even from a ZIP file" do
         importer = create_importer 'pino.zip'
-        result   = importer.import!
+        results,errors   = importer.import!
 
         # Assertions
-        result.name.should          == 'data'
-        result.rows_imported.should == 4
-        result.import_type.should   == '.csv'
+        results[0].name.should          == 'data'
+        results[0].rows_imported.should == 4
+        results[0].import_type.should   == '.csv'
       end
       it "should import CSV even from a ZIP file with the given name" do
         importer = create_importer 'pino.zip', "table123"
-        result   = importer.import!
+        results, errors   = importer.import!
 
         # Assertions
-        result.name.should          == 'table123'
-        result.rows_imported.should == 4
-        result.import_type.should   == '.csv'
+        results[0].name.should          == 'table123'
+        results[0].rows_imported.should == 4
+        results[0].import_type.should   == '.csv'
       end
     end
   
     describe "#CSV" do
       it "should import a CSV file in the given database in a table named like the file" do
         importer = create_importer 'clubbing.csv', 'clubsaregood'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'clubsaregood'
-        result.rows_imported.should == 1998
-        result.import_type.should   == '.csv'
+        results[0].name.should          == 'clubsaregood'
+        results[0].rows_imported.should == 1998
+        results[0].import_type.should   == '.csv'
       end
     
       it "should import Food Security Aid Map_projects.csv" do
         importer = create_importer 'Food_Security_Aid_Map_projects.csv'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'food_security_aid_ma'
-        result.rows_imported.should == 827
-        result.import_type.should   == '.csv'
+        results[0].name.should          == 'food_security_aid_ma'
+        results[0].rows_imported.should == 827
+        results[0].import_type.should   == '.csv'
       end
     
       it "should import world_heritage_list.csv" do
         importer = create_importer 'world_heritage_list.csv'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'world_heritage_list'
-        result.rows_imported.should == 937
-        result.import_type.should   == '.csv'
+        results[0].name.should          == 'world_heritage_list'
+        results[0].rows_imported.should == 937
+        results[0].import_type.should   == '.csv'
       end
     
       it "should import estaciones2.csv" do
         importer = create_importer 'estaciones2.csv'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'estaciones2'
-        result.rows_imported.should == 30
-        result.import_type.should   == '.csv'
+        results[0].name.should          == 'estaciones2'
+        results[0].rows_imported.should == 30
+        results[0].import_type.should   == '.csv'
       end
     
       it "should import CSV with latidude/logitude" do
         importer = create_importer 'walmart.csv'      
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should == 'walmart'
-        result.rows_imported.should == 3176
-        result.import_type.should == '.csv'
+        results[0].name.should == 'walmart'
+        results[0].rows_imported.should == 3176
+        results[0].import_type.should == '.csv'
       end
 
       it "should import CSV with lat/lon" do
         importer = create_importer 'walmart_latlon.csv', 'walmart_latlon'      
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should == 'walmart_latlon'
-        result.rows_imported.should == 3176
-        result.import_type.should == '.csv'
+        results[0].name.should == 'walmart_latlon'
+        results[0].rows_imported.should == 3176
+        results[0].import_type.should == '.csv'
       end
 
       pending "should CartoDB CSV export with latitude & longitude columns" do
         importer = create_importer 'CartoDB_csv_export.zip', 'cartodb_csv_export'                  
-        result = importer.import!
+        results,errors = importer.import!
       
-        result.name.should == 'cartodb_csv_export'
-        result.rows_imported.should == 155
-        result.import_type.should == '.csv'
+        results[0].name.should == 'cartodb_csv_export'
+        results[0].rows_imported.should == 155
+        results[0].import_type.should == '.csv'
 
         # test auto generation of geom from lat/long fields
         res = @db[:cartodb_csv_export].select{[st_x(the_geom), st_y(the_geom), latitude, longitude]}.limit(1).first
@@ -168,11 +166,11 @@ describe CartoDB::Importer do
   
       it "should CartoDB CSV export with the_geom in geojson" do
         importer = create_importer 'CartoDB_csv_multipoly_export.zip', 'cartodb_csv_multipoly_export'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should == 'cartodb_csv_multipol'
-        result.rows_imported.should == 601
-        result.import_type.should == '.csv'
+        results[0].name.should == 'cartodb_csv_multipol'
+        results[0].rows_imported.should == 601
+        results[0].import_type.should == '.csv'
       
         # test geometry returned is legit
         # not loading always in correct order, need to fix below
@@ -182,11 +180,11 @@ describe CartoDB::Importer do
     
       it "should import CSV file with lat/lon column" do
         importer = create_importer 'facility.csv', 'facility'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should == 'facility'
-        result.rows_imported.should == 541
-        result.import_type.should == '.csv'
+        results[0].name.should == 'facility'
+        results[0].rows_imported.should == 541
+        results[0].import_type.should == '.csv'
       
         # test geometry is correct
         res = @db["SELECT st_x(the_geom),st_y(the_geom) FROM facility WHERE prop_id=' Q448 '"].first
@@ -195,7 +193,7 @@ describe CartoDB::Importer do
   
       it "should import CSV file with columns who are numbers" do
         importer = create_importer 'csv_with_number_columns.csv', 'csv_with_number_columns'
-        result = importer.import!
+        results,errors = importer.import!
 
         result.name.should == 'csv_with_number_colu'
         result.rows_imported.should == 177
@@ -207,62 +205,62 @@ describe CartoDB::Importer do
     describe "#XLSX" do
       it "should import a XLSX file in the given database in a table named like the file" do
         importer = create_importer 'ngos.xlsx'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'ngos'
-        result.rows_imported.should == 76
-        result.import_type.should   == '.xlsx'
+        results[0].name.should          == 'ngos'
+        results[0].rows_imported.should == 76
+        results[0].import_type.should   == '.xlsx'
       end
     end
   
     describe "#KML" do
       it "should import KML file rmnp.kml" do
         importer = create_importer 'rmnp.kml'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'rmnp'
-        result.rows_imported.should == 1
-        result.import_type.should   == '.kml'
+        results[0].name.should          == 'rmnp'
+        results[0].rows_imported.should == 1
+        results[0].import_type.should   == '.kml'
       end
     
       it "should import KML file rmnp.zip" do
         importer = create_importer 'rmnp.zip', "rmnp1"
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'rmnp1'
-        result.rows_imported.should == 1
-        result.import_type.should   == '.kml'
+        results[0].name.should          == 'rmnp1'
+        results[0].rows_imported.should == 1
+        results[0].import_type.should   == '.kml'
       end
 
       it "should import KMZ file rmnp.kmz" do
         importer = create_importer 'rmnp.kmz', "rmnp2"      
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'rmnp2'
-        result.rows_imported.should == 1
-        result.import_type.should   == '.kml'
+        results[0].name.should          == 'rmnp2'
+        results[0].rows_imported.should == 1
+        results[0].import_type.should   == '.kml'
       end
     end
 
     describe "#GeoJSON" do
       it "should import GeoJSON file simple.json" do
         importer = create_importer 'simple.json'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'simple'
-        result.rows_imported.should == 11
+        results[0].name.should          == 'simple'
+        results[0].rows_imported.should == 11
 
-        result.import_type.should   == '.json'
+        results[0].import_type.should   == '.json'
       end
 
       it "should import GeoJSON file geojson.geojson" do
         importer = create_importer 'geojson.geojson'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'geojson'
-        result.rows_imported.should == 4
+        results[0].name.should          == 'geojson'
+        results[0].rows_imported.should == 4
 
-        result.import_type.should   == '.geojson'
+        results[0].import_type.should   == '.geojson'
       end
       
       pending "should import GeoJSON files from URLs with non-UTF-8 chars converting if needed" do
@@ -278,66 +276,66 @@ describe CartoDB::Importer do
     describe "#SHP" do    
       it "should import SHP file TM_WORLD_BORDERS_SIMPL-0.3.zip" do
         importer = create_importer 'TM_WORLD_BORDERS_SIMPL-0.3.zip'
-        result = importer.import!
+        results,errors = importer.import!
       
-        result.name.should          == 'tm_world_borders_sim'
-        result.rows_imported.should == 246
-        result.import_type.should   == '.shp'
+        results[0].name.should          == 'tm_world_borders_sim'
+        results[0].rows_imported.should == 246
+        results[0].import_type.should   == '.shp'
       end
       
       it "should import SHP file TM_WORLD_BORDERS_SIMPL-0.3.zip but set the given name" do
         importer = create_importer 'TM_WORLD_BORDERS_SIMPL-0.3.zip', 'borders'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should          == 'borders'
-        result.rows_imported.should == 246
-        result.import_type.should   == '.shp'
+        results[0].name.should          == 'borders'
+        results[0].rows_imported.should == 246
+        results[0].import_type.should   == '.shp'
       end
     end
     
     describe "#GPX file" do
       it "should import GPX file" do
         importer = create_importer 'route2.gpx'                  
-        result = importer.import!
+        results,errors = importer.import!
       
-        result.should_not           == nil
-        result.name.should          == 'route2'
-        result.rows_imported.should == 822
-        result.import_type.should   == '.gpx'
+        results[0].should_not           == nil
+        results[0].name.should          == 'route2'
+        results[0].rows_imported.should == 822
+        results[0].import_type.should   == '.gpx'
       end
     end    
     
     describe "#GTIFF" do
       it "should import a GTIFF file in the given database in a table named like the file" do
         importer = create_importer 'GLOBAL_ELEVATION_SIMPLE.zip'      
-        result = importer.import!
+        results,errors = importer.import!
       
-        result.name.should          == 'global_elevation_sim'
-        result.rows_imported.should == 1500
-        result.import_type.should   == '.tif'
+        results[0].name.should          == 'global_elevation_sim'
+        results[0].rows_imported.should == 1500
+        results[0].import_type.should   == '.tif'
       end
     end  
     
     describe "Natural Earth Polygons" do
       it "should import Natural Earth Polygons" do
         importer = create_importer '110m-glaciated-areas.zip', 'glaciers'                  
-        result = importer.import!
+        results,errors = importer.import!
       
-        result.name.should          == 'glaciers'
-        result.rows_imported.should == 11
-        result.import_type.should   == '.shp'
+        results[0].name.should          == 'glaciers'
+        results[0].rows_imported.should == 11
+        results[0].import_type.should   == '.shp'
       end
     end  
   
     pending "Import from URL" do
       it "should import a shapefile from NaturalEarthData.com" do
         importer = create_importer "http://www.nacis.org/naturalearth/10m/cultural/10m_parks_and_protected_areas.zip", "_10m_us_parks", true
-        result = importer.import!
+        results,errors = importer.import!
 
         @db.tables.should include(:_10m_us_parks)
-        result.name.should          == '_10m_us_parks'
-        result.rows_imported.should == 312
-        result.import_type.should   == '.shp'
+        results[0].name.should          == '_10m_us_parks'
+        results[0].rows_imported.should == 312
+        results[0].import_type.should   == '.shp'
       end
     end    
       
@@ -345,27 +343,27 @@ describe CartoDB::Importer do
     
       it "should import a shapefile from Simon" do
         importer = create_importer 'simon-search-spain-1297870422647.zip'                  
-        result = importer.import!
+        results,errors = importer.import!
       
-        result.rows_imported.should == 601
-        result.import_type.should   == '.shp'
+        results[0].rows_imported.should == 601
+        results[0].import_type.should   == '.shp'
       end
 
       it "should import this KML ZIP file" do
         importer = create_importer 'states.kml.zip'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.rows_imported.should == 56
-        result.import_type.should   == '.kml'
+        results[0].rows_imported.should == 56
+        results[0].import_type.should   == '.kml'
       end
   
       it "should import CartoDB SHP export with lat/lon" do
         importer = create_importer 'CartoDB_shp_export.zip', 'cartodb_shp_export'
-        result = importer.import!
+        results,errors = importer.import!
 
-        result.name.should == 'cartodb_shp_export'
-        result.rows_imported.should == 155
-        result.import_type.should == '.shp'
+        results[0].name.should == 'cartodb_shp_export'
+        results[0].rows_imported.should == 155
+        results[0].import_type.should == '.shp'
       
         # test geometry is correct
         res = @db[:cartodb_shp_export].select{[st_x(the_geom),st_y(the_geom)]}.first

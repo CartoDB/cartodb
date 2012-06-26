@@ -51,6 +51,7 @@ module CartoDB
           if File.file?(tmp_path)
             dirname = File.dirname(tmp_path) 
             name = File.basename(tmp_path) 
+            
             next if name =~ /^(\.|\_{2})/
             if name.include? ' '
               name = name.gsub(' ','_')

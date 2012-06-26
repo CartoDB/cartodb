@@ -202,7 +202,8 @@ module CartoDB
             #raise "no importer for this type of data"  
           else
             begin
-              payloads << loader.process!
+              out = loader.process!
+              out.each{ |d| payloads << d }
               @data_import.log_update("#{data[:ext]} successfully loaded")  
             rescue
               @data_import.reload

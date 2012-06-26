@@ -34,7 +34,7 @@ class Api::Json::ImportController < Api::ApplicationController
     elsif params[:url].present? or params[:file].present?
       method = params[:file] ? 'file': 'url'
       src = params[:file] ? params[:file] : params[:url]
-      imports = import_to_cartodb method, src
+      imports, errors = import_to_cartodb method, src
       unless imports.nil?
         results = Array.new
         
@@ -42,7 +42,23 @@ class Api::Json::ImportController < Api::ApplicationController
           payload, location = migrate_existing import.name, params[:name]
           results << [payload,location]
         end
-        if results.length == 1
+        if results.length == 0
+          if errors.length == 1
+            render_jsonp(errors[0], 400)
+          else
+            stack = Array.new
+            stack << "You uploaded a file containing multiple imports.\nNone of them successfully finished.\nTo debug this problem, try uploading each one as an individual file.\n"
+            error_ct = 1
+            errors.each{|error|
+              # TODO change File CT with File NAME
+              stack << "File #{error_ct}: \n"
+              stack << "#{error.description}\n"
+              error.stack.each{ |m| stack << "#{m}\n" }
+              error_ct += 1
+            }
+            render_jsonp({ :description => "Multifile import errors", :stack => stack, :code=> 1007 }, 400)
+          end
+        elsif results.length == 1
           payload, location = results[0]
           unless location.nil?
             render_jsonp(payload, 200, :location => location)
@@ -53,15 +69,17 @@ class Api::Json::ImportController < Api::ApplicationController
           # TODO add method for all failed
           warnings = Array.new
           table_count = 0
+          file_count = 0
           results.each { | payload, location |
-            if location.nil?
-              warnings << payload[:description]
-            else
+            file_count = file_count+1
+            unless location.nil?
               table_count = table_count+1
             end
           }
-          message = "#{table_count} table(s) successfully created"
-          render_jsonp({:message => message, :warnings => warnings}, 200, :location => '/dashboard')
+          message = "#{table_count}/#{file_count} table(s) successfully created"
+          
+          # TODO remove :tag when front-end will accept just a successful table list
+          render_jsonp({:tag => " "}, 201, :location => '/dashboard')
         end
       end
     end
@@ -165,10 +183,10 @@ class Api::Json::ImportController < Api::ApplicationController
         :data_import_id => @data_import.id
       ).symbolize_keys
       importer = CartoDB::Importer.new hash_in
-      importer = importer.import!
+      importer, errors = importer.import!
       @data_import.reload
       @data_import.imported
-      return importer
+      return importer, errors
     #import from URL
     elsif method == 'url' 
       @data_import.data_type = 'url'
@@ -185,11 +203,11 @@ class Api::Json::ImportController < Api::ApplicationController
         :remaining_quota => table_owner.remaining_quota,
         :data_import_id => @data_import.id
       ).symbolize_keys
-      importer = importer.import!
+      importer, errors = importer.import!
       @data_import.reload
       @data_import.imported
       @data_import.save
-      return importer
+      return [importer, errors]
     end
   end
   

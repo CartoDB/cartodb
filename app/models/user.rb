@@ -200,6 +200,25 @@ class User < Sequel::Model
     Table.filter(:user_id => self.id).order(:id).reverse
   end
 
+  # Retrive list of user tables from database catalogue
+  #
+  # You can use this to check for dangling records in the
+  # admin db "user_tables" table.
+  #
+  # NOTE: this currently returns all public tables, can be
+  #       improved to skip "service" tables
+  #
+  def tables_effective()
+    in_database do |user_database|
+      user_database.synchronize do |conn|
+        query = "select table_name::text from information_schema.tables where table_schema = 'public'"
+        tables = user_database[query].all.map { |i| i[:table_name] }
+        return tables
+      end
+    end
+  end
+
+
   # create the core user_metadata key that is used in redis
   def key
     "rails:users:#{username}"

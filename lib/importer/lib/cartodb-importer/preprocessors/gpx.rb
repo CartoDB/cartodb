@@ -17,7 +17,7 @@ module CartoDB
        # order to import correctly
        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -fieldTypeToString DateTime -f "ESRI Shapefile" #{shp_file} #{@path}}
        
-        stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
+       stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
         unless (err = stderr.read).empty?
           @data_import.log_error(err)

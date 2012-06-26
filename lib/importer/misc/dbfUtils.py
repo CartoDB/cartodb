@@ -53,7 +53,11 @@ def dbfreader(f):
                     value = value
             elif typ == 'D':
                 y, m, d = int(value[:4]), int(value[4:6]), int(value[6:8])
-                value = datetime.date(y, m, d)
+                try:
+                    value = datetime.date(y, m, d)
+                except ValueError:
+                       # Could be '00000000' (for NULL)
+                       value = 0
             elif typ == 'L':
                 value = (value in 'YyTt' and 'T') or (value in 'NnFf' and 'F') or '?'
             result.append(value)

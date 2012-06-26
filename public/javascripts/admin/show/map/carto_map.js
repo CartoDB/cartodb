@@ -2081,6 +2081,8 @@
                 }
                 me.info_window_.open(feature,evt.pixel,null);
                 me.hideOverlays();
+              } else {
+                debugger;
               }
             },200);
           }

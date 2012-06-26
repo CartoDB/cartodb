@@ -61,7 +61,7 @@ class ApplicationController < ActionController::Base
   end
 
   def api_authorization_required
-    authenticate!(:api_authentication, :scope => request.subdomain)
+    authenticate!(:api_key, :api_authentication, :scope => request.subdomain)
   end
 
   def not_authorized

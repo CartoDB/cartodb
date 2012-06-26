@@ -35,7 +35,7 @@ module CartoDB
       @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
       @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")     
       @working_data = nil; 
-
+      
       # Setup candidate file
       @import_from_file = options[:import_from_file]
       if options[:import_from_url]        
@@ -162,30 +162,32 @@ module CartoDB
         
         @data_import.reload
         
-        # TODO: should this be here...?
-        # @import_type = @ext        
-        
-        # @data_import.log_update("file type set to #{@ext}") 
-        
         # Preprocess data and update self with results
         # preprocessors are expected to return a hash datastructure
         
         processed_imports = Array.new
         import_data.each { |data|
           @working_data = data
+          @working_data[:suggested_name] = get_valid_name(@working_data[:suggested_name])
           preproc = CartoDB::Import::Preprocessor.create(data[:ext], self.to_import_hash)
           @data_import.refresh
-          @data_import.log_update('file preprocessed') if preproc
-          processed_imports << preproc.process! if preproc
+          if preproc
+            out = preproc.process!
+            out.each{ |d| processed_imports << d }
+            @data_import.log_update('file preprocessed')
+          else
+            processed_imports << data
+          end
         }
         
-        import_data = import_data.zip(processed_imports).flatten.compact
         # Load data in
-        
         payloads = Array.new
-        import_data.each { |data|
+        processed_imports.each { |data|
           @working_data = data
+          # re-check suggested_name in the case that it has been taken by another in this import
+          @working_data[:suggested_name] = get_valid_name(@working_data[:suggested_name])
           loader = CartoDB::Import::Loader.create(data[:ext], self.to_import_hash)
+          
           if !loader
             @data_import.log_update("no importer for this type of data, #{@ext}")
             @data_import.set_error_code(1002)

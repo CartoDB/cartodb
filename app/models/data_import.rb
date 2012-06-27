@@ -1,4 +1,4 @@
-# coding: UTF-8
+# coding: UTF-8'
 class DataImport < Sequel::Model
   include CartoDB::MiniSequel
   include ActiveModel::Validations 

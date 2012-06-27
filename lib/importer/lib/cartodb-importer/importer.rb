@@ -1,4 +1,6 @@
 # coding: UTF-8
+require 'iconv'
+
 module CartoDB
   class Importer
     class << self
@@ -201,6 +203,7 @@ module CartoDB
           @working_data = data
           # re-check suggested_name in the case that it has been taken by another in this import
           @working_data[:suggested_name] = @suggested_name.nil? ? get_valid_name(@working_data[:suggested_name]) : get_valid_name(@suggested_name) 
+          
           loader = CartoDB::Import::Loader.create(data[:ext], self.to_import_hash)
           
           if !loader
@@ -214,9 +217,10 @@ module CartoDB
               @data_import.log_update("#{data[:ext]} successfully loaded")  
             rescue
               @data_import.reload
+              
               errors << OpenStruct.new({ :description => @data_import.get_error_text,
-                                           :stack =>  @data_import.log_json,
-                                           :code=>@data_import.error_code })
+                                         :stack       => @data_import.log_json,
+                                         :code        => @data_import.error_code })
             end
           end
         }

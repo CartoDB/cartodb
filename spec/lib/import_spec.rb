@@ -301,6 +301,14 @@ describe CartoDB::Importer do
         results[0].name.should          == 'twitters'
         @db.tables.should_not include(:empty)    
       end
+      it "one file should contain 3 fails" do
+        importer = create_importer '3fails.zip'
+        results, errors = importer.import!
+        # Assertions
+        errors.length.should            == 3
+        results.length.should           == 0
+        @db.tables.should_not include(:empty)    
+      end
     end
   end
   ##################################################

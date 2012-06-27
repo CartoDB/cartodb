@@ -86,8 +86,8 @@ module CartoDB
                 @ext=".tgz"
               end
               
-              name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
-              @import_from_file = Tempfile.new([name, @ext])
+              @original_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
+              @import_from_file = Tempfile.new([@original_name, @ext])
               @import_from_file.write res.read.force_encoding("UTF-8")
               @import_from_file.close
             end
@@ -149,9 +149,11 @@ module CartoDB
           raise CartoDB::QuotaExceeded, "#{disk_quota_overspend / 1024}KB more space is required" 
         end
         errors = Array.new
+        suggested = @suggested_name.nil? ? get_valid_name(File.basename(@original_name,@ext).tr('.','_').downcase.sanitize) : @suggested_name
         import_data = [{
           :ext            => @ext,
-          :path           => @path 
+          :path           => @path,
+          :suggested_name => suggested
         }]
         # set our multi file handlers
         # decompress data and update self with results
@@ -173,7 +175,9 @@ module CartoDB
           if preproc
             begin
               out = preproc.process!
-              out.each{ |d| processed_imports << d }
+              out.each{ |d| 
+                processed_imports << d
+              }
               @data_import.log_update('file preprocessed')
             rescue
               @data_import.reload
@@ -191,7 +195,7 @@ module CartoDB
         processed_imports.each { |data|
           @working_data = data
           # re-check suggested_name in the case that it has been taken by another in this import
-          @working_data[:suggested_name] = @suggested_name ? get_valid_name(@suggested_name) : get_valid_name(@working_data[:suggested_name])
+          @working_data[:suggested_name] = @suggested_name.nil? ? get_valid_name(@working_data[:suggested_name]) : get_valid_name(@suggested_name) 
           loader = CartoDB::Import::Loader.create(data[:ext], self.to_import_hash)
           
           if !loader

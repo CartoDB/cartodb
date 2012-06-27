@@ -177,7 +177,7 @@ module CartoDB
           payload = OpenStruct.new({
                                   :name => @working_data[:suggested_name],
                                   :rows_imported => rows_imported,
-                                  :import_type => @working_data[:ext]
+                                  :import_type => @working_data[:import_type] ? @working_data[:import_type] : @working_data[:ext]
                                   })
 
           # construct return variables

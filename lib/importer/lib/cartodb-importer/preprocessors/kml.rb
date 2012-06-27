@@ -72,6 +72,7 @@ module CartoDB
               name = name.downcase
               import_data << {
                 :ext => '.shp',
+                :import_type => '.kml',
                 :suggested_name => File.basename( name, File.extname(name)).sanitize,
                 :path => "#{dirname}/#{name}"
               }

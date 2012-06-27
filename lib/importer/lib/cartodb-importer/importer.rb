@@ -112,6 +112,7 @@ module CartoDB
       
       # finally setup current path
       @path = @import_from_file.respond_to?(:tempfile) ? @import_from_file.tempfile.path : @import_from_file.path
+      
       #final ext check in case the file was falsely transfered as .SHP for example
       if ['','.shp','.csv'].include? @ext
         @ext = check_if_archive(@path, @ext)
@@ -148,6 +149,7 @@ module CartoDB
           @data_import.log_error("#{disk_quota_overspend / 1024}KB more space is required" )
           raise CartoDB::QuotaExceeded, "#{disk_quota_overspend / 1024}KB more space is required" 
         end
+        
         errors = Array.new
         suggested = @suggested_name.nil? ? get_valid_name(File.basename(@original_name,@ext).tr('.','_').downcase.sanitize) : @suggested_name
         import_data = [{

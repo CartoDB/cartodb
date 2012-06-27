@@ -370,6 +370,9 @@ class Table < Sequel::Model(:user_tables)
       
     # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
     super
+    if @data_import
+      CartodbStats.increment_imports()
+    end
   rescue => e
     CartoDB::Logger.info "table#create error", "#{e.inspect}"   
     if @data_import
@@ -407,6 +410,7 @@ class Table < Sequel::Model(:user_tables)
           :temp_file => @import_from_file.path
         }
       )
+      CartodbStats.increment_failed_imports()
     end
     raise e
   end
@@ -442,6 +446,7 @@ class Table < Sequel::Model(:user_tables)
       @data_import.table_id = id
       @data_import.finished
     end
+    add_table_to_stats
   end
   
   def after_update
@@ -464,6 +469,7 @@ class Table < Sequel::Model(:user_tables)
       end
       user_database.run("DROP TABLE IF EXISTS #{self.name}")
     end
+    remove_table_from_stats
   end
   ## End of Callbacks
 
@@ -1300,7 +1306,7 @@ TRIGGER
   end
 
   def owner    
-    @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => self.user_id).first
+    @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota, :account_type).filter(:id => self.user_id).first
   end
 
   private
@@ -1579,4 +1585,19 @@ SQL
     end
     http_res
   end
+
+  def add_table_to_stats
+    CartodbStats.update_tables_counter(1)
+    CartodbStats.update_tables_counter_per_user(1, self.owner.username)
+    CartodbStats.update_tables_counter_per_host(1)
+    CartodbStats.update_tables_counter_per_plan(1, self.owner.account_type)
+  end
+
+  def remove_table_from_stats
+    CartodbStats.update_tables_counter(-1)
+    CartodbStats.update_tables_counter_per_user(-1, self.owner.username)
+    CartodbStats.update_tables_counter_per_host(-1)
+    CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
+  end
+
 end

@@ -205,6 +205,7 @@ GEM
     spreadsheet (0.6.5.9)
       ruby-ole (>= 1.0)
     state_machine (1.1.2)
+    statsd-client (0.0.7)
     steak (2.0.0)
       capybara (>= 1.0.0)
       rspec-rails (>= 2.5.0)
@@ -266,6 +267,7 @@ DEPENDENCIES
   sequel_pg (= 1.2.0)
   spreadsheet (~> 0.6.5.9)
   state_machine (~> 1.0)
+  statsd-client
   steak (= 2.0.0)
   text-hyphen (= 1.2.0)
   timecop

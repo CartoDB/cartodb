@@ -211,11 +211,11 @@ describe CartoDB::Importer do
         results[0].import_type.should   == '.geojson'
       end
       
-      pending "should import GeoJSON files from URLs with non-UTF-8 chars converting if needed" do
-        importer = create_importer "http://raw.github.com/gist/1374824/d508009ce631483363e1b493b00b7fd743b8d008/unicode.json", 'geojson_utf8', true
+      it "should import GeoJSON files from URLs with non-UTF-8 chars converting if needed" do
+        importer = create_importer "https://raw.github.com/gist/1374824/d508009ce631483363e1b493b00b7fd743b8d008/unicode.json", 'geojson_utf8', true
         results, errors = importer.import!
         results.length.should           == 1
-        @db[:geojson_utf8].get(:tm_symbol).should == "In here -> ® <-- this here"
+        @db[:geojson_utf8].get(:reg_symbol).should == "In here -> ® <-- this here"
       end      
     end
   
@@ -288,7 +288,21 @@ describe CartoDB::Importer do
       end
     end    
   end
-  
+  context "expected error results" do
+    describe "#Multifile imports" do
+      it "one file should fail while the other should be imported fine" do
+        importer = create_importer '1good1bad.zip'
+        results, errors = importer.import!
+        # Assertions
+        errors.length.should            == 1  
+        results.length.should           == 1
+        results[0].rows_imported.should == 7
+        results[0].import_type.should   == '.csv'
+        results[0].name.should          == 'twitters'
+        @db.tables.should_not include(:empty)    
+      end
+    end
+  end
   ##################################################
   # configuration & helpers for tests
   ##################################################

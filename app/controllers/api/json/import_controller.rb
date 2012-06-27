@@ -44,7 +44,7 @@ class Api::Json::ImportController < Api::ApplicationController
         end
         if results.length == 0
           if errors.length == 1
-            render_jsonp(errors[0], 400)
+            render_jsonp({ :description => errors[0].description, :stack => errors[0].stack, :code=> errors[0].code }, 400)
           else
             stack = Array.new
             stack << "You uploaded a file containing multiple imports.\nNone of them successfully finished.\nTo debug this problem, try uploading each one as an individual file.\n"

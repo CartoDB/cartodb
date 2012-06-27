@@ -260,7 +260,7 @@ describe CartoDB::Importer do
         results,errors = importer.import!
       
         results[0].name.should          == 'global_elevation_sim'
-        results[0].rows_imported.should == 1500
+        results[0].rows_imported.should == 774
         results[0].import_type.should   == '.tif'
       end
     end  
@@ -287,39 +287,6 @@ describe CartoDB::Importer do
         results[0].import_type.should   == '.shp'
       end
     end    
-      
-    describe "Import from user specific files" do
-    
-      it "should import a shapefile from Simon" do
-        importer = create_importer 'simon-search-spain-1297870422647.zip'                  
-        results,errors = importer.import!
-      
-        results[0].rows_imported.should == 601
-        results[0].import_type.should   == '.shp'
-      end
-
-      it "should import this KML ZIP file" do
-        importer = create_importer 'states.kml.zip'
-        results,errors = importer.import!
-
-        results[0].rows_imported.should == 56
-        results[0].import_type.should   == '.kml'
-      end
-  
-      it "should import CartoDB SHP export with lat/lon" do
-        importer = create_importer 'CartoDB_shp_export.zip', 'cartodb_shp_export'
-        results,errors = importer.import!
-
-        results[0].name.should == 'cartodb_shp_export'
-        results[0].rows_imported.should == 155
-        results[0].import_type.should == '.shp'
-      
-        # test geometry is correct
-        res = @db[:cartodb_shp_export].select{[st_x(the_geom),st_y(the_geom)]}.first
-        res.should == {:st_x=>16.5607329, :st_y=>48.1199611}
-      end
-        
-    end  
   end
   
   context "table model to data import integration tests" do

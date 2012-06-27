@@ -105,24 +105,6 @@ describe CartoDB::Importer do
         results[0].import_type.should   == '.csv'
       end
     
-      it "should import Food Security Aid Map_projects.csv" do
-        importer = create_importer 'Food_Security_Aid_Map_projects.csv'
-        results,errors = importer.import!
-
-        results[0].name.should          == 'food_security_aid_ma'
-        results[0].rows_imported.should == 827
-        results[0].import_type.should   == '.csv'
-      end
-    
-      it "should import world_heritage_list.csv" do
-        importer = create_importer 'world_heritage_list.csv'
-        results,errors = importer.import!
-
-        results[0].name.should          == 'world_heritage_list'
-        results[0].rows_imported.should == 937
-        results[0].import_type.should   == '.csv'
-      end
-    
       it "should import estaciones2.csv" do
         importer = create_importer 'estaciones2.csv'
         results,errors = importer.import!
@@ -171,34 +153,16 @@ describe CartoDB::Importer do
         results[0].name.should == 'cartodb_csv_multipol'
         results[0].rows_imported.should == 601
         results[0].import_type.should == '.csv'
-      
-        # test geometry returned is legit
-        # not loading always in correct order, need to fix below
-        # g = '{"type":"MultiPolygon","coordinates":[[[[1.7,39.1],[1.7,39.1],[1.7,39.1],[1.7,39.1],[1.7,39.1]]]]}'
-        # @db[:cartodb_csv_multipol].get{ST_AsGeoJSON(the_geom,1)}.should == g
       end
     
-      it "should import CSV file with lat/lon column" do
-        importer = create_importer 'facility.csv', 'facility'
-        results,errors = importer.import!
-
-        results[0].name.should == 'facility'
-        results[0].rows_imported.should == 541
-        results[0].import_type.should == '.csv'
-      
-        # test geometry is correct
-        res = @db["SELECT st_x(the_geom),st_y(the_geom) FROM facility WHERE prop_id=' Q448 '"].first
-        res.should == {:st_x=>-73.7698, :st_y=>40.6862}
-      end
-  
       it "should import CSV file with columns who are numbers" do
         importer = create_importer 'csv_with_number_columns.csv', 'csv_with_number_columns'
         results,errors = importer.import!
 
-        result.name.should == 'csv_with_number_colu'
-        result.rows_imported.should == 177
+        results[0].name.should == 'csv_with_number_colu'
+        results[0].rows_imported.should == 177
 
-        result.import_type.should == '.csv'      
+        results[0].import_type.should == '.csv'      
       end
     end
   
@@ -206,7 +170,8 @@ describe CartoDB::Importer do
       it "should import a XLSX file in the given database in a table named like the file" do
         importer = create_importer 'ngos.xlsx'
         results,errors = importer.import!
-
+        
+        errors.length.should            == 0
         results[0].name.should          == 'ngos'
         results[0].rows_imported.should == 76
         results[0].import_type.should   == '.xlsx'

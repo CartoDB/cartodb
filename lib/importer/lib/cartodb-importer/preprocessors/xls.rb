@@ -28,6 +28,7 @@ module CartoDB
           @import_from_file = File.open(new_path,'r')
           import_data << {
             :ext => '.csv',
+            :import_type => @working_data[:ext],
             :suggested_name => @working_data[:suggested_name].sanitize,
             :path => @import_from_file.path
           }

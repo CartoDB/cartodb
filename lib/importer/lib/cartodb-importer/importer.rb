@@ -86,7 +86,9 @@ module CartoDB
                 @ext=".tgz"
               end
               
-              @original_name ||= get_valid_name(File.basename(@import_from_file, @ext).downcase.sanitize)
+              @iconv ||= Iconv.new('UTF-8//IGNORE', 'UTF-8')
+              @original_name ||= get_valid_name(File.basename(@iconv.iconv(@import_from_file), @ext).downcase.sanitize)
+              
               @import_from_file = Tempfile.new([@original_name, @ext])
               @import_from_file.write res.read.force_encoding("UTF-8")
               @import_from_file.close
@@ -157,6 +159,7 @@ module CartoDB
           :path           => @path,
           :suggested_name => suggested
         }]
+        
         # set our multi file handlers
         # decompress data and update self with results
         decompressor = CartoDB::Import::Decompressor.create(@ext, self.to_import_hash) 

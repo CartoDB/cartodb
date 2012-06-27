@@ -29,6 +29,7 @@ module CartoDB
         # any directories one level below. I was running into issues 
         # of files being created in a dir, so not getting processed.
         # this fixes
+        
         Dir.foreach(tmp_dir) do |name|
           # temporary filename. no collisions. 
           tmp_path = "#{tmp_dir}/#{name}"
@@ -36,10 +37,16 @@ module CartoDB
             files << tmp_path
           elsif File.directory?(tmp_path)
             unless ['.','..','__MACOSX'].include?(name)
+              if tmp_path != tmp_path.gsub(" ","_")
+                FileUtils.mv tmp_path, tmp_path.gsub(" ","__")
+                tmp_path = tmp_path.gsub(" ","__")
+              end
               Dir.foreach(tmp_path) do |subname|
-                tmp_sub = "#{tmp_dir}/#{name}/#{subname}"
-                if File.file?(tmp_sub)
-                  files << tmp_sub
+                unless ['.','..','__MACOSX',nil].include?(subname)
+                  tmp_sub = "#{tmp_path}/#{subname}"
+                  if File.file?(tmp_sub)
+                    files << tmp_sub
+                  end
                 end
               end
             end

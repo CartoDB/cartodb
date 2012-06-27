@@ -34,7 +34,11 @@ module CartoDB
           @entries << tmp_path
     
           if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
-            suggested = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
+            unless @suggested_name.nil?
+              suggested = @suggested_name
+            else 
+              suggested = File.basename( name, File.extname(name)).sanitize
+            end
             import_data << {
               :ext => File.extname(name),
               :suggested_name => suggested,

@@ -182,7 +182,8 @@ describe CartoDB::Importer do
       it "should import KML file rmnp.kml" do
         importer = create_importer 'rmnp.kml'
         results,errors = importer.import!
-
+        
+        results.length.should           == 1
         results[0].name.should          == 'rmnp'
         results[0].rows_imported.should == 1
         results[0].import_type.should   == '.kml'
@@ -191,7 +192,8 @@ describe CartoDB::Importer do
       it "should import KMZ file rmnp.kmz" do
         importer = create_importer 'rmnp.kmz', "rmnp2"      
         results,errors = importer.import!
-
+        
+        results.length.should           == 1
         results[0].name.should          == 'rmnp2'
         results[0].rows_imported.should == 1
         results[0].import_type.should   == '.kml'

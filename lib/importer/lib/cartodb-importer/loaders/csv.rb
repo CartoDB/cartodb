@@ -1,4 +1,4 @@
-
+require 'iconv'
 module CartoDB
   module Import
     class CSV < CartoDB::Import::Loader
@@ -9,17 +9,19 @@ module CartoDB
       def process!
         begin
           @data_import = DataImport.find(:id=>@data_import_id)
-
+          
           # run Chardet + Iconv
           fix_encoding
-        
+          
           @data_import.log_update("ogr2ogr #{@working_data[:suggested_name]}")
           ogr2ogr_bin_path = `which ogr2ogr`.strip
           ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@working_data[:path]} -nln #{@working_data[:suggested_name]}}
         
           stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
-  
+          
           unless (err = stderr.read).empty?
+            @iconv ||= Iconv.new('UTF-8//IGNORE', 'UTF-8')
+            err = @iconv.iconv(err)
             if err.downcase.include?('failure')
               @data_import.set_error_code(3006)
               @data_import.log_error(err)
@@ -28,16 +30,16 @@ module CartoDB
                 @data_import.set_error_code(5002)
                 @data_import.log_error("ERROR: #{@working_data[:path]} contains reserved column names")
               end
-              #raise "failed to import #{@working_data[:ext].sub('.','')} to database"
+              @data_import.save
             else
               @data_import.log_update(err)
             end
           end
-        
+          
           unless (reg = stdout.read).empty?
             @runlog.stdout << reg
           end
-
+          
           # Check if the file had data, if not rise an error because probably something went wrong
           begin
             rows_imported = @db_connection["SELECT count(*) from #{@working_data[:suggested_name]} LIMIT 1"].first[:count]
@@ -55,7 +57,7 @@ module CartoDB
             @data_import.log_error("ERROR: no data could be imported from file")
             raise "empty table"
           end
-
+          debugger
           # Importing CartoDB CSV exports
           # ===============================
           # * if there is a column already called the_geom
@@ -117,7 +119,7 @@ module CartoDB
               end
             end
           end
-        
+          debugger
           # if there is no the_geom, and there are latitude and longitude columns, create the_geom
           unless column_names.include? "the_geom"
 
@@ -161,7 +163,7 @@ module CartoDB
                 add_index @working_data[:suggested_name], "importing_#{Time.now.to_i}_#{@working_data[:suggested_name]}"
             end
           end
-
+          debugger
           begin
             # Sanitize column names where needed
             sanitize_table_columns @working_data[:suggested_name]
@@ -170,7 +172,7 @@ module CartoDB
             @data_import.log_update("ERROR: Failed to sanitize some column names")
           end
         
-        
+          debugger
           @table_created = true
           @data_import.log_update("table created")
           FileUtils.rm_rf(Dir.glob(@working_data[:path]))
@@ -179,7 +181,7 @@ module CartoDB
                                   :rows_imported => rows_imported,
                                   :import_type => @working_data[:import_type] ? @working_data[:import_type] : @working_data[:ext]
                                   })
-
+          debugger
           # construct return variables
           [payload]
         rescue => e

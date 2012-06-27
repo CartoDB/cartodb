@@ -102,7 +102,7 @@ module CartoDB
             @runlog.err << msg
             @data_import.log_update("ERROR: Failed to sanitize some column names")
           end
-        
+          
           unless column_names.include? 'the_geom'
             @data_import.set_error_code(1006)
             @data_import.log_update("ERROR: Not a valid or recognized SHP file")

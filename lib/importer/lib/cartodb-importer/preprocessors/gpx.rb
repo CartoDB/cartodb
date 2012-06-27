@@ -38,10 +38,15 @@ module CartoDB
           FileUtils.mv("#{dirname}/#{tmp_path}", "#{dirname}/#{name.downcase}") unless File.basename(tmp_path) == name.downcase
           name = name.downcase
           if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
+            if @working_data[:suggested_name]
+              suggested = "#{@working_data[:suggested_name]}_#{File.basename( name, File.extname(name)).sanitize}"
+            else
+              suggested = File.basename( name, File.extname(name)).sanitize
+            end
             import_data << {
               :ext => File.extname(name),
               :import_type => '.gpx',
-              :suggested_name => File.basename( name, File.extname(name)).sanitize,
+              :suggested_name => suggested,
               :path => "#{dirname}/#{name}"
             }
           end

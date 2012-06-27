@@ -179,16 +179,6 @@ describe CartoDB::Importer do
     end
   
     describe "#KML" do
-      it "should import KML file rmnp.kml" do
-        importer = create_importer 'rmnp.kml'
-        results,errors = importer.import!
-        
-        results.length.should           == 1
-        results[0].name.should          == 'rmnp'
-        results[0].rows_imported.should == 1
-        results[0].import_type.should   == '.kml'
-      end 
-      
       it "should import KMZ file rmnp.kmz" do
         importer = create_importer 'rmnp.kmz', "rmnp2"      
         results,errors = importer.import!
@@ -224,6 +214,7 @@ describe CartoDB::Importer do
       pending "should import GeoJSON files from URLs with non-UTF-8 chars converting if needed" do
         importer = create_importer "http://raw.github.com/gist/1374824/d508009ce631483363e1b493b00b7fd743b8d008/unicode.json", 'geojson_utf8', true
         results, errors = importer.import!
+        results.length.should           == 1
         @db[:geojson_utf8].get(:tm_symbol).should == "In here -> ® <-- this here"
       end      
     end
@@ -252,11 +243,14 @@ describe CartoDB::Importer do
       it "should import GPX file" do
         importer = create_importer 'route2.gpx'                  
         results,errors = importer.import!
-      
-        results[0].should_not           == nil
-        results[0].name.should          == 'route2'
+        
+        results.length.should           == 2
+        results[0].name.should          == 'route2_track_points'
         results[0].rows_imported.should == 822
         results[0].import_type.should   == '.gpx'
+        results[1].name.should          == 'route2_tracks'
+        results[1].rows_imported.should == 1
+        results[1].import_type.should   == '.gpx'
       end
     end    
     

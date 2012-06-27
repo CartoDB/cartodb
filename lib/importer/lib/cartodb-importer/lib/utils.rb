@@ -60,6 +60,7 @@ module CartoDB
           uniname = "#{name}_#{testn}"
           testn = testn + 1
         end
+        uniname = uniname.gsub(' ','_')
         while uniname.include? "__"
           uniname = uniname.sub("__","_")
         end

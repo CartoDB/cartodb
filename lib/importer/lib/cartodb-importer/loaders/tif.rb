@@ -57,7 +57,7 @@ module CartoDB
         payload = OpenStruct.new({
                                 :name => @working_data[:suggested_name], 
                                 :rows_imported => rows_imported,
-                                :import_type => @import_type,
+                                :import_type => '.tif',
                                 :log => @runlog
                                 })
  

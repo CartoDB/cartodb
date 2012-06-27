@@ -186,17 +186,8 @@ describe CartoDB::Importer do
         results[0].name.should          == 'rmnp'
         results[0].rows_imported.should == 1
         results[0].import_type.should   == '.kml'
-      end
-    
-      it "should import KML file rmnp.zip" do
-        importer = create_importer 'rmnp.zip', "rmnp1"
-        results,errors = importer.import!
-
-        results[0].name.should          == 'rmnp1'
-        results[0].rows_imported.should == 1
-        results[0].import_type.should   == '.kml'
-      end
-
+      end 
+      
       it "should import KMZ file rmnp.kmz" do
         importer = create_importer 'rmnp.kmz', "rmnp2"      
         results,errors = importer.import!

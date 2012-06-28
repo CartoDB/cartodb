@@ -43,7 +43,9 @@ class Api::Json::ImportController < Api::ApplicationController
           results << [payload,location]
         end
         if results.length == 0
-          if errors.length == 1
+          if errors.length == 0
+            render_jsonp({ :description => 'Unknown', :stack => [], :code=> 99999 }, 400)
+          elsif errors.length == 1
             render_jsonp({ :description => errors[0].description, :stack => errors[0].stack, :code=> errors[0].code }, 400)
           else
             stack = Array.new

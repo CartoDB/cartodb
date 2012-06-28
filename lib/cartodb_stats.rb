@@ -3,7 +3,6 @@ class CartodbStats
   class << self
 
     def update_tables_counter(count)
-      CartoDB::Logger.info Statsd.host
       begin
         if count == 1
           Statsd.increment('tables.total')
@@ -29,9 +28,9 @@ class CartodbStats
       require 'socket'
       begin 
         if count == 1
-          Statsd.increment("tables.servers.#{Socket.gethostname.gsub('.', '_')}")
+          Statsd.increment("tables.hosts.#{Socket.gethostname.gsub('.', '_')}")
         elsif count == -1
-          Statsd.decrement("tables.servers.#{Socket.gethostname.gsub('.', '_')}")
+          Statsd.decrement("tables.hosts.#{Socket.gethostname.gsub('.', '_')}")
         end
       rescue => e
       end
@@ -61,7 +60,29 @@ class CartodbStats
       require 'socket'
       begin 
         Statsd.increment("imports.failed.total")
-        Statsd.increment("imports.failed.servers.#{Socket.gethostname.gsub('.', '_')}")
+        Statsd.increment("imports.failed.hosts.#{Socket.gethostname.gsub('.', '_')}")
+      rescue => e
+      end
+    end
+
+    def increment_login_counter(email)
+      begin
+        u = User.select(:username).filter(:email => email).or(:username => email).first
+        username = u ? u.username : 'UNKNOWN'
+        Statsd.increment("logins.success.total")
+        Statsd.increment("logins.success.hosts.#{Socket.gethostname.gsub('.', '_')}")
+        Statsd.increment("logins.success.users.#{username}")
+      rescue => e
+      end
+    end
+  
+    def increment_failed_login_counter(email)
+      begin
+        u = User.select(:username).filter(:email => email).or(:username => email).first
+        username = u ? u.username : 'UNKNOWN'
+        Statsd.increment("logins.failed.total")
+        Statsd.increment("logins.failed.hosts.#{Socket.gethostname.gsub('.', '_')}")
+        Statsd.increment("logins.failed.users.#{username}")
       rescue => e
       end
     end

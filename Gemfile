@@ -19,6 +19,7 @@ gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
 gem "airbrake", '~> 3.0.4'
 gem "nokogiri", '~> 1.5.2'
+gem "statsd-client", :require => "statsd"
 
 # importer
 gem "ruby-ole", "~> 1.2.11.3"

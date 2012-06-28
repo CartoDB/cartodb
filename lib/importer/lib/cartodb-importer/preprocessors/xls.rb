@@ -13,9 +13,33 @@ module CartoDB
         begin
           case @working_data[:ext]
             when '.xls'
-              Excel.new(@working_data[:path])
+              s = Excel.new(@working_data[:path])
+              # Below fixes the issue of strange carriage returns in headers not being
+              # interpreted correctly
+              g = Array.new
+              s.row(1).each{|c| g << c.gsub("\n","").strip }
+              if s.row(1) != g
+                cell_count = 1
+                g.each{|c|
+                  s.set(1,cell_count,c)
+                  cell_count = cell_count + 1
+                }
+              end
+              s
             when '.xlsx'
-              Excelx.new(@working_data[:path])
+              s = Excelx.new(@working_data[:path])
+              # Below fixes the issue of strange carriage returns in headers not being
+              # interpreted correctly
+              g = Array.new
+              s.row(1).each{|c| g << c.gsub("\n","").strip }
+              if s.row(1) != g
+                cell_count = 1
+                g.each{|c|
+                  s.set(1,cell_count,c)
+                  cell_count = cell_count + 1
+                }
+              end
+              s
             when '.ods'
               Openoffice.new(@working_data[:path])
             else
@@ -24,7 +48,7 @@ module CartoDB
               @runlog.log << "Don't know how to open spreadsheet #{@working_data[:path]}"
               raise ArgumentError, "Don't know how to open spreadsheet #{@working_data[:path]}"
           end.to_csv(new_path)
-        
+          
           @import_from_file = File.open(new_path,'r')
           import_data << {
             :ext => '.csv',

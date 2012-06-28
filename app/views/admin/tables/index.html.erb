@@ -6,14 +6,10 @@
     <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers", "plugins/file_uploader", "admin/index/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/index/import"  %>
     <% 
       # Get the user space to set the uploader max file size
-      if @table_quota.blank?
-        @userSpaceLimit = 0
+      if @quota && @database_size
+        @userSpaceLimit = (@quota - @database_size.to_i) * 1024 * 1024
       else
-        if @quota && @database_size
-          @userSpaceLimit = (@quota - @database_size.to_i) * 1024 * 1024
-        else
-          @userSpaceLimit = 0
-        end
+        @userSpaceLimit = 0
       end
     %>
     <script type="text/javascript">var userSpaceLimit = <%= @userSpaceLimit %>;</script>

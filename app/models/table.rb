@@ -398,6 +398,7 @@ class Table < Sequel::Model(:user_tables)
         
       if @data_import
         @data_import.log_error("Import Error: #{e.try(:message)}")
+        CartodbStats.increment_failed_imports()
       end   
       # nill required for this bug https://github.com/airbrake/airbrake/issues/34
       Airbrake.notify(nil, 
@@ -410,7 +411,6 @@ class Table < Sequel::Model(:user_tables)
           :temp_file => @import_from_file.path
         }
       )
-      CartodbStats.increment_failed_imports()
     end
     raise e
   end

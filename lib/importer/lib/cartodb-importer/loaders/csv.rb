@@ -57,7 +57,7 @@ module CartoDB
             @data_import.log_error("ERROR: no data could be imported from file")
             raise "empty table"
           end
-          debugger
+          
           # Importing CartoDB CSV exports
           # ===============================
           # * if there is a column already called the_geom
@@ -119,7 +119,7 @@ module CartoDB
               end
             end
           end
-          debugger
+          
           # if there is no the_geom, and there are latitude and longitude columns, create the_geom
           unless column_names.include? "the_geom"
 
@@ -163,7 +163,7 @@ module CartoDB
                 add_index @working_data[:suggested_name], "importing_#{Time.now.to_i}_#{@working_data[:suggested_name]}"
             end
           end
-          debugger
+          
           begin
             # Sanitize column names where needed
             sanitize_table_columns @working_data[:suggested_name]
@@ -171,8 +171,7 @@ module CartoDB
             @runlog.err << msg
             @data_import.log_update("ERROR: Failed to sanitize some column names")
           end
-        
-          debugger
+          
           @table_created = true
           @data_import.log_update("table created")
           FileUtils.rm_rf(Dir.glob(@working_data[:path]))
@@ -181,7 +180,7 @@ module CartoDB
                                   :rows_imported => rows_imported,
                                   :import_type => @working_data[:import_type] ? @working_data[:import_type] : @working_data[:ext]
                                   })
-          debugger
+          
           # construct return variables
           [payload]
         rescue => e

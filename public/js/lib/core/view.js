@@ -7,6 +7,7 @@
   var View = cdb.core.View = Backbone.View.extend({
     constructor: function(options) {
       this._models = [];
+      this._subviews = {};
       Backbone.View.call(this, options);
       View.viewCount++;
       View.views[this.cid] = this;
@@ -18,6 +19,14 @@
       this._models.push(m);
     },
 
+    addView: function(v) {
+      this._subviews[v.cid] = v;
+    },
+
+    removeView: function(v) {
+      delete this._subviews[v.cid];
+    },
+
     /**
      * this methid clean removes the view
      * and clean and events associated. call it when 
@@ -26,6 +35,10 @@
     clean: function() {
       var self = this;
       this.trigger('clean');
+      _(this._subviews).each(function(v) {
+        v.clean();
+      });
+      this._subviews = {};
       this.remove();
       this.unbind();
       // remove model binding

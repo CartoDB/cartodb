@@ -68,4 +68,21 @@ describe("core.view", function() {
       expect(view.test_method.callCount).toEqual(1);
   });
 
+  it("should add and remove subview", function() {
+      var v1 = new cdb.core.View();
+      view.addView(v1);
+      expect(view._subviews[v1.cid]).toEqual(v1);
+      view.removeView(v1);
+      expect(view._subviews[v1.cid]).toEqual(undefined);
+  });
+  it("should remove and clean subviews", function() {
+      var v1 = new cdb.core.View();
+      spyOn(v1, 'clean');
+      view.addView(v1);
+      expect(view._subviews[v1.cid]).toEqual(v1);
+      view.clean();
+      expect(view._subviews[v1.cid]).toEqual(undefined);
+      expect(v1.clean).toHaveBeenCalled();
+  });
+
 });

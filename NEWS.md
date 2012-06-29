@@ -1,3 +1,7 @@
+0.9.9 (29/06/12)
+-----
+* Added module to send some statistics to a StatsD server
+
 0.9.8 (26/06/12)
 -----
 * Fixes when DROP table on the SQL API

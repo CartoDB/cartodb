@@ -41,7 +41,11 @@ cdb.geo.Map = Backbone.Model.extend({
 
     setZoom: function(z) {
         this.set({zoom:  z});
-   },
+    },
+
+    getZoom: function() {
+        return this.get('zoom');
+    },
 
     setCenter: function(latlng) {
         this.set({center: latlng});

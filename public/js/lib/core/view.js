@@ -48,6 +48,17 @@
       this._models = [];
       View.viewCount--;
       delete View.views[this.cid];
+    },
+
+    /**
+     * utility methods
+     */
+    show: function() {
+        this.$el.show();
+    },
+
+    hide: function() {
+        this.$el.hide();
     }
 
   }, {

@@ -16,16 +16,16 @@ $(function() {
         },
 
         _initModels: function() {
-          this.tables = new cbd.admin.Tables();
+          this.tables = new cdb.admin.Tables();
         },
 
         _initViews: function() {
 
-          this.settings = new Settings({
+          var settings = this.settings = new cdb.ui.common.Settings({
             template_base: $('#settings_template').html(),
             speed: 300
           });
-          this.$el.append(settings.render().el);
+          this.$el.append(this.settings.render().el);
 
           setTimeout(function(){
             settings.open();  

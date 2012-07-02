@@ -11,14 +11,12 @@ javascripts:
 
   cartodb:
     - public/js/lib/cartodb.js
-    - public/js/lib/core/config.js
-    - public/js/lib/core/log.js
-    - public/js/lib/core/view.js
-    - public/js/lib/geo/map.js
+    - public/js/lib/core/**/*.js
+    - public/js/lib/geo/**/*.js
+    - public/js/lib/ui/**/*.js
 
   dashboard:
-    - public/js/lib/dashboad/dashboard.js
-    - public/js/lib/ui/common/settings.js    
+    - public/js/lib/cartodb/dashboard/dashboard.js
 
 stylesheets:
   common:

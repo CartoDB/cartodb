@@ -23,6 +23,7 @@
    * tables available for given user
    * usage:
    * var tables = new cbd.admin.Tables()
+   * tables.fetch();
    */
   cdb.admin.Tables = Backbone.Collection.extend({
 

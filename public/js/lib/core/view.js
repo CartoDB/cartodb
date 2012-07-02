@@ -21,6 +21,7 @@
 
     addView: function(v) {
       this._subviews[v.cid] = v;
+      v._parent = this;
     },
 
     removeView: function(v) {
@@ -39,6 +40,10 @@
         v.clean();
       });
       this._subviews = {};
+      // remove from parent
+      if(this._parent) {
+        this._parent.removeView(this);
+      }
       this.remove();
       this.unbind();
       // remove model binding

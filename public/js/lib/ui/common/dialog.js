@@ -2,7 +2,7 @@
  * generic dialog
  *
  * this opens a dialog in the middle of the screen rendering
- * a dialog using JST['common/dialog'] or template_base option.
+ * a dialog using cdb.templates 'common/dialog' or template_base option.
  *
  * inherit class should implement render_content (it could return another widget)
  *
@@ -48,7 +48,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
   initialize: function() {
     _.defaults(this.options, this.default_options);
-    this.template_base = _.template(this.options.template_base || JST['common/dialog'] || '');
+    this.template_base = _.template(this.options.template_base || cdb.templates.getTemplate('common/dialog') || '');
   },
 
   render: function() {

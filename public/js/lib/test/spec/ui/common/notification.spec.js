@@ -3,7 +3,10 @@ describe("common.ui.Notification", function() {
 
   var notification;
   beforeEach(function() {
-    notification = new cdb.ui.common.Notification({el: $('<div>')});
+    notification = new cdb.ui.common.Notification({
+        el: $('<div>'),
+        template: 'template'
+    });
     //spyOn(dialog, 'cancel');
   });
 
@@ -22,7 +25,8 @@ describe("common.ui.Notification", function() {
     runs(function () {
       notification = new cdb.ui.common.Notification({
         el: $('<div>'),
-        timeout: 250
+        timeout: 250,
+        template: 'template'
       });
       notification.open();
     });

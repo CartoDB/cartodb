@@ -26,7 +26,7 @@
    */
   cdb.admin.Tables = Backbone.Collection.extend({
 
-    model: cbd.admin.Table,
+    model: cdb.admin.Table,
 
     url: function() {
       //TODO: use current host

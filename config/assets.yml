@@ -16,6 +16,8 @@ javascripts:
     - public/js/lib/ui/**/*.js
 
   dashboard:
+    - public/js/lib/cartodb/app.js
+    - public/js/lib/cartodb/models/**/*.js
     - public/js/lib/cartodb/dashboard/dashboard.js
 
 stylesheets:

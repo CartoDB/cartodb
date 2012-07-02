@@ -4,6 +4,7 @@
     window.cdb.config = {};
     window.cdb.core = {};
     window.cdb.geo = {};
+    window.cdb.geo.ui = {};
     window.cdb.ui = {};
     window.cdb.ui.common = {};
 

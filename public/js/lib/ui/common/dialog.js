@@ -48,7 +48,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
   initialize: function() {
     _.defaults(this.options, this.default_options);
-    this.template_base = _.template(this.options.template_base || cdb.templates.getTemplate('common/dialog') || '');
+    this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate('common/dialog');
   },
 
   render: function() {

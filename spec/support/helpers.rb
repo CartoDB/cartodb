@@ -1,4 +1,5 @@
 module HelperMethods
+
   def prepare_oauth_request(consumer, url, options={})
     url = URI.parse(url)
     http = Net::HTTP.new(url.host, url.port)
@@ -11,4 +12,5 @@ module HelperMethods
     req.oauth!(http, consumer, options[:token])
     req
   end
+
 end

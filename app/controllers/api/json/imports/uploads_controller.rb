@@ -1,6 +1,4 @@
-# coding: UTF-8
-
-class UploadController < ApplicationController
+class Api::Json::Imports::UploadsController < Api::ApplicationController
 
   if Rails.env.production?
     ssl_required :create
@@ -8,7 +6,6 @@ class UploadController < ApplicationController
 
   skip_before_filter :verify_authenticity_token
   before_filter :api_or_user_authorization_required
-  skip_before_filter :check_domain
 
   def create
     begin
@@ -43,4 +40,5 @@ class UploadController < ApplicationController
     api_authorization_required || login_required
   end
   private :api_or_user_authorization_required
+
 end

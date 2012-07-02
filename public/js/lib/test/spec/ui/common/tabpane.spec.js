@@ -6,11 +6,17 @@ describe('core.ui.common.TabPane', function() {
     });
 
     it("sould add a pane", function() {
+        spy = {
+          tabAdded: function(){}
+        };
+        spyOn(spy, 'tabAdded');
         var v1 = new cdb.core.View();
+        pane.bind('tabAdded', spy.tabAdded, spy);
         pane.addTab('tab1', v1);
         expect(pane._subviews[v1.cid]).toBeTruthy();
         expect(pane.activeTab).toEqual('tab1');
         expect(pane.$el.children()[0]).toEqual(v1.el);
+        expect(spy.tabAdded).toHaveBeenCalledWith('tab1', v1);
     });
 
     it("sould remove a pane", function() {

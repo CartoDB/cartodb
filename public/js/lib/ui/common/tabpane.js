@@ -30,11 +30,12 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
       this.tabs[name] = view.cid;
       this.addView(view);
       this.$el.append(view.el);
+      this.trigger('tabAdded', name, view);
       this.active(name);
     }
   },
 
-  removeTab: function(name, view) {
+  removeTab: function(name) {
     if(this.tabs[name] === undefined) {
       cdb.log.debug("trying to remove non existing pane " + name);
     } else {

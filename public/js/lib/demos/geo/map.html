@@ -28,6 +28,9 @@
           map: map
         });
 
+        map.setCenter([34.95799531086792, -0.6591796875])
+        map.setZoom(3);
+
         map.bind('change:center', function(model, center) {
           console.log(center[0], center[1]);
         });

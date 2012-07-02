@@ -28,10 +28,17 @@ cdb.core.Template = Backbone.Model.extend({
 });
 
 cdb.core.TemplateList = Backbone.Collection.extend({
+
   model: cdb.core.Template,
 
-  get_template: function(template_name) {
-    return this.find(function(t) { return t.get('name') === template_name; });
+  getTemplate: function(template_name) {
+    var t = this.find(function(t) { 
+        return t.get('name') === template_name; 
+    });
+    if(t) {
+        return _.bind(t.render, t);
+    }
+    return null;
   }
 });
 

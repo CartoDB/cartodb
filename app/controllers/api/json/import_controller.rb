@@ -84,6 +84,36 @@ class Api::Json::ImportController < Api::ApplicationController
           render_jsonp({:tag => " "}, 201, :location => '/dashboard')
         end
       end
+    else
+      @table = Table.new
+      @table.user_id = current_user.id
+      @table.data_import_id = @data_import.id
+      @table.name = params[:name]                          if params[:name]# && !params[:table_copy]
+      @table.import_from_file = params[:file]              if params[:file]
+      @table.import_from_url = params[:url]                if params[:url]
+      @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
+      @table.import_from_query = params[:from_query]  if params[:from_query]   
+      @table.migrate_existing_table = params[:migrate_table]  if params[:migrate_table]    
+      @table.importing_SRID = params[:srid] || CartoDB::SRID
+      @table.force_schema   = params[:schema]              if params[:schema]
+      @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
+      
+      if @table.valid? && @table.save      
+        render_jsonp({ :id => @table.id, 
+                       :name => @table.name, 
+                       :schema => @table.schema }, 200, :location => table_path(@table))
+      else
+        @data_import.reload
+        CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
+        if @table.data_import_id
+          render_jsonp({ :description => @data_import.get_error_text ,
+                      :stack =>  @data_import.log_json,
+                      :code=>@data_import.error_code }, 
+                      400)
+        else
+          render_jsonp({ :description => @data_import.get_error_text, :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
+        end
+      end
     end
   rescue => e
     @data_import.reload

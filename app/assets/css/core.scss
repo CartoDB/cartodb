@@ -56,33 +56,3 @@
   .hide {display: none;}
   .overflow {overflow:visible}
   .center {width:100%; text-align:center}
-
-
-
-
-  // CREATED CLASSES
-  .status {
-    padding:3px 10px 2px;
-    @include border-radius(25px);
-    font:bold 11px $text-fonts2;
-    color:white;
-    line-height:normal;
-    &:hover {color:white; text-decoration:none; cursor:pointer}
-
-    &.public {
-      background:rgba(146,188,65,0.5);
-      &:hover {background:rgba(146,188,65,0.8)}
-    }
-    &.private {
-      background:rgba(255,0,0,0.5);
-      &:hover {background:rgba(255,0,0,0.8)}
-    }
-  }
-
-  span.tags a {
-    padding:2px 7px;
-    font:normal 11px $text-fonts2;
-    color:#666666;
-    background:rgba(57,125,187,0.15);
-    @include border-radius(2px);
-  }

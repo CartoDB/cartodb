@@ -1,3 +1,7 @@
+<%= content_for(:js) do %>
+  <%= include_javascripts :common, :cdbjs, :login %>
+<% end %>
+
 <section class="sessions shadow">
   <div class="content">
     <h2 class="center">Login to your CartoDB</h2>

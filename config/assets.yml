@@ -1,7 +1,6 @@
 package_assets: on
 compress_assets: on
 embed_assets: off
-template_function: off
 javascripts:
   common:
     - public/js/vendor/jquery.min.js
@@ -19,6 +18,7 @@ javascripts:
   dashboard:
     - public/js/lib/cartodb/app.js
     - public/js/lib/cartodb/models/**/*.js
+    - public/js/lib/cartodb/dashboard/**/*.js
     - public/js/lib/cartodb/dashboard/dashboard.js
     - public/js/lib/cartodb/**/*.jst
 

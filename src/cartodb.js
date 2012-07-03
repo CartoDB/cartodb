@@ -32,8 +32,9 @@
         'ui/common/table.js'
     ];
 
-    cdb.init = function() {
+    cdb.init = function(ready) {
       cdb._loadJST();
+      ready && ready();
     }
 
     /**

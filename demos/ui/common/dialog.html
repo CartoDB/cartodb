@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cartodb demo template</title>
+  </head>
+
+  <style>
+    body {
+      background-color: #666;
+    }
+    .dialog {
+      padding: 20px;
+      background-color: #FFF;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+    }
+  </style>
+
+  <script id="base_template" type="text/tmpl">
+      <h1 class="title"><%= title %></h1>
+      <h2 class="description"><%= description %></h2>
+      <div class="content">
+      </div>
+      <div class="bottom">
+        <button class="ok">
+          <%= ok_title %>
+        </button>
+      </div>
+      <a class="cancel">close</a>
+  </script>
+
+  <body>
+  </body>
+
+  <script src="../../../src/cartodb.js"></script>
+  <script>
+    window.onload = function() {
+      cdb.load('../../../src/', function() {
+
+        var MyDialog = cdb.ui.common.Dialog.extend({
+          render_content: function() {
+            return "my content";
+          },
+        })
+
+        var dialog = new MyDialog({
+          title: 'test',
+          description: 'long description here',
+          template_base: $('#base_template').html(),
+          width: 500
+        });
+
+        $('body').append(dialog.render().el);
+        dialog.open();
+      });
+    };
+  </script>
+</html>

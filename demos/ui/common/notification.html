@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cartodb demo template</title>
+  </head>
+
+  <script id="template" type="text/tmpl">
+      <p><%= msg %></p>
+      <a class="close">close</a>
+  </script>
+
+  <body>
+    <a id="o" href="#open">open</a>
+    <div id="notification">
+    </div>
+  </body>
+
+  <script src="../../../src/cartodb.js"></script>
+  <script>
+    window.onload = function() {
+      cdb.load('../../../src/', function() {
+        var notification = new cdb.ui.common.Notification({
+          el: $('#notification'),
+          msg: 'this is a test notification, click on close to close!',
+          template: $('#template').html()
+        });
+        $("#o").click(function() {
+          notification.open();
+        });
+      });
+    };
+  </script>
+</html>

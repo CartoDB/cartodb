@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CartoDB map demo</title>
+
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      #zoom_controls {
+        position: absolute;
+        top: 100px;
+        left: 100px;
+        z-index: 10;
+      }
+      #zoom_controls a {
+        padding: 20px;
+        background-color: #FFF;
+      }
+    </style>
+    <link rel="stylesheet" href="http://leaflet.cloudmade.com/dist/leaflet.css" />
+  </head>
+  <script id="zoom_tmpl" type="tmpl">
+    <div id="zoom_controls">
+      <a class="zoom_in">+</a>
+      <a class="zoom_out">-</a>
+    </div>
+  </script>
+
+  <body>
+    <div id="zoom"></div>
+    <div id="map"></div>
+  </body>
+
+  <script src="../../src/cartodb.js"></script>
+  <script>
+    window.onload = function() {
+      cdb.load('../../src/', function() {
+        cdb.templates.add({
+          name: 'geo/zoom',
+          template: $('#zoom_tmpl').html()
+        })
+        // create a map
+        var map = new cdb.geo.Map();
+        var mapView = new cdb.geo.LeafletMapView({
+          el: $('#map'),
+          map: map
+        });
+
+        var zoom = new cdb.geo.ui.Zoom({
+          model: map,
+          el: $('#zoom')
+        })
+        zoom.render();
+
+        map.setCenter([34.95799531086792, -0.6591796875])
+        map.setZoom(3);
+
+        map.bind('change:center', function(model, center) {
+          console.log(center[0], center[1]);
+        });
+
+        var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
+        //URL = 'http://c.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{x}/4094/2724.png';
+
+        map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
+        window.map = map; // to play in console
+      });
+    };
+  </script>
+</html>

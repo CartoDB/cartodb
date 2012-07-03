@@ -6,10 +6,8 @@ javascripts:
     - public/js/vendor/jquery.min.js
     - public/js/rails.js
 
-  cdbjsvendor:
-    - public/js/lib/cdb.js/vendor/**/*.js
-
   cdbjs:
+    - public/js/lib/cdb.js/vendor/**/*.js
     - public/js/lib/cdb.js/src/**/*.js
 
   dashboard:

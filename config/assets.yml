@@ -5,15 +5,10 @@ javascripts:
   common:
     - public/js/vendor/jquery.min.js
     - public/js/rails.js
-    - public/js/vendor/underscore-min.js
-    - public/js/vendor/backbone.js
-    - public/js/vendor/leaflet.js
 
-  cartodb:
-    - public/js/lib/cartodb.js
-    - public/js/lib/core/**/*.js
-    - public/js/lib/geo/**/*.js
-    - public/js/lib/ui/**/*.js
+  cdbjs:
+    - public/js/lib/cdb.js/vendor/**/*.js
+    - public/js/lib/cdb.js/src/**/*.js
 
   dashboard:
     - public/js/lib/cartodb/app.js

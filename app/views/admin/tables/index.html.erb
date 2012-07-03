@@ -15,7 +15,7 @@
     <div class="inner">
       <section class="left tables">
         <div class="head">
-          <h3>
+          <h2>
             <%= pluralize(@tables_count, 'table', 'tables') %>
             <% if @tag_name %>
             with the tag <%= @tag_name %>
@@ -25,7 +25,7 @@
             <% else %>                
               found
             <% end %>
-          </h3>
+          </h2>
           <% if @total_tables > 10 %>            
             <form action="#">
               <input type="text" value="<%= params[:q] %>" name="q" />
@@ -37,45 +37,22 @@
           <ul>
             <%= render :partial => 'shared/flash_message' %>
             <% @tables.each_with_index do |table, i| %>
-            <li>
-              <div class="meta_info">
-                <span class="info">
-                  <h4><%= link_to(table.name, table_path(table), :class=>'tableTitle')  %> </h4>
-                  <p class="status <%= table_privacy_text(table).downcase %>"><%= table_privacy_text(table) %></p>
-                  <p class="delete"> | <a table-name="<%= table.name %>" href="#delete" class="delete">delete table</a></p>
-                  <p class="columns">
-                    <strong>
-                      <%= number_to_human_size table.table_size %> / 
-                      &#126;<%= pluralize(table.rows_estimated,'row','rows') rescue '' %> /
-                      <%= table.schema.size rescue '' %> columns:
-                  </strong>
-                  <%= table.schema.map{ |e| e.first }[2...6].join(', ') %>...
-                  </p>
-                </span>
-                <span class="tags">
-                  <% unless table.updated_at.blank? %>
-                  <p class="last_op"><%= time_ago_in_words(table.updated_at) %> ago</p>
-                  <% end %>
-                  <% unless table.tags.blank? %>
-                    <% table.tags.split(',').each do |tag_name| %>
-                    <a href="<%= dashboard_path(:tag_name => tag_name) %>"><%= tag_name %></a>
-                    <% end %>
-                  <% end %>
-                </span>
-              </div>
-            </li>
+              <%= render :partial => 'table_list', :locals => { :table => table } %>
             <% end %>
           </ul>
         </div>
       </section>
       <aside class="right">
+        <!-- Disable button if limit has been oversized! -->
+        <a href="#create_new" class="button green">Create a new table</a>
         <ul>
-          <% if params[:tag_name]%>
-            <li class="all"><a href="/dashboard">view all tables</a></li>
-          <% end %>
+          <li><%= link_to "all tables (x)", dashboard_path, :class => ('selected' if !params[:tag_name]) %></li>
           <% @tags.each do |tag| %>
-            <li><a href="<%= dashboard_path(:tag_name => tag[:name]) %>"><span style="background-position:<%= tag_width(tag[:count], @tags.last[:count], @tags.first[:count]) %>px 0"><%= tag[:name] %></span></a></li>
+            <li><%= link_to tag[:name] + " (x)",dashboard_path(:tag_name => tag[:name]), :class => ('selected' if params[:tag_name] == tag[:name]) %></li>
           <% end %>
+        </ul>
+        <ul>
+          <li><%= link_to "Popular public tables", "#??" %></li>
         </ul>
       </aside>
 

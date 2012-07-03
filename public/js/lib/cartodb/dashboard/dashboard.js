@@ -13,6 +13,9 @@ $(function() {
           this._initViews();
 
           this.tables.fetch();
+          this.tables.bind('reset', function(e) {
+              console.log(e);
+          });
         },
 
         _initModels: function() {
@@ -21,7 +24,7 @@ $(function() {
 
         _initViews: function() {
 
-          var settings = this.settings = new cdb.ui.common.Settings({
+          /*var settings = this.settings = new cdb.ui.common.Settings({
             template_base: $('#settings_template').html(),
             speed: 300
           });
@@ -30,6 +33,7 @@ $(function() {
           setTimeout(function(){
             settings.open();  
           },3);
+          */
         }
     });
 

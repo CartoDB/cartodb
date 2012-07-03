@@ -5,6 +5,11 @@
 @import "sprites";
 
 
+  $text-fonts: "Helvetica Neue", "Helvetica", Arial;
+  $text-fonts2: "Helvetica", Arial;
+  $title-fonts: "Segoe UI Bold","Helvetica Bold", "Helvetica", Arial;
+
+
   article {
     @include inline-block();
     width:100%;
@@ -109,9 +114,36 @@
                   width:auto;
                 }
               }
+
               span.tags {
                 float:right;
-                margin:30px 0 0 0;
+                margin:30px 0 0 0!important;
+              }
+
+              .status {
+                padding:3px 10px 2px;
+                @include border-radius(25px);
+                font:bold 11px $text-fonts2;
+                color:white;
+                line-height:normal;
+                &:hover {color:white; text-decoration:none; cursor:pointer}
+
+                &.public {
+                  background:rgba(146,188,65,0.5);
+                  &:hover {background:rgba(146,188,65,0.8)}
+                }
+                &.private {
+                  background:rgba(255,0,0,0.5);
+                  &:hover {background:rgba(255,0,0,0.8)}
+                }
+              }
+
+              span.tags a {
+                padding:2px 7px;
+                font:normal 11px $text-fonts2;
+                color:#666666;
+                background:rgba(57,125,187,0.15);
+                @include border-radius(2px);
               }
             }
 

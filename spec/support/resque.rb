@@ -1,3 +1,5 @@
+Resque.inline = true
+
 module CartoDB
   class Resque
     def self.perform_jobs_from_queue(queue)

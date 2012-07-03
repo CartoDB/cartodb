@@ -11,13 +11,13 @@ module CartoDB
 
         # run Chardet + Iconv
         fix_encoding
-        
+
         @data_import.log_update("ogr2ogr #{@suggested_name}")
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@path} -nln #{@suggested_name}}
-        
-        stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
-  
+
+        stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command)
+
         unless (err = stderr.read).empty?
           if err.downcase.include?('failure')
             @data_import.set_error_code(3006)
@@ -32,7 +32,7 @@ module CartoDB
             @data_import.log_update(err)
           end
         end
-        
+
         unless (reg = stdout.read).empty?
           @runlog.stdout << reg
         end
@@ -116,7 +116,7 @@ module CartoDB
             end
           end
         end
-        
+
         # if there is no the_geom, and there are latitude and longitude columns, create the_geom
         unless column_names.include? "the_geom"
 
@@ -154,14 +154,14 @@ module CartoDB
               WHERE
               trim(CAST(\"#{matching_longitude}\" AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
               AND
-              trim(CAST(\"#{matching_latitude}\" AS text))  ~   
+              trim(CAST(\"#{matching_latitude}\" AS text))  ~
               '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
               AND
-              trim(CAST(\"#{matching_latitude}\" AS text))  ~ 
+              trim(CAST(\"#{matching_latitude}\" AS text))  ~
               '[+-]?((\d+(\.\d*)?)|\.\d+)([eE][+-]?[0-9]+)?'
               GEOREF
               )
-              
+
               @db_connection.run("CREATE INDEX \"#{@suggested_name}_the_geom_gist\" ON \"#{@suggested_name}\" USING GIST (the_geom)")
           end
         end
@@ -169,12 +169,12 @@ module CartoDB
         begin
           # Sanitize column names where needed
           sanitize_table_columns @suggested_name
-        rescue Exception => msg  
+        rescue Exception => msg
           @runlog.err << msg
           @data_import.log_update("ERROR: Failed to sanitize some column names")
         end
-        
-        
+
+
         @table_created = true
         @data_import.log_update("table created")
         FileUtils.rm_rf(Dir.glob(@path))

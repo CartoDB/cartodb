@@ -86,7 +86,9 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
         cdb.geo.MapView.prototype.initialize.call(this);
         var self = this;
         
-        this.map_leaflet = new L.Map(this.el);
+        this.map_leaflet = new L.Map(this.el, {
+          zoomControl: false
+        });
         this.map.layers.bind('add', this._addLayer);
         this._bindModel();
         

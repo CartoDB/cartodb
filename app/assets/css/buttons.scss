@@ -4,6 +4,12 @@
 @import "sprites";
 
 
+	/*
+	 *	Green button
+	 *	{@hover}
+	 *  {@active}
+	 *  {@focus}
+	 */
 	a.button.green,
 	button.green,
 	input[type="submit"].green {
@@ -16,16 +22,42 @@
 		@include border-radius(3px);
 		border:1px solid #6A8C2D;
 
+		/* TYPES */
+		// Session type
+		&.sessions {
+      width:312px;
+      padding-left:0;
+      padding-right:0;
+      text-align:center;
+		}
+
 		// Hover
-		&:hover {@include background(linear-gradient(#94BE42,#749C33)); text-decoration:none; cursor:pointer;}
+		&:hover {
+			background:#7FA938; // IE
+			@include background(linear-gradient(#94BE42,#749C33)); 
+			text-decoration:none;
+			cursor:pointer;
+		}
 		// Active
-		&:active {@include background(linear-gradient(#749C33,#94BE42));}
+		&:active {
+			background:#64862C; // IE
+			@include background(linear-gradient(#749C33,#94BE42));
+		}
 		// Focus = hover
-		&:focus {outline:none; @include background(linear-gradient(#94BE42,#749C33));}
+		&:focus {
+			outline:none;
+			background:#7FA938; // IE
+			@include background(linear-gradient(#94BE42,#749C33));
+		}
 	}
 
 
-
+	/*
+	 *	Disabled button
+	 *	{@hover}
+	 *  {@active}
+	 *  {@focus}
+	 */
 	a.button.disabled,
 	button.disabled,
 	input[type="submit"].disabled {
@@ -33,9 +65,22 @@
 		text-shadow: 0 1px #898989;
 		border-color: #999999;
 		// Hover
-		&:hover {@include background(linear-gradient(#D7D7D7,#ADADAD)); text-decoration:none; cursor:default;}
+		&:hover {
+			background:#D7D7D7; // IE
+			@include background(linear-gradient(#D7D7D7,#ADADAD));
+			text-decoration:none;
+			cursor:default;
+		}
 		// Active
-		&:active {@include background(linear-gradient(#D7D7D7,#ADADAD));}
+		&:active {
+			background:#D7D7D7; // IE
+			@include background(linear-gradient(#D7D7D7,#ADADAD));
+		}
 		// Focus = hover
-		&:focus {outline:none; @include background(linear-gradient(#D7D7D7,#ADADAD)); border-color:#797979;}
+		&:focus {
+			outline:none;
+			background:#D7D7D7; // IE
+			@include background(linear-gradient(#D7D7D7,#ADADAD));
+			border-color:#797979;
+		}
 	}

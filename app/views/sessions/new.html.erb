@@ -12,8 +12,7 @@
         <% if @error %>  
           </div>
           <div class="error"><%= @error %></div>
-        <% end %>                              
-                
+        <% end %>
       </div>
 
       <div class="field margin20">
@@ -24,8 +23,7 @@
         <% if @error %>  
           </div>
           <div class="error"><%= @error %></div>
-        <% end %>                                              
-        
+        <% end %>
       </div>
 
       <div class="field margin25">
@@ -42,34 +40,3 @@
 <footer class="short">
   <%= link_to 'CartoDB', root_path, :class => "cartodb" %>
 </footer>
-
-
-
-
-
-
-
-<!--<div class="glow">
-    <div class="section">
-      <h1>Welcome to CartoDB</h1>
-      <p>Enter your account information to start mapping</p>
-      <%= form_tag create_session_path do %>
-        <p class="title">Please login</p>
-        <%= label_tag :email, 'e-mail or username' %>
-        <%= text_field_tag :email, '', :class => (flash[:alert] || @login_error ? 'error' : nil) %>
-        <span class="password">
-          <%= label_tag :password, 'password' %>
-          <%= password_field_tag :password, '', :class => (flash[:alert] || @login_error ? 'error' : nil) %>
-        </span>
-        <%= link_to "Did you forget your password?", forget_password_url, :class => "forget" if forget_password_url.present? %>
-        <%= submit_tag 'Log in', :class => "login" %>
-        <% if flash[:alert] || @login_error %>
-        <div class="error_content">
-          <p><span><%= flash[:alert] || @login_error %></span></p>
-        </div>
-        <% end %>
-      <% end %>
-    </div>
-  </div>
-  <div class="footer">CartoDB is a product from <a href="http://www.vizzuality.com" target="_blank">vizzuality</a> | <a href="http://cartodb.com/terms">Terms of service</a></div>
- -->

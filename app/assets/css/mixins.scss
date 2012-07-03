@@ -1,0 +1,8 @@
+@import "compass";
+
+  @mixin text-indent() {
+    text-indent:-9999px;
+    line-height:0px;
+    font-size:0px;
+    text-transform:uppercase;
+  }

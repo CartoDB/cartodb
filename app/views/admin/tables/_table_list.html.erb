@@ -1,0 +1,29 @@
+<li>
+  <div class="table_info">
+    <div class="left">
+      <hgroup>
+        <h3><%= link_to(table.name, table_path(table)) %></h3>
+        <a href="#change_status" class="status <%= table_privacy_text(table).downcase %>"> <%= table_privacy_text(table) %></a>
+      </hgroup>
+      <p class="light">Description goes here, TODO!</p>
+      <p class="strong uppercase smaller light margin15">
+        <%= number_to_human_size table.table_size %> · <%= pluralize(table.rows_estimated,'row','rows') rescue '' %> · API?
+      </p>
+    </div>
+    <div class="right">
+      <hgroup class="right">
+        <% unless table.updated_at.blank? %>
+          <p class="smaller light"><%= time_ago_in_words(table.updated_at) %> ago</p>
+        <% end %>
+        <a href="#delete" class="delete" data-table="<%= table.name %>">delete</a>
+      </hgroup>
+      <% unless table.tags.blank? %>
+        <span class="tags">
+          <% table.tags.split(',').each do |tag_name| %>
+            <a href="<%= dashboard_path(:tag_name => tag_name) %>"><%= tag_name %></a>
+          <% end %>
+        </span>
+      <% end %>
+    </div>
+  </div>
+</li>

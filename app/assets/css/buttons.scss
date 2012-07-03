@@ -1,0 +1,41 @@
+@import "compass";
+@import "compass/css3";
+@import "core";
+@import "sprites";
+
+
+	a.button.green,
+	button.green,
+	input[type="submit"].green {
+		padding:14px 16px;
+		font:bold 17px $text-fonts2;
+		line-height:normal;
+		color:white;
+		text-shadow:0 1px #455D1E;
+		@include background(linear-gradient(#94BE42,#7FA938));
+		@include border-radius(3px);
+		border:1px solid #6A8C2D;
+
+		// Hover
+		&:hover {@include background(linear-gradient(#94BE42,#749C33)); text-decoration:none; cursor:pointer;}
+		// Active
+		&:active {@include background(linear-gradient(#749C33,#94BE42));}
+		// Focus = hover
+		&:focus {outline:none; @include background(linear-gradient(#94BE42,#749C33));}
+	}
+
+
+
+	a.button.disabled,
+	button.disabled,
+	input[type="submit"].disabled {
+		@include background(linear-gradient(#D7D7D7,#ADADAD));
+		text-shadow: 0 1px #898989;
+		border-color: #999999;
+		// Hover
+		&:hover {@include background(linear-gradient(#D7D7D7,#ADADAD)); text-decoration:none; cursor:default;}
+		// Active
+		&:active {@include background(linear-gradient(#D7D7D7,#ADADAD));}
+		// Focus = hover
+		&:focus {outline:none; @include background(linear-gradient(#D7D7D7,#ADADAD)); border-color:#797979;}
+	}

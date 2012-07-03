@@ -4,28 +4,65 @@
 @import "sprites";
 
   // VARS
-  $text_fonts: "Helvetica Neue", "Helvetica", Arial;
-  $title_fonts: "Segoe UI Bold","Helvetica Bold", "Helvetica", Arial;
+  $text-fonts: "Helvetica Neue", "Helvetica", Arial;
+  $text-fonts2: "Helvetica", Arial;
+  $title-fonts: "Segoe UI Bold","Helvetica Bold", "Helvetica", Arial;
   $w: 960px; // Min width
 
   // GENERAL DOM ELEMENTS
   a {color:#2483B4; text-decoration:none; &:hover {text-decoration:underline; color:#1B668B}}
+  p {
+    color:#666666;
+    font-family: $text-fonts;
+    &.light {color:#999999;}
+    &.dark {color:#333333;}
+    &.uppercase {text-transform:uppercase}
+    &.strong {font-weight:bold}
+    &.small {font-size:13px}
+    &.smaller {font-size:11px}
+  }
+  h2,h3,h4,h5,h6 {font-family: $title-fonts;}
 
   // GENERAL CLASSES
   .left {float:left}
   .right {float:right}
   .inner {width:$w; margin:0 auto;}
   .center {text-align:center}
+  .margin15 {margin-top:15px}
+  .margin10 {margin-top:10px}
+  .margin5 {margin-top:5px}
 
   // BODIR!
   body {
     background:white;
     min-width: $w;
-    font-family: $text_fonts;
+    font-family: $text-fonts;
+    font-size: 15px;
   }
 
-  // MIXINS
-  @mixin text-indent() {
-    text-indent:-9999px;
-    text-transform:uppercase;
+  // CREATED CLASSES
+  .status {
+    padding:3px 10px 2px;
+    @include border-radius(25px);
+    font:bold 11px $text-fonts2;
+    color:white;
+    line-height:normal;
+    &:hover {color:white; text-decoration:none; cursor:pointer}
+
+    &.public {
+      background:rgba(146,188,65,0.5);
+      &:hover {background:rgba(146,188,65,0.8)}
+    }
+    &.private {
+      background:rgba(255,0,0,0.5);
+      &:hover {background:rgba(255,0,0,0.8)}
+    }
+  }
+
+  span.tags a {
+    padding:2px 7px;
+    font:normal 11px $text-fonts2;
+    color:#666666;
+    background:rgba(57,125,187,0.15);
+    @include border-radius(2px);
   }

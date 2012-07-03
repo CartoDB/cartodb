@@ -13,9 +13,6 @@ $(function() {
           this._initViews();
 
           this.tables.fetch();
-          this.tables.bind('reset', function(e) {
-              console.log(e);
-          });
         },
 
         _initModels: function() {
@@ -23,6 +20,10 @@ $(function() {
         },
 
         _initViews: function() {
+          this.tableList = new cdb.admin.dashboard.TableList({
+            el: this.$('.content > ul'),
+            model: this.tables
+          });
 
           /*var settings = this.settings = new cdb.ui.common.Settings({
             template_base: $('#settings_template').html(),
@@ -48,11 +49,13 @@ $(function() {
 
     });
 
-    var dashboard = new Dashboard();
-    var router = new DashboardRouter();
+    cdb.init(function() {
+      var dashboard = new Dashboard();
+      var router = new DashboardRouter();
+      // expose to debug
+      window.dashboard = dashboard;
+    });
 
-    // expose to debug
-    window.dashboard = dashboard;
 
 
 

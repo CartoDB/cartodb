@@ -35,6 +35,10 @@
       return '/api/v1/tables';
     },
 
+    parse: function(response) {
+      return response.tables;
+    },
+
     initialize: function() {
     }
   });

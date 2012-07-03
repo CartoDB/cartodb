@@ -1,8 +1,7 @@
 <section class="sessions shadow">
   <div class="content">
-    <h1 class="sessions compact">Login to your CartoDB</h1>
+    <h2 class="center">Login to your CartoDB</h2>
     <%= form_tag create_session_path do %>
-
       <div class="field margin30">
         <% @error = @login_error %>
         <% if @error %>
@@ -14,7 +13,6 @@
           <div class="error"><%= @error %></div>
         <% end %>
       </div>
-
       <div class="field margin20">
         <% if @error %>
           <div class="field_with_errors">
@@ -25,18 +23,15 @@
           <div class="error"><%= @error %></div>
         <% end %>
       </div>
-
       <div class="field margin25">
         <%= submit_tag "Sign in", :class => "green border sessions" %>
       </div>
-
     <% end %>
   </div>
   <div class="footer">
     <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "http://cartodb.com/signup" %></p>
   </div>
 </section>
-
 <footer class="short">
-  <%= link_to 'CartoDB', root_path, :class => "cartodb" %>
+  <h1><%= link_to 'CartoDB', "http://cartodb.com", :class => "cartodb" %></h1>
 </footer>

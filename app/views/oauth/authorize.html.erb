@@ -1,8 +1,8 @@
 
 <section class="sessions shadow">
   <div class="content">
-    <h1 class="sessions compact"><%= @token.client_application.user.username %> CartoDB</h1>
-    <p class="light margin10"><%= @token.client_application.user.username %> wants to connect to your cartoDB database.This means that <%= @token.client_application.user.username %> will be able to modify, create and delete fields from your database.</p>
+    <h2 class="center"><%= @token.client_application.user.username %> CartoDB</h2>
+    <p class="margin10"><%= @token.client_application.user.username %> wants to connect to your cartoDB database. This means that <%= @token.client_application.user.username %> will be able to modify, create and delete fields from your database.</p>
     <% form_tag authorize_url do %>
       <%= hidden_field_tag "oauth_token", @token.token %>
       <%- if params[:oauth_callback] -%>
@@ -18,5 +18,5 @@
 </section>
 
 <footer class="short">
-  <%= link_to 'CartoDB', root_path, :class => "cartodb" %>
+  <h1><%= link_to 'CartoDB', root_path, :class => "cartodb" %></h1>
 </footer>

@@ -3,7 +3,7 @@
     <%= current_user.username %> |
   <% end %>
   <%= content_for(:js) do %>
-    <%= include_javascripts :common, :cartodb, :dashboard %>
+    <%= include_javascripts :common, :cdbjs, :dashboard %>
   <% end %>
   <%= content_for(:css) do %>
     <%= include_stylesheets :common, :media => 'all' %>

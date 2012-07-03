@@ -1,19 +1,31 @@
 @import "compass";
 @import "compass/reset";
 @import "compass/css3";
-@import "sprites";
+@import "mixins";
 
-  // VARS
+
+  /*
+   *  VARS
+   *  General vars for the project
+   */
   $text-fonts: "Helvetica Neue", "Helvetica", Arial;
   $text-fonts2: "Helvetica", Arial;
   $title-fonts: "Segoe UI Bold","Helvetica Bold", "Helvetica", Arial;
+  $link-color:#397DBA;
+  $link-hover-color:#2B6191;
   $w: 960px; // Min width
 
-  // GENERAL DOM ELEMENTS
-  a {color:#2483B4; text-decoration:none; &:hover {text-decoration:underline; color:#1B668B}}
+
+  /*
+   *  DOM ELEMENTS
+   *  Generic dom elements style
+   */
+  body {background:white; min-width: $w; font-family: $text-fonts; font-size: 15px;}
+  a {font-family:$text-fonts; color:#2483B4; text-decoration:none; &:hover {text-decoration:underline; color:#1B668B}}
   p {
     color:#666666;
-    font-family: $text-fonts;
+    font-family:$text-fonts;
+    line-height:normal;
     &.light {color:#999999;}
     &.dark {color:#333333;}
     &.uppercase {text-transform:uppercase}
@@ -21,24 +33,32 @@
     &.small {font-size:13px}
     &.smaller {font-size:11px}
   }
-  h2,h3,h4,h5,h6 {font-family: $title-fonts;}
+  h2,h3,h4,h5,h6 {font-weight: bold; font-family: $title-fonts; color:#333333; line-height:normal;}
+  h2 {font-size:31px; letter-spacing:-1px; word-spacing:-1px; line-height:34px;}
+  h3 {font-size:25px;}
 
-  // GENERAL CLASSES
+
+  /*
+   *  HELP CLASSES
+   *  Some help classes to help you in the view
+   */
   .left {float:left}
   .right {float:right}
   .inner {width:$w; margin:0 auto;}
-  .center {text-align:center}
+  .margin40 {margin-top:40px;}
+  .margin30 {margin-top:30px;}
+  .margin25 {margin-top:25px;}
+  .margin20 {margin-top:20px;}
   .margin15 {margin-top:15px}
-  .margin10 {margin-top:10px}
+  .margin10 {margin-top:10px;}
   .margin5 {margin-top:5px}
+  .ellipsis {text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
+  .hide {display: none;}
+  .overflow {overflow:visible}
+  .center {width:100%; text-align:center}
 
-  // BODIR!
-  body {
-    background:white;
-    min-width: $w;
-    font-family: $text-fonts;
-    font-size: 15px;
-  }
+
+
 
   // CREATED CLASSES
   .status {

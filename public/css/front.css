@@ -1,1 +1,107 @@
-section{position:relative;width:960px;margin:0 auto;-webkit-border-radius:3px;-moz-border-radius:3px;-ms-border-radius:3px;-o-border-radius:3px;border-radius:3px;background:white}section div.header{padding:40px;border-bottom:1px solid #E5E5E5}section div.footer{padding:40px;border-top:1px solid #E5E5E5}section div.content{position:relative;display:block;padding:40px}section div.content.overflow{overflow:hidden}section div.content.no_padding{width:960px;padding:0}section div.content.less_padding{overflow:hidden;padding-top:25px;padding-bottom:25px}section.sessions{position:relative;width:392px;margin:100px auto 50px}section.grey{background:url("/assets/backgrounds/grey-carto.png") repeat 0 0 #f9f9f9}section.shadow{-webkit-box-shadow:rgba(0,0,0,0.1) 0 0 3px 3px;-moz-box-shadow:rgba(0,0,0,0.1) 0 0 3px 3px;box-shadow:rgba(0,0,0,0.1) 0 0 3px 3px;border:1px solid #E7E7E7\9}section.shadow.top{-webkit-box-shadow:rgba(0,0,0,0.06) 0 -1px 3px 3px;-moz-box-shadow:rgba(0,0,0,0.06) 0 -1px 3px 3px;box-shadow:rgba(0,0,0,0.06) 0 -1px 3px 3px}section.shadow.bottom{-webkit-box-shadow:rgba(0,0,0,0.06) 0 1px 3px 3px;-moz-box-shadow:rgba(0,0,0,0.06) 0 1px 3px 3px;box-shadow:rgba(0,0,0,0.06) 0 1px 3px 3px}section.top{-moz-border-radius-bottomleft:0px;-webkit-border-bottom-left-radius:0px;border-bottom-left-radius:0px;-moz-border-radius-bottomright:0px;-webkit-border-bottom-right-radius:0px;border-bottom-right-radius:0px;border-bottom:none\9}section.bottom{-moz-border-radius-topleft:0px;-webkit-border-top-left-radius:0px;border-top-left-radius:0px;-moz-border-radius-topright:0px;-webkit-border-top-right-radius:0px;border-top-right-radius:0px;border-top:none\9}section.border{border-top:1px solid rgba(0,0,0,0.15)}section div.med{width:62%}section.sessions form div.field{position:relative;display:inline-block;width:100%}section.sessions form div.field.short{width:312px;margin-left:25px;margin-right:25px;padding:15px 0 0 40px}section.sessions form div.field.border{border-top:1px solid #E5E5E5}section.sessions form p{display:-moz-inline-stack;display:inline-block;vertical-align:middle;*vertical-align:auto;zoom:1;*display:inline}section.sessions form span.domain{position:absolute;right:12px;top:0;padding:11px 0;height:auto;margin:0;font:italic 15px "Helvetica Neue",Arial;color:#CCCCCC;line-height:normal}section.sessions form label{position:absolute;top:13px;left:16px;font:normal 15px "Helvetica Neue","Helvetica",Arial;color:#CCCCCC;z-index:0}section.sessions form label:hover{cursor:text}section.sessions form input[type="text"],section.sessions form input[type="password"],section.sessions form input[type="email"]{width:280px;height:auto;padding:11px 15px;margin:0;-webkit-border-radius:3px;-moz-border-radius:3px;-ms-border-radius:3px;-o-border-radius:3px;border-radius:3px;background:none;border:1px solid #CCCCCC;font:normal 15px "Helvetica Neue","Helvetica",Arial;color:#333333;z-index:10;line-height:normal}section.sessions form input[type="text"]:focus,section.sessions form input[type="password"]:focus,section.sessions form input[type="email"]:focus{outline:none;border-color:#999999}section.sessions form input[type="text"].error,section.sessions form input[type="password"].error,section.sessions form input[type="email"].error{width:255px;padding-right:40px;border-color:#F08A84;color:#E95850}section.sessions form input[type="text"].error:focus,section.sessions form input[type="password"].error:focus,section.sessions form input[type="email"].error:focus{border-color:#D17671}section.sessions form div.field_with_errors{width:auto;display:-moz-inline-stack;display:inline-block;vertical-align:middle;*vertical-align:auto;zoom:1;*display:inline;vertical-align:top}section.sessions form div.field_with_errors input[type="text"],section.sessions form div.field_with_errors input[type="password"],section.sessions form div.field_with_errors input[type="email"]{width:255px;padding-right:40px;border-color:#F08A84;color:#E95850}section.sessions form div.field_with_errors input[type="text"]:focus,section.sessions form div.field_with_errors input[type="password"]:focus,section.sessions form div.field_with_errors input[type="email"]:focus{border-color:#D17671}section.sessions form div.error{position:absolute;top:8px;right:8px;margin:0;display:none;width:auto;z-index:1000}section.sessions form div.error a.error{display:block;width:26px;height:27px;margin:0;padding:0;line-height:0;font-size:0;text-transform:uppercase;text-indent:-9999px}section.sessions form div.error p{position:absolute;top:-70px;right:-68px;display:none;float:left;width:147px;height:auto!important;padding:10px;font:normal 15px "Helvetica Neue","Helvetica",Arial;color:#CCCCCC;text-align:center;z-index:10;-webkit-border-radius:3px;-moz-border-radius:3px;-ms-border-radius:3px;-o-border-radius:3px;border-radius:3px;text-shadow:#000 0 1px;background:-webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0,0,0,0.8)), color-stop(100%, rgba(0,0,0,0.9)));background:-webkit-linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.9));background:-moz-linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.9));background:-o-linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.9));background:linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.9));background:#333333\9}section.sessions form div.error p span{position:absolute;bottom:-8px;left:50%;width:0;height:0;margin:0 0 0 -6px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid rgba(0,0,0,0.9);border-top:8px solid #333333\9}section.sessions.large{width:482px}section.sessions.large form input[type="text"],section.sessions.large form input[type="password"],section.sessions.large form input[type="email"]{width:370px}section.sessions.large form input[type="text"].domain,section.sessions.large form input[type="password"].domain,section.sessions.large form input[type="email"].domain{padding-right:105px;width:280px;text-align:right}section.sessions.large form input[type="submit"],section.sessions.large form button[type="submit"]{width:400px}section.sessions.large div.field_with_errors input[type="text"],section.sessions.large div.field_with_errors input[type="password"],section.sessions.large div.field_with_errors input[type="email"]{width:345px}section.sessions.large div.field_with_errors input[type="text"].domain,section.sessions.large div.field_with_errors input[type="password"].domain,section.sessions.large div.field_with_errors input[type="email"].domain{padding-right:135px;width:250px}section.sessions.longer{width:562px}section.sessions.longer img.alone{margin:50px 0 0 125px}footer{width:100%;min-width:960px;height:18px;padding:38px 0 40px;border-top:1px solid #E5E5E5;background:white}footer div.wrap{overflow:visible}footer span.cartodb{position:absolute;top:-112px;left:-10px;width:84px;height:105px;z-index:10}footer div.left{height:19px}footer div.left p{vertical-align:middle}footer.short{min-width:124px;width:124px;height:42px;margin:0 auto 30px;padding:0;background:none;border:none}
+/*
+Syntax error: Undefined mixin 'icons-sprite'.
+        on line 278 of app/assets/css/front.scss, in `icons-sprite'
+        from line 278 of app/assets/css/front.scss
+
+273:     height:42px;
+274:     margin:0 auto 30px;
+275:     padding:0;
+276:     background:none;
+277:     border:none;
+278:     a.cartodb {display:block; width:124px; height:42px; @include text-indent(); @include icons-sprite(cartodb_opacity);}
+279:   }
+280: }
+
+Backtrace:
+app/assets/css/front.scss:278:in `icons-sprite'
+app/assets/css/front.scss:278
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:170:in `visit_mixin'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:238:in `visit_rule'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:238:in `visit_rule'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:238:in `visit_rule'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:47:in `visit_root'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/visitors/perform.rb:7:in `visit'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/tree/root_node.rb:20:in `render'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/engine.rb:300:in `_render'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/engine.rb:248:in `block in render'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/util.rb:348:in `silence_sass_warnings'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/engine.rb:248:in `render'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/plugin/compiler.rb:340:in `update_stylesheet'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/plugin/compiler.rb:202:in `block in update_stylesheets'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/plugin/compiler.rb:200:in `each'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/plugin/compiler.rb:200:in `update_stylesheets'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/plugin.rb:81:in `update_stylesheets'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/plugin.rb:54:in `check_for_updates'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/sass-3.1.19/lib/sass/plugin/rack.rb:51:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/best_standards_support.rb:17:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/head.rb:14:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/rack-1.2.5/lib/rack/methodoverride.rb:24:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/params_parser.rb:21:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/flash.rb:182:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/session/abstract_store.rb:149:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/cookies.rb:302:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/callbacks.rb:46:in `block in call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/activesupport-3.0.10/lib/active_support/callbacks.rb:416:in `_run_call_callbacks'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/callbacks.rb:44:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/rack-1.2.5/lib/rack/sendfile.rb:106:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/remote_ip.rb:48:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/show_exceptions.rb:47:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/railties-3.0.10/lib/rails/rack/logger.rb:13:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/rack-1.2.5/lib/rack/runtime.rb:17:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/activesupport-3.0.10/lib/active_support/cache/strategy/local_cache.rb:72:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/rack-1.2.5/lib/rack/lock.rb:13:in `block in call'
+<internal:prelude>:10:in `synchronize'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/rack-1.2.5/lib/rack/lock.rb:13:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/actionpack-3.0.10/lib/action_dispatch/middleware/static.rb:30:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/airbrake-3.0.9/lib/airbrake/user_informer.rb:12:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/railties-3.0.10/lib/rails/application.rb:168:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/railties-3.0.10/lib/rails/application.rb:77:in `method_missing'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/railties-3.0.10/lib/rails/rack/log_tailer.rb:14:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/rack-1.2.5/lib/rack/content_length.rb:13:in `call'
+/Users/jmedina/.rvm/gems/ruby-1.9.2-p290@cartodb/gems/rack-1.2.5/lib/rack/handler/webrick.rb:52:in `service'
+/Users/jmedina/.rvm/rubies/ruby-1.9.2-p290/lib/ruby/1.9.1/webrick/httpserver.rb:111:in `service'
+/Users/jmedina/.rvm/rubies/ruby-1.9.2-p290/lib/ruby/1.9.1/webrick/httpserver.rb:70:in `run'
+/Users/jmedina/.rvm/rubies/ruby-1.9.2-p290/lib/ruby/1.9.1/webrick/server.rb:183:in `block in start_thread'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Undefined mixin 'icons-sprite'.\A         on line 278 of app/assets/css/front.scss, in `icons-sprite'\A         from line 278 of app/assets/css/front.scss\A \A 273:     height:42px;\A 274:     margin:0 auto 30px;\A 275:     padding:0;\A 276:     background:none;\A 277:     border:none;\A 278:     a.cartodb {display:block; width:124px; height:42px; @include text-indent(); @include icons-sprite(cartodb_opacity);}\A 279:   }\A 280: }"; }

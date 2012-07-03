@@ -1,19 +1,26 @@
 package_assets: on
 compress_assets: on
 embed_assets: off
+template_function: off
 javascripts:
   common:
     - public/js/vendor/jquery.min.js
     - public/js/rails.js
 
   cdbjs:
-    - public/js/lib/cdb.js/vendor/**/*.js
-    - public/js/lib/cdb.js/src/**/*.js
+    - public/js/lib/cdb.js/vendor/underscore-min.js
+    - public/js/lib/cdb.js/vendor/backbone.js
+    - public/js/lib/cdb.js/vendor/leaflet.js
+    - public/js/lib/cdb.js/src/cartodb.js
+    - public/js/lib/cdb.js/src/core/**/*.js
+    - public/js/lib/cdb.js/src/ui/**/*.js
+    - public/js/lib/cdb.js/src/geo/**/*.js
 
   dashboard:
     - public/js/lib/cartodb/app.js
     - public/js/lib/cartodb/models/**/*.js
     - public/js/lib/cartodb/dashboard/dashboard.js
+    - public/js/lib/cartodb/**/*.jst
 
 stylesheets:
   common:

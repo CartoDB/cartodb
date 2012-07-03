@@ -4,6 +4,7 @@
     window.cdb.config = {};
     window.cdb.core = {};
     window.cdb.geo = {};
+    window.cdb.geo.ui = {};
     window.cdb.ui = {};
     window.cdb.ui.common = {};
 
@@ -19,9 +20,11 @@
         'core/config.js',
         'core/log.js',
         'core/profiler.js',
+        'core/template.js',
         'core/view.js',
 
         'geo/map.js',
+        'geo/ui/zoom.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',

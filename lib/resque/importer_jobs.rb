@@ -1,17 +1,16 @@
+require 'resque-result'
+
 module Resque
-  module ImporterJobs
+  class ImporterJobs
+    extend Resque::Plugins::Result
+
     @queue = :import_jobs
 
-    def self.before_perform
-
-    end
-
-    def self.perform(table)
-      table.save!
-    end
-
-    def self.after_perform
-
+    def self.perform(meta_id, user_id, data_source)
+      DataImport.create(:queue_id    => meta_id,
+                        :user_id     => user_id,
+                        :data_source => data_source,
+                        :updated_at  => Time.now)
     end
 
   end

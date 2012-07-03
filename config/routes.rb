@@ -72,9 +72,9 @@ CartoDB::Application.routes.draw do
       put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
       get    '/queries'                              => 'queries#run'
 
-      namespace 'imports' do
-        post '/uploads' => 'uploads#create'
-      end
+      # imports
+      resources :uploads, :only => :create
+      resources :imports, :only => [:create, :show, :index]
 
     end
   end

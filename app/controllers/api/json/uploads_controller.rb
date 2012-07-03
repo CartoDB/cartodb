@@ -1,4 +1,4 @@
-class Api::Json::Imports::UploadsController < Api::ApplicationController
+class Api::Json::UploadsController < Api::ApplicationController
 
   if Rails.env.production?
     ssl_required :create

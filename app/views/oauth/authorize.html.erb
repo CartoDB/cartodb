@@ -20,26 +20,3 @@
 <footer class="short">
   <%= link_to 'CartoDB', root_path, :class => "cartodb" %>
 </footer>
-
-
-
-
-<!--   <div class="glow">
-    <div class="section">
-      <h1><strong><%= @token.client_application.user.username %></strong>CartoDB</h1>
-      <% form_tag authorize_url do %>
-        <h3>Allow connection</h3>
-        <p><%= @token.client_application.user.username %> wants to connect to your cartoDB database.
-          This means that <%= @token.client_application.user.username %> will be able to modify, create and delete fields from your database.</p>
-        <%= hidden_field_tag "oauth_token", @token.token %>
-        <%- if params[:oauth_callback] -%>
-          <%= hidden_field_tag "oauth_callback", params[:oauth_callback] %>
-        <%- end -%>
-        <p><%= check_box_tag 'authorize' %> <a href="#authorize">Authorize access</a></p>
-        <%= submit_tag 'Allow connection', :class => "login" %>
-      <% end %>
-    </div>
-  </div>
-  <div class="footer">CartoDB is a product from <a href="http://www.vizzuality.com" target="_blank">vizzuality</a> | <a href="http://cartodb.com/terms">Terms of service</a></div>
-
- -->

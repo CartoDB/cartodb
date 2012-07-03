@@ -19,11 +19,12 @@ javascripts:
 
 stylesheets:
   common:
-    - public/css/core.css
     - public/css/fonts.css
+    - public/css/sprites.css
+    - public/css/core.css
+    - public/css/buttons.css
     - public/css/header.css
     - public/css/subheader.css
     - public/css/tables.css
     - public/css/footer.css
-    - public/css/sprites.css
     - public/css/leaflet.css

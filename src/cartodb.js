@@ -32,6 +32,10 @@
         'ui/common/table.js'
     ];
 
+    cdb.init = function() {
+      cdb._loadJST();
+    }
+
     /**
      * load all the javascript files. For testing, do not use in production
      */

@@ -8,17 +8,13 @@
 */
 cdb.geo.MapLayer = Backbone.Model.extend({
 
-  TILED: 'tiled',
-
   defaults: {
-    visible: true
+    visible: true,
+    type: 'Tiled'
   }
 });
 
 cdb.geo.TileLayer = cdb.geo.MapLayer.extend({
-  initialize: function() {
-    this.set({'type': "Tile" });
-  },
   getTileLayer: function () {
     return new L.TileLayer(this.get('urlTemplate'));
   }
@@ -26,6 +22,7 @@ cdb.geo.TileLayer = cdb.geo.MapLayer.extend({
 
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   defaults: {
+    type:           'CartoDB',
     query:          "SELECT * FROM {{table_name}}",
     opacity:        0.99,
     auto_bound:     false,
@@ -39,10 +36,6 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     sql_protocol:   "http",
     extra_params:   {},
     cdn_url:        null
-  },
-
-  initialize: function() {
-    this.set({'type': 'CartoDB' });
   },
 
   generateUrl: function(type){
@@ -211,7 +204,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   _addLayer: function(layer) {
     var lyr;
 
-    if ( layer.get('type') == "Tile" ) {
+    if ( layer.get('type') == "Tiled" ) {
       lyr = layer.getTileLayer();
     }
 

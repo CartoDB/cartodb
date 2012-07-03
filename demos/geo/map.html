@@ -62,10 +62,23 @@
           console.log(center[0], center[1]);
         });
 
+        // Adds a TileLayer
         var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
-        //URL = 'http://c.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{x}/4094/2724.png';
 
         map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
+
+        // Adds a CartoDBLayer
+        var options = {
+          user_name: 'examples',
+          table_name: 'earthquakes',
+          query: 'SELECT * FROM {{table_name}}',
+          tile_style: "#{{table_name}}{marker-fill:red}",
+          interactivity: "cartodb_id, magnitude"
+        };
+
+        var layer = new cdb.geo.CartoDBLayer(options);
+        map.addLayer(layer);
+
         window.map = map; // to play in console
       });
     };

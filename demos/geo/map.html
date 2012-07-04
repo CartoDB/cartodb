@@ -69,14 +69,13 @@
 
         // Adds a CartoDBLayer
         var options = {
-          mapView: mapView,
           user_name: 'examples',
           table_name: 'earthquakes',
           query: 'SELECT * FROM {{table_name}}',
           tile_style: "#{{table_name}}{marker-fill:red}",
           interactivity: "cartodb_id, magnitude",
-          featureOut: function() { console.log('out'); },
-          featureOver: function() { console.log('over'); },
+          featureOut:   function() { console.log('out'); },
+          featureOver:  function() { console.log('over'); },
           featureClick: function() { console.log('click'); }
         };
 

@@ -41,7 +41,6 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
   initialize: function() {
     _.bindAll(this, 'getTileLayer', '_getInteractiveLayer', '_getStaticTileLayer', '_bindWaxEvents');
-    this.mapView = this.attributes.mapView;
   },
 
   _generateURL: function(type){
@@ -251,23 +250,21 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     this.tilejson = this._generateTileJson();
     this.layer    = new wax.leaf.connector(this.tilejson);
 
-    var featureOn  = function(o) { self._bindWaxEvents(self.mapView.map_leaflet, o)};
-    var featureOut = function(){
+    var featureOver = function(o) { self._bindWaxEvents(self.mapView.map_leaflet, o)};
+    var featureOut  = function() {
 
       var featureOut = self.get("featureOut");
 
       if (featureOut) {
         return featureOut && featureOut();
       } else {
-        if (self.get("debug")) throw('featureOut function not defined');
+        if (self.get("debug")) {
+          throw('featureOut function not defined');
+        }
       }
     };
 
-    this.interaction = wax.leaf.interaction()
-    .map(this.mapView.map_leaflet)
-    .tilejson(this.tilejson)
-    .on('on',  featureOn)
-    .on('off', featureOut);
+    this.interaction = this.mapView.addInteraction(this.tilejson, featureOver, featureOut);
 
     return this.layer;
   },
@@ -413,8 +410,28 @@ cdb.geo.MapLayers = Backbone.Collection.extend({
       this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
     },
 
+    /**
+    * Adds interactivity to a layer
+    *
+    * @params {String} tileJSON
+    * @params {String} featureOver
+    * @return {String} featureOut
+    */
+    addInteraction: function(tileJSON, featureOver, featureOut) {
+
+      return wax.leaf.interaction()
+      .map(this.map_leaflet)
+      .tilejson(tileJSON)
+      .on('on',  featureOver)
+      .on('off', featureOut);
+
+    },
+
     _addLayer: function(layer) {
       var lyr;
+
+      // Adds reference to the parent mapView
+      layer.mapView = this;
 
       if ( layer.get('type') == "Tiled" ) {
         lyr = layer.getTileLayer();
@@ -431,3 +448,4 @@ cdb.geo.MapLayers = Backbone.Collection.extend({
       }
     }
   });
+

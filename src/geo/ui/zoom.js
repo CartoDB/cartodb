@@ -23,14 +23,15 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
 
   initialize: function() {
       this.map = this.model;
+
       _.defaults(this.options, this.default_options);
-      this.template = this.options.template ? _.template(this.options.template): cdb.templates.getTemplate('geo/zoom');
+
+      this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
       //TODO: bind zoom change to disable zoom+/zoom-
   },
 
   render: function() {
-    var $el = this.$el;
-    $el.html(this.template(this.options));
+    this.$el.html(this.template(this.options));
     return this;
   },
 

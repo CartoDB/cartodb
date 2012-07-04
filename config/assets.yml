@@ -22,6 +22,14 @@ javascripts:
     - public/js/lib/cartodb/dashboard/dashboard.js
     - public/js/lib/cartodb/**/*.jst
 
+  login:
+    - public/js/vendor/modernizr-min.js
+    - public/js/vendor/selectivizr-min.js
+    - public/js/lib/cartodb/app.js
+    - public/js/lib/cartodb/login/placeholder.js
+    - public/js/lib/cartodb/login/error.js
+    - public/js/lib/cartodb/login/login.js
+
 stylesheets:
   common:
     - public/css/fonts.css

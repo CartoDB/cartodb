@@ -11,7 +11,11 @@
     <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
   </head>
   <body>
-    <%= render 'admin/shared/header', :table => (true if controller_name == "tables" && action_name == "show" )  %>
+    <% if ( controller_name != "tables" || action_name != "show" ) %>
+      <%= render 'admin/shared/header' %>
+    <% else %>
+      <%= render 'admin/shared/table_header' %>
+    <% end %>
     <%= yield %>
     <% if controller_name != "tables" && action_name != "show" %>
       <%= render 'admin/shared/footer' %>

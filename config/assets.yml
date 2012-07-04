@@ -40,4 +40,6 @@ stylesheets:
     - public/css/subheader.css
     - public/css/tables.css
     - public/css/footer.css
+    - public/css/table.css
     - public/css/leaflet.css
+

@@ -92,7 +92,8 @@ describe("common.ui.Table", function() {
     });
 
     it("should have 6 cells and header", function() {
-      expect(table.render().$('td').length).toEqual(3*4);
+      expect(table.render().$('th').length).toEqual(4);
+      expect(table.render().$('td').length).toEqual(2*4);
     });
 
     it("each row has an id", function() {

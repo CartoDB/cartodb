@@ -61,18 +61,25 @@ cdb.ui.common.RowView = cdb.core.View.extend({
     this.order = this.options.order;
   },
 
+  valueView: function(colName, value) {
+    return value;
+  },
+
   render: function() {
+    var self = this;
     var tr = this.$el;
     tr.html('');
     var row = this.model;
-    tr.attr('id', 'row_' + row.get('id'));
+    tr.attr('id', 'row_' + row.id);
     var attrs = this.order || _.keys(row.attributes);
     _(attrs).each(function(key) {
       var value = row.attributes[key];
-      var td = $('<td>');
-      td.attr('id', 'cell_' + row.get('id') + '_' + key);
-      td.append(value);
-      tr.append(td);
+      if(value !== undefined) {
+        var td = $('<td>');
+        td.attr('id', 'cell_' + row.id + '_' + key);
+        td.append(self.valueView(key, value));
+        tr.append(td);
+      }
     });
     return this;
   }
@@ -88,6 +95,7 @@ cdb.ui.common.RowView = cdb.core.View.extend({
 cdb.ui.common.Table = cdb.core.View.extend({
 
   tagName: 'table',
+  rowView: cdb.ui.common.RowView,
 
   events: {
   },
@@ -113,11 +121,16 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.add_related_model(this.model);
   },
 
+  headerView: function(column) {
+      return column[0];
+  },
+
   _renderHeader: function() {
+    var self = this;
     var thead = $("<thead>");
     var tr = $("<tr>");
     _(this.model.get('schema')).each(function(col) {
-      tr.append($("<td>").html(col[0]));
+      tr.append($("<th>").append(self.headerView(col)));
     });
     thead.append(tr);
     return thead;
@@ -138,7 +151,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
    */
   addRow: function(row) {
     var self = this;
-    var tr = new cdb.ui.common.RowView({ 
+    var tr = new self.rowView({ 
       model: row, 
       order: this.model.columnNames()
     });

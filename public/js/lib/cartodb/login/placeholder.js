@@ -5,13 +5,16 @@
  *
  * usage example:
  *
- *    var settings = new cdb.ui.common.Settings({
- *        el: "#settings_element",
- *        speed: 300
+ *    var placeholder = new cdb.admin.Placeholder({
+ *        el: "div.field",
+ *        speedIn: 300,
+          speedOut: 10
  *    });
- *    settings.show();
- *    // close it
- *    settings.close();
+ *
+ *    // Disable the placeholder label
+ *    placeholder.disable();
+ *    
+ *    
 */
 
 
@@ -21,64 +24,85 @@ cdb.admin.Placeholder = cdb.core.View.extend({
   className: 'field',
 
   events: {
-    'click label': 'onLabelClick',
-    'keyup input': 'onChange'
+    'click label': '_onLabelClick',
+    'keyup input': '_onChange'
   },
 
   default_options: {
-      speed: 300
+      speedOut: 10,
+      speedIn: 300
   },
 
   initialize: function() {
-    this.input = this.$el.find('input');
+    // Set options
+    _.defaults(this.options, this.default_options);
+
+    // Input element
+    this.$input = this.$el.find('input');
 
     // Render
     this.render();
     
     // Check
-    this.check();
+    this._check();
   },
 
 
   render: function() {
-    var $el = this.$el;
-
     // Get label text
-    var text = this.input.attr("data-label");
+    var text = this.$input.attr("data-label");
 
+    // If this field doesn't have data-label, that means it 
+    // doesn't need a placeholder :)
     if (!text) {
       return false;
     }
 
+    // Create the placeholder label
+    this.$label = $("<label>").text(text);
+
     // Prepend label
-    $el.find("input").before("<label>" + text + "</label>");
+    this.$input.before(this.$label);
 
     return this;
   },
 
 
-  check: function() {
-    if (this.input.val() != '') {
-      this.$el.find('label').hide();
+  disable: function() {
+    // Unbind keyup
+    this.$input.unbind("keyup");
+    // Remove Label
+    this.$label
+      .hide()
+      .unbind("click")
+      .remove()
+  },
+
+
+  _check: function() {
+    // If the input has a previous value don't show the "placeholder"
+    if (this.$input.val() != '' && this.$label) {
+      this.$label.hide();
     }
   },
 
 
-  onLabelClick: function() {
-    this.input.focus();
+  _onLabelClick: function() {
+    // If clicks in the label, focus in the input
+    this.$input.focus();
   },
 
 
-  onChange: function(ev) {
+  _onChange: function(ev) {
+    // Check input every time the user types to show or not the "placeholder"
     var value = $(ev.target).val()
-      , $label = this.$el.find('label');
+      , options = this.options;
 
     if (value.length>0) {
-      $label.fadeOut(10);
+      this.$label.fadeOut(this.options.speedOut);
     } else {
-      $label.fadeIn(300);
+      this.$label.fadeIn(this.options.speedIn);
     }
   }
-
 
 });

@@ -13,28 +13,21 @@ $(function() {
 
     _initViews: function() {
 
+      // Fill user input and focus in the password
+      if (this.$el.find("#email").val()=="" && window.location.host.split(".").length>1) {
+        this.$el.find("#email").val(window.location.host.split(".")[0]);
+        this.$el.find("#password").focus();
+      }
+
       // Placeholders
       this.$el.find("div.field").each(function(i,ele){
         var placeholder = new cdb.admin.Placeholder({ el: $(ele) });
-      })
-
-      this.$el.find("div.field_with_errors").each(function(i,ele){
-        var input_error = new cdb.admin.InputError({ el: $(ele) });
-      })
-
-      // Errors?
-
-      // Error common
-      /*var settings = this.settings = new cdb.ui.common.Settings({
-        template_base: $('#settings_template').html(),
-        speed: 300
       });
-      this.$el.append(this.settings.render().el);
 
-      setTimeout(function(){
-        settings.open();  
-      },3);
-      */
+      // Errors
+      this.$el.find("div.error").each(function(i,ele){
+        var input_error = new cdb.admin.InputError({ el: $(ele) });
+      });
     }
   });
 

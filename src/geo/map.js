@@ -264,7 +264,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
       }
     };
 
-    this.mapView.addInteraction(this.tilejson, featureOver, featureOut);
+    this.interaction = this.mapView.addInteraction(this.tilejson, featureOver, featureOut);
 
     return this.layer;
   },
@@ -419,7 +419,7 @@ cdb.geo.MapLayers = Backbone.Collection.extend({
     */
     addInteraction: function(tileJSON, featureOver, featureOut) {
 
-      this.interaction = wax.leaf.interaction()
+      return wax.leaf.interaction()
       .map(this.map_leaflet)
       .tilejson(tileJSON)
       .on('on',  featureOver)

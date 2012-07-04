@@ -28,11 +28,33 @@ describe("common.ui.Table", function() {
     });
   });
 
+  describe("RowView", function() {
+    it("should render in a row", function() {
+      var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
+      var r = new cdb.ui.common.RowView({model: row});
+      expect(r.render().$('td').length).toEqual(2);
+    });
+    it("should render in order", function() {
+      
+      var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
+      var r = new cdb.ui.common.RowView({model: row, order: ['test1', 'test0']});
+      r.render();
+      expect($(r.$('td')[0]).html()).toEqual('b');
+      expect($(r.$('td')[1]).html()).toEqual('a');
+
+      r = new cdb.ui.common.RowView({model: row, order: ['test0', 'test1']});
+      r.render();
+      expect($(r.$('td')[0]).html()).toEqual('a');
+      expect($(r.$('td')[1]).html()).toEqual('b');
+    });
+  });
+
   describe("Table", function() {
     var table;
     beforeEach(function() {
       cdb.ui.common.Row.url = 'test';
       cols = new cdb.ui.common.TableData();
+      cols.url = 'test';
 
       tableMetadata = new cdb.ui.common.TableProperties({
         schema: [

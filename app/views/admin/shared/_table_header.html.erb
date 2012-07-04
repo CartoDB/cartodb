@@ -1,0 +1,23 @@
+<header class="table">
+  <div class="inner">
+    <div class="left">
+      <hgroup>
+        <h1><%= link_to "CartoDB", root_path %></h1>
+        <h2 class="special">table name TODO</h2>
+      </hgroup>
+      <span class="tags">
+
+      </span>
+      <nav>
+        <%= link_to "table",        "#table",   :class => "smaller strong uppercase tab selected" %>
+        <%= link_to "map view",     "#map",     :class => "smaller strong uppercase tab" %>
+        <%= link_to "publish map",  "#publish", :class => "smaller strong uppercase tab" %>
+      </nav>
+    </div>
+    <ul class="right">
+      <li><%= link_to "georeference", "#georeference" %></li>
+      <li><%= link_to "options", "#options", :class => "dropdown" %></li>
+      <li><%= link_to current_user.username, "#" + current_user.username, :class => "dropdown" %></li>
+    </ul>
+  </div>
+</header>

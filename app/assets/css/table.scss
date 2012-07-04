@@ -1,0 +1,87 @@
+@import "compass";
+
+div.table {
+	table {
+		position:relative;
+		width:100%;
+
+		// Table head
+		thead {
+			left:0;
+			width:100%;
+			height:60px;
+			@include background(linear-gradient(top,#FDFDFD,#F2F2F2));
+			border-bottom:1px solid #CCCCCC;
+			@include box-shadow(rgba(black,0.12) 0 0 20px 20px);
+			z-index:10;
+
+			tr {
+				height:60px;
+
+				th {
+					min-width:60px;
+
+					div {
+						padding:6px 10px;
+						height:30px;
+						border-right:1px solid rgba(#D9D9D9,0.5);
+
+						label {color:#7C7C7C}
+					}
+
+					&:last-child {
+						div {border-right:none;}
+					}
+
+					&:first-child {
+						width:34px;
+						min-width:34px;
+
+						div {
+							padding:0;
+							height:42px;
+							width:34px;
+						}
+					}
+				}
+			}
+		}
+
+		// Table body
+		tbody {
+			position:relative;
+			width:100%;
+			margin:1px 0 0 0;
+			z-index:-1;
+
+			tr {
+				width:100%;
+				border-bottom:1px solid #ECECEC;
+
+				td {
+					border:1px solid #ECECEC;
+
+					div {
+						padding:15px 10px;
+						font-size:13px;
+						color:#666666;
+					}
+
+					&:last-child {
+						border-right:none;		
+					}
+
+					&:first-child {
+						width:34px;
+						min-width:34px;
+
+						div {
+							padding:0;
+							width:34px;
+						}
+					}
+				}
+			}
+		}
+	}
+}

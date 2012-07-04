@@ -3,7 +3,7 @@
     <div class="left">
       <hgroup>
         <h1><%= link_to "CartoDB", root_path %></h1>
-        <h2 class="special">table name TODO</h2>
+        <h2 class="special"><%= link_to "table name TODO", "#change_title" %></h2>
       </hgroup>
       <span class="tags">
 
@@ -21,3 +21,33 @@
     </ul>
   </div>
 </header>
+
+<div>
+  <div class="table">
+    <table>
+      <thead>
+        <tr>
+          <th><div></div></th>
+          <th><div><label class="strong small">cartodb_id</label></div></th>
+          <th><div><label class="strong small">the_geom</label></div></th>
+          <th><div><label class="strong small">name</label></div></th>
+          <th><div><label class="strong small">description</label></div></th>
+          <th><div><label class="strong small">created_at</label></div></th>
+          <th><div><label class="strong small">updated_at</label></div></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div></div></td>
+          <td><div>1</div></td>
+          <td><div>-64.234, -23.234</div></td>
+          <td><div>jamon</div></td>
+          <td><div>the worst</div></td>
+          <td><div>20 December, 1985</div></td>
+          <td><div>4 July, 2012</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="map"></div>
+</div>

@@ -3,14 +3,12 @@
     <h1 class="left"><%= link_to "CartoDB", root_path %></h1>
     <ul class="right">
       <li><%= link_to 'dashboard', dashboard_path, :class => selected_if(current_path == dashboard_path) %></li>
-      <% if true %>
       <li>
         <form action="#">
           <input type="text" value="<%= params[:q] %>" name="q" placeholder="Search tables" />
           <input type="submit" value="Search" />
         </form>
       </li>
-      <% end %>
       <li><%= link_to 'developers', APP_CONFIG[:developers_host] %></a></li>
       <% if current_user.admin %>
         <li><%= link_to 'sheriff', superadmin_users_path %></li>

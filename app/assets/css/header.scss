@@ -39,6 +39,7 @@ header {
       a {
         font-size:15px;
         color:white;
+
         &.account {
           position:relative;
           padding:0 20px 0 0;
@@ -64,6 +65,21 @@ header {
 
           &:hover {
             cursor:pointer;
+          }
+        }
+
+        &.dropdown {
+          position:relative;
+          padding:0 12px 0 0;
+
+          &:before {
+            position:absolute;
+            content:' ';
+            right:0px;
+            margin:8px 0 0 5px;
+            border-left:3px solid transparent;
+            border-right:3px solid transparent;
+            border-top:3px solid white;
           }
         }
 
@@ -103,6 +119,7 @@ header {
             @include transition-duration(500ms);
           }
         }
+
         input[type="submit"] {
           position:absolute;
           top:10px;
@@ -114,6 +131,112 @@ header {
           @include text-indent();
           &:focus {outline:none; @include icons-sprite(lens, $offset-y:-15px);}
           &:hover {cursor:pointer; @include icons-sprite(lens, $offset-y:-15px);}
+        }
+      }
+    }
+  }
+
+  // Header for the table :)
+  &.table {
+    height:90px;
+    overflow:visible;
+
+    .inner {width:auto;}
+    
+    div.left {
+      position:relative;
+      width:65%;
+      height:121px;
+      margin-left:35px;
+
+      hgroup {
+        width:100%;
+        h1,h2 {
+          margin:0;
+          @include inline-block();
+          width:auto;
+        }
+        h2 {
+          position:relative;
+          padding:2px 0 0 20px;
+          margin:3px 0 0 0;
+          font-size:21px;
+
+          a {color:white;}
+          
+          &:before {
+            position:absolute;
+            content:'|';
+            font-weight:normal;
+            top:0px;
+            left:0;
+            margin:0 0 0 5px;
+            color:rgba(255,255,255,0.7);
+          }
+        }
+      }
+
+      nav {
+        position:absolute;
+        left:0;
+        bottom:0;
+        height:40px;
+
+        a.tab {
+          padding:14px 20px;
+          margin:0 0 1px 0;
+          @include inline-block();
+          color:white;
+          background:rgba(black, 0.2);
+          border:none;
+          @include border-top-radius(3px);
+
+          &:hover {}
+          &:focus {}
+          &:active {}
+
+          &.selected {
+            margin:0;
+            color:#666666;
+            border:1px solid #1C3D56;
+            border-bottom:none;
+            background:white;
+            
+            &:hover {text-decoration:none; cursor:default;}
+            &:focus {}
+            &:active {}
+          }
+
+          &.disabled {
+            &:hover {}
+            &:focus {}
+            &:active {}
+          }
+        }
+      }
+    }
+
+    ul {
+      width:auto;
+      margin:10px 35px 0 0;
+
+      li {
+        position:relative;
+        padding:0 10px;
+        margin:0;
+
+        &:after {
+          position:absolute;
+          content:'|';
+          top:0px;
+          right:0;
+          margin:0;
+          color:rgba(white,0.4);
+        }
+
+        &:last-child {
+          padding-right:0;
+          &:after {display:none}
         }
       }
     }

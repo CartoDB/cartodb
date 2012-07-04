@@ -7,13 +7,15 @@
     <%= yield :css %>
     <%= yield :js %>
     <%= csrf_meta_tag %>
-    <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
     <%= render 'shared/analytics' %>
+    <noscript><meta http-equiv="refresh" content="0;url=/no_javascript.html"></noscript>
   </head>
   <body>
-    <%= render 'admin/shared/header' %>
+    <%= render 'admin/shared/header', :table => (true if controller_name == "tables" && action_name == "show" )  %>
     <%= yield %>
-    <%= render 'admin/shared/footer', :visible => true %>
+    <% if controller_name != "tables" && action_name != "show" %>
+      <%= render 'admin/shared/footer' %>
+    <% end %>
     <%#= yield :mamufas %>
   </body>
 </html>

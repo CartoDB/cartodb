@@ -15,7 +15,9 @@
         "../vendor/underscore-min.js",
         "../vendor/backbone.js",
 
+
         "../vendor/leaflet.js",
+        "../vendor/wax.leaf.min-6.2.3-touched.js",
 
         'core/config.js',
         'core/log.js',

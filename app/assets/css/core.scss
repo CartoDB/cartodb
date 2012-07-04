@@ -21,20 +21,19 @@
    *  Generic dom elements style
    */
   body {background:white; min-width: $w; font-family: $text-fonts; font-size: 15px;}
-  a {font-family:$text-fonts; color:#2483B4; text-decoration:none; &:hover {text-decoration:underline; color:#1B668B}}
+  a {
+    font-family:$text-fonts;
+    color:#2483B4;
+    text-decoration:none;
+    &:hover {text-decoration:underline; color:#1B668B}
+  }
   p {
     color:#666666;
     font-family:$text-fonts;
     line-height:normal;
-    &.light {color:#999999;}
-    &.dark {color:#333333;}
-    &.uppercase {text-transform:uppercase}
-    &.strong {font-weight:bold}
-    &.small {font-size:13px}
-    &.smaller {font-size:11px}
   }
   h2,h3,h4,h5,h6 {font-weight: bold; font-family: $title-fonts; color:#333333; line-height:normal;}
-  h2 {font-size:31px; letter-spacing:-1px; word-spacing:-1px; line-height:34px;}
+  h2 {font-size:31px; letter-spacing:-1px; word-spacing:-1px; line-height:34px; &.special {font-family:$text-fonts}}
   h3 {font-size:25px;}
 
 
@@ -56,3 +55,10 @@
   .hide {display: none;}
   .overflow {overflow:visible}
   .center {width:100%; text-align:center}
+
+  .light {color:#999999;}
+  .dark {color:#333333;}
+  .uppercase {text-transform:uppercase}
+  .strong {font-weight:bold}
+  .small {font-size:13px}
+  .smaller {font-size:11px}

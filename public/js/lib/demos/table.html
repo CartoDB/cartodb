@@ -113,7 +113,7 @@
 
         tableMetadata = new cdb.ui.common.TableProperties();
         tableMetadata.url = function() {
-          return '/api/v1/tables/borders';
+          return '/api/v1/tables/' + this.name;
         }
         window.meta = tableMetadata;
         window.cols = cols;

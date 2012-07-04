@@ -13,11 +13,13 @@
 	a.button.green,
 	button.green,
 	input[type="submit"].green {
-		padding:14px 16px;
-		font:bold 17px $text-fonts2;
+		padding:12px 13px;
+		font:bold 19px $text-fonts2;
 		line-height:normal;
+		letter-spacing:-1px;
 		color:white;
-		text-shadow:0 1px #455D1E;
+		text-shadow:0 1px 0 #455D1E;
+		background:#94BE42; // IE
 		@include background(linear-gradient(#94BE42,#7FA938));
 		@include border-radius(3px);
 		border:1px solid #6A8C2D;
@@ -33,20 +35,20 @@
 
 		// Hover
 		&:hover {
-			background:#7FA938; // IE
+			background:#94BE12; // IE
 			@include background(linear-gradient(#94BE42,#749C33)); 
 			text-decoration:none;
 			cursor:pointer;
 		}
 		// Active
 		&:active {
-			background:#64862C; // IE
+			background:#749C33; // IE
 			@include background(linear-gradient(#749C33,#94BE42));
 		}
 		// Focus = hover
 		&:focus {
 			outline:none;
-			background:#7FA938; // IE
+			background:#749C33; // IE
 			@include background(linear-gradient(#94BE42,#749C33));
 		}
 	}

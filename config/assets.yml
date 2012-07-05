@@ -17,6 +17,7 @@ javascripts:
 
   dashboard:
     - public/js/lib/cartodb/app.js
+    - public/js/vendor/d3.v2.js
     - public/js/lib/cartodb/models/**/*.js
     - public/js/lib/cartodb/dashboard/**/*.js
     - public/js/lib/cartodb/dashboard/dashboard.js

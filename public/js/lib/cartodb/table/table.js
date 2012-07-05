@@ -17,11 +17,11 @@ $(function() {
           this.table.fetch();
           this.columns.fetch();
           var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
-          this.map.setCenter([34.30714385628804, 11.6015625]);
-          this.map.setZoom(2);
           this.map.addLayer(new cdb.geo.TileLayer({
             urlTemplate: URL
           }));
+          this.map.setZoom(4);
+          this.map.setCenter([34.30714385628804, 11.6015625]);
         },
 
         _initModels: function() {
@@ -49,7 +49,7 @@ $(function() {
 
           this.workView.addTab('table', this.tableTab.render());
           this.workView.addTab('map', this.mapTab.render());
-          this.mapTab.enableMap();
+          this.workView.bind('tabEnabled:map', this.mapTab.enableMap, this.mapTab);
 
           this.workView.active('table');
 

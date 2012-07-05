@@ -25,16 +25,16 @@ $(function() {
             model: this.tables
           });
 
-          /*var settings = this.settings = new cdb.ui.common.Settings({
-            template_base: $('#settings_template').html(),
-            speed: 300
-          });
-          this.$el.append(this.settings.render().el);
+          // var settings = this.settings = new cdb.ui.common.Settings({
+          //   template_base: $('#settings_template').html(),
+          //   speed: 300
+          // });
+          //this.$el.append(this.settings.render().el);
 
-          setTimeout(function(){
-            settings.open();  
-          },3);
-          */
+          // setTimeout(function(){
+          //   settings.open();  
+          // },3);
+          
         }
     });
 

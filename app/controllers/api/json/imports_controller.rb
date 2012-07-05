@@ -13,7 +13,9 @@ class Api::Json::ImportsController < Api::ApplicationController
   def show
     import = DataImport.filter(:queue_id => params[:id]).first
 
-    render :json => {:import => import.values, :success => true}
+    import_values = import.values rescue {}
+
+    render :json => {:import => import_values, :success => true}
   end
 
   def create

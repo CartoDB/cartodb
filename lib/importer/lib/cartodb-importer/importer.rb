@@ -147,7 +147,7 @@ module CartoDB
           @data_import.set_error_code(1005)
           @data_import.log_error("File contains no information, check it locally" )
           raise "File contains no information, check it locally" 
-        elsif @remaining_quota < (0.6*fs)
+        elsif @remaining_quota < (0.3*fs)
           disk_quota_overspend = (File.size(@path) - @remaining_quota).to_int
           @data_import.set_error_code(8001)
           @data_import.log_error("#{disk_quota_overspend / 1024}KB more space is required" )
@@ -161,6 +161,10 @@ module CartoDB
           :path           => @path,
           :suggested_name => suggested
         }]
+        
+        # TODO the problem with this Factory method, is that if a Zip -> KMZ/Zip 
+        # it will fail because it wont know to go back and do the Decompressor
+        # stage again
         
         # set our multi file handlers
         # decompress data and update self with results

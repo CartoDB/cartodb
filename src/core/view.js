@@ -58,6 +58,14 @@
     /**
      * utility methods
      */
+
+    getTemplate: function(tmpl) {
+      if(this.options.template) {
+        return  _.template(this.options.template);
+      }
+      return cdb.templates.getTemplate(tmpl);
+    },
+
     show: function() {
         this.$el.show();
     },

@@ -17,7 +17,7 @@
       <%= render 'admin/shared/table_header' %>
     <% end %>
     <%= yield %>
-    <% if controller_name != "tables" && action_name != "show" %>
+    <% if controller_name != "tables" || action_name != "show" %>
       <%= render 'admin/shared/footer' %>
     <% end %>
     <%#= yield :mamufas %>

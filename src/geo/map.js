@@ -363,17 +363,24 @@ cdb.geo.MapLayers = Backbone.Collection.extend({
 
       var self = this;
 
+      var c = this.map.get('center');
       this.map_leaflet = new L.Map(this.el, {
-        zoomControl: false
+        zoomControl: false,
+        center: new L.LatLng(c[0], c[1]),
+        zoom: this.map.get('zoom')
       });
 
       this.map.layers.bind('add', this._addLayer);
 
+
       this._bindModel();
 
       //set options
-      this._setCenter(this.map, this.map.get('center'));
-      this._setZoom(this.map, this.map.get('zoom'));
+      //this._setCenter(this.map, this.map.get('center'));
+      //this._setZoom(this.map, this.map.get('zoom'));
+      this.map.layers.each(function(lyr) {
+          self._addLayer(lyr);
+      });
 
       this.map_leaflet.on('zoomend', function() {
         self._setModelProperty({zoom: self.map_leaflet.getZoom()});
@@ -383,6 +390,7 @@ cdb.geo.MapLayers = Backbone.Collection.extend({
         var c = self.map_leaflet.getCenter();
         self._setModelProperty({center: [c.lat, c.lng]});
       }, this);
+
     },
 
     /** bind model properties */

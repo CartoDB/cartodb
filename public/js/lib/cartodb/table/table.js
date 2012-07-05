@@ -51,6 +51,8 @@ $(function() {
           this.workView.addTab('map', this.mapTab.render());
           this.mapTab.enableMap();
 
+          this.workView.active('table');
+
         }
     });
 

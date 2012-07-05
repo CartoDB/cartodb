@@ -124,6 +124,7 @@ class Api::Json::ImportController < Api::ApplicationController
       e = CartoDB::InvalidFile.new    e.message    if params[:file]    
       e = CartoDB::TableCopyError.new e.message    if params[:table_copy]    
     end  
+    message = e.message.split("\n")[0]
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     
     @data_import.reload

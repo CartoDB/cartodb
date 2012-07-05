@@ -62,9 +62,11 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
           if(v.cid === vid) {
             v.show();
             self.trigger('tabEnabled', name, v);
+            self.trigger('tabEnabled:' + name,  v);
           } else {
             v.hide();
             self.trigger('tabDisabled', '' , v);
+            self.trigger('tabDiabled:' + name,  v);
           }
         });
       }

@@ -43,12 +43,13 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     ok_title: 'ok',
     width: 300,
     height: 200,
-    clean_on_hide: false
+    clean_on_hide: false,
+    template_name: 'common/dialog'
   },
 
   initialize: function() {
     _.defaults(this.options, this.default_options);
-    this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate('common/dialog');
+    this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate(this.options.template_name);
   },
 
   render: function() {

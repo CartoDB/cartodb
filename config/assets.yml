@@ -50,4 +50,4 @@ stylesheets:
     - public/css/footer.css
     - public/css/table.css
     - public/css/leaflet.css
-
+    - public/css/dropdown.css

@@ -11,7 +11,7 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
     tagName: 'li',
 
     initialize: function() {
-      this.template = cdb.templates.getTemplate('table_list_item');
+      this.template = cdb.templates.getTemplate('dashboard/views/table_list_item');
     },
 
     render: function() {

@@ -59,3 +59,21 @@ cdb.admin.TableView = cdb.ui.common.Table.extend({
   }
 });
 
+cdb.admin.TableTab = cdb.core.View.extend({
+
+  className: 'table',
+
+  initialize: function() {
+    this.tableView = new cdb.admin.TableView({
+      dataModel: this.model.data(),
+      model: this.model
+    });
+  },
+
+  render: function() {
+    this.$el.append(this.tableView.el);
+    return this;
+  }
+
+});
+

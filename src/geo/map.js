@@ -342,6 +342,10 @@ cdb.geo.MapLayers = Backbone.Collection.extend({
       }
       this.map = this.options.map;
       this.add_related_model(this.map);
+    },
+
+    render: function() {
+      return this;
     }
 
   });

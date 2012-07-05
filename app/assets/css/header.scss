@@ -50,7 +50,7 @@ header {
             top:1px;
             right:11px;
             margin:0 0 0 5px;
-            color:rgba(255,255,255,0.5);
+            color:rgba(white,0.5);
           }
 
           &:before {
@@ -84,7 +84,7 @@ header {
         }
 
         &:hover {color:white}
-        &.selected {color:#264565; text-shadow:0 1px #70A3DC; &:hover {text-decoration:none; cursor:default;}}
+        &.selected {color:#264565; text-shadow:0 1px #70A3DC; &:hover {text-decoration:none; cursor:default;} &:after {color:rgba(#264565,0.5);} &:before {border-top-color:#264565;}}
         &:focus {outline:none; text-decoration:underline;}
       }
 

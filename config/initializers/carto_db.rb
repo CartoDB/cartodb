@@ -70,7 +70,7 @@ module CartoDB
   
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
-  ERROR_CODES = {
+  IMPORTER_ERROR_CODES = {
     1000 => 'File I/O error',
     1001 => 'Unable to open file',
     1002 => 'Unsupported file type',

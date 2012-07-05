@@ -102,7 +102,7 @@ class DataImport < Sequel::Model
     self.save
   end
   def get_error_text
-    CartoDB::ERROR_CODES[self.error_code]
+    CartoDB::IMPORTER_ERROR_CODES[self.error_code]
   end
   def log_json
     if self.logger.nil?

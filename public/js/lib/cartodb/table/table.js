@@ -34,6 +34,10 @@ $(function() {
 
         _initViews: function() {
 
+          this.tabs = new cdb.admin.Tabs({
+              el: this.$('nav')
+          });
+
           this.workView = new cdb.ui.common.TabPane({
             el: this.$('.panes')
           });
@@ -51,6 +55,7 @@ $(function() {
           this.workView.addTab('map', this.mapTab.render());
           this.workView.bind('tabEnabled:map', this.mapTab.enableMap, this.mapTab);
 
+          this.workView.bind('tabEnabled', this.tabs.activate);
           this.workView.active('table');
 
         }

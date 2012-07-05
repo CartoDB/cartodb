@@ -42,5 +42,37 @@
     initialize: function() {
     }
   });
+  
+  cdb.admin.CartoDBTableMetadata = cdb.ui.common.TableProperties.extend({
+      url: function() {
+        return '/api/v1/tables/' + this.get('name');
+      },
+
+      data: function() {
+        if(this._data === undefined) {
+          this._data = new cdb.admin.CartoDBTableData(null, {
+            name: this.get('name')
+          });
+        }
+        return this._data;
+      }
+  });
+
+  cdb.admin.CartoDBTableData = cdb.ui.common.TableData.extend({
+
+    initialize: function(models, options) {
+      this.table = options.name;
+      this.model.prototype.idAttribute = 'cartodb_id';
+    },
+
+    parse: function(d) {
+      return d.rows;
+    },
+
+    url: function() {
+      return '/api/v1/tables/' + this.table + '/records';
+    }
+
+  });
 
 })();

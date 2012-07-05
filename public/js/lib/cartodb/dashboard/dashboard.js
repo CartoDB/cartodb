@@ -25,16 +25,16 @@ $(function() {
             model: this.tables
           });
 
-          // var settings = this.settings = new cdb.ui.common.Settings({
-          //   template_base: $('#settings_template').html(),
-          //   speed: 300
-          // });
-          //this.$el.append(this.settings.render().el);
-
-          // setTimeout(function(){
-          //   settings.open();  
-          // },3);
-          
+          // User settings
+          var settings = this.settings = new cdb.ui.common.Dropdown({
+            target: 'a.account',
+            model: {username: username},
+            template_base: "settings_item",
+            onClick: function() {
+              console.log("how does it look?");
+            }
+          });
+          this.$el.append(this.settings.render().el);
         }
     });
 

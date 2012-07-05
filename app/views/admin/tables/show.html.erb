@@ -6,14 +6,18 @@
     <%= include_stylesheets :common, :media => 'all' %>
   <% end %>
 
+  <script>
+      var table_name = '<%= @table.name %>';
+  </script>
+
   <% content_for(:js) do %>
-    <%= include_javascripts :common, :cdbjs, :login %>
+    <%= include_javascripts :common, :cdbjs, :table %>
   <% end %>
 
 
   <div>
     <div class="table">
-      <table>
+      <!-- <table>
         <thead>
           <tr>
             <th><div></div></th>
@@ -103,7 +107,7 @@
           </tr>
 
         </tbody>
-      </table>
+      </table> -->
     </div>
     <div class="map"></div>
   </div>

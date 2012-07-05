@@ -119,7 +119,7 @@
       //Uploader for the modal window
       var uploader = new qq.FileUploader({
         element: document.getElementById('uploader'),
-        action: '/upload',
+        action:  global_api_url+'uploads',
         params: {},
         allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz', 'osm', 'bz2', 'tif', 'tiff'],
         sizeLimit: 0, // max size
@@ -149,7 +149,7 @@
       //Uploader for the whole page (dashboard only)
       var hugeUploader = new qq.FileUploader({
       	element: document.getElementById('hugeUploader'),
-      	action: '/upload',
+      	action: global_api_url+'uploads',
       	params: {},
         allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz', 'osm', 'bz2', 'tif', 'tiff'],
       	sizeLimit: 0,
@@ -230,25 +230,38 @@
         $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
           var params = {}
           if (url!='') {
-            if (!out) {
-              params = {file:'http://'+window.location.host + url};
-            } else {
-              params = {file:url};
-            }
+            params = {file_uri:url};
           } else {
             params = {the_geom_type:type}
           }
           $.ajax({
             type: "POST",
-            url: global_api_url+'tables/',
+            url: global_api_url+'imports/',
             data: params,
             headers: {'cartodbclient':true},
             success: function(data, textStatus, XMLHttpRequest) {
-              if (data.tag){
-                  window.location.href = "/dashboard?tag_name="+data.tag;
-              }else{
-                  window.location.href = "/tables/"+data.id;
-              }
+
+              var item_queue = data.item_queue_id;
+
+              $.ajax({
+                type: "GET",
+                url: global_api_url + 'imports/' + item_queue,
+                sucess: function(r) {
+                  console.log(r);
+                }
+              })
+
+              //debugger;
+
+
+
+
+
+              // if (data.tag){
+              //     window.location.href = "/dashboard?tag_name="+data.tag;
+              // }else{
+              //     window.location.href = "/tables/"+data.id;
+              // }
             },
             error: function(e) {
 							var json = $.parseJSON(e.responseText);

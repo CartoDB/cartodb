@@ -24,7 +24,7 @@ cdb.ui.common.Row = Backbone.Model.extend({
 cdb.ui.common.TableData = Backbone.Collection.extend({
     model: cdb.ui.common.Row,
 
-    /** 
+    /**
      * get value for row index and columnName
      */
     getCell: function(index, columnName) {
@@ -71,6 +71,13 @@ cdb.ui.common.RowView = cdb.core.View.extend({
     tr.html('');
     var row = this.model;
     tr.attr('id', 'row_' + row.id);
+
+    if(this.options.row_header) {
+        var td = $('<td>');
+        td.append(self.valueView('', ''));
+        tr.append(td);
+    }
+
     var attrs = this.order || _.keys(row.attributes);
     _(attrs).each(function(key) {
       var value = row.attributes[key];
@@ -109,7 +116,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.rowViews = [];
 
     // binding
-    this.dataModel.bind('reset', this.render, this);
+    this.dataModel.bind('reset', this._renderRows, this);
     this.dataModel.bind('add', this.addRow, this);
     this.model.bind('change', this.render, this);
 
@@ -129,6 +136,9 @@ cdb.ui.common.Table = cdb.core.View.extend({
     var self = this;
     var thead = $("<thead>");
     var tr = $("<tr>");
+    if(this.options.row_header) {
+      tr.append($("<th>").append(self.headerView(['', 'header'])));
+    }
     _(this.model.get('schema')).each(function(col) {
       tr.append($("<th>").append(self.headerView(col)));
     });
@@ -151,8 +161,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
    */
   addRow: function(row) {
     var self = this;
-    var tr = new self.rowView({ 
-      model: row, 
+    var tr = new self.rowView({
+      model: row,
       order: this.model.columnNames()
     });
     self.$el.append(tr.render().el);
@@ -160,20 +170,31 @@ cdb.ui.common.Table = cdb.core.View.extend({
   },
 
   /**
+   * render only data rows
+   */
+  _renderRows: function() {
+    var self = this;
+    this.clear_rows();
+    this.dataModel.each(function(row) {
+      self.addRow(row);
+    });
+  },
+
+  /**
    * render table
    */
   render: function() {
     var self = this;
-    self.clear_rows();
+
     self.$el.html('');
 
     // render header
     self.$el.append(self._renderHeader());
 
     // render data
-    this.dataModel.each(function(row) {
-      self.addRow(row);
-    });
+    self._renderRows();
+
     return this;
+
   }
 });

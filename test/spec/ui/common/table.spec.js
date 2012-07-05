@@ -34,8 +34,8 @@ describe("common.ui.Table", function() {
       var r = new cdb.ui.common.RowView({model: row});
       expect(r.render().$('td').length).toEqual(2);
     });
+
     it("should render in order", function() {
-      
       var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
       var r = new cdb.ui.common.RowView({model: row, order: ['test1', 'test0']});
       r.render();
@@ -46,6 +46,15 @@ describe("common.ui.Table", function() {
       r.render();
       expect($(r.$('td')[0]).html()).toEqual('a');
       expect($(r.$('td')[1]).html()).toEqual('b');
+    });
+    it("should render row header", function() {
+      var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
+      var r = new cdb.ui.common.RowView({
+        model: row, 
+        row_header: true
+      });
+      r.render();
+      expect(r.$('td').length).toEqual(3);
     });
   });
 

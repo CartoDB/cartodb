@@ -29,7 +29,7 @@ $(function() {
           var settings = this.settings = new cdb.ui.common.Dropdown({
             target: 'a.account',
             model: {username: username},
-            template_base: "settings_item",
+            template_base: "dashboard/views/settings_item",
             onClick: function() {
               console.log("how does it look?");
             }

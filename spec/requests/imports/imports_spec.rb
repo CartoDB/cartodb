@@ -58,5 +58,5 @@ describe "Imports API" do
   it 'allows users to get a list of failed imports'
   it 'allows users to get a list of succeeded imports'
   it 'allows users to kill pending imports'
-  it 'allows users to perform synchronous imports'
+
 end

@@ -88,10 +88,18 @@ class DataImport < Sequel::Model
       import_attributes[:import_from_url] = data_source
     end
 
-    CartoDB::Importer.new(import_attributes).import!
+    importer = CartoDB::Importer.new(import_attributes).import!
 
-    reload
-    imported
+    self.reload
+    self.imported
+    self.table_name = importer.name
+    self.save
+
+    #import_cleanup
+    #set_the_geom_column!
+
+    self.formatted
+    self.save
   end
 
   def after_rollback(*args, &block)

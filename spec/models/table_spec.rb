@@ -706,54 +706,14 @@ describe Table do
       end
     end
   end
-  context "table from queries" do
-    it "should create table from query" do
-      table = new_table :name => nil
-      table.import_from_query = "SELECT generate_series as gs FROM generate_series(1,10)"
-      table.save.reload
-      table.rows_counted.should == 10
-      check_schema(table, [
-        [:cartodb_id, "integer"], [:gs, "integer"], 
-        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-        [:the_geom, "geometry", "geometry", "point"]
-      ])
-      row = table.records[:rows][0]
-      row[:gs].should == 1
-    end
   
-    it "should create table from query and create invalid_the_geom" do
-      table = new_table :name => nil
-      table.import_from_query = "SELECT generate_series as gs, generate_series as the_geom FROM generate_series(1,10)"
-      table.save.reload
-      table.rows_counted.should == 10
-      check_schema(table, [
-        [:cartodb_id, "integer"], [:gs, "integer"], 
-        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-        [:invalid_the_geom, "integer"], [:the_geom, "geometry", "geometry", "point"]
-      ])
-      row = table.records[:rows][0]
-      row[:gs].should == 1
-    end
-  
-    it "should create table from query and valid multipolygon not 4326" do
-      table = new_table :name => nil
-      table.import_from_query = "SELECT generate_series as gs, GEOMETRYFROMTEXT('MULTIPOLYGON(((0 0, 0 10, 10 10, 10 0, 0 0)))',3242) as the_geom FROM generate_series(1,10)"
-      table.save.reload
-      table.rows_counted.should == 10
-      check_schema(table, [
-        [:cartodb_id, "integer"], [:gs, "integer"], 
-        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"],
-        [:the_geom, "geometry", "geometry", "multipolygon"]
-      ])
-      row = table.records[:rows][0]
-      row[:gs].should == 1
-    end
-  
-  end
   context "post import processing tests" do
     it "should add a point the_geom column after importing a CSV" do
       table = new_table :name => nil
-      table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+      
+      importer, errors = create_import user, "#{Rails.root}/db/fake_data/twitters.csv"
+      #table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
+      table.migrate_existing_table = importer[0].name
       table.save.reload
       table.name.should match(/^twitters/)
       table.rows_counted.should == 7
@@ -775,13 +735,9 @@ describe Table do
       table = new_table :name => 'empty_file', :user_id => user.id
       table.save.reload
       table.name.should == 'empty_file'
-
-      table2 = new_table :name => nil, :user_id => user.id
-      table2.import_from_file = "#{Rails.root}/db/fake_data/empty_file.csv"
-      lambda {
-        table2.save
-      }.should raise_error
-
+      
+      importer, errors = create_import user, "#{Rails.root}/db/fake_data/empty_file.csv"
+      
       user.in_database do |user_database|
         user_database.table_exists?(table.name.to_sym).should be_true
       end
@@ -1367,5 +1323,22 @@ describe Table do
     table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
     schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
     schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
+  end
+  def create_import user, file_name, name=nil
+    @data_import  = DataImport.new(:user_id => user.id)
+    @data_import.updated_at = Time.now
+    @data_import.save
+    hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      "database" => user.database_name, 
+      :logger => ::Rails.logger,
+      "username" => user.database_username, 
+      "password" => user.database_password,
+      :import_from_file => file_name, 
+      :debug => (Rails.env.development?), 
+      :data_import_id => @data_import.id,
+      :remaining_quota => user.remaining_quota
+    ).symbolize_keys
+    importer = CartoDB::Importer.new hash_in
+    return importer.import!
   end
 end

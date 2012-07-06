@@ -712,7 +712,6 @@ describe Table do
       table = new_table :name => nil
       
       importer, errors = create_import user, "#{Rails.root}/db/fake_data/twitters.csv"
-      #table.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
       table.migrate_existing_table = importer[0].name
       table.save.reload
       table.name.should match(/^twitters/)
@@ -750,7 +749,8 @@ describe Table do
       table.name.should == 'empty_file'
 
       table2 = new_table :name => 'empty_file', :user_id => user.id
-      table2.import_from_file = "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
+      importer, errors = create_import user, "#{Rails.root}/db/fake_data/csv_no_quotes.csv"
+      table2.migrate_existing_table = importer[0].name
       table2.save.reload
       table2.name.should == 'csv_no_quotes'
 
@@ -801,7 +801,8 @@ describe Table do
     it "should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id" do
       user = create_user
       table = new_table :user_id => user.id
-      table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+      importer, errors = create_import user, "#{Rails.root}/db/fake_data/gadm4_export.csv"
+      table.migrate_existing_table = importer[0].name
       table.save.reload
       user = User.select(:id,:database_name,:crypted_password).filter(:id => table.user_id).first
       table_schema = user.in_database.schema(table.name)
@@ -818,7 +819,8 @@ describe Table do
     it "should copy cartodb_id values to a new cartodb_id serial column when importing a file which already has a cartodb_id column" do
       user = create_user
       table = new_table :user_id => user.id
-      table.import_from_file = "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+      importer, errors = create_import user, "#{Rails.root}/db/fake_data/with_cartodb_id.csv"
+      table.migrate_existing_table = importer[0].name
       table.save.reload
 
       check_schema(table, [
@@ -861,7 +863,8 @@ describe Table do
     it "should make sure it converts created_at and updated at to date types when importing from CSV" do
       user = create_user
       table = new_table :user_id => user.id
-      table.import_from_file = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+      importer, errors = create_import user, "#{Rails.root}/db/fake_data/gadm4_export.csv"
+      table.migrate_existing_table = importer[0].name
       table.save.reload
       schema = table.schema(:cartodb_types => true)
       schema.include?([:updated_at, "date"]).should == true
@@ -869,26 +872,20 @@ describe Table do
     end  
     it "should normalize strings if there is a non-convertible entry when converting string to number" do
       user = create_user
-      table = new_table
-      table.user_id = user.id
-      table.name = "elecciones2008"
-      table.import_from_file = "#{Rails.root}/spec/support/data/column_string_to_number.csv"
-      table.save    
+      table = new_table :user_id => user.id
+      table.name = "clubbing"
+      importer, errors = create_import user, "#{Rails.root}/db/fake_data/short_clubbing.csv"
 
-      table.modify_column! :name=>"f1", :type=>"number", :old_name=>"f1", :new_name=>nil
+      table.migrate_existing_table = importer[0].name
+      table.save.reload
 
-      table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 1
-      table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == 2
-      table.sequel.select(:f1).where(:test_id => '3').first[:f1].should == nil
-      table.sequel.select(:f1).where(:test_id => '4').first[:f1].should == 1234
-      table.sequel.select(:f1).where(:test_id => '5').first[:f1].should == 45345
-      table.sequel.select(:f1).where(:test_id => '6').first[:f1].should == -41234
-      table.sequel.select(:f1).where(:test_id => '7').first[:f1].should == 21234.2134
-      table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == 2345.2345
-      table.sequel.select(:f1).where(:test_id => '9').first[:f1].should == -1234.3452
-      table.sequel.select(:f1).where(:test_id => '10').first[:f1].should == nil
-      table.sequel.select(:f1).where(:test_id => '11').first[:f1].should == nil
-      table.sequel.select(:f1).where(:test_id => '12').first[:f1].should == nil                                
+      table.modify_column! :name=> "club_id", :type=>"number", :old_name=>"club_id", :new_name=>nil
+
+      table.sequel.where(:cartodb_id => '1').first[:club_id].should == 709
+      table.sequel.where(:cartodb_id => '2').first[:club_id].should == 892
+      table.sequel.where(:cartodb_id => '3').first[:club_id].should == 992
+      table.sequel.where(:cartodb_id => '4').first[:club_id].should == nil
+      table.sequel.where(:cartodb_id => '5').first[:club_id].should == 45345                            
     end
 
     it "should normalize string if there is a non-convertible entry when converting string to boolean" do
@@ -896,9 +893,13 @@ describe Table do
       table = new_table
       table.user_id = user.id
       table.name = "my_precious"
-      table.import_from_file = "#{Rails.root}/spec/support/data/column_string_to_boolean.csv"
+      importer, errors = create_import user, "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
+      table.migrate_existing_table = importer[0].name
       table.save    
 
+      # configure nil column
+      table.sequel.where(:test_id => '4').update(:f1 => '0')   
+       
       # configure nil column
       table.sequel.where(:test_id => '11').update(:f1 => nil)                              
 
@@ -909,13 +910,13 @@ describe Table do
       table.modify_column! :name=>"f1", :type=>"boolean", :old_name=>"f1", :new_name=>nil
 
       # test
-      table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == true
-      table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == true
-      table.sequel.select(:f1).where(:test_id => '3').first[:f1].should == true
-      table.sequel.select(:f1).where(:test_id => '4').first[:f1].should == true
-      table.sequel.select(:f1).where(:test_id => '5').first[:f1].should == true
-      table.sequel.select(:f1).where(:test_id => '6').first[:f1].should == true
-      table.sequel.select(:f1).where(:test_id => '7').first[:f1].should == true
+      table.sequel.select(:f1).where(:cartodb_id => '1').first[:f1].should == true
+      table.sequel.select(:f1).where(:cartodb_id => '2').first[:f1].should == true
+      table.sequel.select(:f1).where(:cartodb_id => '3').first[:f1].should == true
+      table.sequel.select(:f1).where(:cartodb_id => '4').first[:f1].should == false
+      table.sequel.select(:f1).where(:cartodb_id => '5').first[:f1].should == true
+      table.sequel.select(:f1).where(:cartodb_id => '6').first[:f1].should == true
+      table.sequel.select(:f1).where(:cartodb_id => '7').first[:f1].should == true
       table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == false
       table.sequel.select(:f1).where(:test_id => '9').first[:f1].should == false
       table.sequel.select(:f1).where(:test_id => '10').first[:f1].should == false

@@ -211,6 +211,7 @@ class Table < Sequel::Model(:user_tables)
         
         # ensure unique name, also ensures self.name can override any imported table name
         uniname = self.name ? get_valid_name(self.name) : get_valid_name(migrate_existing_table)
+        
         # with table #{uniname} table created now run migrator to CartoDBify
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
           "database" => database_name, 

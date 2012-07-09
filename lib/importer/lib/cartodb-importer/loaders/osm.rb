@@ -71,6 +71,7 @@ module CartoDB
         valid_tables.each do |feature|
           @old_table_name = "#{random_table_prefix}_#{feature}"
           @table_name = get_valid_name("#{@working_data[:suggested_name]}_#{feature}")
+          
           begin
             @db_connection.run("ALTER TABLE \"#{@old_table_name}\" RENAME TO \"#{@table_name}\"")
             @table_created = true
@@ -100,35 +101,17 @@ module CartoDB
               
               @rows_imported = @db_connection["SELECT count(*) as count from #{@table_name}"].first[:count]
               
-              # import_tables << @table_name
-              # @last_table = @table_name
               @data_import.save
               
-              @new_table = Table.new :tags => "#{import_tag}"
-              # @di = DataImport.new(:user_id => @data_import.user_id)
-              # @di.updated_at = Time.now
-              # @di.save
-              @new_table.user_id =  @data_import.user_id
-              @new_table.data_import_id = @data_import.id
-              @new_table.name = @table_name  
-              @new_table.migrate_existing_table = @table_name 
-              if @new_table.valid?
-                @new_table.save
-                
-                payloads << OpenStruct.new({
-                                        :name => @new_table.name, 
-                                        :rows_imported => @rows_imported,
-                                        :import_type => 'OSM',
-                                        :log => ''
-                                      })
-              end
+              payloads << OpenStruct.new({
+                                      :name => @table_name, 
+                                      :rows_imported => @rows_imported,
+                                      :import_type => '.osm',
+                                      :log => ''
+                                    })
+              
               @data_import.refresh
             
-            # rescue
-            #   @data_import.set_error_code(5000)
-            #   @data_import.log_error("ERROR: unable to format table \"#{@table_name}\" for CartoDB")
-            #   @db_connection.drop_table @old_table_name
-            # end
           rescue Exception => msg  
             @runlog.err << msg
             @data_import.set_error_code(5000)

@@ -8,7 +8,7 @@ module CartoDB
       register_loader :geojson
       register_loader :js
       register_loader :json
-      register_loader :kml
+      #register_loader :kml
 
       def process!
         begin
@@ -93,9 +93,9 @@ module CartoDB
                 if geometry_type
                   # move original geometry column around
                   @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} RENAME COLUMN the_geom TO the_geom_orig;")
-                  
+
                   @db_connection.run("SELECT AddGeometryColumn('#{@working_data[:suggested_name]}','the_geom',4326, '#{geometry_type}', 2)")
-                  
+
                   add_index @working_data[:suggested_name], random_index_name
                   #@db_connection.run("CREATE INDEX #{@working_data[:suggested_name]}_the_geom_gist ON #{@working_data[:suggested_name]} USING GIST (the_geom)")
 

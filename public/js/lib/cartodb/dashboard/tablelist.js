@@ -45,7 +45,6 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
 
     render: function() {
       var self = this;
-      self.$el.html('');
       this.model.each(function(m) {
         self.addTable(m);
       });

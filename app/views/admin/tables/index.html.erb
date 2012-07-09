@@ -29,7 +29,7 @@
           </h2>
           <% if @total_tables > 10 %>            
             <form action="#">
-              <input type="text" value="<%= params[:q] %>" name="q" />
+              <input type="text" placeholder="search" value="<%= params[:q] %>" name="q" />
               <input type="submit" value="true" name="submit" />
             </form>
           <% end %>
@@ -37,9 +37,9 @@
         <div class="content">
           <ul>
             <%= render :partial => 'shared/flash_message' %>
-            <% @tables.each_with_index do |table, i| %>
-              <%= render :partial => 'table_list', :locals => { :table => table } %>
-            <% end %>
+            <%# @tables.each_with_index do |table, i| %>
+              <%#= render :partial => 'table_list', :locals => { :table => table } %>
+            <%# end %>
           </ul>
         </div>
       </section>

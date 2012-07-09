@@ -24,13 +24,80 @@
       letter-spacing:0px;
 
       div.head {
+        position:relative;
         padding:35px 40px; // Hack for line-height
         border-bottom:1px solid #E5E5E5;
         h2 {
+          @include inline-block();
+          width:auto;
           font-size:25px;
           letter-spacing:-1px;
           color:#333333;
           line-height:normal;
+        }
+
+        form {
+          position:absolute;
+          right:34px;
+          top:34px;
+          width:auto;
+
+          input[type="text"] {
+            width:50px;
+            color: #397DB9;
+            font-size:15px;
+            padding:7px 24px 7px 10px;
+            border:1px solid white;
+            @include border-radius(4px);
+            @include transform-style("linear");
+            @include transition-property("border,width");
+            @include transition-duration(500ms);
+
+            &::-webkit-input-placeholder {
+              color: #397DB9;
+              font-size:15px;
+            }
+            &:-moz-placeholder {
+              color: #397DB9;
+              font-size:15px;
+            }
+
+            &:focus {
+              outline:none;
+              width:100px;
+              border-color:#397DB9;
+              @include transform-style("linear");
+              @include transition-property("border,width");
+              @include transition-duration(500ms);
+
+              &::-webkit-input-placeholder {
+                color: #DEDEDE;
+                @include transform-style("linear");
+                @include transition-property("color");
+                @include transition-duration(500ms);
+              }
+              &:-moz-placeholder {
+                color: #DEDEDE;
+                @include transform-style("linear");
+                @include transition-property("color");
+                @include transition-duration(500ms);
+              }
+            }
+          }
+
+          input[type="submit"] {
+            position:absolute;
+            top:13px;
+            right:6px;
+            width:13px;
+            height:13px;
+            border:none;
+            @include text-indent();
+            @include icons-sprite(lens_blue);
+            &:focus {
+              outline:none;
+            }
+          }
         }
       }
 
@@ -42,7 +109,7 @@
           li {
             position:relative;
             padding:0 40px;
-            overflow:hidden;
+            //overflow:hidden;
 
             div.table_info {
               padding:40px 0;
@@ -179,6 +246,40 @@
                 &:before {display:none;}  
               }
             }
+
+            &.flash {
+              position:relative;
+              padding:22px 40px;
+              background:rgba(#FA9494,0.15);
+              border-bottom:1px solid rgba(#CCCCCC,0.5);
+
+              a.close {
+                position:absolute;
+                right:40px;
+                top:22px;
+                padding:1px 0 3px;
+                width:15px;
+                background:#CCCCCC;
+                @include border-radius(25px);
+                color:white;
+                text-align:center;
+                line-height:11px;
+                &:hover {
+                  background:#999999;
+                  text-decoration:none;
+                  cursor:pointer;
+                }
+              }
+
+              & + li div.table_info {border-color:white}
+
+              &:hover {
+                background:rgba(#FA9494,0.15);
+                &:after {display:none;}
+                &:before {display:none;}
+                cursor:default;
+              }
+            }
           }
         }
       }
@@ -198,6 +299,25 @@
 
         li {
           margin:0 0 14px;
+          a {
+            color:#666666;
+            text-decoration:none;
+
+            &:hover {
+              color:#333333;
+              text-decoration:underline;
+            }
+
+            &.selected {
+              font-weight:bold;
+              color:#333333;
+              &:hover {
+                color:#333333;
+                cursor:default;
+                text-decoration:none;
+              }
+            }
+          }
           &:last-child {margin:0}
         }
 

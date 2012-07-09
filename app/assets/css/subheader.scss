@@ -34,9 +34,6 @@
             height:36px;
             @include border-radius(3px);
             @include background(linear-gradient(#85ACDC,#5990CE));
-            // @include transform-style("linear");
-            // @include transition-property("width");
-            // @include transition-duration(500ms);
             &.boom {@include background(linear-gradient(#CB2828,#FF5255));}
             &.danger {@include background(linear-gradient(#F8B85C,#F49000));}
 
@@ -52,12 +49,41 @@
             }
           }
         }
+
+        div.stats {
+          display:block;
+          height:36px;
+        }
+        
         p {
           margin:10px 0 0 0;
           font-size:15px;
           color:#666666;
           strong {font-weight:bold}
         }
+      }
+    }
+  }
+
+  section.warning {
+    padding:25px 0;
+    background:#FFF7EA;
+    border-bottom:1px solid rgba(#CCCCCC,0.5);
+
+    a.close {
+      position:absolute;
+      right:0;
+      top:2px;
+      padding:1px 0 3px;
+      width:15px;
+      background:#CCCCCC;
+      @include border-radius(25px);
+      color:white;
+      text-align:center;
+      line-height:11px;
+      &:hover {
+        background:#999999;
+        text-decoration:none;
       }
     }
   }

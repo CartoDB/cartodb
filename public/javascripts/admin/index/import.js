@@ -255,7 +255,7 @@
         url: global_api_url + 'imports/' + queue_id,
         success: function(r) {
           var data_import = r.import;
-          if ($.isEmptyObject(data_import) || data_import.state != 'complete' || data_import.state != 'failure') {
+          if ($.isEmptyObject(data_import) || (data_import.state != 'complete' && data_import.state != 'failure')) {
             setTimeout(function(){
               checkImportStatus(queue_id);
             }, 1000);

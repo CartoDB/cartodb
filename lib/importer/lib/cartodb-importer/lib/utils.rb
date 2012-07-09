@@ -141,6 +141,10 @@ module CartoDB
           @db_connection.run("CREATE INDEX \"#{index_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
         end
       end
+      def drop_index random_index_name
+        @db_connection.run("DROP INDEX IF EXISTS \"#{random_index_name}\"")
+      end
+        
       def sanitize_table_columns table_name
         # Sanitize column names where needed
         column_names = @db_connection.schema(table_name).map{ |s| s[0].to_s }

@@ -34,7 +34,8 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
   events: {
     'click .ok': '_ok',
-    'click .cancel': '_cancel'
+    'click .cancel': '_cancel',
+    'click .close': '_cancel'
   },
 
   default_options: {

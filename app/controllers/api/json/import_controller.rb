@@ -35,13 +35,16 @@ class Api::Json::ImportController < Api::ApplicationController
       method = params[:file] ? 'file': 'url'
       src = params[:file] ? params[:file] : params[:url]
       imports, errors = import_to_cartodb method, src
+      
       unless imports.nil?
         results = Array.new
-        
         imports.each do | import |
           payload, location = migrate_existing import.name, params[:name]
           results << [payload,location]
         end
+        
+        clean_failed_imports
+        
         if results.length == 0
           if errors.length == 0
             render_jsonp({ :description => 'Unknown', :stack => [], :code=> 99999 }, 400)
@@ -128,6 +131,8 @@ class Api::Json::ImportController < Api::ApplicationController
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     
     @data_import.reload
+    
+    clean_failed_imports
     render_jsonp({ :description => @data_import.get_error_text, :stack =>  @data_import.log_json, :code => @data_import.error_code }, 400)
   end
 
@@ -343,6 +348,22 @@ class Api::Json::ImportController < Api::ApplicationController
     lat2 = (res * upy) - 90
     
     return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}" 
+  end
+  def clean_failed_imports
+    # Queries for all tables in the users sys table and checks that they 
+    # really exist on disk. If they don't, it removes them from disk
+    # Avoids ghost tables from import
+    
+    user_tables = []
+    Table.filter(:user_id => current_user.id).each{|table| user_tables << table[:name]}
+    
+    database_tables = current_user.in_database.fetch("select c.relname as name FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN ('r','') AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid) AND c.relname != 'spatial_ref_sys'")
+    
+    database_tables.each do |table| 
+      unless user_tables.include? table[:name]
+        current_user.in_database.run("DROP TABLE IF EXISTS #{table[:name]}")
+      end
+    end
   end
   def table_owner    
     table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first

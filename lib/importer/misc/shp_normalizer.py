@@ -57,7 +57,7 @@ def to_epsg(srs):
             except:
                 return None
 
-srid = 4326
+srid = None
 #Try detecting the SRID
 if os.path.isfile(prj_file):
   prj_string = open(prj_file,'r').read()
@@ -73,28 +73,30 @@ if os.path.isfile(prj_file):
           'error' : True,
           'mode' : 'wkt',
           'terms' : prj_string})
-      webres = urlopen('http://prj2epsg.org/search.json', query)
+      webres = urlopen('http://prj2epsg.cloudfoundry.com/search.json', query)
       jres = json.loads(webres.read())
+      if 'errors' in jres and 0<length(jres['errors']):
+        srid = None
       if jres['codes']:
         srid = int(jres['codes'][0]['code'])
     except:
-      srid=4326 # ensure set back to 4326 whatever happens    
+      srid=None # ensure set back to 4326 whatever happens    
 
 try:
-    #Try to detect the encoding
-    dbf = open(dbf_file, 'rb')
+# Try to detect the encoding
+    dbf = open(dbf_file.strip(), 'rb')
     db = dbfUtils.dbfreader(dbf)
-    
+
     fnames = db.next()
     ftypes = db.next()
-    
+
     # find string fields
     sfields = []
     for fno in range(len(fnames)):
       if ( ftypes[fno][0] == 'C' ) : sfields.append(fno)
-    
+
     detector = UniversalDetector()
-    
+
     # 100 rows should be enough to figure encoding
     # TODO: more broader and automated testing, allow 
     #       setting limit by command line param
@@ -108,7 +110,8 @@ try:
     if encoding=="ascii":
         encoding="LATIN1" # why not UTF8 here ?
 except Exception as err:
-    sys.stderr.write(repr(err)+'\n')
-    sys.exit(1)
+    encoding="UTF8" # why not UTF8 here ?
+    #sys.stderr.write(repr(err)+'\n')
+    #sys.exit(1)
 
 print "%s,%s,%s,%s" % (srid,encoding,shp_file,name)

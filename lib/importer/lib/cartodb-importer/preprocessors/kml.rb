@@ -14,22 +14,25 @@ module CartoDB
         fix_encoding 
         
         ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{@path}.shp #{@path}}
+        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{@path}.shp #{@path}}
         #-lco DIM=*2* 
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
         unless (err = stderr.read).empty?
           if err.downcase.include?('failure')
-            @data_import.set_error_code(2000)
-            @data_import.log_error(err)
-            @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
-          
             if err.include? "Geometry Collection"
               @data_import.set_error_code(3201)
               @data_import.log_error("ERROR: geometry contains Geometry Collection")
+            elsif ['.json','.geojson','.js'].include? @ext
+              @data_import.set_error_code(3007)
+              @data_import.log_error(err)
+              @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
+            else
+              @data_import.set_error_code(2000)
+              @data_import.log_error(err)
+              @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
             end
-          
-            raise "failed to convert #{@ext.sub('.','')} to shp"
+            raise "failed to convert file to shp"
           else
             @data_import.log_update(err)
           end
@@ -45,10 +48,12 @@ module CartoDB
         elsif File.directory?("#{@path}.shp") #multi-layer kml support
           Dir.foreach("#{@path}.shp") do |entry|
             if File.extname(entry) == ".shp"
+              #ent = sys.escape(entry)
+              ent = entry
               if File.file?("#{@path}.1.shp")
-                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" -update -append #{@path}.merged.shp #{@path}.shp/#{sys.escape(entry)}}
+                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" -update -append #{@path}.merged.shp "#{@path}.shp/#{ent}"}
               else
-                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{@path}.merged.shp #{@path}.shp/#{sys.escape(entry)}}
+                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{@path}.merged.shp "#{@path}.shp/#{ent}"}
               end
               stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
             end

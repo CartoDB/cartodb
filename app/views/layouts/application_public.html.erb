@@ -20,7 +20,7 @@
       <% end %>
       <ul>
       	<% if current_user %>
-        	<li class="last"><%= link_to current_user.email, account_url, :class=>"account" %><span><a href="<%= logout_path %>">(close session)</a></span></li>
+        	<li class="last"><%= link_to current_user.email, account_url, :class=>"account" %><span><a href="<%= logout_path %>">(log out)</a></span></li>
         <% else %>
         	<li class="last"><%= link_to "login to CartoDB", "http://cartodb.com/login", :class=>"account" %></li>
         <% end %>

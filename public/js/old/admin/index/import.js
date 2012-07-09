@@ -122,7 +122,7 @@
         action: '/upload',
         params: {},
         allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz', 'osm', 'bz2', 'tif', 'tiff'],
-        sizeLimit: 0, // max size
+        sizeLimit: userSpaceLimit, // max size
         minSizeLimit: 0, // min size
         debug: false,
         onSubmit: function(id, fileName){
@@ -144,18 +144,17 @@
           $('div.select_file p').addClass('error');
         }
       });
-      
-      
+
+
       //Uploader for the whole page (dashboard only)
       var hugeUploader = new qq.FileUploader({
       	element: document.getElementById('hugeUploader'),
       	action: '/upload',
       	params: {},
         allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz', 'osm', 'bz2', 'tif', 'tiff'],
-      	sizeLimit: 0,
+      	sizeLimit: userSpaceLimit,
       	minSizeLimit: 0,
-      	debug: false,
-
+      	debug: true,
       	onSubmit: function(id, fileName){
         	resetUploadFile();
       		$('div.create_window ul > li:eq(0)').addClass('disabled');

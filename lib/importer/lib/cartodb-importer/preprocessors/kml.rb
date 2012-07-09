@@ -14,8 +14,11 @@ module CartoDB
         # run Chardet + Iconv
         fix_encoding 
         
+        # generate a temporally filename 
+        tmp_file = temporary_filename
+        
         ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{@working_data[:path]}.shp #{@working_data[:path]}}
+        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{tmp_file} #{@working_data[:path]}}
         #-lco DIM=*2* 
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
@@ -43,10 +46,10 @@ module CartoDB
           @runlog.stdout << reg
         end
         
-        if File.file?("#{@working_data[:path]}.shp")
-          dirname = File.dirname("#{@working_data[:path]}.shp") 
-          orig = File.basename("#{@working_data[:path]}.shp")
-          name = File.basename("#{@working_data[:path]}.shp") 
+        if File.file?("#{tmp_file}")
+          dirname = File.dirname("#{tmp_file}") 
+          orig = File.basename("#{tmp_file}")
+          name = File.basename("#{tmp_file}") 
           if name.include? ' '
             name = name.gsub(' ','_')
           end
@@ -59,12 +62,12 @@ module CartoDB
             :suggested_name => "#{@working_data[:suggested_name]}",
             :path => "#{dirname}/#{name}"
           }
-        elsif File.directory?("#{@working_data[:path]}.shp") #multi-layer kml support
-          Dir.foreach("#{@working_data[:path]}.shp") do |entry|
+        elsif File.directory?("#{tmp_file}") #multi-layer kml support
+          Dir.foreach("#{tmp_file}") do |entry|
             if File.extname(entry) == ".shp"
-              dirname = File.dirname("#{@working_data[:path]}.shp/#{entry}") 
-              orig = File.basename("#{@working_data[:path]}.shp/#{entry}")
-              name = File.basename("#{@working_data[:path]}.shp/#{entry}") 
+              dirname = File.dirname("#{tmp_file}/#{entry}") 
+              orig = File.basename("#{tmp_file}/#{entry}")
+              name = File.basename("#{tmp_file}/#{entry}") 
               if name.include? ' '
                 name = name.gsub(' ','_')
               end

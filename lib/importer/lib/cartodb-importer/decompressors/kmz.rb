@@ -30,9 +30,6 @@ module CartoDB
           # temporary filename. no collisions. 
           tmp_path = "#{tmp_dir}.#{name}"
           
-          # add to delete queue
-          @entries << tmp_path
-    
           if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
             unless @suggested_name.nil?
               suggested = @suggested_name

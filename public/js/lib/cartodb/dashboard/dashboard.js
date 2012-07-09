@@ -45,21 +45,10 @@ $(function() {
 
         show_dialog: function() {
 
-          var MyDialog = cdb.ui.common.Dialog.extend({
-            render_content: function() {
-              return "my content";
-            },
-          })
-
-          var dialog = new MyDialog({
-              title: 'test',
-              description: 'long description here',
-              template_name: 'common/views/dialog_base',
-              width: 500
-          });
-
+          var dialog = new cdb.admin.CreateTableDialog();
           this.$el.append(dialog.render().el);
           dialog.open();
+
         }
     });
 

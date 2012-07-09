@@ -79,6 +79,7 @@ module CartoDB
           # * loop over table and parse geojson into postgis geometries
           # * drop the_geom_orig
           #
+          random_index_name = "importing_#{Time.now.to_i}_#{@working_data[:suggested_name]}"
           column_names = @db_connection.schema(@working_data[:suggested_name]).map{ |s| s[0].to_s }
           if column_names.include? "the_geom"
             @data_import.log_update("update the_geom")
@@ -92,8 +93,11 @@ module CartoDB
                 if geometry_type
                   # move original geometry column around
                   @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} RENAME COLUMN the_geom TO the_geom_orig;")
+                  
                   @db_connection.run("SELECT AddGeometryColumn('#{@working_data[:suggested_name]}','the_geom',4326, '#{geometry_type}', 2)")
-                  @db_connection.run("CREATE INDEX #{@working_data[:suggested_name]}_the_geom_gist ON #{@working_data[:suggested_name]} USING GIST (the_geom)")
+                  
+                  add_index @working_data[:suggested_name], random_index_name
+                  #@db_connection.run("CREATE INDEX #{@working_data[:suggested_name]}_the_geom_gist ON #{@working_data[:suggested_name]} USING GIST (the_geom)")
 
                   # loop through old geom parsing into the_geom.
                   # TODO: Replace with ST_GeomFromGeoJSON when production has been upgraded to postgis r8692
@@ -116,6 +120,7 @@ module CartoDB
                 end
               rescue => e
                 column_names.delete('the_geom')
+                drop_index random_index_name
                 @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} RENAME COLUMN the_geom TO invalid_the_geom;")
                 @runlog.err << "failed to read geojson for #{@working_data[:suggested_name]}. #{e.inspect}"
                 @data_import.log_error("ERROR: failed to read geojson for #{@working_data[:suggested_name]}. #{e.inspect}")
@@ -123,6 +128,7 @@ module CartoDB
             else
               begin
                 column_names.delete('the_geom')
+                drop_index random_index_name
                 @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} RENAME COLUMN the_geom TO invalid_the_geom;")
               rescue
                 column_names.delete('the_geom')
@@ -172,7 +178,7 @@ module CartoDB
                 '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
                 GEOREF
                 )
-                add_index @working_data[:suggested_name], "importing_#{Time.now.to_i}_#{@working_data[:suggested_name]}"
+                add_index @working_data[:suggested_name], random_index_name
             end
           end
           

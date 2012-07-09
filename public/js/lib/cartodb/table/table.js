@@ -8,6 +8,10 @@ $(function() {
     var Table = cdb.core.View.extend({
         el: document.body,
 
+        events: {
+          'click a[href=#create_new]': 'show_dialog'
+        },
+
         initialize: function() {
 
           this._initModels();
@@ -58,6 +62,25 @@ $(function() {
           this.workView.bind('tabEnabled', this.tabs.activate);
           this.workView.active('table');
 
+        },
+
+        show_dialog: function() {
+
+          var MyDialog = cdb.ui.common.Dialog.extend({
+            render_content: function() {
+              return "my content";
+            },
+          })
+
+          var dialog = new MyDialog({
+              title: 'test',
+              description: 'long description here',
+              template_name: 'common/views/dialog_base'
+              width: 500
+          });
+
+          this.$el.append(dialog.render().el);
+          dialog.open();
         }
     });
 
@@ -82,6 +105,8 @@ $(function() {
         }
 
     });
+
+
 
     cdb.init(function() {
       var table = new Table();

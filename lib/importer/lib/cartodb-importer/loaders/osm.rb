@@ -88,6 +88,8 @@ module CartoDB
                 if feature == "polygon"
                   @db_connection.run("UPDATE #{@table_name} SET the_geom = ST_Multi(the_geom) WHERE geometrytype(the_geom) != '#{type_conversions[feature]}' ;")
                 end
+                
+                add_index @table_name,"importing_#{Time.now.to_i}_#{@table_name}"
               end
       
               begin

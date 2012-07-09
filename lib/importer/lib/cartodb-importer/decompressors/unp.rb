@@ -19,6 +19,7 @@ module CartoDB
         tmp_dir = temporary_filename
         
         Dir.mkdir(tmp_dir)
+
         curdir = Dir.pwd
         Dir.chdir(tmp_dir)
         tarcmd = "unp #{@path}"

@@ -28,6 +28,7 @@ module CartoDB
           :python_bin_path  => @python_bin_path,
           :psql_bin_path    => @psql_bin_path,
           :entries          => @entries,
+          :table_entries    => @table_entries,
           :runlog           => @runlog,
           :import_type      => @import_type,
           :data_import_id   => @data_import_id

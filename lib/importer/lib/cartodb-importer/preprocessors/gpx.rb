@@ -10,7 +10,7 @@ module CartoDB
        import_data = Array.new
        
        # generate a temporally filename 
-       shp_file = temporary_filename(@working_data[:path])
+       shp_file = temporary_filename
        
        # extract the 3 shp files (and associated dbf and so on)
        # it will create a folder

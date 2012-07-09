@@ -24,7 +24,8 @@ module CartoDB
     
     # Initialiser has to get the file in a standard location on the filesystem    
     def initialize(options = {})
-      @entries          = []
+      @entries          = [] #will contain all files created on disk
+      @table_entries    = [] #will contain all tables attempted to be created on disk
       @python_bin_path  = `which python`.strip
       @psql_bin_path    = `which psql`.strip   
       @runlog           = OpenStruct.new :log => [], :stdout => [], :err => []   
@@ -156,11 +157,18 @@ module CartoDB
         
         errors = Array.new
         suggested = @suggested_name.nil? ? get_valid_name(File.basename(@original_name,@ext).tr('.','_').downcase.sanitize) : @suggested_name
+        
+        
+        # All imports start with only one file, so 'import_data' is an array of 
+        # on length = 1
         import_data = [{
           :ext            => @ext,
           :path           => @path,
           :suggested_name => suggested
         }]
+        
+        # A record of all file paths for cleanup
+        @entries << @path
         
         # TODO the problem with this Factory method, is that if a Zip -> KMZ/Zip 
         # it will fail because it wont know to go back and do the Decompressor
@@ -179,6 +187,7 @@ module CartoDB
         
         processed_imports = Array.new
         import_data.each { |data|
+          @entries << data[:path]
           @working_data = data
           @working_data[:suggested_name] = get_valid_name(@working_data[:suggested_name])
           preproc = CartoDB::Import::Preprocessor.create(data[:ext], self.to_import_hash)
@@ -204,6 +213,7 @@ module CartoDB
         # Load data in
         payloads = Array.new
         processed_imports.each { |data|
+          @entries << data[:path]
           @working_data = data
           # re-check suggested_name in the case that it has been taken by another in this import
           @working_data[:suggested_name] = @suggested_name.nil? ? get_valid_name(@working_data[:suggested_name]) : get_valid_name(@suggested_name) 
@@ -221,7 +231,6 @@ module CartoDB
               @data_import.log_update("#{data[:ext]} successfully loaded")  
             rescue
               @data_import.reload
-              
               errors << OpenStruct.new({ :description => @data_import.get_error_text,
                                          :stack       => @data_import.log_json,
                                          :code        => @data_import.error_code })
@@ -232,7 +241,8 @@ module CartoDB
         @data_import.refresh
         @data_import.log_update("file successfully imported")
         
-        # update_self i_res if i_res
+        #remove all files from disk
+        cleanup_disk
         
         @data_import.save
         return [payloads, errors]
@@ -251,6 +261,7 @@ module CartoDB
         raise e
       ensure
         @db_connection.disconnect
+        cleanup_disk
         if @import_from_file.is_a?(File) && File.file?(@import_from_file.path)
           File.unlink(@import_from_file)
         elsif @import_from_file.is_a? Tempfile
@@ -262,6 +273,21 @@ module CartoDB
       end        
     end  
     #https://viz2.cartodb.com/tables/1255.shp
+  def cleanup_disk
+    @entries = @entries.sort_by {|x| x.length}.reverse
+    @entries.each { |filename|
+      begin
+        # ensure we remove the file from disk
+        File.delete(filename)
+      rescue
+        begin
+          Dir.delete(filename)
+        rescue
+          # file/dir path is incorrect or doesn't exist
+        end
+      end
+    }
+  end
   def check_if_archive(path, ext)
     is_utf = `file -bi #{@path}`
     if is_utf.include? 'zip'

@@ -1,0 +1,37 @@
+@import "compass";
+
+	.mamufas {
+		position:fixed;
+		top:0;
+		left:0;
+		width:100%;
+		height:100%;
+		background:rgba(black,0.5);
+
+		section.modal {
+			position:relative;
+			width:600px;
+			margin: 200px auto 0 auto;
+			background:white;
+			@include border-radius(4px);
+      @include box-shadow(rgba(black,0.15) 0 0 0 4px);
+
+      a.close {
+      	position:absolute;
+      	top:-15px;
+      	right:-15px;
+      	width:30px;
+      	height:15px;
+      	padding:7px 0 8px;
+      	background:white;
+      	@include box-shadow(rgba(black,0.15) 0 0 0 4px);
+      	@include border-radius(50px);
+      	line-height:14px;
+      	text-align:center;
+      	&:hover {
+      		color:black;
+      		text-decoration:none;
+      	}
+      }
+		}
+	}

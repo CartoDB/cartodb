@@ -3,19 +3,25 @@
     <ul>
       <%# Check if the user needs more resources or not %>
       <% @danger = false %>
-
       <li>
         <% if @table_quota.blank? && @tables_count.blank? %>
           <% @total_tables = "&infin;" %>
           <% @tables_status = 1 %>
           <% @tables_class = "special" %>
         <% else %>
-          <% @tables_status = @tables_count.to_f/@table_quota %>
-          <% if @tables_status > 0.75 %>
-            <% @tables_class = (@tables_status > 0.90) ? "boom" : "danger" %>
+          <% if @tables_count != 0 %> 
+            <% @tables_status = @tables_count.to_f/@table_quota %>
+            <% if @tables_status > 0.75 %>
+              <% @tables_class = (@tables_status > 0.90) ? "boom" : "danger" %>
+            <% end %>
+            <% @total_tables = @table_quota %>
+            <% @danger = true %>
+          <% else %>
+            <% @tables_status = 0 %>
+            <% @total_tables = 0 %>
+            <% @total_tables = @table_quota || 5 %>
+            <% @danger = true %>
           <% end %>
-          <% @total_tables = @table_quota %>
-          <% @danger = true %>
         <% end %>
         
         <div class="progress">

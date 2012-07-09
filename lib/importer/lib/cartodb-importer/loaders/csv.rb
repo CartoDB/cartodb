@@ -8,6 +8,7 @@ module CartoDB
       register_loader :geojson  
       register_loader :js       
       register_loader :json     
+      register_loader :kml
 
       def process!
         begin

@@ -2,7 +2,7 @@ module CartoDB
   module Import
     class KML < CartoDB::Import::Preprocessor
 
-      register_preprocessor :kml
+      register_preprocessor :kmlx
       #register_preprocessor :kmz 
 
       def process!    

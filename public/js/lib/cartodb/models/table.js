@@ -16,7 +16,12 @@
    * rows and so on
    */
   cdb.admin.Table = cdb.ui.common.TableProperties.extend({
-    idAttribute: 'name'
+    url: function() {
+      //TODO: use current host
+      //var name = this.options.user.get('name');
+      return '/api/v1/tables';
+    },
+    //idAttribute: 'name'
   });
 
   /**

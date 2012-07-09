@@ -30,19 +30,24 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
 
     initialize: function() {
       this.model.bind('reset', this.addAll, this);
+      this.model.bind('add', this.addTable, this);
     },
 
     addAll: function() {
       this.render();
     },
 
+    addTable: function(m) {
+      var li = new TableView({ model: m });
+      this.$el.append(li.render().el);
+      this.addView(li);
+    },
+
     render: function() {
       var self = this;
       self.$el.html('');
       this.model.each(function(m) {
-        var li = new TableView({ model: m });
-        self.$el.append(li.render().el);
-        self.addView(li);
+        self.addTable(m);
       });
     }
 

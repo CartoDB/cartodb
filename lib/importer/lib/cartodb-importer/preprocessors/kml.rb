@@ -3,10 +3,7 @@ module CartoDB
     class KML < CartoDB::Import::Preprocessor
 
       register_preprocessor :kml
-      #register_preprocessor :kmz
-      register_preprocessor :json
-      register_preprocessor :geojson      
-      register_preprocessor :js            
+      #register_preprocessor :kmz 
 
       def process!    
         @data_import = DataImport.find(:id=>@data_import_id)
@@ -18,7 +15,8 @@ module CartoDB
         tmp_file = temporary_filename
         
         ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{tmp_file} #{@working_data[:path]}}
+        
+        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -s_srs EPSG:4326 -a_srs EPSG:4326 -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{tmp_file} #{@working_data[:path]}}
         #-lco DIM=*2* 
         stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
@@ -56,10 +54,16 @@ module CartoDB
           #fixes problem of different SHP archive files with different case patterns
           FileUtils.mv("#{dirname}/#{orig}", "#{dirname}/#{name.downcase}") unless orig == name.downcase
           name = name.downcase
+          
+          if @working_data[:suggested_name]
+            suggested = "#{@working_data[:suggested_name]}"
+          else
+            suggested = File.basename( name, File.extname(name)).sanitize
+          end
           import_data << {
             :ext => File.extname(name),
             :import_type => @working_data[:ext],
-            :suggested_name => "#{@working_data[:suggested_name]}",
+            :suggested_name => suggested,
             :path => "#{dirname}/#{name}"
           }
         elsif File.directory?("#{tmp_file}") #multi-layer kml support
@@ -74,10 +78,15 @@ module CartoDB
               #fixes problem of different SHP archive files with different case patterns
               FileUtils.mv("#{dirname}/#{orig}", "#{dirname}/#{name.downcase}") unless orig == name.downcase
               name = name.downcase
+              if @working_data[:suggested_name]
+                suggested = "#{@working_data[:suggested_name]}"
+              else
+                suggested = File.basename( name, File.extname(name)).sanitize
+              end
               import_data << {
                 :ext => '.shp',
                 :import_type => @working_data[:ext],
-                :suggested_name => File.basename( name, File.extname(name)).sanitize,
+                :suggested_name => suggested,
                 :path => "#{dirname}/#{name}"
               }
             end

@@ -72,9 +72,12 @@ cdb.ui.common.RowView = cdb.core.View.extend({
     var row = this.model;
     tr.attr('id', 'row_' + row.id);
 
+    var tdIndex = 0;
     if(this.options.row_header) {
         var td = $('<td>');
         td.append(self.valueView('', ''));
+        td.attr('data-x', tdIndex);
+        tdIndex++;
         tr.append(td);
     }
 
@@ -84,11 +87,21 @@ cdb.ui.common.RowView = cdb.core.View.extend({
       if(value !== undefined) {
         var td = $('<td>');
         td.attr('id', 'cell_' + row.id + '_' + key);
+        td.attr('data-x', tdIndex);
+        tdIndex++;
         td.append(self.valueView(key, value));
         tr.append(td);
       }
     });
     return this;
+  },
+
+  getCell: function(x) {
+    var childNo = x;
+    if(this.options.row_header) {
+      ++x;
+    }
+    return this.$('td:eq(' + x + ')');
   }
 
 });
@@ -105,6 +118,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
   rowView: cdb.ui.common.RowView,
 
   events: {
+      'click td': '_cellClick'
   },
 
   default_options: {
@@ -166,6 +180,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
       order: this.model.columnNames()
     });
     self.$el.append(tr.render().el);
+    tr.$el.attr('data-y', self.rowViews.length);
     self.rowViews.push(tr);
   },
 
@@ -196,5 +211,25 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
     return this;
 
+  },
+
+  /**
+   * return jquery cell element of cell x,y
+   */
+  getCell: function(x, y) {
+    if(this.options.row_header) {
+      ++y;
+    }
+    return this.rowViews[y].getCell(x);
+  },
+
+  _cellClick: function(e) {
+    e.preventDefault();
+    var cell = $(e.target);
+    var x = parseInt(cell.attr('data-x'), 10);
+    var y = parseInt(cell.parent().attr('data-y'), 10);
+    this.trigger('cellClick', cell, x, y);
   }
+
+
 });

@@ -46,7 +46,7 @@ stylesheets:
     - public/css/sprites.css
     - public/css/core.css
     - public/css/buttons.css
-    - public/css/section.css
+    - public/css/block.css
     - public/css/header.css
     - public/css/subheader.css
     - public/css/tables.css

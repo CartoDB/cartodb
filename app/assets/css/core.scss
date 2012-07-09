@@ -35,7 +35,7 @@
   h2,h3,h4,h5,h6 {font-weight: bold; font-family: $title-fonts; color:#333333; line-height:normal;}
   h2 {font-size:31px; letter-spacing:-1px; word-spacing:-1px; line-height:34px; &.special {font-family:$text-fonts}}
   h3 {font-size:25px;}
-
+  strong {font-weight:bold;}
 
   /*
    *  HELP CLASSES
@@ -43,7 +43,7 @@
    */
   .left {float:left}
   .right {float:right}
-  .inner {width:$w; margin:0 auto;}
+  .inner {position:relative; width:$w; margin:0 auto;}
   .margin40 {margin-top:40px;}
   .margin30 {margin-top:30px;}
   .margin25 {margin-top:25px;}
@@ -63,3 +63,4 @@
   .small {font-size:13px}
   .smaller {font-size:11px}
   .tiny {font-size:8px;}
+  .underline {text-decoration:underline;}

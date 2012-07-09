@@ -31,6 +31,12 @@ $(function() {
             model: this.tables
           });
 
+          // D3 API Requests
+          var stats = this.stats = new cdb.admin.D3Stats({
+            el: this.$("div.stats")
+          });
+
+
           // User settings
           // var settings = this.settings = new cdb.ui.common.Dropdown({
           //   target: 'a.account',

@@ -15,12 +15,13 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     import_values = import.values rescue {}
 
-    render :json => {:import => import_values, :success => true}
+    success = import_values[:state].blank? || import_values[:state] != 'failure'
+    render :json => {:import => import_values, :success => success}, :status => success ? :ok : :unprocessable_entity
   end
 
   def create
     async = params[:async] == 'false' ? false : true
-    job_meta = Resque::ImporterJobs.enqueue(current_user[:id], params[:file_uri]) if async
+    job_meta = Resque::ImporterJobs.enqueue(current_user[:id], params[:table_name], params[:file_uri]) if async
 
     render :json => {:item_queue_id => job_meta.meta_id, :success => true}
   end

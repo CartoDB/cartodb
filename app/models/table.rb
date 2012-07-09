@@ -441,7 +441,8 @@ class Table < Sequel::Model(:user_tables)
     # finally, close off the data import
     if data_import_id
       @data_import = DataImport.find(:id=>data_import_id)
-      @data_import.table_id = id
+      @data_import.table_id   = id
+      @data_import.table_name = name
       @data_import.finished
     end
   end

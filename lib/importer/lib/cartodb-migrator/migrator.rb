@@ -6,53 +6,53 @@ module CartoDB
       attr_accessor :debug
     end
     @@debug = true
-    
+
     attr_accessor :current_name, :suggested_name, :db_configuration, :db_connection
-                  
+
     attr_reader :table_created, :force_name
 
     def initialize(options = {})
       log "options: #{options}"
       @@debug = options[:debug] if options[:debug]
       @table_created = nil
-      
+
       # Handle name of table and target name of table
       @suggested_name = options[:current_name]
       @current_name = options[:current_name]
-      
+
       @data_import      = DataImport.find(:id=>options[:data_import_id])
       @data_import_id   = options[:data_import_id]
-      
+
       raise "current_table value can't be nil" if @current_name.nil?
-      
+
       # Handle DB connection
       @db_configuration = options.slice :database, :username, :password, :host, :port
       @db_configuration = {:port => 5432, :host => '127.0.0.1'}.merge @db_configuration
-      @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")    
+      @db_connection = Sequel.connect("postgres://#{@db_configuration[:username]}:#{@db_configuration[:password]}@#{@db_configuration[:host]}:#{@db_configuration[:port]}/#{@db_configuration[:database]}")
 
-      #handle suggested_name  
+      #handle suggested_name
       unless options[:suggested_name].nil? || options[:suggested_name].blank?
         @force_name = true
         @suggested_name = options[:suggested_name]
       else
         @force_name = false
       end
-      
+
     rescue => e
       log $!
       log e.backtrace
       raise e
     end
-    
+
     def migrate!
-      # 
+      #
       # # Check if the file had data, if not rise an error because probably something went wrong
       # if @db_connection["SELECT * from #{@current_name} LIMIT 1"].first.nil?
       #   @runlog.err << "Empty table"
       #   @data_import.log_error("Empty table")
       #   raise "Empty table"
       # end
-      
+
       # Sanitize column names where needed
       column_names = @db_connection.schema(@current_name).map{ |s| s[0].to_s }
       need_sanitizing = column_names.each do |column_name|
@@ -60,17 +60,17 @@ module CartoDB
           @db_connection.run("ALTER TABLE #{@current_name} RENAME COLUMN \"#{column_name}\" TO #{column_name.sanitize_column_name}")
         end
       end
-      
+
       # Rename our table
       if @current_name != @suggested_name
         @db_connection.run("ALTER TABLE #{@current_name} RENAME TO #{@suggested_name}")
       end
-      
+
       if column_names.include? "cartodb_id"
         # We could also just alter the column name here, but users shouldn't be bothered with this column at all
         @db_connection.run("ALTER TABLE #{@current_name} DROP COLUMN cartodb_id")
       end
-      
+
       # attempt to transform the_geom to 4326
       if column_names.include? "the_geom"
         begin
@@ -136,7 +136,7 @@ module CartoDB
         end
       end
 
-      
+
       @table_created = true
       @data_import.log_update("table created")
       rows_imported = @db_connection["SELECT count(*) as count from #{@suggested_name}"].first[:count]
@@ -147,10 +147,10 @@ module CartoDB
                               :import_type => "external_table",
                               :log => @runlog
                               })
-      
+
       # construct return variables
       return payload
-      
+
     rescue => e
       log "====================="
       log $!
@@ -163,9 +163,9 @@ module CartoDB
     ensure
       @db_connection.disconnect
     end
-    
+
     private
-    
+
     def get_valid_name(name)
       candidates = @db_connection.tables.map{ |t| t.to_s }.select{ |t| t.match(/^#{name}/) }
       if candidates.any?
@@ -179,7 +179,7 @@ module CartoDB
         return name
       end
     end
-    
+
     def log(str)
       if @@debug
         puts str

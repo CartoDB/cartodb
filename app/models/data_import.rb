@@ -3,6 +3,8 @@ class DataImport < Sequel::Model
   include CartoDB::MiniSequel
   include ActiveModel::Validations
 
+  attr_accessor :append, :migrate_table, :table_copy, :from_query
+
   state_machine :initial => :preprocessing do
     before_transition :updated_now
     before_transition do
@@ -64,42 +66,46 @@ class DataImport < Sequel::Model
     end
   end
 
+
   def data_source=(data_source)
-    self.values[:data_source] = data_source
-    self.data_type = if File.exist?(Rails.root.join("public#{self.data_source}")) then 'file' else 'url' end
+    self.data_type            = if File.exist?(Rails.root.join("public#{data_source}")) then 'file' else 'url' end
+    self.values[:data_source] = if data_type == 'file' then Rails.root.join("public#{data_source}").to_s else data_source end
   end
 
   def after_create
-    user = User[self.user_id]
+    begin
+      if append.present?
+        append_to_existing
 
-    import_attributes = Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      :database        => user.database_name,
-      :logger          => Rails.logger,
-      :username        => user.database_username,
-      :password        => user.database_password,
-      :debug           => (Rails.env.development?),
-      :remaining_quota => user.remaining_quota,
-      :data_import_id  => id
-    ).symbolize_keys
+      elsif migrate_table.present?
+        migrate_existing migrate_table
 
-    if data_type == 'file'
-      import_attributes[:import_from_file] = File.open(Rails.root.join("public#{self.data_source}"), 'r')
-    else
-      import_attributes[:import_from_url] = data_source
+      elsif table_copy.present? || from_query.present?
+        query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
+        new_table_name = import_from_query table_name, query
+        migrate_existing new_table_name
+
+      elsif %w(url file).include?(data_type)
+        imports, errors = import_to_cartodb data_type, data_source
+        if imports.present?
+          imports.each do | import |
+            migrate_existing import.name, table_name
+          end
+        end
+      end
+
+    rescue => e
+      reload
+      # Add semantics based on the users creation method.
+      # TODO: The importer should throw these specific errors
+      if !e.is_a? CartoDB::QuotaExceeded
+        e = CartoDB::InvalidUrl.new     e.message    if url?
+        e = CartoDB::InvalidFile.new    e.message    if file?
+        e = CartoDB::TableCopyError.new e.message    if table_copy?
+      end
+      CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     end
 
-    importer = CartoDB::Importer.new(import_attributes).import!
-
-    self.reload
-    self.imported
-    self.table_name = importer.name
-    self.save
-
-    #import_cleanup
-    #set_the_geom_column!
-
-    self.formatted
-    self.save
   end
 
   def after_rollback(*args, &block)
@@ -155,4 +161,160 @@ class DataImport < Sequel::Model
     end
   end
 
+  private
+
+  def append_to_existing
+    @new_table = Table.new
+    @new_table.user_id = current_user.id
+    @new_table.data_import_id = id
+    @new_table.name = table_name              if table_name?
+    @new_table.import_from_file = data_source if file?
+    @new_table.import_from_url = data_source  if url?
+    @new_table.save
+
+    @new_table.reload
+    @table = Table.filter(:user_id => current_user.id, :id => table_id).first
+    @table.append_to_table(:from_table => @new_table)
+    @table.save.reload
+    # append_to_table doesn't automatically destroy the table
+    @new_table.destroy
+
+    return [{:id => @table.id,
+             :name => @table.name,
+             :schema => @table.schema}, table_path(@table)]
+  end
+
+  def import_to_cartodb method, import_source
+    if method == 'file'
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).symbolize_keys.merge(
+        :database         => current_user.database_name,
+        :logger           => ::Rails.logger,
+        :username         => current_user.database_username,
+        :password         => current_user.database_password,
+        :import_from_file => import_source,
+        :debug            => (Rails.env.development?),
+        :remaining_quota  => current_user.remaining_quota,
+        :data_import_id   => id
+      )
+      importer = CartoDB::Importer.new hash_in
+      importer, errors = importer.import!
+      reload
+      imported
+      return importer, errors
+      #import from URL
+    elsif method == 'url'
+      self.data_type = 'url'
+      self.data_source = import_from_url
+      download
+      save
+      importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).symbolize_keys.merge(
+        :database        => table_owner.database_name,
+        :logger          => ::Rails.logger,
+        :username        => table_owner.database_username,
+        :password        => table_owner.database_password,
+        :import_from_url => import_from_url,
+        :debug           => (Rails.env.development?),
+        :remaining_quota => table_owner.remaining_quota,
+        :data_import_id  => id
+      )
+      importer, errors = importer.import!
+      reload
+      imported
+      save
+      return [importer, errors]
+    end
+  end
+
+  def import_from_query name, query
+    self.data_type = 'query'
+    self.data_source = query
+    self.save
+    # ensure unique name
+    uniname = get_valid_name(name)
+    # create a table based on the query
+    table_owner.in_database.run("CREATE TABLE #{uniname} AS #{query}")
+    return uniname
+  end
+
+  def migrate_existing table, name = nil
+
+    new_name = name.nil? ? table : name
+
+    #the below is redudant with the method below after import.nil?, should factor
+    @new_table = Table.new
+    @new_table.user_id = current_user.id
+    @new_table.name = new_name
+
+    @new_table.user_id =  user_id
+    @new_table.data_import_id = id
+    @new_table.migrate_existing_table = table
+
+    if @new_table.valid?
+      @new_table.save
+      refresh
+    else
+      reload
+      CartoDB::Logger.info "Errors on import#create", @new_table.errors.full_messages
+    end
+  end
+
+  def get_valid_name(raw_new_name = nil)
+    # TODO add a delete table check in the cases where a table has become ghost
+    # probably in the after_destroy method in table.rb
+
+    # set defaults and sanity check
+    raw_new_name = (raw_new_name || "untitled_table").sanitize
+
+    # tables cannot be blank, start with numbers or underscore
+    raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
+    raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
+    raw_new_name = "untitled_table"        if raw_new_name.blank?
+
+    # Do a basic check for the new name. If it doesn't exist, let it through (sanitized)
+    return raw_new_name if name_available?(raw_new_name)
+
+    # Happens if we're duplicating a table.
+    # First get candidates from the base name
+    # eg: "simon_24" => "simon"
+    if match = /(.+)_\d+$/.match(raw_new_name)
+      raw_new_name = match[1]
+    end
+
+    # return if no dupe
+    return raw_new_name if name_available?(raw_new_name)
+
+    # increment trailing number (max+1) if dupe
+    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
+
+    if max_candidate =~ /(.+)_(\d+)$/
+      return $1 + "_#{$2.to_i + 1}"
+    else
+      return max_candidate + "_2"
+    end
+  end
+
+  def name_available?(name)
+    name_candidates(name).include?(name) ? false : name
+  end
+
+  def name_candidates(name)
+    # FYI: Native sequel (table_owner.in_database.tables) filters tables that start with sql or pg
+    table_owner.tables.filter(:name.like(/^#{name}/)).select_map(:name)
+  end
+
+  def table_owner
+    table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
+  end
+
+  def current_user
+    @current_user ||= User[user_id]
+  end
+
+  def file?
+    data_type == 'file'
+  end
+
+  def url?
+    data_type == 'url'
+  end
 end

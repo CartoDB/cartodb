@@ -9,7 +9,8 @@ module CartoDB
           @data_import = DataImport.find(:id=>@data_import_id)
         
           log "processing shp"
-        
+          
+          #unless ['.geojson','.kml','.json','.js','.csv','.xls']
           #check for available PRJ file
           unless File.exists?(@working_data[:path].gsub(".shp",".prj"))
             @runlog.log << "Error finding a PRJ file for uploaded SHP"

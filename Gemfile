@@ -19,6 +19,7 @@ gem "resque", "~> 1.19.0"
 gem "yajl-ruby", :require => "yajl"
 gem "airbrake", '~> 3.0.4'
 gem "nokogiri", '~> 1.5.2'
+gem "statsd-client", :require => "statsd"
 gem 'jammit', '~> 0.6.5'
 
 # assets
@@ -64,6 +65,7 @@ group :development, :test do
   gem "rack-reverse-proxy", "~> 0.4.1", :require => 'rack/reverse_proxy'
   gem 'minitest', '~> 2.0.2'
   gem 'foreman'
+  gem 'aws-sdk'
 end
 
 

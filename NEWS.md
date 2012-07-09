@@ -1,3 +1,33 @@
+0.9.9 (29/06/12)
+-----
+* Added module to send some statistics to a StatsD server
+
+0.9.8 (26/06/12)
+-----
+* Fixes when DROP table on the SQL API
+* Change the ESPG service used for finding projection to a more stable one provided by cloudfoundry.
+* Make clicks on features more reliable on maps
+* Improved testing, faster and and easier to run
+* Check file size before uploading on client side
+
+0.9.7 (12/06/12)
+-----
+* Allow .geojson imports
+* UI tweaks
+* Fix support for 3D shapefiles (force 2D) 
+* upload failed imports to S3 for offline inspection
+* improvements to import (encoding, geom checks)
+* warnings for table rename collisions
+
+0.9.6 (05/06/12)
+-----
+* Improvements on import file type checking
+* Better encoding detection across all import types
+* UI bugfixes 
+* Improved navigation when lots of tabs open
+* testing review and refactoring
+* Improve the mapping of geometry at N/S extremes
+
 0.9.5
 -----
 * CDB_RectangleGrid function, for simpler grids

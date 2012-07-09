@@ -205,7 +205,7 @@
               '<div class="tiles_code">'+
                 '<h4>DIRECT LINK</h4>'+
                 '<span class="copy_code">'+
-                  '<input type="text" disabled="disabled" value="'+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map\'" />'+
+                  '<p>'+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map</p>'+
                   '<a class="copy">Copy</a>'+
                 '</span>'+
               '</div>'+
@@ -213,7 +213,7 @@
               '<div class="html_code">'+
                 '<h4>OR HTML EMBED CODE</h4>'+
                 '<span class="copy_code">'+
-                  '<input type="text" disabled="disabled" value="<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map\' width=\'572\' height=\'220\'></iframe>" />'+
+                  '<p>&#60iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map\' width=\'572\' height=\'220\'&#62&#60/iframe&#62</p>'+
                   '<a id="test" class="copy">Copy</a>'+
                 '</span>'+
                 '<span class="outer_map">'+

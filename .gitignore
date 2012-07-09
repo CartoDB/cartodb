@@ -1,6 +1,6 @@
-Gemfile.lock
 .DS_Store
 .bundle
+dump.rdb
 db/*.sqlite3
 log/*.log
 tmp/*
@@ -13,7 +13,9 @@ bin/
 config/database.yml
 .idea/*
 config/app_config.yml
+config/redis.conf
 src/
+spec/support/data/failed_remote/*
 *.swp
 *.swo
 cartodb-importer

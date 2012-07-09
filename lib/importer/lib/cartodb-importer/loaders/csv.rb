@@ -20,15 +20,14 @@ module CartoDB
   
         unless (err = stderr.read).empty?
           if err.downcase.include?('failure')
-            @data_import.set_error_code(2000)
+            @data_import.set_error_code(3006)
             @data_import.log_error(err)
-            @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
-          
+            @data_import.log_error("ERROR: failed to import #{@ext.sub('.','')} to database")
             if err.include? "already exists"
               @data_import.set_error_code(5002)
               @data_import.log_error("ERROR: #{@path} contains reserved column names")
             end
-            raise "failed to convert #{@ext.sub('.','')} to shp"
+            #raise "failed to import #{@ext.sub('.','')} to database"
           else
             @data_import.log_update(err)
           end
@@ -39,14 +38,22 @@ module CartoDB
         end
 
         # Check if the file had data, if not rise an error because probably something went wrong
-        if @db_connection["SELECT * from #{@suggested_name} LIMIT 1"].first.nil?
+        begin
+          row = @db_connection["SELECT * from #{@suggested_name} LIMIT 1"]
+        rescue Exception => e
+          @runlog.err << "Empty table"
+          @data_import.set_error_code(3006)
+          @data_import.log_error(err)
+          @data_import.log_error("ERROR: failed to import #{@ext.sub('.','')} to database")
+          raise "failed to import table"
+        end
+        if row.first.nil?
           @runlog.err << "Empty table"
           @data_import.set_error_code(5001)
           @data_import.log_error(err)
           @data_import.log_error("ERROR: no data could be imported from file")
-          raise "Empty table"
+          raise "empty table"
         end
-
 
         # Importing CartoDB CSV exports
         # ===============================
@@ -134,7 +141,10 @@ module CartoDB
               @data_import.log_update("converting #{matching_latitude}, #{matching_latitude} to the_geom")
               #we know there is a latitude/longitude columns
               @db_connection.run("SELECT AddGeometryColumn('#{@suggested_name}','the_geom',4326, 'POINT', 2);")
-
+              #TODO
+              # reconcile the two matching_latitude regex below
+              # the first one wasn't stringent enough, but i realize
+              # the second one doesn't bother with absolute extent check
               @db_connection.run(<<-GEOREF
               UPDATE \"#{@suggested_name}\"
               SET the_geom =
@@ -144,9 +154,11 @@ module CartoDB
               WHERE
               trim(CAST(\"#{matching_longitude}\" AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
               AND
-              trim(CAST(\"#{matching_latitude}\" AS text))  ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
+              trim(CAST(\"#{matching_latitude}\" AS text))  ~   
+              '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
               GEOREF
               )
+              
               @db_connection.run("CREATE INDEX \"#{@suggested_name}_the_geom_gist\" ON \"#{@suggested_name}\" USING GIST (the_geom)")
           end
         end

@@ -5,6 +5,9 @@ module CartoDB
 
       register_loader :csv
       register_loader :txt
+      register_loader :geojson  
+      register_loader :js       
+      register_loader :json     
 
       def process!
         begin
@@ -57,7 +60,15 @@ module CartoDB
             @data_import.log_error("ERROR: no data could be imported from file")
             raise "empty table"
           end
-          
+          # Importing CartoDB GeoJSON
+          # =========================
+          # Result in a column called wkb_geometry
+          # Start by renaming this column to the_geom 
+          # And then the next steps all follow the methods for CSV
+          column_names = @db_connection.schema(@working_data[:suggested_name]).map{ |s| s[0].to_s }
+          if column_names.include? "wkb_geometry"
+            @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} RENAME COLUMN wkb_geometry TO the_geom;")
+          end
           # Importing CartoDB CSV exports
           # ===============================
           # * if there is a column already called the_geom

@@ -365,6 +365,7 @@ class User < Sequel::Model
           puts "DATABASE #{self.database_name} already exists: #{$!}"
         end
       end.join
+      
       set_database_permissions
       load_cartodb_functions
     end
@@ -418,6 +419,7 @@ class User < Sequel::Model
     end
   end
 
+  # Whitelist Permissions
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
@@ -448,13 +450,13 @@ class User < Sequel::Model
         user_database.run("GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO #{database_username}")
         user_database.run("GRANT ALL ON ALL TABLES IN SCHEMA public TO #{database_username}")
 
-        # grant select permissions to public user
+        # grant select permissions to public user (for SQL API)
         user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::PUBLIC_DB_USER}")
         user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
         user_database.run("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO #{CartoDB::PUBLIC_DB_USER}")
         user_database.run("GRANT SELECT ON spatial_ref_sys TO #{CartoDB::PUBLIC_DB_USER}")
 
-        # grant select permissions to tile user
+        # grant select permissions to tile user (for tile API + internal tiles)
         user_database.run("GRANT CONNECT ON DATABASE #{database_name} TO #{CartoDB::TILE_DB_USER}")
         user_database.run("GRANT USAGE ON SCHEMA public TO #{CartoDB::TILE_DB_USER}")
         user_database.run("GRANT SELECT ON ALL TABLES IN SCHEMA public TO #{CartoDB::TILE_DB_USER}")

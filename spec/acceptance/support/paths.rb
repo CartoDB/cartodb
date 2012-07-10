@@ -4,7 +4,7 @@ module NavigationHelpers
   end
 
   def login_path
-    "/login"
+    "#{CartoDB.hostname}/login"
   end
 
   def logout_path
@@ -48,11 +48,11 @@ module NavigationHelpers
   end
 
   def api_table_columns_url(table_identifier)
-    "#{api_url_prefix}/tables/#{table_identifier}/columns"
+    api_req "#{api_url_prefix}/tables/#{table_identifier}/columns"
   end
 
   def api_table_column_url(table_identifier, column_name)
-    "#{api_url_prefix}/tables/#{table_identifier}/columns/#{column_name}"
+    api_req "#{api_url_prefix}/tables/#{table_identifier}/columns/#{column_name}"
   end
 
   def api_table_record_column_url(table_identifier, row_identifier, column_name)
@@ -84,6 +84,14 @@ module NavigationHelpers
   def api_url_prefix
     "#{CartoDB.hostname}/api/#{CartoDB::API::VERSION_1}"
   end
+  
+  def api_key
+    "api_key=#{$users_metadata.HMGET("rails:users:test", 'map_key').first}"
+  end  
+  
+  def api_req url
+    "#{url}?#{api_key}"
+  end  
 
 end
 

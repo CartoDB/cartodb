@@ -60,7 +60,8 @@ class ApplicationController < ActionController::Base
     authenticated?(request.subdomain) || not_authorized
   end
 
-  def api_authorization_required
+  def api_authorization_required 
+    Rails.logger.info "MAH LOVERLY COOKIE #{cookies}"     
     authenticate!(:api_key, :api_authentication, :scope => request.subdomain)
   end
 

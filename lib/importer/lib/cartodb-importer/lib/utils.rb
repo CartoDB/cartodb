@@ -21,9 +21,14 @@ module CartoDB
           :suggested_name   => @suggested_name,
           :ext              => @ext,
           :path             => @path,
+          :working_data     => @working_data,
+          :suggested_names  => @suggested_names,
+          :exts             => @exts,
+          :paths            => @paths,
           :python_bin_path  => @python_bin_path,
           :psql_bin_path    => @psql_bin_path,
           :entries          => @entries,
+          :table_entries    => @table_entries,
           :runlog           => @runlog,
           :import_type      => @import_type,
           :data_import_id   => @data_import_id
@@ -56,6 +61,7 @@ module CartoDB
           uniname = "#{name}_#{testn}"
           testn = testn + 1
         end
+        uniname = uniname.gsub(' ','_')
         while uniname.include? "__"
           uniname = uniname.sub("__","_")
         end
@@ -115,17 +121,30 @@ module CartoDB
         
       def reproject_import random_table_name
         @db_connection.run("ALTER TABLE #{random_table_name} RENAME COLUMN the_geom TO the_geom_orig;")
-        geom_type = @db_connection["SELECT GeometryType(ST_Force_2D(the_geom_orig)) as type from #{random_table_name} WHERE the_geom_orig IS NOT NULL LIMIT 1"].first[:type]
-        @db_connection.run("SELECT AddGeometryColumn('#{random_table_name}','the_geom',4326, '#{geom_type}', 2);")
-        @db_connection.run("UPDATE \"#{random_table_name}\" SET the_geom = ST_Force_2D(ST_Transform(the_geom_orig, 4326)) WHERE the_geom_orig IS NOT NULL")
+        geom_type_row = @db_connection["SELECT GeometryType(ST_Force_2D(the_geom_orig)) as type from #{random_table_name} WHERE the_geom_orig IS NOT NULL LIMIT 1"].first
+        if geom_type_row.nil?
+          @db_connection.run("SELECT AddGeometryColumn('#{random_table_name}','the_geom',4326, 'POINT', 2);")
+        else
+          geom_type = geom_type_row[:type]
+          @db_connection.run("SELECT AddGeometryColumn('#{random_table_name}','the_geom',4326, '#{geom_type}', 2);")
+          @db_connection.run("UPDATE \"#{random_table_name}\" SET the_geom = ST_Force_2D(ST_Transform(the_geom_orig, 4326)) WHERE the_geom_orig IS NOT NULL")
+        end
         @db_connection.run("ALTER TABLE #{random_table_name} DROP COLUMN the_geom_orig")
       end
       # def force_table_2d random_table_name
       #   @db_connection.run("UPDATE \"#{random_table_name}\" SET the_geom = ST_Force_2D(the_geom)")
       # end
-      def add_index random_table_name
-        @db_connection.run("CREATE INDEX \"#{random_table_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
+      def add_index random_table_name, index_name=nil
+        if index_name.nil?
+          @db_connection.run("CREATE INDEX \"#{random_table_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
+        else
+          @db_connection.run("CREATE INDEX \"#{index_name}_the_geom_gist\" ON \"#{random_table_name}\" USING GIST (the_geom)")
+        end
       end
+      def drop_index random_index_name
+        @db_connection.run("DROP INDEX IF EXISTS \"#{random_index_name}\"")
+      end
+        
       def sanitize_table_columns table_name
         # Sanitize column names where needed
         column_names = @db_connection.schema(table_name).map{ |s| s[0].to_s }

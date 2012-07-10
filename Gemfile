@@ -16,6 +16,7 @@ gem "rgeo", "0.3.2"
 gem "rgeo-geojson", "0.2.1", :require => "rgeo/geo_json"
 gem "redis", "~> 2.2.2"
 gem "resque", "~> 1.19.0"
+gem "resque-result", "~> 1.0.1"
 gem "yajl-ruby", :require => "yajl"
 gem "airbrake", '~> 3.0.4'
 gem "nokogiri", '~> 1.5.2'

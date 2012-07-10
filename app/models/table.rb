@@ -9,31 +9,31 @@ class Table < Sequel::Model(:user_tables)
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
-  
+
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
 
   # Allowed columns
   set_allowed_columns(:privacy, :tags)
 
-  attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query, 
-                :import_from_table_copy, :importing_SRID, :importing_encoding, 
+  attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query,
+                :import_from_table_copy, :importing_SRID, :importing_encoding,
                 :temporal_the_geom_type, :migrate_existing_table
 
   ## Callbacks
-  
+
   # Core validation method that is automatically called before create and save
   def validate
     super
-    
+
     ## SANITY CHECKS
 
     # userid and table name tuple must be unique
     validates_unique [:name, :user_id], :message => 'is already taken'
-    
+
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
-  
+
     # privacy setting must be a sane value
     errors.add(:privacy, 'has an invalid value') if privacy != PRIVATE && privacy != PUBLIC
 
@@ -42,42 +42,42 @@ class Table < Sequel::Model(:user_tables)
 
     # tables cannot be created if the owner has no more table quota
     if self.new? && self.owner.over_table_quota?
-      
+
       # Add basic error to user response
-      errors.add(nil, 'over table quota, please upgrade')       
-      
+      errors.add(nil, 'over table quota, please upgrade')
+
       # Add error to data_import object log
       @data_import ||= DataImport.find(:id => self.data_import_id) # note memoize function
       @data_import.set_error_code(8002)
-      @data_import.log_error('over table quota, please upgrade')      
+      @data_import.log_error('over table quota, please upgrade')
     end
-      
+
     # Branch if owner dows not have private table privileges
-    if !self.owner.try(:private_tables_enabled) 
-      
+    if !self.owner.try(:private_tables_enabled)
+
       # If it's a new table and the user is trying to make it private
       if self.new? && privacy == PRIVATE
-        errors.add(:privacy, 'unauthorized to create private tables')          
+        errors.add(:privacy, 'unauthorized to create private tables')
       end
-      
+
       # if the table exists, is private, but the owner no longer has private privalidges
       # basically, this should never happen.
       if !self.new? && privacy == PRIVATE && self.changed_columns.include?(:privacy)
-        errors.add(:privacy, 'unauthorized to modify privacy status to private') 
-      end  
+        errors.add(:privacy, 'unauthorized to modify privacy status to private')
+      end
     end
   end
 
   # runs before each validation phase on create and update
-  def before_validation  
+  def before_validation
     # ensure privacy variable is set to one of the constants. this is bad.
-    self.privacy ||= owner.private_tables_enabled ? PRIVATE : PUBLIC  
+    self.privacy ||= owner.private_tables_enabled ? PRIVATE : PUBLIC
     super
   end
-  
-  def append_to_table(options) 
+
+  def append_to_table(options)
     from_table = options[:from_table]
-    self.database_name = owner.database_name   
+    self.database_name = owner.database_name
     append_to_table = self
     # if concatenate_to_table is set, it will join the table just created
     # to the table named in concatenate_to_table and then drop the created table
@@ -85,9 +85,9 @@ class Table < Sequel::Model(:user_tables)
     new_schema = from_table.schema(:reload => true)
     new_schema_hash = Hash[new_schema]
     new_schema_names = new_schema.collect {|x| x[0]}
-  
+
     existing_schema_hash = Hash[append_to_table.schema(:reload => true)]
-    
+
     # fun schema check here
     drop_names = %W{ cartodb_id created_at updated_at ogc_fid}
     new_schema_hash.keys.each do |column_name|
@@ -99,7 +99,7 @@ class Table < Sequel::Model(:user_tables)
           if existing_schema_hash[column_name] != new_schema_hash[column_name]
             #the new column type does not match the existing, force change to existing
             hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-              :type => existing_schema_hash[column_name], 
+              :type => existing_schema_hash[column_name],
               :name => column_name
             ).symbolize_keys
             self.modify_column! hash_in
@@ -107,7 +107,7 @@ class Table < Sequel::Model(:user_tables)
         else
           # add column and type to old table
             hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-              :type => new_schema_hash[column_name], 
+              :type => new_schema_hash[column_name],
               :name => column_name
             ).symbolize_keys
           append_to_table.add_column! hash_in
@@ -123,105 +123,104 @@ class Table < Sequel::Model(:user_tables)
     # => then tableB is append_to_table onto tableA
     # => leaving both in tact while creating a new tthat contains both
   end
-  
-  
-  def import_to_cartodb
-      if import_from_file.present?     
-        @data_import.data_type = 'file'
-        @data_import.data_source = import_from_file
-        @data_import.upload
-        @data_import.save
-        
-        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          "database" => database_name, 
-          :logger => ::Rails.logger,
-          "username" => owner.database_username, 
-          "password" => owner.database_password,
-          :import_from_file => import_from_file, 
-          :debug => (Rails.env.development?), 
-          :remaining_quota => owner.remaining_quota,
-          :data_import_id => @data_import.id
-        ).symbolize_keys
 
-        importer = CartoDB::Importer.new hash_in
-        importer = importer.import!
-        @data_import.reload
-        @data_import.imported
-        return importer.name
-      end
-      #import from URL
-      if import_from_url.present?   
-        @data_import.data_type = 'url'
-        @data_import.data_source = import_from_url
-        @data_import.download
-        @data_import.save
-        importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          "database" => database_name, 
-          :logger => ::Rails.logger,
-          "username" => owner.database_username, 
-          "password" => owner.database_password,
-          :import_from_url => import_from_url, 
-          :debug => (Rails.env.development?), 
-          :remaining_quota => owner.remaining_quota,
-          :data_import_id => @data_import.id
-        ).symbolize_keys
-        importer = importer.import!
-        @data_import.reload
-        @data_import.imported
-        @data_import.save
-        return importer.name
-      end
+  def import_to_cartodb
+      # if import_from_file.present?
+      #         @data_import.data_type = 'file'
+      #         @data_import.data_source = import_from_file
+      #         @data_import.upload
+      #         @data_import.save
+      #
+      #         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      #           "database" => database_name,
+      #           :logger => ::Rails.logger,
+      #           "username" => owner.database_username,
+      #           "password" => owner.database_password,
+      #           :import_from_file => import_from_file,
+      #           :debug => (Rails.env.development?),
+      #           :remaining_quota => owner.remaining_quota,
+      #           :data_import_id => @data_import.id
+      #         ).symbolize_keys
+      #
+      #         importer = CartoDB::Importer.new hash_in
+      #         importer = importer.import!
+      #         @data_import.reload
+      #         @data_import.imported
+      #         return importer.name
+      #       end
+      #       #import from URL
+      #       if import_from_url.present?
+      #         @data_import.data_type = 'url'
+      #         @data_import.data_source = import_from_url
+      #         @data_import.download
+      #         @data_import.save
+      #         importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      #           "database" => database_name,
+      #           :logger => ::Rails.logger,
+      #           "username" => owner.database_username,
+      #           "password" => owner.database_password,
+      #           :import_from_url => import_from_url,
+      #           :debug => (Rails.env.development?),
+      #           :remaining_quota => owner.remaining_quota,
+      #           :data_import_id => @data_import.id
+      #         ).symbolize_keys
+      #         importer = importer.import!
+      #         @data_import.reload
+      #         @data_import.imported
+      #         @data_import.save
+      #         return importer.name
+      #       end
       #Import from the results of a query
-      if import_from_query.present? 
-        @data_import.data_type = 'query'
-        @data_import.data_source = import_from_query
-        @data_import.migrate
-        @data_import.save
-                
-        # ensure unique name
-        uniname = get_valid_name(self.name)
-        
-        # create a table based on the query
-        owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
-        
-        # with table #{uniname} table created now run migrator to CartoDBify
-        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          "database" => database_name, 
-          :logger => ::Rails.logger,
-          "username" => owner.database_username, 
-          "password" => owner.database_password,
-          :current_name => uniname, 
-          :suggested_name => uniname, 
-          :debug => (Rails.env.development?), 
-          :remaining_quota => owner.remaining_quota,
-          :data_import_id => @data_import.id
-        ).symbolize_keys
-        importer = CartoDB::Migrator.new hash_in
-        importer = importer.migrate!
-        @data_import.reload
-        @data_import.migrated
-        @data_import.save
-        return importer.name
-      end
+      # if import_from_query.present?
+      #     @data_import.data_type = 'query'
+      #     @data_import.data_source = import_from_query
+      #     @data_import.migrate
+      #     @data_import.save
+      #
+      #     # ensure unique name
+      #     uniname = get_valid_name(self.name)
+      #
+      #     # create a table based on the query
+      #     owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
+      #
+      #     # with table #{uniname} table created now run migrator to CartoDBify
+      #     hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+      #       "database" => database_name,
+      #       :logger => ::Rails.logger,
+      #       "username" => owner.database_username,
+      #       "password" => owner.database_password,
+      #       :current_name => uniname,
+      #       :suggested_name => uniname,
+      #       :debug => (Rails.env.development?),
+      #       :remaining_quota => owner.remaining_quota,
+      #       :data_import_id => @data_import.id
+      #     ).symbolize_keys
+      #     importer = CartoDB::Migrator.new hash_in
+      #     importer = importer.migrate!
+      #     @data_import.reload
+      #     @data_import.migrated
+      #     @data_import.save
+      #     return importer.name
+      #   end
       #Register a table not created throug the UI
       if migrate_existing_table.present?
         @data_import.data_type = 'external_table'
         @data_import.data_source = migrate_existing_table
         @data_import.migrate
         @data_import.save
-                
-        # ensure unique name
-        uniname = get_valid_name(migrate_existing_table)
-        
+
+        # ensure unique name, also ensures self.name can override any imported table name
+        uniname = self.name ? get_valid_name(self.name) : get_valid_name(migrate_existing_table)
+
         # with table #{uniname} table created now run migrator to CartoDBify
         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          "database" => database_name, 
+          "database" => database_name,
           :logger => ::Rails.logger,
-          "username" => owner.database_username, 
+          "username" => owner.database_username,
           "password" => owner.database_password,
-          :current_name => uniname, 
-          :suggested_name => uniname, 
-          :debug => (Rails.env.development?), 
+          :current_name => migrate_existing_table,
+          :suggested_name => uniname,
+          :debug => (Rails.env.development?),
           :remaining_quota => owner.remaining_quota,
           :data_import_id => @data_import.id
         ).symbolize_keys
@@ -233,26 +232,26 @@ class Table < Sequel::Model(:user_tables)
         return importer.name
       end
       #Import from copying another table
-      if import_from_table_copy.present?
-        @data_import.data_type = 'table'
-        @data_import.data_source = migrate_existing_table
-        @data_import.migrate
-        @data_import.save
-        # ensure unique name
-        uniname = get_valid_name(self.name)
-        owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
-        @data_import.imported
-        owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
-        owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
-        owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
-        owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
-        owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
-        set_trigger_the_geom_webmercator
-        @data_import.migrated
-        return uniname
-      end
+      # if import_from_table_copy.present?
+      #   @data_import.data_type = 'table'
+      #   @data_import.data_source = migrate_existing_table
+      #   @data_import.migrate
+      #   @data_import.save
+      #   # ensure unique name
+      #   uniname = get_valid_name(self.name)
+      #   owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
+      #   @data_import.imported
+      #   owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
+      #   owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
+      #   owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
+      #   owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
+      #   owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
+      #   set_trigger_the_geom_webmercator
+      #   @data_import.migrated
+      #   return uniname
+      # end
   end
-  
+
   def import_cleanup
     owner.in_database do |user_database|
       # If we already have a cartodb_id column let's rename it to an auxiliary column
@@ -263,7 +262,7 @@ class Table < Sequel::Model(:user_tables)
          @data_import.log_update('renaming cartodb_id from import file')
          self.schema
       end
-      
+
       # When tables are created using ogr2ogr they are added a ogc_fid primary key
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
@@ -290,7 +289,7 @@ class Table < Sequel::Model(:user_tables)
         end
       end
       schema = self.schema(:reload => true)
-      
+
       user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
 
       # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
@@ -299,13 +298,13 @@ class Table < Sequel::Model(:user_tables)
         user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
         user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
         cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
-        max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max] 
-  
-        # only reset the sequence on real imports. 
-        # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns         
+        max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max]
+
+        # only reset the sequence on real imports.
+        # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns
         if max_cartodb_id
-          user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}") 
-        end  
+          user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
+        end
         @data_import.log_update('cleaning supplied cartodb_id')
       end
       user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
@@ -314,14 +313,17 @@ class Table < Sequel::Model(:user_tables)
       normalize_timestamp_field!(:updated_at, user_database)
     end
   end
-  
+
   def before_create
     update_updated_at
-    self.database_name = owner.database_name    
-    
+    self.database_name = owner.database_name
+
     #import from file
-    if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
-      
+    # if import_from_file.present? or import_from_url.present? or import_from_query.present? or import_from_table_copy.present? or migrate_existing_table.present?
+
+    # The Table model only migrates now, never imports
+    if migrate_existing_table.present?
+
       #init state machine
       if self.data_import_id.nil? #needed for non ui-created tables
         @data_import  = DataImport.new(:user_id => self.user_id)
@@ -330,15 +332,15 @@ class Table < Sequel::Model(:user_tables)
       else
         @data_import  = DataImport.find(:id=>self.data_import_id)
       end
-      
+
       importer_result_name = import_to_cartodb
-      
+
       @data_import.reload
       @data_import.table_name = importer_result_name
       @data_import.save
-      
+
       self[:name] = importer_result_name
-      
+
       schema = self.schema(:reload => true)
 
       import_cleanup
@@ -353,38 +355,38 @@ class Table < Sequel::Model(:user_tables)
       end
       set_the_geom_column!(self.the_geom_type)
     end
-    
-    
+
+
     # test for exceeding of table quota after creation - needed as no way to test future db size pre-creation
     if owner.over_disk_quota?
       unless @data_import.nil?
         @data_import.reload
         @data_import.set_error_code(8001)
         @data_import.log_error("#{owner.disk_quota_overspend / 1024}KB more space is required" )
-      end   
-      raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required" 
+      end
+      raise CartoDB::QuotaExceeded, "#{owner.disk_quota_overspend / 1024}KB more space is required"
     end
 
     # all looks ok, so ANALYZE for correct statistics
     owner.in_database.run("ANALYZE \"#{self.name}\"")
-      
+
     # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
     super
     if @data_import
       CartodbStats.increment_imports()
     end
   rescue => e
-    CartoDB::Logger.info "table#create error", "#{e.inspect}"   
+    CartoDB::Logger.info "table#create error", "#{e.inspect}"
     if @data_import
       @data_import.reload
       @data_import.log_error("Table error, #{e.inspect}")
-    end   
+    end
     unless self.name.blank?
       $tables_metadata.del key
       owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
       if @data_import
         @data_import.log_update("dropping table #{self.name}")
-      end   
+      end
     end
 
     if @import_from_file
@@ -395,13 +397,14 @@ class Table < Sequel::Model(:user_tables)
         @import_from_file.write res.read.force_encoding('utf-8')
         @import_from_file.close
       end
-        
+
       if @data_import
         @data_import.log_error("Import Error: #{e.try(:message)}")
         CartodbStats.increment_failed_imports()
       end   
+
       # nill required for this bug https://github.com/airbrake/airbrake/issues/34
-      Airbrake.notify(nil, 
+      Airbrake.notify(nil,
         :error_class   => "Import Error",
         :error_message => "Import Error: #{e.try(:message)}",
         :backtrace     => e.try(:backtrace),
@@ -428,36 +431,38 @@ class Table < Sequel::Model(:user_tables)
     owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
     add_python
     delete_tile_style
-    flush_cache    
+    flush_cache
     set_trigger_update_updated_at
     set_trigger_cache_timestamp
     set_trigger_check_quota
     set_default_table_privacy
     # make_geom_valid # too expensive to do on import, leave to the user
-    
+
     @force_schema = nil
     $tables_metadata.hset key, "user_id", user_id
-    
+
     update_table_pg_stats
-    
+
     # finally, close off the data import
     if data_import_id
       @data_import = DataImport.find(:id=>data_import_id)
-      @data_import.table_id = id
+      @data_import.table_id   = id
+      @data_import.table_name = name
       @data_import.finished
     end
     add_table_to_stats
   end
-  
+
   def after_update
     flush_cache
   end
-    
+
   def before_destroy
     $tables_metadata.del key
   end
 
   def after_destroy
+    # TODO add a delete table check in the cases where a table has become ghost
     super
     Tag.filter(:user_id => user_id, :table_id => id).delete
     User.filter(:id => user_id).update(:tables_count => :tables_count - 1)
@@ -465,7 +470,7 @@ class Table < Sequel::Model(:user_tables)
       begin
         user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
       rescue => e
-        CartoDB::Logger.info "Table#after_destroy error", "maybe table #{self.name} doesn't exist: #{e.inspect}"      
+        CartoDB::Logger.info "Table#after_destroy error", "maybe table #{self.name} doesn't exist: #{e.inspect}"
       end
       user_database.run("DROP TABLE IF EXISTS #{self.name}")
     end
@@ -495,18 +500,18 @@ class Table < Sequel::Model(:user_tables)
       end
     end
   end
-  
-  
+
+
   def make_geom_valid
-    begin 
-      # make timeout here long, but not infinite. 10mins = 600000 ms. 
+    begin
+      # make timeout here long, but not infinite. 10mins = 600000 ms.
       # TODO: extend .run to take a "long_running" indicator? See #730.
       owner.in_database.run("SET statement_timeout TO 600000;UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom);SET statement_timeout TO DEFAULT")
     rescue => e
       CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} make valid failed: #{e.inspect}"
     end
   end
-  
+
 
   def name=(value)
     return if value == self[:name] || value.blank?
@@ -529,14 +534,14 @@ class Table < Sequel::Model(:user_tables)
   def infowindow
     $tables_metadata.hget(key, 'infowindow')
   end
-  
+
   def map_metadata=(value)
     $tables_metadata.hset(key, 'map_metadata', value)
   end
 
   def map_metadata
     $tables_metadata.hget(key, 'map_metadata')
-  end  
+  end
 
   def private?
     $tables_metadata.hget(key, "privacy").to_i == PRIVATE
@@ -550,7 +555,7 @@ class Table < Sequel::Model(:user_tables)
     self.privacy ||= self.owner.try(:private_tables_enabled) ? PRIVATE : PUBLIC
     save
   end
-    
+
   def manage_privacy
     if privacy == PRIVATE
       owner.in_database(:as => :superuser).run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
@@ -558,7 +563,7 @@ class Table < Sequel::Model(:user_tables)
     elsif privacy == PUBLIC
       $tables_metadata.hset key, "privacy", PUBLIC
       owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
-    end        
+    end
   end
 
   # enforce standard format for this field
@@ -599,12 +604,12 @@ class Table < Sequel::Model(:user_tables)
   def rows_counted
     sequel.count
   end
-  
+
   # returns table size in bytes
   def table_size
     @table_size ||= owner.in_database["SELECT pg_relation_size('#{self.name}') as size"].first[:size] / 2
-  end  
-  
+  end
+
   # TODO: make predictable. Alphabetical would be better
   def schema(options = {})
     first_columns     = []
@@ -624,17 +629,17 @@ class Table < Sequel::Model(:user_tables)
         when :cartodb_id
           first_columns.insert(0,col)
         when :the_geom
-          first_columns.insert(1,col)  
+          first_columns.insert(1,col)
         when :created_at, :updated_at
           last_columns.insert(-1,col)
         else
           middle_columns << col
       end
     end
-    
+
     # sort middle columns alphabetically
     middle_columns.sort! {|x,y| x[0].to_s <=> y[0].to_s}
-    
+
     # group columns together and return
     (first_columns + middle_columns + last_columns).compact
   end
@@ -649,9 +654,9 @@ class Table < Sequel::Model(:user_tables)
       end
       begin
         primary_key = user_database[name.to_sym].insert(make_sequel_compatible(attributes))
-      rescue Sequel::DatabaseError => e        
+      rescue Sequel::DatabaseError => e
         message = e.message.split("\n")[0]
-        
+
         # If the type don't match the schema of the table is modified for the next valid type
         invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
         invalid_column = if invalid_value
@@ -663,7 +668,7 @@ class Table < Sequel::Model(:user_tables)
             end
           end
         end
-        
+
         if new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type self.name.to_sym, invalid_column.to_sym, new_column_type
           retry
@@ -680,19 +685,19 @@ class Table < Sequel::Model(:user_tables)
     rows_updated = 0
     owner.in_database do |user_database|
       schema = user_database.schema(name.to_sym, :reload => true).map{|c| c.first}
-      attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) } 
+      attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
         raise CartoDB::InvalidAttributes, "Invalid rows: #{(raw_attributes.keys - attributes.keys).join(',')}"
       end
       if !attributes.except(THE_GEOM).empty?
-        begin                
+        begin
           # update row
           rows_updated = user_database[name.to_sym].filter(:cartodb_id => row_id).update(make_sequel_compatible(attributes))
         rescue Sequel::DatabaseError => e
           # If the type don't match the schema of the table is modified for the next valid type
           # TODO: STOP THIS MADNESS
           message = e.message.split("\n")[0]
-          
+
           invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
           if invalid_value
             invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
@@ -703,8 +708,8 @@ class Table < Sequel::Model(:user_tables)
             end
           else
             raise e
-          end          
-        end  
+          end
+        end
       else
         if attributes.size == 1 && attributes.keys == [THE_GEOM]
           rows_updated = 1
@@ -719,7 +724,7 @@ class Table < Sequel::Model(:user_tables)
   # https://github.com/Vizzuality/cartodb/issues/331
   def make_sequel_compatible attributes
     attributes.except(THE_GEOM).convert_nulls.each_with_object({}) { |(k, v), h| h[k.identifier] = v }
-  end  
+  end
 
   def add_column!(options)
     raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9_]/
@@ -744,7 +749,7 @@ class Table < Sequel::Model(:user_tables)
     new_name = options[:name] || options[:old_name]
     new_type = options[:type] ? options[:type].try(:convert_to_db_type) : schema(:cartodb_types => false).select{ |c| c[0] == new_name.to_sym }.first[1]
     cartodb_type = new_type.try(:convert_to_cartodb_type)
-    
+
     owner.in_database do |user_database|
       if options[:old_name] && options[:new_name]
         raise CartoDB::InvalidColumnName if options[:new_name] =~ /^[0-9_]/ || RESERVED_COLUMN_NAMES.include?(options[:new_name])
@@ -762,7 +767,7 @@ class Table < Sequel::Model(:user_tables)
           if message =~ /cannot be cast to type/
             begin
               convert_column_datatype user_database, name, column_name, new_type
-            rescue => e              
+            rescue => e
               raise e
             end
           else
@@ -775,148 +780,148 @@ class Table < Sequel::Model(:user_tables)
   end
 
   # convert non-conformist rows to null
-  def convert_column_datatype user_database, table_name, column_name, new_type        
+  def convert_column_datatype user_database, table_name, column_name, new_type
     begin
       # try straight cast
-      user_database.transaction do                
+      user_database.transaction do
         user_database.run(<<-EOF
-          ALTER TABLE #{table_name} 
-          ALTER COLUMN #{column_name} 
-          TYPE #{new_type} 
+          ALTER TABLE #{table_name}
+          ALTER COLUMN #{column_name}
+          TYPE #{new_type}
           USING cast(#{column_name} as #{new_type})
           EOF
-        )  
+        )
       end
     rescue => e
       # attempt various lossy conversions by regex nullifying unmatching data and retrying conversion.
       user_database.transaction do
-        old_type = col_type(user_database, table_name, column_name).to_s        
+        old_type = col_type(user_database, table_name, column_name).to_s
 
         # conversions ok by default
         # number => string
-        # boolean => string        
-                
+        # boolean => string
+
         # string => number
-        if (old_type == 'string' && new_type == 'double precision')                    
+        if (old_type == 'string' && new_type == 'double precision')
           # normalise number
           user_database.run(<<-EOF
-            UPDATE #{table_name} 
-            SET #{column_name}=NULL 
+            UPDATE #{table_name}
+            SET #{column_name}=NULL
             WHERE trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'
             EOF
           )
         end
-                    
+
         # string => boolean
         if (old_type == 'string' && new_type == 'boolean')
           falsy = "0|f|false"
 
           # normalise empty string to NULL
           user_database.run(<<-EOF
-            UPDATE #{table_name} 
+            UPDATE #{table_name}
             SET #{column_name}=NULL
             WHERE trim(\"#{column_name}\") ~* '^$'
             EOF
-          )          
+          )
 
           # normalise truthy (anything not false and NULL is true...)
           user_database.run(<<-EOF
-            UPDATE #{table_name} 
-            SET #{column_name}='t' 
+            UPDATE #{table_name}
+            SET #{column_name}='t'
             WHERE trim(\"#{column_name}\") !~* '^(#{falsy})$' AND #{column_name} IS NOT NULL
             EOF
           )
 
           # normalise falsy
           user_database.run(<<-EOF
-            UPDATE #{table_name} 
+            UPDATE #{table_name}
             SET #{column_name}='f'
             WHERE trim(\"#{column_name}\") ~* '^(#{falsy})$'
             EOF
-          )                    
-        end      
+          )
+        end
 
         # boolean => number
         # normalise truthy to 1, falsy to 0
         if (old_type == 'boolean' && new_type == 'double precision')
-          
+
           # first to string
           user_database.run(<<-EOF
-            ALTER TABLE #{table_name} 
-            ALTER COLUMN #{column_name} TYPE text 
+            ALTER TABLE #{table_name}
+            ALTER COLUMN #{column_name} TYPE text
             USING cast(#{column_name} as text)
             EOF
           )
-                    
+
           # normalise truthy
           user_database.run(<<-EOF
-            UPDATE #{table_name} 
-            SET #{column_name}='1' 
+            UPDATE #{table_name}
+            SET #{column_name}='1'
             WHERE #{column_name} = 'true' AND #{column_name} IS NOT NULL
             EOF
           )
 
           # normalise falsy
           user_database.run(<<-EOF
-            UPDATE #{table_name} 
-            SET #{column_name}='0' 
+            UPDATE #{table_name}
+            SET #{column_name}='0'
             WHERE #{column_name} = 'false' AND #{column_name} IS NOT NULL
             EOF
           )
         end
-        
-        
+
+
         # number => boolean
-        # normalise 0 to falsy else truthy        
+        # normalise 0 to falsy else truthy
         if (old_type == 'float' && new_type == 'boolean')
-          
+
           # first to string
           user_database.run(<<-EOF
-            ALTER TABLE #{table_name} 
-            ALTER COLUMN #{column_name} TYPE text 
+            ALTER TABLE #{table_name}
+            ALTER COLUMN #{column_name} TYPE text
             USING cast(#{column_name} as text)
             EOF
-          )                  
+          )
 
           # normalise truthy
           user_database.run(<<-EOF
-            UPDATE #{table_name} 
-            SET #{column_name}='t' 
+            UPDATE #{table_name}
+            SET #{column_name}='t'
             WHERE #{column_name} !~* '^0$' AND #{column_name} IS NOT NULL
             EOF
           )
 
           # normalise falsy
           user_database.run(<<-EOF
-            UPDATE #{table_name} 
+            UPDATE #{table_name}
             SET #{column_name}='f'
             WHERE #{column_name} ~* '^0$'
             EOF
           )
         end
-              
-        # TODO: 
-        # * string  => datetime 
-        # * number  => datetime 
-        # * boolean => datetime               
-        # 
+
+        # TODO:
+        # * string  => datetime
+        # * number  => datetime
+        # * boolean => datetime
+        #
         # Maybe do nothing? Does it even make sense? Best to throw error here for now.
-                    
+
         # try to update normalised column to new type (if fails here, well, we have not lost anything)
         user_database.run(<<-EOF
-          ALTER TABLE #{table_name} 
-          ALTER COLUMN #{column_name} 
-          TYPE #{new_type} 
+          ALTER TABLE #{table_name}
+          ALTER COLUMN #{column_name}
+          TYPE #{new_type}
           USING cast(#{column_name} as #{new_type})
           EOF
-        )  
+        )
       end
-    end    
+    end
   end
-  
+
   def col_type user_database, table_name, column_name
     user_database.schema(table_name).select{ |c| c[0] == column_name.to_sym }.flatten.last[:type]
-  end  
+  end
 
   def records(options = {})
     rows = []
@@ -1032,17 +1037,17 @@ class Table < Sequel::Model(:user_tables)
   def georeference_from!(options = {})
     if !options[:latitude_column].blank? && !options[:longitude_column].blank?
       set_the_geom_column!("point")
-            
+
       owner.in_database do |user_database|
         user_database.run(<<-GEOREF
-        UPDATE #{self.name} 
-        SET the_geom = 
+        UPDATE #{self.name}
+        SET the_geom =
           ST_GeomFromText(
             'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')',#{CartoDB::SRID}
-        ) 
-        WHERE 
-        trim(CAST(#{options[:longitude_column]} AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$' 
-        AND   
+        )
+        WHERE
+        trim(CAST(#{options[:longitude_column]} AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
+        AND
         trim(CAST(#{options[:latitude_column]} AS text)) ~ '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
         GEOREF
         )
@@ -1076,85 +1081,88 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def to_kml
-    owner.in_database do |user_database|  
+    owner.in_database do |user_database|
       export_schema = self.schema.map{|c| c.first}
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name, 
+        "database" => database_name,
         :logger => ::Rails.logger,
-        "username" => owner.database_username, 
+        "username" => owner.database_username,
         "password" => owner.database_password,
-        :table_name => self.name, 
-        :export_type => "kml", 
+        :table_name => self.name,
+        :export_type => "kml",
         :export_schema => export_schema,
-        :debug => (Rails.env.development?), 
+        :debug => (Rails.env.development?),
         :remaining_quota => owner.remaining_quota
       ).symbolize_keys
 
       exporter = CartoDB::Exporter.new hash_in
-    
-      return exporter.export! 
+
+      return exporter.export!
     end
   end
+
   def to_csv
-    owner.in_database do |user_database|  
+    owner.in_database do |user_database|
       #table_name = "csv_export_temp_#{self.name}"
       export_schema = self.schema.map{|c| c.first} - [THE_GEOM]
       export_schema += ["ST_AsGeoJSON(the_geom, 6) as the_geom"] if self.schema.map{|c| c.first}.include?(THE_GEOM)
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name, 
+        "database" => database_name,
         :logger => ::Rails.logger,
-        "username" => owner.database_username, 
+        "username" => owner.database_username,
         "password" => owner.database_password,
-        :table_name => self.name, 
-        :export_type => "csv", 
+        :table_name => self.name,
+        :export_type => "csv",
         :export_schema => export_schema,
-        :debug => (Rails.env.development?), 
+        :debug => (Rails.env.development?),
         :remaining_quota => owner.remaining_quota
       ).symbolize_keys
 
       exporter = CartoDB::Exporter.new hash_in
-    
-      return exporter.export! 
+
+      return exporter.export!
     end
   end
+
   def to_shp
-    owner.in_database do |user_database|  
+    owner.in_database do |user_database|
       export_schema = self.schema.map{|c| c.first}
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name, 
+        "database" => database_name,
         :logger => ::Rails.logger,
-        "username" => owner.database_username, 
+        "username" => owner.database_username,
         "password" => owner.database_password,
-        :table_name => self.name, 
-        :export_type => "shp", 
+        :table_name => self.name,
+        :export_type => "shp",
         :export_schema => export_schema,
-        :debug => (Rails.env.development?), 
+        :debug => (Rails.env.development?),
         :remaining_quota => owner.remaining_quota
       ).symbolize_keys
 
       exporter = CartoDB::Exporter.new hash_in
-    
-      return exporter.export! 
+
+      return exporter.export!
     end
   end
+
   def to_sql
-    owner.in_database do |user_database|  
+    owner.in_database do |user_database|
       export_schema = self.schema.map{|c| c.first}
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name, 
+        "database" => database_name,
         :logger => ::Rails.logger,
-        "username" => owner.database_username, 
+        "username" => owner.database_username,
         "password" => owner.database_password,
-        :table_name => self.name, 
-        :export_type => "sql", 
+        :table_name => self.name,
+        :export_type => "sql",
         :export_schema => export_schema,
-        :debug => (Rails.env.development?), 
+        :debug => (Rails.env.development?),
         :remaining_quota => owner.remaining_quota
       ).symbolize_keys
 
       exporter = CartoDB::Exporter.new hash_in
-    
-      return exporter.export! 
+
+      return exporter.export!
     end
   end
 
@@ -1170,35 +1178,34 @@ class Table < Sequel::Model(:user_tables)
 
   def self.find_by_identifier(user_id, identifier)
     col = (identifier =~ /\A\d+\Z/ || identifier.is_a?(Fixnum)) ? 'id' : 'name'
-    
+
     table = fetch("SELECT *, array_to_string(array(
                      SELECT tags.name FROM tags WHERE tags.table_id = user_tables.id ORDER BY tags.id),',') AS tags_names
                    FROM user_tables WHERE user_tables.user_id = ? AND user_tables.#{col} = ?", user_id, identifier).first
     raise RecordNotFound if table.nil?
     table
   end
-  
+
   def self.find_by_subdomain(subdomain, identifier)
-    if user = User.find(:username => subdomain)      
+    if user = User.find(:username => subdomain)
       Table.find_by_identifier(user.id, identifier)
-    end  
+    end
   end
 
   def oid
     @oid ||= owner.in_database["SELECT '#{self.name}'::regclass::oid"].first[:oid]
   end
 
-
   # DB Triggers and things
   def add_python
     owner.in_database(:as => :superuser).run(<<-SQL
-      CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler; 
+      CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;
     SQL
     )
   end
-  
+
   def set_trigger_the_geom_webmercator
-    owner.in_database(:as => :superuser) do |user_database|      
+    owner.in_database(:as => :superuser) do |user_database|
       user_database.run(<<-TRIGGER
         DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
         CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
@@ -1214,7 +1221,7 @@ class Table < Sequel::Model(:user_tables)
            FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
   TRIGGER
         )
-    end  
+    end
   end
 
   def set_trigger_update_updated_at
@@ -1278,7 +1285,7 @@ TRIGGER
   def update_table_pg_stats
     owner.in_database["ANALYZE #{self.name};"]
   end
-  
+
   # move to C
   def set_trigger_check_quota
     owner.in_database(:as => :superuser).run(<<-TRIGGER
@@ -1287,10 +1294,10 @@ TRIGGER
     c = SD.get('quota_counter', 0)
     m = SD.get('quota_mod', 1000)
     QUOTA_MAX = #{self.owner.quota_in_bytes}
-    
+
     if c%m == 0:
         s = plpy.execute("SELECT sum(pg_relation_size(table_name)) FROM information_schema.tables WHERE table_catalog = '#{self.database_name}' AND table_schema = 'public'")[0]['sum'] / 2
-        int_s = int(s) 
+        int_s = int(s)
         diff = int_s - QUOTA_MAX
         SD['quota_mod'] = min(1000, max(1, diff))
         if int_s > QUOTA_MAX:
@@ -1298,11 +1305,11 @@ TRIGGER
     SD['quota_counter'] = c + 1
     $$
     LANGUAGE 'plpythonu' VOLATILE;
-    
+
     DROP TRIGGER IF EXISTS test_quota ON #{self.name};
     CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON #{self.name} EXECUTE PROCEDURE check_quota();
   TRIGGER
-  )  
+  )
   end
 
   def owner    
@@ -1325,9 +1332,9 @@ TRIGGER
   # * duplicate checking
   # * incrementing trailing counter if duplicate
   #
-  # Note, trailing counter increments the maximum trailing number found. 
+  # Note, trailing counter increments the maximum trailing number found.
   # This means gaps in a counter range will be made if the user manually sets
-  # the name of a table with a trailing number. 
+  # the name of a table with a trailing number.
   #
   # Duplicating a table manually loaded called "my_table_2010" => "my_table_2011"
   #
@@ -1335,28 +1342,28 @@ TRIGGER
   def get_valid_name(raw_new_name = nil)
     # set defaults and sanity check
     raw_new_name = (raw_new_name || "untitled_table").sanitize
-    
+
     # tables cannot be blank, start with numbers or underscore
     raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
     raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
     raw_new_name = "untitled_table"        if raw_new_name.blank?
-    
+
     # Do a basic check for the new name. If it doesn't exist, let it through (sanitized)
     return raw_new_name if name_available?(raw_new_name)
-        
+
     # Happens if we're duplicating a table.
     # First get candidates from the base name
     # eg: "simon_24" => "simon"
     if match = /(.+)_\d+$/.match(raw_new_name)
       raw_new_name = match[1]
-    end  
-    
+    end
+
     # return if no dupe
     return raw_new_name if name_available?(raw_new_name)
 
     # increment trailing number (max+1) if dupe
-    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first  
-    
+    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
+
     if max_candidate =~ /(.+)_(\d+)$/
       return $1 + "_#{$2.to_i + 1}"
     else
@@ -1365,14 +1372,14 @@ TRIGGER
   end
 
   # return name if no dupe, else false
-  def name_available?(name)                 
-    name_candidates(name).include?(name) ? false : name 
-  end    
+  def name_available?(name)
+    name_candidates(name).include?(name) ? false : name
+  end
 
   def name_candidates(name)
     # FYI: Native sequel (owner.in_database.tables) filters tables that start with sql or pg
     owner.tables.filter(:name.like(/^#{name}/)).select_map(:name)
-  end  
+  end
 
   def get_new_column_type(invalid_column)
     flatten_cartodb_schema = schema.flatten
@@ -1397,7 +1404,7 @@ TRIGGER
       end
     end
     return if type.nil?
-    
+
     #if the geometry is MULTIPOINT we convert it to POINT
     if type.to_s.downcase == "multipoint"
       owner.in_database do |user_database|
@@ -1408,7 +1415,7 @@ TRIGGER
       end
       type = "point"
     end
-    
+
     #if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING and MULTIPOLYGON resp.
     if ["linestring","polygon"].include?(type.to_s.downcase)
       owner.in_database do |user_database|
@@ -1423,7 +1430,7 @@ TRIGGER
         type = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{self.name} where #{THE_GEOM} is not null limit 1"].first[:geometrytype]
       end
     end
-    
+
     raise "Error: unsupported geometry type #{type.to_s.downcase} in CartoDB" unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
     #raise InvalidArgument unless CartoDB::VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
     updates = false
@@ -1438,12 +1445,12 @@ TRIGGER
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
-        # make timeout here long, but not infinite. 10mins = 600000 ms. 
-        user_database.run("SET statement_timeout TO 600000;UPDATE #{self.name} SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL;SET statement_timeout TO DEFAULT")        
+        # make timeout here long, but not infinite. 10mins = 600000 ms.
+        user_database.run("SET statement_timeout TO 600000;UPDATE #{self.name} SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL;SET statement_timeout TO DEFAULT")
         user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
 
-        # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")        
-      end      
+        # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")
+      end
     end
     self.the_geom_type = type.downcase
     save_changes unless new?
@@ -1493,7 +1500,7 @@ SQL
     #   owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON('#{attributes[THE_GEOM].sanitize_sql}'),#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
     # rescue => e
     #   raise CartoDB::InvalidGeoJSONFormat
-    # end    
+    # end
 
     geo_json = RGeo::GeoJSON.decode(attributes[THE_GEOM], :json_parser => :json).try(:as_text)
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?
@@ -1530,23 +1537,23 @@ SQL
     if @name_changed_from.present? && @name_changed_from != name
       # update metadata records
       $tables_metadata.rename(Table.key(database_name,@name_changed_from), key)
-      
+
       # update tile styles
       begin
         # get old tile style
         old_style = tile_request('GET', "/tiles/#{@name_changed_from}/style?map_key=#{owner.get_map_key}").try(:body)
-       
+
         # parse old CartoCSS style out
         old_style = JSON.parse(old_style).with_indifferent_access[:style]
 
         # rename common table name based variables
-        old_style.gsub!(@name_changed_from, self.name)      
-        
+        old_style.gsub!(@name_changed_from, self.name)
+
         # post new style
         tile_request('POST', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}", {"style" => old_style})
       rescue => e
-        CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"      
-      end        
+        CartoDB::Logger.info "tilestyle#rename error for", "#{e.inspect}"
+      end
     end
     @name_changed_from = nil
   end
@@ -1555,16 +1562,16 @@ SQL
     begin
       tile_request('DELETE', "/tiles/#{self.name}/style?map_key=#{owner.get_map_key}")
     rescue => e
-      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"      
-    end  
-  end  
-  
+      CartoDB::Logger.info "tilestyle#delete error", "#{e.inspect}"
+    end
+  end
+
   def flush_cache
     begin
       tile_request('DELETE', "/tiles/#{self.name}/flush_cache?map_key=#{owner.get_map_key}")
     rescue => e
-      CartoDB::Logger.info "cache#flush error", "#{e.inspect}"      
-    end        
+      CartoDB::Logger.info "cache#flush error", "#{e.inspect}"
+    end
   end
 
   def tile_request(request_method, request_uri, form = {})
@@ -1580,7 +1587,7 @@ SQL
         http_res = http_req.request_post(request_uri, URI.encode_www_form(form), request_headers)
       when 'DELETE'
         extra_delete_headers = {'Depth' => 'Infinity'}
-        http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers)) 
+        http_res = http_req.delete(request_uri, request_headers.merge(extra_delete_headers))
       else
     end
     http_res

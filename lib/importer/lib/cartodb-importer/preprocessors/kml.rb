@@ -3,30 +3,28 @@ module CartoDB
     class KML < CartoDB::Import::Preprocessor
 
       register_preprocessor :kml
-      #register_preprocessor :kmz
-      register_preprocessor :json
-      register_preprocessor :geojson      
-      register_preprocessor :js            
 
       def process!    
-        @data_import = DataImport.find(:id=>@data_import_id)
-        # run Chardet + Iconv
-        fix_encoding 
-        
-        ogr2ogr_bin_path = `which ogr2ogr`.strip
-        ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{@path}.shp #{@path}}
-        #-lco DIM=*2* 
-        stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
+      
+       @data_import = DataImport.find(:id=>@data_import_id)
+       import_data = Array.new
+       
+       # generate a temporally filename 
+       shp_file = temporary_filename
+       
+       # extract the 3 shp files (and associated dbf and so on)
+       # it will create a folder
+       ogr2ogr_bin_path = `which ogr2ogr`.strip
+       
+       ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -lco dim=2 -skipfailures --config SHAPE_ENCODING UTF8 -f "ESRI Shapefile" #{shp_file} #{@working_data[:path]}}
+       
+       stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
   
         unless (err = stderr.read).empty?
           if err.downcase.include?('failure')
             if err.include? "Geometry Collection"
               @data_import.set_error_code(3201)
               @data_import.log_error("ERROR: geometry contains Geometry Collection")
-            elsif ['.json','.geojson','.js'].include? @ext
-              @data_import.set_error_code(3007)
-              @data_import.log_error(err)
-              @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
             else
               @data_import.set_error_code(2000)
               @data_import.log_error(err)
@@ -38,44 +36,33 @@ module CartoDB
           end
         end
         
-        unless (reg = stdout.read).empty?
-          @runlog.stdout << reg
-        end
-
-        if File.file?("#{@path}.shp")
-          @path = "#{@path}.shp"
-          @ext = '.shp'
-        elsif File.directory?("#{@path}.shp") #multi-layer kml support
-          Dir.foreach("#{@path}.shp") do |entry|
-            if File.extname(entry) == ".shp"
-              #ent = sys.escape(entry)
-              ent = entry
-              if File.file?("#{@path}.1.shp")
-                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" -update -append #{@path}.merged.shp "#{@path}.shp/#{ent}"}
-              else
-                ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "ESRI Shapefile" #{@path}.merged.shp "#{@path}.shp/#{ent}"}
-              end
-              stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
+       # then choose the track_points file to import
+       Dir.foreach(shp_file) do |tmp_path|
+          dirname = shp_file
+          name = File.basename(tmp_path) 
+          next if name =~ /^(\.|\_{2})/
+          if name.include? ' '
+            name = name.gsub(' ','_')
+          end
+          #fixes problem of different SHP archive files with different case patterns
+          FileUtils.mv("#{dirname}/#{tmp_path}", "#{dirname}/#{name.downcase}") unless File.basename(tmp_path) == name.downcase
+          name = name.downcase
+          if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
+            if @working_data[:suggested_name]
+              suggested = "#{@working_data[:suggested_name]}"
+            else
+              suggested = File.basename( name, File.extname(name)).sanitize
             end
+            import_data << {
+              :ext => File.extname(name),
+              :import_type => '.kml',
+              :suggested_name => suggested,
+              :path => "#{dirname}/#{name}"
+            }
           end
-          FileUtils.rm_rf "#{@path}.shp"
-          if File.file?("#{@path}.merged.shp")
-            @path = "#{@path}.merged.shp"
-            @ext = '.shp'
-          else
-            @data_import.set_error_code(2000)
-            @data_import.log_error("ERROR: failed to convert multi-layer #{@ext.sub('.','')} to shp")
-            @runlog.err << "failed to create shp file from #{@ext.sub('.','')}"
-            raise "failed to convert #{@ext.sub('.','')} to shp"
-          end
-        else
-          @data_import.set_error_code(2000)
-          @data_import.log_error("ERROR: failed to convert #{@ext.sub('.','')} to shp")
-          @runlog.err << "failed to create shp file from #{@ext.sub('.','')}"
-          raise "failed to convert #{@ext.sub('.','')} to shp"
-        end
+       end
        # construct return variables
-       to_import_hash       
+       import_data       
       end  
     end
   end    

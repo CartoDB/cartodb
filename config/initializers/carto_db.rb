@@ -70,7 +70,7 @@ module CartoDB
   
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
-  ERROR_CODES = {
+  IMPORTER_ERROR_CODES = {
     1000 => 'File I/O error',
     1001 => 'Unable to open file',
     1002 => 'Unsupported file type',
@@ -78,6 +78,7 @@ module CartoDB
     1004 => 'File encoding error',
     1005 => 'Zero byte file',
     1006 => 'Invalid SHP file',
+    1007 => 'Multifile import errors',
     2000 => 'File conversion errors',
     3000 => 'Geometry error',
     3004 => 'Unable to read SHP file',

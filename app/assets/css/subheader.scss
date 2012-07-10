@@ -73,8 +73,8 @@
     a.close {
       position:absolute;
       right:0;
-      top:2px;
-      padding:1px 0 2px;
+      top:3px;
+      padding:0 0 3px 0;
       width:15px;
       background:#CCCCCC;
       @include border-radius(25px);

@@ -137,7 +137,10 @@ class Api::Json::TablesController < Api::ApplicationController
       if @table.valid? && @table.save      
         render_jsonp({ :id => @table.id, 
                        :name => @table.name, 
-                       :schema => @table.schema }, 200, :location => table_path(@table))
+                       :schema => @table.schema ,
+                       :updated_at => @table.updated_at,
+                       :rows_counted => @table.rows_estimated 
+                       }, 200, :location => table_path(@table))
       else
         @data_import.reload
         CartoDB::Logger.info "Errors on tables#create", @table.errors.full_messages
@@ -188,7 +191,10 @@ class Api::Json::TablesController < Api::ApplicationController
                        :name => @table.name,
                        :privacy => table_privacy_text(@table),
                        :tags => @table[:tags_names],
-                       :schema => @table.schema(:reload => true) })
+                       :schema => @table.schema(:reload => true),
+                       :updated_at => @table.updated_at,
+                       :rows_counted => @table.rows_estimated 
+                       })
       end
     end
   end

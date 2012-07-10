@@ -1,16 +1,73 @@
 <section class="subheader">
-  <div class="inner_subheader">
-    <div class="left">
-      <ul class="tables_list">
-        <li class="<%= selected_if(current_path == dashboard_path) %>"><a class="oth <%= selected_if(current_path == dashboard_path) %>" href="<%= dashboard_path %>">Your tables</a></li>
-        <!--<li class="<%= selected_if(current_path == "") %>"><a class="oth <%= selected_if(current_path == "") %>" href="<%= "" %>">Public tables</a></li>-->
-        <li class="<%= selected_if(controller_name == "client_applications") %>"><a class="oth <%= selected_if(controller_name == "client_applications") %>" href="<%= api_key_credentials_path %>">Your api keys</a></li>
-      </ul>
-    </div>
-    <% if CartoDB.account_host %>
-    <div class="right">
-      <p class="settings"><%= link_to 'settings', account_url, :class=>"settings" %></p>
-    </div>
-    <% end %>
+  <div class="inner">
+    <ul>
+      <%# Check if the user needs more resources or not %>
+      <% @danger = false %>
+      <li>
+        <% if @table_quota.blank? && @tables_count.blank? %>
+          <% @total_tables = "&infin;" %>
+          <% @tables_status = 1 %>
+          <% @tables_class = "special" %>
+        <% else %>
+          <% if @tables_count != 0 %> 
+            <% @tables_status = @tables_count.to_f/@table_quota %>
+            <% if @tables_status > 0.75 %>
+              <% @tables_class = (@tables_status > 0.90) ? "boom" : "danger" %>
+            <% end %>
+            <% @total_tables = @table_quota %>
+            <% @danger = true %>
+          <% else %>
+            <% @tables_status = 0 %>
+            <% @total_tables = 0 %>
+            <% @total_tables = @table_quota || 5 %>
+            <% @danger = true %>
+          <% end %>
+        <% end %>
+        
+        <div class="progress">
+          <span class="<%= @tables_class %>" style="width:<%= @tables_status*100 %>%"></span>
+        </div>
+        <p class="center"><strong><%= @tables_count %> of <%= @total_tables %></strong> tables created</p>
+      </li>
+      <li>
+        <% if @quota > 1023 %>
+          <% @used_disk = number_with_precision(@database_size/1024, :precision => 1) %>
+          <% @total_disk = @quota/1024 %>
+          <% @bytes = "gigabytes" %>
+        <% else %>
+          <% @used_disk = @database_size.to_i %>
+          <% @total_disk = @quota %>
+          <% @bytes = "megabytes" %>
+        <% end %>
+
+        <% @disk_status = @database_size.to_f/@quota %>
+
+        <% if @disk_status > 0.75 %>
+          <% @disk_class = (@disk_status > 0.90) ? 'boom' : 'danger' %>
+          <% @danger = true %>
+        <% end %>
+
+        <div class="progress">
+          <span class="<%= @disk_class %>" style="width:<%= @disk_status*100 %>%"></span>
+        </div>
+        <p class="center"><strong><%= @used_disk %> of <%= @total_disk %></strong> used <%= @bytes %></p>
+      </li>
+
+      <li>
+        <div class="stats" data-requests="10,50,30,1,1,1,1,1,50,100,34,13,23,67,10,1,54,89,10,12,0"></div>
+        <p class="center"><strong>1,981</strong> API calls the last 21 days</p>
+      </li>
+    </ul>
   </div>
 </section>
+
+<%# Hey guy, you need more power! %>
+<% @dedicated = current_user.try(:account_type).upcase == 'DEDICATED' ? true : false %>
+<% if @danger && !@dedicated && !current_user.admin %>
+  <section class="warning">
+    <div class="inner">
+      <p class="dark">Hey <strong><%= current_user.account_type.humanize %></strong>, looks like you are close to reach your account limits. Start thinking on <%= link_to "upgrading your plan", upgrade_url, :class => "underline" %>.</p>
+      <a href="#close" class="smaller close">x</a>
+    </div>
+  </section>
+<% end %>

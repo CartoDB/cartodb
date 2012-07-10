@@ -1,0 +1,23 @@
+@import "compass";
+
+
+	section.block {
+		background:white;
+		@include border-radius(4px);
+		@include box-shadow(rgba(0,0,0,0.07) 0 0 4px 3px);
+
+		div.head {
+			padding:35px 40px; // Hack for line-height
+      border-bottom:1px solid #E5E5E5;
+		}
+
+		div.content {
+			padding:40px;
+		}
+
+		div.foot {
+			padding:35px 40px;
+			border-top:1px solid #E5E5E5;
+			overflow:auto;
+		}
+	}

@@ -1,0 +1,57 @@
+package_assets: on
+compress_assets: on
+embed_assets: off
+javascripts:
+  common:
+    - public/js/vendor/jquery.min.js
+    - public/js/rails.js
+
+  cdbjs:
+    - public/js/lib/cdb.js/vendor/underscore-min.js
+    - public/js/lib/cdb.js/vendor/backbone.js
+    - public/js/lib/cdb.js/vendor/leaflet.js
+    - public/js/lib/cdb.js/src/cartodb.js
+    - public/js/lib/cdb.js/src/core/**/*.js
+    - public/js/lib/cdb.js/src/ui/**/*.js
+    - public/js/lib/cdb.js/src/geo/**/*.js
+
+  dashboard:
+    - public/js/lib/cartodb/app.js
+    - public/js/vendor/d3.v2.js
+    - public/js/lib/cartodb/models/**/*.js
+    - public/js/lib/cartodb/common/**/*.js
+    - public/js/lib/cartodb/dashboard/**/*.js
+    - public/js/lib/cartodb/dashboard/dashboard.js
+    - public/js/lib/cartodb/**/*.jst
+
+  table:
+    - public/js/lib/cartodb/app.js
+    - public/js/lib/cartodb/models/**/*.js
+    - public/js/lib/cartodb/common/**/*.js
+    - public/js/lib/cartodb/table/**/*.js
+    - public/js/lib/cartodb/table/table.js
+    - public/js/lib/cartodb/**/*.jst
+
+  login:
+    - public/js/vendor/modernizr-min.js
+    - public/js/vendor/selectivizr-min.js
+    - public/js/lib/cartodb/app.js
+    - public/js/lib/cartodb/login/placeholder.js
+    - public/js/lib/cartodb/login/error.js
+    - public/js/lib/cartodb/login/login.js
+
+stylesheets:
+  common:
+    - public/css/fonts.css
+    - public/css/sprites.css
+    - public/css/core.css
+    - public/css/buttons.css
+    - public/css/block.css
+    - public/css/header.css
+    - public/css/subheader.css
+    - public/css/tables.css
+    - public/css/footer.css
+    - public/css/table.css
+    - public/css/leaflet.css
+    - public/css/dropdown.css
+    - public/css/modal.css

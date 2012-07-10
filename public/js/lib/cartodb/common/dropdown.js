@@ -41,6 +41,9 @@ cdb.admin.Dropdown = cdb.core.View.extend({
 
     // Bind to target
     $(this.options.target).bind({"click": this.handle_click});
+
+    this.isOpen = false;
+
   },
 
   render: function() {
@@ -51,14 +54,16 @@ cdb.admin.Dropdown = cdb.core.View.extend({
   },
 
   handle_click: function(ev) {
+    //Check if the dropdown is visible to hiding with the click on the target
     ev.preventDefault();
     ev.stopPropagation();
     // If visible
-    if (this.$el.is(":visible")){
+    if (this.isOpen){
       this.hide();
     }else{
       this.open();
     }
+    this.isOpen = !this.isOpen;
   },
 
   hide: function() {
@@ -66,7 +71,7 @@ cdb.admin.Dropdown = cdb.core.View.extend({
     this.$el.animate({
       margin: "-10px 0 0 0",
       opacity: 0
-    },this.options.speedOut,function(){
+    },this.options.speedOut, function(){
       // Remove selected class
       $(self.options.target).removeClass("selected");
       // And hide it

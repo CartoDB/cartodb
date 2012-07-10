@@ -142,8 +142,12 @@
     model: cdb.admin.Row,
 
     initialize: function(models, options) {
+      var self = this;
       this.table = options.table;
       this.model.prototype.idAttribute = 'cartodb_id';
+      // dont bind directly to fetch because change send
+      // options that are use in fetch
+      this.table.bind('change', function() { self.fetch() });
     },
 
     parse: function(d) {

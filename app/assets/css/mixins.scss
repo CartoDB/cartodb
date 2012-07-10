@@ -1,0 +1,17 @@
+@import "compass";
+
+  @mixin text-indent() {
+    text-indent:-9999px;
+    line-height:0px;
+    font-size:0px;
+    text-transform:uppercase;
+  }
+
+  @mixin user-select($val) {
+   	-webkit-touch-callout: $val;
+   	-webkit-user-select: $val;
+   	-khtml-user-select: $val;
+   	-moz-user-select: $val;
+   	-ms-user-select: $val;
+   	user-select: $val;
+  }

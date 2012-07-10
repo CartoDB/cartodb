@@ -1,10 +1,6 @@
-<% if cookies[:flash] || flash[:success] %>
-<div class="notification section">
-  <div class="top_white"></div>
-    <div class="middle_white">
-      <a class="close" href="#close_notification">close</a>
-      <p><%= cookies[:flash] || flash[:success] %></p>
-    </div>
-  <div class="bottom_white"></div>
-</div>
-<% end %>
+<%# if !cookies[:flash] || !flash[:success] %>
+	<li class="flash">
+		<p class="dark">TODO<%= cookies[:flash] || flash[:success] %></p>
+		<a class="smaller close" href="#close">x</a>
+	</li>
+<%# end %>

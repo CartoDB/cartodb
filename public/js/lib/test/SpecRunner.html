@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>CartoDB Spec Runner</title>
+
+  <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.2.0/jasmine_favicon.png">
+  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
+
+
+  <script type="text/javascript" src="../cdb.js/vendor/jquery.min.js"></script>
+  <script type="text/javascript" src="../cdb.js/vendor/underscore-min.js"></script>
+  <script type="text/javascript" src="../cdb.js/vendor/backbone-min.js"></script>
+  <script type="text/javascript" src="../cdb.js/vendor/leaflet.js"></script>
+
+  <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine.js"></script>
+  <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine-html.js"></script>
+  <script type="text/javascript" src="lib/sinon-1.3.4.js"></script>
+  
+
+
+  <!-- include source files here... -->
+  <script type="text/javascript" src="../cdb.js/src/cartodb.js"></script>
+  <script type="text/javascript" src="../cdb.js/src/core/config.js"></script>
+  <script type="text/javascript" src="../cdb.js/src/core/log.js"></script>
+  <script type="text/javascript" src="../cdb.js/src/core/profiler.js"></script>
+  <script type="text/javascript" src="../cdb.js/src/core/template.js"></script>
+  <script type="text/javascript" src="../cdb.js/src/core/view.js"></script>
+
+  <script type="text/javascript" src="../cdb.js/src/geo/map.js"></script>
+
+  <script type="text/javascript" src="../cdb.js/src//ui/common/dialog.js"></script>
+  <script type="text/javascript" src="../cdb.js/src//ui/common/notification.js"></script>
+  <script type="text/javascript" src="../cdb.js/src//ui/common/table.js"></script>
+  <script type="text/javascript" src="../cdb.js/src//ui/common/tabpane.js"></script>
+
+  <!-- cartodb admin app -->
+  <script type="text/javascript" src="../cartodb/app.js"></script>
+  <script type="text/javascript" src="../cartodb/models/table.js"></script>
+  <script type="text/javascript" src="../cartodb/table/tableview.js"></script>
+
+  <!-- cartodb admin app -->
+  <script type="text/javascript" src="spec/cartodb/models/table.spec.js"></script> 
+  <script type="text/javascript" src="spec/cartodb/table/tableview.spec.js"></script> 
+
+  <script type="text/javascript">
+    (function() {
+      var jasmineEnv = jasmine.getEnv();
+      jasmineEnv.updateInterval = 1000;
+
+      var htmlReporter = new jasmine.HtmlReporter();
+
+      jasmineEnv.addReporter(htmlReporter);
+
+      jasmineEnv.specFilter = function(spec) {
+        return htmlReporter.specFilter(spec);
+      };
+
+      var currentWindowOnload = window.onload;
+
+      window.onload = function() {
+        if (currentWindowOnload) {
+          currentWindowOnload();
+        }
+        execJasmine();
+      };
+
+      function execJasmine() {
+        jasmineEnv.execute();
+      }
+
+    })();
+  </script>
+
+</head>
+
+<body>
+</body>
+</html>

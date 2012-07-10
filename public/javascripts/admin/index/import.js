@@ -13,7 +13,7 @@
           $(this).addClass('selected');
         }
       });
-      
+
       $('div.geom_type span a').click(function(ev){
         ev.stopPropagation();
         ev.preventDefault();
@@ -45,12 +45,12 @@
 
       $('div.select_file input#url_txt').focusin(function(){
          $(this).val('');
-         $('div.create_window span.bottom input').removeClass('disabled');        
+         $('div.create_window span.bottom input').removeClass('disabled');
  	    });
-	    
+
       $('div.select_file input#url_txt').focusout(function(){
    	    if ($(this).val() == ""){
-       	  $(this).val('Insert a valid URL...');  
+       	  $(this).val('Insert a valid URL...');
            $('div.create_window span.bottom input').addClass('disabled');
    	    }else{
      	    $('div.create_window span.bottom input').removeClass('disabled');
@@ -72,10 +72,10 @@
             $('div.create_window span.bottom input').removeClass('disabled');
           }
         }
-				
+
 
       });
-      
+
 
       $('span.file input').hover(function(ev){
         $('span.file a').addClass('hover');
@@ -93,15 +93,15 @@
         if (!$('div.create_window span.bottom input').hasClass('disabled')) {
           if (create_type==0) {
             var geom_type = $('div.geom_type span.selected a').text().toLowerCase();
-            
+
             if (geom_type=="point") {
-              geom_type="point";              
+              geom_type="point";
             } else if (geom_type=="polygon") {
               geom_type="multipolygon";
             } else {
               geom_type="multilinestring";
             }
-            
+
             createNewToFinish(geom_type,'');
           } else if (create_type==2) {
 						var url = $('div.select_file input#url_txt').val();
@@ -114,12 +114,12 @@
           }
         }
       });
-      
-      
+
+
       //Uploader for the modal window
       var uploader = new qq.FileUploader({
         element: document.getElementById('uploader'),
-        action: '/upload',
+        action:  global_api_url+'uploads',
         params: {},
         allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz', 'osm', 'bz2', 'tif', 'tiff'],
         sizeLimit: userSpaceLimit, // max size
@@ -129,7 +129,7 @@
           $('div.create_window ul > li:eq(0)').addClass('disabled');
           $('div.create_window ul > li:eq(2)').addClass('disabled');
           $('form input[type="submit"]').addClass('disabled');
-          $('span.file').addClass('uploading');     
+          $('span.file').addClass('uploading');
         },
         onProgress: function(id, fileName, loaded, total){
           var percentage = loaded / total;
@@ -149,7 +149,7 @@
       //Uploader for the whole page (dashboard only)
       var hugeUploader = new qq.FileUploader({
       	element: document.getElementById('hugeUploader'),
-      	action: '/upload',
+      	action: global_api_url+'uploads',
       	params: {},
         allowedExtensions: ['csv', 'xls', 'xlsx', 'zip', 'kml', 'geojson', 'json', 'ods', 'kmz', 'gpx', 'tar', 'gz', 'tgz', 'osm', 'bz2', 'tif', 'tiff'],
       	sizeLimit: userSpaceLimit,
@@ -165,7 +165,7 @@
           $('#hugeUploader').hide();
           $('div.create_window').show();
           $('div.mamufas').fadeIn();
-          bindESC();		  
+          bindESC();
       	},
       	onProgress: function(id, fileName, loaded, total){
       		var percentage = loaded / total;
@@ -189,7 +189,7 @@
       	}
       });
     });
-    
+
 
     function resetUploadFile() {
       create_type = 0;
@@ -229,69 +229,80 @@
         $('div.create_window div.inner_ span.loading').animate({opacity:1},200, function(){
           var params = {}
           if (url!='') {
-            if (!out) {
-              params = {file:'http://'+window.location.host + url};
-            } else {
-              params = {file:url};
-            }
+            params = {file_uri:url};
           } else {
             params = {the_geom_type:type}
           }
           $.ajax({
             type: "POST",
-            url: global_api_url+'tables/',
+            url: global_api_url+'imports/',
             data: params,
             headers: {'cartodbclient':true},
             success: function(data, textStatus, XMLHttpRequest) {
-              if (data.tag){
-                  window.location.href = "/dashboard?tag_name="+data.tag;
-              }else{
-                  window.location.href = "/tables/"+data.id;
-              }
+              checkImportStatus(data.item_queue_id);
             },
-            error: function(e) {
-							var json = $.parseJSON(e.responseText);
-
-							if (json.code || json.import_errors) {
-
-								// Reset
-								$('div.create_window div.inner_ span.loading').html('');
-
-								// Title
-								$('div.create_window div.inner_ span.loading').html('<h5>Oops! There has been an error</h5>');
-
-								// Description
-								if (json.description) {
-									$('div.create_window div.inner_ span.loading').append('<p>' + json.description + '</p>');
-								}
-
-								// Stack
-								if (json.stack && json.stack.length>0) {
-									$('div.create_window div.inner_ span.loading').append('<p class="see_details"><a class="see_more" href="#show_more">see details</a></p>');
-									
-									var stack = '<span class="error_details"><h6>Code ' + (json.code || '') + '</h6><dl>';
-									for (var i=0,_length=json.stack.length; i<_length; i++) {
-										stack += '<dd>' + json.stack[i] + '</dd>';
-									}
-									stack += '</dl></span>';
-									$('div.create_window div.inner_ span.loading').append(stack);
-								}
-                
-							} else {
-                $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:support@cartodb.com">contact us</a> with a sample of your data if possible. Thanks!');
-                $('div.create_window div.inner_ span.loading h5').text('Oops! Error');
-							}
-						  $('div.create_window div.inner_ span.loading').addClass('error');
-							$('div.create_window a.close_create').show().addClass('last');
-              $('div.create_window div.inner_').height($('div.create_window div.inner_ span.loading').height() + 30);
-            }
+            error: importError
           });
         });
       });
       setTimeout(function(){$('div.create_window a.close_create').addClass('last');},250);
     }
-    
-    
+
+    function checkImportStatus(queue_id){
+      $.ajax({
+        type: "GET",
+        url: global_api_url + 'imports/' + queue_id,
+        success: function(r) {
+          var data_import = r.import;
+          if ($.isEmptyObject(data_import) || (data_import.state != 'complete' && data_import.state != 'failure')) {
+            setTimeout(function(){
+              checkImportStatus(queue_id);
+            }, 1000);
+          } else {
+            window.location.href = "/tables/"+data_import.table_name;
+          }
+        },
+        error: importError
+      })
+    }
+
+    function importError(e) {
+      var json = $.parseJSON(e.responseText);
+
+      if (json.code || json.import_errors) {
+
+        // Reset
+        $('div.create_window div.inner_ span.loading').html('');
+
+        // Title
+        $('div.create_window div.inner_ span.loading').html('<h5>Oops! There has been an error</h5>');
+
+        // Description
+        if (json.description) {
+          $('div.create_window div.inner_ span.loading').append('<p>' + json.description + '</p>');
+        }
+
+        // Stack
+        if (json.stack && json.stack.length>0) {
+          $('div.create_window div.inner_ span.loading').append('<p class="see_details"><a class="see_more" href="#show_more">see details</a></p>');
+
+          var stack = '<span class="error_details"><h6>Code ' + (json.code || '') + '</h6><dl>';
+          for (var i=0,_length=json.stack.length; i<_length; i++) {
+            stack += '<dd>' + json.stack[i] + '</dd>';
+          }
+          stack += '</dl></span>';
+          $('div.create_window div.inner_ span.loading').append(stack);
+        }
+
+      } else {
+        $('div.create_window div.inner_ span.loading p').html('There has been an error, please <a href="mailto:support@cartodb.com">contact us</a> with a sample of your data if possible. Thanks!');
+        $('div.create_window div.inner_ span.loading h5').text('Oops! Error');
+      }
+      $('div.create_window div.inner_ span.loading').addClass('error');
+      $('div.create_window a.close_create').show().addClass('last');
+      $('div.create_window div.inner_').height($('div.create_window div.inner_ span.loading').height() + 30);
+    }
+
     function retryImportTable() {
       $('div.create_window a.close_create').show().removeClass('last');
       $('div.create_window div.inner_').animate({borderColor:'#CCCCCC', height:'254px'},500,function(){

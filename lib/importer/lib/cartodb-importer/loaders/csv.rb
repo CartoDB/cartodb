@@ -5,24 +5,24 @@ module CartoDB
 
       register_loader :csv
       register_loader :txt
-      register_loader :geojson  
-      register_loader :js       
-      register_loader :json  
+      register_loader :geojson
+      register_loader :js
+      register_loader :json
       #register_loader :kml
 
       def process!
         begin
           @data_import = DataImport.find(:id=>@data_import_id)
-          
+
           # run Chardet + Iconv
           fix_encoding
-          
+
           @data_import.log_update("ogr2ogr #{@working_data[:suggested_name]}")
           ogr2ogr_bin_path = `which ogr2ogr`.strip
           ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@working_data[:path]} -nln #{@working_data[:suggested_name]}}
-        
-          stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command) 
-          
+
+          stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command)
+
           unless (err = stderr.read).empty?
             @iconv ||= Iconv.new('UTF-8//IGNORE', 'UTF-8')
             err = @iconv.iconv(err)
@@ -39,11 +39,11 @@ module CartoDB
               @data_import.log_update(err)
             end
           end
-          
+
           unless (reg = stdout.read).empty?
             @runlog.stdout << reg
           end
-          
+
           # Check if the file had data, if not rise an error because probably something went wrong
           begin
             rows_imported = @db_connection["SELECT count(*) from #{@working_data[:suggested_name]} LIMIT 1"].first[:count]
@@ -54,6 +54,7 @@ module CartoDB
             @data_import.log_error("ERROR: failed to import #{@working_data[:ext].sub('.','')} to database")
             raise "failed to import table"
           end
+
           if rows_imported == 0
             @runlog.err << "Empty table"
             @data_import.set_error_code(5001)
@@ -64,7 +65,7 @@ module CartoDB
           # Importing CartoDB GeoJSON
           # =========================
           # Result in a column called wkb_geometry
-          # Start by renaming this column to the_geom 
+          # Start by renaming this column to the_geom
           # And then the next steps all follow the methods for CSV
           column_names = @db_connection.schema(@working_data[:suggested_name]).map{ |s| s[0].to_s }
           if column_names.include? "wkb_geometry"
@@ -93,15 +94,17 @@ module CartoDB
                 if geometry_type
                   # move original geometry column around
                   @db_connection.run("ALTER TABLE #{@working_data[:suggested_name]} RENAME COLUMN the_geom TO the_geom_orig;")
-                  
                   @db_connection.run("SELECT AddGeometryColumn('#{@working_data[:suggested_name]}','the_geom',4326, '#{geometry_type}', 2)")
-                  
+
                   add_index @working_data[:suggested_name], random_index_name
                   #@db_connection.run("CREATE INDEX #{@working_data[:suggested_name]}_the_geom_gist ON #{@working_data[:suggested_name]} USING GIST (the_geom)")
 
                   # loop through old geom parsing into the_geom.
-                  # TODO: Replace with ST_GeomFromGeoJSON when production has been upgraded to postgis r8692
-                  # @db_connection.run("UPDATE #{@working_data[:suggested_name]} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(the_geom_orig),4326) WHERE the_geom_orig IS NOT NULL")
+                  # TODO: Replace with ST_GeomFromGeoJSON when production has been 
+                  # upgraded to postgis r8692
+                  # @db_connection.run("UPDATE #{@working_data[:suggested_name]} \
+                  # SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(the_geom_orig),4326) \
+                  # WHERE the_geom_orig IS NOT NULL")
                   # tokumine ticket: http://trac.osgeo.org/postgis/ticket/1434
                   @data_import.log_update("converting GeoJSON to the_geom")
                   @db_connection["select the_geom_orig from #{@working_data[:suggested_name]} where the_geom_orig != '' and the_geom_orig is not null "].each do |res|
@@ -137,7 +140,7 @@ module CartoDB
               end
             end
           end
-          
+
           # if there is no the_geom, and there are latitude and longitude columns, create the_geom
           unless column_names.include? "the_geom"
 
@@ -156,7 +159,7 @@ module CartoDB
             if !res.first.nil?
               matching_longitude= res.first[:column_name]
             end
-          
+
             if matching_latitude and matching_longitude
                 @data_import.log_update("converting #{matching_latitude}, #{matching_longitude} to the_geom")
                 #we know there is a latitude/longitude columns
@@ -174,22 +177,22 @@ module CartoDB
                 WHERE
                 trim(CAST(\"#{matching_longitude}\" AS text)) ~ '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
                 AND
-                trim(CAST(\"#{matching_latitude}\" AS text))  ~   
+                trim(CAST(\"#{matching_latitude}\" AS text))  ~
                 '^(([-+]?(([0-9]|[1-8][0-9])(\.[0-9]+)?))|[-+]?90)$'
                 GEOREF
                 )
                 add_index @working_data[:suggested_name], random_index_name
             end
           end
-          
+
           begin
             # Sanitize column names where needed
             sanitize_table_columns @working_data[:suggested_name]
-          rescue Exception => msg  
+          rescue Exception => msg
             @runlog.err << msg
             @data_import.log_update("ERROR: Failed to sanitize some column names")
           end
-          
+
           @table_created = true
           @data_import.log_update("table created")
           FileUtils.rm_rf(Dir.glob(@working_data[:path]))
@@ -198,7 +201,7 @@ module CartoDB
                                   :rows_imported => rows_imported,
                                   :import_type => @working_data[:import_type] ? @working_data[:import_type] : @working_data[:ext]
                                   })
-          
+
           # construct return variables
           [payload]
         rescue => e
@@ -210,15 +213,15 @@ module CartoDB
           log "====================="
           begin  # TODO: Do we really mean nil here? What if a table is created?
             @db_connection.drop_table random_table_name
-          rescue # silent try to drop the table            
+          rescue # silent try to drop the table
           end
           begin  # TODO: Do we really mean nil here? What if a table is created?
             @db_connection.drop_table @working_data[:suggested_name]
-          rescue # silent try to drop the table            
+          rescue # silent try to drop the table
           end
-        
+
           raise e
-        end 
+        end
       end
     end
   end

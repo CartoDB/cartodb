@@ -71,7 +71,7 @@ module CartoDB
         valid_tables.each do |feature|
           @old_table_name = "#{random_table_prefix}_#{feature}"
           @table_name = get_valid_name("#{@working_data[:suggested_name]}_#{feature}")
-          
+
           begin
             @db_connection.run("ALTER TABLE \"#{@old_table_name}\" RENAME TO \"#{@table_name}\"")
             @table_created = true
@@ -111,9 +111,8 @@ module CartoDB
                                       :import_type => '.osm',
                                       :log => ''
                                     })
-              
-              @data_import.refresh
-            
+
+              @data_import.refresh            
           rescue Exception => msg  
             @runlog.err << msg
             @data_import.set_error_code(5000)

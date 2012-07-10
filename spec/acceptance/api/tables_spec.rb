@@ -39,7 +39,7 @@ feature "API 1.0 tables management" do
       response.body[:tables].size.should == 2
     end
   end
-  
+
   scenario "Get tables from a tag" do
     another_user = create_user
 
@@ -63,12 +63,12 @@ feature "API 1.0 tables management" do
       response.status.should be_success
       response.body[:tables].map{ |t| t['name'] }.should == ["my_table_1"]
     end
-    
+
     get_json api_tables_tag_url("tag 2", :page => 1, :per_page => 10) do |response|
       response.status.should be_success
       response.body[:tables].map{ |t| t['name'] }.should == ["my_table_1"]
     end
-    
+
     get_json api_tables_tag_url("tag 4") do |response|
       response.status.should be_success
       response.body[:tables].map{ |t| t['name'] }.should be_empty
@@ -87,7 +87,7 @@ feature "API 1.0 tables management" do
 
   scenario "Create a new table specifing a name and a schema" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+
     post_json api_tables_url, {:name => "My new imported table", :schema => "bla bla blat"} do |response|
       response.status.should == 400
     end
@@ -101,10 +101,10 @@ feature "API 1.0 tables management" do
        ]).should be_empty
     end
   end
-  
+
   scenario "Create a new table specifying a geometry of type point" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Point" } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -117,7 +117,7 @@ feature "API 1.0 tables management" do
 
   scenario "Create a new table specifying a geometry of type polygon" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Polygon" } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -127,10 +127,10 @@ feature "API 1.0 tables management" do
        ]).should be_empty
     end
   end
-  
+
   scenario "Create a new table specifying a geometry of type line" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Line" } do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
@@ -143,7 +143,7 @@ feature "API 1.0 tables management" do
 
   scenario "Create a new table specifing an schema and a file from which import data" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+
     post_json api_tables_url, {
                :name => "Twitts",
                :schema => "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)",
@@ -193,7 +193,7 @@ feature "API 1.0 tables management" do
     put_json api_table_url(table1.name), {:name => ""} do |response|
       response.status.should be_success
     end
-    
+
     get_json api_table_url(table1.name) do |response|
       response.status.should be_success
     end
@@ -201,7 +201,7 @@ feature "API 1.0 tables management" do
 
   scenario "Delete a table of mine" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     delete_json api_table_url(table1.name) do |response|
@@ -211,7 +211,7 @@ feature "API 1.0 tables management" do
 
   scenario "Delete a table of another user" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
-    
+
     another_user = create_user
     table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
@@ -272,17 +272,17 @@ feature "API 1.0 tables management" do
       response.body[:schema].should include(["aggregated_address", "string", "address"])
     end
   end
-  
+
   scenario "Create a new table importing file twitters.csv" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+
     post_json api_tables_url, {
       :file => "#{Rails.root}/db/fake_data/twitters.csv"
     } do |response|
       response.status.should be_success
       response.body[:name].should == "twitters"
       schema_differences = (response.body[:schema] - [
-        ["cartodb_id", "number"], ["url", "string"], ["login", "string"], ["country", "string"], ["followers_count", "string"], 
+        ["cartodb_id", "number"], ["url", "string"], ["login", "string"], ["country", "string"], ["followers_count", "string"],
         ["field_5", "string"], ["created_at", "date"], ["updated_at", "date"],
         ["the_geom", "geometry", "geometry", "point"]
        ])
@@ -292,29 +292,29 @@ feature "API 1.0 tables management" do
 
   scenario "Create a new table importing file ngos.xlsx" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+
     post_json api_tables_url, {
       :file => "#{Rails.root}/db/fake_data/ngos.xlsx"
     } do |response|
       response.status.should be_success
       response.body[:name].should == "ngos"
       schema_differences = (response.body[:schema] - [
-        ["cartodb_id", "number"], ["organization", "string"], ["website", "string"], ["about", "string"], ["organization_s_work_in_haiti", "string"], 
-        ["calculation_of_number_of_people_reached", "string"], ["private_funding", "string"], ["relief", "string"], ["reconstruction", "string"], 
-        ["private_funding_spent", "string"], ["spent_on_relief", "string"], ["spent_on_reconstruction", "string"], ["usg_funding", "string"], 
-        ["usg_funding_spent", "string"], ["other_funding", "string"], ["other_funding_spent", "string"], ["international_staff", "string"], ["national_staff", "string"], 
-        ["us_contact_name", "string"], ["us_contact_title", "string"], ["us_contact_phone", "string"], ["us_contact_e_mail", "string"], ["media_contact_name", "string"], 
-        ["media_contact_title", "string"], ["media_contact_phone", "string"], ["media_contact_e_mail", "string"], ["donation_phone_number", "string"], ["donation_address_line_1", "string"], 
+        ["cartodb_id", "number"], ["organization", "string"], ["website", "string"], ["about", "string"], ["organization_s_work_in_haiti", "string"],
+        ["calculation_of_number_of_people_reached", "string"], ["private_funding", "string"], ["relief", "string"], ["reconstruction", "string"],
+        ["private_funding_spent", "string"], ["spent_on_relief", "string"], ["spent_on_reconstruction", "string"], ["usg_funding", "string"],
+        ["usg_funding_spent", "string"], ["other_funding", "string"], ["other_funding_spent", "string"], ["international_staff", "string"], ["national_staff", "string"],
+        ["us_contact_name", "string"], ["us_contact_title", "string"], ["us_contact_phone", "string"], ["us_contact_e_mail", "string"], ["media_contact_name", "string"],
+        ["media_contact_title", "string"], ["media_contact_phone", "string"], ["media_contact_e_mail", "string"], ["donation_phone_number", "string"], ["donation_address_line_1", "string"],
         ["address_line_2", "string"], ["city", "string"], ["state", "string"], ["zip_code", "string"], ["donation_website", "string"], ["created_at", "date"], ["updated_at", "date"],
         ["the_geom", "geometry", "geometry", "point"]
       ])
       schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
     end
   end
-  
+
   scenario "Create a new table importing file EjemploVizzuality.zip" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+
     post_json api_tables_url, {
       :file => "#{Rails.root}/db/fake_data/EjemploVizzuality.zip",
       :srid => CartoDB::SRID
@@ -322,18 +322,18 @@ feature "API 1.0 tables management" do
       response.status.should be_success
       response.body[:name].should == "vizzuality"
       schema_differences = (response.body[:schema] - [
-        ["cartodb_id", "number"], ["gid", "number"], ["subclass", "string"], ["x", "number"], ["y", "number"], ["length", "string"], ["area", "string"], 
-        ["angle", "number"], ["name", "string"], ["pid", "number"], ["lot_navteq", "string"], ["version_na", "string"], ["vitesse_sp", "number"], 
-        ["id", "number"], ["nombrerest", "string"], ["tipocomida", "string"], 
+        ["cartodb_id", "number"], ["gid", "number"], ["subclass", "string"], ["x", "number"], ["y", "number"], ["length", "string"], ["area", "string"],
+        ["angle", "number"], ["name", "string"], ["pid", "number"], ["lot_navteq", "string"], ["version_na", "string"], ["vitesse_sp", "number"],
+        ["id", "number"], ["nombrerest", "string"], ["tipocomida", "string"],
         ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
       ])
       schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
-    end    
+    end
   end
-  
+
   scenario "Create a new table importing file shp not working.zip" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-    
+
     post_json api_tables_url, {
       :file => "#{Rails.root}/db/fake_data/shp\ not\ working.zip",
       :srid => CartoDB::SRID
@@ -341,30 +341,30 @@ feature "API 1.0 tables management" do
       response.status.should be_success
       response.body[:name].should == "constru"
       schema_differences = (response.body[:schema] - [
-        ["cartodb_id", "number"], ["gid", "number"], ["mapa", "number"], ["delegacio", "number"], ["municipio", "number"], ["masa", "string"], 
-        ["tipo", "string"], ["parcela", "string"], ["constru", "string"], ["coorx", "number"], ["coory", "number"], ["numsymbol", "number"], 
-        ["area", "number"], ["fechaalta", "number"], ["fechabaja", "number"], ["ninterno", "number"], ["hoja", "string"], ["refcat", "string"], 
+        ["cartodb_id", "number"], ["gid", "number"], ["mapa", "number"], ["delegacio", "number"], ["municipio", "number"], ["masa", "string"],
+        ["tipo", "string"], ["parcela", "string"], ["constru", "string"], ["coorx", "number"], ["coory", "number"], ["numsymbol", "number"],
+        ["area", "number"], ["fechaalta", "number"], ["fechabaja", "number"], ["ninterno", "number"], ["hoja", "string"], ["refcat", "string"],
         ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
       ])
       schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
-    end    
+    end
   end
-  
-  
+
+
   scenario "Create a table, remove a table, and recreate it with the same name" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).times(3)
-    
+
     post_json api_tables_url, {:file => "#{Rails.root}/db/fake_data/twitters.csv"} do |response|
       response.status.should be_success
-    end       
-    
+    end
+
     delete_json api_table_url("twitters") do |response|
       response.status.should be_success
     end
 
     post_json api_tables_url, {:name => "wadus", :file => "#{Rails.root}/db/fake_data/twitters.csv"} do |response|
       response.status.should be_success
-    end    
+    end
   end
 
   scenario "Download a table in shp format" do

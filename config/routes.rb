@@ -14,11 +14,11 @@ CartoDB::Application.routes.draw do
     match '/dashboard'        => 'tables#index', :as => :dashboard
     # TO IMPLEMENT
     #match '/dashboard/public' => 'tables#index_public', :as => :dashboard_public
-    
+
     resources :tables, :only => [:show] do
       get 'embed_map', :on => :member
       get 'public' => 'tables#show_public', :on => :member
-    end      
+    end
     match '/your_apps/oauth'   => 'client_applications#oauth',   :as => :oauth_credentials
     match '/your_apps/api_key' => 'client_applications#api_key', :as => :api_key_credentials
     post  '/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', :as => :regenerate_api_key
@@ -29,7 +29,7 @@ CartoDB::Application.routes.draw do
     post '/' => 'users#create', :as => :users
     resources :users, :only => [:create, :update, :destroy]
   end
-  
+
   scope :oauth, :path => :oauth do
     match '/authorize'      => 'oauth#authorize',     :as => :authorize
     match '/request_token'  => 'oauth#request_token', :as => :request_token
@@ -37,7 +37,7 @@ CartoDB::Application.routes.draw do
     get   '/identity'       => 'sessions#show'
   end
 
-  scope "/api" do    
+  scope "/api" do
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
       get    '/column_types'                         => 'meta#column_types'
       get    '/tables'                               => 'tables#index'
@@ -56,7 +56,7 @@ CartoDB::Application.routes.draw do
       get    '/tables/:table_id/export/shp'          => 'export_tables#show', :format => :shp
       get    '/tables/:table_id/export/kml'          => 'export_tables#show', :format => :kml
       get    '/tables/:table_id/export/sql'          => 'export_tables#show', :format => :sql
-      
+
       get    '/tables/:table_id/records'             => 'records#index'
       post   '/tables/:table_id/records'             => 'records#create'
       get    '/tables/:table_id/records/pending_addresses' => 'records#pending_addresses'
@@ -71,6 +71,11 @@ CartoDB::Application.routes.draw do
       get    '/tables/:table_id/records/:record_id/columns/:id' => 'records#show_column'
       put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
       get    '/queries'                              => 'queries#run'
+
+      # imports
+      resources :uploads, :only => :create
+      resources :imports, :only => [:create, :show, :index]
+
     end
   end
 end

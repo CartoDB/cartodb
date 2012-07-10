@@ -2,16 +2,16 @@
 
 class Api::Json::ImportController < Api::ApplicationController
   :create
-  
+
   before_filter :set_start_time
   after_filter  :record_query_threshold
-  
+
   def create
     # create a ne import log
     @data_import  = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
-    
+
     if params[:append].present?
       payload, location = append_to_existing params
       render_jsonp(payload, 200, :location => location)
@@ -35,16 +35,16 @@ class Api::Json::ImportController < Api::ApplicationController
       method = params[:file] ? 'file': 'url'
       src = params[:file] ? params[:file] : params[:url]
       imports, errors = import_to_cartodb method, src
-      
+
       unless imports.nil?
         results = Array.new
         imports.each do | import |
           payload, location = migrate_existing import.name, params[:name]
           results << [payload,location]
         end
-        
+
         clean_failed_imports
-        
+
         if results.length == 0
           if errors.length == 0
             render_jsonp({ :description => 'Unknown', :stack => [], :code=> 99999 }, 400)
@@ -82,7 +82,7 @@ class Api::Json::ImportController < Api::ApplicationController
             end
           }
           message = "#{table_count}/#{file_count} table(s) successfully created"
-          
+
           # TODO remove :tag when front-end will accept just a successful table list
           render_jsonp({:tag => " "}, 201, :location => '/dashboard')
         end
@@ -95,15 +95,15 @@ class Api::Json::ImportController < Api::ApplicationController
       @table.import_from_file = params[:file]              if params[:file]
       @table.import_from_url = params[:url]                if params[:url]
       @table.import_from_table_copy = params[:table_copy]  if params[:table_copy]
-      @table.import_from_query = params[:from_query]  if params[:from_query]   
-      @table.migrate_existing_table = params[:migrate_table]  if params[:migrate_table]    
+      @table.import_from_query = params[:from_query]  if params[:from_query]
+      @table.migrate_existing_table = params[:migrate_table]  if params[:migrate_table]
       @table.importing_SRID = params[:srid] || CartoDB::SRID
       @table.force_schema   = params[:schema]              if params[:schema]
       @table.the_geom_type  = params[:the_geom_type]       if params[:the_geom_type]
-      
-      if @table.valid? && @table.save      
-        render_jsonp({ :id => @table.id, 
-                       :name => @table.name, 
+
+      if @table.valid? && @table.save
+        render_jsonp({ :id => @table.id,
+                       :name => @table.name,
                        :schema => @table.schema }, 200, :location => table_path(@table))
       else
         @data_import.reload
@@ -111,7 +111,7 @@ class Api::Json::ImportController < Api::ApplicationController
         if @table.data_import_id
           render_jsonp({ :description => @data_import.get_error_text ,
                       :stack =>  @data_import.log_json,
-                      :code=>@data_import.error_code }, 
+                      :code=>@data_import.error_code },
                       400)
         else
           render_jsonp({ :description => @data_import.get_error_text, :stack => @table.errors.full_messages, :code=>@data_import.error_code }, 400)
@@ -120,20 +120,22 @@ class Api::Json::ImportController < Api::ApplicationController
     end
   rescue => e
     @data_import.reload
-    # Add semantics based on the users creation method. 
+    # Add semantics based on the users creation method.
     # TODO: The importer should throw these specific errors
     if !e.is_a? CartoDB::QuotaExceeded
-      e = CartoDB::InvalidUrl.new     e.message    if params[:url]    
-      e = CartoDB::InvalidFile.new    e.message    if params[:file]    
-      e = CartoDB::TableCopyError.new e.message    if params[:table_copy]    
-    end  
+      e = CartoDB::InvalidUrl.new     e.message    if params[:url]
+      e = CartoDB::InvalidFile.new    e.message    if params[:file]
+      e = CartoDB::TableCopyError.new e.message    if params[:table_copy]
+    end
     message = e.message.split("\n")[0]
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
-    
+
     @data_import.reload
-    
+
     clean_failed_imports
-    render_jsonp({ :description => @data_import.get_error_text, :stack =>  @data_import.log_json, :code => @data_import.error_code }, 400)
+    render_jsonp({ :description => @data_import.get_error_text, 
+                   :stack =>  @data_import.log_json, 
+                   :code => @data_import.error_code }, 400)
   end
 
   protected
@@ -148,23 +150,23 @@ class Api::Json::ImportController < Api::ApplicationController
     return uniname
   end
   def migrate_existing table, name = nil
-    
+
     new_name = name.nil? ? table : name
-    
+
     #the below is redudant with the method below after import.nil?, should factor
-    @new_table = Table.new 
+    @new_table = Table.new
     @new_table.user_id = current_user.id
     @new_table.name = new_name
-    
+
     @new_table.user_id =  @data_import.user_id
     @new_table.data_import_id = @data_import.id
     @new_table.migrate_existing_table = table
-    
+
     if @new_table.valid?
       @new_table.save
       @data_import.refresh
-      payload = {:id => @new_table.id, 
-                      :name => @new_table.name, 
+      payload = {:id => @new_table.id,
+                      :name => @new_table.name,
                       :schema => @new_table.schema}
       location = table_path(@new_table)
     else
@@ -175,8 +177,8 @@ class Api::Json::ImportController < Api::ApplicationController
                     :stack =>  @data_import.log_json,
                     :code=>@data_import.error_code }
       else
-        payload = { :description => @data_import.get_error_text, 
-                    :stack => @table.errors.full_messages, 
+        payload = { :description => @data_import.get_error_text,
+                    :stack => @table.errors.full_messages,
                     :code=>@data_import.error_code }
       end
       location = nil
@@ -188,7 +190,7 @@ class Api::Json::ImportController < Api::ApplicationController
     @data_import = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
-    
+
     @new_table = Table.new
     @new_table.user_id = current_user.id
     @new_table.data_import_id = @data_import.id
@@ -196,27 +198,27 @@ class Api::Json::ImportController < Api::ApplicationController
     @new_table.import_from_file = params[:file]              if params[:file]
     @new_table.import_from_url = params[:url]                if params[:url]
     @new_table.save
-        
+
     @new_table.reload
     @table = Table.filter(:user_id => current_user.id, :id => params[:table_id]).first
     @table.append_to_table(:from_table => @new_table)
     @table.save.reload
     # append_to_table doesn't automatically destroy the table
     @new_table.destroy
-  
-    return [{:id => @table.id, 
-                 :name => @table.name, 
+
+    return [{:id => @table.id,
+                 :name => @table.name,
                  :schema => @table.schema}, table_path(@table)]
   end
   def import_to_cartodb method, import_source
-    if method == 'file'    
+    if method == 'file'
       hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => current_user.database_name, 
+        "database" => current_user.database_name,
         :logger => ::Rails.logger,
-        "username" => current_user.database_username, 
+        "username" => current_user.database_username,
         "password" => current_user.database_password,
-        :import_from_file => import_source, 
-        :debug => (Rails.env.development?), 
+        :import_from_file => import_source,
+        :debug => (Rails.env.development?),
         :remaining_quota => current_user.remaining_quota,
         :data_import_id => @data_import.id
       ).symbolize_keys
@@ -226,18 +228,18 @@ class Api::Json::ImportController < Api::ApplicationController
       @data_import.imported
       return importer, errors
     #import from URL
-    elsif method == 'url' 
+    elsif method == 'url'
       @data_import.data_type = 'url'
       @data_import.data_source = import_from_url
       @data_import.download
       @data_import.save
       importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        "database" => database_name, 
+        "database" => database_name,
         :logger => ::Rails.logger,
-        "username" => table_owner.database_username, 
+        "username" => table_owner.database_username,
         "password" => table_owner.database_password,
-        :import_from_url => import_from_url, 
-        :debug => (Rails.env.development?), 
+        :import_from_url => import_from_url,
+        :debug => (Rails.env.development?),
         :remaining_quota => table_owner.remaining_quota,
         :data_import_id => @data_import.id
       ).symbolize_keys
@@ -248,63 +250,64 @@ class Api::Json::ImportController < Api::ApplicationController
       return [importer, errors]
     end
   end
-  
+
   def get_valid_name(raw_new_name = nil)
     # TODO add a delete table check in the cases where a table has become ghost
     # probably in the after_destroy method in table.rb
-    
+
     # set defaults and sanity check
     raw_new_name = (raw_new_name || "untitled_table").sanitize
-    
+
     # tables cannot be blank, start with numbers or underscore
     raw_new_name = "table_#{raw_new_name}" if raw_new_name =~ /^[0-9]/
     raw_new_name = "table#{raw_new_name}"  if raw_new_name =~ /^_/
     raw_new_name = "untitled_table"        if raw_new_name.blank?
-    
+
     # Do a basic check for the new name. If it doesn't exist, let it through (sanitized)
     return raw_new_name if name_available?(raw_new_name)
-        
+
     # Happens if we're duplicating a table.
     # First get candidates from the base name
     # eg: "simon_24" => "simon"
     if match = /(.+)_\d+$/.match(raw_new_name)
       raw_new_name = match[1]
-    end  
-    
+    end
+
     # return if no dupe
     return raw_new_name if name_available?(raw_new_name)
 
     # increment trailing number (max+1) if dupe
-    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first  
-    
+    max_candidate = name_candidates(raw_new_name).sort_by {|c| -c[/_(\d+)$/,1].to_i}.first
+
     if max_candidate =~ /(.+)_(\d+)$/
       return $1 + "_#{$2.to_i + 1}"
     else
       return max_candidate + "_2"
     end
   end
-  
+
   # return name if no dupe, else false
-  def name_available?(name)                 
-    name_candidates(name).include?(name) ? false : name 
-  end    
+  def name_available?(name)
+    name_candidates(name).include?(name) ? false : name
+  end
 
   def name_candidates(name)
     # FYI: Native sequel (table_owner.in_database.tables) filters tables that start with sql or pg
     table_owner.tables.filter(:name.like(/^#{name}/)).select_map(:name)
-  end  
+  end
 
   def load_table
     @table = Table.find_by_identifier(current_user.id, params[:id])
   end
-  
+
   def record_query_threshold
     if response.ok?
       CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)
     end
   end
+
   def fix_openstreetmap_url url
-    
+
     # the very particular case of osm.org url imports
     # MOVE THIS TO importer.rb
     # if params[:url] || params[:file]
@@ -314,7 +317,7 @@ class Api::Json::ImportController < Api::ApplicationController
     #   if src =~ /openstreetmap.org/
     #     if src !~ /api.openstreetmap.org/
     #       src = fix_openstreetmap_url src
-    #       
+    #
     #       @data_import.log_update("Openstreetmaps.org URL converted to API url")
     #       @data_import.log_update(src)
     #     end
@@ -324,16 +327,14 @@ class Api::Json::ImportController < Api::ApplicationController
     #     ext =File.extname(src)
     #   end
     # end
-    
+
     params = Rack::Utils.parse_query(url.split('?')[1])
     #2h, 6w
     lon = params['lon'].to_f
     lat = params['lat'].to_f
     zm = params['zoom'].to_i
-    
     dw = 1200.0/2.0
     dh = 1000.0/2.0
-    
     res = 180 / 256.0 / 2**zm
     py = (90 + lat) / res
     px = (180 + lon) / res
@@ -341,31 +342,32 @@ class Api::Json::ImportController < Api::ApplicationController
     lpy = py - dh
     upx = px + dw
     upy = py + dh
-    
     lon1 = (res * lpx) - 180
     lat1 = (res * lpy) - 90
     lon2 = (res * upx) - 180
     lat2 = (res * upy) - 90
-    
-    return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}" 
+
+    return "http://api.openstreetmap.org/api/0.6/map?bbox=#{lon1},#{lat1},#{lon2},#{lat2}"
   end
+
   def clean_failed_imports
-    # Queries for all tables in the users sys table and checks that they 
+    # Queries for all tables in the users sys table and checks that they
     # really exist on disk. If they don't, it removes them from disk
     # Avoids ghost tables from import
-    
+
     user_tables = []
     Table.filter(:user_id => current_user.id).each{|table| user_tables << table[:name]}
-    
+
     database_tables = current_user.in_database.fetch("select c.relname as name FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN ('r','') AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid) AND c.relname != 'spatial_ref_sys'")
-    
-    database_tables.each do |table| 
+
+    database_tables.each do |table|
       unless user_tables.include? table[:name]
         current_user.in_database.run("DROP TABLE IF EXISTS #{table[:name]}")
       end
     end
   end
-  def table_owner    
+
+  def table_owner
     table_owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
   end
 end

@@ -14,7 +14,7 @@ module CartoDB
     elsif Rails.env.development?
       "vizzuality#{session_domain}"
     else
-      "vizzuality#{session_domain}"      
+      "test#{session_domain}"      
     end
   end
   

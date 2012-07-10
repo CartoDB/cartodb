@@ -8,7 +8,7 @@ module HelperMethods
     visit login_path
     fill_in 'email', :with => user.email
     fill_in 'password', :with => user.password || user.email.split('@').first
-    click_link_or_button 'Log in'
+    click_link_or_button 'Sign in'
   end
 
   def authenticate_api(user)

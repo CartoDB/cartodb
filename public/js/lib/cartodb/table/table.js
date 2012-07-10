@@ -26,7 +26,7 @@ $(function() {
 
         _initModels: function() {
           this.table = new cdb.admin.CartoDBTableMetadata({
-            name: table_name
+            id: table_id
           });
           this.columns = this.table.data();
           this.map = new cdb.geo.Map();

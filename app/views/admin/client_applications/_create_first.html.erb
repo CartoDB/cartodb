@@ -1,21 +1,19 @@
-<div class="banner">
-  <div class="top_white_short"></div>
-  <div class="middle_white_short">
+  <div class="head">
     <h3>Your first CartoDB app?</h3>
+  </div>
+  <div class="content">
     <ul>
       <li>
         <label class="dark uppercase smaller strong">SIMPLE KEY</label>
-        <p class="margin5">Use your API key with the SQL API and Maps API for full API access to your CartoDB tables. <a href="<%= APP_CONFIG[:developers_host] %>/api/">Learn more</a>.</p>
+        <p class="margin5">Use your API key with the SQL API and Maps API for full API access to your CartoDB tables. <%= link_to "Learn more", APP_CONFIG[:developers_host] + "/api/", :class => "underline" %>.</p>
       </li>
-      <li class="margin10">
+      <li class="margin35">
         <label class="dark uppercase smaller strong">OAUTH</label>
-        <p class="margin5">For more information on OAuth in CartoDB, and on our preconfigured API client libraries, <a href="<%= APP_CONFIG[:developers_host] %>" class="">take a look</a> at our developers page.</p>
+        <p class="margin5">For more information on OAuth in CartoDB, and on our preconfigured API client libraries, <%= link_to "take a look", APP_CONFIG[:developers_host], :class => "underline" %> at our developers page.</p>
       </li>
-      <li class="margin10">
+      <li class="margin35">
         <label class="dark uppercase smaller strong">GETTING STARTED?</label>
-        <p class="margin5">Learn a <%= link_to "basic recipe", APP_CONFIG[:developers_host] %> or take a look at how to use our API’s.</p>
+        <p class="margin5">Learn a <%= link_to "basic recipe", APP_CONFIG[:developers_host], :class => "underline" %> or take a look at how to use our API’s.</p>
       </li>
     </ul>
   </div>
-  <div class="bottom_white_short"></div>
-</div>

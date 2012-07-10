@@ -1,0 +1,58 @@
+
+	@import "compass";
+
+	section.long {
+
+		div.head {
+			position:relative;
+
+			nav {
+				position:absolute;
+				right:40px;
+				top:35px;
+				padding:2px;
+				background:rgba(black,0.05);
+				@include border-radius(4px);
+				letter-spacing:-4px;
+
+				a {
+					padding:10px 8px;
+					@include inline-block();
+					@include border-radius(4px);
+					letter-spacing:0;
+					vertical-align:middle;
+					background:none;
+
+					&.selected {
+						border:1px solid #CCCCCC;
+						background:white;
+						color:#333333;
+						text-decoration:none;
+
+						&:hover {
+							cursor:default;
+						}
+					}
+				}
+			}
+		}
+
+		div.content {
+			padding:0;
+
+			li {
+				padding:40px;
+
+				div.list {
+					display:list-item;
+					list-style:url("/img/icons/list.png");
+				}
+
+				&.flash {
+					padding:22px 40px;
+				}
+			}
+		}
+
+		a.red:hover {color:#C84C46;}
+	}

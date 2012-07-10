@@ -11,37 +11,45 @@
 
   <article>
     <div class="inner">
-      <section class="left block">
+      <section class="left block long">
         <div class="head">
           <h2>Your OAuth credentials</h2>
+          <nav>
+            <%= link_to "SIMPLE KEY", "/your_apps/api_key", :class => "strong smaller uppercase" %>
+            <%= link_to "OAUTH", "/your_apps/oauth", :class => "strong smaller uppercase selected" %>
+          </nav>
         </div>
         <div class="content">
           <ul>
             <%= render :partial => 'shared/flash_message' %>
             <li>
-              <label>XXX<label>
-              <p><%= "XXXXXXXXXXXXX" %></p>
-              <a href="#copy">copy</a>
-
-              <label>XXX<label>
-              <p><%= "XXXXXXXXXXXXX" %></p>
-              <a href="#copy">copy</a>
-            </li>
-
-            <li>
-              <label>XXX<label>
-              <p><%= "XXXXXXXXXXXXX" %></p>
-              <a href="#copy">copy</a>
-
-              <label>XXX<label>
-              <p><%= "XXXXXXXXXXXXX" %></p>
-              <a href="#copy">copy</a>
+              <div class="copy">
+                <label class="uppercase smaller strong lighter">CONSUMER KEY</label>
+                <p class="margin5"><%= current_user.client_application.key %></p>
+                <a class="copy" href="#copy">copy</a>
+              </div>
+              <div class="copy margin20">
+                <label class="uppercase smaller strong lighter">CONSUMER SECRET</label>
+                <p class="margin5"><%= current_user.client_application.secret %></p>
+                <a class="copy" href="#copy">copy</a>
+              </div>
+              <span class="separate"></span>
+              <div class="copy">
+                <label class="uppercase smaller strong lighter">REQUEST TOKEN URL</label>
+                <p class="margin5">https://<%= current_user.username %>.cartodb.com/oauth/request_token</p>
+                <a class="copy" href="#copy">copy</a>
+              </div>
+              <div class="copy margin20">
+                <label class="uppercase smaller strong lighter">ACCESS TOKEN URL</label>
+                <p class="margin5">https://<%= current_user.username %>.cartodb.com/oauth/access_token</p>
+                <a class="copy" href="#copy">copy</a>
+              </div>
             </li>
           </ul>
         </div>
         <div class="foot">
-          <a href="#todo" class="left">Need help?</a>
-          <a href="#todo" class="right">Request new key and token</a>
+          <%= link_to "Need help?", "#todo", :class => "left underline" %>
+        <%= link_to "Request a new key and token", "#todo", :class => "right underline red" %>
         </div>
       </section>
       <aside class="right">

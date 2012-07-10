@@ -28,7 +28,7 @@ $(function() {
 
         _initViews: function() {
           this.tableList = new cdb.admin.dashboard.TableList({
-            el: this.$('.content > ul'),
+            el: this.$('#tablelist'),
             model: this.tables
           });
 

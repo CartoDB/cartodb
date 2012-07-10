@@ -13,6 +13,7 @@
 //= require cdb/src/core/view
 //= require cdb/src/geo/map
 //= require cdb/src/geo/ui/zoom
+//= require cdb/src/geo/ui/infowindow
 //= require cdb/src/ui/common/dialog
 //= require cdb/src/ui/common/notification
 //= require cdb/src/ui/common/settings

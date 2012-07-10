@@ -11,6 +11,7 @@ cdb.geo.MapLayer = Backbone.Model.extend({
     visible: true,
     type: 'Tiled'
   }
+
 });
 
 // Good old fashioned tile layer
@@ -215,22 +216,22 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
         } else {
           if (this.get("debug")) throw('featureOver function not defined');
         }
-      break;
-    case 'click':
-      if (featureClick) {
-        featureClick(o.e,latlng,o.pos,o.data);
-      } else {
-        if (this.get("debug")) throw('featureClick function not defined');
-      }
-    break;
-  case 'touched':
-    if (featureClick) {
-      featureClick(o.e,latlng,o.pos,o.data);
-    } else {
-      if (this.get("debug")) throw('featureClick function not defined');
-    }
-    break;
-  default: break;
+        break;
+      case 'click':
+        if (featureClick) {
+          featureClick(o.e,latlng,o.pos,o.data);
+        } else {
+          if (this.get("debug")) throw('featureClick function not defined');
+        }
+        break;
+      case 'touched':
+        if (featureClick) {
+          featureClick(o.e,latlng,o.pos,o.data);
+        } else {
+          if (this.get("debug")) throw('featureClick function not defined');
+        }
+        break;
+      default: break;
     }
   },
 
@@ -293,171 +294,193 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
 cdb.geo.MapLayers = Backbone.Collection.extend({
   model: cdb.geo.MapLayer
-  });
+});
 
-  /**
-  * map model itself
-  */
-  cdb.geo.Map = Backbone.Model.extend({
+/**
+* map model itself
+*/
+cdb.geo.Map = Backbone.Model.extend({
 
-    defaults: {
-      center: [0, 0],
-      zoom: 9
-    },
+  defaults: {
+    center: [0, 0],
+    zoom: 9
+  },
 
-    initialize: function() {
-      this.layers = new cdb.geo.MapLayers();
-    },
+  initialize: function() {
+    this.layers = new cdb.geo.MapLayers();
+  },
 
-    setZoom: function(z) {
-      this.set({zoom:  z});
-    },
+  setZoom: function(z) {
+    this.set({zoom:  z});
+  },
 
-    getZoom: function() {
-      return this.get('zoom');
-    },
+  getZoom: function() {
+    return this.get('zoom');
+  },
 
-    setCenter: function(latlng) {
-      this.set({center: latlng});
-    },
+  setCenter: function(latlng) {
+    this.set({center: latlng});
+  },
 
-    /**
-    * add a layer to the map
-    */
-    addLayer: function(layer) {
-      this.layers.add(layer);
+  addLayer: function(layer) {
+    this.layers.add(layer);
+
+    return layer.cid;
+  },
+
+  removeLayer: function(layer) {
+    this.layers.remove(layer);
+  },
+
+  removeLayerByCid: function(cid) {
+    var layer = this.layers.getByCid(cid);
+
+    if (layer) this.removeLayer(layer);
+    else cdb.log.error("There's no layer with cid = " + cid + ".");
+  },
+
+  removeLayerAt: function(i) {
+    var layer = this.layers.at(i);
+
+    if (layer) this.removeLayer(layer);
+    else cdb.log.error("There's no layer in that position.");
+  }
+
+});
+
+
+/**
+* base view for all impl
+*/
+cdb.geo.MapView = cdb.core.View.extend({
+
+  initialize: function() {
+
+    if (this.options.map === undefined) {
+      throw new Exception("you should specify a map model");
     }
 
-  });
+    this.map = this.options.map;
+    this.add_related_model(this.map);
+  },
 
+  render: function() {
+    return this;
+  }
+
+});
+
+/**
+* leatlef impl
+*/
+cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
+
+  initialize: function() {
+
+    _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter');
+
+    cdb.geo.MapView.prototype.initialize.call(this);
+
+    var self = this;
+
+    var c = this.map.get('center');
+
+    this.map_leaflet = new L.Map(this.el, {
+      zoomControl: false,
+      center: new L.LatLng(c[0], c[1]),
+      zoom: this.map.get('zoom')
+    });
+
+    this.map.layers.bind('add', this._addLayer);
+    this.map.layers.bind('remove', this._removeLayer);
+
+    this._bindModel();
+
+    this.map.layers.each(function(lyr) {
+      self._addLayer(lyr);
+    });
+
+    this.map_leaflet.on('zoomend', function() {
+      self._setModelProperty({zoom: self.map_leaflet.getZoom()});
+    }, this);
+
+    this.map_leaflet.on('drag', function () {
+      var c = self.map_leaflet.getCenter();
+      self._setModelProperty({center: [c.lat, c.lng]});
+    }, this);
+
+  },
+
+  /** bind model properties */
+  _bindModel: function() {
+    this.map.bind('change:zoom', this._setZoom, this);
+    this.map.bind('change:center', this._setCenter, this);
+  },
+
+  /** unbind model properties */
+  _unbindModel: function() {
+    this.map.unbind('change:zoom', this._setZoom, this);
+    this.map.unbind('change:center', this._setCenter, this);
+  },
 
   /**
-  * base view for all impl
+  * set model property but unbind changes first in order to not create an infinite loop
   */
-  cdb.geo.MapView = cdb.core.View.extend({
+  _setModelProperty: function(prop) {
+    this._unbindModel();
+    this.map.set(prop);
+    this._bindModel();
+  },
 
-    initialize: function() {
-      if(this.options.map === undefined) {
-        throw new Exception("you should specify a map model");
-      }
-      this.map = this.options.map;
-      this.add_related_model(this.map);
-    },
+  _setZoom: function(model, z) {
+    this.map_leaflet.setZoom(z);
+  },
 
-    render: function() {
-      return this;
-    }
-
-  });
+  _setCenter: function(model, center) {
+    this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
+  },
 
   /**
-  * leatlef impl
+  * Adds interactivity to a layer
+  *
+  * @params {String} tileJSON
+  * @params {String} featureOver
+  * @return {String} featureOut
   */
-  cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
+  addInteraction: function(tileJSON, featureOver, featureOut) {
 
-    initialize: function() {
+    return wax.leaf.interaction()
+    .map(this.map_leaflet)
+    .tilejson(tileJSON)
+    .on('on',  featureOver)
+    .on('off', featureOut);
 
-      _.bindAll(this, '_addLayer', '_setZoom', '_setCenter');
+  },
 
-      cdb.geo.MapView.prototype.initialize.call(this);
+  _removeLayer: function(layer) {
+    this.map_leaflet.removeLayer(layer.lyr);
+  },
 
-      var self = this;
+  _addLayer: function(layer) {
+    var lyr;
 
-      var c = this.map.get('center');
-      this.map_leaflet = new L.Map(this.el, {
-        zoomControl: false,
-        center: new L.LatLng(c[0], c[1]),
-        zoom: this.map.get('zoom')
-      });
+    // Adds reference to the parent mapView
+    layer.mapView = this;
 
-      this.map.layers.bind('add', this._addLayer);
-
-
-      this._bindModel();
-
-      //set options
-      //this._setCenter(this.map, this.map.get('center'));
-      //this._setZoom(this.map, this.map.get('zoom'));
-      this.map.layers.each(function(lyr) {
-          self._addLayer(lyr);
-      });
-
-      this.map_leaflet.on('zoomend', function() {
-        self._setModelProperty({zoom: self.map_leaflet.getZoom()});
-      }, this);
-
-      this.map_leaflet.on('drag', function () {
-        var c = self.map_leaflet.getCenter();
-        self._setModelProperty({center: [c.lat, c.lng]});
-      }, this);
-
-    },
-
-    /** bind model properties */
-    _bindModel: function() {
-      this.map.bind('change:zoom', this._setZoom, this);
-      this.map.bind('change:center', this._setCenter, this);
-    },
-
-    /** unbind model properties */
-    _unbindModel: function() {
-      this.map.unbind('change:zoom', this._setZoom, this);
-      this.map.unbind('change:center', this._setCenter, this);
-    },
-
-    /**
-    * set model property but unbind changes first in order to not create an infinite loop
-    */
-    _setModelProperty: function(prop) {
-      this._unbindModel();
-      this.map.set(prop);
-      this._bindModel();
-    },
-
-    _setZoom: function(model, z) {
-      this.map_leaflet.setZoom(z);
-    },
-
-    _setCenter: function(model, center) {
-      this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
-    },
-
-    /**
-    * Adds interactivity to a layer
-    *
-    * @params {String} tileJSON
-    * @params {String} featureOver
-    * @return {String} featureOut
-    */
-    addInteraction: function(tileJSON, featureOver, featureOut) {
-
-      return wax.leaf.interaction()
-      .map(this.map_leaflet)
-      .tilejson(tileJSON)
-      .on('on',  featureOver)
-      .on('off', featureOut);
-
-    },
-
-    _addLayer: function(layer) {
-      var lyr;
-
-      // Adds reference to the parent mapView
-      layer.mapView = this;
-
-      if ( layer.get('type') == "Tiled" ) {
-        lyr = layer.getTileLayer();
-      }
-
-      if ( layer.get('type') == 'CartoDB') {
-        lyr = layer.getTileLayer();
-      }
-
-      if (lyr) {
-        this.map_leaflet.addLayer(lyr);
-      } else {
-        cdb.log.error("layer type not supported");
-      }
+    if ( layer.get('type') == "Tiled" ) {
+      lyr = layer.getTileLayer();
     }
-  });
+
+    if ( layer.get('type') == 'CartoDB') {
+      lyr = layer.getTileLayer();
+    }
+
+    if (lyr) {
+      layer.lyr = lyr;
+      this.map_leaflet.addLayer(lyr);
+    } else {
+      cdb.log.error("layer type not supported");
+    }
+  }
+});
 

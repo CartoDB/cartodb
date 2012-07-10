@@ -43,11 +43,13 @@ describe("admin table", function() {
       expect(table._getColumn('test').get('type')).toEqual('number');
     });
 
+    /*
     it("it should fetch the model after changing a column", function() {
         spyOn(table, 'fetch');
         table.renameColumn('test', 'renamed');
         expect(table.fetch).toHaveBeenCalledWith();
     });
+    */
 
 
   });

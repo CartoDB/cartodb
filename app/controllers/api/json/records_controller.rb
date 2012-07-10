@@ -17,14 +17,14 @@ class Api::Json::RecordsController < Api::ApplicationController
 
   def create
     primary_key = @table.insert_row!(params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
-    render_jsonp({:id => primary_key})
+    render_jsonp(get_record(primary_key))
   rescue => e
     CartoDB::Logger.info "exception on records#create", e.inspect
     render_jsonp({ :errors => [e] }, 400)
   end
 
   def show
-    render_jsonp(@table.record(params[:id]))
+    render_jsonp(get_record(params[:id]))
   rescue => e
     render_jsonp({ :errors => ["Record #{params[:id]} not found"] }, 404)
   end
@@ -80,6 +80,10 @@ class Api::Json::RecordsController < Api::ApplicationController
   end
 
   protected
+
+  def get_record(id)
+    @table.record(id)
+  end
 
   def load_table
     @table = Table.find_by_identifier(current_user.id, params[:table_id])

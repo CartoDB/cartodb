@@ -109,7 +109,6 @@
     data: function() {
       if(this._data === undefined) {
         this._data = new cdb.admin.CartoDBTableData(null, {
-          name: this.get('id'),
           table: this
         });
       }
@@ -120,16 +119,20 @@
   cdb.admin.Row = Backbone.Model.extend({
 
     initialize: function() {
+      /*
       this.table = this.get('table');
       if(!this.table) {
         throw new Exception("you should specify a table model");
       }
       this.unset('table', { silent: true });
+      */
     },
 
+/*
     urlRoot: function() {
       return '/api/v1/tables/' + this.table.get('name') + '/records';
     }
+    */
 
   });
 
@@ -139,7 +142,7 @@
     model: cdb.admin.Row,
 
     initialize: function(models, options) {
-      this.table = options.name;
+      this.table = options.table;
       this.model.prototype.idAttribute = 'cartodb_id';
     },
 
@@ -148,11 +151,11 @@
     },
 
     url: function() {
-      return '/api/v1/tables/' + this.table + '/records';
+      return '/api/v1/tables/' + this.table.get('id') + '/records';
     },
 
     addRow: function() {
-      this.create({table: this.table});
+      this.create(null, { wait: true});
     },
 
     deleteRow: function(row_id) {

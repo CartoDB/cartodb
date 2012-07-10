@@ -10,7 +10,8 @@ $(function() {
         el: document.body,
 
         events: {
-          'click a[href=#create_new]': 'show_dialog'
+          'click a[href=#create_new]':  'show_dialog',
+          'click':                      'onClickOut'
         },
 
 
@@ -36,17 +37,17 @@ $(function() {
             el: this.$("div.stats")
           });
 
-
           // User settings
-          // var settings = this.settings = new cdb.ui.common.Dropdown({
-          //   target: 'a.account',
-          //   model: {username: username},
-          //   template_base: "dashboard/views/settings_item",
-          //   onClick: function() {
-          //     console.log("how does it look?");
-          //   }
-          // });
-          // this.$el.append(this.settings.render().el);
+          var settings = this.settings = new cdb.ui.common.Dropdown({
+            target: 'a.account',
+            model: {username: username},
+            template_base: "dashboard/views/settings_item"
+          })
+          .on("optionClicked",function(ev){})
+
+          cdb.god.bind("closeDialogs", settings.hide, settings);
+
+          this.$el.append(this.settings.render().el);
         },
 
         show_dialog: function() {
@@ -55,6 +56,10 @@ $(function() {
           this.$el.append(dialog.render().el);
           dialog.open();
 
+        },
+
+        onClickOut: function(ev) {
+          cdb.god.trigger("closeDialogs");
         }
     });
 

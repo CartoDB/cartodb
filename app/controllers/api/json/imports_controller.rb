@@ -1,7 +1,7 @@
 class Api::Json::ImportsController < Api::ApplicationController
 
   if Rails.env.production?
-    ssl_required :create
+    ssl_required :all
   end
 
   def index

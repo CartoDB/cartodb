@@ -42,6 +42,7 @@ cdb.admin.Dropdown = cdb.core.View.extend({
     // Bind to target
     $(this.options.target).bind({"click": this.handle_click});
 
+    // Is open flag
     this.isOpen = false;
 
   },
@@ -55,8 +56,10 @@ cdb.admin.Dropdown = cdb.core.View.extend({
 
   handle_click: function(ev) {
     //Check if the dropdown is visible to hiding with the click on the target
-    ev.preventDefault();
-    ev.stopPropagation();
+    if(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+    }
     // If visible
     if (this.isOpen){
       this.hide();

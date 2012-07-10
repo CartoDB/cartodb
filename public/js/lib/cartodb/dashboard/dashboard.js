@@ -38,7 +38,7 @@ $(function() {
           });
 
           // User settings
-          var settings = this.settings = new cdb.ui.common.Dropdown({
+          var settings = this.settings = new cdb.admin.Dropdown({
             target: 'a.account',
             model: {username: username},
             template_base: "dashboard/views/settings_item"

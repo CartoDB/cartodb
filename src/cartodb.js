@@ -15,7 +15,6 @@
         "../vendor/underscore-min.js",
         "../vendor/backbone.js",
 
-
         "../vendor/leaflet.js",
         "../vendor/wax.leaf.min-6.2.3-touched.js",
 
@@ -27,6 +26,7 @@
 
         'geo/map.js',
         'geo/ui/zoom.js',
+        'geo/ui/infowindow.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',

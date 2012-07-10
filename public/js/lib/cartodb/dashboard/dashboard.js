@@ -51,7 +51,6 @@ $(function() {
         },
 
         show_dialog: function() {
-
           var dialog = new cdb.admin.CreateTableDialog();
           this.$el.append(dialog.render().el);
           dialog.open();

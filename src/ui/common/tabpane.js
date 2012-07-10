@@ -4,7 +4,10 @@
  *
  * usage:
  *
- * var pane = new cdb.ui.common.TabPane();
+ * var pane = new cdb.ui.common.TabPane({
+ *   el: $("#container")
+ * });
+ *
  * pane.addTab('tab1', new OtherView());
  * pane.addTab('tab2', new OtherView2());
  * pane.addTab('tab3', new OtherView3());

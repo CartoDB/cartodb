@@ -8,9 +8,9 @@ class ApplicationController < ActionController::Base
 
   before_filter :browser_is_html5_compliant?
   before_filter :check_domain
-  after_filter :remove_flash_cookie
   before_filter :allow_cross_domain_access
-
+  after_filter  :remove_flash_cookie
+  
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound,   :with => :render_404
 
@@ -61,7 +61,6 @@ class ApplicationController < ActionController::Base
   end
 
   def api_authorization_required 
-    Rails.logger.info "MAH LOVERLY COOKIE #{cookies}"     
     authenticate!(:api_key, :api_authentication, :scope => request.subdomain)
   end
 
@@ -77,6 +76,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # TODO: REMOVE. this was to redirect the user to their own cartodb. 
+  # A legacy from when cartoedb only supported 1 user login at a time.
   def check_domain
     if Rails.env.production?
      protocol   = 'https'
@@ -103,6 +104,7 @@ class ApplicationController < ActionController::Base
   end
   helper_method :table_privacy_text
 
+  # TODO: Move to own exception infrastructure
   def translate_error(exception)
     return exception if exception.is_a? String
 
@@ -130,6 +132,7 @@ class ApplicationController < ActionController::Base
     render :file => "#{Rails.root}/public/HTML5.html", :status => 500, :layout => false
   end
 
+  # TODO: remove as makes no sense.
   def api_request?
     request.subdomain == 'api'
   end
@@ -140,6 +143,8 @@ class ApplicationController < ActionController::Base
     cookies.delete(:flash) if cookies[:flash]
   end
 
+
+  # TODO: REMOVE. This should be in the browser app.
   def browser_is_html5_compliant?
     user_agent = request.user_agent.try(:downcase)
     return true if Rails.env.test? || api_request? || user_agent.nil?

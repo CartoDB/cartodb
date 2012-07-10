@@ -75,14 +75,14 @@
       right:0;
       top:3px;
       padding:0 0 3px 0;
-      width:15px;
-      background:#CCCCCC;
+      width:14px;
+      background: rgba(#000000,0.15);
       @include border-radius(25px);
       color:white;
       text-align:center;
       line-height:11px;
       &:hover {
-        background:#999999;
+        background: rgba(#000000,0.3);
         text-decoration:none;
       }
     }

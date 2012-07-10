@@ -66,36 +66,77 @@
     },
 
     deleteColumn: function(columnName) {
+      var self = this;
       var c = this._getColumn(columnName);
-      c.destroy();
+      c.destroy({
+          success: function() {
+            self.fetch();
+          },
+          wait: true
+      });
     },
 
     renameColumn: function(columnName, newName) {
+      var self = this;
       var c = this._getColumn(columnName);
       c.set({
         new_name: newName,
         old_name: c.get('name')
       });
-      c.save();
+      c.save(null,  {
+          success: function() {
+            self.fetch();
+          },
+          error: function() {
+            cdb.log.error("can't rename column");
+          },
+          wait: true
+      });
     },
 
     changeColumnType: function(columnName, newType) {
+      var self = this;
       var c = this._getColumn(columnName);
       c.set({ type: newType});
-      c.save();
+      c.save(null, {
+          success: function() {
+            self.fetch();
+          },
+          wait: true
+      });
     },
 
     data: function() {
       if(this._data === undefined) {
         this._data = new cdb.admin.CartoDBTableData(null, {
-          name: this.get('id')
+          name: this.get('id'),
+          table: this
         });
       }
       return this._data;
     }
   });
 
+  cdb.admin.Row = Backbone.Model.extend({
+
+    initialize: function() {
+      this.table = this.get('table');
+      if(!this.table) {
+        throw new Exception("you should specify a table model");
+      }
+      this.unset('table', { silent: true });
+    },
+
+    urlRoot: function() {
+      return '/api/v1/tables/' + this.table.get('name') + '/records';
+    }
+
+  });
+
+
   cdb.admin.CartoDBTableData = cdb.ui.common.TableData.extend({
+
+    model: cdb.admin.Row,
 
     initialize: function(models, options) {
       this.table = options.name;
@@ -108,7 +149,14 @@
 
     url: function() {
       return '/api/v1/tables/' + this.table + '/records';
-    }
+    },
+
+    addRow: function() {
+      this.create({table: this.table});
+    },
+
+    deleteRow: function(row_id) {
+    },
 
   });
 

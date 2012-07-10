@@ -53,7 +53,7 @@ cdb.admin.D3Stats = cdb.core.View.extend({
       , line = d3.svg.line()
                 .x(function(d,i) { return x(i); })
                 .y(function(d) { return y(d); })
-                .interpolate("basis")
+                //.interpolate("basis")
   
       // display the line by appending an svg:path element with the data line we created above
       svg.append("svg:path")

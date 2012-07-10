@@ -26,12 +26,12 @@ cdb.admin.Dropdown = cdb.core.View.extend({
 
   default_options: {
       width: 160,
-      speedIn: 200,
-      speedOut: 200
+      speedIn: 150,
+      speedOut: 150
   },
 
   initialize: function() {
-    _.bindAll(this,"open", "hide");
+    _.bindAll(this,"open", "hide", "handle_click");
 
     // Extend options
     _.defaults(this.options, this.default_options);
@@ -40,7 +40,11 @@ cdb.admin.Dropdown = cdb.core.View.extend({
     this.template_base = cdb.templates.getTemplate(this.options.template_base);
 
     // Bind to target
-    $(this.options.target).bind({"click": this.open})
+    $(this.options.target).bind({"click": this.handle_click});
+
+    // Is open flag
+    this.isOpen = false;
+
   },
 
   render: function() {
@@ -50,12 +54,27 @@ cdb.admin.Dropdown = cdb.core.View.extend({
     return this;
   },
 
+  handle_click: function(ev) {
+    //Check if the dropdown is visible to hiding with the click on the target
+    if(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+    }
+    // If visible
+    if (this.isOpen){
+      this.hide();
+    }else{
+      this.open();
+    }
+    this.isOpen = !this.isOpen;
+  },
+
   hide: function() {
     var self = this;
     this.$el.animate({
-      margin: "-15px 0 0 0",
+      margin: "-10px 0 0 0",
       opacity: 0
-    },this.options.speedOut,function(){
+    },this.options.speedOut, function(){
       // Remove selected class
       $(self.options.target).removeClass("selected");
       // And hide it
@@ -63,29 +82,21 @@ cdb.admin.Dropdown = cdb.core.View.extend({
     });
   },
 
-  open: function(ev) {
-    // If visible
-    if (this.$el.is(":visible")) return false;
-
-    if (ev) {
-      // Stop default
-      ev.preventDefault();
-      ev.stopPropagation();
+  open: function() {
       
-      // Positionate
-      var targetPos = $(this.options.target).offset()
-        , targetWidth = $(this.options.target).outerWidth()
-        , targetHeight = $(this.options.target).outerHeight()
+    // Positionate
+    var targetPos = $(this.options.target).offset()
+      , targetWidth = $(this.options.target).outerWidth()
+      , targetHeight = $(this.options.target).outerHeight()
 
-      this.$el.css({
-        top: targetPos.top + targetHeight + 10,
-        left: targetPos.left + targetWidth - this.options.width + 15,
-        width: this.options.width,
-        margin: "-15px 0 0 0",
-        display: "block",
-        opacity: 0
-      })
-    }
+    this.$el.css({
+      top: targetPos.top + targetHeight + 10,
+      left: targetPos.left + targetWidth - this.options.width + 15,
+      width: this.options.width,
+      margin: "-10px 0 0 0",
+      display: "block",
+      opacity: 0
+    })
 
     // Add selected class to the target
     $(this.options.target).addClass("selected");

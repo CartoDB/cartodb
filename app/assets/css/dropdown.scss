@@ -14,13 +14,13 @@
     background:white;
     @include border-radius(3px);
     border:none;
-    @include box-shadow(rgba(0,0,0,0.2) 0 0 2px 1px);
+    @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
     list-style:none;
     overflow:visible;
 
     li {
       display:block;
-      padding:15px;
+      padding:13px 13px 15px 13px;
       border-top:1px solid rgba(#CCCCCC,0.35);
 
       &:first-child {@include border-top-radius(3px)}

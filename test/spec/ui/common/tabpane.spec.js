@@ -5,7 +5,7 @@ describe('core.ui.common.TabPane', function() {
         pane = new cdb.ui.common.TabPane();
     });
 
-    it("sould add a pane", function() {
+    it("should add a pane", function() {
         spy = {
           tabAdded: function(){}
         };
@@ -19,7 +19,7 @@ describe('core.ui.common.TabPane', function() {
         expect(spy.tabAdded).toHaveBeenCalledWith('tab1', v1);
     });
 
-    it("sould remove a pane", function() {
+    it("should remove a pane", function() {
         var v1 = new cdb.core.View();
         var v2 = new cdb.core.View();
         pane.addTab('tab1', v1);
@@ -33,7 +33,7 @@ describe('core.ui.common.TabPane', function() {
         expect(pane.$el.children().length).toEqual(1);
     });
 
-    it("sould trigger on activate", function() {
+    it("should trigger on activate", function() {
         spy = {
           tabEnabled: function(){},
           tabDisabled: function(){}
@@ -51,7 +51,7 @@ describe('core.ui.common.TabPane', function() {
         pane.bind('tabDisabled', spy.tabDisabled, spy);
         pane.active('tab1');
         expect(spy.tabEnabled).toHaveBeenCalledWith('tab1', v1);
-        expect(spy.tabDisabled).toHaveBeenCalledWith('', v2);
+        expect(spy.tabDisabled).toHaveBeenCalledWith('tab2', v2);
         expect(v1.el.style.display).toEqual('block');
         expect(v2.el.style.display).toEqual('none');
 

@@ -23,6 +23,10 @@ cdb.admin.RowView = cdb.ui.common.RowView.extend({
 
 cdb.admin.HeaderView = cdb.core.View.extend({
 
+  events: {
+    'click .coloptions': 'showColumnOptions'
+  },
+
   initialize: function() {
     this.column = this.options.column;
     this.template = this.getTemplate('table/views/table_header_view');
@@ -34,6 +38,23 @@ cdb.admin.HeaderView = cdb.core.View.extend({
       col_type: this.column[1]
     }));
     return this;
+  },
+
+  showColumnOptions: function(e) {
+    e.preventDefault();
+    var colOptions= new cdb.admin.Dropdown({
+      target: 'a.small',
+      template_base: "table/views/table_header_options"
+    })
+    colOptions.render();
+    colOptions.bind('optionClicked', function(e) {
+      e.preventDefault();
+      console.log(arguments);
+      return false;
+    });
+    this.$el.append(colOptions.el);
+    colOptions.open();
+    return false;
   }
 
 });
@@ -53,6 +74,7 @@ cdb.admin.TableView = cdb.ui.common.Table.extend({
   headerView: function(column) {
     if(column[1] !== 'header') {
       var v = new cdb.admin.HeaderView({ column: column });
+      this.addView(v);
       return v.render().el;
     }
     return '';

@@ -92,7 +92,7 @@ class Api::Json::TablesController < Api::ApplicationController
                             where id=?",@table.id).first
 
       # wont allow users to set a table to same name, sends error
-      unless params[:name].nil?
+      unless params[:name].blank? 
         if params[:name].downcase != @table.name
           owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
           if params[:name][0].match(/[^0-9]/).nil?

@@ -99,14 +99,18 @@ header {
           margin:0;
           padding:10px 30px 10px 10px;
           background:rgba(0,0,0,0.25);
-          font-size:13px;
+          font:normal 13px "Helvetica",Arial;
           border:none;
           color:#9AB2CB;
           @include border-radius(4px);
           @include transform-style("linear");
           @include transition-property("background,color");
           @include transition-duration(500ms);
-          &::-webkit-input-placeholder, &::-moz-placeholder {
+          &::-webkit-input-placeholder {
+            color:#9AB2CB;
+          }
+
+          &::-moz-placeholder {
             color:#9AB2CB;
           }
 

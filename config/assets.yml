@@ -24,6 +24,15 @@ javascripts:
     - public/js/lib/cartodb/dashboard/dashboard.js
     - public/js/lib/cartodb/**/*.jst
 
+  keys:
+    - public/js/lib/cartodb/app.js
+    - public/js/vendor/d3.v2.js
+    - public/js/lib/cartodb/models/**/*.js
+    - public/js/lib/cartodb/common/**/*.js
+    - public/js/lib/cartodb/keys/**/*.js
+    - public/js/lib/cartodb/keys/keys.js
+    - public/js/lib/cartodb/**/*.jst
+
   table:
     - public/js/lib/cartodb/app.js
     - public/js/lib/cartodb/models/**/*.js
@@ -47,11 +56,13 @@ stylesheets:
     - public/css/core.css
     - public/css/buttons.css
     - public/css/block.css
+    - public/css/dropdown.css
+    - public/css/modal.css
+    - public/css/keys.css
+    - public/css/flash.css    
     - public/css/header.css
     - public/css/subheader.css
     - public/css/tables.css
     - public/css/footer.css
     - public/css/table.css
     - public/css/leaflet.css
-    - public/css/dropdown.css
-    - public/css/modal.css

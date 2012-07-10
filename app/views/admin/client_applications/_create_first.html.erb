@@ -2,11 +2,19 @@
   <div class="top_white_short"></div>
   <div class="middle_white_short">
     <h3>Your first CartoDB app?</h3>
-    <p>Take a look at our documentation</p>
     <ul>
-      <li><a href="<%= APP_CONFIG[:developers_host] %>/api/">Take a look at our SQL API</a></li>
-      <li><a href="<%= APP_CONFIG[:developers_host] %>/api/sql/getallrows.html">Learn a basic recipe</a></li>
-      <li><a href="http://support.cartodb.com/">Need help? Go to support</a></li>
+      <li>
+        <label class="dark uppercase smaller strong">SIMPLE KEY</label>
+        <p class="margin5">Use your API key with the SQL API and Maps API for full API access to your CartoDB tables. <a href="<%= APP_CONFIG[:developers_host] %>/api/">Learn more</a>.</p>
+      </li>
+      <li class="margin10">
+        <label class="dark uppercase smaller strong">OAUTH</label>
+        <p class="margin5">For more information on OAuth in CartoDB, and on our preconfigured API client libraries, <a href="<%= APP_CONFIG[:developers_host] %>" class="">take a look</a> at our developers page.</p>
+      </li>
+      <li class="margin10">
+        <label class="dark uppercase smaller strong">GETTING STARTED?</label>
+        <p class="margin5">Learn a <%= link_to "basic recipe", APP_CONFIG[:developers_host] %> or take a look at how to use our API’s.</p>
+      </li>
     </ul>
   </div>
   <div class="bottom_white_short"></div>

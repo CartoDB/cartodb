@@ -44,6 +44,7 @@
   .right {float:right}
   .inner {position:relative; width:$w; margin:0 auto;}
   .margin40 {margin-top:40px;}
+  .margin35 {margin-top:35px;}
   .margin30 {margin-top:30px;}
   .margin25 {margin-top:25px;}
   .margin20 {margin-top:20px;}
@@ -56,6 +57,7 @@
   .center {width:100%; text-align:center}
 
   .light {color:#999999;}
+  .lighter {color:#CCCCCC;}
   .dark {color:#333333;}
   .uppercase {text-transform:uppercase}
   .strong {font-weight:bold}
@@ -63,3 +65,4 @@
   .smaller {font-size:11px}
   .tiny {font-size:8px;}
   .underline {text-decoration:underline;}
+  .red {color:#E95850;}

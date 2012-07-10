@@ -82,7 +82,7 @@ class Api::Json::RecordsController < Api::ApplicationController
   protected
 
   def load_table
-    @table = Table.filter(:user_id => current_user.id, :name => params[:table_id]).first
+    @table = Table.find_by_identifier(current_user.id, params[:table_id])
     raise RecordNotFound if @table.nil?
   end
 

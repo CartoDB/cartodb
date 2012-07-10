@@ -1,23 +1,57 @@
-@import "compass";
-
+	
+	@import "compass";
 
 	section.block {
 		background:white;
 		@include border-radius(4px);
 		@include box-shadow(rgba(0,0,0,0.07) 0 0 4px 3px);
+		h3, p, a, label {letter-spacing:0;}
 
 		div.head {
 			padding:35px 40px; // Hack for line-height
       border-bottom:1px solid #E5E5E5;
+      h3 {letter-spacing:-1px;}
 		}
 
 		div.content {
 			padding:40px;
+
+			ul {
+				display:block;
+				
+				li {
+					border-bottom:1px solid rgba(#CCCCCC,0.35);
+					&.dark {background:rgba(#F0F0F0,0.5);}
+					&:last-child {border-bottom:none;}
+				}
+			}
 		}
 
 		div.foot {
 			padding:35px 40px;
 			border-top:1px solid #E5E5E5;
 			overflow:auto;
+		}
+
+		// Long section
+		&.long {width:638px;}
+	}
+
+
+	aside {
+		@include inline-block();
+    width:279px;
+    padding:0 0 0 40px;
+    letter-spacing:0px;
+
+		div.head {
+			display:block;
+			padding:35px 0;
+			border-bottom:1px solid #CCCCCC;
+			h3 {letter-spacing:-1px;}
+		}
+
+		div.content {
+			padding:40px 0;
 		}
 	}

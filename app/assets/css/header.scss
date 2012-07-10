@@ -159,6 +159,7 @@ header {
           margin:0;
           @include inline-block();
           width:auto;
+          letter-spacing: 0px;
         }
         h2 {
           position:relative;

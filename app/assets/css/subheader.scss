@@ -1,4 +1,6 @@
 @import "compass";
+@import "sprites";
+@import "mixins";
 
   section.subheader {
     position:relative;
@@ -74,16 +76,12 @@
       position:absolute;
       right:0;
       top:3px;
-      padding:0 0 3px 0;
-      width:14px;
-      background: rgba(#000000,0.15);
-      @include border-radius(25px);
-      color:white;
-      text-align:center;
-      line-height:11px;
-      &:hover {
-        background: rgba(#000000,0.3);
-        text-decoration:none;
-      }
+      width:13px;
+      height:13px;
+      @include icons-sprite(close_flash);
+      @include text-indent();
+      
+      &:hover {@include icons-sprite(close_flash, $offset-y: -13px);}
+      &:active {@include icons-sprite(close_flash, $offset-y: -26px);}
     }
   }

@@ -1,5 +1,5 @@
   <% content_for(:page_title) do %>
-    Api keys |
+    Api key |
   <% end %>
   <%= content_for(:js) do %>
     <%= include_javascripts :common, :cdbjs, :keys %>
@@ -11,29 +11,39 @@
 
 <article>
   <div class="inner">
-    <section class="left block">
+    <section class="left block long">
       <div class="head">
-        <h2>Your Api key</h2>
+        <h3>Your Api key</h3>
+        <nav>
+          <%= link_to "SIMPLE KEY", "/your_apps/api_key", :class => "strong smaller uppercase selected" %>
+          <%= link_to "OAUTH", "/your_apps/oauth", :class => "strong smaller uppercase" %>
+        </nav>
       </div>
       <div class="content">
         <ul>
           <%= render :partial => 'shared/flash_message' %>
           <li>
-            <label>YOUR API KEY<label>
-            <p><%= current_user.get_map_key %></p>
-            <a href="#copy">copy</a>
+            <div class="copy">
+              <label class="uppercase smaller strong lighter">YOUR API KEY</label>
+              <p class="margin5"><%= current_user.get_map_key %></p>
+              <a class="copy" href="#copy">copy</a>
+            </div>
           </li>
-          <li>
-            <label>Example write:</label>
-            <p>http://username.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),’rare bird spotted’)&api_key=<%= current_user.get_map_key %></p>
-            <label>Example write:</label>
-            <p>http://username.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),’rare bird spotted’)&api_key=<%= current_user.get_map_key %></p>
+          <li class="dark">
+            <div class="list">
+              <label class="dark strong small">Example write:</label>
+              <p class="small margin5">http://username.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),’rare bird spotted’)&api_key=<%= current_user.get_map_key %></p>
+            </div>
+            <div class="list margin15">
+              <label class="dark strong small">Example private table read:</label>
+              <p class="small margin5">http://username.cartodb.com/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.get_map_key %></p>
+            </div>
           </li>
         </ul>
       </div>
       <div class="foot">
-        <a href="#todo" class="left">Need help?</a>
-        <a href="#todo" class="right">Request new key and token</a>
+        <%= link_to "Need help?", "#todo", :class => "left underline" %>
+        <%= link_to "Request a new key", "#todo", :class => "right underline red" %>
       </div>
     </section>
     <aside class="right">

@@ -120,7 +120,6 @@
               .right {width:35%;}
               hgroup {
                 display:block;
-                letter-spacing:-4px;
                 width:100%;
                 h3 {
                   @include inline-block();
@@ -150,7 +149,7 @@
                   position:relative;
                   @include inline-block();
                   width:auto;
-                  padding:0 5px 0 0;
+                  padding:1px 10px 0 0;
                   letter-spacing:0;
                   &:after {
                     content:' ';
@@ -214,7 +213,6 @@
             }
 
             &:hover {
-              cursor:pointer;
               background:#F7F7F7;
               & + li div.table_info {border-color:white}
               
@@ -250,26 +248,7 @@
             &.flash {
               position:relative;
               padding:22px 40px;
-              background:rgba(#FA9494,0.15);
               border-bottom:1px solid rgba(#CCCCCC,0.5);
-
-              a.close {
-                position:absolute;
-                right:40px;
-                top:22px;
-                padding:1px 0 2px;
-                width:15px;
-                background:#CCCCCC;
-                @include border-radius(25px);
-                color:white;
-                text-align:center;
-                line-height:11px;
-                &:hover {
-                  background:#999999;
-                  text-decoration:none;
-                  cursor:pointer;
-                }
-              }
 
               & + li div.table_info {border-color:white}
 

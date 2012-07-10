@@ -66,11 +66,11 @@ cdb.admin.Dropdown = cdb.core.View.extend({
     }else{
       this.open();
     }
-    this.isOpen = !this.isOpen;
   },
 
   hide: function() {
     var self = this;
+    this.isOpen = false;
     this.$el.animate({
       margin: "-10px 0 0 0",
       opacity: 0
@@ -84,6 +84,8 @@ cdb.admin.Dropdown = cdb.core.View.extend({
 
   open: function() {
       
+    this.isOpen = true;
+
     // Positionate
     var targetPos = $(this.options.target).offset()
       , targetWidth = $(this.options.target).outerWidth()

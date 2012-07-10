@@ -1,11 +1,55 @@
-  <% content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers.js", "admin/api/api" %>
+  <% content_for(:page_title) do %>
+    OAuth |
   <% end %>
-  <% content_for(:head) do %>
-    <%= stylesheet_link_tag('reset', 'admin/layout','admin/others/tokens') %>
+  <%= content_for(:js) do %>
+    <%= include_javascripts :common, :cdbjs, :keys %>
+  <% end %>
+  <%= content_for(:css) do %>
+    <%= include_stylesheets :common, :media => 'all' %>
   <% end %>
 
-  <%= render :partial => 'admin/shared/subheader' %>
+
+  <article>
+    <div class="inner">
+      <section class="left block">
+        <div class="head">
+          <h2>Your OAuth credentials</h2>
+        </div>
+        <div class="content">
+          <ul>
+            <%= render :partial => 'shared/flash_message' %>
+            <li>
+              <label>XXX<label>
+              <p><%= "XXXXXXXXXXXXX" %></p>
+              <a href="#copy">copy</a>
+
+              <label>XXX<label>
+              <p><%= "XXXXXXXXXXXXX" %></p>
+              <a href="#copy">copy</a>
+            </li>
+
+            <li>
+              <label>XXX<label>
+              <p><%= "XXXXXXXXXXXXX" %></p>
+              <a href="#copy">copy</a>
+
+              <label>XXX<label>
+              <p><%= "XXXXXXXXXXXXX" %></p>
+              <a href="#copy">copy</a>
+            </li>
+          </ul>
+        </div>
+        <div class="foot">
+          <a href="#todo" class="left">Need help?</a>
+          <a href="#todo" class="right">Request new key and token</a>
+        </div>
+      </section>
+      <aside class="right">
+        <%= render :partial => 'create_first' %>
+      </aside>
+    </div>
+  </article>
+<!-- 
 
   <section id="content">
     <div class="inner_content">
@@ -76,5 +120,4 @@
       </div>
     </div>
   <% end %>
-
-
+ -->

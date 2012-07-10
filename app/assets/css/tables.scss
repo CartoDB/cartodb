@@ -250,26 +250,7 @@
             &.flash {
               position:relative;
               padding:22px 40px;
-              background:rgba(#FA9494,0.15);
               border-bottom:1px solid rgba(#CCCCCC,0.5);
-
-              a.close {
-                position:absolute;
-                right:40px;
-                top:22px;
-                padding:1px 0 2px;
-                width:15px;
-                background:#CCCCCC;
-                @include border-radius(25px);
-                color:white;
-                text-align:center;
-                line-height:11px;
-                &:hover {
-                  background:#999999;
-                  text-decoration:none;
-                  cursor:pointer;
-                }
-              }
 
               & + li div.table_info {border-color:white}
 

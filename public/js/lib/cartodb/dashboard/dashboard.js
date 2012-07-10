@@ -45,7 +45,7 @@ $(function() {
           })
           .on("optionClicked",function(ev){})
 
-          cdb.god.bind("closeDialogs", settings.handle_click, settings);
+          cdb.god.bind("closeDialogs", settings.hide, settings);
 
           this.$el.append(this.settings.render().el);
         },

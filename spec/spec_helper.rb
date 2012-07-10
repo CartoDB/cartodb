@@ -15,10 +15,10 @@ RSpec.configure do |config|
   config.include EmailSpec::Matchers
   config.include CartoDB::Factories
   config.include HelperMethods
-  
+
   config.before(:suite) do
     CartoDB::RedisTest.up
-  end  
+  end
 
   config.before(:each) do
     $threshold.flushdb
@@ -26,7 +26,7 @@ RSpec.configure do |config|
     $tables_metadata.flushdb
     $api_credentials.flushdb
     $users_metadata.flushdb
-    
+
     Rails::Sequel.connection.tables.each{ |t| next if t == :schema_migrations; Rails::Sequel.connection[t].truncate }
   end
 
@@ -39,7 +39,7 @@ RSpec.configure do |config|
       "SELECT u.usename FROM pg_catalog.pg_user u"
     ].map{ |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user #{username}") if username =~ /^test_cartodb_user_/ }
   end
-  
+
   config.after(:suite) do
     CartoDB::RedisTest.down
   end

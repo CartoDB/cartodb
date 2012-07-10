@@ -7,50 +7,48 @@ module CartoDB
       def process!
         log "Importing zip file: #{@path}"
         @data_import = DataImport.find(:id=>@data_import_id)
-        @data_import.log_update("decompressing file #{@path}") 
+        @data_import.log_update("decompressing file #{@path}")
 
         # generate a temp file for import
         tmp_dir = temporary_filename
 
+        import_data = []
         Zip::ZipFile.foreach(@path) do |entry|
           name = entry.name.split('/').last
+          orig = name
           next if name =~ /^(\.|\_{2})/
-          
+
           # cleans spaces out of archived file names
           if name.include? ' '
             name = name.gsub(' ','_')
           end
-          
+
           #fixes problem of different SHP archive files with different case patterns
+          FileUtils.mv("#{path}/#{orig}", "#{path}/#{name.downcase}") unless name == orig.downcase
           name = name.downcase
-          
-          
-          # temporary filename. no collisions. 
+
+          # temporary filename. no collisions.
           tmp_path = "#{tmp_dir}.#{name}"
-          
-          # add to delete queue
-          @entries << tmp_path
-    
-          if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name).downcase)
-            @ext            = File.extname(name)
-            @suggested_name = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
-            @path           = tmp_path
+
+          if CartoDB::Importer::SUPPORTED_FORMATS.include?(File.extname(name))
+            unless @suggested_name.nil?
+              suggested = @suggested_name
+            else
+              suggested = File.basename( name, File.extname(name)).sanitize
+            end
+            import_data << {
+              :ext => File.extname(name),
+              :suggested_name => suggested,
+              :path => tmp_path
+            }
             log "Found original @ext file named #{name} in path #{@path}"
           end
-          # elsif name.include? '.osm.xml' #specific check for osm.xml files
-          #   @ext            = '.osm'
-          #   @suggested_name = get_valid_name(File.basename(name,@ext).tr('.','_').downcase.sanitize) if !@force_name
-          #   @path           = tmp_path
-          #   log "Found original @ext file named #{name} in path #{@path}"
-          # end
-          
-          # extract
           entry.extract(tmp_path)
-          
-        end        
+        end
+
         # construct return variables
-        to_import_hash
-      end  
+        import_data
+      end
     end
-  end    
+  end
 end

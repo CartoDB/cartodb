@@ -239,14 +239,14 @@ class User < Sequel::Model
   def get_map_key
     $users_metadata.HMGET(key, 'map_key').first
   end
-  
+
   def regenerate_map_key
     # GET CURRENT KEY
     old_key = self.get_map_key
-    
+
     # SET NEW KEY
     self.set_map_key
-    
+
     # REMOVE OLD KEY FROM KEY SET
     $users_metadata.SREM "#{key}:map_key", old_key
   end
@@ -376,9 +376,9 @@ class User < Sequel::Model
     puts "Loading functions in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        glob = RAILS_ROOT + '/lib/sql/*.sql'
+        glob = Rails.root.join('/lib/sql/*.sql')
 
-        Dir.glob(glob).each do |f|          
+        Dir.glob(glob).each do |f|
           @sql = File.new(f).read
           user_database.run(@sql)
         end
@@ -393,10 +393,10 @@ class User < Sequel::Model
       user_database.transaction do
 	config = ::Rails::Sequel.configuration.environment_for(Rails.env)
         env  = " PGUSER=#{database_username}"
-        env += " PGPORT=#{config['port']}" 
+        env += " PGPORT=#{config['port']}"
         env += " PGHOST=#{config['host']}"
         env += " PGPASSWORD=#{database_password}"
-        glob = RAILS_ROOT + '/lib/sql/test/*.sql'
+        glob = Rails.root.join('/lib/sql/test/*.sql')
         #puts " Scanning #{glob}"
         Dir.glob(glob).each do |f|
           tname = File.basename(f, '.sql')

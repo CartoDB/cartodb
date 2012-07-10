@@ -1,0 +1,22 @@
+
+
+	section.long {
+		div.content {
+			padding:0;
+
+			li {
+				padding:40px;
+
+				div.list {
+					display:list-item;
+					list-style:url("/img/icons/list.png");
+				}
+
+				&.flash {
+					padding:22px 40px;
+				}
+			}
+		}
+
+		a.red:hover {color:#C84C46;}
+	}

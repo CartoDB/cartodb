@@ -8,6 +8,12 @@
     window.cdb.ui = {};
     window.cdb.ui.common = {};
 
+    /**
+     * global variables 
+     */
+    window.cdb.god = new Backbone.Model();
+
+
     window.JST = window.JST || {};
 
     cdb.files = [

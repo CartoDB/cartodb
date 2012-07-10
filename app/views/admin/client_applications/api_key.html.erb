@@ -1,12 +1,48 @@
-  <% content_for(:js) do %>
-    <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers.js", "admin/api/api" %>
+  <% content_for(:page_title) do %>
+    Api keys |
   <% end %>
-  <% content_for(:head) do %>
-    <%= stylesheet_link_tag('reset','admin/layout','admin/others/tokens') %>
+  <%= content_for(:js) do %>
+    <%= include_javascripts :common, :cdbjs, :keys %>
+  <% end %>
+  <%= content_for(:css) do %>
+    <%= include_stylesheets :common, :media => 'all' %>
   <% end %>
 
-  <%= render :partial => 'admin/shared/subheader' %>
 
+<article>
+  <div class="inner">
+    <section class="left block">
+      <div class="head">
+        <h2>Your Api key</h2>
+      </div>
+      <div class="content">
+        <ul>
+          <%= render :partial => 'shared/flash_message' %>
+          <li>
+            <label>YOUR API KEY<label>
+            <p><%= current_user.get_map_key %></p>
+            <a href="#copy">copy</a>
+          </li>
+          <li>
+            <label>Example write:</label>
+            <p>http://username.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),’rare bird spotted’)&api_key=<%= current_user.get_map_key %></p>
+            <label>Example write:</label>
+            <p>http://username.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),’rare bird spotted’)&api_key=<%= current_user.get_map_key %></p>
+          </li>
+        </ul>
+      </div>
+      <div class="foot">
+        <a href="#todo" class="left">Need help?</a>
+        <a href="#todo" class="right">Request new key and token</a>
+      </div>
+    </section>
+    <aside class="right">
+      <%= render :partial => 'create_first' %>
+    </aside>
+  </div>
+</article>
+
+<!-- 
   <section id="content">
     <div class="inner_content">
 
@@ -46,9 +82,9 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
 
-  <% content_for(:mamufas) do %>
+<!--   <% content_for(:mamufas) do %>
     <div class="mamufas">
       <div class="delete_window">
         <a href="#close_window" class="close_delete"></a>
@@ -64,4 +100,4 @@
         </div>
       </div>
     </div>
-  <% end %>
+  <% end %> -->

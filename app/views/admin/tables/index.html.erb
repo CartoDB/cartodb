@@ -45,16 +45,20 @@
       </section>
       <aside class="right">
         <!-- Disable button if limit has been oversized! -->
-        <a href="#create_new" class="button green">Create a new table</a>
-        <ul>
-          <li><%= link_to "all tables (x)", dashboard_path, :class => ('selected' if !params[:tag_name]) %></li>
-          <% @tags.each do |tag| %>
-            <li><%= link_to tag[:name] + " (x)",dashboard_path(:tag_name => tag[:name]), :class => ('selected' if params[:tag_name] == tag[:name]) %></li>
-          <% end %>
-        </ul>
-        <ul>
-          <li><%= link_to "Popular public tables", "#??" %></li>
-        </ul>
+        <div class="head">
+          <a href="#create_new" class="button green">Create a new table</a>
+        </div>
+        <div class="content">
+          <ul>
+            <li><%= link_to "all tables (x)", dashboard_path, :class => ('selected' if !params[:tag_name]) %></li>
+            <% @tags.each do |tag| %>
+              <li><%= link_to tag[:name] + " (x)",dashboard_path(:tag_name => tag[:name]), :class => ('selected' if params[:tag_name] == tag[:name]) %></li>
+            <% end %>
+          </ul>
+          <ul>
+            <li><%= link_to "Popular public tables", "#??" %></li>
+          </ul>
+        </div>
       </aside>
 
       <%= paginate(@tables) %>

@@ -14,6 +14,10 @@
     <section class="left block long">
       <div class="head">
         <h3>Your Api key</h3>
+        <nav>
+          <%= link_to "SIMPLE KEY", "/your_apps/api_key", :class => "strong smaller uppercase selected" %>
+          <%= link_to "OAUTH", "/your_apps/oauth", :class => "strong smaller uppercase" %>
+        </nav>
       </div>
       <div class="content">
         <ul>
@@ -38,8 +42,8 @@
         </ul>
       </div>
       <div class="foot">
-        <a href="#todo" class="left underline">Need help?</a>
-        <a href="#todo" class="right underline red">Request new key</a>
+        <%= link_to "Need help?", "#todo", :class => "left underline" %>
+        <%= link_to "Request a new key", "#todo", :class => "right underline red" %>
       </div>
     </section>
     <aside class="right">

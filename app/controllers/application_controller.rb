@@ -111,7 +111,7 @@ class ApplicationController < ActionController::Base
 
   # TODO: Move to own exception infrastructure
   def translate_error(exception)
-    return exception if exception.is_a? String
+    return exception if exception.blank? || exception.is_a?(String)
 
     case exception
       when CartoDB::EmptyFile

@@ -22,7 +22,7 @@
     initialize: function() {
       this.table = this.get('table');
       if(!this.table) {
-        throw new Exception("you should specify a table model");
+        throw "you should specify a table model";
       }
       this.unset('table', { silent: true });
     }
@@ -55,7 +55,7 @@
 
     _getColumn: function(columnName) {
       if(this._columnType[columnName] === undefined) {
-        throw new Exception("the column does not exists");
+        throw "the column does not exists";
       }
       var c = new cdb.admin.Column({
         table: this,

@@ -1,10 +1,14 @@
 <div>
   <label class="strong small">
-    <a class="coloptions" href="">
-      <%= col_name %>
-      <% if (col_type == 'geometry') { %>
-        <span class="tiny geo">GEO</span>
-      <% } %>
+    <% if (!editing_name) { %>
+      <a class="coloptions" href="">
+        <%= col_name %>
+        <% if (col_type == 'geometry') { %>
+          <span class="tiny geo">GEO</span>
+        <% } %>
+    <% } else { %>
+      <input class="col_name_edit" type="text" value="<%= col_name %>"></input>
+    <% } %>
     </a>
   </label>
   <p class="margin5 small"><a href=""><%= col_type %></a></p>

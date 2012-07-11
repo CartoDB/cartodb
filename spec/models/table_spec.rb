@@ -883,7 +883,6 @@ describe Table do
       rows.last[:name].should == "Row 8"
     end
 
-    # FIXED
     it "should make sure it converts created_at and updated at to date types when importing from CSV" do
       user = create_user
       data_import = DataImport.create( :queue_id      => '',
@@ -1155,7 +1154,6 @@ describe Table do
       table.rows_counted.should == 2
     end
 
-    # FIXED
     it "create and migrate a table containing a valid the_geom" do
       user = create_user
 
@@ -1206,7 +1204,6 @@ describe Table do
       table.rows_counted.should == 2005
     end
 
-    # FIXED
     it "should import and then export file twitters.csv" do
       user = create_user
       data_import = DataImport.create( :queue_id      => '',
@@ -1236,14 +1233,12 @@ describe Table do
       parsed[1].first.should == "1"
     end
 
-    # FIXME
     it "should import and then export file SHP1.zip" do
       user = create_user
       data_import = DataImport.create( :queue_id      => '',
                                        :user_id       => user.id,
                                        :data_source   => '/../db/fake_data/SHP1.zip',
                                        :updated_at    => Time.now )
-      require 'ruby-debug'; debugger
       table = Table[data_import.table_id]
       table.name.should == "esp_adm1"
 
@@ -1260,7 +1255,6 @@ describe Table do
       file_ct.should == 4
     end
 
-    # FIXME
     it "should import and then export file SHP1.zip as kml" do
       user = create_user
       data_import = DataImport.create( :queue_id      => '',
@@ -1282,7 +1276,6 @@ describe Table do
       file_ct.should == 1
     end
 
-    # FIXME
     it "should import and then export file SHP1.zip as sql" do
       user = create_user
       data_import = DataImport.create( :queue_id      => '',

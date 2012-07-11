@@ -67,4 +67,5 @@ stylesheets:
     - public/css/tables.css
     - public/css/footer.css
     - public/css/table.css
+    - public/css/table_panel.css
     - public/css/leaflet.css

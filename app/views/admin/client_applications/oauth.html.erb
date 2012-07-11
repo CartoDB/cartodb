@@ -27,23 +27,23 @@
               <div class="copy">
                 <label class="uppercase smaller strong lighter">CONSUMER KEY</label>
                 <p class="margin5"><%= current_user.client_application.key %></p>
-                <a class="copy" href="#copy">copy</a>
+                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
               </div>
               <div class="copy margin20">
                 <label class="uppercase smaller strong lighter">CONSUMER SECRET</label>
                 <p class="margin5"><%= current_user.client_application.secret %></p>
-                <a class="copy" href="#copy">copy</a>
+                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
               </div>
               <span class="separate"></span>
               <div class="copy">
                 <label class="uppercase smaller strong lighter">REQUEST TOKEN URL</label>
                 <p class="margin5">https://<%= current_user.username %>.cartodb.com/oauth/request_token</p>
-                <a class="copy" href="#copy">copy</a>
+                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
               </div>
               <div class="copy margin20">
                 <label class="uppercase smaller strong lighter">ACCESS TOKEN URL</label>
                 <p class="margin5">https://<%= current_user.username %>.cartodb.com/oauth/access_token</p>
-                <a class="copy" href="#copy">copy</a>
+                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
               </div>
             </li>
           </ul>

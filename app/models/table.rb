@@ -575,10 +575,6 @@ class Table < Sequel::Model(:user_tables)
     end
   end
   
-  def privacy_string
-    privacy == PRIVATE ? 'PRIVATE' : 'PUBLIC'
-  end
-
   def key
     Table.key(database_name, name)
   rescue

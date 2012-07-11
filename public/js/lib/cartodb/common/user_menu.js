@@ -1,13 +1,16 @@
 
 
 cdb.admin.UserMenu = cdb.ui.common.Dropdown.extend({
-  open: function(ev) {
+  open: function(ev, target) {
     this.isOpen = true;
 
+    target = target || this.options.target;
+    this.options.target = target;
+
     // Positionate
-    var targetPos = $(this.options.target).offset()
-      , targetWidth = $(this.options.target).outerWidth()
-      , targetHeight = $(this.options.target).outerHeight()
+    var targetPos = $(target)[this.options.position || 'offset']()
+      , targetWidth = $(target).outerWidth()
+      , targetHeight = $(target).outerHeight()
 
     this.$el.css({
       top: targetPos.top + targetHeight + 10,
@@ -19,7 +22,7 @@ cdb.admin.UserMenu = cdb.ui.common.Dropdown.extend({
     });
 
     // Add selected class to the target
-    $(this.options.target).addClass("selected");
+    $(target).addClass("selected");
 
     // Show
     this.$el.animate({
@@ -28,7 +31,7 @@ cdb.admin.UserMenu = cdb.ui.common.Dropdown.extend({
     },this.options.speedIn);
   },
 
-  hide: function() {
+  hide: function(done) {
     var self = this;
     this.isOpen = false;
 
@@ -40,6 +43,7 @@ cdb.admin.UserMenu = cdb.ui.common.Dropdown.extend({
       $(self.options.target).removeClass("selected");
       // And hide it
       self.$el.hide();
+      done && done();
     });
   }
 });

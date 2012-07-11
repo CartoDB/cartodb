@@ -1,5 +1,16 @@
 @import "compass";
 
+header.table {
+	position:fixed;
+	left:0;
+	top:0;
+	z-index:2;
+}
+
+div.panes {
+	margin:150px 0 0 0;
+}
+
 div.table {
 	table {
 		position:relative;

@@ -44,11 +44,13 @@ cdb.admin.Placeholder = cdb.core.View.extend({
     this.render();
     
     // Check
-    this._check();
+    setTimeout(this._check,500);
   },
 
 
   render: function() {
+    _.bindAll(this,"_check");
+
     // Get label text
     var text = this.$input.attr("data-label");
 

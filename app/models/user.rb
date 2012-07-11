@@ -376,8 +376,7 @@ class User < Sequel::Model
     puts "Loading functions in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        glob = Rails.root.join('/lib/sql/*.sql')
-
+        glob = Rails.root.join('lib/sql/*.sql')
         Dir.glob(glob).each do |f|
           @sql = File.new(f).read
           user_database.run(@sql)
@@ -396,7 +395,7 @@ class User < Sequel::Model
         env += " PGPORT=#{config['port']}"
         env += " PGHOST=#{config['host']}"
         env += " PGPASSWORD=#{database_password}"
-        glob = Rails.root.join('/lib/sql/test/*.sql')
+        glob = Rails.root.join('lib/sql/test/*.sql')
         #puts " Scanning #{glob}"
         Dir.glob(glob).each do |f|
           tname = File.basename(f, '.sql')

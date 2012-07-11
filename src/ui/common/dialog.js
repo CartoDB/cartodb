@@ -25,6 +25,7 @@
   
  * TODO: implement draggable
  * TODO: modal
+ * TODO: ESC button
  */
 
 cdb.ui.common.Dialog = cdb.core.View.extend({
@@ -41,11 +42,15 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   default_options: {
     title: 'title',
     description: '',
-    ok_title: 'ok',
+    ok_title: 'Ok',
+    cancel_title: 'Cancel',
     width: 300,
     height: 200,
     clean_on_hide: false,
-    template_name: 'common/dialog'
+    template_name: 'common/views/dialog_base',
+    ok_button_classes: 'button green',
+    cancel_button_classes: '',
+    modal_type: ''
   },
 
   initialize: function() {
@@ -55,7 +60,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
   render: function() {
     var $el = this.$el;
-    $el.css({
+    $el.find(".modal").css({
       width: this.options.width,
       height: this.options.height,
       'margin-left': -this.options.width>>1,
@@ -68,14 +73,18 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     return this;
   },
 
-  _ok: function() {
+  _ok: function(ev) {
+    ev.preventDefault();
+    
     if(this.ok) {
       this.ok();
     }
     this.hide();
   },
 
-  _cancel: function() {
+  _cancel: function(ev) {
+    ev.preventDefault();
+
     if(this.cancel) {
       this.cancel();
     }

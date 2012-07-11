@@ -26,9 +26,9 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
   },
 
   default_options: {
-      width: 160,
-      speedIn: 150,
-      speedOut: 150
+    width: 160,
+    speedIn: 150,
+    speedOut: 300
   },
 
   initialize: function() {

@@ -40,10 +40,6 @@ class Admin::TablesController < ApplicationController
     
   end
 
-  # to implement
-  def index_public
-  end
-
   def show
     # private table show as normal
     if current_user.present?    

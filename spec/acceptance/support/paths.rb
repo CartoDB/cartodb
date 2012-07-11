@@ -70,7 +70,7 @@ module NavigationHelpers
   end
   
   def api_table_export_to_csv_url(table_identifier)
-    "#{api_url_prefix}/tables/#{table_identifier}/export/csv"
+    api_req "#{api_url_prefix}/tables/#{table_identifier}/export/csv"
   end
 
   def api_tables_map_metadata_url(table_identifier)

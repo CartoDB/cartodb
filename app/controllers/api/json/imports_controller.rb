@@ -20,10 +20,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def create
-    async = params[:async] == 'false' ? false : true
-    job_meta = Resque::ImporterJobs.enqueue(current_user[:id], params[:table_name], params[:file_uri]) if async
-
+    job_meta = Resque::ImporterJobs.enqueue(current_user[:id], params[:table_name], params[:file_uri]) 
     render :json => {:item_queue_id => job_meta.meta_id, :success => true}
   end
-
 end

@@ -2,7 +2,7 @@
   <div class="left">
     <hgroup>
       <h3><a href="/tables/<%= id %>"><%= name %></a></h3>
-      <a href="#change_status" class="status public">TODO</a>
+      <a href="#change_status" class="status <%= privacy.toLowerCase() %>"><%= privacy %></a>
     </hgroup>
     <p class="light">Description goes here, TODO!</p>
     <p class="strong uppercase smaller light margin15">

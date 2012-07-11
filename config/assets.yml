@@ -26,6 +26,7 @@ javascripts:
 
   keys:
     - public/js/lib/cartodb/app.js
+    - public/js/lib/cdb.js/vendor/ZeroClipboard.js
     - public/js/vendor/d3.v2.js
     - public/js/lib/cartodb/models/**/*.js
     - public/js/lib/cartodb/common/**/*.js
@@ -56,6 +57,7 @@ stylesheets:
     - public/css/core.css
     - public/css/buttons.css
     - public/css/block.css
+    - public/css/copy.css
     - public/css/dropdown.css
     - public/css/modal.css
     - public/css/keys.css
@@ -65,4 +67,5 @@ stylesheets:
     - public/css/tables.css
     - public/css/footer.css
     - public/css/table.css
+    - public/css/table_panel.css
     - public/css/leaflet.css

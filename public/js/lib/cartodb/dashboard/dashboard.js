@@ -18,7 +18,6 @@ $(function() {
         initialize: function() {
           this._initModels();
           this._initViews();
-
           this.tables.fetch();
         },
 
@@ -28,26 +27,30 @@ $(function() {
 
         _initViews: function() {
           this.tableList = new cdb.admin.dashboard.TableList({
-            el: this.$('.content > ul'),
+            el: this.$('#tablelist'),
             model: this.tables
           });
+
+
+          // this.tableStats = new cdb.admin.dashboard.TableStats({
+          //   el: this.$('#tablelist'),
+          //   model: this.tables
+          // })
 
           // D3 API Requests
           var stats = this.stats = new cdb.admin.D3Stats({
             el: this.$("div.stats")
           });
 
-          // User settings
-          var settings = this.settings = new cdb.admin.Dropdown({
+          // User menu
+          var user_menu = this.user_menu = new cdb.admin.UserMenu({
             target: 'a.account',
             model: {username: username},
             template_base: "dashboard/views/settings_item"
           })
           .on("optionClicked",function(ev){})
-
-          cdb.god.bind("closeDialogs", settings.hide, settings);
-
-          this.$el.append(this.settings.render().el);
+          cdb.god.bind("closeDialogs", user_menu.hide, user_menu);
+          this.$el.append(this.user_menu.render().el);
         },
 
         show_dialog: function() {

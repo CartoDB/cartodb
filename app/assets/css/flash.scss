@@ -1,5 +1,7 @@
 @import "compass";
 @import "compass/css3";
+@import "sprites";
+@import "mixins";
 
 .flash {
   position:relative;
@@ -10,18 +12,13 @@
   a.close {
     position:absolute;
     right:40px;
-    top:22px;
-    padding:1px 0 2px;
-    width:15px;
-    background:#CCCCCC;
-    @include border-radius(25px);
-    color:white;
-    text-align:center;
-    line-height:11px;
-    &:hover {
-      background:#999999;
-      text-decoration:none;
-      cursor:pointer;
-    }
+    top:24px;
+    width:13px;
+    height:13px;
+    @include icons-sprite(close_flash);
+    @include text-indent();
+    
+    &:hover {@include icons-sprite(close_flash, $offset-y: -13px);}
+    &:active {@include icons-sprite(close_flash, $offset-y: -26px);}
   }
 }

@@ -20,7 +20,6 @@ module CartoDB
     def initialize(options = {})
       raise "table_name value can't be nil" if options[:table_name].nil?
 
-      log "options: #{options}"
       @runlog           = OpenStruct.new :log => [], :stdout => [], :err => []   
       @@debug           = options[:debug] if options[:debug]
       @table_name       = options[:table_name]

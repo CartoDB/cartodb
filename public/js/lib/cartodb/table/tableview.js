@@ -1,101 +1,177 @@
 
-/**
- * view used to render each row
- */
-cdb.admin.RowView = cdb.ui.common.RowView.extend({
+(function() {
 
-  initialize: function() {
-     this.constructor.__super__.initialize.apply(this);
-     this.options.row_header = true;
-  },
-  /**
-   * return each cell view
-   */
-  valueView: function(colName, value) {
-    return $('<div>').append(value);
-  }
-});
+    var HeaderDropdown = cdb.admin.UserMenu.extend({ 
 
+      events: {
+        'click .order_column': 'orderColumns',
+        'click .rename_column': 'renameColumn',
+        'click .change_data_type': 'changeType',
+        'click .georeference': 'georeference',
+        'click .filter_by_this_column': 'filterColumn',
+        'click .delete_column': 'deleteColumn'
+      },
 
-/**
- * header cell view, manages operations on table columns
- */
+      setTable: function(table, column) {
+        this.table = table;
+        this.column = column;
+      },
 
-cdb.admin.HeaderView = cdb.core.View.extend({
-
-  events: {
-    'click .coloptions': 'showColumnOptions'
-  },
-
-  initialize: function() {
-    this.column = this.options.column;
-    this.template = this.getTemplate('table/views/table_header_view');
-  },
-
-  render: function() {
-    this.$el.append(this.template({
-      col_name: this.column[0],
-      col_type: this.column[1]
-    }));
-    return this;
-  },
-
-  showColumnOptions: function(e) {
-    e.preventDefault();
-    var colOptions= new cdb.admin.Dropdown({
-      target: 'a.small',
-      template_base: "table/views/table_header_options"
-    })
-    colOptions.render();
-    colOptions.bind('optionClicked', function(e) {
-      e.preventDefault();
-      console.log(arguments);
-      return false;
+      orderColumns: function(e) {
+      },
+      renameColumn: function(e) {
+        e.preventDefault();
+        this.hide();
+        this.trigger('renameColumn');
+        return false;
+      },
+      changeType: function(e) {
+      },
+      georeference: function(e) {
+      },
+      filterColumn: function(e) {
+      },
+      deleteColumn: function(e) {
+        e.preventDefault();
+        cdb.log.debug("removing column: " + this.column);
+        this.hide();
+        this.table.deleteColumn(this.column);
+        return false;
+      }
     });
-    this.$el.append(colOptions.el);
-    colOptions.open();
-    return false;
-  }
 
-});
+    /**
+     * view used to render each row
+     */
+    cdb.admin.RowView = cdb.ui.common.RowView.extend({
 
-/**
- * table view shown in admin
- */
-cdb.admin.TableView = cdb.ui.common.Table.extend({
-
-  rowView: cdb.admin.RowView,
-
-  initialize: function() {
-     this.constructor.__super__.initialize.apply(this);
-     this.options.row_header = true;
-  },
-
-  headerView: function(column) {
-    if(column[1] !== 'header') {
-      var v = new cdb.admin.HeaderView({ column: column });
-      this.addView(v);
-      return v.render().el;
-    }
-    return '';
-  }
-});
-
-cdb.admin.TableTab = cdb.core.View.extend({
-
-  className: 'table',
-
-  initialize: function() {
-    this.tableView = new cdb.admin.TableView({
-      dataModel: this.model.data(),
-      model: this.model
+      initialize: function() {
+         this.constructor.__super__.initialize.apply(this);
+         this.options.row_header = true;
+      },
+      /**
+       * return each cell view
+       */
+      valueView: function(colName, value) {
+        return $('<div>').append(value);
+      }
     });
-  },
 
-  render: function() {
-    this.$el.append(this.tableView.el);
-    return this;
-  }
 
-});
+    /**
+     * header cell view, manages operations on table columns
+     */
 
+    var HeaderView = cdb.admin.HeaderView = cdb.core.View.extend({
+
+      events: {
+        'click    .coloptions':      'showColumnOptions',
+        'keydown  .col_name_edit':   '_checkEditColnameInput'
+      },
+
+      initialize: function() {
+        this.column = this.options.column;
+        this.table = this.options.table;
+        this.template = this.getTemplate('table/views/table_header_view');
+        this.editing_name = false;
+
+        HeaderView.colOptions= new HeaderDropdown({
+          position: 'position',
+          template_base: "table/views/table_header_options"
+        })
+        HeaderView.colOptions.render();
+      },
+
+      render: function() {
+        this.$el.html('');
+        this.$el.append(this.template({
+          col_name: this.column[0],
+          col_type: this.column[1],
+          editing_name: this.editing_name
+        }));
+        return this;
+      },
+
+      _openColOptions: function(e) {
+        var colOptions = HeaderView.colOptions;
+        colOptions.off();
+        this.$el.append(colOptions.el);
+
+        // set data for column and table currently editing
+        colOptions.setTable(this.table, this.column[0]);
+
+        colOptions.bind('renameColumn', this._renameColumn, this);
+
+        // bind the stuff
+        colOptions.open(e, e.target);
+      },
+
+      _checkEditColnameInput: function(e) {
+        if(e.keyCode === 13) {
+          this.table.renameColumn(this.column[0], $('.col_name_edit').val());
+        }
+      },
+
+      _finishEdit: function() {
+        this.editing_name = false;
+        this.render();
+      },
+
+      _renameColumn: function() {
+        this.editing_name = true;
+        this.render();
+      },
+
+      showColumnOptions: function(e) {
+        var self = this;
+        e.preventDefault();
+        var colOptions = HeaderView.colOptions;
+        colOptions.hide(function() {
+          self._openColOptions(e);
+        });
+        return false;
+      }
+
+    });
+
+    /**
+     * table view shown in admin
+     */
+    cdb.admin.TableView = cdb.ui.common.Table.extend({
+
+      rowView: cdb.admin.RowView,
+
+      initialize: function() {
+         this.constructor.__super__.initialize.apply(this);
+         this.options.row_header = true;
+      },
+
+      headerView: function(column) {
+        if(column[1] !== 'header') {
+          var v = new cdb.admin.HeaderView({ column: column, table: this.model});
+          this.addView(v);
+          return v.render().el;
+        }
+        return '';
+      }
+    });
+
+    cdb.admin.TableTab = cdb.core.View.extend({
+
+      className: 'table',
+
+      initialize: function() {
+        this.tableView = new cdb.admin.TableView({
+          dataModel: this.model.data(),
+          model: this.model
+        });
+      },
+
+      render: function() {
+        this.$el.append(this.tableView.el);
+        return this;
+      }
+
+    });
+
+})();

@@ -48,7 +48,7 @@ class Api::Json::ColumnsController < Api::ApplicationController
     # Recompact table on disk
     current_user.run_query("CLUSTER #{@table.name} USING #{pkey_name}")
     
-    head :ok
+    head :no_content
   rescue => e
     errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
     render_jsonp({:errors => errors}, 400) and return

@@ -61,6 +61,7 @@ $(function() {
         },
 
         _importStarted: function(imp) {
+          //TODO: create dialog to show the import progress
           var self = this;
           imp.pollCheck();
           imp.bind('importComplete', function(){ 

@@ -16,6 +16,10 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
 
     render: function() {
       this.$el.html(this.template(this.model.toJSON()));
+
+      // Tipsy
+      this.$el.find("a.tooltip").tipsy({gravity: 's', fade:true});
+      
       return this;
     }
 

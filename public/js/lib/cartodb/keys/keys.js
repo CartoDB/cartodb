@@ -34,7 +34,7 @@ $(function() {
         cdb.god.bind("closeDialogs", user_menu.hide, user_menu);
         this.$el.append(this.user_menu.render().el);
 
-        // Tipsy?
+        // Tipsy
         this.$el.find("a.tooltip").tipsy({gravity: 's', fade:true});
       },
 

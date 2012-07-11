@@ -18,7 +18,6 @@ $(function() {
         initialize: function() {
           this._initModels();
           this._initViews();
-
           this.tables.fetch();
         },
 
@@ -32,10 +31,16 @@ $(function() {
             model: this.tables
           });
 
+
+          // this.tableStats = new cdb.admin.dashboard.TableStats({
+          //   el: this.$('#tablelist'),
+          //   model: this.tables
+          // })
+
           // D3 API Requests
-          // var stats = this.stats = new cdb.admin.D3Stats({
-          //   el: this.$("div.stats")
-          // });
+          var stats = this.stats = new cdb.admin.D3Stats({
+            el: this.$("div.stats")
+          });
 
           // User menu
           var user_menu = this.user_menu = new cdb.admin.UserMenu({

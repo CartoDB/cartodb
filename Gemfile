@@ -33,6 +33,8 @@ gem "builder"
 gem "state_machine", "~> 1.0"
 
 group :development, :test do
+  gem 'minitest', '~> 2.0.2', :require => 'minitest/unit'
+
   # this is for Ruby 1.9.2 debugging. You should upgrade to ruby 1.9.3, it's much faster in development
   if (RUBY_VERSION == "1.9.2")
     gem "ruby-debug-base19x", '~>0.11.30.pre3', :require => "ruby-debug", :platforms => :mri_19
@@ -58,7 +60,6 @@ group :development, :test do
   gem "timecop"
   gem "email_spec"
   gem "rack-reverse-proxy", "~> 0.4.1", :require => 'rack/reverse_proxy'
-  gem 'minitest', '~> 2.0.2'
   gem 'foreman'
   gem 'aws-sdk'
 end

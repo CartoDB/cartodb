@@ -23,12 +23,18 @@ module NavigationHelpers
     "#{api_url_prefix}/"
   end
 
+  def api_tables_info_window_url(table_identifier)
+    api_req "#{api_url_prefix}/tables/#{table_identifier}/infowindow"
+  end
+
   def api_tables_url(params = {})
      api_req "#{api_url_prefix}/tables#{params.empty? ? '' : '?' }#{params.to_query}"
   end
 
-  def api_table_url(table_identifier)
-    api_req("#{api_url_prefix}/tables/#{table_identifier}")
+  def api_table_url(table_identifier, params = {})
+    url = "#{api_url_prefix}/tables/#{table_identifier}"
+    url = (url + ".#{params[:format]}") unless params[:format].blank?
+    api_req(url)
   end
   
   def api_tags_url(params = {})
@@ -65,6 +71,10 @@ module NavigationHelpers
   
   def api_table_export_to_csv_url(table_identifier)
     "#{api_url_prefix}/tables/#{table_identifier}/export/csv"
+  end
+
+  def api_tables_map_metadata_url(table_identifier)
+    api_req "#{api_url_prefix}/tables/#{table_identifier}/map_metadata"
   end
 
   def api_table_export_to_shp_url(table_identifier)

@@ -57,7 +57,17 @@ $(function() {
           var dialog = new cdb.admin.CreateTableDialog();
           this.$el.append(dialog.render().el);
           dialog.open();
+          dialog.bind('importStarted', this._importStarted, this);
+        },
 
+        _importStarted: function(imp) {
+          var self = this;
+          imp.pollCheck();
+          imp.bind('importComplete', function(){ 
+            cdb.log.info("updating tables");
+            self.tables.fetch();
+            imp.unbind();
+          });
         },
 
         onClickOut: function(ev) {

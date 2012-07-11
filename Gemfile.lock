@@ -1,14 +1,3 @@
-GIT
-  remote: git://github.com/tokumine/sequel-rails.git
-  revision: ab8617e85ee939e4f211664b873fb0e0778ebd27
-  tag: 0.3.6
-  specs:
-    sequel-rails (0.1.7)
-      actionpack (~> 3.0.0.rc)
-      activesupport (~> 3.0.0.rc)
-      railties (~> 3.0.0.rc)
-      sequel (~> 3.13)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -195,6 +184,11 @@ GEM
       multi_json (~> 1.0)
       rubyzip
     sequel (3.29.0)
+    sequel-rails-cartodb (0.1.7)
+      actionpack (~> 3.0.0.rc)
+      activesupport (~> 3.0.0.rc)
+      railties (~> 3.0.0.rc)
+      sequel (~> 3.13)
     sequel_column_type_array (0.0.4)
     sequel_pg (1.2.0)
       pg (>= 0.8.0)
@@ -262,7 +256,7 @@ DEPENDENCIES
   ruby-ole (~> 1.2.11.3)
   rubyzip (~> 0.9.6.1)
   sequel (= 3.29.0)
-  sequel-rails!
+  sequel-rails-cartodb (= 0.1.7)
   sequel_column_type_array (~> 0.0.2)
   sequel_pg (= 1.2.0)
   spreadsheet (~> 0.6.5.9)

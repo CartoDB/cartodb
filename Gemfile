@@ -6,7 +6,8 @@ gem "pg", "0.11"
 gem "sequel", "3.29.0"
 gem "sequel_pg", "1.2.0", :require=>'sequel'
 gem "sequel_column_type_array", "~> 0.0.2"
-gem "sequel-rails", :git => "git://github.com/tokumine/sequel-rails.git", :tag => '0.3.6'
+#gem "sequel-rails", :git => "git://github.com/tokumine/sequel-rails.git", :tag => '0.3.6'
+gem "sequel-rails-cartodb", "0.1.7", :require => "sequel-rails"
 gem "rails_warden", "0.5.2"
 gem "oauth", "0.4.5"
 gem "oauth-plugin", "0.4.0.pre4"

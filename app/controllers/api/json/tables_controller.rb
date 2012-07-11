@@ -50,21 +50,22 @@ class Api::Json::TablesController < Api::ApplicationController
   def create    
     @table = Table.new
     @table.user_id        = current_user.id
-    @table.name           = params[:name]
-    @table.the_geom_type  = params[:the_geom_type]
+    @table.name           = params[:name]          if params[:name]
+    @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type] 
+    @table.force_schema   = params[:schema]        if params[:schema]
         
     if @table.valid? && @table.save            
-      render_jsonp ( { :id              => @table.id, 
-                       :name            => @table.name, 
-                       :schema          => @table.schema ,
-                       :updated_at      => @table.updated_at,
-                       :rows_counted    => @table.rows_estimated 
-                     }, 200, :location  => table_path(@table))
+      render_jsonp( { :id => @table.id, 
+                      :name => @table.name, 
+                      :schema => @table.schema, 
+                      :updated_at => @table.updated_at, 
+                      :rows_counted => @table.rows_estimated 
+                    }, 200, {:location => table_path(@table)})
     else
       CartoDB::Logger.info "Error on tables#create", @table.errors.full_messages
-      render_jsonp({ :description => @data_import.get_error_text, 
-                     :stack       => @table.errors.full_messages, 
-                     :code        => @data_import.error_code }, 400)
+      render_jsonp( { :description => @table.errors.full_messages, 
+                      :stack => @table.errors.full_messages 
+                    }, 400)
     end    
   end
 

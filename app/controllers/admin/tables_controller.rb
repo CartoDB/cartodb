@@ -7,37 +7,15 @@ class Admin::TablesController < ApplicationController
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]  
   before_filter :login_required, :only => [:index]
 
-  def index
-    current_page = params[:page].nil? ? 1 : params[:page].to_i
-    per_page = 20
-    
+  def index    
     # load top 100 tags
     @tags = Tag.load_user_tags(current_user.id, :limit => 100)
-
-    # Filter tables by tag, search, or return all. Paginated.
-    @tables = if !params[:tag_name].blank?
-      Table.find_all_by_user_id_and_tag(current_user.id, params[:tag_name])
-    elsif !params[:q].blank?
-      Table.filter("\"name\" ILIKE ? AND \"user_id\" = ?", "%#{params[:q]}%", current_user.id)
-    else  
-      Table.filter({:user_id => current_user.id})
-    end
-
-    # strip tables which do not exist anymore
-    # See https://github.com/Vizzuality/cartodb/issues/824
-    @tables = @tables.filter( { :name => current_user.tables_effective } ) 
-    # TODO: see what's missing both ways and handle somehow
-
-    # Order by identifier and paginate
-    @tables = @tables.order(:id).reverse.paginate(current_page, per_page)
 
     # Quota (in Mb and Tables)
     @quota         = current_user.quota_in_bytes / 1024 / 1024
     @database_size = current_user.db_size_in_bytes / 1024 /1024
     @table_quota   = current_user.table_quota
-    @tables_count  = @tables.pagination_record_count
-    @total_tables  = current_user.tables.count
-    
+    @tables_count  = current_user.tables.count    
   end
 
   def show

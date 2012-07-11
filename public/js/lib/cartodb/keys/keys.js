@@ -35,10 +35,7 @@ $(function() {
         this.$el.append(this.user_menu.render().el);
 
         // Tipsy?
-        this.$el.find("a.tooltip").tipsy({
-          gravity: 's',
-          offset: 5
-        });
+        this.$el.find("a.tooltip").tipsy({gravity: 's', fade:true});
       },
 
       _initCopy: function() {

@@ -1,0 +1,28 @@
+
+	@import "compass";
+
+	.table_panel {
+		position:fixed;
+		right:0;
+		top:151px;
+		width:600px;
+		bottom:0;
+		background:white;
+		z-index:1;
+		letter-spacing:-4px;
+		//display:none;
+		.sidebar {
+			@include inline-block();
+			width:65px;
+			height:100%;
+			background:#EDEDED;
+			letter-spacing:0;
+		}
+
+		.views {
+			@include inline-block();
+			width:535px;
+			height:100%;
+			letter-spacing:0;
+		}
+	}

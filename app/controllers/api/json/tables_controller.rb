@@ -60,7 +60,7 @@ class Api::Json::TablesController < Api::ApplicationController
                       :schema          => @table.schema, 
                       :updated_at      => @table.updated_at, 
                       :rows_counted    => @table.rows_estimated,
-                      :privacy         => @table.privacy_string
+                      :privacy         => table_privacy_text(@table)
                     }, 200, {:location => table_path(@table)})
     else
       CartoDB::Logger.info "Error on tables#create", @table.errors.full_messages

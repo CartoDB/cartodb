@@ -53,7 +53,12 @@ class ApplicationController < ActionController::Base
   end
 
   def render_500
-    render :file => "public/500.html", :status => 500, :layout => false
+    format.html do
+      render :file => "public/500.html", :status => 500, :layout => false
+    end
+    format.json do
+      render :status => 500      
+    end
   end
 
   def login_required
@@ -132,11 +137,6 @@ class ApplicationController < ActionController::Base
     render :file => "#{Rails.root}/public/HTML5.html", :status => 500, :layout => false
   end
 
-  # TODO: remove as makes no sense.
-  def api_request?
-    request.subdomain == 'api'
-  end
-
   # In some cases the flash message is going to be set in the fronted with js after making a request to the API
   # We use this filter to ensure it disappears in the very first request
   def remove_flash_cookie
@@ -147,7 +147,7 @@ class ApplicationController < ActionController::Base
   # TODO: REMOVE. This should be in the browser app.
   def browser_is_html5_compliant?
     user_agent = request.user_agent.try(:downcase)
-    return true if Rails.env.test? || api_request? || user_agent.nil?
+    return true if Rails.env.test? || user_agent.nil?
 
     #IE 6
     # mozilla/4.0 (compatible; msie 8.0; windows nt 6.1; wow64; trident/4.0; slcc2; .net clr 2.0.50727; .net clr 3.5.30729; .net clr 3.0.30729; media center pc 6.0)

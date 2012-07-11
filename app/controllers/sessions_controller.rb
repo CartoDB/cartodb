@@ -34,11 +34,7 @@ class SessionsController < ApplicationController
     @login_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
     respond_to do |format|
       format.html do
-        if api_request?
-          head :unauthorized
-        else
-          render :action => 'new' and return
-        end
+        render :action => 'new' and return
       end
       format.json do
         head :unauthorized

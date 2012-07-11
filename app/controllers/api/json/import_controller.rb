@@ -1,8 +1,8 @@
 # coding: UTF-8
 
 class Api::Json::ImportController < Api::ApplicationController
-  :create
-
+  ssl_required :create
+  
   before_filter :set_start_time
   after_filter  :record_query_threshold
 

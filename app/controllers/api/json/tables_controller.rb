@@ -44,6 +44,29 @@ class Api::Json::TablesController < Api::ApplicationController
                       }
                     })
   end
+  
+  # Very basic controller method to simply make blank tables
+  # All other table creation things are controlled via the imports_controller#create
+  def create    
+    @table = Table.new
+    @table.user_id        = current_user.id
+    @table.name           = params[:name]
+    @table.the_geom_type  = params[:the_geom_type]
+        
+    if @table.valid? && @table.save            
+      render_jsonp ( { :id              => @table.id, 
+                       :name            => @table.name, 
+                       :schema          => @table.schema ,
+                       :updated_at      => @table.updated_at,
+                       :rows_counted    => @table.rows_estimated 
+                     }, 200, :location  => table_path(@table))
+    else
+      CartoDB::Logger.info "Error on tables#create", @table.errors.full_messages
+      render_jsonp({ :description => @data_import.get_error_text, 
+                     :stack       => @table.errors.full_messages, 
+                     :code        => @data_import.error_code }, 400)
+    end    
+  end
 
   def show
     respond_to do |format|

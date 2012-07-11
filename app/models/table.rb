@@ -17,7 +17,7 @@ class Table < Sequel::Model(:user_tables)
   set_allowed_columns(:privacy, :tags)
 
   attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query,
-                :import_from_table_copy, :importing_SRID, :importing_encoding,
+                :import_from_table_copy, :importing_encoding,
                 :temporal_the_geom_type, :migrate_existing_table
 
   ## Callbacks

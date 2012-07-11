@@ -5,7 +5,7 @@
       <li><%= link_to 'dashboard', dashboard_path, :class => selected_if(current_path == dashboard_path) %></li>
       <li>
         <form action="#">
-          <input type="text" value="<%= params[:q] %>" name="q" placeholder="Search tables" />
+          <input type="text" value="<%= params[:q] %>" name="q" placeholder="Search in your tables" />
           <input type="submit" value="Search" />
         </form>
       </li>

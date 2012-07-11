@@ -1,6 +1,7 @@
 
 
 cdb.admin.UserMenu = cdb.ui.common.Dropdown.extend({
+
   open: function(ev, target) {
     this.isOpen = true;
 

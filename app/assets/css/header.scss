@@ -14,14 +14,14 @@ header {
   border-bottom: 1px solid #2F567E;
 
   h1 {
-    margin:4px 0 0 0;
+    margin:7px 0 0 0;
     a {
       @include inline-block();
       width:93px;
-      height:17px;
+      height:18px;
       @include icons-sprite(cartodb);
       @include text-indent();
-      &:focus,&:hover {outline:none; @include icons-sprite(cartodb,$offset-y:-18px)}
+      &:focus,&:hover {outline:none; @include icons-sprite(cartodb,$offset-y:-19px)}
     }
   }
 

@@ -143,6 +143,12 @@ describe Table do
       $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PUBLIC
     end
     
+    it "should be able to get a stringy version of a table" do
+      table = create_table
+      table.privacy_string.should == 'PRIVATE'
+      table.privacy = Table::PUBLIC
+      table.privacy_string.should == 'PUBLIC'
+    end
 
     it "should be associated to a database table" do
       user = create_user

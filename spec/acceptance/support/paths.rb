@@ -78,7 +78,7 @@ module NavigationHelpers
   end
 
   def api_table_export_to_shp_url(table_identifier)
-    "#{api_url_prefix}/tables/#{table_identifier}/export/shp"
+    api_req "#{api_url_prefix}/tables/#{table_identifier}/export/shp"
   end
 
   def superadmin_users_path

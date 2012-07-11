@@ -143,19 +143,6 @@ feature "API 1.0 tables management" do
     end
   end  
 
-
-  scenario "Create a new table specifing an schema and a file from which import data" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
-    post_json api_tables_url, {
-               :name => "Twitts",
-               :schema => "url varchar(255) not null, login varchar(255), country varchar(255), \"followers count\" integer, foo varchar(255)",
-               :file => "#{Rails.root}/db/fake_data/twitters.csv"
-              } do |response|
-      response.status.should be_success
-    end
-  end
-
   scenario "Get a table metadata information" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
 
@@ -276,103 +263,6 @@ feature "API 1.0 tables management" do
     end
   end
 
-  scenario "Create a new table importing file twitters.csv" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
-    post_json api_tables_url, {
-      :file => "#{Rails.root}/db/fake_data/twitters.csv"
-    } do |response|
-      response.status.should be_success
-      response.body[:name].should == "twitters"
-      schema_differences = (response.body[:schema] - [
-        ["cartodb_id", "number"], ["url", "string"], ["login", "string"], ["country", "string"], ["followers_count", "string"],
-        ["field_5", "string"], ["created_at", "date"], ["updated_at", "date"],
-        ["the_geom", "geometry", "geometry", "point"]
-       ])
-       schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
-    end
-  end
-
-  scenario "Create a new table importing file ngos.xlsx" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
-    post_json api_tables_url, {
-      :file => "#{Rails.root}/db/fake_data/ngos.xlsx"
-    } do |response|
-      response.status.should be_success
-      response.body[:name].should == "ngos"
-      schema_differences = (response.body[:schema] - [
-        ["cartodb_id", "number"], ["organization", "string"], ["website", "string"], ["about", "string"], ["organization_s_work_in_haiti", "string"],
-        ["calculation_of_number_of_people_reached", "string"], ["private_funding", "string"], ["relief", "string"], ["reconstruction", "string"],
-        ["private_funding_spent", "string"], ["spent_on_relief", "string"], ["spent_on_reconstruction", "string"], ["usg_funding", "string"],
-        ["usg_funding_spent", "string"], ["other_funding", "string"], ["other_funding_spent", "string"], ["international_staff", "string"], ["national_staff", "string"],
-        ["us_contact_name", "string"], ["us_contact_title", "string"], ["us_contact_phone", "string"], ["us_contact_e_mail", "string"], ["media_contact_name", "string"],
-        ["media_contact_title", "string"], ["media_contact_phone", "string"], ["media_contact_e_mail", "string"], ["donation_phone_number", "string"], ["donation_address_line_1", "string"],
-        ["address_line_2", "string"], ["city", "string"], ["state", "string"], ["zip_code", "string"], ["donation_website", "string"], ["created_at", "date"], ["updated_at", "date"],
-        ["the_geom", "geometry", "geometry", "point"]
-      ])
-      schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
-    end
-  end
-  
-  # TODO: broken, importing the file EjemploVizzuality.zip
-  # in production throws the error Missing projection (.prj) file (Code 3101)
-  pending "Create a new table importing file EjemploVizzuality.zip" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
-    post_json api_tables_url, {
-      :file => "#{Rails.root}/db/fake_data/EjemploVizzuality.zip",
-      :srid => CartoDB::SRID
-    } do |response|
-      response.status.should be_success
-      response.body[:name].should == "vizzuality"
-      schema_differences = (response.body[:schema] - [
-        ["cartodb_id", "number"], ["gid", "number"], ["subclass", "string"], ["x", "number"], ["y", "number"], ["length", "string"], ["area", "string"],
-        ["angle", "number"], ["name", "string"], ["pid", "number"], ["lot_navteq", "string"], ["version_na", "string"], ["vitesse_sp", "number"],
-        ["id", "number"], ["nombrerest", "string"], ["tipocomida", "string"],
-        ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
-      ])
-      schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
-    end
-  end
-
-  # TODO: broken, file size seems to be over the quota
-  pending "Create a new table importing file shp not working.zip" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
-
-    post_json api_tables_url, {
-      :file => "#{Rails.root}/db/fake_data/shp\ not\ working.zip",
-      :srid => CartoDB::SRID
-    } do |response|
-      response.status.should be_success
-      response.body[:name].should == "constru"
-      schema_differences = (response.body[:schema] - [
-        ["cartodb_id", "number"], ["gid", "number"], ["mapa", "number"], ["delegacio", "number"], ["municipio", "number"], ["masa", "string"],
-        ["tipo", "string"], ["parcela", "string"], ["constru", "string"], ["coorx", "number"], ["coory", "number"], ["numsymbol", "number"],
-        ["area", "number"], ["fechaalta", "number"], ["fechabaja", "number"], ["ninterno", "number"], ["hoja", "string"], ["refcat", "string"],
-        ["the_geom", "geometry", "geometry", "multipolygon"], ["created_at", "date"], ["updated_at", "date"]
-      ])
-      schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
-    end
-  end
-
-
-  scenario "Create a table, remove a table, and recreate it with the same name" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).times(3)
-
-    post_json api_tables_url, {:file => "#{Rails.root}/db/fake_data/twitters.csv"} do |response|
-      response.status.should be_success
-    end
-
-    delete_json api_table_url("twitters") do |response|
-      response.status.should be_success
-    end
-
-    post_json api_tables_url, {:name => "wadus", :file => "#{Rails.root}/db/fake_data/twitters.csv"} do |response|
-      response.status.should be_success
-    end
-  end
-
   scenario "Download a table in shp format" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
@@ -382,10 +272,10 @@ feature "API 1.0 tables management" do
 
   scenario "Download a table in csv format" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1.insert_row!({:name => "El Estocolmo"})
     visit "#{api_table_url(table1.name, :format => 'csv')}"
     current_path.should be == '/api/v1/tables/my_table_1.csv'
   end
-
 
   scenario "save a infowindow for a table" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
@@ -400,5 +290,7 @@ feature "API 1.0 tables management" do
       response.status.should == 200
     end
   end
+
+
 
 end

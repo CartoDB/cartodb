@@ -120,7 +120,7 @@ module CartoDB
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = "#{ogr2ogr_bin_path} -f \"CSV\" #{csv_file_path} PG:\"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}\" -sql \"SELECT #{@export_schema.join(',')} FROM #{@table_name}\""
         out = `#{ogr2ogr_command}`
-      Rails.logger.info ogr2ogr_command
+        Rails.logger.info ogr2ogr_command
       
         # the way we should do it, but fix for quoting like above
         #ogr2ogr_bin_path = `which ogr2ogr`.strip

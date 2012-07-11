@@ -16,7 +16,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     import_values = import.values rescue {}
 
     success = import_values[:state].blank? || import_values[:state] != 'failure'
-    render :json => {:import => import_values, :success => success}, :status => success ? :ok : :unprocessable_entity
+    render :json => import_values, :status => success ? :ok : :unprocessable_entity
   end
 
   def create

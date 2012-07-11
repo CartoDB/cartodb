@@ -28,7 +28,6 @@ javascripts:
   keys:
     - public/js/lib/cartodb/app.js
     - public/js/vendor/ZeroClipboard.js
-    - public/js/vendor/d3.v2.js
     - public/js/lib/cartodb/models/**/*.js
     - public/js/lib/cartodb/common/**/*.js
     - public/js/lib/cartodb/keys/**/*.js

@@ -272,10 +272,10 @@ feature "API 1.0 tables management" do
 
   scenario "Download a table in csv format" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1.insert_row!({:name => "El Estocolmo"})
     visit "#{api_table_url(table1.name, :format => 'csv')}"
     current_path.should be == '/api/v1/tables/my_table_1.csv'
   end
-
 
   scenario "save a infowindow for a table" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
@@ -290,5 +290,7 @@ feature "API 1.0 tables management" do
       response.status.should == 200
     end
   end
+
+
 
 end

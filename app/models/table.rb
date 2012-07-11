@@ -401,7 +401,7 @@ class Table < Sequel::Model(:user_tables)
       if @data_import
         @data_import.log_error("Import Error: #{e.try(:message)}")
         CartodbStats.increment_failed_imports()
-      end   
+      end
 
       # nill required for this bug https://github.com/airbrake/airbrake/issues/34
       Airbrake.notify(nil,
@@ -1312,7 +1312,7 @@ TRIGGER
   )
   end
 
-  def owner    
+  def owner
     @owner ||= User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota, :account_type).filter(:id => self.user_id).first
   end
 

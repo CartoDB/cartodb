@@ -24,7 +24,6 @@ feature "Tables" do
     visit "#{page.current_path}/embed_map"    
   end
 
-
   # By the moment threre is no privacy in the table
   pending "Toggle the privacy of a table" do
     # Toggle to private
@@ -73,7 +72,6 @@ feature "Tables" do
 
   pending "Delete a table" do
     click_link_or_button("delete table")
-
     click_link_or_button("Delete this table")
 
     page.current_path.should == dashboard_path

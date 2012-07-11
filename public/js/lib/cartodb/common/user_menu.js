@@ -36,7 +36,7 @@ cdb.admin.UserMenu = cdb.ui.common.Dropdown.extend({
     this.isOpen = false;
 
     this.$el.animate({
-      margin: "-10px 0 0 0",
+      margin: "10px 0 0 0",
       opacity: 0
     },this.options.speedOut, function(){
       // Remove selected class

@@ -395,7 +395,7 @@ class User < Sequel::Model
         env += " PGPORT=#{config['port']}"
         env += " PGHOST=#{config['host']}"
         env += " PGPASSWORD=#{database_password}"
-        glob = Rails.root.join('/lib/sql/test/*.sql')
+        glob = Rails.root.join('lib/sql/test/*.sql')
         #puts " Scanning #{glob}"
         Dir.glob(glob).each do |f|
           tname = File.basename(f, '.sql')

@@ -1,34 +1,17 @@
 # coding: UTF-8
 require 'spec_helper'
 
-def reload_user_data user    
-    # truncate all tables for user        
-    user.tables.each { |table| table.destroy }    
-    
-    # Import basic csv file as table
-    import1 = DataImport.create(  :user_id       => user.id,
-                                  :table_name    => 'import_csv_1',
-                                  :data_source   => "/../db/fake_data/import_csv_1.csv" )
-    Table[import1.table_id]    
-
-    # Import tweets file as table
-    import2 = DataImport.create(  :user_id       => user.id,
-                                  :table_name    => 'twitters',
-                                  :data_source   => "/../db/fake_data/twitters.csv" )
-    Table[import2.table_id]    
-end
-
 describe User do
   before(:all) do    
-    puts "[rspec] Creating Users..."
+    puts "[rspec][user_spec] Creating test user databases..."
     @new_user = new_user
     @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => 'admin123'
     @user2    = create_user :email => 'user@example.com',  :username => 'user',  :password => 'user123'  
     
-    puts "[rspec] Creating User data..."
+    puts "[rspec][user_spec] Loading user data..."
     reload_user_data(@user) && @user.reload
 
-    puts "[rspec] Running User specs..."
+    puts "[rspec][user_spec] Running..."
   end
   
   it "should set up a user after create" do

@@ -101,7 +101,7 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def update
-    @table = Table.filter(:user_id => current_user.id, :name => params[:id]).first
+    @table = Table.filter(:user_id => current_user.id, :id => params[:id]).first
     warnings = []
 
     @table.set_all(params)

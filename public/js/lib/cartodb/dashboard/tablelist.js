@@ -87,8 +87,11 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
       this.model.each(function(m) {
         self.addTable(m);
       });
-    }
+    },
 
+    _updateListHeader: function() {
+      
+    }
     
   });
 

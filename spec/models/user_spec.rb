@@ -1,61 +1,83 @@
 # coding: UTF-8
-
 require 'spec_helper'
 
+def reload_user_data user    
+    # truncate all tables for user        
+    user.tables.each { |table| table.destroy }    
+    
+    # Import basic csv file as table
+    import1 = DataImport.create(  :user_id       => user.id,
+                                  :table_name    => 'import_csv_1',
+                                  :data_source   => "/../db/fake_data/import_csv_1.csv" )
+    Table[import1.table_id]    
+
+    # Import tweets file as table
+    import2 = DataImport.create(  :user_id       => user.id,
+                                  :table_name    => 'twitters',
+                                  :data_source   => "/../db/fake_data/twitters.csv" )
+    Table[import2.table_id]    
+end
+
 describe User do
+  before(:all) do    
+    puts "[rspec] Creating Users..."
+    @new_user = new_user
+    @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => 'admin123'
+    @user2    = create_user :email => 'user@example.com',  :username => 'user',  :password => 'user123'  
+    
+    puts "[rspec] Creating User data..."
+    reload_user_data(@user) && @user.reload
+
+    puts "[rspec] Running User specs..."
+  end
   
   it "should set up a user after create" do
-    user = new_user
-    user.save
-    user.reload
-    user.should_not be_new
-    user.in_database.test_connection.should == true
-    user.database_name.should_not be_nil
+    @new_user.save
+    @new_user.reload
+    @new_user.should_not be_new
+    @new_user.in_database.test_connection.should == true
+    @new_user.database_name.should_not be_nil
   end
 
-  it "should have a crypted password" do
-    user = create_user :email => 'admin@example.com', :password => 'admin123'
-    user.crypted_password.should_not be_blank
-    user.crypted_password.should_not == 'admin123'
+  it "should have a crypted password" do    
+    @user.crypted_password.should_not be_blank
+    @user.crypted_password.should_not == 'admin123'
   end
 
   it "should authenticate if given email and password are correct" do
-    user = create_user :email => 'admin@example.com', :password => 'admin123'
-    User.authenticate('admin@example.com', 'admin123').should == user
+    User.authenticate('admin@example.com', 'admin123').should == @user
     User.authenticate('admin@example.com', 'admin321').should be_nil
     User.authenticate('', '').should be_nil
   end
   
-  it "should authenticate with case-insensitive email and username" do
-    user = create_user :email => 'user@example.com', :username => "user", :password => 'user123'
-    User.authenticate('user@example.com', 'user123').should == user
-    User.authenticate('UsEr@eXaMpLe.Com', 'user123').should == user
-    User.authenticate('user', 'user123').should == user
-    User.authenticate('USER', 'user123').should == user
+  it "should authenticate with case-insensitive email and username" do  
+    User.authenticate('admin@example.com', 'admin123').should == @user
+    User.authenticate('aDMin@eXaMpLe.Com', 'admin123').should == @user  
+    User.authenticate('admin', 'admin123').should == @user
+    User.authenticate('ADMIN', 'admin123').should == @user
   end
   
   it "should only allow legal usernames" do
     illegal_usernames = %w(si$mon 'sergio estella' j@vi sergio£££ simon_tokumine simon.tokumine SIMON Simon)
-    legal_usernames = %w(simon javier-de-la-torre sergio-leiva sergio99)
-    user = create_user :email => 'user@example.com', :username => "user", :password => 'user123'
-    
+    legal_usernames   = %w(simon javier-de-la-torre sergio-leiva sergio99)
+
     illegal_usernames.each do |name|
-      user.username = name
-      user.valid?.should be_false
-      user.errors[:username].should be_present
+      @user.username = name
+      @user.valid?.should be_false
+      @user.errors[:username].should be_present
     end
     
     legal_usernames.each do |name|
-      user.username = name      
-      user.valid?.should be_true
-      user.errors[:username].should be_blank
+      @user.username = name      
+      @user.valid?.should be_true
+      @user.errors[:username].should be_blank
     end
   end
 
   it "should validate that password is present if record is new and crypted_password or salt are blank" do
     user = User.new
-    user.username = "admin"
-    user.email = "admin@example.com"
+    user.username = "adminipop"
+    user.email = "adminipop@example.com"
     
     user.valid?.should be_false
     user.errors[:password].should be_present
@@ -76,32 +98,26 @@ describe User do
     user.valid?.should be_true
   end
 
-  it "should have many tables" do
-    user = create_user
-    user.tables.should be_empty
-
-    create_table :user_id => user.id, :name => 'My first table', :privacy => Table::PUBLIC
-
-    user.reload
-    user.tables_count.should == 1
-    user.tables.all.should == [Table.first(:user_id => user.id)]
+  it "should have many tables" do    
+    @user2.tables.should be_empty
+    create_table :user_id => @user2.id, :name => 'My first table', :privacy => Table::PUBLIC
+    @user2.reload
+    @user2.tables_count.should == 1
+    @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
   end
 
-  it "should has his own database, created when the account is created" do
-    user = create_user
-    user.database_name.should == "cartodb_test_user_#{user.id}_db"
-    user.database_username.should == "test_cartodb_user_#{user.id}"
-    user.in_database.test_connection.should == true
+  it "should has his own database, created when the account is created" do    
+    @user.database_name.should == "cartodb_test_user_#{@user.id}_db"
+    @user.database_username.should == "test_cartodb_user_#{@user.id}"
+    @user.in_database.test_connection.should == true
   end
 
-  it "should create a dabase user that only can read it's own database" do
-    user1 = create_user
-    user2 = create_user
+  it "should create a dabase user that only can read it's own database" do    
 
     connection = ::Sequel.connect(
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => user1.database_name, :logger => ::Rails.logger,
-        'username' => user1.database_username, 'password' => user1.database_password
+        'database' => @user.database_name, :logger => ::Rails.logger,
+        'username' => @user.database_username, 'password' => @user.database_password
       )
     )
     connection.test_connection.should == true
@@ -110,8 +126,8 @@ describe User do
     connection = nil
     connection = ::Sequel.connect(
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => user2.database_name, :logger => ::Rails.logger,
-        'username' => user1.database_username, 'password' => user1.database_password
+        'database' => @user2.database_name, :logger => ::Rails.logger,
+        'username' => @user.database_username, 'password' => @user.database_password
       )
     )
     begin
@@ -125,8 +141,8 @@ describe User do
 
     connection = ::Sequel.connect(
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => user2.database_name, :logger => ::Rails.logger,
-        'username' => user2.database_username, 'password' => user2.database_password
+        'database' => @user2.database_name, :logger => ::Rails.logger,
+        'username' => @user2.database_username, 'password' => @user2.database_password
       )
     )
     connection.test_connection.should == true
@@ -134,8 +150,8 @@ describe User do
 
     connection = ::Sequel.connect(
       ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-        'database' => user1.database_name, :logger => ::Rails.logger,
-        'username' => user2.database_username, 'password' => user2.database_password
+        'database' => @user.database_name, :logger => ::Rails.logger,
+        'username' => @user2.database_username, 'password' => @user2.database_password
       )
     )
     begin
@@ -149,14 +165,9 @@ describe User do
   end
 
   it "should run valid queries against his database" do
-    # config
-    user = create_user
-    table = new_table(:user_id => user.id)
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.save
 
     # initial select tests
-    query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -165,28 +176,22 @@ describe User do
     query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
     
     # update and reselect
-    query_result = user.run_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")  
-    query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.run_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")  
+    query_result = @user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:total_rows].should == 0
     
     # check counts
-    query_result = user.run_query("select * from import_csv_1 where family='polynoidae' limit 10")
+    query_result = @user.run_query("select * from import_csv_1 where family='polynoidae' limit 10")
     query_result[:total_rows].should == 2
-    
-    # add new table
-    table2 = new_table :name => 'twitts', :user_id => user.id
-    table2.user_id = user.id
-    table2.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
-    table2.save
-    
+        
     # test a product
-    query_result = user.run_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
+    query_result = @user.run_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
     query_result[:total_rows].should == 10    
     query_result[:rows].first.keys.should == [:fam, :login]    
     query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
     
     # test counts
-    query_result = user.run_query("select count(*) from import_csv_1 where family='polynoidae' ")
+    query_result = @user.run_query("select count(*) from import_csv_1 where family='polynoidae' ")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 1
@@ -195,28 +200,17 @@ describe User do
   end
 
   it "should raise errors when running invalid queries against his database" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.save
-
     lambda {
-      user.run_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
+      @user.run_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
-
   it "should run valid queries against his database in pg mode" do
-    # config
-    user = create_user
-    table = new_table(:user_id => user.id)
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.save
+    reload_user_data(@user) && @user.reload    
 
     # initial select tests
     # tests results and modified flags
-    query_result = user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
@@ -227,34 +221,28 @@ describe User do
     query_result[:modified].should == false
     
     # update and reselect
-    query_result = user.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")  
+    query_result = @user.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")  
     query_result[:modified].should   == true
     query_result[:results].should    == false
 
-    query_result = user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:total_rows].should == 0
     query_result[:modified].should   == false
     query_result[:results].should    == true
      
     # # check counts
-    query_result = user.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
+    query_result = @user.run_pg_query("select * from import_csv_1 where family='polynoidae' limit 10")
     query_result[:total_rows].should == 2
     query_result[:results].should    == true
-    
-    # add new table
-    table2 = new_table :name => 'twitts', :user_id => user.id
-    table2.user_id = user.id
-    table2.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
-    table2.save
-    
+        
     # test a product
-    query_result = user.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
+    query_result = @user.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
     query_result[:total_rows].should == 10    
     query_result[:rows].first.keys.should == [:fam, :login]    
     query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
     
     # test counts
-    query_result = user.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
+    query_result = @user.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 1
@@ -263,65 +251,40 @@ describe User do
   end
 
   it "should raise errors when running invalid queries against his database in pg mode" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.save
-
     lambda {
-      user.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
+      @user.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
   it "should raise errors when invalid table name used in pg mode" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.save
-
     lambda {
-      user.run_pg_query("select * from this_table_is_not_here where family='Polynoidae' limit 10")
+      @user.run_pg_query("select * from this_table_is_not_here where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::TableNotExists)
   end
 
   it "should raise errors when invalid column used in pg mode" do
-    user = create_user
-    table = new_table
-    table.user_id = user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.save
-
     lambda {
-      user.run_pg_query("select not_a_col from import_csv_1 where family='Polynoidae' limit 10")
-    }.should raise_error(CartoDB::TableNotExists)
+      @user.run_pg_query("select not_a_col from import_csv_1 where family='Polynoidae' limit 10")
+    }.should raise_error(CartoDB::ColumnNotExists)
   end
 
-
   it "should create a client_application for each user" do
-    user = create_user
-    user.client_application.should_not be_nil
+    @user.client_application.should_not be_nil
   end
 
   it "should reset its client application" do
-    user = create_user
-    old_key = user.client_application.key
+    old_key = @user.client_application.key
 
-    user.reset_client_application!
-    user.reload
+    @user.reset_client_application!
+    @user.reload
 
-    user.client_application.key.should_not == old_key
+    @user.client_application.key.should_not == old_key
   end
   
   it "should return the result from the last select query if multiple selects" do
-    user = create_user
-    table = new_table(:user_id => user.id)
-    table.user_id = user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.save
+    reload_user_data(@user) && @user.reload
 
-    query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 1; select * from import_csv_1 where family='Polynoidae' limit 10")
+    query_result = @user.run_query("select * from import_csv_1 where family='Polynoidae' limit 1; select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2    
@@ -330,44 +293,32 @@ describe User do
   end
 
   it "should allow multiple queries in the format: insert_query; select_query" do
-    user = create_user
-    table = new_table(:user_id => user.id)
-    table.user_id = user.id
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.save
-
-    query_result = user.run_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
-    query_result[:total_rows].should == 3    
+    query_result = @user.run_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
+    query_result[:total_rows].should == 3      
     query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
-    query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
-    query_result[:rows][2][:name_of_species].should == "cristata barrukia"
+    query_result[:rows][1][:name_of_species].should == "cristata barrukia"
+    query_result[:rows][2][:name_of_species].should == "Eulagisca gigantea" 
   end
   
   it "should fail with error if table doesn't exist" do
-    user = create_user
+    reload_user_data(@user) && @user.reload
     lambda {
-      user.run_query("select * from wadus")
+      @user.run_query("select * from wadus")
     }.should raise_error(CartoDB::TableNotExists)
   end
   
   it "should have a method that generates users redis users_metadata key" do
-    user = create_user
-    user.key.should == "rails:users:#{user.username}"
+    @user.key.should == "rails:users:#{@user.username}"
   end  
   
   it "should be able to store the users id and database name in redis" do
-    user = create_user
-    
-    user.save_metadata.should be_true    
-    $users_metadata.HGET(user.key, 'id').should == user.id.to_s
-    $users_metadata.HGET(user.key, 'database_name').should == user.database_name
+    @user.save_metadata.should be_true    
+    $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
+    $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
   end
   
-  it "should store it's metadata automatically after creation" do
-    user = create_user
-    
-    $users_metadata.HGET(user.key, 'id').should == user.id.to_s
-    $users_metadata.HGET(user.key, 'database_name').should == user.database_name
-  end
-  
+  it "should store it's metadata automatically after creation" do    
+    $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
+    $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
+  end  
 end

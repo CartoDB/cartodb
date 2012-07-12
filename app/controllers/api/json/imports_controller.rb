@@ -6,14 +6,12 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   def index
     imports = DataImport.filter(:user_id => current_user.id).all
-
     render :json => {:imports => imports, :success => true}
   end
 
   def show
-    import = DataImport.filter(:queue_id => params[:id]).first
-
-    import_values = import.values rescue {}
+    import        = DataImport.filter(:queue_id => params[:id]).first
+    import_values = import.values rescue { :state => 'preprocessing' }
 
     success = import_values[:state].blank? || import_values[:state] != 'failure'
     render :json => import_values, :status => success ? :ok : :unprocessable_entity

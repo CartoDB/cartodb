@@ -1,6 +1,6 @@
-<%# if !cookies[:flash] || !flash[:success] %>
+<% if cookies[:flash] || flash[:success] %>
 	<li class="flash">
-		<p class="dark">TODO<%= cookies[:flash] || flash[:success] %></p>
+		<p class="dark"><%= cookies[:flash] || flash[:success] %></p>
 		<a class="smaller close" href="#close">x</a>
 	</li>
-<%# end %>
+<% end %>

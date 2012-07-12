@@ -10,8 +10,8 @@
   </div>
   <div class="right">
     <hgroup class="right">
-        <p class="smaller light"><%= updated_at %> ago</p>
-      <a href="#delete" class="delete" data-table="<%= name %>">delete</a>
+        <p class="smaller light"><% print(moment(updated_at).fromNow()); %></p>
+      <a href="#delete" class="delete tooltip" data-table="<%= name %>" title="Delete">delete</a>
     </hgroup>
       <span class="tags">
       </span>

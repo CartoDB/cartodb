@@ -14,7 +14,6 @@ $(function() {
           'click':                      'onClickOut'
         },
 
-
         initialize: function() {
           this._initModels();
           this._initViews();
@@ -31,7 +30,6 @@ $(function() {
             model: this.tables
           });
 
-
           // this.tableStats = new cdb.admin.dashboard.TableStats({
           //   el: this.$('#tablelist'),
           //   model: this.tables
@@ -46,11 +44,20 @@ $(function() {
           var user_menu = this.user_menu = new cdb.admin.UserMenu({
             target: 'a.account',
             model: {username: username},
-            template_base: "dashboard/views/settings_item"
+            template_base: 'dashboard/views/settings_item'
           })
           .on("optionClicked",function(ev){})
           cdb.god.bind("closeDialogs", user_menu.hide, user_menu);
           this.$el.append(this.user_menu.render().el);
+
+          // Bacground Importer
+          var bkg_importer = this.bkg_importer = new cdb.ui.common.BackgroundImporter({
+            template_base: 'common/views/background_importer'
+          })
+          this.$el.append(this.bkg_importer.render().el);
+
+          // Tipsy
+          this.$el.find("a.tooltip").tipsy({gravity: 's', fade:true, live:true});
         },
 
         show_dialog: function() {
@@ -64,9 +71,13 @@ $(function() {
           //TODO: create dialog to show the import progress
           var self = this;
           imp.pollCheck();
+
+          //TODO: Connect the uploading state
+          imp.bind('change:state', function(i) { this.bkg_importer.changeState(i.get('state')); }, this);
           imp.bind('importComplete', function(){ 
             cdb.log.info("updating tables");
             self.tables.fetch();
+            setTimeout(self.bkg_importer.hide, 3000);
             imp.unbind();
           });
         },

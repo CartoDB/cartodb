@@ -25,6 +25,7 @@ javascripts:
     - public/js/lib/cartodb/dashboard/**/*.js
     - public/js/lib/cartodb/dashboard/dashboard.js
     - public/js/lib/cartodb/**/*.jst
+    - public/js/vendor/moment.js
 
   keys:
     - public/js/lib/cartodb/app.js

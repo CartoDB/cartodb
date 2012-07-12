@@ -43,6 +43,50 @@ describe("admin table", function() {
       expect(table._getColumn('test').get('type')).toEqual('number');
     });
 
+    it("altertable", function() {
+      expect(table.alterTable('select * from blba')).toEqual(false);
+      expect(table.alterTable('alter table add column blbla')).toEqual(true);
+      expect(table.alterTable('update aaa set a = 1')).toEqual(false);
+      expect(table.alterTable('insert into blaba values (1,2,3,4)')).toEqual(false);
+      expect(table.alterTable('delete from bkna')).toEqual(false);
+    });
+
+    it("altertabledata", function() {
+      expect(table.alterTableData('select * from blba')).toEqual(false);
+      expect(table.alterTableData('update aaa set a = 1')).toEqual(true);
+      expect(table.alterTableData('alter table add column blbla')).toEqual(true);
+      expect(table.alterTableData('insert into blaba values (1,2,3,4)')).toEqual(true);
+      expect(table.alterTableData('delete from bkna')).toEqual(true);
+    });
+
+    it("should change schema when a sqlview is applied", function() {
+      var sqlView = new cdb.admin.SQLViewData(null, { sql: 'select * from a' });
+      table.useSQLView(sqlView);
+      sqlView.reset([
+        { a: 1, b:2 }
+      ]);
+
+      expect(table.get('schema')).toEqual([
+        ['a', 'undefined'],
+        ['b', 'undefined']
+      ]);
+      expect(table._data.models[0].attributes).toEqual(
+        { a: 1, b:2 }
+      );
+      //spyOn(table._data, 'fetch');
+      //expect(table._data.fetch).toHaveBeenCalled();
+    });
+    it("should change schema when a sqlview is reset", function() {
+      var sqlView = new cdb.admin.SQLViewData(null, { sql: 'select * from a' });
+      table.useSQLView(sqlView);
+      sqlView.reset([
+        { a: 1, b:2 }
+      ]);
+      spyOn(table, 'fetch');
+      table.useSQLView(null);
+      expect(table.fetch).toHaveBeenCalled();
+    });
+
     /*
     it("it should fetch the model after changing a column", function() {
         spyOn(table, 'fetch');

@@ -11,11 +11,15 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
     tagName: 'li',
 
     events: {
-      "click a.status": "_addPrivacySelector"
+      "click a.status": "_addPrivacySelector",
+      "click a.delete": "_showDeleteConfirmation",
     },
 
     initialize: function() {
       this.template = cdb.templates.getTemplate('dashboard/views/table_list_item');
+
+      this.model.bind('destroy', this.clean, this);
+      this.model.bind('change', this.render, this);
     },
 
     render: function() {
@@ -34,6 +38,24 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
       this.$el.append(privacy.render().el);
 
       privacy.show();
+    },
+
+    _showDeleteConfirmation: function(ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      var delete_dialog = new cdb.admin.DeleteDialog({
+        clean_on_hide: true,
+        title: "",
+        content: "",
+        ok_button_classes: "button grey",
+        cancel_button_classes: "underline margin15",
+        modal_type: "confirmation",
+        model: this.model
+      });
+
+      this.$el.append(delete_dialog.render().el);
+      delete_dialog.open();
     }
   });
 

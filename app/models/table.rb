@@ -48,8 +48,10 @@ class Table < Sequel::Model(:user_tables)
 
       # Add error to data_import object log
       @data_import ||= DataImport.find(:id => self.data_import_id) # note memoize function
-      @data_import.set_error_code(8002)
-      @data_import.log_error('over table quota, please upgrade')
+      unless @data_import.blank?
+        @data_import.set_error_code(8002)
+        @data_import.log_error('over table quota, please upgrade')
+      end
     end
 
     # Branch if owner dows not have private table privileges

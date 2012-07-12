@@ -38,6 +38,7 @@ cdb.core.TemplateList = Backbone.Collection.extend({
     if(t) {
         return _.bind(t.render, t);
     }
+    cdb.log.error(template_name+" not found");
     return null;
   }
 });

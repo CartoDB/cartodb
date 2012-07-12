@@ -70,7 +70,6 @@ cdb.admin.D3Stats = cdb.core.View.extend({
         .style("fill", "none")
         .style("stroke-width", "2")
         .style("stroke", "#409FCE")
-        //.attr("transform","translate(0,"+height+")");
 
     return this;
   }

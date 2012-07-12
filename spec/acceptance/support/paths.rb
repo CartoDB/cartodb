@@ -38,7 +38,7 @@ module NavigationHelpers
   end
   
   def api_tags_url(params = {})
-    "#{api_url_prefix}/tables/tags"
+    api_req "#{api_url_prefix}/tables/tags"
   end
   
   def api_tables_tag_url(tag_name, params = {})

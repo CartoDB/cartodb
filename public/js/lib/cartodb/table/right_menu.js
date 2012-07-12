@@ -32,6 +32,7 @@ var Button = cdb.core.View.extend({
 
 cdb.admin.RightMenu = cdb.core.View.extend({
 
+  tagName: 'section',
   className: 'table_panel',
 
   initialize: function() {
@@ -39,6 +40,7 @@ cdb.admin.RightMenu = cdb.core.View.extend({
     this.tabs = new cdb.admin.Tabs();
     this.addView(this.panels);
     this.template = this.getTemplate('table/views/right_panel');
+    this.isOpen = true;
   },
 
   render: function() {
@@ -61,7 +63,30 @@ cdb.admin.RightMenu = cdb.core.View.extend({
     buttons.append(b.render().el);
     this.addView(b);
     b.bind('click', this.panels.active, this.panels);
+    b.bind('click', this.toggle, this);
   },
+
+  toggle: function() {
+    if(this.isOpen) {
+      this.hide();
+    } else {
+      this.show();
+    }
+  },
+
+  hide: function() {
+    this.isOpen = false;
+    this.$el.animate({
+      right: -535
+    })
+  },
+
+  show: function() {
+    this.isOpen = true;
+    this.$el.animate({
+      right: 0
+    })
+  }
 
 });
 

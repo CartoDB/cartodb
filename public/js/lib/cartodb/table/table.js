@@ -50,6 +50,14 @@ $(function() {
             model: this.map
           });
 
+          this.menu = new cdb.admin.RightMenu({});
+          this.$el.append(this.menu.render().el);
+
+          // lateral menu modules
+          var sql = new cdb.admin.mod.SQL({ model: this.table });
+          this.menu.addModule(sql.render());
+          //sql.bind('sqlQuery', this.table.sql);
+
 
           this.workView.addTab('table', this.tableTab.render());
           this.workView.addTab('map', this.mapTab.render());

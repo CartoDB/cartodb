@@ -3,7 +3,7 @@
   <% end %>
   <%= content_for(:js) do %>
     <%= include_javascripts :common, :cdbjs, :keys %>
-    <script type="text/javascript">var username = "<%= current_user.username %>";</script>
+    <script type="text/javascript">var username = "<%= current_user.username %>", type = "key";</script>
   <% end %>
   <%= content_for(:css) do %>
     <%= include_stylesheets :common, :media => 'all' %>
@@ -27,24 +27,25 @@
             <div class="copy">
               <label class="uppercase smaller strong lighter">YOUR API KEY</label>
               <p class="margin5"><%= current_user.get_map_key %></p>
-              <a id="copy" class="tooltip copy" href="#copy" title="Copy this">copy</a>
+              <a class="tooltip copy" href="#copy" title="Copy this">copy</a>
             </div>
           </li>
           <li class="dark">
             <div class="list">
               <label class="dark strong small">Example write:</label>
-              <p class="small margin5">http://username.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),’rare bird spotted’)&api_key=<%= current_user.get_map_key %></p>
+              <p class="small margin5">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),’rare bird spotted’)&api_key=<%= current_user.get_map_key %></p>
             </div>
             <div class="list margin15">
               <label class="dark strong small">Example private table read:</label>
-              <p class="small margin5">http://username.cartodb.com/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.get_map_key %></p>
+              <p class="small margin5">http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.get_map_key %></p>
             </div>
           </li>
         </ul>
       </div>
       <div class="foot">
-        <%= link_to "Need help?", "#todo", :class => "left underline" %>
-        <%= link_to "Request a new key", "#todo", :class => "right underline red" %>
+        <%= form_tag(regenerate_api_key_url, :method => "POST", :id => 'regenerate_api_key') do %>
+          <%= link_to "Request a new key", "#request_new_key", :class => "right underline red regenerate" %>
+        <% end %>
       </div>
     </section>
     <aside class="right">
@@ -52,63 +53,3 @@
     </aside>
   </div>
 </article>
-
-<!-- 
-  <section id="content">
-    <div class="inner_content">
-
-      <%= render :partial => 'shared/flash_message' %>
-
-      <div class="tables_list">
-        <div class="left">
-          <div class="top_blue_medium">
-            <h3>Your <strong>API keys</strong></h3>
-            <p><a class="oauth selected" href="<%= api_key_credentials_path %>">API Key</a><a class="jsonp" href="<%= oauth_credentials_path %>">OAuth</a></p>
-          </div>
-          <div class="middle_white_medium">
-            <div class="end_oauth">
-              <p>Use your API key with the SQL API and Maps API for full API access to your CartoDB tables. Learn more about using the API Key in <a href="<%= APP_CONFIG[:developers_host] %>/documentation/cartodb-apis.html">our documentation</a>.</p>
-            <%= form_tag(regenerate_api_key_url, :method => "POST", :id => 'regenerate_api_key') do %>
-              <span class="form_block" style="width:350px;">
-                <%= label_tag      :api_key, "YOUR API KEY" %>
-                <%= text_field_tag :api_key, current_user.get_map_key, :readonly => 'readonly', :style => "width:350px;"  %>
-              </span>
-              <a href="#submit" class="green submit regenerate_api_key" style="margin-left:25px;" ><span>Regenerate API key</span></a>
-            <% end %>
-            <p style="background:#eee;font-size:12px;padding:1em;margin-top:10px;">
-              <b>Example write:</b><br/>
-              http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=INSERT INTO table_name (the_geom, observation)
-              VALUES (ST_GeomFromText('POINT(-71.2 42.5)', 4326),'rare bird spotted')&api_key=<%= current_user.get_map_key%><br><br>
-
-              <b>Example private table read:</b><br/>
-              http://<%= current_user.username %>.cartodb.com/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.get_map_key%><br>
-            </p>
-
-            </div>
-          </div>
-          <div class="bottom_white_medium"></div>
-        </div>
-        <div class="right">
-          <%= render :partial => 'create_first' %>
-        </div>
-      </div>
-    </div>
-  </section> -->
-
-<!--   <% content_for(:mamufas) do %>
-    <div class="mamufas">
-      <div class="delete_window">
-        <a href="#close_window" class="close_delete"></a>
-        <div class="inner_">
-          <span class="top">
-            <h3>You are about to regenerate your API key</h3>
-            <p>You will need to update all deployed apps with a new API key. Are you sure you want to continue?</p>
-          </span>
-          <span class="bottom">
-            <a href="#close_window" class="cancel">cancel</a>
-            <a href="#confirm_regen" id="confirm_regen" class="confirm_regen" key="">Regenerate API key</a>
-          </span>
-        </div>
-      </div>
-    </div>
-  <% end %> -->

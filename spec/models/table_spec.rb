@@ -604,8 +604,7 @@ describe Table do
     it "should be able to update data in rows with column names with multiple underscores" do
       user = create_user
 
-      data_import = DataImport.create( :queue_id      => '',
-                                       :user_id       => user.id,
+      data_import = DataImport.create( :user_id       => user.id,
                                        :table_name    => 'elecciones2008',
                                        :data_source   => '/../spec/support/data/elecciones2008.csv',
                                        :updated_at    => Time.now)

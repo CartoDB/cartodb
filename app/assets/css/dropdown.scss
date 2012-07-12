@@ -1,49 +1,54 @@
-@import "compass";
+  
+  /*
+   * Dropdown for CartoDB
+   */
 
-.dropdown {
-  position:absolute;
-  display:none;
-  z-index:10;
+  @import "compass";
 
-  ul {
-    position:relative;
-    @include inline-block();
-    width:100%;
-    margin:0;
-    padding:0;
-    background:white;
-    @include border-radius(3px);
-    border:none;
-    @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
-    list-style:none;
-    overflow:visible;
+  .dropdown {
+    position:absolute;
+    display:none;
+    z-index:10;
 
-    li {
-      display:block;
-      padding:13px 13px 15px 13px;
-      border-top:1px solid rgba(#CCCCCC,0.35);
+    ul {
+      position:relative;
+      @include inline-block();
+      width:100%;
+      margin:0;
+      padding:0;
+      background:white;
+      @include border-radius(3px);
+      border:none;
+      @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
+      list-style:none;
+      overflow:visible;
 
-      &:first-child {@include border-top-radius(3px)}
-      &:last-child {@include border-bottom-radius(3px)}
+      li {
+        display:block;
+        padding:13px 13px 15px 13px;
+        border-top:1px solid rgba(#CCCCCC,0.35);
 
-      &:hover {
-        background:#F7F7F7;
-        a {color:#333333; text-decoration:none}
+        &:first-child {@include border-top-radius(3px)}
+        &:last-child {@include border-bottom-radius(3px)}
+
+        &:hover {
+          background:#F7F7F7;
+          a {color:#333333; text-decoration:none}
+        }
+      }
+
+      &:before {
+        content:' ';
+        position:absolute;
+        display:block!important;
+        top:-5px;
+        right:10px;
+        width:0;
+        height:0;
+        border-bottom:8px solid white;
+        border-left:8px solid transparent;
+        border-right:8px solid transparent;
+        z-index:10;
       }
     }
-
-    &:before {
-      content:' ';
-      position:absolute;
-      display:block!important;
-      top:-5px;
-      right:10px;
-      width:0;
-      height:0;
-      border-bottom:8px solid white;
-      border-left:8px solid transparent;
-      border-right:8px solid transparent;
-      z-index:10;
-    }
   }
-}

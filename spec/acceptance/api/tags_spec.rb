@@ -6,8 +6,7 @@ feature "API 1.0 tags management" do
 
   background do
     Capybara.current_driver = :rack_test
-    @user = create_user
-    login_as @user
+    @user = create_user(:username => 'test')
   end
 
   scenario "Get tags" do

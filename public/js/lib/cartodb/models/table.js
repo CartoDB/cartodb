@@ -39,6 +39,7 @@
     initialize: function() {
       this.bind('change:schema', this._prepareSchema, this);
       this._prepareSchema();
+      this.sqlView = null;
     },
 
     urlRoot: function() {
@@ -113,7 +114,50 @@
         });
       }
       return this._data;
+    },
+
+
+    useSQLView: function(view) {
+      var self = this;
+      var data = this.data();
+
+      if(this.sqlView) {
+        this.sqlView.unbind(null, null, this);
+        this.sqlView.unbind(null, null, data);
+      }
+
+      this.sqlView = view;
+
+      if(view) {
+        data.unlinkFromSchema();
+        view.bind('reset', function() {
+          data.reset(view.models);
+          self.set({ schema: view.schemaFromData()});
+        }, data);
+      } else {
+        data.linkToSchema();
+        this.fetch();
+      }
+    },
+
+    /**
+     * return true if the sql query alters table schema in some way
+     */
+    alterTable: function(sql) {
+      return sql.search(/alter/i) !== -1   ||
+             sql.search(/drop/i)  !== -1
+    },
+
+    /**
+     * return true if the sql query alters table data
+     */
+    alterTableData: function(sql) {
+      return this.alterTable(sql)       ||
+             sql.search(/insert/i) !== -1  ||
+             sql.search(/update/i) !== -1  ||
+             sql.search(/delete/i) !== -1
     }
+
   });
 
   cdb.admin.Row = Backbone.Model.extend({
@@ -147,7 +191,23 @@
       this.model.prototype.idAttribute = 'cartodb_id';
       // dont bind directly to fetch because change send
       // options that are use in fetch
-      this.table.bind('change', function() { self.fetch() });
+      this.linkToSchema();
+      this.filter = null;
+    },
+
+    /**
+     * when the schema changes the data is not refetch
+     */
+    unlinkFromSchema: function() {
+      this.table.unbind('change', null, this);
+    },
+
+    /**
+     * when the schame changes the data is fetch again
+     */
+    linkToSchema: function() {
+      var self = this;
+      this.table.bind('change', function() { self.fetch() }, this);
     },
 
     parse: function(d) {
@@ -159,11 +219,48 @@
     },
 
     addRow: function() {
-      this.create(null, { wait: true});
+      this.create(null, { wait: true });
     },
 
     deleteRow: function(row_id) {
     },
+
+  });
+
+  /**
+   * contains data for a sql view
+   * var s = new cdb.admin.SQLViewData({ sql : "select...." });
+   * s.fetch();
+   */
+  cdb.admin.SQLViewData = cdb.admin.CartoDBTableData.extend({
+
+    UNDEFINED_TYPE_COLUMN: 'undefined',
+
+    initialize: function(models, options) {
+      this.model.prototype.idAttribute = 'cartodb_id';
+      this.sql = options ? options.sql: null;
+    },
+
+    setSQL: function(sql) {
+      this.sql = sql;
+    },
+
+    schemaFromData: function() {
+      var self = this;
+      var schema = _(self.models[0].attributes).map(function(k, v) {
+         return [v, self.UNDEFINED_TYPE_COLUMN];
+      });
+      return schema;
+    },
+
+    url: function() {
+      if(!this.sql) {
+        throw "sql must be provided";
+      }
+      return '/api/v1/queries?sql=' +
+        encodeURIComponent(this.sql) +
+        '&limit=20&rows_per_page=40&page=0'
+    }
 
   });
 

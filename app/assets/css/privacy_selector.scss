@@ -1,0 +1,23 @@
+
+	/*
+	 *	Privacy selector
+	 */
+
+	 @import "compass";
+
+	.privacy_selector {
+		position:absolute;
+		width:183px;
+		border:1px solid #999999;
+		@include border-radius(3px);
+		@include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
+		background:white;
+
+		ul {
+			display:block;
+			width:100%;
+			li {
+				padding:0;
+			}
+		}
+	}

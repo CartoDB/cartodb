@@ -1,21 +1,26 @@
-<div class="background_importer">
 
-	<% if (status=='uploading') { %>
-  	<span>Uploading data</span>
-  	<div class="mini-bar"><span></span></div>
+	<% if (state=='uploading') { %>
+		<div class="background_importer">
+  		<span>Uploading data</span>
+  		<div class="mini-bar"><span></span></div>
+		</div>
   <% } %>
 
-	<% if (status=='creating') { %>
-    <span>Creating table</span>
-    <div class="mini-bar"><span></span></div>
+	<% if (state=='preprocessing') { %>
+		<div class="background_importer">
+	    <span>Creating table</span>
+	    <div class="mini-bar"><span></span></div>
+	  </div>
 	<% } %>
 
-	<% if (status=='ok') { %>
-	  <span class="ok"><a class="underline" href="#created_table">Your table</a> has been created correctly</span>
+	<% if (state=='complete') { %>
+	  <div class="background_importer">
+	  	<span class="ok"><a class="underline" href="#created_table">Your table</a> has been created correctly</span>
+		</div>
 	<% } %>
 
-  <% if (status=='error') { %>
-    <span class="error">There has been an error when creating your table</span>
+  <% if (state=='failed') { %>
+  	<div class="background_importer">
+    	<span class="error">There has been an error when creating your table</span>
+    </div>
   <% } %>
-
-</div>

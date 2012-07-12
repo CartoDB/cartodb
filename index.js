@@ -17,5 +17,4 @@
 //= require cdb/src/ui/common/tabpane
 //= require cdb/src/ui/common/dialog
 //= require cdb/src/ui/common/notification
-//= require cdb/src/ui/common/settings
 //= require cdb/src/ui/common/table

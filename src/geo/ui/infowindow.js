@@ -25,8 +25,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.on('change:content', this.render);
     this.model.on('change:latlng', this.render);
     this.model.on('change:visibility', this.toggle);
-    this.map.on('viewreset', this.render);
-    this.map.on('drag', this.render);
+    this.map.on('viewreset', this._updatePosition);
+    this.map.on('drag', this._updatePosition);
     this.map.on('zoomstart', this.hide);
     this.map.on('zoomend', this.show);
 
@@ -68,8 +68,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (this.model.get("visibility")) this.$el.fadeIn(250);
   },
 
-  hide: function () {
-    if (!this.model.get("visibility")) this.$el.fadeOut(250);
+  hide: function (force) {
+    if (force || !this.model.get("visibility")) this.$el.fadeOut(250);
   },
 
   _update: function () {

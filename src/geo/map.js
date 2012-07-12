@@ -41,7 +41,12 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   },
 
   initialize: function() {
-    _.bindAll(this, 'getTileLayer', '_getInteractiveLayer', '_getStaticTileLayer', '_bindWaxEvents');
+    _.bindAll(this, 'getTileLayer', '_getInteractiveLayer', '_getStaticTileLayer', '_bindWaxEvents', 'setBounds');
+
+    if (this.get("auto_bound")) {
+      this.setBounds();
+    }
+
   },
 
   _generateURL: function(type){
@@ -111,6 +116,66 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     return uri;
   },
 
+    /**
+     * Zoom to cartodb geometries
+     */
+    setBounds: function(sql) {
+      var
+      self      = this,
+      query     = "",
+      tableName = this.get("table_name");
+
+      if (sql) { // Custom query
+        query = sql;
+      } else { // Already defined query
+        query = this.get("query");
+      }
+
+      var from = query.replace(/\{\{table_name\}\}/g, tableName).replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+
+      var q = escape('SELECT ST_XMin(ST_Extent(the_geom)) as minx, ST_YMin(ST_Extent(the_geom)) as miny, ST_XMax(ST_Extent(the_geom)) as maxx, ST_YMax(ST_Extent(the_geom)) as maxy from (' + from + ') as subq');
+      var url = this._generateURL("sql") + '/api/v2/sql/?q=' + q;
+
+      reqwest({
+        url: url,
+        type: 'jsonp',
+        jsonpCallback: 'callback',
+        success: function(result) {
+          if (result.rows[0].maxx != null) {
+            var coordinates = result.rows[0];
+
+            var lon0 = coordinates.maxx;
+            var lat0 = coordinates.maxy;
+            var lon1 = coordinates.minx;
+            var lat1 = coordinates.miny;
+
+            var minlat = -85.0511;
+            var maxlat =  85.0511;
+            var minlon = -179;
+            var maxlon =  179;
+
+            /* Clamp X to be between min and max (inclusive) */
+            var clampNum = function(x, min, max) {
+              return x < min ? min : x > max ? max : x;
+            }
+
+            lon0 = clampNum(lon0, minlon, maxlon);
+            lon1 = clampNum(lon1, minlon, maxlon);
+            lat0 = clampNum(lat0, minlat, maxlat);
+            lat1 = clampNum(lat1, minlat, maxlat);
+
+            var sw = new L.LatLng(lat0, lon0);
+            var ne = new L.LatLng(lat1, lon1);
+            var bounds = new L.LatLngBounds(sw,ne);
+            self.mapView.map_leaflet.fitBounds(bounds);
+          }
+        },
+        error: function(e,msg) {
+          if (this.get("debug")) throw('Error getting table bounds: ' + msg);
+        }
+      });
+    },
+
   /**
   * Generate tilejson for wax
   *
@@ -132,6 +197,8 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
     if (query) {
       var query = 'sql=' + encodeURIComponent(query.replace(/\{\{table_name\}\}/g, tableName));
+      query = query.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+
       tile_url = this._addUrlData(tile_url, query);
       grid_url = this._addUrlData(grid_url, query);
     }
@@ -279,7 +346,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     query     = this.get("query");
 
     tileStyle  = (style) ? encodeURIComponent(style.replace(/\{\{table_name\}\}/g, tableName )) : '';
-    query      = encodeURIComponent(query.replace(/\{\{table_name\}\}/g, tableName ));
+    query      = encodeURIComponent(query.replace(/\{\{table_name\}\}/g, tableName )).replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
 
     var cartodb_url = this._generateURL("tiler") + '/tiles/' + tableName + '/{z}/{x}/{y}.png?sql=' + query +'&style=' + tileStyle;
 
@@ -311,7 +378,7 @@ cdb.geo.Map = Backbone.Model.extend({
   },
 
   setZoom: function(z) {
-    this.set({zoom:  z});
+    this.set({zoom:z});
   },
 
   getZoom: function() {
@@ -321,6 +388,41 @@ cdb.geo.Map = Backbone.Model.extend({
   setCenter: function(latlng) {
     this.set({center: latlng});
   },
+
+  /**
+  * Change multiple options at the same time
+  * @params {Object} New options object
+  */
+  setOptions: function(options) {
+    if (typeof options!= "object" || options.length) {
+      if (this.options.debug) {
+        throw(options + ' options has to be an object');
+      } else { return }
+    }
+
+    // Set options
+    L.Util.setOptions(this, options);
+
+    // Update tiles
+    //this._update();
+  },
+
+    /**
+     * Update CartoDB layer
+     */
+    _update: function() {
+      // First remove old layer
+      this.clearLayers();
+
+      // Create the new updated one
+      if (!this.options.interactivity) {
+        this._addSimple();
+      } else {
+        this._addInteraction();
+      }
+    },
+
+
 
   addLayer: function(layer) {
     this.layers.add(layer);
@@ -344,9 +446,14 @@ cdb.geo.Map = Backbone.Model.extend({
 
     if (layer) this.removeLayer(layer);
     else cdb.log.error("There's no layer in that position.");
-  }
+  },
 
-});
+  clearLayers: function() {
+    while (this.layers.length > 0) {
+      this.removeLayer(this.layers.at(0));
+    }
+  }
+  });
 
 
 /**
@@ -383,11 +490,11 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
     var self = this;
 
-    var c = this.map.get('center');
+    var center = this.map.get('center');
 
     this.map_leaflet = new L.Map(this.el, {
       zoomControl: false,
-      center: new L.LatLng(c[0], c[1]),
+      center: new L.LatLng(center[0], center[1]),
       zoom: this.map.get('zoom')
     });
 

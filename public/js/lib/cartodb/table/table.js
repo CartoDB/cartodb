@@ -5,6 +5,28 @@
 
 $(function() {
 
+    var Header = cdb.core.View.extend({
+
+        initialize: function() {
+          this.table = this.model;
+          this.table.bind('change:name', this.tableName, this);
+          this.table.bind('change:sqlView', this.onSQLView, this);
+          this.add_related_model(this.table);
+        },
+
+        tableName: function() {
+          this.$('h2.special a').html(this.table.get('name'));
+        },
+
+        onSQLView: function() {
+          var color = this.table.sqlView ? 'orange': 'blue';
+          this.$el.css({
+            'background-color': color
+          });
+        }
+
+    });
+
     var Table = cdb.core.View.extend({
         el: document.body,
 
@@ -34,8 +56,13 @@ $(function() {
 
         _initViews: function() {
 
+          this.header = new Header({
+            el: this.$('header'),
+            model: this.table
+          });
+
           this.tabs = new cdb.admin.Tabs({
-              el: this.$('nav')
+            el: this.$('nav')
           });
 
           this.workView = new cdb.ui.common.TabPane({
@@ -49,6 +76,16 @@ $(function() {
           this.mapTab = new cdb.admin.MapTab({
             model: this.map
           });
+
+          this.menu = new cdb.admin.RightMenu({});
+          this.$el.append(this.menu.render().el);
+          this.menu.hide();
+
+          // lateral menu modules
+          var sql = new cdb.admin.mod.SQL({ model: this.table });
+          this.menu.addModule(sql.render());
+
+          //sql.bind('sqlQuery', this.table.sql);
 
 
           this.workView.addTab('table', this.tableTab.render());

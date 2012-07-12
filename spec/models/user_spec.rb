@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe User do
   before(:all) do    
-    puts "[rspec][user_spec] Creating test user databases..."
+    puts "\n[rspec][user_spec] Creating test user databases..."
     @new_user = new_user
     @user     = create_user :email => 'admin@example.com', :username => 'admin', :password => 'admin123'
     @user2    = create_user :email => 'user@example.com',  :username => 'user',  :password => 'user123'  

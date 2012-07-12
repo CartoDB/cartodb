@@ -33,7 +33,7 @@ end
 describe Table do
 
   before(:all) do    
-    puts "[rspec][table_spec] Creating test user database..."
+    puts "\n[rspec][table_spec] Creating test user database..."
     @quota_in_bytes = 524288000
     @table_quota    = 500
     @new_user = new_user

@@ -1,16 +1,19 @@
 /*
 Syntax error: Undefined mixin 'font-face'.
-        on line 3 of app/assets/css/fonts.scss, in `font-face'
-        from line 3 of app/assets/css/fonts.scss
+        on line 8 of app/assets/css/fonts.scss, in `font-face'
+        from line 8 of app/assets/css/fonts.scss
 
-1:   // NEW FONTS
-2:   /*SegoUI*/ 
-3:   @include font-face("Segoe UI Bold", font-files("fonts/SEGOEUIB.woff", "fonts/SEGOEUIB.ttf", "fonts/SEGOEUIB.svg"), "SEGOEUIB.eot", bold, normal);
-4:   @include font-face("Segoe UI Bold Italic", font-files("SEGOEUIZ.woff", "SEGOEUIZ.ttf", "SEGOEUIZ.svg"), "SEGOEUIZ.eot", bold, italic);
+3:    * New fonts for CartoDB
+4:    */
+5: 
+6:   // NEW FONTS
+7:   /*SegoUI*/ 
+8:   @include font-face("Segoe UI Bold", font-files("fonts/SEGOEUIB.woff", "fonts/SEGOEUIB.ttf", "fonts/SEGOEUIB.svg"), "SEGOEUIB.eot", bold, normal);
+9:   @include font-face("Segoe UI Bold Italic", font-files("SEGOEUIZ.woff", "SEGOEUIZ.ttf", "SEGOEUIZ.svg"), "SEGOEUIZ.eot", bold, italic);
 
 Backtrace:
-app/assets/css/fonts.scss:3:in `font-face'
-app/assets/css/fonts.scss:3
+app/assets/css/fonts.scss:8:in `font-face'
+app/assets/css/fonts.scss:8
 /home/ubuntu/.rvm/gems/ruby-1.9.2-p320@cartodb/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:170:in `visit_mixin'
 /home/ubuntu/.rvm/gems/ruby-1.9.2-p320@cartodb/gems/sass-3.1.20/lib/sass/tree/visitors/base.rb:37:in `visit'
 /home/ubuntu/.rvm/gems/ruby-1.9.2-p320@cartodb/gems/sass-3.1.20/lib/sass/tree/visitors/perform.rb:18:in `visit'
@@ -70,4 +73,4 @@ app/assets/css/fonts.scss:3
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: Undefined mixin 'font-face'.\A         on line 3 of app/assets/css/fonts.scss, in `font-face'\A         from line 3 of app/assets/css/fonts.scss\A \A 1:   // NEW FONTS\A 2:   /*SegoUI*/ \A 3:   @include font-face(\"Segoe UI Bold\", font-files(\"fonts/SEGOEUIB.woff\", \"fonts/SEGOEUIB.ttf\", \"fonts/SEGOEUIB.svg\"), \"SEGOEUIB.eot\", bold, normal);\A 4:   @include font-face(\"Segoe UI Bold Italic\", font-files(\"SEGOEUIZ.woff\", \"SEGOEUIZ.ttf\", \"SEGOEUIZ.svg\"), \"SEGOEUIZ.eot\", bold, italic);"; }
+  content: "Syntax error: Undefined mixin 'font-face'.\A         on line 8 of app/assets/css/fonts.scss, in `font-face'\A         from line 8 of app/assets/css/fonts.scss\A \A 3:    * New fonts for CartoDB\A 4:    */\A 5: \A 6:   // NEW FONTS\A 7:   /*SegoUI*/ \A 8:   @include font-face(\"Segoe UI Bold\", font-files(\"fonts/SEGOEUIB.woff\", \"fonts/SEGOEUIB.ttf\", \"fonts/SEGOEUIB.svg\"), \"SEGOEUIB.eot\", bold, normal);\A 9:   @include font-face(\"Segoe UI Bold Italic\", font-files(\"SEGOEUIZ.woff\", \"SEGOEUIZ.ttf\", \"SEGOEUIZ.svg\"), \"SEGOEUIZ.eot\", bold, italic);"; }

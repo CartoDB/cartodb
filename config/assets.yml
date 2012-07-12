@@ -63,7 +63,7 @@ stylesheets:
     - public/css/dropdown.css
     - public/css/modal.css
     - public/css/keys.css
-    - public/css/flash.css    
+    - public/css/flash.css
     - public/css/header.css
     - public/css/subheader.css
     - public/css/tables.css

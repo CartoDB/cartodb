@@ -45,8 +45,8 @@ module NavigationHelpers
     api_req URI.encode("#{api_url_prefix}/tables/tags/#{tag_name}#{params.empty? ? '' : '?' }#{params.to_query}")
   end
 
-  def api_table_records_url(table_identifier)
-    "#{api_url_prefix}/tables/#{table_identifier}/records"
+  def api_table_records_url(table_identifier, params = {})
+    api_req "#{api_url_prefix}/tables/#{table_identifier}/records#{params.empty? ? '' : '?' }#{params.to_query}"
   end
 
   def api_table_record_url(table_identifier, row_identifier)

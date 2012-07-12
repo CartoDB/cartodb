@@ -1,0 +1,119 @@
+@import "compass";
+@import "sprites";
+
+.background_importer{
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	padding: 8px 12px 8px 8px;
+	border-top: solid 1px #CCC;
+	border-right: solid 1px #CCC;
+	@include border-top-right-radius(5px);
+	@include box-shadow(rgba(black, 0.2) 0 0 5px);
+
+	span{
+		font-size: 15px;
+		color: #333;
+		letter-spacing: 0px;
+		margin: 0 10px 0 0;
+
+		&.ok{
+			padding: 0 0 0 22px;
+			@include icons-sprite(background_loader_ok);
+			margin:0;
+		}
+
+		&.error{
+			padding: 0 0 0 22px;
+			@include icons-sprite(background_loader_error);
+			margin:0;
+			color:#EB2466;
+		}
+
+	}
+
+	.mini-bar {
+		height:8px;
+		width:100px;
+		background: transparent;
+		@include border-radius(2px);
+		display:inline-block;
+	
+		span {
+			display:block;
+			height:100%;
+			width:100%;
+			border:1px solid #333;
+			background-color:#5DA1D6;
+			@include box-sizing(border-box);
+ 			@include background-size(20px 20px);
+ 			@include border-radius(2px);
+			background-image:
+				-webkit-linear-gradient(
+				-45deg,
+				rgba(85, 128, 197, 1) 25%,
+				transparent 25%,
+				transparent 50%,
+				rgba(85, 128, 197, 1) 50%,
+				rgba(85, 128, 197, 1) 75%,
+				transparent 75%,
+				transparent
+			);
+			background-image:
+				-moz-linear-gradient(
+				-45deg,
+				rgba(85, 128, 197, 1) 25%,
+				transparent 25%,
+				transparent 50%,
+				rgba(85, 128, 197, 1) 50%,
+				rgba(85, 128, 197, 1) 75%,
+				transparent 75%,
+				transparent
+			);
+			background-image:
+				-ms-linear-gradient(
+				-45deg,
+				rgba(85, 128, 197, 1) 25%,
+				transparent 25%,
+				transparent 50%,
+				rgba(85, 128, 197, 1) 50%,
+				rgba(85, 128, 197, 1) 75%,
+				transparent 75%,
+				transparent
+			);
+			background-image:
+				linear-gradient(
+				-45de
+				rgba(85, 128, 197, 1) 25%,
+				transparent 25%,
+				transparent 50%,
+				rgba(85, 128, 197, 1) 50%,
+				rgba(85, 128, 197, 1) 75%,
+				transparent 75%,
+				transparent
+			);
+			-webkit-animation:move .7s linear infinite;
+			-moz-animation:move .7s linear infinite;
+			-ms-animation:move .7s linear infinite;
+			animation:move .7s linear infinite;
+			overflow: hidden;
+		}
+	}
+}
+
+@-webkit-keyframes move{
+  0% {background-position: 0 0;}
+  100% {background-position: 20px 20px;}
+}	
+@-moz-keyframes move{
+  0% {background-position: 0 0;}
+  100% {background-position: 20px 20px;}
+}	
+@-ms-keyframes move{
+  0% {background-position: 0 0;}
+  100% {background-position: 20px 20px;}
+}	
+@keyframes move{
+  0% {background-position: 0 0;}
+  100% {background-position: 20px 20px;}
+}	

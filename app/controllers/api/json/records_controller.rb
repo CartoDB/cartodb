@@ -32,7 +32,6 @@ class Api::Json::RecordsController < Api::ApplicationController
   def update
     unless params[:id].blank?
       begin
-        #debugger
         resp = @table.update_row!(params[:id], params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
         if resp > 0
           head :ok

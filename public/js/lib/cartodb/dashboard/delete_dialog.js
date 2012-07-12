@@ -1,12 +1,12 @@
 
-  cdb.admin.RegenerateDialog = cdb.ui.common.Dialog.extend({
+  cdb.admin.DeleteDialog = cdb.ui.common.Dialog.extend({
     
     render_content: function() {
       return "<p>" + this.options.content + "</p>"
     },
 
     ok: function(ev) {
-      $("#" + this.options.send_form_id).submit();
+      this.model.destroy();
     },
 
     hide: function() {

@@ -63,6 +63,7 @@ feature "Superadmin's users API" do
   end
   
   scenario "user create default account settings" do
+    @user_atts[:private_tables_enabled] = false
     post_json superadmin_users_path, { :user => @user_atts }, default_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 104857600

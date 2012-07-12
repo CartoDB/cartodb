@@ -14,7 +14,6 @@ $(function() {
           'click':                      'onClickOut'
         },
 
-
         initialize: function() {
           this._initModels();
           this._initViews();
@@ -72,10 +71,13 @@ $(function() {
           //TODO: create dialog to show the import progress
           var self = this;
           imp.pollCheck();
-          imp.bind('change:status', this.bkg_importer.changeStatus, this);
+
+          //TODO: Connect the uploading state
+          imp.bind('change:state', function(i) { this.bkg_importer.changeState(i.get('state')); }, this);
           imp.bind('importComplete', function(){ 
             cdb.log.info("updating tables");
             self.tables.fetch();
+            setTimeout(self.bkg_importer.hide, 3000);
             imp.unbind();
           });
         },

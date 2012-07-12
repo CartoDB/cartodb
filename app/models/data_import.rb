@@ -112,6 +112,7 @@ class DataImport < Sequel::Model
         e = CartoDB::TableCopyError.new e.message    if table_copy?
       end
       CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
+      true # FIXME: our exception handler returns true so that the after_create method doesnt rollback
     end
   end
 

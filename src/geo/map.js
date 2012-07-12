@@ -131,23 +131,22 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
         query = this.get("query");
       }
 
-      var from = query.replace(/\{\{table_name\}\}/g, tableName).replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-
-      var q = escape('SELECT ST_XMin(ST_Extent(the_geom)) as minx, ST_YMin(ST_Extent(the_geom)) as miny, ST_XMax(ST_Extent(the_geom)) as maxx, ST_YMax(ST_Extent(the_geom)) as maxy from (' + from + ') as subq');
-      var url = this._generateURL("sql") + '/api/v2/sql/?q=' + q;
+      var url = 'http://'+this.get("user_name")+'.cartodb.com/api/v1/sql/?q='+escape('select ST_Extent(the_geom) from '+ tableName);
 
       reqwest({
         url: url,
         type: 'jsonp',
         jsonpCallback: 'callback',
         success: function(result) {
-          if (result.rows[0].maxx != null) {
-            var coordinates = result.rows[0];
+          if (result.rows[0].st_extent!=null) {
+            var coordinates = result.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+            var coor1 = coordinates[0].split(' ');
+            var coor2 = coordinates[1].split(' ');
 
-            var lon0 = coordinates.maxx;
-            var lat0 = coordinates.maxy;
-            var lon1 = coordinates.minx;
-            var lat1 = coordinates.miny;
+            var lon0 = coor1[0];
+            var lat0 = coor1[1];
+            var lon1 = coor2[0];
+            var lat1 = coor2[1];
 
             var minlat = -85.0511;
             var maxlat =  85.0511;
@@ -171,9 +170,11 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
           }
         },
         error: function(e,msg) {
-          if (this.get("debug")) throw('Error getting table bounds: ' + msg);
+          if (this.options.debug) throw('Error getting table bounds: ' + msg);
         }
       });
+
+
     },
 
   /**

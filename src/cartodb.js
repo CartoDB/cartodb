@@ -9,7 +9,7 @@
     window.cdb.ui.common = {};
 
     /**
-     * global variables 
+     * global variables
      */
     window.cdb.god = new Backbone.Model();
 
@@ -36,7 +36,6 @@
 
         'ui/common/dialog.js',
         'ui/common/notification.js',
-        'ui/common/settings.js',
         'ui/common/table.js'
     ];
 

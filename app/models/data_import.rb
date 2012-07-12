@@ -68,8 +68,15 @@ class DataImport < Sequel::Model
 
 
   def data_source=(data_source)
-    self.data_type            = if File.exist?(Rails.root.join("public#{data_source}")) then 'file' else 'url' end
-    self.values[:data_source] = if data_type == 'file' then Rails.root.join("public#{data_source}").to_s else data_source end
+    if File.exist?(Rails.root.join("public#{data_source}"))
+      debugger
+      self.values[:data_type] = 'file'
+      self.values[:data_source] = Rails.root.join("public#{data_source}").to_s
+    elsif Addressable::URI.parse(data_source).host.present?
+      self.values[:data_type] = 'url'
+    else
+      # TODO: handle invalid uri or missing file
+    end
   end
 
   def after_create
@@ -92,6 +99,8 @@ class DataImport < Sequel::Model
             migrate_existing import.name, table_name
           end
         end
+      else
+        failed!
       end
 
     rescue => e

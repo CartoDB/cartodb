@@ -377,6 +377,7 @@ class User < Sequel::Model
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         glob = Rails.root.join('lib/sql/*.sql')
+
         Dir.glob(glob).each do |f|
           @sql = File.new(f).read
           user_database.run(@sql)

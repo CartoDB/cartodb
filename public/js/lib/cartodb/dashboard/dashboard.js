@@ -53,7 +53,6 @@ $(function() {
 
           // Bacground Importer
           var bkg_importer = this.bkg_importer = new cdb.ui.common.BackgroundImporter({
-            status: 'uploading',
             template_base: 'common/views/background_importer'
           })
           this.$el.append(this.bkg_importer.render().el);
@@ -73,6 +72,7 @@ $(function() {
           //TODO: create dialog to show the import progress
           var self = this;
           imp.pollCheck();
+          imp.bind('change:status', this.bkg_importer.changeStatus, this);
           imp.bind('importComplete', function(){ 
             cdb.log.info("updating tables");
             self.tables.fetch();

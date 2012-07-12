@@ -149,11 +149,12 @@ describe User do
   end
 
   it "should run valid queries against his database" do
-    # config
+    # initial table import
     user = create_user
-    table = new_table(:user_id => user.id)
-    table.import_from_file = "#{Rails.root}/db/fake_data/import_csv_1.csv"
-    table.save
+    data_import = DataImport.create( :user_id       => user.id,
+                                     :table_name    => 'import_csv_1',
+                                     :data_source   => "/../db/fake_data/import_csv_1.csv" )
+    table = Table[data_import.table_id]    
 
     # initial select tests
     query_result = user.run_query("select * from import_csv_1 where family='Polynoidae' limit 10")
@@ -174,10 +175,10 @@ describe User do
     query_result[:total_rows].should == 2
     
     # add new table
-    table2 = new_table :name => 'twitts', :user_id => user.id
-    table2.user_id = user.id
-    table2.import_from_file = "#{Rails.root}/db/fake_data/twitters.csv"
-    table2.save
+    data_import2 = DataImport.create( :user_id       => user.id,
+                                      :table_name    => 'twitters',
+                                      :data_source   => "/../db/fake_data/twitters.csv" )
+    table2 = Table[data_import2.table_id]    
     
     # test a product
     query_result = user.run_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")

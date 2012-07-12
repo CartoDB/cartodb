@@ -149,7 +149,7 @@
                   position:relative;
                   @include inline-block();
                   width:auto;
-                  padding:1px 10px 0 0;
+                  padding:3px 10px 0 0;
                   letter-spacing:0;
                   &:after {
                     content:' ';
@@ -163,7 +163,7 @@
                 }
 
                 a.delete {
-                  margin:2px 0 0 6px;
+                  margin:0px 0 0 4px;
                   @include icons-sprite(trash);
                   @include text-indent();
                   width:13px;

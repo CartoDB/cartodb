@@ -29,7 +29,7 @@ class Api::Json::ColumnsController < Api::ApplicationController
                                        :type => params[:type], 
                                        :old_name => params[:id], 
                                        :new_name => params[:new_name]))
-  rescue => e
+  rescue => e  
     errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
     render_jsonp({:errors => errors}, 400) and return
   end

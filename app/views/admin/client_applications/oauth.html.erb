@@ -3,7 +3,7 @@
   <% end %>
   <%= content_for(:js) do %>
     <%= include_javascripts :common, :cdbjs, :keys %>
-    <script type="text/javascript">var username = "<%= current_user.username %>";</script>
+    <script type="text/javascript">var username = "<%= current_user.username %>", type = "oauth";</script>
   <% end %>
   <%= content_for(:css) do %>
     <%= include_stylesheets :common, :media => 'all' %>
@@ -27,30 +27,31 @@
               <div class="copy">
                 <label class="uppercase smaller strong lighter">CONSUMER KEY</label>
                 <p class="margin5"><%= current_user.client_application.key %></p>
-                <a class="copy" href="#copy">copy</a>
+                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
               </div>
               <div class="copy margin20">
                 <label class="uppercase smaller strong lighter">CONSUMER SECRET</label>
                 <p class="margin5"><%= current_user.client_application.secret %></p>
-                <a class="copy" href="#copy">copy</a>
+                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
               </div>
               <span class="separate"></span>
               <div class="copy">
                 <label class="uppercase smaller strong lighter">REQUEST TOKEN URL</label>
                 <p class="margin5">https://<%= current_user.username %>.cartodb.com/oauth/request_token</p>
-                <a class="copy" href="#copy">copy</a>
+                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
               </div>
               <div class="copy margin20">
                 <label class="uppercase smaller strong lighter">ACCESS TOKEN URL</label>
                 <p class="margin5">https://<%= current_user.username %>.cartodb.com/oauth/access_token</p>
-                <a class="copy" href="#copy">copy</a>
+                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
               </div>
             </li>
           </ul>
         </div>
         <div class="foot">
-          <%= link_to "Need help?", "#todo", :class => "left underline" %>
-        <%= link_to "Request a new key and token", "#todo", :class => "right underline red" %>
+          <%= form_tag(oauth_credentials_url, :method => "DELETE", :id => 'regenerate_api_key') do %>
+            <%= link_to "Request a new key", "#request_new_key", :class => "right underline red regenerate" %>
+          <% end %>
         </div>
       </section>
       <aside class="right">
@@ -58,75 +59,3 @@
       </aside>
     </div>
   </article>
-<!-- 
-
-  <section id="content">
-    <div class="inner_content">
-
-      <%= render :partial => 'shared/flash_message' %>
-
-      <div class="tables_list">
-        <div class="left">
-          <div class="top_blue_medium">
-            <h3>Your <strong>OAuth credentials</strong></h3>
-            <% if true %>
-            <p><a class="oauth" href="<%= api_key_credentials_path %>">API Key</a><a class="jsonp selected" href="<%= oauth_credentials_path %>">OAuth</a></p>
-            <% end %>
-          </div>
-          <div class="middle_white_medium">
-            <div class="end_oauth">
-              <p>For more information on OAuth in CartoDB, and on our preconfigured API client libraries, take a look at our <a href="http://developers.cartodb.com/">developers page</a>.</p>
-              <span class="form_block">
-                <label>CONSUMER KEY</label>
-                <input type="text" value="<%= current_user.client_application.key %>" readonly="readonly"/>
-              </span>
-              <span class="form_block last">
-                <label>CONSUMER SECRET</label>
-                <input type="text" value="<%= current_user.client_application.secret %>" readonly="readonly"/>
-                <p></p>
-              </span>
-
-              <div class="urls_block">
-                <span class="long_block">
-                  <label>REQUEST TOKEN URL</label>
-                  <input type="text" value="https://<%=current_user.username%>.cartodb.com/oauth/request_token" readonly="readonly"/>
-                </span>
-                <span class="long_block">
-                  <label>ACCESS TOKEN URL</label>
-                  <input type="text" value="https://<%=current_user.username%>.cartodb.com/oauth/access_token" readonly="readonly"/>
-                </span>
-              </div>
-
-              <span class="end_key">
-                <a href="#open_confirm_renew" class="open_confirm_renew submit orange">Regenerate key and secret</a>
-              </span>
-            </div>
-          </div>
-          <div class="bottom_white_medium"></div>
-        </div>
-        <div class="right">
-          <%= render :partial => 'create_first' %>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <% content_for(:mamufas) do %>
-    <div class="mamufas">
-      <div class="renew_window">
-        <a href="#close_window" class="close_delete"></a>
-        <div class="inner_">
-          <span class="top">
-            <h3>You are about to regenerate your OAuth key and secret</h3>
-            <p>You will have to update all OAuth keys in apps where you are using CartoDB. Are you sure?</p>
-          </span>
-          <span class="bottom">
-            <a href="#close_window" class="cancel">cancel</a>
-            <a href="#confirm_renew" class="confirm_renew" key="">Regenerate your keys</a>
-          </span>
-        </div>
-      </div>
-    </div>
-  <% end %>
- -->

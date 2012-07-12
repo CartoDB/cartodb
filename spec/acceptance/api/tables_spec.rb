@@ -290,7 +290,4 @@ feature "API 1.0 tables management" do
       response.status.should == 200
     end
   end
-
-
-
 end

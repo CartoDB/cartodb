@@ -45,11 +45,18 @@ $(function() {
           var user_menu = this.user_menu = new cdb.admin.UserMenu({
             target: 'a.account',
             model: {username: username},
-            template_base: "dashboard/views/settings_item"
+            template_base: 'dashboard/views/settings_item'
           })
           .on("optionClicked",function(ev){})
           cdb.god.bind("closeDialogs", user_menu.hide, user_menu);
           this.$el.append(this.user_menu.render().el);
+
+          // Bacground Importer
+          var bkg_importer = this.bkg_importer = new cdb.ui.common.BackgroundImporter({
+            status: 'uploading',
+            template_base: 'common/views/background_importer'
+          })
+          this.$el.append(this.bkg_importer.render().el);
 
           // Tipsy
           this.$el.find("a.tooltip").tipsy({gravity: 's', fade:true, live:true});
@@ -59,7 +66,6 @@ $(function() {
           var dialog = new cdb.admin.CreateTableDialog();
           this.$el.append(dialog.render().el);
           dialog.open();
-
         },
 
         onClickOut: function(ev) {

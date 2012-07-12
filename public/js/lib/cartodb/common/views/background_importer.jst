@@ -1,0 +1,21 @@
+<div class="background_importer">
+
+	<% if (status=='uploading') { %>
+  	<span>Uploading data</span>
+  	<div class="mini-bar"><span></span></div>
+  <% } %>
+
+	<% if (status=='creating') { %>
+    <span>Creating table</span>
+    <div class="mini-bar"><span></span></div>
+	<% } %>
+
+	<% if (status=='ok') { %>
+	  <span class="ok"><a class="underline" href="#created_table">Your table</a> has been created correctly</span>
+	<% } %>
+
+  <% if (status=='error') { %>
+    <span class="error">There has been an error when creating your table</span>
+  <% } %>
+
+</div>

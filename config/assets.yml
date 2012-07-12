@@ -71,3 +71,4 @@ stylesheets:
     - public/css/table.css
     - public/css/table_panel.css
     - public/css/leaflet.css
+    - public/css/background_importer.css

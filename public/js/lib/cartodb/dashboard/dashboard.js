@@ -14,7 +14,6 @@ $(function() {
           'click':                      'onClickOut'
         },
 
-
         initialize: function() {
           this._initModels();
           this._initViews();
@@ -53,7 +52,6 @@ $(function() {
 
           // Bacground Importer
           var bkg_importer = this.bkg_importer = new cdb.ui.common.BackgroundImporter({
-            status: 'uploading',
             template_base: 'common/views/background_importer'
           })
           this.$el.append(this.bkg_importer.render().el);
@@ -73,9 +71,13 @@ $(function() {
           //TODO: create dialog to show the import progress
           var self = this;
           imp.pollCheck();
+
+          //TODO: Connect the uploading state
+          imp.bind('change:state', function(i) { this.bkg_importer.changeState(i.get('state')); }, this);
           imp.bind('importComplete', function(){ 
             cdb.log.info("updating tables");
             self.tables.fetch();
+            setTimeout(self.bkg_importer.hide, 3000);
             imp.unbind();
           });
         },

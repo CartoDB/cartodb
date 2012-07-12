@@ -19,7 +19,7 @@
    *  DOM ELEMENTS
    *  Generic dom elements style
    */
-  body {background:white; min-width: $w; font-family: $text-fonts; font-size: 15px;}
+  body {position:relative; background:white; min-width: $w; font-family: $text-fonts; font-size: 15px;}
   a {
     font-family:$text-fonts;
     color:#2483B4;

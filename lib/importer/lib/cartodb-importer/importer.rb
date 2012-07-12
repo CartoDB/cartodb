@@ -229,7 +229,7 @@ module CartoDB
               out = loader.process!
               out.each{ |d| payloads << d }
               @data_import.log_update("#{data[:ext]} successfully loaded")
-            rescue
+            rescue => e
               @data_import.reload
               errors << OpenStruct.new({ :description => @data_import.get_error_text,
                                          :stack       => @data_import.log_json,

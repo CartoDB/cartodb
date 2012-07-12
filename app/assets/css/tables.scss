@@ -1,8 +1,13 @@
-@import "compass";
-@import "compass/css3";
-@import "mixins";
-@import "fonts";
-@import "sprites";
+
+  /*
+   * List of tables for your dashboard or public tables
+   */
+
+  @import "compass";
+  @import "compass/css3";
+  @import "mixins";
+  @import "fonts";
+  @import "sprites";
 
 
   $text-fonts: "Helvetica Neue", "Helvetica", Arial;

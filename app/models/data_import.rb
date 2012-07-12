@@ -118,7 +118,7 @@ class DataImport < Sequel::Model
 
   def before_save
     self.updated_now
-  end 
+  end
 
   def after_rollback(*args, &block)
     self.save

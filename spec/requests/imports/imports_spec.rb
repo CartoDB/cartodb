@@ -5,14 +5,14 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe "Imports API" do
 
   before(:each) do
+    User.all.each(&:destroy)
     @user = create_user(:username => 'test', :email => "client@example.com", :password => "clientex")
     @user.set_map_key
-
   end
 
   it 'allows users to perform asynchronous imports' do
 
-    post v1_imports_url(:host => 'test.localhost.lan'), :file_uri => upload_file('spec/support/data/column_boolean_to_string.csv', 'text/plain'), :api_key => @user.get_map_key
+    post v1_imports_url(:host => 'test.localhost.lan'), :file_uri => upload_file('db/fake_data/column_string_to_boolean.csv', 'text/plain'), :api_key => @user.get_map_key
 
     response.code.should be == '200'
 
@@ -22,12 +22,12 @@ describe "Imports API" do
 
     last_import = DataImport.order(:updated_at.desc).first
     last_import.queue_id.should be == response_json['item_queue_id']
-    last_import.state.should be == 'preprocessing'
+    last_import.state.should be == 'complete'
   end
 
   it 'allows users to get a list of all performed imports' do
-    %w(column_boolean_to_string column_number_to_boolean column_number_to_string column_string_to_boolean).each do |file_name|
-      post v1_imports_url(:host => 'test.localhost.lan'), :file_uri => upload_file("spec/support/data/#{file_name}.csv", 'text/plain'), :api_key => @user.get_map_key
+    %w(arrivals_BCN clubbing column_number_to_boolean column_string_to_boolean).each do |file_name|
+      post v1_imports_url(:host => 'test.localhost.lan'), :file_uri => upload_file("db/fake_data/#{file_name}.csv", 'text/plain'), :api_key => @user.get_map_key
     end
 
     get v1_imports_url(:host => 'test.localhost.lan'), :api_key => @user.get_map_key
@@ -41,17 +41,19 @@ describe "Imports API" do
   end
 
   it 'allows users to get the detail of an import' do
-    post v1_imports_url(:host => 'test.localhost.lan'), :file_uri       => upload_file('spec/support/data/clubbing.csv', 'text/plain'),
+    post v1_imports_url(:host => 'test.localhost.lan'), :file_uri       => upload_file('db/fake_data/clubbing.csv', 'text/plain'),
                                                         :table_name     => 'wadus',
                                                         :api_key        => @user.get_map_key
+
     item_queue_id = JSON.parse(response.body)['item_queue_id']
+
+    puts item_queue_id
 
     get v1_import_url(:host => 'test.localhost.lan', :id => item_queue_id), :api_key => @user.get_map_key
 
     response.code.should be == '200'
 
-    response_json = JSON.parse(response.body)
-    import = response_json['import']
+    import = JSON.parse(response.body)
     import['state'].should be == 'complete'
   end
 

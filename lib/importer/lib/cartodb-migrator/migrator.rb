@@ -12,7 +12,7 @@ module CartoDB
     attr_reader :table_created, :force_name
 
     def initialize(options = {})
-      log "options: #{options}"
+      # log "options: #{options}"
       @@debug = options[:debug] if options[:debug]
       @table_created = nil
 

@@ -9,7 +9,10 @@ feature "Dashboard", %q{
 } do
 
   scenario "Login and visit my dashboard" do
-    user = create_user
+    user = create_user({:quota_in_bytes => 500000,
+                        :table_quota    => 50,
+                        :account_type   => 'Coronelli',
+                        :private_tables_enabled => true})
     the_other = create_user
     t = Time.now - 6.minutes
     Timecop.travel(t)

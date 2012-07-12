@@ -6,10 +6,8 @@ feature "API 1.0 records management" do
 
   background do
     Capybara.current_driver = :rack_test
-    @user = create_user
+    @user = create_user(:username => 'test')
     @table = create_table :user_id => @user.id
-
-    login_as @user
   end
 
   scenario "Get the records from a table" do
@@ -32,20 +30,21 @@ feature "API 1.0 records management" do
         should == content[1].slice(:cartodb_id, :name, :location, :description)
     end
 
-    get_json "#{api_table_records_url(@table.name)}?rows_per_page=2&page=1" do |response|
+    get_json api_table_records_url(@table.name, :rows_per_page => 2, :page => 1) do |response|
       response.status.should be_success
+      response.body[:rows].size.should == 2
       response.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
       response.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
     end
 
-    get_json "#{api_table_records_url(@table.name)}?rows_per_page=2&page=1..3" do |response|
+    get_json api_table_records_url(@table.name, :rows_per_page => 6, :page=>0) do |response|
       response.status.should be_success
-      response.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
-      response.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
-      response.body[:rows][2].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[4].slice(:cartodb_id, :name, :location, :description)
-      response.body[:rows][3].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[5].slice(:cartodb_id, :name, :location, :description)
-      response.body[:rows][4].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[6].slice(:cartodb_id, :name, :location, :description)
-      response.body[:rows][5].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[7].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][0].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[0].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[1].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][2].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[2].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][3].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[3].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][4].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[4].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][5].symbolize_keys.slice(:cartodb_id, :name, :location, :description).should == content[5].slice(:cartodb_id, :name, :location, :description)
     end
   end
   

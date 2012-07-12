@@ -2,7 +2,9 @@
 @import "sprites";
 
 .background_importer{
-	position: absolute;
+	position: fixed;
+	z-index: 100;
+	background: white;
 	bottom: 0px;
 	left: 0px;
 	padding: 8px 12px 8px 8px;

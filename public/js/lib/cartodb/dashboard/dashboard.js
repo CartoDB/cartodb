@@ -31,7 +31,6 @@ $(function() {
             model: this.tables
           });
 
-
           // this.tableStats = new cdb.admin.dashboard.TableStats({
           //   el: this.$('#tablelist'),
           //   model: this.tables
@@ -51,6 +50,9 @@ $(function() {
           .on("optionClicked",function(ev){})
           cdb.god.bind("closeDialogs", user_menu.hide, user_menu);
           this.$el.append(this.user_menu.render().el);
+
+          // Tipsy
+          this.$el.find("a.tooltip").tipsy({gravity: 's', fade:true, live:true});
         },
 
         show_dialog: function() {

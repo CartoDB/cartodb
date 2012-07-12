@@ -4,6 +4,7 @@ embed_assets: off
 javascripts:
   common:
     - public/js/vendor/jquery.min.js
+    - public/js/vendor/jquery.tipsy.js
     - public/js/rails.js
 
   cdbjs:
@@ -27,8 +28,7 @@ javascripts:
 
   keys:
     - public/js/lib/cartodb/app.js
-    - public/js/lib/cdb.js/vendor/ZeroClipboard.js
-    - public/js/vendor/d3.v2.js
+    - public/js/vendor/ZeroClipboard.js
     - public/js/lib/cartodb/models/**/*.js
     - public/js/lib/cartodb/common/**/*.js
     - public/js/lib/cartodb/keys/**/*.js
@@ -59,6 +59,7 @@ stylesheets:
     - public/css/buttons.css
     - public/css/block.css
     - public/css/copy.css
+    - public/css/tipsy.css
     - public/css/dropdown.css
     - public/css/modal.css
     - public/css/keys.css

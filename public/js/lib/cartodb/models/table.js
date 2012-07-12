@@ -138,6 +138,7 @@
         data.linkToSchema();
         this.fetch();
       }
+      this.trigger('change:sqlView', this);
     },
 
     /**

@@ -1,4 +1,5 @@
-
+ 
+ 
 	/*
 	 * Copy "input" funcionality - style
 	 * Syntax:
@@ -37,8 +38,8 @@
 			@include text-indent();
 			@include icons-sprite(copy_button);
 			z-index:1;
-			&:hover {@include icons-sprite(copy_button, $offset-y:-27px);}
-			&:focus {@include icons-sprite(copy_button,$offset-y:-27px);}
-			&:active {@include icons-sprite(copy_button,$offset-y:-54px);}
+			&.hover {@include icons-sprite(copy_button, $offset-y:-27px);}
+			&.focus {@include icons-sprite(copy_button,$offset-y:-27px);}
+			&.active {@include icons-sprite(copy_button,$offset-y:-54px);}
 		}
 	}

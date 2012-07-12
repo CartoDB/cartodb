@@ -113,15 +113,18 @@ class DataImport < Sequel::Model
       end
       CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     end
-
   end
+
+  def before_save
+    self.updated_now
+  end 
 
   def after_rollback(*args, &block)
     self.save
     set_callback(:rollback, :after, *args, &block)
   end
 
-  def updated_now(transition)
+  def updated_now(transition=nil)
     self.updated_at = Time.now
   end
 

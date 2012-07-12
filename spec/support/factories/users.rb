@@ -22,7 +22,9 @@ module CartoDB
       user.admin                 = attributes[:admin] == false ? false : true
       user.private_tables_enabled= attributes[:private_tables_enabled] == false ? false : true
       user.enabled               = attributes[:enabled] == false ? false : true
-      user
+      user.table_quota           = attributes[:table_quota]
+      user.quota_in_bytes        = attributes[:quota_in_bytes]
+      user.account_type          = attributes[:account_type]
     end
 
     def create_user(attributes = {})

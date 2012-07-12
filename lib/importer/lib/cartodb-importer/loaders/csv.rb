@@ -100,7 +100,7 @@ module CartoDB
                   #@db_connection.run("CREATE INDEX #{@working_data[:suggested_name]}_the_geom_gist ON #{@working_data[:suggested_name]} USING GIST (the_geom)")
 
                   # loop through old geom parsing into the_geom.
-                  # TODO: Replace with ST_GeomFromGeoJSON when production has been 
+                  # TODO: Replace with ST_GeomFromGeoJSON when production has been
                   # upgraded to postgis r8692
                   # @db_connection.run("UPDATE #{@working_data[:suggested_name]} \
                   # SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON(the_geom_orig),4326) \

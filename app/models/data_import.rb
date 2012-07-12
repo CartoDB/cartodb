@@ -69,7 +69,6 @@ class DataImport < Sequel::Model
 
   def data_source=(data_source)
     if File.exist?(Rails.root.join("public#{data_source}"))
-      debugger
       self.values[:data_type] = 'file'
       self.values[:data_source] = Rails.root.join("public#{data_source}").to_s
     elsif Addressable::URI.parse(data_source).host.present?

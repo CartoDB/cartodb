@@ -1,7 +1,13 @@
-@import "compass";
-@import "compass/reset";
-@import "compass/css3";
-@import "mixins";
+  
+  /*
+   * Generic vars, dom elements and classes for CartoDB
+   * - Section, aside, ..
+   */
+
+  @import "compass";
+  @import "compass/reset";
+  @import "compass/css3";
+  @import "mixins";
 
   /*
    *  VARS

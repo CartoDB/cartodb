@@ -1,6 +1,11 @@
-@import "compass";
-@import "sprites";
-@import "mixins";
+
+  /*
+   * Subheader for the CartoDB dashboard
+   */
+
+  @import "compass";
+  @import "sprites";
+  @import "mixins";
 
   section.subheader {
     position:relative;

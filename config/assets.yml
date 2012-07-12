@@ -25,6 +25,7 @@ javascripts:
     - public/js/lib/cartodb/dashboard/**/*.js
     - public/js/lib/cartodb/dashboard/dashboard.js
     - public/js/lib/cartodb/**/*.jst
+    - public/js/vendor/moment.js
 
   keys:
     - public/js/lib/cartodb/app.js
@@ -63,7 +64,7 @@ stylesheets:
     - public/css/dropdown.css
     - public/css/modal.css
     - public/css/keys.css
-    - public/css/flash.css    
+    - public/css/flash.css
     - public/css/header.css
     - public/css/subheader.css
     - public/css/tables.css
@@ -72,3 +73,4 @@ stylesheets:
     - public/css/table_panel.css
     - public/css/leaflet.css
     - public/css/background_importer.css
+    - public/css/privacy_selector.css

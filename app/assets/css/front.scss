@@ -1,283 +1,290 @@
-@import "compass"; 
-@import "compass/css3";
-@import "mixins";
-@import "fonts";
-@import "buttons";
+
+  /*
+   * Front pages of CartoDB
+   * - Login, 404, 500, 403, 422, 500, html5, no_javascript,...
+   */
 
 
-// Styles for static pages like 404, 500, HTML5,...
-
-body {
-  min-width:600px;
-  @include background(image-url("img/layout/grey-carto.jpg") repeat 0 0);
-}
-
-
-/* SECTIONS */
-section {
-  position:relative;
-	width:960px;
-	margin:0 auto;
-	@include border-radius(3px);
-	background:white;
+  @import "compass"; 
+  @import "compass/css3";
+  @import "mixins";
+  @import "fonts";
+  @import "buttons";
 
 
-  /* skeleton of a section */
-  div.header {
-    padding:40px;
-    border-bottom:1px solid #E5E5E5;
+  // Styles for static pages like 404, 500, HTML5,...
+
+  body {
+    min-width:600px;
+    @include background(image-url("img/layout/grey-carto.jpg") repeat 0 0);
   }
-  div.footer {
-    padding:40px;
-    border-top:1px solid #E5E5E5;
-  }
-  div.content {
+
+
+  /* SECTIONS */
+  section {
     position:relative;
-    display:block;
-    padding:40px;
-
-    /* content options */
-    &.overflow {overflow:hidden}
-    &.no_padding {width:960px; padding:0;}
-    &.less_padding {overflow:hidden; padding-top:25px; padding-bottom:25px}
-  }
+  	width:960px;
+  	margin:0 auto;
+  	@include border-radius(3px);
+  	background:white;
 
 
-  /* sessions flat section*/
-  &.sessions {
-    position:relative;
-    width:392px;
-    margin:100px auto 50px;
-  }
-
-  /* add shadow to the section */
-  &.shadow {
-    @include box-shadow(rgba(0,0,0,0.10) 0 0 3px 3px);
-    border:1px solid #E7E7E7\9; // IE
-    &.top {@include box-shadow(rgba(0,0,0,0.06) 0 -1px 3px 3px);}
-    &.bottom {@include box-shadow(rgba(0,0,0,0.06) 0 1px 3px 3px);}
-  }
-
-  /* border radius only in the top */
-	&.top {
-    @include border-bottom-radius(0px);
-    border-bottom:none\9; // IE
-  }
-
-  /* border radius only in the bottom */
-	&.bottom {
-    @include border-top-radius(0px);
-    border-top:none\9; // IE
-  }
-
-  /* grey top line */
-  &.border {border-top:1px solid rgba(0,0,0,0.15)}
-
-  div.med {width:62%;}
-}
-
-
-
-/* SESSIONS FORM */
-section.sessions {
-
-  div.browsers {
-    margin:30px 0 0 60px;
-    letter-spacing:-4px;
-    font-size:0;
-
-    a {
-      @include inline-block();
-      letter-spacing:0;
-      vertical-align:middle;
-      margin:0 35px 0 0;
-      padding:0;
-
-      img {margin:0!important}
+    /* skeleton of a section */
+    div.header {
+      padding:40px;
+      border-bottom:1px solid #E5E5E5;
     }
-  }
-
-
-  form {
-    div.field {
+    div.footer {
+      padding:40px;
+      border-top:1px solid #E5E5E5;
+    }
+    div.content {
       position:relative;
-      display:inline-block;
-      width:100%;
+      display:block;
+      padding:40px;
 
-      &.short {
-        width:312px;
-        margin-left:25px;
-        margin-right:25px;
-        padding:15px 0 0 40px;
-      }
+      /* content options */
+      &.overflow {overflow:hidden}
+      &.no_padding {width:960px; padding:0;}
+      &.less_padding {overflow:hidden; padding-top:25px; padding-bottom:25px}
+    }
 
-      &.border {
-        border-top:1px solid #E5E5E5;
+
+    /* sessions flat section*/
+    &.sessions {
+      position:relative;
+      width:392px;
+      margin:100px auto 50px;
+    }
+
+    /* add shadow to the section */
+    &.shadow {
+      @include box-shadow(rgba(0,0,0,0.10) 0 0 3px 3px);
+      border:1px solid #E7E7E7\9; // IE
+      &.top {@include box-shadow(rgba(0,0,0,0.06) 0 -1px 3px 3px);}
+      &.bottom {@include box-shadow(rgba(0,0,0,0.06) 0 1px 3px 3px);}
+    }
+
+    /* border radius only in the top */
+  	&.top {
+      @include border-bottom-radius(0px);
+      border-bottom:none\9; // IE
+    }
+
+    /* border radius only in the bottom */
+  	&.bottom {
+      @include border-top-radius(0px);
+      border-top:none\9; // IE
+    }
+
+    /* grey top line */
+    &.border {border-top:1px solid rgba(0,0,0,0.15)}
+
+    div.med {width:62%;}
+  }
+
+
+
+  /* SESSIONS FORM */
+  section.sessions {
+
+    div.browsers {
+      margin:30px 0 0 60px;
+      letter-spacing:-4px;
+      font-size:0;
+
+      a {
+        @include inline-block();
+        letter-spacing:0;
+        vertical-align:middle;
+        margin:0 35px 0 0;
+        padding:0;
+
+        img {margin:0!important}
       }
     }
 
-    p {@include inline-block();}
 
-    label {
-      position:absolute;
-      top:13px;
-      left:16px;
-      font:normal 15px "Helvetica Neue","Helvetica",Arial;
-      color:#CCCCCC;
-      z-index:0;
-      @include user-select(none);
-      &:hover {cursor:text}
-    }
+    form {
+      div.field {
+        position:relative;
+        display:inline-block;
+        width:100%;
 
-    input[type="text"],
-    input[type="password"],
-    input[type="email"] {
-      width:280px;
-      height:auto;
-      padding:11px 15px;
-      margin:0;
-      @include border-radius(3px);
-      background:none;
-      border:1px solid #CCCCCC;
-      font:normal 15px "Helvetica Neue","Helvetica",Arial;
-      color:#333333;
-      z-index:10;
-      line-height:normal;
+        &.short {
+          width:312px;
+          margin-left:25px;
+          margin-right:25px;
+          padding:15px 0 0 40px;
+        }
 
-      &:focus {
-        outline:none;
-        border-color:#999999;
-      }
-
-      &.error {
-        width:255px;
-        padding-right:40px;
-        border-color:#F08A84;
-        color:#E95850;
-
-        &:focus {
-          border-color:#D17671;
+        &.border {
+          border-top:1px solid #E5E5E5;
         }
       }
-    }
 
-    /* Errors */
-    div.field_with_errors {
-      width:auto;
-      @include inline-block();
-      vertical-align:top;
+      p {@include inline-block();}
+
+      label {
+        position:absolute;
+        top:13px;
+        left:16px;
+        font:normal 15px "Helvetica Neue","Helvetica",Arial;
+        color:#CCCCCC;
+        z-index:0;
+        @include user-select(none);
+        &:hover {cursor:text}
+      }
 
       input[type="text"],
       input[type="password"],
       input[type="email"] {
-        width:255px;
-        padding-right:40px;
-        border-color:#F08A84;
-        color:#E95850;
+        width:280px;
+        height:auto;
+        padding:11px 15px;
+        margin:0;
+        @include border-radius(3px);
+        background:none;
+        border:1px solid #CCCCCC;
+        font:normal 15px "Helvetica Neue","Helvetica",Arial;
+        color:#333333;
+        z-index:10;
+        line-height:normal;
 
         &:focus {
-          border-color:#D17671;
+          outline:none;
+          border-color:#999999;
+        }
+
+        &.error {
+          width:255px;
+          padding-right:40px;
+          border-color:#F08A84;
+          color:#E95850;
+
+          &:focus {
+            border-color:#D17671;
+          }
         }
       }
-    }
 
-    div.error {
-      position:absolute;
-      top:8px;
-      right:8px;
-      margin:0;
-      display:none;
-      width:auto;
-      z-index:1000;
+      /* Errors */
+      div.field_with_errors {
+        width:auto;
+        @include inline-block();
+        vertical-align:top;
 
-      a.error {
-        display:block;
-        width:26px;
-        height:27px;
-        margin:0;
-        padding:0;
-        line-height:0;
-        font-size:0;
-        text-transform:uppercase;
-        text-indent:-9999px;
-        @include icons-sprite(error);
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+          width:255px;
+          padding-right:40px;
+          border-color:#F08A84;
+          color:#E95850;
+
+          &:focus {
+            border-color:#D17671;
+          }
+        }
       }
 
-      p {
+      div.error {
         position:absolute;
-        top:-70px;
-        right:-68px;
+        top:8px;
+        right:8px;
+        margin:0;
         display:none;
-        float:left;
-        width:147px;
-        height:auto!important;
-        padding:10px;
-        font:normal 15px "Helvetica Neue","Helvetica",Arial;
-        color:#CCCCCC;
-        text-align:center;
-        z-index:10;
-        @include border-radius(3px);
-        @include text-shadow(black 0 1px);
-        @include background(linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.9)));
-        background:#333333\9;
+        width:auto;
+        z-index:1000;
 
-        span {
+        a.error {
+          display:block;
+          width:26px;
+          height:27px;
+          margin:0;
+          padding:0;
+          line-height:0;
+          font-size:0;
+          text-transform:uppercase;
+          text-indent:-9999px;
+          @include icons-sprite(error);
+        }
+
+        p {
           position:absolute;
-          bottom:-8px;
-          left:50%;
-          width: 0;
-          height: 0;
-          margin:0 0 0 -6px;
-          border-left: 8px solid transparent;
-          border-right: 8px solid transparent;
-          border-top: 8px solid rgba(0,0,0,0.9);
-          border-top: 8px solid #333333\9;
+          top:-70px;
+          right:-68px;
+          display:none;
+          float:left;
+          width:147px;
+          height:auto!important;
+          padding:10px;
+          font:normal 15px "Helvetica Neue","Helvetica",Arial;
+          color:#CCCCCC;
+          text-align:center;
+          z-index:10;
+          @include border-radius(3px);
+          @include text-shadow(black 0 1px);
+          @include background(linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.9)));
+          background:#333333\9;
+
+          span {
+            position:absolute;
+            bottom:-8px;
+            left:50%;
+            width: 0;
+            height: 0;
+            margin:0 0 0 -6px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid rgba(0,0,0,0.9);
+            border-top: 8px solid #333333\9;
+          }
         }
       }
     }
+
+    // Longer than large :)
+    &.longer {
+      width:562px;
+
+      img.alone {margin:50px 0 0 125px}
+    }
   }
 
-  // Longer than large :)
-  &.longer {
-    width:562px;
 
-    img.alone {margin:50px 0 0 125px}
+
+  /* FOOTER */
+  footer {
+    width:100%;
+    min-width:960px;
+    height:18px;
+    padding:38px 0 40px;
+    border-top: 1px solid #E5E5E5;
+    background:white;
+
+    div.wrap {overflow:visible;}
+    span.cartodb {
+      position:absolute;
+      top:-112px;
+      left:-10px;
+      width:84px;
+      height:105px;
+      //@include text-indent();
+      z-index:10;
+      //@include logos-sprite(cartodb_light);
+    }
+
+    div.left {height:19px; p {vertical-align:middle}} //@include inline-block();
+
+    &.short {
+      min-width:124px;
+      width:124px;
+      height:42px;
+      margin:0 auto 30px;
+      padding:0;
+      background:none;
+      border:none;
+      a.cartodb {display:block; width:124px; height:42px; @include text-indent(); @include icons-sprite(cartodb_opacity);}
+    }
   }
-}
-
-
-
-/* FOOTER */
-footer {
-  width:100%;
-  min-width:960px;
-  height:18px;
-  padding:38px 0 40px;
-  border-top: 1px solid #E5E5E5;
-  background:white;
-
-  div.wrap {overflow:visible;}
-  span.cartodb {
-    position:absolute;
-    top:-112px;
-    left:-10px;
-    width:84px;
-    height:105px;
-    //@include text-indent();
-    z-index:10;
-    //@include logos-sprite(cartodb_light);
-  }
-
-  div.left {height:19px; p {vertical-align:middle}} //@include inline-block();
-
-  &.short {
-    min-width:124px;
-    width:124px;
-    height:42px;
-    margin:0 auto 30px;
-    padding:0;
-    background:none;
-    border:none;
-    a.cartodb {display:block; width:124px; height:42px; @include text-indent(); @include icons-sprite(cartodb_opacity);}
-  }
-}

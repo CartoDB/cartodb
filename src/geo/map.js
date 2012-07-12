@@ -116,66 +116,66 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     return uri;
   },
 
-    /**
-     * Zoom to cartodb geometries
-     */
-    setBounds: function(sql) {
-      var
-      self      = this,
-      query     = "",
-      tableName = this.get("table_name");
+  /**
+  * Zoom to cartodb geometries
+  */
+  setBounds: function(sql) {
+    var
+    self      = this,
+    query     = "",
+    tableName = this.get("table_name");
 
-      if (sql) { // Custom query
-        query = sql;
-      } else { // Already defined query
-        query = this.get("query");
-      }
+    if (sql) { // Custom query
+      query = sql;
+    } else { // Already defined query
+      query = this.get("query");
+    }
 
-      var url = 'http://'+this.get("user_name")+'.cartodb.com/api/v1/sql/?q='+escape('select ST_Extent(the_geom) from '+ tableName);
+    var url = 'http://'+this.get("user_name")+'.cartodb.com/api/v1/sql/?q='+escape('select ST_Extent(the_geom) from '+ tableName);
 
-      reqwest({
-        url: url,
-        type: 'jsonp',
-        jsonpCallback: 'callback',
-        success: function(result) {
-          if (result.rows[0].st_extent!=null) {
-            var coordinates = result.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
-            var coor1 = coordinates[0].split(' ');
-            var coor2 = coordinates[1].split(' ');
+    reqwest({
+      url: url,
+      type: 'jsonp',
+      jsonpCallback: 'callback',
+      success: function(result) {
+        if (result.rows[0].st_extent!=null) {
+          var coordinates = result.rows[0].st_extent.replace('BOX(','').replace(')','').split(',');
+          var coor1 = coordinates[0].split(' ');
+          var coor2 = coordinates[1].split(' ');
 
-            var lon0 = coor1[0];
-            var lat0 = coor1[1];
-            var lon1 = coor2[0];
-            var lat1 = coor2[1];
+          var lon0 = coor1[0];
+          var lat0 = coor1[1];
+          var lon1 = coor2[0];
+          var lat1 = coor2[1];
 
-            var minlat = -85.0511;
-            var maxlat =  85.0511;
-            var minlon = -179;
-            var maxlon =  179;
+          var minlat = -85.0511;
+          var maxlat =  85.0511;
+          var minlon = -179;
+          var maxlon =  179;
 
-            /* Clamp X to be between min and max (inclusive) */
-            var clampNum = function(x, min, max) {
-              return x < min ? min : x > max ? max : x;
-            }
-
-            lon0 = clampNum(lon0, minlon, maxlon);
-            lon1 = clampNum(lon1, minlon, maxlon);
-            lat0 = clampNum(lat0, minlat, maxlat);
-            lat1 = clampNum(lat1, minlat, maxlat);
-
-            var sw = new L.LatLng(lat0, lon0);
-            var ne = new L.LatLng(lat1, lon1);
-            var bounds = new L.LatLngBounds(sw,ne);
-            self.mapView.map_leaflet.fitBounds(bounds);
+          /* Clamp X to be between min and max (inclusive) */
+          var clampNum = function(x, min, max) {
+            return x < min ? min : x > max ? max : x;
           }
-        },
-        error: function(e,msg) {
-          if (this.options.debug) throw('Error getting table bounds: ' + msg);
+
+          lon0 = clampNum(lon0, minlon, maxlon);
+          lon1 = clampNum(lon1, minlon, maxlon);
+          lat0 = clampNum(lat0, minlat, maxlat);
+          lat1 = clampNum(lat1, minlat, maxlat);
+
+          var sw = new L.LatLng(lat0, lon0);
+          var ne = new L.LatLng(lat1, lon1);
+          var bounds = new L.LatLngBounds(sw,ne);
+          self.mapView.map_leaflet.fitBounds(bounds);
         }
-      });
+      },
+      error: function(e,msg) {
+        if (this.options.debug) throw('Error getting table bounds: ' + msg);
+      }
+    });
 
 
-    },
+  },
 
   /**
   * Generate tilejson for wax
@@ -378,6 +378,11 @@ cdb.geo.Map = Backbone.Model.extend({
     this.layers = new cdb.geo.MapLayers();
   },
 
+  setView: function(latlng, zoom) {
+    this.set({ center: latlng, zoom: zoom }, { silent: true });
+    this.trigger("set_view");
+  },
+
   setZoom: function(z) {
     this.set({zoom:z});
   },
@@ -408,20 +413,20 @@ cdb.geo.Map = Backbone.Model.extend({
     //this._update();
   },
 
-    /**
-     * Update CartoDB layer
-     */
-    _update: function() {
-      // First remove old layer
-      this.clearLayers();
+  /**
+  * Update CartoDB layer
+  */
+  _update: function() {
+    // First remove old layer
+    this.clearLayers();
 
-      // Create the new updated one
-      if (!this.options.interactivity) {
-        this._addSimple();
-      } else {
-        this._addInteraction();
-      }
-    },
+    // Create the new updated one
+    if (!this.options.interactivity) {
+      this._addSimple();
+    } else {
+      this._addInteraction();
+    }
+  },
 
 
 
@@ -454,7 +459,7 @@ cdb.geo.Map = Backbone.Model.extend({
       this.removeLayer(this.layers.at(0));
     }
   }
-  });
+});
 
 
 /**
@@ -485,7 +490,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
   initialize: function() {
 
-    _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter');
+    _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
 
     cdb.geo.MapView.prototype.initialize.call(this);
 
@@ -499,6 +504,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       zoom: this.map.get('zoom')
     });
 
+    this.map.bind('set_view', this._setView);
     this.map.layers.bind('add', this._addLayer);
     this.map.layers.bind('remove', this._removeLayer);
 
@@ -508,13 +514,17 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       self._addLayer(lyr);
     });
 
+    this.map_leaflet.on('layeradd', function(lyr) {
+      this.trigger('layeradd', lyr, self);
+    }, this);
+
     this.map_leaflet.on('zoomend', function() {
-      self._setModelProperty({zoom: self.map_leaflet.getZoom()});
+      self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
     }, this);
 
     this.map_leaflet.on('drag', function () {
       var c = self.map_leaflet.getCenter();
-      self._setModelProperty({center: [c.lat, c.lng]});
+      self._setModelProperty({ center: [c.lat, c.lng] });
     }, this);
 
   },
@@ -567,6 +577,10 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
   _removeLayer: function(layer) {
     this.map_leaflet.removeLayer(layer.lyr);
+  },
+
+  _setView:function() {
+    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
   },
 
   _addLayer: function(layer) {

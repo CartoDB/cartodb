@@ -22,7 +22,8 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
 
   initialize: function() {
       this.tabs = {};
-      this.activeTab = null;
+      this.activeTab  = null;
+      this.activePane = null;
   },
 
   addTab: function(name, view) {
@@ -35,6 +36,10 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
       this.trigger('tabAdded', name, view);
       this.active(name);
     }
+  },
+
+  getActivePane: function() {
+    return this.activePane;
   },
 
   removeTab: function(name) {
@@ -81,6 +86,7 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
         self.trigger('tabEnabled:' + name,  v);
 
         this.activeTab = name;
+        this.activePane = v;
       }
     }
   },

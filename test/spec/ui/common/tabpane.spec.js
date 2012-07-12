@@ -5,6 +5,20 @@ describe('core.ui.common.TabPane', function() {
         pane = new cdb.ui.common.TabPane();
     });
 
+    it("should return the active pane", function() {
+      spy = {
+        tabAdded: function(){}
+      };
+      spyOn(spy, 'tabAdded');
+      var v1 = new cdb.core.View();
+      var v2 = new cdb.core.View();
+      pane.bind('tabAdded', spy.tabAdded, spy);
+      pane.addTab('tab1', v1);
+      pane.addTab('tab2', v2);
+      pane.active('tab1');
+      expect(pane.getActivePane()).toEqual(v1);
+    });
+
     it("should add a pane", function() {
         spy = {
           tabAdded: function(){}

@@ -22,7 +22,7 @@
 
       $('body').append(dialog.render().el);
       dialog.open();
-  
+
  * TODO: implement draggable
  * TODO: modal
  * TODO: ESC button
@@ -74,8 +74,8 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   },
 
   _ok: function(ev) {
-    ev.preventDefault();
-    
+   if(ev) ev.preventDefault();
+
     if(this.ok) {
       this.ok();
     }
@@ -83,7 +83,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   },
 
   _cancel: function(ev) {
-    ev.preventDefault();
+    if (ev) ev.preventDefault();
 
     if(this.cancel) {
       this.cancel();

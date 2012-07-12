@@ -10,15 +10,31 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
 
     tagName: 'li',
 
+    events: {
+      "click a.status": "_addPrivacySelector"
+    },
+
     initialize: function() {
       this.template = cdb.templates.getTemplate('dashboard/views/table_list_item');
     },
 
     render: function() {
-      this.$el.html(this.template(this.model.toJSON()));      
-      return this;
-    }
+      this.$el.html(this.template(this.model.toJSON()));
 
+      return this;
+    },
+
+    _addPrivacySelector: function(ev) {
+      ev.preventDefault();
+
+      var privacy = new cdb.admin.PrivacySelector({
+        model: this.model
+      })
+      
+      this.$el.append(privacy.render().el);
+
+      privacy.show();
+    }
   });
 
 

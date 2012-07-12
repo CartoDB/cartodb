@@ -1,4 +1,9 @@
+	
+  /*
+   * New fonts for CartoDB
+   */
+
   // NEW FONTS
-  /*SegoUI*/
+  /*SegoUI*/ 
   @include font-face("Segoe UI Bold", font-files("fonts/SEGOEUIB.woff", "fonts/SEGOEUIB.ttf", "fonts/SEGOEUIB.svg"), "SEGOEUIB.eot", bold, normal);
   @include font-face("Segoe UI Bold Italic", font-files("SEGOEUIZ.woff", "SEGOEUIZ.ttf", "SEGOEUIZ.svg"), "SEGOEUIZ.eot", bold, italic);

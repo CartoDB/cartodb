@@ -1,8 +1,13 @@
-@import "compass";
-@import "compass/css3";
-@import "mixins";
-@import "fonts";
-@import "sprites";
+
+  /*
+   * List of tables for your dashboard or public tables
+   */
+
+  @import "compass";
+  @import "compass/css3";
+  @import "mixins";
+  @import "fonts";
+  @import "sprites";
 
 
   $text-fonts: "Helvetica Neue", "Helvetica", Arial;
@@ -107,6 +112,7 @@
         
         ul {
           li {
+            border:none;
             position:relative;
             padding:0 40px;
             //overflow:hidden;
@@ -149,7 +155,7 @@
                   position:relative;
                   @include inline-block();
                   width:auto;
-                  padding:1px 10px 0 0;
+                  padding:3px 10px 0 0;
                   letter-spacing:0;
                   &:after {
                     content:' ';
@@ -163,7 +169,7 @@
                 }
 
                 a.delete {
-                  margin:2px 0 0 6px;
+                  margin:0px 0 0 4px;
                   @include icons-sprite(trash);
                   @include text-indent();
                   width:13px;

@@ -69,7 +69,6 @@ class DataImport < Sequel::Model
 
   def data_source=(data_source)
     if File.exist?(Rails.root.join("public#{data_source}"))
-      debugger
       self.values[:data_type] = 'file'
       self.values[:data_source] = Rails.root.join("public#{data_source}").to_s
     elsif Addressable::URI.parse(data_source).host.present?
@@ -113,16 +112,20 @@ class DataImport < Sequel::Model
         e = CartoDB::TableCopyError.new e.message    if table_copy?
       end
       CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
+      true # FIXME: our exception handler returns true so that the after_create method doesnt rollback
     end
-
   end
+
+  def before_save
+    self.updated_now
+  end 
 
   def after_rollback(*args, &block)
     self.save
     set_callback(:rollback, :after, *args, &block)
   end
 
-  def updated_now(transition)
+  def updated_now(transition=nil)
     self.updated_at = Time.now
   end
 

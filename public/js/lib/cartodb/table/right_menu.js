@@ -6,6 +6,8 @@
  */
 
 
+(function() {
+
 var Button = cdb.core.View.extend({
 
   tagName: 'a',
@@ -16,6 +18,7 @@ var Button = cdb.core.View.extend({
 
   render: function() {
     this.$el.addClass(this.className);
+    this.$el.append(this.className);
     return this;
   },
 
@@ -28,10 +31,6 @@ var Button = cdb.core.View.extend({
 });
 
 cdb.admin.RightMenu = cdb.core.View.extend({
-
-  events: {
-    'click .sidebar a': 'buttonClicked'
-  },
 
   className: 'table_panel',
 
@@ -64,10 +63,6 @@ cdb.admin.RightMenu = cdb.core.View.extend({
     b.bind('click', this.panels.active, this.panels);
   },
 
-  buttonClicked: function(e) {
-
-  }
-
-
-
 });
+
+})();

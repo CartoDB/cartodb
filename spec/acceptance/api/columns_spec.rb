@@ -4,7 +4,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
 
 feature "API 1.0 columns management" do
 
-  background do
+  before(:all) do
     Capybara.current_driver = :rack_test
     @user  = create_user({:username => 'test'})
     @table = create_table :user_id => @user.id
@@ -73,6 +73,9 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Rename a column" do
+    delete_user_data @user
+    @table = create_table :user_id => @user.id
+
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     put_json api_table_column_url(@table.name, "name"), {:new_name => "nombresito"} do |response|
@@ -86,9 +89,10 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Drop a column" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    delete_user_data @user
+    @table = create_table :user_id => @user.id    
     
-    delete_json api_table_column_url(@table.name, "name") do |response|
+    delete_json api_table_column_url(@table.name, "name") do |response|                
       response.status.should be_success
     end
   end

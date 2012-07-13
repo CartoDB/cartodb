@@ -3,7 +3,7 @@ require 'spec_helper'
 describe AccessToken do
 
   before(:all) do    
-    puts    "[rspec] Creating User for AccessToken spec..."
+    puts    "\n[rspec] Creating User for AccessToken spec..."
     @user = create_user
   end
 

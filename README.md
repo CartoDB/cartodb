@@ -299,6 +299,9 @@ Manual configuration is needed for the
 Windshaft-cartodb tile server URLs.
 
 
+### Testing ###
+CartoDB is a large app. We reccomend you use the [spin gem](https://github.com/jstorimer/spin/) to load the main application into memory while you are testing.
+
 ### Contributors ###
 
   - Fernando Blat (@ferblape)

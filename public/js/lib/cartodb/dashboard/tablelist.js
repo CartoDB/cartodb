@@ -16,10 +16,13 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
     },
 
     initialize: function() {
+      _.bindAll(this, "_addPrivacySelector");
+
       this.template = cdb.templates.getTemplate('dashboard/views/table_list_item');
 
       this.model.bind('destroy', this.clean, this);
       this.model.bind('change', this.render, this);
+
     },
 
     render: function() {
@@ -31,13 +34,14 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
     _addPrivacySelector: function(ev) {
       ev.preventDefault();
 
-      var privacy = new cdb.admin.PrivacySelector({
+      // Add privacy selector
+      var privacy = this.privacy = new cdb.admin.PrivacySelector({
         model: this.model
       })
-      
-      this.$el.append(privacy.render().el);
 
-      privacy.show();
+      this.$el.append(this.privacy.render().el);
+
+      this.privacy.show(ev.target);
     },
 
     _showDeleteConfirmation: function(ev) {

@@ -6,7 +6,7 @@
     },
 
     ok: function(ev) {
-      $("#" + this.options.send_form_id).submit();
+      this.model.destroy();
     },
 
     hide: function() {

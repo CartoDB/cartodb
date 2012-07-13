@@ -40,5 +40,26 @@ module CartoDB
       user = new_user(attributes)
       user.save
     end
+
+    def reload_user_data user    
+      
+      delete_user_data user      
+      
+      # Import basic csv file as table
+      import1 = DataImport.create(  :user_id       => user.id,
+                                    :table_name    => 'import_csv_1',
+                                    :data_source   => "/../db/fake_data/import_csv_1.csv" )
+      Table[import1.table_id]    
+
+      # Import tweets file as table
+      import2 = DataImport.create(  :user_id       => user.id,
+                                    :table_name    => 'twitters',
+                                    :data_source   => "/../db/fake_data/twitters.csv" )
+      Table[import2.table_id]    
+    end
+
+    def delete_user_data user
+      user.tables.destroy
+    end
   end
 end

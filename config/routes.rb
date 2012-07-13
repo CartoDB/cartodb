@@ -34,7 +34,7 @@ CartoDB::Application.routes.draw do
 
   scope "/api" do
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
-      get    '/column_types'                         => 'meta#column_types'
+      get    '/column_types'                         => 'meta#column_types'      
       get    '/tables'                               => 'tables#index'
       post   '/tables'                               => 'tables#create'
       get    '/tables/tags/:tag_name'                => 'tables#index'
@@ -70,6 +70,8 @@ CartoDB::Application.routes.draw do
       resources :uploads, :only => :create
       resources :imports, :only => [:create, :show, :index]
 
+      # Dashboard
+      resources :users, :only => [:show]
     end
   end
 end

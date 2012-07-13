@@ -96,5 +96,4 @@ feature "API 1.0 columns management" do
       response.status.should be_success
     end
   end
-
 end

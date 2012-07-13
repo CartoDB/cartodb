@@ -1,6 +1,6 @@
 #encoding: UTF-8
 
-require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require File.expand_path(File.dirname(__FILE__) + '/../../../spec_helper')
 
 describe "Imports API" do
 
@@ -46,8 +46,6 @@ describe "Imports API" do
                                                         :api_key        => @user.get_map_key
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
-
-    puts item_queue_id
 
     get v1_import_url(:host => 'test.localhost.lan', :id => item_queue_id), :api_key => @user.get_map_key
 

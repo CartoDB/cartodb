@@ -23,7 +23,6 @@ cdb.admin.PrivacySelector = cdb.core.View.extend({
   className: 'privacy_selector',
 
   events: {
-    //'click a.selected': '',
     'click a': '_optionClicked'
   },
 
@@ -37,20 +36,78 @@ cdb.admin.PrivacySelector = cdb.core.View.extend({
 
     // Dropdown template
     this.template_base = cdb.templates.getTemplate("common/views/privacy_selector");
+
+    // Set visibility
+    this.isOpen = false;
   },
 
   render: function() {
     // Render
     var $el = this.$el;
     $el.html(this.template_base());
+
+    // Add selected
+
+
     return this;
+  },
+
+  show: function(target) {
+
+    // Positionate
+    var pos = $(target).position()
+      , t_width = $(target).outerWidth()
+      , t_height = $(target).outerHeight()
+      , el_width = this.$el.outerWidth()
+      , el_height = this.$el.outerHeight()
+
+    // Set css previous animation
+    this.$el.css({
+      opacity:0,
+      display:"block",
+      top: pos.top - el_height + "px",
+      left: pos.left + (t_width/2) - (el_width/2) + "px",
+      marginTop: "10px"
+    });
+
+    // Animate
+    this.$el.animate({
+      marginTop: "0",
+      opacity:1
+    },300);
+  },
+
+  hide: function(target) {
+
+    // Animate
+    this.$el.animate({
+      marginTop: "-10px",
+      opacity:0
+    },300, function(){
+      $(this).remove();
+    });    
   },
 
   _optionClicked: function(ev) {
     ev.preventDefault();
 
-    this.model.set({privacy: "PUBLIC"});
-    this.model.save();
+    // New privacy status
+    var new_status;
+
+    if ($(ev.target).hasClass("public")) {
+      new_status = "PUBLIC";
+    } else {
+      new_status = "PRIVATE";
+    }
+
+    // Save if it is a new privacy
+    if (new_status != this.model.get("privacy").toUpperCase()) {
+      this.model.set({privacy: new_status});
+      this.model.save();
+    } else {
+      this.hide();
+    }
+
   }
 
 });

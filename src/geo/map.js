@@ -462,6 +462,11 @@ cdb.geo.Map = Backbone.Model.extend({
     while (this.layers.length > 0) {
       this.removeLayer(this.layers.at(0));
     }
+  },
+
+  // by default the base layer is the layer at index 0
+  getBaseLayer: function() {
+    return this.layers.at(0);
   }
 });
 

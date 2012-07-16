@@ -38,10 +38,7 @@ $(function() {
           // init data
           this.table.fetch();
           this.columns.fetch();
-          var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
-          this.map.addLayer(new cdb.geo.TileLayer({
-            urlTemplate: URL
-          }));
+          this.map.addLayer(this.baseLayers.at(0).clone());
           this.map.setZoom(4);
           this.map.setCenter([34.30714385628804, 11.6015625]);
         },
@@ -52,6 +49,24 @@ $(function() {
           });
           this.columns = this.table.data();
           this.map = new cdb.geo.Map();
+
+          //TODO: load this from an initial data file or d
+          // something like this
+
+          var layers = [
+            'http://tile.stamen.com/toner/{z}/{x}/{y}.png',
+            'http://a.tiles.mapbox.com/v3/mapbox.mapbox-light/{z}/{x}/{y}.png',
+            'http://tile.stamen.com/terrain/{z}/{x}/{y}.png',
+            'http://tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+            'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png'
+          ];
+
+          this.baseLayers = new cdb.geo.Layers(
+            _(layers).map(function(m) {
+              return new cdb.geo.TileLayer({ urlTemplate: m });
+            })
+          );
+
         },
 
         _initViews: function() {
@@ -74,7 +89,8 @@ $(function() {
           });
 
           this.mapTab = new cdb.admin.MapTab({
-            model: this.map
+            model: this.map,
+            baseLayers: this.baseLayers
           });
 
           this.menu = new cdb.admin.RightMenu({});

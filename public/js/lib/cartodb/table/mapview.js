@@ -1,4 +1,64 @@
 
+/**
+ * small photo of available base map layers
+ */
+cdb.admin.BaseMapView = cdb.core.View.extend({
+
+  events: {
+    'click': 'activate'
+  },
+
+  tagName: 'li',
+
+  initialize: function() {
+    this.map = this.options.map;
+  },
+
+  render: function() {
+    this.$el.html('layer' + this.cid);
+    return this;
+  },
+
+  activate: function(e) {
+    e.preventDefault();
+    var layer = this.map.getBaseLayer();
+    layer.set(this.model.toJSON());
+    cdb.log.debug("enabling layer: " + layer.get('urlTemplate'));
+    return false;
+  }
+
+});
+
+cdb.admin.BaseMapChooser = cdb.core.View.extend({
+
+  tagName: 'ul',
+
+  initialize: function() {
+    _.bindAll(this, 'add');
+    this.baseLayers = this.options.baseLayers;
+    this.baseLayers.bind('reset', this.render, this);
+    this.baseLayers.bind('add', this.add, this);
+  },
+
+  _addAll: function() {
+    this.baseLayers.each(this.add);
+  },
+
+  add: function(lyr) {
+    var v = new cdb.admin.BaseMapView({ model: lyr, map: this.model });
+    cdb.log.debug("added base layer option: " + lyr.get('urlTemplate'));
+    this.addView(v);
+    this.$el.append(v.render().el);
+  },
+
+  render: function() {
+    this.$el.html('');
+    this._addAll();
+    return this;
+  }
+
+});
+
 cdb.admin.MapTab = cdb.core.View.extend({
 
   className: 'map',
@@ -12,6 +72,11 @@ cdb.admin.MapTab = cdb.core.View.extend({
     if(!this.map_enabled) {
         var div = $('<div>');
         div.css({'height': '100%'});
+        this.baseLayerChooser = new cdb.admin.BaseMapChooser({
+          model: this.map,
+          baseLayers: this.options.baseLayers
+        });
+        this.$el.append(this.baseLayerChooser.render().el);
         this.$el.append(div);
         this.mapView = new cdb.geo.LeafletMapView({
           el: div,

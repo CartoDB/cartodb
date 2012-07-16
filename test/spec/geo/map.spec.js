@@ -53,10 +53,17 @@ describe("geo.map", function() {
       expect(map.layers.length).toEqual(1);
     });
 
+    it("should create a layer view when adds a model", function() {
+      map.addLayer(layer);
+      expect(map.layers.length).toEqual(1);
+      expect(_.size(mapView.layers)).toEqual(1);
+    });
+
     it("should allow removing a layer", function() {
       map.addLayer(layer);
       map.removeLayer(layer);
       expect(map.layers.length).toEqual(0);
+      expect(_.size(mapView.layers)).toEqual(0);
     });
 
     it("should allow removing a layer by index", function() {

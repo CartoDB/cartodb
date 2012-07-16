@@ -62,9 +62,9 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
     var // let's build the URL
     username     = this.get("user_name"),
-    domain       = this.get("sql_domain"),
-    port         = this.get("sql_port"),
-    protocol     = this.get("sql_protocol");
+    domain       = this.get(type + "_domain"),
+    port         = this.get(type + "_port"),
+    protocol     = this.get(type + "_protocol");
 
     if (type != "sql") {
       protocol = this.get("tiler_protocol");
@@ -492,6 +492,9 @@ cdb.geo.MapView = cdb.core.View.extend({
 
 });
 
+/**
+ * view to control tile layers 
+ */
 cdb.geo.LeafLetLayerView = function(layerModel, leafletLayer, leafletMap) {
   this.leafletLayer = leafletLayer;
   this.leafletMap = leafletMap;
@@ -505,6 +508,7 @@ _.extend(cdb.geo.LeafLetLayerView.prototype, {
   remove: function() {
     this.leafletMap.removeLayer(this.leafletLayer);
     this.model.unbind(null, null, this);
+    this.unbind();
   },
 
   _update: function() {
@@ -615,8 +619,8 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
   _removeLayer: function(layer) {
     //this.map_leaflet.removeLayer(layer.lyr);
-    this.layer[layer.cid].remove();
-    delete this.layer[layer.cid];
+    this.layers[layer.cid].remove();
+    delete this.layers[layer.cid];
   },
 
   _setView:function() {

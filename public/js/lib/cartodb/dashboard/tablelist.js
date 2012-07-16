@@ -12,7 +12,7 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
 
     events: {
       "click a.status": "_addPrivacySelector",
-      "click a.delete": "_showDeleteConfirmation",
+      "click a.delete": "_showDeleteConfirmation"
     },
 
     initialize: function() {
@@ -37,7 +37,7 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
       // Add privacy selector
       var privacy = this.privacy = new cdb.admin.PrivacySelector({
         model: this.model
-      })
+      });
 
       this.$el.append(this.privacy.render().el);
 
@@ -99,9 +99,9 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
     _updateListHeader: function() {
       $("section.tables > div.head > h2").text(
         this.model.length == 1 ? this.model.length + " table in your account" :  this.model.length + " tables in your account"
-      )
+      );
     }
-    
+
   });
 
   cdb.admin.dashboard.TableList = TableList;

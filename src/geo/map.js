@@ -492,6 +492,32 @@ cdb.geo.MapView = cdb.core.View.extend({
 
 });
 
+cdb.geo.LeafLetLayerView = function(layerModel, leafletLayer, leafletMap) {
+  this.leafletLayer = leafletLayer;
+  this.leafletMap = leafletMap;
+  this.model = layerModel;
+  this.model.bind('change', this._update, this);
+}
+
+_.extend(cdb.geo.LeafLetLayerView.prototype, Backbone.Events);
+_.extend(cdb.geo.LeafLetLayerView.prototype, {
+
+  remove: function() {
+    this.leafletMap.removeLayer(this.leafletLayer);
+    this.model.unbind(null, null, this);
+  },
+
+  _update: function() {
+    _.defaults(this.leafletLayer.options, this.model.toJSON());
+    // NOTE: change those 3 calls by setUrl (available in Leaflet 0.4)
+    this.leafletLayer._url = this.model.get('urlTemplate');
+    this.leafletLayer._reset(true);
+    this.leafletLayer._update();
+  }
+
+});
+
+
 /**
 * leatlef impl
 */
@@ -512,6 +538,9 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       center: new L.LatLng(center[0], center[1]),
       zoom: this.map.get('zoom')
     });
+
+    // this var stores views information for each model
+    this.layers = {}
 
     this.map.bind('set_view', this._setView);
     this.map.layers.bind('add', this._addLayer);
@@ -585,7 +614,9 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   },
 
   _removeLayer: function(layer) {
-    this.map_leaflet.removeLayer(layer.lyr);
+    //this.map_leaflet.removeLayer(layer.lyr);
+    this.layer[layer.cid].remove();
+    delete this.layer[layer.cid];
   },
 
   _setView:function() {
@@ -596,8 +627,10 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     var lyr;
 
     // Adds reference to the parent mapView
+    // TODO: do not track views from model
     layer.mapView = this;
 
+    //TODO: create layers in view not in model
     if ( layer.get('type') == "Tiled" ) {
       lyr = layer.getTileLayer();
     }
@@ -606,7 +639,10 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       lyr = layer.getTileLayer();
     }
 
+    this.layers[layer.cid] = new cdb.geo.LeafLetLayerView(layer, lyr, this.map_leaflet);
+
     if (lyr) {
+      //TODO: do not track view from model
       layer.lyr = lyr;
       this.map_leaflet.addLayer(lyr);
     } else {

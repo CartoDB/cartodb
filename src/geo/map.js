@@ -14,6 +14,10 @@ cdb.geo.MapLayer = Backbone.Model.extend({
 
 });
 
+cdb.geo.Layers = Backbone.Collection.extend({
+  model: cdb.geo.MapLayer
+});
+
 // Good old fashioned tile layer
 cdb.geo.TileLayer = cdb.geo.MapLayer.extend({
   getTileLayer: function () {

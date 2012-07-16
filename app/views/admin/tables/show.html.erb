@@ -8,7 +8,8 @@
 
   <script>
     var table_name = '<%= @table.name %>'
-      , table_id = '<%= @table.id %>';
+      , table_id = '<%= @table.id %>'
+      , user_name = '<%= current_user.username %>';
   </script>
 
   <% content_for(:js) do %>

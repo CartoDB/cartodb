@@ -38,12 +38,15 @@ $(function() {
           // init data
           this.table.fetch();
           this.columns.fetch();
-          this.map.addLayer(this.baseLayers.at(0).clone());
+          // add base layer
+          this.map.addLayer(this.baseLayers.at(4).clone());
+          // add cartodb layer
           this.map.setZoom(4);
           this.map.setCenter([34.30714385628804, 11.6015625]);
         },
 
         _initModels: function() {
+          var self = this;
           this.table = new cdb.admin.CartoDBTableMetadata({
             id: table_id
           });
@@ -66,6 +69,19 @@ $(function() {
               return new cdb.geo.TileLayer({ urlTemplate: m });
             })
           );
+
+          this.dataLayer = new cdb.geo.CartoDBLayer({
+            user_name: user_name,
+            tiler_port: cdb.config.get('tiler_port'),
+            tiler_domain: cdb.config.get('tiler_domain')
+          });
+
+          // when the table name is known the tiles from
+          // the tile server can be fetched
+          this.table.bind('change:name', function() {
+            self.dataLayer.set({ table_name: self.table.get('name') });
+            self.map.addLayer(self.dataLayer);
+          });
 
         },
 
@@ -140,6 +156,10 @@ $(function() {
 
 
     cdb.init(function() {
+      cdb.config.set({
+        tiler_port: '8181',
+        tiler_domain: 'localhost.lan'
+      });
       var table = new Table();
       var router = new TableRouter(table);
       // expose to debug

@@ -165,24 +165,43 @@ cdb.ui.common.Table = cdb.core.View.extend({
    * remove all rows
    */
   clear_rows: function() {
-    _(this.rowViews).each(function(tr) {
-      tr.clean();
-    });
+    while(this.rowViews.length) {
+      // each element removes itself from rowViews
+      this.rowViews[0].clean();
+    }
     this.rowViews = [];
   },
 
   /**
    * add rows
    */
-  addRow: function(row) {
+  addRow: function(row, collection, options) {
     var self = this;
     var tr = new self.rowView({
       model: row,
       order: this.model.columnNames()
     });
-    self.$el.append(tr.render().el);
-    tr.$el.attr('data-y', self.rowViews.length);
-    self.rowViews.push(tr);
+
+    tr.bind('clean', function() {
+      self.rowViews.splice(_.indexOf(self.rowViews,this), 1);
+    });
+
+    tr.render();
+    if(options && options.index !== undefined && options.index != self.rowViews.length) {
+
+      tr.$el.insertBefore(self.rowViews[options.index].$el);
+      self.rowViews.splice(options.index, 0, tr);
+      //tr.$el.attr('data-y', options.index);
+      // change others view data-y attribute
+      for(var i = options.index; i < self.rowViews.length; ++i) {
+        self.rowViews[i].$el.attr('data-y', i);
+      }
+    } else {
+      // at the end
+      tr.$el.attr('data-y', self.rowViews.length);
+      self.$el.append(tr.el);
+      self.rowViews.push(tr);
+    }
   },
 
   /**

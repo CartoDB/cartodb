@@ -17,20 +17,21 @@
         this.column = column;
       },
 
-      orderColumns: function(e) {
-      },
+      orderColumns: function(e) { },
+
       renameColumn: function(e) {
         e.preventDefault();
         this.hide();
         this.trigger('renameColumn');
         return false;
       },
-      changeType: function(e) {
-      },
-      georeference: function(e) {
-      },
-      filterColumn: function(e) {
-      },
+
+      changeType: function(e) { },
+
+      georeference: function(e) { },
+
+      filterColumn: function(e) { },
+
       deleteColumn: function(e) {
         e.preventDefault();
         cdb.log.debug("removing column: " + this.column);
@@ -78,7 +79,7 @@
         HeaderView.colOptions= new HeaderDropdown({
           position: 'position',
           template_base: "table/views/table_header_options"
-        })
+        });
         HeaderView.colOptions.render();
       },
 
@@ -142,8 +143,29 @@
       rowView: cdb.admin.RowView,
 
       initialize: function() {
+         var self = this;
          this.constructor.__super__.initialize.apply(this);
          this.options.row_header = true;
+         this.model.data().bind('newPage', this.newPage, this);
+         setInterval(function() {
+           var pos = $(this).scrollTop();
+           if( pos + $(window).height() > $(document).height()) {
+             var d = self.model.data();
+             d.setPage(d.getPage() + 1);
+           }
+         }, 300);
+      },
+
+      /**
+       * called when a new page is loaded
+       */
+      newPage: function(currentPage) {
+         var d = this.model.data();
+         if(d.size() > 40*4) {
+           //remove 40 first
+           d.remove(d.models.slice(0, 40));
+           cdb.log.debug("removing rows");
+         }
       },
 
       headerView: function(column) {
@@ -165,6 +187,7 @@
           dataModel: this.model.data(),
           model: this.model
         });
+
       },
 
       render: function() {

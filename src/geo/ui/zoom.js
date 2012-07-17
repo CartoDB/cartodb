@@ -1,15 +1,16 @@
 /**
- * zoom view to control the zoom of the map
- * usage:
+ * View to control the zoom of the map.
  *
- * var zoomControl = new cdb.geo.ui.Zoom({model: map});
- * view.append(zoomControl.render().el);
+ * Usage:
+ *
+ * var zoomControl = new cdb.geo.ui.Zoom({ model: map });
+ * mapView.$el.append(zoom.render().$el);
  *
  */
 
 cdb.geo.ui.Zoom = cdb.core.View.extend({
 
-  //tagName: 'div',
+  id: "zoom",
 
   events: {
     'click .zoom_in': 'zoom_in',

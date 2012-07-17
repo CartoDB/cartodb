@@ -29,6 +29,7 @@
 
         'geo/map.js',
         'geo/ui/zoom.js',
+        'geo/ui/legend.js',
         'geo/ui/infowindow.js',
 
         'ui/common/dialog.js',

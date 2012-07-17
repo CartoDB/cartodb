@@ -149,9 +149,11 @@
          this.model.data().bind('newPage', this.newPage, this);
          setInterval(function() {
            var pos = $(this).scrollTop();
-           if( pos + $(window).height() > $(document).height()) {
-             var d = self.model.data();
+           var d = self.model.data();
+           if( pos + $(window).height() > $(document).height() + 3) {
              d.setPage(d.getPage() + 1);
+           } else if (pos < 0) {
+             d.setPage(d.getPage() - 1);
            }
          }, 300);
       },
@@ -159,11 +161,17 @@
       /**
        * called when a new page is loaded
        */
-      newPage: function(currentPage) {
+      newPage: function(currentPage, direction) {
          var d = this.model.data();
-         if(d.size() > 40*4) {
-           //remove 40 first
-           d.remove(d.models.slice(0, 40));
+         var rowspp = d.options.get('rows_per_page');
+         var max_items = rowspp*4;
+         if(d.size() > max_items) {
+           var idx = currentPage*rowspp;
+           if(direction == 'up') {
+             d.remove(d.models.slice(max_items, d.size()));
+           } else {
+             d.remove(d.models.slice(0, idx));
+           }
            cdb.log.debug("removing rows");
          }
       },

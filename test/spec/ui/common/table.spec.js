@@ -143,6 +143,12 @@ describe("common.ui.Table", function() {
       expect(table.$('tr').length).toEqual(4);
     });
 
+    it("should remove rows", function() {
+      table.render();
+      cols.remove(cols.at(0));
+      expect(table.$('tr').length).toEqual(2);
+    });
+
     it("should return cell x,y", function() {
        //$('#foo').trigger('click');
       var cell = table.render().getCell(0, 1);

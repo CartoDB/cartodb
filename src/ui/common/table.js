@@ -57,6 +57,7 @@ cdb.ui.common.RowView = cdb.core.View.extend({
   initialize: function() {
     this.model.bind('change', this.render, this);
     this.model.bind('destroy', this.clean, this);
+    this.model.bind('remove', this.clean, this);
     this.add_related_model(this.model);
     this.order = this.options.order;
   },

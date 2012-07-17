@@ -1,12 +1,3 @@
-/**
-* zoom view to control the zoom of the map
-* usage:
-*
-* var legend = new cdb.geo.ui.Legend({ model: map });
-* view.append(legend.render().el);
-*
-*/
-
 cdb.geo.ui.LegendItemModel = Backbone.Model.extend({ });
 
 cdb.geo.ui.LegendItems = Backbone.Collection.extend({
@@ -42,14 +33,16 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   },
 
   initialize: function() {
+
     this.map = this.model;
 
     _.bindAll(this, "render", "show", "hide");
 
     _.defaults(this.options, this.default_options);
 
-
-    this.model.collection = this.collection;
+    if (this.collection) {
+      this.model.collection = this.collection;
+    }
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/legend');
   },
@@ -65,14 +58,19 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
   render: function() {
     var self = this;
 
-    this.$el.html(this.template(this.model.toJSON()));
+    if (this.model != undefined) {
+      this.$el.html(this.template(this.model.toJSON()));
+    }
 
-    this.collection.each(function(item) {
+    if (this.collection) {
 
-      var view = new cdb.geo.ui.LegendItem({ className: item.get("className"), model: item });
-      self.$el.find("ul").append(view.render());
+      this.collection.each(function(item) {
 
-    });
+        var view = new cdb.geo.ui.LegendItem({ className: item.get("className"), model: item });
+        self.$el.find("ul").append(view.render());
+
+      });
+    }
 
     return this;
   }

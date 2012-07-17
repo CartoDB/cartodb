@@ -4,7 +4,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
 
 feature "API 1.0 tables export" do
 
-  background do
+  before(:all) do
     Capybara.current_driver = :rack_test
     @user = create_user({:username => 'test'})
 

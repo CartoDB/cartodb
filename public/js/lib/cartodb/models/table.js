@@ -40,6 +40,7 @@
       this.bind('change:schema', this._prepareSchema, this);
       this._prepareSchema();
       this.sqlView = null;
+      this.data();
     },
 
     urlRoot: function() {
@@ -113,6 +114,9 @@
           table: this
         });
       }
+      if(this.sqlView) {
+        return this.sqlView;
+      }
       return this._data;
     },
 
@@ -123,19 +127,25 @@
 
       if(this.sqlView) {
         this.sqlView.unbind(null, null, this);
-        this.sqlView.unbind(null, null, data);
+        this.sqlView.unbind(null, null, this._data);
       }
 
       this.sqlView = view;
 
       if(view) {
-        data.unlinkFromSchema();
+        this._data.unlinkFromSchema();
+        this.sqlView.bind('reset', this._renderRows, this);
+        this.sqlView.bind('add', this.addRow, this);
         view.bind('reset', function() {
-          data.reset(view.models);
+          //data.reset(view.models);
           self.set({ schema: view.schemaFromData()});
-        }, data);
+        }, this);
+        // swicth source data
+        this.dataModel = this.sqlView;
       } else {
-        data.linkToSchema();
+        this._data.linkToSchema();
+        this.dataModel = this._data;
+        // get the original schema
         this.fetch();
       }
       this.trigger('change:sqlView', this);
@@ -208,11 +218,9 @@
         if(self._fetching) {
           return;
         }
-        console.log("=locked " + this.options.get('page'));
         self._fetching = true;
         opt = {};
         var previous = this.options.previous('page');
-        console.log('previous ' + previous);
 
         if(this.options.hasChanged('page')) {
           opt.add = true;
@@ -231,17 +239,20 @@
           } else {
             // no data so do not change the page
             self.options.set({page: previous});//, { silent: true });
-            console.log("reverted to " + previous);
           }
-          console.log(self.options.attributes.page);
+          self.trigger('endLoadingRows');
           self._fetching = false;
-        console.log("=unlocked");
         };
+
         opt.error = function() {
           cdb.log.error("there was some problem fetching rows");
+          self.trigger('endLoadingRows');
           self._fetching = false;
         };
+
+        self.trigger('loadingRows', opt.at === 0 ? 'up': 'down');
         this.fetch(opt);
+
       }, this);
     },
 
@@ -265,7 +276,7 @@
     },
 
     _createUrlOptions: function() {
-      return _(this.options.attributes).map(function(v, k) { return k + "=" + v; }).join('&');
+      return _(this.options.attributes).map(function(v, k) { return k + "=" + encodeURIComponent(v); }).join('&');
     },
 
     url: function() {
@@ -279,9 +290,7 @@
     },
 
     setPage: function(p) {
-      console.log("changing page: " + p + " fecth: " + this._fetching);
       if(!this._fetching && p >= 0) {
-        console.log("changed page: " + p + " now " + this.options.get('page'));
         this.setOptions({page: p});
       }
     },
@@ -310,11 +319,14 @@
 
     initialize: function(models, options) {
       this.model.prototype.idAttribute = 'cartodb_id';
-      this.sql = options ? options.sql: null;
+      if(options && options.sql) {
+        this.setSQL(options.sql);
+      }
     },
 
     setSQL: function(sql) {
-      this.sql = sql;
+      //this.sql = sql;
+      this.options.set({sql :sql});
     },
 
     schemaFromData: function() {
@@ -326,13 +338,19 @@
     },
 
     url: function() {
+      var u = '/api/v1/queries/';
+      u += "?" + this._createUrlOptions();
+      return u;
+    }
+
+    /*url: function() {
       if(!this.sql) {
         throw "sql must be provided";
       }
       return '/api/v1/queries?sql=' +
         encodeURIComponent(this.sql) +
         '&limit=20&rows_per_page=40&page=0'
-    }
+    }*/
 
   });
 

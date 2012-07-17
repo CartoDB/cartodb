@@ -93,7 +93,7 @@ feature "API 1.0 columns management" do
     @table = create_table :user_id => @user.id    
     
     delete_json api_table_column_url(@table.name, "name") do |response|                
-      response.status.should be_success
+      response.status.should eql(204)
     end
   end
 end

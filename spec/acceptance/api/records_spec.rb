@@ -4,9 +4,15 @@ require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
 
 feature "API 1.0 records management" do
 
-  background do
+  before(:all) do
+    puts "\n[rspec][records_spec] Creating test user database..."
     Capybara.current_driver = :rack_test
     @user = create_user(:username => 'test')
+    puts "[rspec][records_spec] Running..."
+  end
+
+  before(:each) do
+    delete_user_data @user
     @table = create_table :user_id => @user.id
   end
 
@@ -87,7 +93,7 @@ feature "API 1.0 records management" do
         :description => "The description"
     } do |response|
       response.status.should be_success
-      response.body[:id].should == 1
+      response.body[:cartodb_id].should == 1
     end
 
     get_json api_table_record_url(@table.name,1) do |response|
@@ -144,7 +150,7 @@ feature "API 1.0 records management" do
   scenario "Remove multiple rows" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "delete", any_parameters).once
     
-    pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
+    pk  = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
     pk2 = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
     pk3 = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
     pk4 = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
@@ -201,7 +207,7 @@ feature "API 1.0 records management" do
         :age => "30.2"
     } do |response|
       response.status.should be_success
-      row_id = response.body[:id]
+      row_id = response.body[:cartodb_id]
     end
     
     get_json api_table_columns_url(table_id) do |response|
@@ -226,7 +232,7 @@ feature "API 1.0 records management" do
         :the_geom => %Q{\{"type":"Point","coordinates":[#{lon},#{lat}]\}}
     } do |response|
       response.status.should be_success
-      pk = response.body[:id]
+      pk = response.body[:cartodb_id]
     end
     
     query_result = @user.run_query(CartoDB::SqlParser.parse("select longitude(the_geom) as lon, latitude(the_geom) as lat from #{@table.name} where cartodb_id = #{pk} limit 1"))
@@ -244,7 +250,7 @@ feature "API 1.0 records management" do
         :description => "Geolocated programmer"
     } do |response|
       response.status.should be_success
-      pk = response.body[:id]
+      pk = response.body[:cartodb_id]
     end
     
     put_json api_table_record_url(@table.name,1), {

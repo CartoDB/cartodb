@@ -11,9 +11,6 @@
     /**
      * global variables
      */
-    window.cdb.god = new Backbone.Model();
-
-
     window.JST = window.JST || {};
 
     cdb.files = [
@@ -41,6 +38,9 @@
 
     cdb.init = function(ready) {
       cdb._loadJST();
+
+    window.cdb.god = new Backbone.Model();
+
       ready && ready();
     }
 

@@ -70,9 +70,9 @@ describe("admin table", function() {
         ['a', 'undefined'],
         ['b', 'undefined']
       ]);
-      expect(table._data.models[0].attributes).toEqual(
+      /*expect(table._data.models[0].attributes).toEqual(
         { a: 1, b:2 }
-      );
+      );*/
       //spyOn(table._data, 'fetch');
       //expect(table._data.fetch).toHaveBeenCalled();
     });

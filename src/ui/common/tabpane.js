@@ -87,6 +87,8 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
 
         this.activeTab = name;
         this.activePane = v;
+
+        return this.activePane;
       }
     }
   },

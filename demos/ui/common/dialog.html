@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>cartodb demo template</title>
+    <title>CartoDB demo template</title>
   </head>
 
   <style>
@@ -9,28 +9,44 @@
       background-color: #666;
     }
     .dialog {
+      width: 400px;
       padding: 20px;
       background-color: #FFF;
       position: absolute;
-      top: 50%;
-      left: 50%;
     }
+
+    h1 { margin: 0; }
+    h2 { font-size: 20px; }
+
+    .bottom {
+      margin: 10px 0 0 0;
+      padding: 10px 0 0 0;
+      border-top: 1px solid #ccc;
+    }
+
+    button { float: left; }
+
+    .cancel {
+      float:right;
+    }
+
   </style>
 
   <script id="base_template" type="text/tmpl">
-      <h1 class="title"><%= title %></h1>
-      <h2 class="description"><%= description %></h2>
-      <div class="content">
-      </div>
-      <div class="bottom">
-        <button class="ok">
-          <%= ok_title %>
-        </button>
-      </div>
-      <a class="cancel">close</a>
+    <h1 class="title"><%= title %></h1>
+    <h2 class="description"><%= description %></h2>
+    <div class="content">
+    </div>
+    <div class="bottom">
+      <button class="ok">
+        <%= ok_title %>
+      </button>
+      <a href="#" class="cancel">close</a>
+    </div>
   </script>
 
   <body>
+
   </body>
 
   <script src="../../../src/cartodb.js"></script>
@@ -40,7 +56,7 @@
 
         var MyDialog = cdb.ui.common.Dialog.extend({
           render_content: function() {
-            return "my content";
+            return "Always begin typing in the upper search area. Press return to add a new note with that title. While you type, NV searches for notes whose body or title contain your words. Observe that naming a note and searching always occur simultaneously.";
           },
         })
 
@@ -52,6 +68,7 @@
         });
 
         $('body').append(dialog.render().el);
+
         dialog.open();
       });
     };

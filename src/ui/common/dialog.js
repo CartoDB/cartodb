@@ -60,12 +60,26 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
   render: function() {
     var $el = this.$el;
+
     $el.find(".modal").css({
       width: this.options.width,
       height: this.options.height,
       'margin-left': -this.options.width>>1,
       'margin-top': -this.options.height>>1
     });
+
+   // TODO: Review previous block & replace it with
+   // the following:
+   //
+   // $el.css({
+   //   width: this.options.width,
+   //   height: this.options.height,
+   //   'top': "50%",
+   //   'left': "50%",
+   //   'margin-left': -this.options.width / 2,
+   //   'margin-top':  -this.options.height / 2
+   // });
+
     $el.html(this.template_base(this.options));
     if(this.render_content) {
       this.$('.content').append(this.render_content());

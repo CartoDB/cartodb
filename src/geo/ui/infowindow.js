@@ -18,7 +18,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     _.bindAll(this, "render", "setLatLng", "_updatePosition", "_update", "toggle", "show", "hide");
 
     this.mapView = this.options.mapView;
-    this.map     = this.mapView.the_map;
+    this.map     = this.mapView.map_leaflet;
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/infowindow');
 

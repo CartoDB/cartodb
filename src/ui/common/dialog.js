@@ -8,21 +8,21 @@
  *
  * usage example:
  *
-      var MyDialog = cdb.ui.common.Dialog.extend({
-        render_content: function() {
-          return "my content";
-        },
-      })
-      var dialog = new MyDialog({
-          title: 'test',
-          description: 'long description here',
-          template_base: $('#base_template').html(),
-          width: 500
-      });
-
-      $('body').append(dialog.render().el);
-      dialog.open();
-
+ *    var MyDialog = cdb.ui.common.Dialog.extend({
+ *      render_content: function() {
+ *        return "my content";
+ *      },
+ *    })
+ *    var dialog = new MyDialog({
+ *        title: 'test',
+ *        description: 'long description here',
+ *        template_base: $('#base_template').html(),
+ *        width: 500
+ *    });
+ *
+ *    $('body').append(dialog.render().el);
+ *    dialog.open();
+ *
  * TODO: implement draggable
  * TODO: modal
  * TODO: ESC button

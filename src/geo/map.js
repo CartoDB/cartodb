@@ -1,5 +1,22 @@
+
+/*
+* MapLayers = a collection of several MapLayers
+*
+* MapLayer = a layer
+* |_ TileLayer
+* |_ CartoDBLayer
+*
+* Map = the model
+*   A map contains a collection of MapLayers
+*
+* MapView = the representation of a map
+* |_ LeafletMapView
+* |_ GoogleMapsMapView (not implemented yet)
+*
+*/
+
 /**
-* classes to manage maps
+* Classes to manage maps
 */
 
 /**
@@ -166,7 +183,8 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
           var sw = new L.LatLng(lat0, lon0);
           var ne = new L.LatLng(lat1, lon1);
           var bounds = new L.LatLngBounds(sw,ne);
-          self.mapView.map_leaflet.fitBounds(bounds);
+
+          self.mapView.map.setBounds(bounds);
         }
       },
       error: function(e,msg) {
@@ -319,7 +337,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     this.tilejson = this._generateTileJson();
     this.layer    = new wax.leaf.connector(this.tilejson);
 
-    var featureOver = function(o) { self._bindWaxEvents(self.mapView.map_leaflet, o)};
+    var featureOver = function(o) { self._bindWaxEvents(self.mapView.the_map, o)};
     var featureOut  = function() {
 
       var featureOut = self.get("featureOut");
@@ -371,6 +389,7 @@ cdb.geo.Map = Backbone.Model.extend({
 
   defaults: {
     center: [0, 0],
+    bounds: null,
     zoom: 9
   },
 
@@ -393,6 +412,10 @@ cdb.geo.Map = Backbone.Model.extend({
 
   setCenter: function(latlng) {
     this.set({center: latlng});
+  },
+
+  setBounds: function(bounds) {
+    this.set({bounds: bounds});
   },
 
   /**
@@ -428,8 +451,6 @@ cdb.geo.Map = Backbone.Model.extend({
     }
   },
 
-
-
   addLayer: function(layer) {
     this.layers.add(layer);
 
@@ -463,7 +484,7 @@ cdb.geo.Map = Backbone.Model.extend({
 
 
 /**
-* base view for all impl
+* Base MapView for all the implementations
 */
 cdb.geo.MapView = cdb.core.View.extend({
 
@@ -484,61 +505,72 @@ cdb.geo.MapView = cdb.core.View.extend({
 });
 
 /**
-* leatlef impl
+* LeafletMapView
 */
 cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
   initialize: function() {
 
+    var self = this;
+
     _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
 
     cdb.geo.MapView.prototype.initialize.call(this);
 
-    var self = this;
-
     var center = this.map.get('center');
 
-    this.map_leaflet = new L.Map(this.el, {
+    this.the_map = new L.Map(this.el, {
       zoomControl: false,
       center: new L.LatLng(center[0], center[1]),
       zoom: this.map.get('zoom')
     });
 
-    this.map.bind('set_view', this._setView);
     this.map.layers.bind('add', this._addLayer);
     this.map.layers.bind('remove', this._removeLayer);
 
     this._bindModel();
 
+    // Event binding
+
+    this.the_map.on('layerremove', function(lyr) {
+      this.trigger('layerremove', lyr, self);
+    }, this);
+
+    this.the_map.on('layeradd', function(lyr) {
+      this.trigger('layeradd', lyr, self);
+    }, this);
+
+    this.the_map.on('zoomend', function() {
+      self._setModelProperty({ zoom: self.the_map.getZoom() });
+    }, this);
+
+    this.the_map.on('drag', function () {
+      var c = self.the_map.getCenter();
+      self._setModelProperty({ center: [c.lat, c.lng] });
+    }, this);
+
+    // Add layers
     this.map.layers.each(function(lyr) {
       self._addLayer(lyr);
     });
 
-    this.map_leaflet.on('layeradd', function(lyr) {
-      this.trigger('layeradd', lyr, self);
-    }, this);
-
-    this.map_leaflet.on('zoomend', function() {
-      self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
-    }, this);
-
-    this.map_leaflet.on('drag', function () {
-      var c = self.map_leaflet.getCenter();
-      self._setModelProperty({ center: [c.lat, c.lng] });
-    }, this);
 
   },
 
-  /** bind model properties */
+  /** Bind model properties */
   _bindModel: function() {
     this.map.bind('change:zoom', this._setZoom, this);
     this.map.bind('change:center', this._setCenter, this);
+    this.map.bind('change:bounds', this._setBounds, this);
+    this.map.bind('set_view', this._setView);
   },
 
-  /** unbind model properties */
+  /** Unbind model properties */
   _unbindModel: function() {
     this.map.unbind('change:zoom', this._setZoom, this);
     this.map.unbind('change:center', this._setCenter, this);
+    this.map.unbind('change:bounds', this._settBounds, this);
+    this.map.unbind('set_view', this._setView, this);
   },
 
   /**
@@ -551,11 +583,15 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   },
 
   _setZoom: function(model, z) {
-    this.map_leaflet.setZoom(z);
+    this.the_map.setZoom(z);
   },
 
   _setCenter: function(model, center) {
-    this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
+    this.the_map.panTo(new L.LatLng(center[0], center[1]));
+  },
+
+  _setBounds: function(model, bounds) {
+    this.the_map.fitBounds(bounds);
   },
 
   /**
@@ -568,7 +604,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   addInteraction: function(tileJSON, featureOver, featureOut) {
 
     return wax.leaf.interaction()
-    .map(this.map_leaflet)
+    .map(this.the_map)
     .tilejson(tileJSON)
     .on('on',  featureOver)
     .on('off', featureOut);
@@ -576,11 +612,11 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   },
 
   _removeLayer: function(layer) {
-    this.map_leaflet.removeLayer(layer.lyr);
+    this.the_map.removeLayer(layer.lyr);
   },
 
   _setView:function() {
-    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
+    this.the_map.setView(this.map.get("center"), this.map.get("zoom"));
   },
 
   _addLayer: function(layer) {
@@ -599,7 +635,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
     if (lyr) {
       layer.lyr = lyr;
-      this.map_leaflet.addLayer(lyr);
+      this.the_map.addLayer(lyr);
     } else {
       cdb.log.error("layer type not supported");
     }

@@ -17,7 +17,7 @@ describe("tableview", function() {
       }));
 
       view = new cdb.admin.HeaderView({
-        column: ['name', 'type'],
+        column: ['name', 'type']
       });
     });
 

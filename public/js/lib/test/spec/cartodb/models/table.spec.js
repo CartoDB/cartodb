@@ -16,7 +16,7 @@ describe("admin table", function() {
       it("should have correct url", function() {
         expect(column.url()).toEqual(
           '/api/v1/tables/testTable/columns/columnName'
-        )
+        );
       });
   });
 
@@ -29,7 +29,7 @@ describe("admin table", function() {
           ['test', 'string'],
           ['test2', 'number']
         ]
-      })
+      });
     });
 
     it("should create column types", function() {
@@ -109,4 +109,37 @@ describe("admin table", function() {
       expect(tables.model).toEqual(cdb.admin.CartoDBTableMetadata);
     });
   });
+
+  describe("cbd.admin.CartoDBTableData", function() {
+    var table;
+    var tableData;
+
+    beforeEach(function() {
+
+      table = new cdb.admin.CartoDBTableMetadata({
+        name: 'testTable',
+        schema: [
+          ['test', 'string'],
+          ['test2', 'number']
+        ]
+      });
+
+      tableData = new cdb.admin.CartoDBTableData(null, {
+        table: table
+      });
+    });
+
+    it("should add params to the url", function() {
+      expect(tableData.url().indexOf('rows_per_page=40')).not.toEqual(-1);
+    });
+
+    it("should call fetch when options change", function() {
+      spyOn(tableData, 'fetch');
+      tableData.setPage(1);
+      //expect(tableData.url().indexOf('page=1')).not.toEqual(-1);
+      expect(tableData.fetch).toHaveBeenCalled();
+    });
+
+  });
+
 });

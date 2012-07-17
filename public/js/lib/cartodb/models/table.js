@@ -186,6 +186,15 @@
 
     model: cdb.admin.Row,
 
+    options: new Backbone.Model({
+      rows_per_page:40,
+      page: 0,
+      mode: 'asc',
+      order_by: 'cartodb_id',
+      filter_column: '',
+      filter_value: ''
+    }),
+
     initialize: function(models, options) {
       var self = this;
       this.table = options.table;
@@ -194,6 +203,22 @@
       // options that are use in fetch
       this.linkToSchema();
       this.filter = null;
+      this.options.bind('change', function() {
+        opt = {};
+        if(this.options.hasChanged('page')) {
+          opt.add = true;
+          opt.changingPage = true;
+        }
+        opt.success = function() {
+           if(opt.changingPage) {
+             self.trigger('newPage', self.options.get('page'));
+           }
+        };
+        opt.error = function() {
+          cdb.log.error("there was some problem fetching rows");
+        };
+        this.fetch(opt);
+      }, this);
     },
 
     /**
@@ -208,15 +233,33 @@
      */
     linkToSchema: function() {
       var self = this;
-      this.table.bind('change', function() { self.fetch() }, this);
+      this.table.bind('change', function() { self.fetch(); }, this);
     },
 
     parse: function(d) {
       return d.rows;
     },
 
+    _createUrlOptions: function() {
+      return _(this.options.attributes).map(function(v, k) { return k + "=" + v; }).join('&');
+    },
+
     url: function() {
-      return '/api/v1/tables/' + this.table.get('id') + '/records';
+      var u = '/api/v1/tables/' + this.table.get('id') + '/records';
+      u += "?" + this._createUrlOptions();
+      return u;
+    },
+
+    setOptions: function(opt) {
+      this.options.set(opt);
+    },
+
+    setPage: function(p) {
+      this.setOptions({page: p});
+    },
+
+    getPage: function(p) {
+      return this.options.get('page');
     },
 
     addRow: function() {
@@ -224,7 +267,7 @@
     },
 
     deleteRow: function(row_id) {
-    },
+    }
 
   });
 

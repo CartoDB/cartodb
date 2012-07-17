@@ -8,15 +8,15 @@ feature "Sessions" do
     visit login_path
     fill_in 'email', :with => user.email
     fill_in 'password', :with => 'blablapassword'
-    click_link_or_button 'Log in'
+    click_link_or_button 'Sign in'
 
     page.should have_css("input[@type=text].error")
     page.should have_css("input[@type=password].error")
     page.should have_content("Your account or your password is not ok")
 
-    fill_in 'e-mail', :with => user.email
+    fill_in 'email', :with => user.email
     fill_in 'password', :with => user.email.split('@').first
-    click_link_or_button 'Log in'
+    click_link_or_button 'Sign in'
   end
 
   scenario "Get the session information via OAuth" do

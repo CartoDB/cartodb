@@ -3,11 +3,13 @@ require "steak"
 require 'capybara/rails'
 require "capybara/dsl"
 require "selenium-webdriver"
+require "capybara/poltergeist"
 
 # Put your acceptance spec helpers inside /spec/acceptance/support
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
-Capybara.default_driver    = :selenium
+#Capybara.default_driver    = :selenium
+Capybara.javascript_driver = :poltergeist
 Capybara.default_wait_time = 30
 Capybara.default_host      = "http://admin.localhost.lan:53716"
 Capybara.app_host          = "http://admin.localhost.lan:53716"

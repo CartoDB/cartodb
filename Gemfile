@@ -40,7 +40,9 @@ gem "builder"
 gem "state_machine", "~> 1.0"
 
 group :development, :test do
+  gem 'poltergeist', '0.6.0'
   gem 'minitest', '~> 2.0.2', :require => 'minitest/unit'
+  gem 'selenium-webdriver', '2.5.0'
 
   # this is for Ruby 1.9.2 debugging. You should upgrade to ruby 1.9.3, it's much faster in development
   if (RUBY_VERSION == "1.9.2")

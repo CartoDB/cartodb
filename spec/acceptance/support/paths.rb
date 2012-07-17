@@ -50,7 +50,7 @@ module NavigationHelpers
   end
 
   def api_table_record_url(table_identifier, row_identifier)
-    "#{api_url_prefix}/tables/#{table_identifier}/records/#{row_identifier}"
+    api_req "#{api_url_prefix}/tables/#{table_identifier}/records/#{row_identifier}"
   end
 
   def api_table_columns_url(table_identifier)
@@ -62,7 +62,7 @@ module NavigationHelpers
   end
 
   def api_table_record_column_url(table_identifier, row_identifier, column_name)
-    "#{api_url_prefix}/tables/#{table_identifier}/records/#{row_identifier}/columns/#{column_name}"
+    api_req"#{api_url_prefix}/tables/#{table_identifier}/records/#{row_identifier}/columns/#{column_name}"
   end
   
   def api_table_records_pending_addresses_url(table_identifier)

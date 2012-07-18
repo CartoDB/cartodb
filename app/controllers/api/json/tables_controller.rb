@@ -101,7 +101,6 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def update
-    @table = Table.filter(:user_id => current_user.id, :id => params[:id]).first
     warnings = []
 
     @table.set_all(params)
@@ -111,7 +110,7 @@ class Api::Json::TablesController < Api::ApplicationController
       @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
     end
     @table.tags = params[:tags] if params[:tags]
-    if @table.save
+    if @table.update(@table.values.delete_if {|k,v| k == :tags_names})
       @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                             from user_tables
                             where id=?",@table.id).first

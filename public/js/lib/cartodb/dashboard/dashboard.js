@@ -39,11 +39,6 @@ $(function() {
             tables: this.tables
           })
 
-          // D3 API Requests
-          // var stats = this.stats = new cdb.admin.D3Stats({
-          //   el: this.$("div.stats")
-          // });
-
           // User menu
           var user_menu = this.user_menu = new cdb.admin.UserMenu({
             target: 'a.account',

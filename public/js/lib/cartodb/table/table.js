@@ -112,6 +112,7 @@ $(function() {
         },
 
         keyPress: function(e) {
+          //TODO: do keystroke properly
           if(String.fromCharCode(e.keyCode) === 's') {
             this.menu.show();
             this.menu.active('sql');

@@ -5,13 +5,13 @@
 cdb.admin.Header = cdb.core.View.extend({
 
   events: {
-    '.clearview': 'clearView'
+    'click .clearview': 'clearView'
   },
 
   initialize: function() {
     this.table = this.model;
     this.table.bind('change:name', this.tableName, this);
-    this.table.bind('change:sqlView', this.onSQLView, this);
+    this.table.bind('change:dataSource', this.onSQLView, this);
     this.add_related_model(this.table);
     this.$('.clearview').hide();
   },
@@ -22,17 +22,21 @@ cdb.admin.Header = cdb.core.View.extend({
 
   onSQLView: function() {
     //TODO: change header 
+
     var color = this.table.sqlView ? 'orange': 'blue';
     this.$el.css({
       'background-color': color
     });
-    //
-    this.$('.clearview').show();
+    if(this.table.isInSQLView()) {
+      this.$('.clearview').show();
+    } else {
+      this.$('.clearview').hide();
+    }
   },
 
   clearView: function(e) {
     e.preventDefault();
-    this.$('.clearview').hide();
+    this.table.useSQLView(null);
     return false;
   }
 

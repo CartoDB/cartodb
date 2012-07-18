@@ -148,6 +148,10 @@
       this.trigger('change:dataSource', this.dataModel, this);
     },
 
+    isInSQLView: function() {
+      return this.sqlView ? true: false;
+    },
+
     /**
      * return true if the sql query alters table schema in some way
      */

@@ -64,7 +64,7 @@ $(function() {
           // when the table name is known the tiles from
           // the tile server can be fetched
           this.table.bind('change:name', function() {
-            self.dataLayer.set({ table_name: self.table.get('name') });
+            self.dataLayer.set({table_name: this.get('name')});
             self.map.addLayer(self.dataLayer);
           });
 
@@ -112,7 +112,9 @@ $(function() {
 
           // lateral menu modules
           var sql = new cdb.admin.mod.SQL({ model: this.table });
+          var carto = new cdb.admin.mod.Carto({ model: this.dataLayer });
           this.menu.addModule(sql.render());
+          this.menu.addModule(carto.render());
 
           //sql.bind('sqlQuery', this.table.sql);
 

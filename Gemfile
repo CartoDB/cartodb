@@ -39,6 +39,8 @@ gem "rubyzip", "~> 0.9.6.1"
 gem "builder"
 gem "state_machine", "~> 1.0"
 
+gem 'simplecov', :require => false, :group => :test
+
 group :development, :test do
   gem 'poltergeist', '0.6.0'
   gem 'minitest', '~> 2.0.2', :require => 'minitest/unit'

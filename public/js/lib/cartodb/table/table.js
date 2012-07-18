@@ -9,10 +9,13 @@ $(function() {
     var Table = cdb.core.View.extend({
         el: document.body,
         events: {
-          'keypress': 'keyPress'
+          'keypress': 'keyPress',
+          'keyup': 'keyUp'
         },
 
         initialize: function() {
+
+          this.ctrlPressed = false;
 
           this._initModels();
           this._initViews();
@@ -65,6 +68,18 @@ $(function() {
             self.map.addLayer(self.dataLayer);
           });
 
+          this.table.bind('change:dataSource', function() {
+            var sql = '';
+            if(this.isInSQLView()) {
+              sql = this.data().options.get('sql');
+            }
+            cdb.log.info("tiler: sql: " + sql);
+            self.dataLayer.set({
+              query: sql
+            });
+          });
+
+
         },
 
         _initViews: function() {
@@ -111,14 +126,16 @@ $(function() {
 
         },
 
+        keyUp: function(e) {
+        },
+
         keyPress: function(e) {
-          //TODO: do keystroke properly
-          if(String.fromCharCode(e.keyCode) === 's') {
+          if(e.which == 19) {
             this.menu.show();
-            this.menu.active('sql');
+            this.menu.active('sql_mod');
             e.preventDefault();
+            return false;
           }
-          return 0;
         }
 
     });

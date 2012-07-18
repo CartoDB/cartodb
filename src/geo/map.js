@@ -31,7 +31,7 @@ cdb.geo.TileLayer = cdb.geo.MapLayer.extend({
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   defaults: {
     type: 'CartoDB',
-    query: "SELECT * FROM {{table_name}}",
+    query: null, 
     opacity: 0.99,
     auto_bound: false,
     debug: false,

@@ -362,12 +362,26 @@ if (typeof(L.CartoDBLayer) === "undefined") {
      */
     _addSimple: function () {
 
-      // Then add the cartodb tiles
-      var tile_style = (this.options.tile_style)? encodeURIComponent(this.options.tile_style.replace(/\{\{table_name\}\}/g,this.options.table_name)) : ''
-        , query = encodeURIComponent(this.options.query.replace(/\{\{table_name\}\}/g,this.options.table_name));
-
       // Add the cartodb tiles
-      var cartodb_url = this.generateUrl("tiler") + '/tiles/' + this.options.table_name + '/{z}/{x}/{y}.png?sql=' + query +'&style=' + tile_style;
+      var cartodb_url = this.generateUrl("tiler") + '/tiles/' + this.options.table_name + '/{z}/{x}/{y}.png?'
+
+      // set params
+      var params = {};
+      if(this.options.query) {
+        params.sql = this.options.query;
+      }
+      if(this.options.style) {
+        params.style = this.options.style;
+      }
+      var url_params = [];
+      for(var k in params) {
+        var q = encodeURIComponent(
+          params[k].replace(/\{\{table_name\}\}/g, this.options.table_name)
+        );
+        url_params.push(k + "=" + q);
+      }
+      cartodb_url += url_params.join('&');
+
 
       // extra_params?
       for (_param in this.options.extra_params) {

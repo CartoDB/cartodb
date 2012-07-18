@@ -66,6 +66,10 @@ cdb.admin.RightMenu = cdb.core.View.extend({
     b.bind('click', this.toggle, this);
   },
 
+  active: function(modName) {
+    this.panels.active(modName);
+  },
+
   toggle: function() {
     if(this.isOpen) {
       this.hide();
@@ -78,14 +82,14 @@ cdb.admin.RightMenu = cdb.core.View.extend({
     this.isOpen = false;
     this.$el.animate({
       right: -535
-    })
+    });
   },
 
   show: function() {
     this.isOpen = true;
     this.$el.animate({
       right: 0
-    })
+    });
   }
 
 });

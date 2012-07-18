@@ -180,16 +180,17 @@ feature "API 1.0 tables management" do
   scenario "Update with bad values the metadata of a table" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
     put_json api_table_url(table1.name), {:privacy => "bad privacy value"} do |response|
-      response.status.should be_success
-      response.body[:privacy].should == "PRIVATE"
+      response.status.should == 400
+      table1.refresh
+      table1.privacy.should == 0
     end
 
     put_json api_table_url(table1.name), {:name => ""} do |response|
-      response.status.should be_success
+      response.status.should == 400
     end
 
     get_json api_table_url(table1.name) do |response|
-      response.status.should be_success
+      response.status.should == 200
     end
   end
 

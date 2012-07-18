@@ -226,6 +226,10 @@ GEM
     sequel_pg (1.2.0)
       pg (>= 0.8.0)
       sequel (>= 3.29.0)
+    simplecov (0.6.4)
+      multi_json (~> 1.0)
+      simplecov-html (~> 0.5.3)
+    simplecov-html (0.5.3)
     sinatra (1.2.8)
       rack (~> 1.1)
       tilt (>= 1.2.2, < 2.0)
@@ -299,6 +303,7 @@ DEPENDENCIES
   sequel-rails-cartodb (= 0.1.7)
   sequel_column_type_array (~> 0.0.2)
   sequel_pg (= 1.2.0)
+  simplecov
   spreadsheet (~> 0.6.5.9)
   state_machine (~> 1.0)
   statsd-client

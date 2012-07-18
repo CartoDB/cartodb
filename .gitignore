@@ -20,3 +20,4 @@ spec/support/data/failed_remote/*
 *.swo
 cartodb-importer
 env
+coverage

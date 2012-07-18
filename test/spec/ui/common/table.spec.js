@@ -183,6 +183,16 @@ describe("common.ui.Table", function() {
 
     });
 
+    it("should render new data on change data source", function() {
+      cols = new cdb.ui.common.TableData();
+      table.setDataSource(cols);
+      cols.reset([
+        {'id': 100, 'col1': 1, 'col2': 2, 'col3': 3}
+      ]);
+      cell = table.getCell(0, 0);
+      expect(cell.html()).toEqual('100');
+    });
+
   });
 
 });

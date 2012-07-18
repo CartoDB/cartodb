@@ -131,9 +131,9 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.rowViews = [];
 
     // binding
-    this.dataModel.bind('reset', this._renderRows, this);
-    this.dataModel.bind('add', this.addRow, this);
+    this.setDataSource(this.dataModel);
     this.model.bind('change', this.render, this);
+    this.model.bind('change:dataSource', this.setDataSource, this);
 
     // assert the rows are removed when table is removed
     this.bind('clean', this.clear_rows, this);
@@ -145,6 +145,15 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
   headerView: function(column) {
       return column[0];
+  },
+
+  setDataSource: function(dm) {
+    if(this.dataModel) {
+      this.dataModel.unbind(null, null, this);
+    }
+    this.dataModel = dm;
+    this.dataModel.bind('reset', this._renderRows, this);
+    this.dataModel.bind('add', this.addRow, this);
   },
 
   _renderHeader: function() {

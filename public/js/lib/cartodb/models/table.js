@@ -5,12 +5,6 @@
 
 (function() {
 
-  /**
-   * current user running app
-   */
-  cdb.admin.User = Backbone.Model.extend({});
-
-
   cdb.admin.Column = Backbone.Model.extend({
 
     idAttribute: 'name',
@@ -28,7 +22,6 @@
     }
 
   });
-
 
 
   /**

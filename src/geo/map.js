@@ -538,6 +538,15 @@ _.extend(cdb.geo.LeafLetLayerView.prototype, {
 
 });
 
+cdb.geo.LeafLetLayerCartoDBView = function(layerModel, leafletLayer, leafletMap) {
+  cdb.geo.LeafLetLayerView.call(this, layerModel, leafletLayer, leafletMap);
+}
+_.extend(cdb.geo.LeafLetLayerCartoDBView.prototype, {
+  _update: function() {
+  }
+});
+
+
 
 /**
  * leatlef impl
@@ -645,7 +654,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   },
 
   _addLayer: function(layer) {
-    var lyr;
+    var lyr, layer_view;
 
     // Adds reference to the parent mapView
     // TODO: do not track views from model
@@ -654,13 +663,16 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     //TODO: create layers in view not in model
     if (layer.get('type') == "Tiled") {
       lyr = layer.getTileLayer();
+      layer_view = new cdb.geo.LeafLetLayerView(layer, lyr, this.map_leaflet);
+
     }
 
     if (layer.get('type') == 'CartoDB') {
       lyr = layer.getTileLayer();
+      layer_view = new cdb.geo.LeafLetLayerCartoDBView(layer, lyr, this.map_leaflet);
     }
 
-    this.layers[layer.cid] = new cdb.geo.LeafLetLayerView(layer, lyr, this.map_leaflet);
+    this.layers[layer.cid] = layer_view;
 
     if (lyr) {
       //TODO: do not track view from model

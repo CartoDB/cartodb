@@ -9,10 +9,13 @@ $(function() {
     var Table = cdb.core.View.extend({
         el: document.body,
         events: {
-          'keypress': 'keyPress'
+          'keypress': 'keyPress',
+          'keyup': 'keyUp'
         },
 
         initialize: function() {
+
+          this.ctrlPressed = false;
 
           this._initModels();
           this._initViews();
@@ -61,9 +64,21 @@ $(function() {
           // when the table name is known the tiles from
           // the tile server can be fetched
           this.table.bind('change:name', function() {
-            self.dataLayer.set({ table_name: self.table.get('name') });
+            self.dataLayer.set({table_name: this.get('name')});
             self.map.addLayer(self.dataLayer);
           });
+
+          this.table.bind('change:dataSource', function() {
+            var sql = '';
+            if(this.isInSQLView()) {
+              sql = this.data().options.get('sql');
+            }
+            cdb.log.info("tiler: sql: " + sql);
+            self.dataLayer.set({
+              query: sql
+            });
+          });
+
 
         },
 
@@ -97,7 +112,9 @@ $(function() {
 
           // lateral menu modules
           var sql = new cdb.admin.mod.SQL({ model: this.table });
+          var carto = new cdb.admin.mod.Carto({ model: this.dataLayer });
           this.menu.addModule(sql.render());
+          this.menu.addModule(carto.render());
 
           //sql.bind('sqlQuery', this.table.sql);
 
@@ -111,14 +128,16 @@ $(function() {
 
         },
 
+        keyUp: function(e) {
+        },
+
         keyPress: function(e) {
-          //TODO: do keystroke properly
-          if(String.fromCharCode(e.keyCode) === 's') {
+          if(e.which == 19) {
             this.menu.show();
-            this.menu.active('sql');
+            this.menu.active('sql_mod');
             e.preventDefault();
+            return false;
           }
-          return 0;
         }
 
     });

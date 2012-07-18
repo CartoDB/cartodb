@@ -54,20 +54,27 @@ cdb.admin.RightMenu = cdb.core.View.extend({
     this.panels.addTab(v.buttonClass, v);
     var buttons;
     if(v.type == 'tool') {
-      buttons = this.$('.tools')
+      buttons = this.$('.tools');
     } else {
-      buttons = this.$('.edit')
+      buttons = this.$('.edit');
     }
     var b = new Button();
     b.className = v.buttonClass;
-    buttons.append(b.render().el);
+    buttons.append(b.render().$el.css({ display: 'block'}));
     this.addView(b);
-    b.bind('click', this.panels.active, this.panels);
+
+    // call togle before activate panel
     b.bind('click', this.toggle, this);
+    b.bind('click', this.panels.active, this.panels);
   },
 
-  toggle: function() {
-    if(this.isOpen) {
+  active: function(modName) {
+    this.panels.active(modName);
+  },
+
+  toggle: function(modName) {
+    // only hide if we click on active tab
+    if(this.isOpen && modName == this.panels.activeTab) {
       this.hide();
     } else {
       this.show();
@@ -78,14 +85,14 @@ cdb.admin.RightMenu = cdb.core.View.extend({
     this.isOpen = false;
     this.$el.animate({
       right: -535
-    })
+    });
   },
 
   show: function() {
     this.isOpen = true;
     this.$el.animate({
       right: 0
-    })
+    });
   }
 
 });

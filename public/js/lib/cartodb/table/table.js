@@ -5,30 +5,12 @@
 
 $(function() {
 
-    var Header = cdb.core.View.extend({
-
-        initialize: function() {
-          this.table = this.model;
-          this.table.bind('change:name', this.tableName, this);
-          this.table.bind('change:sqlView', this.onSQLView, this);
-          this.add_related_model(this.table);
-        },
-
-        tableName: function() {
-          this.$('h2.special a').html(this.table.get('name'));
-        },
-
-        onSQLView: function() {
-          var color = this.table.sqlView ? 'orange': 'blue';
-          this.$el.css({
-            'background-color': color
-          });
-        }
-
-    });
 
     var Table = cdb.core.View.extend({
         el: document.body,
+        events: {
+          'keypress': 'keyPress'
+        },
 
         initialize: function() {
 
@@ -87,7 +69,7 @@ $(function() {
 
         _initViews: function() {
 
-          this.header = new Header({
+          this.header = new cdb.admin.Header({
             el: this.$('header'),
             model: this.table
           });
@@ -127,6 +109,16 @@ $(function() {
           this.workView.bind('tabEnabled', this.tabs.activate);
           this.workView.active('table');
 
+        },
+
+        keyPress: function(e) {
+          //TODO: do keystroke properly
+          if(String.fromCharCode(e.keyCode) === 's') {
+            this.menu.show();
+            this.menu.active('sql');
+            e.preventDefault();
+          }
+          return 0;
         }
 
     });

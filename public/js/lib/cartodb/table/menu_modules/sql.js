@@ -20,6 +20,10 @@ cdb.admin.mod.SQL = cdb.core.View.extend({
       this.sqlView = new cdb.admin.SQLViewData();
     },
 
+    activated: function() {
+      this.$('textarea').focus();
+    },
+
     render: function() {
       this.$el.append(this.template({}));
       return this;

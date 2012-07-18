@@ -134,10 +134,7 @@
 
       if(view) {
         this._data.unlinkFromSchema();
-        this.sqlView.bind('reset', this._renderRows, this);
-        this.sqlView.bind('add', this.addRow, this);
         view.bind('reset', function() {
-          //data.reset(view.models);
           self.set({ schema: view.schemaFromData()});
         }, this);
         // swicth source data
@@ -148,7 +145,11 @@
         // get the original schema
         this.fetch();
       }
-      this.trigger('change:sqlView', this);
+      this.trigger('change:dataSource', this.dataModel, this);
+    },
+
+    isInSQLView: function() {
+      return this.sqlView ? true: false;
     },
 
     /**
@@ -196,24 +197,25 @@
 
     model: cdb.admin.Row,
 
-    options: new Backbone.Model({
-      rows_per_page:40,
-      page: 0,
-      mode: 'asc',
-      order_by: 'cartodb_id',
-      filter_column: '',
-      filter_value: ''
-    }),
-
     initialize: function(models, options) {
-      var self = this;
       this.table = options.table;
       this.model.prototype.idAttribute = 'cartodb_id';
-      // dont bind directly to fetch because change send
-      // options that are use in fetch
+      this.initOptions();
       this.linkToSchema();
       this.filter = null;
       this._fetching = false;
+    },
+
+    initOptions: function() {
+      var self = this;
+      this.options = new Backbone.Model({
+        rows_per_page:40,
+        page: 0,
+        mode: 'asc',
+        order_by: 'cartodb_id',
+        filter_column: '',
+        filter_value: ''
+      });
       this.options.bind('change', function() {
         if(self._fetching) {
           return;
@@ -319,14 +321,30 @@
 
     initialize: function(models, options) {
       this.model.prototype.idAttribute = 'cartodb_id';
+      //cdb.admin.CartoDBTableData.prototype.initialize.call(this, models, options);
+      this.initOptions();
       if(options && options.sql) {
         this.setSQL(options.sql);
       }
+      this.bind('reset', function() {
+        console.log("sql reset");
+      });
+      this.bind('add', function() {
+        console.log("sql add");
+      });
     },
 
     setSQL: function(sql) {
-      //this.sql = sql;
-      this.options.set({sql :sql});
+      // reset options whiout changing raising a new fetchs
+      this.options.set({
+        page: 0,
+        mode: 'asc',
+        order_by: 'cartodb_id',
+        filter_column: '',
+        filter_value: ''
+      }, { silent: true} );
+
+      this.options.set({ sql :sql });
     },
 
     schemaFromData: function() {
@@ -340,6 +358,7 @@
     url: function() {
       var u = '/api/v1/queries/';
       u += "?" + this._createUrlOptions();
+      console.log("fetching " + u);
       return u;
     }
 

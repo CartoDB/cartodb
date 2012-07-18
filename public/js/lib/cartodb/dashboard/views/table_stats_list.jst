@@ -1,0 +1,18 @@
+<ul>
+  <li>
+    <div class="progress">
+      <span class="" style="width:<%= (table_count / table_quota) * 100 %>%"></span>
+    </div>
+    <p class="center"><strong><%= table_count %> of <%= table_quota %></strong> tables created</p>
+  </li>
+  <li>
+    <div class="progress">
+      <span class="" style="width:<%= ((byte_quota - remaining_byte_quota) / byte_quota) * 100 %>%"></span>
+    </div>
+    <p class="center"><strong><%= (( byte_quota - remaining_byte_quota ) / (1024*1024)).toFixed(2) %> of <%= (byte_quota / (1024*1024)).toFixed(0) %></strong> used megabytes</p>
+  </li>
+  <li>
+    <div class="stats" data-requests="<%= api_calls %>"></div>
+    <p class="center"><strong><%= _.reduce(api_calls, function(memo, num){ return memo + num; }, 0) %></strong> API calls the last 21 days</p>
+  </li>
+</ul>

@@ -9,7 +9,7 @@ feature "API 1.0 columns management" do
     @user  = create_user({:username => 'test'})
   end
 
-  scenario "Get standard information for the user" do    
+  scenario "Get standard information for the user by id" do    
     @user
     get_json api_user_url(@user.id) do |response|
       response.body.should == {:username          => "test", 
@@ -21,6 +21,12 @@ feature "API 1.0 columns management" do
                                :byte_quota        => 104857600, 
                                :remaining_byte_quota  => 103231488.0, 
                                :api_calls         => (1..30).map{|i| i}}       
+      response.status.should be_success      
+    end
+  end
+  scenario "Get standard information for the user by username" do    
+    @user
+    get_json api_user_url(@user.username) do |response|
       response.status.should be_success      
     end
   end

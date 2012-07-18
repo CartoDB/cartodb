@@ -8,45 +8,34 @@
     tagName: 'ul',
 
     initialize: function() {
+
+      this.model = new cdb.admin.User({ id : this.options.userid });
+
       this.template = cdb.templates.getTemplate('dashboard/views/table_stats_list');
 
-      this.model.bind('reset', this.reset, this);
-      this.model.bind('add', this.add, this);
-      this.model.bind('remove', this.remove, this);
+      this.options.tables.bind('add',     this.tableChange, this);
+      this.options.tables.bind('remove',  this.tableChange, this);
+      this.options.tables.bind('reset',   this.tableChange, this);
+
+      this.model.bind('change', this.render, this);
     },
 
-    reset: function() {
-      cdb.log.info("fetch")
-      this.render();
-    },
-
-    add: function(m) {
-      cdb.log.info(m);
-    },
-
-    remove: function(m) {
-      cdb.log.info("remove")
-      cdb.log.info(m)
+    tableChange: function() {
+      this.model.fetch();
     },
 
     render: function() {
-      var self = this;
-      $.ajax({
-        type: "GET",
-        url: "/api/v1/users/" + this.options.userid,
-        dataType: "json",
-        success: function(r) {
-          self.$el.html(self.template(r));
-
-          return self;
-        },
-        error: function(e) {
-          cdb.log.info(e)
-        }
-      });
+      this.$el.html(this.template(this.model.toJSON()));
+      return this;
     }
   });
 
   cdb.admin.dashboard.TableStats = TableStats;
-
 })();
+
+
+
+cdb.admin.User = Backbone.Model.extend({
+  urlRoot: '/api/v1/users',
+  initialize: function() {}
+});

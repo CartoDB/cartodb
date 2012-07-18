@@ -11,9 +11,11 @@ javascripts:
     - public/js/lib/cdb.js/vendor/underscore-min.js
     - public/js/lib/cdb.js/vendor/backbone.js
     - public/js/lib/cdb.js/vendor/leaflet.js
+    - public/js/lib/cdb.js/vendor/*.js
     - public/js/lib/cdb.js/src/cartodb.js
     - public/js/lib/cdb.js/src/core/**/*.js
     - public/js/lib/cdb.js/src/ui/**/*.js
+    - public/js/lib/cdb.js/src/geo/map.js
     - public/js/lib/cdb.js/src/geo/**/*.js
 
   dashboard:

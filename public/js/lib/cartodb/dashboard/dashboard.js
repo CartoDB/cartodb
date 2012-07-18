@@ -36,7 +36,7 @@ $(function() {
             el: this.$('section.subheader div.inner'),
             username: username,
             userid: userid,
-            model: this.tables
+            tables: this.tables
           })
 
           // D3 API Requests

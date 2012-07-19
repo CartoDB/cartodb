@@ -34,44 +34,44 @@ CartoDB::Application.routes.draw do
 
   scope "/api" do
     namespace CartoDB::API::VERSION_1, :format => :json, :module => "api/json" do
-      get    '/column_types'                         => 'meta#column_types'      
-      get    '/tables'                               => 'tables#index'
-      post   '/tables'                               => 'tables#create'
-      get    '/tables/tags/:tag_name'                => 'tables#index'
-      get    '/tables/tags'                          => 'tags#index'
-      get    '/tables/:id'                           => 'tables#show'
-      put    '/tables/:id'                           => 'tables#update'
-      delete '/tables/:id'                           => 'tables#destroy'
-      post   '/tables/:id/infowindow'                => 'tables#set_infowindow', :as => "api_tables_info_window"
-      post   '/tables/:id/map_metadata'              => 'tables#set_map_metadata', :as => "api_tables_map_metadata"
-      get    '/tables/:id/map_metadata'              => 'tables#get_map_metadata'
-      get    '/tables/:table_id.:format'             => 'export_tables#show'
+      get    '/column_types'                                    => 'meta#column_types'
+      get    '/tables'                                          => 'tables#index'
+      post   '/tables'                                          => 'tables#create'
+      get    '/tables/tags/:tag_name'                           => 'tables#index'
+      get    '/tables/tags'                                     => 'tags#index'
+      get    '/tables/:id'                                      => 'tables#show'
+      put    '/tables/:id'                                      => 'tables#update'
+      delete '/tables/:id'                                      => 'tables#destroy'
+      post   '/tables/:id/infowindow'                           => 'tables#set_infowindow', :as   => "api_tables_info_window"
+      post   '/tables/:id/map_metadata'                         => 'tables#set_map_metadata', :as => "api_tables_map_metadata"
+      get    '/tables/:id/map_metadata'                         => 'tables#get_map_metadata'
+      get    '/tables/:table_id.:format'                        => 'export_tables#show'
       #we should depricate the following four
-      get    '/tables/:table_id/export/csv'          => 'export_tables#show', :format => :csv
-      get    '/tables/:table_id/export/shp'          => 'export_tables#show', :format => :shp
-      get    '/tables/:table_id/export/kml'          => 'export_tables#show', :format => :kml
-      get    '/tables/:table_id/export/sql'          => 'export_tables#show', :format => :sql
-      get    '/tables/:table_id/records'             => 'records#index'
-      post   '/tables/:table_id/records'             => 'records#create'
-      get    '/tables/:table_id/records/pending_addresses' => 'records#pending_addresses'
-      get    '/tables/:table_id/records/:id'         => 'records#show'
-      put    '/tables/:table_id/records/:id'         => 'records#update'
-      delete '/tables/:table_id/records/:id'         => 'records#destroy'
-      get    '/tables/:table_id/columns'             => 'columns#index'
-      post   '/tables/:table_id/columns'             => 'columns#create'
-      get    '/tables/:table_id/columns/:id'         => 'columns#show'
-      put    '/tables/:table_id/columns/:id'         => 'columns#update'
-      delete '/tables/:table_id/columns/:id'         => 'columns#delete'
+      get    '/tables/:table_id/export/csv'                     => 'export_tables#show', :format  => :csv
+      get    '/tables/:table_id/export/shp'                     => 'export_tables#show', :format  => :shp
+      get    '/tables/:table_id/export/kml'                     => 'export_tables#show', :format  => :kml
+      get    '/tables/:table_id/export/sql'                     => 'export_tables#show', :format  => :sql
+      get    '/tables/:table_id/records'                        => 'records#index'
+      post   '/tables/:table_id/records'                        => 'records#create'
+      get    '/tables/:table_id/records/pending_addresses'      => 'records#pending_addresses'
+      get    '/tables/:table_id/records/:id'                    => 'records#show'
+      put    '/tables/:table_id/records/:id'                    => 'records#update'
+      delete '/tables/:table_id/records/:id'                    => 'records#destroy'
+      get    '/tables/:table_id/columns'                        => 'columns#index'
+      post   '/tables/:table_id/columns'                        => 'columns#create'
+      get    '/tables/:table_id/columns/:id'                    => 'columns#show'
+      put    '/tables/:table_id/columns/:id'                    => 'columns#update'
+      delete '/tables/:table_id/columns/:id'                    => 'columns#delete'
       get    '/tables/:table_id/records/:record_id/columns/:id' => 'records#show_column'
       put    '/tables/:table_id/records/:record_id/columns/:id' => 'records#update_column'
-      get    '/queries'                              => 'queries#run'
+      get    '/queries'                                         => 'queries#run'
 
       # imports
-      resources :uploads, :only => :create
-      resources :imports, :only => [:create, :show, :index]
+      resources :uploads, :only                                 => :create
+      resources :imports, :only                                 => [:create, :show, :index]
 
       # Dashboard
-      resources :users, :only => [:show]
+      resources :users, :only                                   => [:show]
     end
   end
 end

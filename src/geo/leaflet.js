@@ -47,12 +47,34 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
  */
 
 var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
+  var self = this;
+
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+
   var opts = layerModel.toJSON();
+
   opts.map =  leafletMap;
-  opts.featureOver = this.featureOver;
-  opts.featureOut = this.featureOut;
-  opts.featureClick = this.featureClick;
+
+  var // preserve the user's callbacks
+  _featureOver  = opts.featureOver,
+  _featureOut   = opts.featureOut,
+  _featureClick = opts.featureClick;
+
+  opts.featureOver  = function() {
+    _featureOver  && _featureOver.apply(this, arguments);
+    self.featureOver  && self.featureOver.apply(this, arguments);
+  };
+
+  opts.featureOut  = function() {
+    _featureOut  && _featureOut.apply(this, arguments);
+    self.featureOut  && self.featureOut.apply(this, arguments);
+  };
+
+  opts.featureClick  = function() {
+    _featureClick  && _featureClick.apply(this, arguments);
+    self.featureClick  && self.featureClick.apply(opts, arguments);
+  };
+
   leafletLayer = new L.CartoDBLayer(opts);
   LeafLetLayerView.call(this, layerModel, leafletLayer, leafletMap);
 };

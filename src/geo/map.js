@@ -34,7 +34,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     query: null,
     opacity: 0.99,
     auto_bound: false,
-    interactivity: 'cartodb_id',
+    interactivity: null,
     debug: false,
     visible: true,
     tiler_domain: "cartodb.com",

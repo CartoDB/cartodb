@@ -30,8 +30,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.map.on('zoomstart', this.hide);
     this.map.on('zoomend', this.show);
 
-    var self = this;
-
     this.map.on('click', function() {
       self.model.set("visibility", false);
     });

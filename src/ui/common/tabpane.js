@@ -82,6 +82,9 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
         }
 
         v.show();
+        if(v.activated) { 
+          v.activated();
+        }
         self.trigger('tabEnabled', name, v);
         self.trigger('tabEnabled:' + name,  v);
 

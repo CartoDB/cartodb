@@ -38,12 +38,15 @@
     ];
 
     cdb.init = function(ready) {
-      cdb._loadJST();
+      // define a simple class
+      var Class = cdb.Class = function() {};
+      _.extend(Class.prototype, Backbone.Events);
 
-    window.cdb.god = new Backbone.Model();
+      cdb._loadJST();
+      window.cdb.god = new Backbone.Model();
 
       ready && ready();
-    }
+    };
 
     /**
      * load all the javascript files. For testing, do not use in production

@@ -57,6 +57,7 @@ cdb.ui.common.RowView = cdb.core.View.extend({
   initialize: function() {
     this.model.bind('change', this.render, this);
     this.model.bind('destroy', this.clean, this);
+    this.model.bind('remove', this.clean, this);
     this.add_related_model(this.model);
     this.order = this.options.order;
   },
@@ -130,9 +131,9 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.rowViews = [];
 
     // binding
-    this.dataModel.bind('reset', this._renderRows, this);
-    this.dataModel.bind('add', this.addRow, this);
+    this.setDataSource(this.dataModel);
     this.model.bind('change', this.render, this);
+    this.model.bind('change:dataSource', this.setDataSource, this);
 
     // assert the rows are removed when table is removed
     this.bind('clean', this.clear_rows, this);
@@ -144,6 +145,15 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
   headerView: function(column) {
       return column[0];
+  },
+
+  setDataSource: function(dm) {
+    if(this.dataModel) {
+      this.dataModel.unbind(null, null, this);
+    }
+    this.dataModel = dm;
+    this.dataModel.bind('reset', this._renderRows, this);
+    this.dataModel.bind('add', this.addRow, this);
   },
 
   _renderHeader: function() {
@@ -164,24 +174,43 @@ cdb.ui.common.Table = cdb.core.View.extend({
    * remove all rows
    */
   clear_rows: function() {
-    _(this.rowViews).each(function(tr) {
-      tr.clean();
-    });
+    while(this.rowViews.length) {
+      // each element removes itself from rowViews
+      this.rowViews[0].clean();
+    }
     this.rowViews = [];
   },
 
   /**
    * add rows
    */
-  addRow: function(row) {
+  addRow: function(row, collection, options) {
     var self = this;
     var tr = new self.rowView({
       model: row,
       order: this.model.columnNames()
     });
-    self.$el.append(tr.render().el);
-    tr.$el.attr('data-y', self.rowViews.length);
-    self.rowViews.push(tr);
+
+    tr.bind('clean', function() {
+      self.rowViews.splice(_.indexOf(self.rowViews,this), 1);
+    });
+
+    tr.render();
+    if(options && options.index !== undefined && options.index != self.rowViews.length) {
+
+      tr.$el.insertBefore(self.rowViews[options.index].$el);
+      self.rowViews.splice(options.index, 0, tr);
+      //tr.$el.attr('data-y', options.index);
+      // change others view data-y attribute
+      for(var i = options.index; i < self.rowViews.length; ++i) {
+        self.rowViews[i].$el.attr('data-y', i);
+      }
+    } else {
+      // at the end
+      tr.$el.attr('data-y', self.rowViews.length);
+      self.$el.append(tr.el);
+      self.rowViews.push(tr);
+    }
   },
 
   /**

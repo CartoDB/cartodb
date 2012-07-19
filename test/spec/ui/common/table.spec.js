@@ -135,6 +135,7 @@ describe("common.ui.Table", function() {
       table.render();
       cols.at(0).destroy();
       expect(table.$('tr').length).toEqual(2);
+      expect(table.rowViews.length).toEqual(1);
     });
 
     it("should add rows", function() {
@@ -143,11 +144,27 @@ describe("common.ui.Table", function() {
       expect(table.$('tr').length).toEqual(4);
     });
 
+    it("should add rows at index", function() {
+      table.render();
+      cols.add({'id': 10, 'col1': 11, 'col2': 12, 'col3': 13}, {at: 1});
+      expect(table.$('tr').length).toEqual(4);
+      var cell = table.getCell(0, 1);
+      expect(cell.html()).toEqual('10');
+      expect(cell.parent().attr('data-y')).toEqual('1');
+      expect(table.getCell(0, 2).parent().attr('data-y')).toEqual('2');
+    });
+
+    it("should remove rows", function() {
+      table.render();
+      cols.remove(cols.at(0));
+      expect(table.$('tr').length).toEqual(2);
+    });
+
     it("should return cell x,y", function() {
        //$('#foo').trigger('click');
       var cell = table.render().getCell(0, 1);
       expect(cell.html()).toEqual('2');
-      var cell = table.getCell(1, 1);
+      cell = table.getCell(1, 1);
       expect(cell.html()).toEqual('4');
     });
 
@@ -155,7 +172,7 @@ describe("common.ui.Table", function() {
       var cell = table.render().getCell(0, 1);
       spy = {
         click: function() {}
-      }
+      };
       spyOn(spy, 'click');
       table.bind('cellClick', spy.click, spy);
       cell.trigger('click');
@@ -164,6 +181,16 @@ describe("common.ui.Table", function() {
       expect(spy.click.mostRecentCall.args[1]).toEqual(0);
       expect(spy.click.mostRecentCall.args[2]).toEqual(1);
 
+    });
+
+    it("should render new data on change data source", function() {
+      cols = new cdb.ui.common.TableData();
+      table.setDataSource(cols);
+      cols.reset([
+        {'id': 100, 'col1': 1, 'col2': 2, 'col3': 3}
+      ]);
+      cell = table.getCell(0, 0);
+      expect(cell.html()).toEqual('100');
     });
 
   });

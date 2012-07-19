@@ -1,7 +1,9 @@
+
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   defaults: {
     latlng: new L.LatLng(0, 0),
     offset: new L.Point(58, 2),
+    template_name: 'geo/infowindow',
     autoPan: true,
     content: "",
     visibility: false
@@ -15,16 +17,18 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   initialize: function(){
     var self = this;
 
-    _.bindAll(this, "render", "setLatLng", "_updatePosition", "_update", "toggle", "show", "hide");
+    _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
 
     this.mapView = this.options.mapView;
     this.map     = this.mapView.map_leaflet;
 
-    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/infowindow');
+    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate(this.model.get("template_name"));
 
     this.model.on('change:content', this.render);
+    this.model.on('change:template_name', this.changeTemplate);
     this.model.on('change:latlng', this.render);
     this.model.on('change:visibility', this.toggle);
+
     this.map.on('viewreset', this._updatePosition);
     this.map.on('drag', this._updatePosition);
     this.map.on('zoomstart', this.hide);
@@ -36,6 +40,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.render();
     this.$el.hide();
+
+  },
+
+  changeTemplate: function(template_name) {
+
+    this.template = cdb.templates.getTemplate(this.model.get("template_name"));
+    this.render();
 
   },
 

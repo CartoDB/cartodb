@@ -380,14 +380,15 @@ if (typeof(L.CartoDBLayer) === "undefined") {
         );
         url_params.push(k + "=" + q);
       }
-      cartodb_url += url_params.join('&');
 
+      cartodb_url += url_params.join('&');
 
       // extra_params?
       for (_param in this.options.extra_params) {
          cartodb_url += "&"+_param+"="+this.options.extra_params[_param];
       }
 
+      cartodb_url = cartodb_url.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
 
       this.layer = new L.TileLayer(cartodb_url,{attribution:'CartoDB', opacity: this.options.opacity});
 
@@ -468,6 +469,7 @@ if (typeof(L.CartoDBLayer) === "undefined") {
       // SQL?
       if (this.options.query) {
         var query = 'sql=' + encodeURIComponent(this.options.query.replace(/\{\{table_name\}\}/g,this.options.table_name));
+
         tile_url = this._addUrlData(tile_url, query);
         grid_url = this._addUrlData(grid_url, query);
       }

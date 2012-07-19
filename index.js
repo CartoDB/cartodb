@@ -5,9 +5,9 @@
 *
 **/
 
+//= require cdb/vendor/leaflet
 //= require cdb/vendor/cartodb-leaflet
 //= require cdb/vendor/wax.leaf.min-7.0.0dev1-touched
-
 //= require cdb/src/cartodb
 //= require cdb/src/core/config
 //= require cdb/src/core/log

@@ -1,7 +1,7 @@
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   defaults: {
-    latlng: new L.LatLng(0, 0),
-    offset: new L.Point(58, 2),
+    latlng: [0, 0],
+    offset: [58, 2],
     autoPan: true,
     content: "",
     visibility: false
@@ -56,6 +56,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   */
   setLatLng: function (latlng) {
     this.model.set("latlng", latlng);
+    return this;
   },
 
   showInfowindow: function() {
@@ -80,7 +81,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   _updatePosition: function () {
 
     var
-    pos  = this.map.layerPointToContainerPoint(this.map.latLngToLayerPoint(this.model.get("latlng"))),
+    pos  = this.mapView.latLonToPixel(this.model.get("latlng")),
     top  = pos.y - this.$el.outerHeight(true) + 12,
     left = pos.x - this.$el.width() / 2;
 
@@ -98,7 +99,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     containerHeight = this.$el.outerHeight(true),
     containerWidth  = this.$el.width(),
     layerPos        = new L.Point(x, y),
-    pos             = this.map.layerPointToContainerPoint(this.map.latLngToLayerPoint(this.model.get("latlng"))),
+    pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
     adjustOffset    = new L.Point(0, 0),
     size            = map.getSize();
 

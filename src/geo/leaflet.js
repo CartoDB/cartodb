@@ -47,17 +47,37 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
  */
 
 var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
+  _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
   var opts = layerModel.toJSON();
   opts.map =  leafletMap;
+  opts.featureOver = this.featureOver;
+  opts.featureOut = this.featureOut;
+  opts.featureClick = this.featureClick;
   leafletLayer = new L.CartoDBLayer(opts);
   LeafLetLayerView.call(this, layerModel, leafletLayer, leafletMap);
 };
 
 
 _.extend(LeafLetLayerCartoDBView.prototype, LeafLetLayerView.prototype, {
+
   _update: function() {
     this.leafletLayer.setOptions(this.model.toJSON());
-  }
+  },
+
+  featureOver: function(e, latlon, pixelPos, data) {
+    // dont pass leaflet lat/lon
+    this.trigger('featureOver', e, [latlon.lat, latlon.lng], pixelPos, data);
+  },
+
+  featureOut: function(e) {
+    this.trigger('featureOut', e);
+  },
+
+  featureClick: function(e, latlon, pixelPos, data) {
+    // dont pass leaflet lat/lon
+    this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data);
+  },
+
 });
 
 cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
@@ -157,6 +177,14 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
   },
 
+  getLayerByCid: function(cid) {
+    var l = this.layers[cid];
+    if(!l) {
+      cdb.log.error("layer with cid " + cid + " can't be get");
+    }
+    return l;
+  },
+
   _removeLayer: function(layer) {
     //this.map_leaflet.removeLayer(layer.lyr);
     this.layers[layer.cid].remove();
@@ -186,7 +214,13 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     } else {
       cdb.log.error("layer type not supported");
     }
+  },
+
+  latLonToPixel: function(latlon) {
+    var point = this.map_leaflet.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
+    return this.map_leaflet.layerPointToContainerPoint(point);
   }
+
 });
 
 })();

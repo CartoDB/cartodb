@@ -34,6 +34,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     query: null, 
     opacity: 0.99,
     auto_bound: false,
+    interactivity: 'cartodb_id',
     debug: false,
     visible: true,
     tiler_domain: "cartodb.com",
@@ -107,26 +108,7 @@ cdb.geo.Map = Backbone.Model.extend({
     // Set options
     L.Util.setOptions(this, options);
 
-    // Update tiles
-    //this._update();
   },
-
-  /**
-   * Update CartoDB layer
-   */
-  _update: function() {
-    // First remove old layer
-    this.clearLayers();
-
-    // Create the new updated one
-    if (!this.options.interactivity) {
-      this._addSimple();
-    } else {
-      this._addInteraction();
-    }
-  },
-
-
 
   addLayer: function(layer) {
     this.layers.add(layer);

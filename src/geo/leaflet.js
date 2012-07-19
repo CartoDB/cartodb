@@ -36,10 +36,7 @@ var LeafLetTiledLayerView = function(layerModel, leafletMap) {
 _.extend(LeafLetTiledLayerView.prototype, LeafLetLayerView.prototype, {
   _update: function() {
     _.defaults(this.leafletLayer.options, this.model.toJSON());
-    // NOTE: change those 3 calls by setUrl (available in Leaflet 0.4)
-    this.leafletLayer._url = this.model.get('urlTemplate');
-    this.leafletLayer._reset(true);
-    this.leafletLayer._update();
+    this.leafletLayer.setUrl(this.model.get('urlTemplate'));
   }
 });
 
@@ -89,9 +86,9 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     // this var stores views information for each model
     this.layers = {};
 
-    this.map.bind('set_view', this._setView);
-    this.map.layers.bind('add', this._addLayer);
-    this.map.layers.bind('remove', this._removeLayer);
+    this.map.bind('set_view', this._setView, this);
+    this.map.layers.bind('add', this._addLayer, this);
+    this.map.layers.bind('remove', this._removeLayer, this);
 
     this._bindModel();
 
@@ -184,7 +181,8 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     this.layers[layer.cid] = layer_view;
 
     if (layer_view) {
-      this.map_leaflet.addLayer(layer_view.leafletLayer);
+      var isBaseLayer = this.layers.length === 1;
+      this.map_leaflet.addLayer(layer_view.leafletLayer, isBaseLayer);
     } else {
       cdb.log.error("layer type not supported");
     }

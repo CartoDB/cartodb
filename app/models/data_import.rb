@@ -176,24 +176,18 @@ class DataImport < Sequel::Model
   private
 
   def append_to_existing
-    @new_table = Table.new
-    @new_table.user_id = current_user.id
-    @new_table.data_import_id = id
-    @new_table.name = table_name              if table_name?
-    @new_table.import_from_file = data_source if file?
-    @new_table.import_from_url = data_source  if url?
-    @new_table.save
 
-    @new_table.reload
+    imports, errors = import_to_cartodb data_type, data_source
     @table = Table.filter(:user_id => current_user.id, :id => table_id).first
-    @table.append_to_table(:from_table => @new_table)
-    @table.save.reload
-    # append_to_table doesn't automatically destroy the table
-    @new_table.destroy
+    (imports || []).each do |import|
+      migrate_existing import.name, table_name
+      @new_table = Table.filter(:name => import.name).first
+      @table.append_to_table(:from_table => @new_table)
+      @table.save
+      # append_to_table doesn't automatically destroy the table
+      @new_table.destroy
+    end
 
-    return [{:id => @table.id,
-             :name => @table.name,
-             :schema => @table.schema}, table_path(@table)]
   end
 
   def import_to_cartodb method, import_source
@@ -320,6 +314,10 @@ class DataImport < Sequel::Model
 
   def current_user
     @current_user ||= User[user_id]
+  end
+
+  def table_name?
+    table_name.present?
   end
 
   def file?

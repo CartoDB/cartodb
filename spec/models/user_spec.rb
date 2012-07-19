@@ -89,6 +89,26 @@ describe User do
     @user2.tables.all.should == [Table.first(:user_id => @user2.id)]
   end
 
+  it "should update remaining quotas when adding or removing tables" do
+    initial_quota = @user2.remaining_quota
+    
+    expect { create_table :user_id => @user2.id, :privacy => Table::PUBLIC }
+      .to change { @user2.remaining_table_quota }.by(-1)
+    
+    table = Table.filter(:user_id => @user2.id).first
+    50.times { |i| table.insert_row!(:name => "row #{i}") }
+
+    @user2.remaining_quota.should be < initial_quota
+
+    initial_quota = @user2.remaining_quota
+
+    expect { table.destroy }
+      .to change { @user2.remaining_table_quota }.by(1)
+    @user2.remaining_quota.should be > initial_quota
+  end
+
+  it "should be able to create tables until his table quota"
+
   it "should has his own database, created when the account is created" do    
     @user.database_name.should == "cartodb_test_user_#{@user.id}_db"
     @user.database_username.should == "test_cartodb_user_#{@user.id}"

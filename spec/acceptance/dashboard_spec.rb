@@ -9,11 +9,14 @@ feature "Dashboard", %q{
 } do
 
   scenario "Login and visit my dashboard" do
-    user = create_user({:quota_in_bytes => 500000,
-                        :table_quota    => 50,
+    user = create_user({:quota_in_bytes => 50000000,
+                        :table_quota    => 100,
                         :account_type   => 'Coronelli',
                         :private_tables_enabled => true})
-    the_other = create_user
+    the_other = create_user({:quota_in_bytes => 50000000,
+                             :table_quota    => 100,
+                             :account_type   => 'Coronelli',
+                             :private_tables_enabled => true})
     t = Time.now - 6.minutes
     Timecop.travel(t)
     20.times do |i|
@@ -41,16 +44,15 @@ feature "Dashboard", %q{
 
     within(:css, "header") do
       page.should have_link("CartoDB")
-      page.should have_content(user.email)
     end
 
     page.should have_css("footer")
 
-    page.should have_css("ul.tables_list li.selected a", :text => "Your tables")
+    page.should have_css("ul#tablelist")
 
     page.should have_content("22 tables in your account")
 
-    within("ul.your_tables li:eq(1)") do
+    within("ul#tablelist li:eq(1)") do
       page.should have_link("downloaded_movies")
       page.should have_content("PRIVATE")
       # page.should have_content("4 minutes ago")

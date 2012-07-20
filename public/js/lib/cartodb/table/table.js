@@ -58,7 +58,8 @@ $(function() {
           this.dataLayer = new cdb.geo.CartoDBLayer({
             user_name: user_name,
             tiler_port: cdb.config.get('tiler_port'),
-            tiler_domain: cdb.config.get('tiler_domain')
+            tiler_domain: cdb.config.get('tiler_domain'),
+            interactivity: 'cartodb_id'
           });
 
           // when the table name is known the tiles from

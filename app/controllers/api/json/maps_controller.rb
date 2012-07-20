@@ -19,6 +19,26 @@ class Api::Json::MapsController < Api::ApplicationController
     end
   end
 
+  def create
+    @map = Map.new(params[:map])
+    @map.user_id = current_user.id
+
+    if @map.save
+      render_jsonp( { :id => @map.id,
+                       :provider => @map.provider,
+                       :bounding_box_sw => @map.bounding_box_sw,
+                       :bounding_box_ne => @map.bounding_box_ne,
+                       :center => @map.center,
+                       :zoom => @map.zoom
+                       })
+    else
+      CartoDB::Logger.info "Error on maps#create", @map.errors.full_messages
+      render_jsonp( { :description => @map.errors.full_messages,
+                      :stack => @map.errors.full_messages
+                    }, 400)
+    end
+  end
+
   protected
 
   def load_map

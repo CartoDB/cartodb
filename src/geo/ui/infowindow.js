@@ -31,10 +31,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:latlng', this.render, this);
     this.model.bind('change:visibility', this.toggle, this);
 
-    this.map.on('viewreset', this._updatePosition);
-    this.map.on('drag', this._updatePosition);
-    this.map.on('zoomstart', this.hide);
-    this.map.on('zoomend', this.show);
+    this.mapView.map.bind('change', this._updatePosition, this);
+    this.map.on('viewreset', this._updatePosition, this);
+    this.map.on('drag', this._updatePosition, this);
+    this.map.on('zoomstart', this.hide, this);
+    this.map.on('zoomend', this.show, this);
 
     this.map.on('click', function() {
       self.model.set("visibility", false);
@@ -56,7 +57,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.html($(this.template(this.model.toJSON())));
     this._update();
 
-    return this.$el;
+    return this;
   },
 
   toggle: function() {

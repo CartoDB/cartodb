@@ -94,7 +94,8 @@ class Api::Json::TablesController < Api::ApplicationController
                        :tags => @table[:tags_names],
                        :schema => @table.schema(:reload => true),
                        :updated_at => @table.updated_at,
-                       :rows_counted => @table.rows_estimated
+                       :rows_counted => @table.rows_estimated,
+                       :map_id => @table.map_id
                        })
       end
     end

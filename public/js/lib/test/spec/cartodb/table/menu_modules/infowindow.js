@@ -26,7 +26,7 @@ describe("mod.infowindow", function() {
       console.log(model.attributes.fields);
     });
     model.removeField('name1');
-    expect($(view.$el.find('li')[0]).hasClass('enabled')).toEqual(false);
+    expect(view.$el.find('li').length).toEqual(1);
   });
 
   it("should toggle fields on click", function() {

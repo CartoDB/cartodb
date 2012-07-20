@@ -72,6 +72,9 @@ CartoDB::Application.routes.draw do
 
       # Dashboard
       resources :users, :only                                   => [:show]
+
+      # Maps
+      resources :maps, :only => [:show]
     end
   end
 end

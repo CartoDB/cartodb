@@ -37,6 +37,7 @@ $(function() {
           });
           this.columns = this.table.data();
           this.map = new cdb.geo.Map();
+          this.infowindow = new cdb.geo.ui.InfowindowModel({ });
 
           //TODO: load this from an initial data file or d
           // something like this
@@ -68,6 +69,14 @@ $(function() {
             self.dataLayer.set({table_name: this.get('name')});
             self.map.addLayer(self.dataLayer);
           });
+
+          //temporal
+          this.table.bind('change:schema', function() {
+            _(self.table.get('schema')).each(function(v) {
+              self.infowindow.addField(v[0]);
+            });
+            self.table.unbind(null, null, this);
+          }, this.infowindow);
 
           this.table.bind('change:dataSource', function() {
             var sql = '';
@@ -107,7 +116,8 @@ $(function() {
             model: this.map,
             baseLayers: this.baseLayers,
             dataLayer: this.dataLayer,
-            table: this.table
+            table: this.table,
+            infowindow: this.infowindow
           });
 
           this.menu = new cdb.admin.RightMenu({});
@@ -117,8 +127,13 @@ $(function() {
           // lateral menu modules
           var sql = new cdb.admin.mod.SQL({ model: this.table });
           var carto = new cdb.admin.mod.Carto({ model: this.dataLayer });
+          var infowindow = new cdb.admin.mod.InfoWindow({ 
+            table: this.table,
+            model: this.infowindow
+          });
           this.menu.addModule(sql.render(), ['table', 'map']);
           this.menu.addModule(carto.render(), 'map');
+          this.menu.addModule(infowindow.render(), 'map');
 
           //sql.bind('sqlQuery', this.table.sql);
 

@@ -28,6 +28,8 @@
 		@include background(linear-gradient(#94BE42,#7FA938));
 		@include border-radius(3px);
 		border:1px solid #6A8C2D;
+		letter-spacing:-1px;
+		word-spacing:1px;
 
 		/* TYPES */
 		// Session type

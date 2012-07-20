@@ -74,7 +74,7 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
     initialize: function() {
       this.model.bind('reset', this._addAll, this);
       this.model.bind('add', this._addTable, this);
-      this.model.bind('destroy', this._updateListHeader, this);
+      this.model.bind('remove', this._updateListHeader, this);
     },
 
     render: function() {

@@ -54,4 +54,23 @@ describe("right menu", function() {
     expect(view.panels.activeTab).toEqual('testButtonClass');
 
   });
+
+  it("should hide tools realted to a section", function() {
+    var v = new cdb.core.View();
+    v.buttonClass = 'testButtonClass';
+    v.type = 'tool';
+    view.render();
+    view.addModule(v, 'table');
+
+    var v2 = new cdb.core.View();
+    v2.buttonClass = 'testButtonClass2';
+    v2.type = 'tool';
+    view.addModule(v2, 'map');
+
+    view.showTools('map');
+    expect(view.buttons[0].$el.css('display')).toEqual('none');
+    view.showTools('table');
+    expect(view.buttons[0].$el.css('display')).not.toEqual('none');
+
+  });
 });

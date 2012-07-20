@@ -117,8 +117,8 @@ $(function() {
           // lateral menu modules
           var sql = new cdb.admin.mod.SQL({ model: this.table });
           var carto = new cdb.admin.mod.Carto({ model: this.dataLayer });
-          this.menu.addModule(sql.render());
-          this.menu.addModule(carto.render());
+          this.menu.addModule(sql.render(), ['table', 'map']);
+          this.menu.addModule(carto.render(), 'map');
 
           //sql.bind('sqlQuery', this.table.sql);
 
@@ -160,10 +160,12 @@ $(function() {
 
         index: function() {
           this.table.workView.active('table');
+          this.table.menu.showTools('table');
         },
 
         map: function() {
           this.table.workView.active('map');
+          this.table.menu.showTools('map');
         }
 
     });

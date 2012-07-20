@@ -38,6 +38,7 @@ cdb.admin.RightMenu = cdb.core.View.extend({
   initialize: function() {
     this.panels = new cdb.ui.common.TabPane();
     this.tabs = new cdb.admin.Tabs();
+    this.buttons = [];
     this.addView(this.panels);
     this.template = this.getTemplate('table/views/right_panel');
     this.isOpen = true;
@@ -50,7 +51,8 @@ cdb.admin.RightMenu = cdb.core.View.extend({
     return this;
   },
 
-  addModule: function(v) {
+  addModule: function(v, sections) {
+    sections = sections || ['table'];
     this.panels.addTab(v.buttonClass, v);
     var buttons;
     if(v.type == 'tool') {
@@ -60,8 +62,10 @@ cdb.admin.RightMenu = cdb.core.View.extend({
     }
     var b = new Button();
     b.className = v.buttonClass;
+    b.sections = _.isArray(sections) ? sections: [sections];
     buttons.append(b.render().$el.css({ display: 'block'}));
     this.addView(b);
+    this.buttons.push(b);
 
     // call togle before activate panel
     b.bind('click', this.toggle, this);
@@ -70,6 +74,17 @@ cdb.admin.RightMenu = cdb.core.View.extend({
 
   active: function(modName) {
     this.panels.active(modName);
+  },
+
+  showTools: function(section) {
+    this.hide();
+    _(this.buttons).each(function(b) {
+      if(_.include(b.sections, section)) {
+        b.show();
+      } else {
+        b.hide();
+      }
+    });
   },
 
   toggle: function(modName) {

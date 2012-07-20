@@ -17,7 +17,7 @@ describe("tablestats", function() {
 
   it("should update user stats when tables model is fetched", function() {
     spyOn(tablestats, '_tableChange');
-    tables.fetch();
+    tables.reset();
     expect(tablestats._tableChange).toHaveBeenCalled();
   });
 

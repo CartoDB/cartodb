@@ -6,6 +6,77 @@ describe('core.ui.common.TabPane', function() {
     pane = new cdb.ui.common.TabPane();
   });
 
+  it("getPreviousPane should return the last pane if the active pane is the first one", function() {
+
+    var // Let's create the views
+    v1 = new cdb.core.View(),
+    v2 = new cdb.core.View(),
+    v3 = new cdb.core.View();
+
+    // Add some tabs
+    pane.addTab('tab1', v1);
+    pane.addTab('tab2', v2);
+    pane.addTab('tab3', v3);
+
+    pane.active('tab1');
+
+    expect(pane.getPreviousPane()).toEqual(v3);
+
+  });
+  it("getPreviousPane should return the previous pane", function() {
+
+    var // Let's create the views
+    v1 = new cdb.core.View(),
+    v2 = new cdb.core.View(),
+    v3 = new cdb.core.View();
+
+    // Add some tabs
+    pane.addTab('tab1', v1);
+    pane.addTab('tab2', v2);
+    pane.addTab('tab3', v3);
+
+    pane.active('tab2');
+
+    expect(pane.getPreviousPane()).toEqual(v1);
+
+  });
+
+  it("getNextPane should return the next pane", function() {
+
+    var // Let's create the views
+    v1 = new cdb.core.View(),
+    v2 = new cdb.core.View(),
+    v3 = new cdb.core.View();
+
+    // Add some tabs
+    pane.addTab('tab1', v1);
+    pane.addTab('tab2', v2);
+    pane.addTab('tab3', v3);
+
+    pane.active('tab1');
+
+    expect(pane.getNextPane()).toEqual(v2);
+
+  });
+
+  it("getNextPane should return the first pane if the last pane is active", function() {
+
+    var // Let's create the views
+    v1 = new cdb.core.View(),
+    v2 = new cdb.core.View(),
+    v3 = new cdb.core.View();
+
+    // Add some tabs
+    pane.addTab('tab1', v1);
+    pane.addTab('tab2', v2);
+    pane.addTab('tab3', v3);
+
+    pane.active('tab3');
+
+    expect(pane.getNextPane()).toEqual(v1);
+
+  });
+
   it("getActive should return the desired pane", function() {
 
     var // Let's create the views
@@ -23,6 +94,7 @@ describe('core.ui.common.TabPane', function() {
     expect(pane.getPane('tab2')).toEqual(v2);
 
   });
+
   it("getActivePane should return the active pane", function() {
 
     var // Let's create the views

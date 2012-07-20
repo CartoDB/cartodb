@@ -38,6 +38,26 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
     }
   },
 
+  getPreviousPane: function() {
+    var tabs  = _.toArray(this.tabs);
+    var panes = _.toArray(this._subviews);
+
+    var i = _.indexOf(tabs, this.activePane.cid) - 1;
+    if (i < 0) i = panes.length - 1;
+
+    return panes[i];
+  },
+
+  getNextPane: function() {
+    var tabs  = _.toArray(this.tabs);
+    var panes = _.toArray(this._subviews);
+
+    var i = 1 + _.indexOf(tabs, this.activePane.cid);
+    if (i > panes.length - 1) i = 0;
+
+    return panes[i];
+  },
+
   getPane: function(name) {
     var vid = this.tabs[name];
     return this._subviews[vid];

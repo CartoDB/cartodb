@@ -20,7 +20,7 @@ class Api::Json::MapsController < Api::ApplicationController
   end
 
   def create
-    @map = Map.new(params.slice(:provider, :bounding_box_sw, :bounding_box_ne, :center, :zoom))
+    @map = Map.new(params.slice(:provider, :bounding_box_sw, :bounding_box_ne, :center, :zoom, :table_id))
     @map.user_id = current_user.id
 
     if @map.save

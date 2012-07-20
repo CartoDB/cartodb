@@ -981,7 +981,7 @@ class Table < Sequel::Model(:user_tables)
       #
       # NOTE: we fetch one more row to verify estimated rowcount is not short
       #
-      rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY #{order_by_column} #{mode} LIMIT #{per_page}+1 OFFSET #{page}"].all
+      rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY \"#{order_by_column}\" #{mode} LIMIT #{per_page}+1 OFFSET #{page}"].all
       CartoDB::Logger.info "Query", "fetch: #{rows.length}"
 
       # Tweak estimation if needed

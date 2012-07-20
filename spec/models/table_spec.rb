@@ -32,17 +32,17 @@ end
 
 describe Table do
 
-  before(:all) do    
+  before(:all) do
     puts "\n[rspec][table_spec] Creating test user database..."
     @quota_in_bytes = 524288000
     @table_quota    = 500
     @new_user = new_user
-    @user     = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)      
+    @user     = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)
     puts "[rspec][table_spec] Running..."
   end
 
   context "table setups" do
-    it "should set a default name different than the previous" do      
+    it "should set a default name different than the previous" do
       table = Table.new
       table.user_id = @user.id
       table.save.reload
@@ -74,7 +74,7 @@ describe Table do
 
     it "should be private if it's creating user has the ability to make private tables" do
       @user.private_tables_enabled = true
-      @user.save      
+      @user.save
       table = create_table(:user_id => @user.id)
       table.privacy.should == Table::PRIVATE
     end
@@ -82,7 +82,7 @@ describe Table do
     it "should be able to make private tables if the user gets the ability to do it" do
       @user.private_tables_enabled = false
       @user.save
-    
+
       table = create_table(:user_id => @user.id)
       table.privacy.should == Table::PUBLIC
 
@@ -96,7 +96,7 @@ describe Table do
     it "should only be able to make public tables if the user is stripped of permissions" do
       @user.private_tables_enabled = true
       @user.save
-      
+
       table = create_table(:user_id => @user.id)
       table.privacy.should == Table::PRIVATE
 
@@ -130,7 +130,7 @@ describe Table do
 
       @user.private_tables_enabled = false
       @user.save
-      
+
       table.privacy = Table::PUBLIC
       table.save.should be_true
     end
@@ -138,7 +138,7 @@ describe Table do
     it "should not be able to convert to public table if the user has no permissions" do
       @user.private_tables_enabled = false
       @user.save
-    
+
       table = create_table(:user_id => @user.id)
       table.privacy.should == Table::PUBLIC
 
@@ -151,7 +151,7 @@ describe Table do
     it "should not be able to convert to public table if the user is stripped of " do
       @user.private_tables_enabled = true
       @user.save
-      
+
       table = create_table(:user_id => @user.id)
       table.privacy.should == Table::PRIVATE
 
@@ -168,11 +168,11 @@ describe Table do
       }.to raise_error(Sequel::ValidationFailed)
     end
 
-    it "should not allow public user access to a table when it is private" do      
+    it "should not allow public user access to a table when it is private" do
       @user.private_tables_enabled = true
       @user.save
 
-      table = create_table(:user_id => @user.id) 
+      table = create_table(:user_id => @user.id)
       table.should be_private
 
       expect {
@@ -183,18 +183,18 @@ describe Table do
     it "should allow public user access when the table is public" do
       @user.private_tables_enabled = true
       @user.save
-      table = create_table(:user_id => @user.id)      
+      table = create_table(:user_id => @user.id)
 
       table.should be_private
       $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PRIVATE
 
       table.privacy = Table::PUBLIC
       table.save
-      
+
       expect {
         @user.in_database(:as => :public_user).run("select * from #{table.name}")
       }.to_not raise_error
-      
+
       $tables_metadata.hget(table.key,"privacy").to_i.should == Table::PUBLIC
     end
 
@@ -222,7 +222,7 @@ describe Table do
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
-      
+
       table = create_table({:name => 'Wadus table', :user_id => @user.id})
 
       Rails::Sequel.connection.table_exists?(table.name.to_sym).should be_false
@@ -248,12 +248,12 @@ describe Table do
       end
     end
 
-    it "should store the identifier of its owner when created" do      
+    it "should store the identifier of its owner when created" do
       table = create_table(:user_id => @user.id)
       $tables_metadata.hget(table.key,"user_id").should == table.user_id.to_s
     end
 
-    it "should rename the pk sequence when renaming the table" do      
+    it "should rename the pk sequence when renaming the table" do
       table1 = new_table :name => 'table 1', :user_id => @user.id
       table1.save.reload
       table1.name.should == 'table_1'
@@ -269,12 +269,12 @@ describe Table do
       lambda {
         table2.destroy
       }.should_not raise_error
-    end    
+    end
   end
 
   context "redis syncs" do
     it "should have a unique key to be identified in Redis" do
-      table = create_table(:user_id => @user.id)      
+      table = create_table(:user_id => @user.id)
       table.key.should == "rails:#{table.database_name}:#{table.name}"
     end
 
@@ -282,11 +282,11 @@ describe Table do
       table = create_table(:user_id => @user.id)
       original_name = table.name
       original_the_geom_type = table.the_geom_type
-      
+
       table.name = "brand_new_name"
       table.save_changes
       table.reload
-      
+
       table.key.should == "rails:#{table.database_name}:#{table.name}"
       $tables_metadata.exists(table.key).should be_true
       $tables_metadata.exists(original_name).should be_false
@@ -321,32 +321,32 @@ describe Table do
       table.schema.should be_equal_to_default_cartodb_schema
     end
 
-    it "can be associated to many tags" do      
-      delete_user_data @user            
+    it "can be associated to many tags" do
+      delete_user_data @user
       table = create_table :user_id => @user.id, :tags => "tag 1, tag 2,tag 3, tag 3"
 
       Tag.count.should == 3
-      
+
       tag1 = Tag[:name => 'tag 1']
       tag1.user_id.should  == @user.id
       tag1.table_id.should == table.id
-            
+
       tag2 = Tag[:name => 'tag 2']
       tag2.user_id.should  == @user.id
       tag2.table_id.should == table.id
-      
+
       tag3 = Tag[:name => 'tag 3']
       tag3.user_id.should  == @user.id
       tag3.table_id.should == table.id
 
       table.tags = "tag 1"
       table.save_changes
-      
+
       Tag.count.should == 1
       tag1 = Tag[:name => 'tag 1']
       tag1.user_id.should  == @user.id
       tag1.table_id.should == table.id
-      
+
       table.tags = "    "
       table.save_changes
       Tag.count.should == 0
@@ -462,8 +462,8 @@ describe Table do
       ])
     end
 
-    it "should sanitize columns from a given schema" do      
-      delete_user_data @user      
+    it "should sanitize columns from a given schema" do
+      delete_user_data @user
       table = new_table(:user_id => @user.id)
       table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
       table.save
@@ -474,8 +474,8 @@ describe Table do
       ])
     end
 
-    it "should alter the schema automatically to a a wide range of numbers when inserting" do      
-      table = new_table(:user_id => @user.id)      
+    it "should alter the schema automatically to a a wide range of numbers when inserting" do
+      table = new_table(:user_id => @user.id)
       table.force_schema = "name varchar, age integer"
       table.save
 
@@ -489,8 +489,8 @@ describe Table do
       table.schema.should include([:age, "number"])
     end
 
-    it "should alter the schema automatically to a a wide range of numbers when inserting a number with 0" do      
-      table = new_table(:user_id => @user.id)      
+    it "should alter the schema automatically to a a wide range of numbers when inserting a number with 0" do
+      table = new_table(:user_id => @user.id)
       table.force_schema = "name varchar, age integer"
       table.save
 
@@ -504,8 +504,8 @@ describe Table do
       table.schema.should include([:age, "number"])
     end
 
-    it "should alter the schema automatically to a a wide range of numbers when updating" do      
-      table = new_table(:user_id => @user.id)      
+    it "should alter the schema automatically to a a wide range of numbers when updating" do
+      table = new_table(:user_id => @user.id)
       table.force_schema = "name varchar, age integer"
       table.save
 
@@ -519,8 +519,8 @@ describe Table do
       table.schema.should include([:age, "number"])
     end
 
-    it "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do      
-      table = new_table(:user_id => @user.id)      
+    it "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do
+      table = new_table(:user_id => @user.id)
       table.force_schema = "name varchar(40)"
       table.save
 
@@ -533,7 +533,7 @@ describe Table do
       table.schema(:cartodb_types => false).should include([:name, "text"])
     end
 
-    it "should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception" do      
+    it "should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception" do
       table = new_table({:name => 'table1', :user_id => @user.id})
       table.save
       pk = table.insert_row!({:name => "name #1", :description => "description #1"})
@@ -548,7 +548,7 @@ describe Table do
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
     end
 
-    it "should not remove an existing table when the creation of a new table from a file with the same name has raised an exception" do      
+    it "should not remove an existing table when the creation of a new table from a file with the same name has raised an exception" do
       table = new_table({:name => 'table1', :user_id => @user.id})
       table.save
 
@@ -606,7 +606,7 @@ describe Table do
       }.should raise_error(CartoDB::InvalidAttributes)
     end
 
-    it "should be able to insert a row with a geometry value" do      
+    it "should be able to insert a row with a geometry value" do
       table = new_table(:user_id => @user.id)
       table.save.reload
 
@@ -620,8 +620,8 @@ describe Table do
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
 
-    it "should update null value to nil when inserting and updating" do      
-      table = new_table(:user_id => @user.id)      
+    it "should update null value to nil when inserting and updating" do
+      table = new_table(:user_id => @user.id)
       table.force_schema = "valid boolean"
       table.save.reload
 
@@ -696,10 +696,10 @@ describe Table do
       res[:upo___nombre_partido].should == "PSOEE"
     end
   end
-  
+
   context "counter updates" do
-    it "should increase the tables_count counter from owner" do      
-      delete_user_data(@user) && @user.reload            
+    it "should increase the tables_count counter from owner" do
+      delete_user_data(@user) && @user.reload
       @user.tables_count.should == 0
 
       table = create_table(:user_id => @user.id)
@@ -730,8 +730,8 @@ describe Table do
       table2.save.reload
       table2.name.should == 'empty_file_2'
     end
-    
-    it "should escape table names starting with numbers" do      
+
+    it "should escape table names starting with numbers" do
       table = new_table :user_id => @user.id, :name => '123_table_name'
       table.save.reload
 
@@ -743,7 +743,7 @@ describe Table do
       table.name.should == "table_table_name"
     end
 
-    it "should get a valid name when a table when a name containing the current name exists" do      
+    it "should get a valid name when a table when a name containing the current name exists" do
       table = create_table :name => 'Table #20', :user_id => @user.id
       table2 = create_table :name => 'Table #2', :user_id => @user.id
       table2.reload
@@ -800,7 +800,7 @@ describe Table do
         user_database.table_exists?(table.name.to_sym).should be_true
       end
     end
-  
+
     it "should not drop a table that exists when upload does not fail" do
       delete_user_data @user
       table = new_table :name => 'empty_file', :user_id => @user.id
@@ -851,7 +851,7 @@ describe Table do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
 
-      table = Table[data_import.table_id]      
+      table = Table[data_import.table_id]
       table_schema = @user.in_database.schema(table.name)
 
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
@@ -873,7 +873,7 @@ describe Table do
         [:cartodb_id, "number"], [:name, "string"], [:the_geom, "geometry", "geometry", "point"],
         [:invalid_the_geom, "string"], [:created_at, "date"], [:updated_at, "date"]
       ], :cartodb_types => true)
-      
+
       table_schema = @user.in_database.schema(table.name)
       cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
       cartodb_id_schema.should be_present
@@ -905,7 +905,7 @@ describe Table do
       rows.last[:name].should == "Row 8"
     end
 
-    it "should make sure it converts created_at and updated at to date types when importing from CSV" do      
+    it "should make sure it converts created_at and updated at to date types when importing from CSV" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :data_source   => '/../db/fake_data/gadm4_export.csv' )
       table = Table[data_import.table_id]
@@ -997,7 +997,7 @@ describe Table do
       table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == 0
     end
 
-    it "should normalize number if there is a non-convertible entry when converting number to boolean" do  
+    it "should normalize number if there is a non-convertible entry when converting number to boolean" do
       table = new_table :user_id => @user.id
       table.name = "my_precious"
       importer, errors = create_import @user, "#{Rails.root}/db/fake_data/column_number_to_boolean.csv"
@@ -1058,7 +1058,7 @@ describe Table do
       ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
     end
 
-    it "should be able to set a the_geom column from numeric latitude column and a longitude column" do  
+    it "should be able to set a the_geom column from numeric latitude column and a longitude column" do
       table = Table.new
       table.user_id = @user.id
       table.name = 'Madrid Bars'
@@ -1108,7 +1108,7 @@ describe Table do
       res = table.sequel.select{[st_x(the_geom),st_y(the_geom)]}.first
       res.should == {:st_x=>-3.699732, :st_y=>40.423012}
     end
-  
+
     context "geojson tests" do
       it "should return a geojson for the_geom if it is a point" do
         table = new_table :user_id => @user.id
@@ -1126,7 +1126,7 @@ describe Table do
         RGeo::GeoJSON.decode(record[:the_geom], :json_parser => :json).as_text.should == "POINT (#{"%.3f" % lon} #{"%.3f" % lat})"
       end
 
-      it "should raise an error when the geojson provided is invalid" do        
+      it "should raise an error when the geojson provided is invalid" do
         table = new_table :user_id => @user.id
         table.save.reload
 
@@ -1145,7 +1145,7 @@ describe Table do
     it "create table via SQL statement and then migrate table into CartoDB" do
       table = new_table :name => nil, :user_id => @user.id
       table.migrate_existing_table = "exttable"
-      
+
       @user.run_pg_query("CREATE TABLE exttable (go VARCHAR, ttoo INT, bed VARCHAR)")
       @user.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
                           INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 2, 'p')")
@@ -1153,12 +1153,12 @@ describe Table do
       table.name.should == 'exttable'
       table.rows_counted.should == 2
     end
-  
+
     it "create and migrate a table containing a the_geom and cartodb_id" do
       delete_user_data @user
       table = new_table :name => nil, :user_id => @user.id
       table.migrate_existing_table = "exttable"
-      
+
       @user.run_pg_query("CREATE TABLE exttable (the_geom VARCHAR, cartodb_id INT, bed VARCHAR)")
       @user.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
                          INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
@@ -1274,7 +1274,7 @@ describe Table do
       file_ct.should == 1
     end
 
-    it "should import and then export file SHP1.zip as sql" do      
+    it "should import and then export file SHP1.zip as sql" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :table_name    => 'esp_adm1',
                                        :data_source   => '/../db/fake_data/SHP1.zip' )

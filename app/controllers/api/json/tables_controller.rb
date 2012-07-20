@@ -44,30 +44,30 @@ class Api::Json::TablesController < Api::ApplicationController
                       }
                     })
   end
-  
+
   # Very basic controller method to simply make blank tables
   # All other table creation things are controlled via the imports_controller#create
-  def create    
+  def create
     @table = Table.new
     @table.user_id        = current_user.id
     @table.name           = params[:name]          if params[:name]
-    @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type] 
+    @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
     @table.force_schema   = params[:schema]        if params[:schema]
-        
-    if @table.valid? && @table.save            
-      render_jsonp( { :id              => @table.id, 
-                      :name            => @table.name, 
-                      :schema          => @table.schema, 
-                      :updated_at      => @table.updated_at, 
+
+    if @table.valid? && @table.save
+      render_jsonp( { :id              => @table.id,
+                      :name            => @table.name,
+                      :schema          => @table.schema,
+                      :updated_at      => @table.updated_at,
                       :rows_counted    => @table.rows_estimated,
                       :privacy         => table_privacy_text(@table)
                     }, 200, {:location => table_path(@table)})
     else
       CartoDB::Logger.info "Error on tables#create", @table.errors.full_messages
-      render_jsonp( { :description => @table.errors.full_messages, 
-                      :stack => @table.errors.full_messages 
+      render_jsonp( { :description => @table.errors.full_messages,
+                      :stack => @table.errors.full_messages
                     }, 400)
-    end    
+    end
   end
 
   def show
@@ -94,7 +94,7 @@ class Api::Json::TablesController < Api::ApplicationController
                        :tags => @table[:tags_names],
                        :schema => @table.schema(:reload => true),
                        :updated_at => @table.updated_at,
-                       :rows_counted => @table.rows_estimated 
+                       :rows_counted => @table.rows_estimated
                        })
       end
     end
@@ -116,7 +116,7 @@ class Api::Json::TablesController < Api::ApplicationController
                             where id=?",@table.id).first
 
       # wont allow users to set a table to same name, sends error
-      unless params[:name].blank? 
+      unless params[:name].blank?
         if params[:name].downcase != @table.name
           owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
           if params[:name][0].match(/[^0-9]/).nil?

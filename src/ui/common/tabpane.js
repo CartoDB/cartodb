@@ -38,6 +38,11 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
     }
   },
 
+  getPane: function(name) {
+    var vid = this.tabs[name];
+    return this._subviews[vid];
+  },
+
   getActivePane: function() {
     return this.activePane;
   },

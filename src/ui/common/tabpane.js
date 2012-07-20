@@ -38,6 +38,11 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
     }
   },
 
+  getPane: function(name) {
+    var vid = this.tabs[name];
+    return this._subviews[vid];
+  },
+
   getActivePane: function() {
     return this.activePane;
   },
@@ -82,7 +87,7 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
         }
 
         v.show();
-        if(v.activated) { 
+        if(v.activated) {
           v.activated();
         }
         self.trigger('tabEnabled', name, v);
@@ -91,8 +96,9 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
         this.activeTab = name;
         this.activePane = v;
 
-        return this.activePane;
       }
+
+      return this.activePane;
     }
   },
 

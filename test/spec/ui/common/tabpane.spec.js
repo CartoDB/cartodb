@@ -6,6 +6,23 @@ describe('core.ui.common.TabPane', function() {
     pane = new cdb.ui.common.TabPane();
   });
 
+  it("getActive should return the desired pane", function() {
+
+    var // Let's create the views
+    v1 = new cdb.core.View(),
+    v2 = new cdb.core.View(),
+    v3 = new cdb.core.View();
+
+    // Add some tabs
+    pane.addTab('tab1', v1);
+    pane.addTab('tab2', v2);
+    pane.addTab('tab3', v3);
+
+    expect(pane.getPane('tab1')).toEqual(v1);
+    expect(pane.getPane('tab3')).toEqual(v3);
+    expect(pane.getPane('tab2')).toEqual(v2);
+
+  });
   it("getActivePane should return the active pane", function() {
 
     var // Let's create the views

@@ -16,21 +16,21 @@ describe("tablestats", function() {
   });
 
   it("should update user stats when tables model is fetched", function() {
-    spyOn(tablestats, '_tableChange');
-    tables.fetch();
-    expect(tablestats._tableChange).toHaveBeenCalled();
+    spyOn(tablestats.model, 'fetch');
+    tables.reset([{name: 'test'}]);
+    expect(tablestats.model.fetch).toHaveBeenCalled();
   });
 
   it("should update user stats when new table is added", function() {
-    spyOn(tablestats, '_tableChange');
+    spyOn(tablestats.model, 'fetch');
     tables.add({name: 'test'});
-    expect(tablestats._tableChange).toHaveBeenCalled();
+    expect(tablestats.model.fetch).toHaveBeenCalled();
   });
 
   it("should update user stats when a table is removed", function() {
     tables.add({name: 'test'});
-    spyOn(tablestats, '_tableChange');
+    spyOn(tablestats.model, 'fetch');
     tables.remove(tables.at(0));
-    expect(tablestats._tableChange).toHaveBeenCalled();
+    expect(tablestats.model.fetch).toHaveBeenCalled();
   });
 });

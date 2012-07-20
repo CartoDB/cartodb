@@ -1,113 +1,180 @@
-/*
-  DOC it
-  Refactor it
-  Add tests
-  Best animation: appear empty and then fill them
+/**
+ * User stats embeded in the dashboard
+ *
+ * It shows the tables and the space used in the user account
+ * You must set the username, the user id and the tables model,
+ * if not, it won't work.
+ *
+ * usage example:
+ *
+ *    this.tableStats = new cdb.admin.dashboard.TableStats({
+ *      el: this.$('div.subheader'),
+ *      username: "admin",
+ *      userid: 1,
+ *      tables: tables.model
+ *    })
+ *
+ *
+ * TODO:
+ *  - Animate progress colors (not possible with gradients)
+ *  - Animate numbers from the beginning
 */
+
 
 
 (function() {
 
+  $.ajaxSetup({ cache: false });
+
   /**
-   * dasboard table stats
+   * Dasboard table stats
    */
   var TableStats = cdb.core.View.extend({
-    tagName: 'ul',
+    
     defaults: {
       loaded: false
+    },
+
+    events: {
+      'click section.warning a.close':  '_disableWarning'
     },
 
     initialize: function() {
       this.model = new cdb.admin.User({ id : this.options.userid });
 
-      this.template = cdb.templates.getTemplate('dashboard/views/table_stats_list');
+      // If the user doesn't want to see the warning anymore)
+      this.warning = true;
 
-      this.options.tables.bind('add',     this.tableChange, this);
-      this.options.tables.bind('remove',  this.tableChange, this);
-      this.options.tables.bind('reset',   this.tableChange, this);
+      // If any change happened in the tables model, fetch the user stats
+      this.options.tables.bind('add',     this._tableChange, this);
+      this.options.tables.bind('remove',  this._tableChange, this);
+      this.options.tables.bind('reset',   this._tableChange, this);
 
+      // Any change, render this view
       this.model.bind('change', this.render, this);
     },
 
-    tableChange: function() {
+
+    /*
+     * Table change function -> Fetch model!
+     */
+    _tableChange: function() {
       this.model.fetch();
     },
 
+
     render: function() {
 
-      // Check tables count quota status
-      if (((this.model.attributes.table_count / this.model.attributes.table_quota) * 100) < 80) {
-        this.model.attributes.table_quota_status = "";
+      // Calculate quotas first
+      this._calculateQuotas();
+
+      // If there is danger...
+      if (this.model.attributes.byte_quota_status != "" || this.model.attributes.table_quota_status != "") {
+        this._showWarning();
       } else {
-        if (((this.model.attributes.table_count / this.model.attributes.table_quota) * 100) < 90) {
-          this.model.attributes.table_quota_status = "danger";
-        } else {
-          this.model.attributes.table_quota_status = "boom";
-        }
+        this._hideWarning();
       }
 
-      // Check table space quota status
-      if ((((this.model.attributes.byte_quota - this.model.attributes.remaining_byte_quota) / this.model.attributes.byte_quota) * 100) < 80) {
-        this.model.attributes.byte_quota_status = "";
-      } else {
-        if ((((this.model.attributes.byte_quota - this.model.attributes.remaining_byte_quota) / this.model.attributes.byte_quota) * 100) < 90) {
-          this.model.attributes.byte_quota_status = "danger";
-        } else {
-          this.model.attributes.byte_quota_status = "boom";
-        }
-      }
-
+      // Rendering for the first time?
       if (!this.options.loaded) {
         this.options.loaded = !this.options.loaded;
-        this.$el.html(this.template(this.model.toJSON()));
-
-        // Animate it!
-        this._animateInit();
-
+        
         // D3 API Requests
         this.stats = this.stats = new cdb.admin.D3Stats({
-          el: this.$("div.stats")
+          el: this.$el.find("li:eq(2)"),
+          api_calls: this.model.attributes.api_calls
         });
-      } else {
-        this._animateChange();
       }
+
+      this._animateChange();
 
       return this;
     },
 
-    _animateInit: function() {
 
-      this.$el.find("li").each(function(i,ele){
-        setTimeout(function(){
-          $(ele).animate({opacity:1}, {duration:500, queue: true});
-        },300*i);
-      });
-      // this.$el.parent().animate({
-      //   marginTop:0
-      // },500, function(){
-      //   $(this).css({zIndex: 1})
-      // })
+    /*
+     * Calculate user quotas (calculations will be in the model)
+     */
+    _calculateQuotas: function() {
+
+      var attrs = this.model.attributes;
+
+      // Check tables count quota status
+      if (((attrs.table_count / attrs.table_quota) * 100) < 80) {
+        attrs.table_quota_status = "";
+      } else {
+        if (((attrs.table_count / attrs.table_quota) * 100) < 90) {
+          attrs.table_quota_status = "danger";
+        } else {
+          attrs.table_quota_status = "boom";
+        }
+      }
+
+      // Check table space quota status
+      if ((((attrs.byte_quota - attrs.remaining_byte_quota) / attrs.byte_quota) * 100) < 80) {
+        attrs.byte_quota_status = "";
+      } else {
+        if ((((attrs.byte_quota - attrs.remaining_byte_quota) / attrs.byte_quota) * 100) < 90) {
+          attrs.byte_quota_status = "danger";
+        } else {
+          attrs.byte_quota_status = "boom";
+        }
+      }
+
+      this.model.attributes = attrs;
     },
 
+
+    /*
+     * Animate the changes in the view
+     */
     _animateChange: function() {
 
-      // First li
-      var $first_li = this.$el.find("li:eq(0)")
-        , attrs = this.model.attributes;
-      $first_li.find("div.progress span").removeAttr("class").addClass(attrs.table_quota_status);
-      $first_li.find("p").html("<strong>" + attrs.table_count + " of " + attrs.table_quota + "</strong> tables created");
-      $first_li.find("div.progress span").animate({
-        width: ((attrs.table_count / attrs.table_quota) * 100) + "%"
-      },500)
+      var attrs = this.model.attributes
+        , $tables = this.$el.find("section.stats li:eq(0)")
+        , $space = this.$el.find("section.stats li:eq(1)");
 
-      // Second li
-      var $sec_li = this.$el.find("li:eq(1)");
-      $sec_li.find("div.progress span").removeAttr("class").addClass(attrs.byte_quota_status);
-      $sec_li.find("p").html("<strong>" + (( attrs.byte_quota - attrs.remaining_byte_quota ) / (1024*1024)).toFixed(2) + " of " + (attrs.byte_quota / (1024*1024)).toFixed(0) + "</strong> used megabytes");
-      $sec_li.find("div.progress span").animate({
-        width: (((attrs.byte_quota - attrs.remaining_byte_quota) / attrs.byte_quota) * 100) + "%"
-      },500)
+      // Tables change
+      $tables.find("p").html("<strong>" + attrs.table_count + " of " + attrs.table_quota + "</strong> tables created");
+      $tables.find("div.progress span")
+        .removeAttr("class").addClass(attrs.table_quota_status)
+        .animate({
+          width: ((attrs.table_count / attrs.table_quota) * 100) + "%"
+        },500);
 
+      // Space change
+      $space.find("p").html("<strong>" + (( attrs.byte_quota - attrs.remaining_byte_quota ) / (1024*1024)).toFixed(2) + " of " + (attrs.byte_quota / (1024*1024)).toFixed(0) + "</strong> used megabytes");
+      $space.find("div.progress span")
+        .removeAttr("class").addClass(attrs.byte_quota_status)
+        .animate({
+          width: (((attrs.byte_quota - attrs.remaining_byte_quota) / attrs.byte_quota) * 100) + "%"
+        },500);
+    },
+
+
+    /*
+     * Disabled the warning upgrade flash
+     */
+    _disableWarning: function() {
+      this.warning = false;
+      this._hideWarning();
+    },
+
+
+    /*
+     * Show the warning upgrade flash
+     */
+    _showWarning: function() {
+      if (this.warning)
+        this.$el.find("section.warning").addClass("visible");
+    },
+
+
+    /*
+     * Hide the warning upgrade flash
+     */
+    _hideWarning: function() {
+      this.$el.find("section.warning").removeClass("visible");
     }
   });
 

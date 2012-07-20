@@ -19,7 +19,7 @@
 cdb.admin.D3Stats = cdb.core.View.extend({
 
   tagName: 'div',
-  className: 'dialog',
+  className: 'stats',
 
   events: {
     //'click .close': 'hide'
@@ -32,7 +32,7 @@ cdb.admin.D3Stats = cdb.core.View.extend({
     _.defaults(this.options, this.default_options);
 
     // Get data
-    this.requests = this.$el.attr("data-requests").split(",");
+    this.requests = this.options.api_calls;
 
     // Render graphic!
     this.render();
@@ -40,9 +40,10 @@ cdb.admin.D3Stats = cdb.core.View.extend({
 
   render: function() {
 
+    // SVG
     var width = 291
       , height = 36
-      , svg = d3.select(this.el)
+      , svg = d3.select(this.$el.find("div.stats")[0])
                 .append("svg")
                 .attr("width",width)
                 .attr("height",height)
@@ -70,6 +71,12 @@ cdb.admin.D3Stats = cdb.core.View.extend({
         .style("fill", "none")
         .style("stroke-width", "2")
         .style("stroke", "#409FCE")
+
+
+    // Put total api calls
+    this.$el.find("p").html(
+      "<strong>" + _.reduce(this.requests, function(memo, num){ return memo + num; }, 0) + "</strong> API calls the last " + _.size(this.requests) + " days"
+    )
 
     return this;
   }

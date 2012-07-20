@@ -36,7 +36,7 @@ $(function() {
             id: table_id
           });
           this.columns = this.table.data();
-          this.map = new cdb.geo.Map();
+          this.map = new cdb.admin.Map();
           this.infowindow = new cdb.geo.ui.InfowindowModel({ });
 
           //TODO: load this from an initial data file or d

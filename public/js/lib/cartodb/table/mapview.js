@@ -66,9 +66,7 @@ cdb.admin.MapTab = cdb.core.View.extend({
   initialize: function() {
     this.map = this.model;
     this.map_enabled = false;
-    this.infowindowModel = new cdb.geo.ui.InfowindowModel({ 
-      content: "GHOAJSOL"
-    });
+    this.infowindowModel = this.options.infowindow;
 
     this.add_related_model(this.options.dataLayer);
     this.add_related_model(this.map);

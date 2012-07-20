@@ -106,7 +106,8 @@ $(function() {
           this.mapTab = new cdb.admin.MapTab({
             model: this.map,
             baseLayers: this.baseLayers,
-            dataLayer: this.dataLayer
+            dataLayer: this.dataLayer,
+            table: this.table
           });
 
           this.menu = new cdb.admin.RightMenu({});

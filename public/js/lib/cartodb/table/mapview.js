@@ -72,6 +72,7 @@ cdb.admin.MapTab = cdb.core.View.extend({
 
     this.add_related_model(this.options.dataLayer);
     this.add_related_model(this.map);
+    this.add_related_model(this.options.table);
     this.add_related_model(this.infowindowModel);
   },
 
@@ -97,10 +98,11 @@ cdb.admin.MapTab = cdb.core.View.extend({
             self.layerDataView = self.mapView.getLayerByCid(self.options.dataLayer.cid);
 
             self.layerDataView.bind('featureClick', self.featureClick, self);
-            self.infowindow = new cdb.geo.ui.Infowindow({
+            self.infowindow = new cdb.admin.MapInfowindow({
               model: self.infowindowModel,
               template: cdb.templates.getTemplate('table/views/infowindow'),
-              mapView: self.mapView
+              mapView: self.mapView,
+              table: self.options.table
             });
             self.mapView.$el.append(self.infowindow.el);
           }
@@ -110,7 +112,14 @@ cdb.admin.MapTab = cdb.core.View.extend({
   },
 
   featureClick: function(e, latlon, pxPos, data) {
-    this.infowindow.setLatLng(latlon).showInfowindow();
+    if(data.cartodb_id) {
+      this.infowindow
+        .setLatLng(latlon)
+        .setFeatureInfo(data.cartodb_id)
+        .showInfowindow();
+    } else {
+      cdb.log.error("can't show infowindow, no cartodb_id on data");
+    }
   },
 
   render: function() {

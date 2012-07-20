@@ -7,7 +7,7 @@
   @import "sprites";
   @import "mixins";
 
-  section.subheader {
+  section.stats {
     position:relative;
     @include inline-block();
     width:100%;
@@ -15,6 +15,7 @@
     background:white;
     border-bottom:1px solid #CDCDCD;
     @include single-box-shadow(rgba(0,0,0,0.07), 0, 4px, 3px, 0, false);
+    z-index:2;
 
     ul {
       letter-spacing:-4px;
@@ -22,7 +23,6 @@
         @include inline-block();
         width:239px;
         padding:40px;
-        @include opacity(0);
         border-right: 1px solid #E5E5E5;
         letter-spacing:0;
 
@@ -44,7 +44,7 @@
             @include border-radius(3px);
             @include background(linear-gradient(#85ACDC,#5990CE));
             @include transform-style("linear");
-            @include transition-property("background");
+            @include transition-property("width");
             @include transition-duration(500ms);
 
             &.boom {@include background(linear-gradient(#CB2828,#FF5255)); @include transform-style("linear"); @include transition-property("background"); @include transition-duration(500ms);}
@@ -72,6 +72,10 @@
           margin:10px 0 0 0;
           font-size:15px;
           color:#666666;
+          @include transform-style("linear");
+          @include transition-property("all");
+          @include transition-duration(500ms);
+
           strong {font-weight:bold}
         }
       }
@@ -79,9 +83,14 @@
   }
 
   section.warning {
+    margin:-70px 0 0 0;
     padding:25px 0;
     background:#FFF7EA;
     border-bottom:1px solid rgba(#CCCCCC,0.5);
+    z-index:-1;
+    @include transform-style("linear");
+    @include transition-property("all");
+    @include transition-duration(500ms);
 
     a.close {
       position:absolute;
@@ -94,5 +103,10 @@
       
       &:hover {@include icons-sprite(close_flash, $offset-y: -13px);}
       &:active {@include icons-sprite(close_flash, $offset-y: -26px);}
+    }
+
+    &.visible {
+      margin:0;
+      z-index:0;
     }
   }

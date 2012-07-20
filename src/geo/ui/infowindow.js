@@ -24,10 +24,12 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate(this.model.get("template_name"));
 
-    this.model.on('change:content', this.render);
-    this.model.on('change:template_name', this.changeTemplate);
-    this.model.on('change:latlng', this.render);
-    this.model.on('change:visibility', this.toggle);
+    this.add_related_model(this.model);
+
+    this.model.bind('change:content', this.render, this);
+    this.model.bind('change:template_name', this.changeTemplate, this);
+    this.model.bind('change:latlng', this.render, this);
+    this.model.bind('change:visibility', this.toggle, this);
 
     this.map.on('viewreset', this._updatePosition);
     this.map.on('drag', this._updatePosition);

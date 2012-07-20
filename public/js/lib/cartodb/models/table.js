@@ -166,23 +166,9 @@
   });
 
   cdb.admin.Row = Backbone.Model.extend({
-
-    initialize: function() {
-      /*
-      this.table = this.get('table');
-      if(!this.table) {
-        throw new Exception("you should specify a table model");
-      }
-      this.unset('table', { silent: true });
-      */
-    },
-
-/*
-    urlRoot: function() {
-      return '/api/v1/tables/' + this.table.get('name') + '/records';
+    url: function() {
+      return '/api/v1/tables/' + this.table.get('name') + '/records/' + this.get('id');
     }
-    */
-
   });
 
 
@@ -296,6 +282,15 @@
 
     addRow: function() {
       this.create(null, { wait: true });
+    },
+
+    /**
+     * return a model row
+     */
+    getRow: function(id) {
+      var r = new cdb.admin.Row({id: id});
+      r.table = this.table;
+      return r;
     },
 
     deleteRow: function(row_id) {

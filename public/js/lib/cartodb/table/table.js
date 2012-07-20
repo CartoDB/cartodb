@@ -80,6 +80,7 @@ $(function() {
           });
 
 
+
         },
 
         _initViews: function() {
@@ -103,7 +104,8 @@ $(function() {
 
           this.mapTab = new cdb.admin.MapTab({
             model: this.map,
-            baseLayers: this.baseLayers
+            baseLayers: this.baseLayers,
+            dataLayer: this.dataLayer
           });
 
           this.menu = new cdb.admin.RightMenu({});

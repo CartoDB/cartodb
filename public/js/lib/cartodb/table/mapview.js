@@ -66,12 +66,20 @@ cdb.admin.MapTab = cdb.core.View.extend({
   initialize: function() {
     this.map = this.model;
     this.map_enabled = false;
+    this.infowindowModel = new cdb.geo.ui.InfowindowModel({ 
+      content: "GHOAJSOL"
+    });
+
+    this.add_related_model(this.options.dataLayer);
+    this.add_related_model(this.map);
+    this.add_related_model(this.infowindowModel);
   },
 
   enableMap: function() {
+    var self = this;
     if(!this.map_enabled) {
         var div = $('<div>');
-        div.css({'height': '100%'});
+        div.css({'height': '900px'});
         this.baseLayerChooser = new cdb.admin.BaseMapChooser({
           model: this.map,
           baseLayers: this.options.baseLayers
@@ -83,7 +91,26 @@ cdb.admin.MapTab = cdb.core.View.extend({
           map: this.map
         });
         this.map_enabled = true;
+
+        this.map.layers.bind('add', function(lyr) {
+          if(lyr.cid == self.options.dataLayer.cid) {
+            self.layerDataView = self.mapView.getLayerByCid(self.options.dataLayer.cid);
+
+            self.layerDataView.bind('featureClick', self.featureClick, self);
+            self.infowindow = new cdb.geo.ui.Infowindow({
+              model: self.infowindowModel,
+              template: cdb.templates.getTemplate('table/views/infowindow'),
+              mapView: self.mapView
+            });
+            self.mapView.$el.append(self.infowindow.el);
+          }
+        });
+
     }
+  },
+
+  featureClick: function(e, latlon, pxPos, data) {
+    this.infowindow.setLatLng(latlon).showInfowindow();
   },
 
   render: function() {

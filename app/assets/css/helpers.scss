@@ -1,0 +1,18 @@
+
+@mixin size($width, $height:$width) {
+
+  @if $width  != false { width:  $width; }
+  @if $height != false { height: $height; }
+
+}
+
+@mixin position($top, $right, $bottom, $left) {
+
+  position: absolute;
+
+  @if $top    != false { top:    $top; }
+  @if $right  != false { right:  $right; }
+  @if $bottom != false { bottom: $bottom; }
+  @if $left   != false { left:   $left; }
+
+}

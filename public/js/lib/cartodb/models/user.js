@@ -1,9 +1,6 @@
 
 
-
-	(function() {
-		cdb.admin.User = Backbone.Model.extend({
-		  urlRoot: '/api/v1/users',
-		  initialize: function() {}
-		});
-	})();
+cdb.admin.User = Backbone.Model.extend({
+  urlRoot: '/api/v1/users',
+  initialize: function() {}
+});

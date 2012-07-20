@@ -3,7 +3,7 @@
 class Api::Json::MapsController < Api::ApplicationController
   ssl_required :index, :create, :show, :update, :delete
 
-  before_filter :load_map
+  before_filter :load_map, :except => :create
 
   def show
     respond_to do |format|

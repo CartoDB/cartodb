@@ -6,7 +6,34 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     offset: [58, 2],
     autoPan: true,
     content: "",
-    visibility: false
+    visibility: false,
+    fields: null // contains the fields displayed in the infowindow
+  },
+
+  clearFields: function() {
+    this.set({fields: []});
+  },
+
+  addField: function(fieldName) {
+    var fields = _.clone(this.get('fields')) || [];
+    fields.push(fieldName);
+    this.set({'fields': fields});
+    return this;
+  },
+
+  containsField: function(fieldName) {
+    var fields = _.clone(this.get('fields')) || [];
+    return _.contains(fields, fieldName);
+  },
+
+  removeField: function(fieldName) {
+    var fields = _.clone(this.get('fields')) || [];
+    var idx = _.indexOf(fields, fieldName);
+    if(idx >= 0) {
+      fields.splice(idx, 1);
+    }
+    this.set({'fields': fields});
+    return this;
   }
 
 });

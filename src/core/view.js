@@ -28,6 +28,13 @@
       delete this._subviews[v.cid];
     },
 
+    clearSubViews: function() {
+      _(this._subviews).each(function(v) {
+        v.clean();
+      });
+      this._subviews = {};
+    },
+
     /**
      * this methid clean removes the view
      * and clean and events associated. call it when 
@@ -36,10 +43,7 @@
     clean: function() {
       var self = this;
       this.trigger('clean');
-      _(this._subviews).each(function(v) {
-        v.clean();
-      });
-      this._subviews = {};
+      this.clearSubViews();
       // remove from parent
       if(this._parent) {
         this._parent.removeView(this);

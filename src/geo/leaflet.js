@@ -148,6 +148,11 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       });
     }, this);
 
+    this.map_leaflet.on('move', function() {
+      var c = self.map_leaflet.getCenter();
+      self._setModelProperty({ center: [c.lat, c.lng] });
+    });
+
     this.map_leaflet.on('drag', function() {
       var c = self.map_leaflet.getCenter();
       self._setModelProperty({

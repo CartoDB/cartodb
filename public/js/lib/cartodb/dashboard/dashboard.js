@@ -33,7 +33,7 @@ $(function() {
 
           // User data
           this.tableStats = new cdb.admin.dashboard.TableStats({
-            el: this.$('section.subheader div.inner'),
+            el: this.$('div.subheader'),
             username: username,
             userid: userid,
             tables: this.tables
@@ -41,12 +41,14 @@ $(function() {
 
           // User menu
           var user_menu = this.user_menu = new cdb.admin.UserMenu({
-            target: 'a.account',
-            model: {username: username},
-            template_base: 'dashboard/views/settings_item'
-          })
-          .on("optionClicked",function(ev){})
+              target: 'a.account',
+              model: {username: username},
+              template_base: 'dashboard/views/settings_item'
+            })
+            .on("optionClicked",function(ev){});
+
           cdb.god.bind("closeDialogs", user_menu.hide, user_menu);
+          
           this.$el.append(this.user_menu.render().el);
 
           // Bacground Importer
@@ -103,8 +105,5 @@ $(function() {
       // expose to debug
       window.dashboard = dashboard;
     });
-
-
-
 
 });

@@ -72,6 +72,8 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
     tagName: 'ul',
 
     initialize: function() {
+      _.bindAll(this, "_updateListHeader");
+
       this.model.bind('reset', this._addAll, this);
       this.model.bind('add', this._addTable, this);
       this.model.bind('remove', this._updateListHeader, this);

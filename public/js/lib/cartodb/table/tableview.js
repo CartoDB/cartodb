@@ -4,7 +4,8 @@
     var HeaderDropdown = cdb.admin.UserMenu.extend({ 
 
       events: {
-        'click .order_column': 'orderColumns',
+        'click .asc': 'orderColumnsAsc',
+        'click .desc': 'orderColumnsDesc',
         'click .rename_column': 'renameColumn',
         'click .change_data_type': 'changeType',
         'click .georeference': 'georeference',
@@ -15,9 +16,37 @@
       setTable: function(table, column) {
         this.table = table;
         this.column = column;
+
+        //set options for ordering
+        if(table.data().options.get('mode') === 'asc') {
+          this.$('.asc').addClass('selected');
+          this.$('.desc').removeClass('selected');
+        } else {
+          this.$('.desc').addClass('selected');
+          this.$('.asc').removeClass('selected');
+        }
+
       },
 
-      orderColumns: function(e) { },
+      orderColumnsAsc: function(e) { 
+        e.preventDefault();
+        this.table.data().setOptions({
+          mode: 'asc',
+          order_by: this.column
+        });
+        this.hide();
+        return false;
+      },
+
+      orderColumnsDesc: function(e) { 
+        e.preventDefault();
+        this.table.data().setOptions({
+          mode: 'des',
+          order_by: this.column
+        });
+        this.hide();
+        return false;
+      },
 
       renameColumn: function(e) {
         e.preventDefault();

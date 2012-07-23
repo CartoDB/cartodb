@@ -30,6 +30,7 @@
   cdb.admin.CartoDBTableMetadata = cdb.ui.common.TableProperties.extend({
 
     initialize: function() {
+      _.bindAll(this, 'notice');
       this.bind('change:schema', this._prepareSchema, this);
       this._prepareSchema();
       this.sqlView = null;
@@ -38,6 +39,15 @@
 
     urlRoot: function() {
       return '/api/v1/tables/';
+    },
+
+    notice: function(msg, type, timeout) {
+      this.trigger('notice', msg, type, timeout);
+    },
+
+    error: function(msg, resp) {
+      var err =  JSON.parse(resp.responseText).errors[0];
+      this.trigger('notice', msg + " " + err, 'error');
     },
 
     _prepareSchema: function() {
@@ -63,9 +73,13 @@
     deleteColumn: function(columnName) {
       var self = this;
       var c = this._getColumn(columnName);
+      this.notice('deleting column');
       c.destroy({
           success: function() {
             self.fetch();
+          },
+          error: function () {
+            self.error('error deleting column');
           },
           wait: true
       });
@@ -78,12 +92,14 @@
         new_name: newName,
         old_name: c.get('name')
       });
+      this.notice('renaming column');
       c.save(null,  {
           success: function() {
             self.fetch();
           },
-          error: function() {
+          error: function(e, resp) {
             cdb.log.error("can't rename column");
+            self.error('error renaming column', resp);
           },
           wait: true
       });
@@ -93,9 +109,13 @@
       var self = this;
       var c = this._getColumn(columnName);
       c.set({ type: newType});
+      this.notice('changing column type');
       c.save(null, {
           success: function() {
             self.fetch();
+          },
+          error: function() {
+            self.error('error chaging column ttype');
           },
           wait: true
       });
@@ -143,6 +163,22 @@
 
     isInSQLView: function() {
       return this.sqlView ? true: false;
+    },
+
+    /**
+     * replace fetch functionally to add some extra call for logging
+     * it can be used in the same way fetch is
+     */
+    fetch: function(opts) {
+      var self = this;
+      this.notice('loading table', 0, 0);
+      opts = opts || {};
+      var old_success = opts && opts.success;
+      opts.success = function() {
+        old_success && old_success();
+        self.notice('loaded');
+      };
+      Backbone.Model.prototype.fetch.call(this, opts);
     },
 
     /**

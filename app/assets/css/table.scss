@@ -1,194 +1,202 @@
 
-	/*
+  /*
    * Styles for the CartoDB table
    */
 
-	@import "compass";
+  @import "compass";
 
-	header.table {
-		position:fixed;
-		min-width:960px;
-		left:0;
-		top:0;
-		z-index:2;
-	}
+  header.table {
+    position:fixed;
+    min-width:960px;
+    left:0;
+    top:0;
+    z-index:2;
+  }
 
-	div.panes {
-		margin:150px 0 0 0;
-	}
+  div.panes {
+    margin:150px 0 0 0;
+  }
 
-	div.table {
-		table {
-			//position:relative;
-			width:100%;
+  div.globalerror {
+    position: absolute;
+    top:150px;
+    right: 50%;
+    padding: 10px;
+    z-index:2;
+  }
+
+  div.table {
+    table {
+      //position:relative;
+      width:100%;
 
 
-			// Table head
-			thead {
-				left:0;
-				width:100%;
-				height:60px;
+      // Table head
+      thead {
+        left:0;
+        width:100%;
+        height:60px;
 
-				tr {
-					width:100%;
-					height:64px;
+        tr {
+          width:100%;
+          height:64px;
 
-					th {
-						position:relative;
-						min-width:180px;
+          th {
+            position:relative;
+            min-width:180px;
 
-						& > div {
-							position:relative;
-							@include inline-block();
-							float:left;
-							width:100%;
-							height:66px;
-							
-							& > div {
-								position:absolute;
-								display:block;
-								height:34px;
-								width:100%;
-								padding:17px 0 15px;
-								@include background(linear-gradient(top,#FDFDFD,#F2F2F2));
-								border-bottom:1px solid #CCCCCC;
-								@include box-shadow(rgba(black,0.15) 3px 0 3px 0);
-								z-index:0;
+            & > div {
+              position:relative;
+              @include inline-block();
+              float:left;
+              width:100%;
+              height:66px;
 
-								&:after {
-									content:' ';
-									position:absolute;
-									right:0px;
-									top:13px;
-									background:rgba(#D9D9D9,0.5);
-									height:42px;
-									width:1px;
-									z-index:0;
-								}
+              & > div {
+                position:absolute;
+                display:block;
+                height:34px;
+                width:100%;
+                padding:17px 0 15px;
+                @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
+                border-bottom:1px solid #CCCCCC;
+                @include box-shadow(rgba(black,0.15) 3px 0 3px 0);
+                z-index:0;
 
-								&:last-child {
-									div {border-right:none;}
-								}								
-							}
+                &:after {
+                  content:' ';
+                  position:absolute;
+                  right:0px;
+                  top:13px;
+                  background:rgba(#D9D9D9,0.5);
+                  height:42px;
+                  width:1px;
+                  z-index:0;
+                }
 
-							label {
-								display:block;
-								padding:0 10px;
+                &:last-child {
+                  div {border-right:none;}
+                }
+              }
 
-								a {
-									display:block;
-									color:#7C7C7C;
+              label {
+                display:block;
+                padding:0 10px;
 
-									&:after {
-										position:absolute;
-				            content:' ';
-				            right:12px;
-				            margin:8px 0 0 5px;
-				            border-left:3px solid transparent;
-				            border-right:3px solid transparent;
-				            border-top:3px solid #7C7C7C;
-									}
+                a {
+                  display:block;
+                  color:#7C7C7C;
 
-									&:hover {
-										color:#565656;
-										text-decoration:none;
-										&:after {border-top-color:#565656;}
-									}
+                  &:after {
+                    position:absolute;
+                    content:' ';
+                    right:12px;
+                    margin:8px 0 0 5px;
+                    border-left:3px solid transparent;
+                    border-right:3px solid transparent;
+                    border-top:3px solid #7C7C7C;
+                  }
 
-									span.geo {
-										margin:0 0 0 5px;
-										padding:1px 2px;
-										text-decoration:uppercase;
-										border:1px solid #C17400;
-										@include border-radius(2px);
-										background:orange;
-										color:white;
-									}
-								}
-							}
+                  &:hover {
+                    color:#565656;
+                    text-decoration:none;
+                    &:after {border-top-color:#565656;}
+                  }
 
-							p {
-								padding:0 10px;
-								a {
-									color:#999999;
-									padding:0 10px 0 0;
+                  span.geo {
+                    margin:0 0 0 5px;
+                    padding:1px 2px;
+                    text-decoration:uppercase;
+                    border:1px solid #C17400;
+                    @include border-radius(2px);
+                    background:orange;
+                    color:white;
+                  }
+                }
+              }
 
-									&:hover {
-										position:relative;
-										color:#666666;
-										padding:0 10px 0 0;
-										text-decoration:none;
+              p {
+                padding:0 10px;
+                a {
+                  color:#999999;
+                  padding:0 10px 0 0;
 
-										&:after {
-											position:absolute;
-				            	content:' ';
-				            	right:0;
-				            	margin:8px 0 0 5px;
-				            	border-left:3px solid transparent;
-				            	border-right:3px solid transparent;
-				            	border-top:3px solid #7C7C7C;
-										}
-									}
-								}
-							}
-						}
+                  &:hover {
+                    position:relative;
+                    color:#666666;
+                    padding:0 10px 0 0;
+                    text-decoration:none;
 
-						&:first-child {
-							width:35px;
-							min-width:35px;
-						}
-					}
-				}
-			}
+                    &:after {
+                      position:absolute;
+                      content:' ';
+                      right:0;
+                      margin:8px 0 0 5px;
+                      border-left:3px solid transparent;
+                      border-right:3px solid transparent;
+                      border-top:3px solid #7C7C7C;
+                    }
+                  }
+                }
+              }
+            }
 
-			// Table body
-			tbody {
-				// position:relative;
-				// display:inline-block;
-				width:100%;
-				border:none;
+            &:first-child {
+              width:35px;
+              min-width:35px;
+            }
+          }
+        }
+      }
 
-				tr {
-					width:100%;
-					border-top:1px solid #ECECEC;
+      // Table body
+      tbody {
+        // position:relative;
+        // display:inline-block;
+        width:100%;
+        border:none;
 
-					&:first-child {
-						border-top:none;
-					}
-					&:last-child {
-						border-bottom:1px solid #ECECEC;
-					}
+        tr {
+          width:100%;
+          border-top:1px solid #ECECEC;
 
-					&:hover {
-						background:#E8F9EC;
-						border-color:#CCCCCC;
+          &:first-child {
+            border-top:none;
+          }
+          &:last-child {
+            border-bottom:1px solid #ECECEC;
+          }
 
-						& + tr {
-							border-top-color:#CCCCCC;
-						}
-					}
+          &:hover {
+            background:#E8F9EC;
+            border-color:#CCCCCC;
 
-					td {
-						border-left:1px solid #ECECEC;
-						border-right:1px solid #ECECEC;
+            & + tr {
+              border-top-color:#CCCCCC;
+            }
+          }
 
-						div {
-							@include inline-block();
-							padding:15px 10px;
-							max-height:26px;
-							max-width:300px;
-							font-size:13px;
-							color:#666666;
-							overflow: hidden;
-							text-overflow: ellipsis;
-							white-space: nowrap;
-						}
+          td {
+            border-left:1px solid #ECECEC;
+            border-right:1px solid #ECECEC;
 
-						&:last-child {
-							border-right:none;		
-						}
-					}
-				}
-			}
-		}
-	}
+            div {
+              @include inline-block();
+              padding:15px 10px;
+              max-height:26px;
+              max-width:300px;
+              font-size:13px;
+              color:#666666;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+
+            &:last-child {
+              border-right:none;
+            }
+          }
+        }
+      }
+    }
+  }

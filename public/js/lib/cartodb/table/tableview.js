@@ -85,6 +85,7 @@
 
       render: function() {
         this.$el.html('');
+
         this.$el.append(this.template({
           col_name: this.column[0],
           col_type: this.column[1],
@@ -158,7 +159,13 @@
            } else if (pos <= 0) {
              d.setPage(d.getPage() - 1);
            }
+
          }, 300);
+
+        // Moving header when scrolls
+        $(window).scroll(function(ev){
+          self.$el.find("thead th div div").css({top: $(window).scrollTop() + "px"});
+        });
       },
 
       /**
@@ -184,8 +191,9 @@
           var v = new cdb.admin.HeaderView({ column: column, table: this.model});
           this.addView(v);
           return v.render().el;
+        } else {
+          return '<div><div></div></div>';
         }
-        return '';
       }
     });
 
@@ -198,7 +206,6 @@
           dataModel: this.model.data(),
           model: this.model
         });
-
       },
 
       render: function() {

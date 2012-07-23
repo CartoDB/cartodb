@@ -36,7 +36,6 @@
 					th {
 						position:relative;
 						min-width:180px;
-						// border-right:1px solid rgba(#D9D9D9,0);
 
 						& > div {
 							position:relative;
@@ -47,22 +46,20 @@
 							
 							& > div {
 								position:absolute;
-								float:left;
 								display:block;
-								height:46px;
+								height:34px;
 								width:100%;
-								padding:20px 0 10px;
+								padding:17px 0 15px;
 								@include background(linear-gradient(top,#FDFDFD,#F2F2F2));
 								border-bottom:1px solid #CCCCCC;
-								border-right:1px solid rgba(#D9D9D9,0);
-								@include box-shadow(rgba(black,0.15) 1px 2px 3px 0);
+								@include box-shadow(rgba(black,0.15) 3px 0 3px 0);
 								z-index:0;
 
 								&:after {
 									content:' ';
 									position:absolute;
-									right:-1px;
-									top:11px;
+									right:0px;
+									top:13px;
 									background:rgba(#D9D9D9,0.5);
 									height:42px;
 									width:1px;
@@ -139,12 +136,6 @@
 						&:first-child {
 							width:35px;
 							min-width:35px;
-
-							& > div {
-								padding:0;
-								height:42px;
-								width:35px;
-							}
 						}
 					}
 				}

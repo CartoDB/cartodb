@@ -148,6 +148,9 @@
          this.options.row_header = true;
          this.model.data().bind('newPage', this.newPage, this);
          setInterval(function() {
+           if(!self.$el.is(":visible")) {
+             return;
+           }
            var pos = $(this).scrollTop();
            var d = self.model.data();
            if( pos + $(window).height() >= $(document).height() ) {

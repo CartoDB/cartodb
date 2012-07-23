@@ -1,0 +1,35 @@
+development:
+  account_host: 'localhost.lan:4000'
+  account_path: '/account'
+  developers_host: 'http://developers.localhost.lan:3000'
+  secret_token: "some_longer_secret_reaching_30_chars"
+  session_domain: '.localhost.lan'
+  amazon_access_key: ''
+  amazon_secret_key: ''
+  varnish_management: 
+    host: '127.0.0.1'
+    post: 6082
+  redis:
+    host: '127.0.0.1'
+    port: 6379
+  superadmin:
+    username: "superadmin"
+    password: "monkey"
+
+test:
+  account_host: 'testhost.lan'
+  account_path: '/account'
+  developers_host: 'http://developers.testhost.lan:53716'
+  secret_token: "some_longer_secret_reaching_30_chars"
+  session_domain: '.testhost.lan'
+  amazon_access_key: ''
+  amazon_secret_key: ''
+  varnish_management: 
+    host: '127.0.0.1'
+    post: 6082
+  redis:
+    host: '127.0.0.1'
+    port: 6380
+  superadmin:
+    username: "superadmin"
+    password: "monkeytest"

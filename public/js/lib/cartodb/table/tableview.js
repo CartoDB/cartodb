@@ -158,7 +158,13 @@
            } else if (pos <= 0) {
              d.setPage(d.getPage() - 1);
            }
+
          }, 300);
+
+        // Moving header when scrolls
+        $(window).scroll(function(ev){
+          self.$el.find("thead th div div").css({top: $(window).scrollTop() + "px"});
+        });
       },
 
       /**
@@ -198,7 +204,6 @@
           dataModel: this.model.data(),
           model: this.model
         });
-
       },
 
       render: function() {

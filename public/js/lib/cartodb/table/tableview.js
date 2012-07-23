@@ -20,7 +20,7 @@
       orderColumns: function(e) { },
 
       renameColumn: function(e) {
-        e.preventdefault();
+        e.preventDefault();
         this.hide();
         this.trigger('renameColumn');
         return false;
@@ -131,7 +131,7 @@
 
       _renameColumn: function() {
         this.editing_name = true;
-        this.changing_type = falsee;
+        this.changing_type = false;
         this.render();
       },
 
@@ -203,7 +203,7 @@
         });
 
         this.model.data().bind('endLoadingRows', function() {
-          self.$('.loader').remove();
+          self.$('.dataloader').remove();
         });
 
       },

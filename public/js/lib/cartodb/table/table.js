@@ -70,6 +70,9 @@ $(function() {
             self.map.addLayer(self.dataLayer);
           });
 
+          // fetch or create map id
+          this.map.relatedTo(this.table);
+
           //temporal
           this.table.bind('change:schema', function() {
             _(self.table.get('schema')).each(function(v) {
@@ -88,9 +91,6 @@ $(function() {
               query: sql
             });
           });
-
-
-
         },
 
         _initViews: function() {

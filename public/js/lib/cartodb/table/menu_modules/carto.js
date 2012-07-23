@@ -48,7 +48,7 @@ cdb.admin.mod.Carto = cdb.core.View.extend({
       cdb.log.debug("compiling carto");
       var style = this.$('textarea').val();
       // compile and validate
-      this.model.set({ style: style });
+      this.model.set({ tile_style: style });
     }
 
 });

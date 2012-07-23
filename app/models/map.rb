@@ -1,5 +1,6 @@
 class Map < Sequel::Model
   many_to_many :layers
+  plugin :association_dependencies, :layers => :nullify
 
   # TODO remove this
   # We'll need to join maps and tables for this version

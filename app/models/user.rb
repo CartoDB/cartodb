@@ -5,6 +5,8 @@ class User < Sequel::Model
 
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
+  one_to_many :maps
+  plugin :association_dependencies, :maps => :destroy
 
   # Sequel setup & plugins
   set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled

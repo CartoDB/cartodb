@@ -76,7 +76,7 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
 
       this.model.bind('reset', this._addAll, this);
       this.model.bind('add', this._addTable, this);
-      this.model.bind('remove', this._updateListHeader, this);
+      this.model.bind('remove', this._tableRemoved, this);
     },
 
     render: function() {
@@ -95,6 +95,10 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
       var li = new TableView({ model: m });
       this.$el.append(li.render().el);
       this.addView(li);
+      this._updateListHeader();
+    },
+
+    _tableRemoved: function() {
       this._updateListHeader();
     },
 

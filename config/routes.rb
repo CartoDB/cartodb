@@ -74,7 +74,7 @@ CartoDB::Application.routes.draw do
       resources :users, :only                                   => [:show]
 
       # Maps
-      resources :maps, :only                                    => [:show, :create] do
+      resources :maps, :only                                    => [:show, :create, :update, :destroy] do
         resources :layers, :only                                => [:show, :index]
       end
     end

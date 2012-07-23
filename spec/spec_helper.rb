@@ -33,7 +33,7 @@ RSpec.configure do |config|
     $api_credentials.flushdb
     $users_metadata.flushdb
 
-    Rails::Sequel.connection.tables.each{ |t| next if [:schema_migrations, :layers_maps].include?(t); Rails::Sequel.connection[t].truncate }
+    Rails::Sequel.connection.tables.each{ |t| next if [:schema_migrations, :layers_maps, :layers, :maps].include?(t); Rails::Sequel.connection[t].truncate }
   end
 
   config.after(:all) do

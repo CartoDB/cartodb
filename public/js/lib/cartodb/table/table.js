@@ -120,6 +120,11 @@ $(function() {
             infowindow: this.infowindow
           });
 
+          this.globalError = new cdb.admin.GlobalError({
+            el: $('.globalerror')
+          });
+          this.table.bind('notice', this.globalError.showError, this.globalError);
+
           this.menu = new cdb.admin.RightMenu({});
           this.$el.append(this.menu.render().el);
           this.menu.hide();

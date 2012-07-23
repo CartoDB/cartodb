@@ -31,28 +31,14 @@
         <div class="content">
           <ul id="tablelist">
             <%= render :partial => 'shared/flash_message' %>
-            <%# @tables.each_with_index do |table, i| %>
-              <%#= render :partial => 'table_list', :locals => { :table => table } %>
-            <%# end %>
           </ul>
         </div>
       </section>
       <aside class="right">
-        <!-- Disable button if limit has been oversized! -->
         <div class="head">
           <a href="#create_new" class="button green">Create a new table</a>
         </div>
-        <div class="content">
-          <ul>
-            <li><%= link_to "all tables (x)", dashboard_path, :class => ('selected' if !params[:tag_name]) %></li>
-            <% @tags.each do |tag| %>
-              <li><%= link_to tag[:name] + " (x)",dashboard_path(:tag_name => tag[:name]), :class => ('selected' if params[:tag_name] == tag[:name]) %></li>
-            <% end %>
-          </ul>
-          <ul>
-            <li><%= link_to "Popular public tables", "#??" %></li>
-          </ul>
-        </div>
+        <div class="content"></div>
       </aside>
     </div>
   </article>

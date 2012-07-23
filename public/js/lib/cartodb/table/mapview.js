@@ -8,15 +8,22 @@ cdb.admin.BaseMapView = cdb.core.View.extend({
     'click': 'activate'
   },
 
+  defaults: {
+    x: 2005,
+    y: 1544,
+    z: 12
+  },
+
   tagName: 'li',
 
   initialize: function() {
+    this.options = _.defaults(this.options,this.defaults);
     this.map = this.options.map;
   },
 
   render: function() {
-    var madrid_tile = this.model.get("urlTemplate").replace("{z}", 12).replace("{x}", 2005).replace("{y}", 1544)
-      , a = this.make("a", {"style": "background:url(" + madrid_tile + ") no-repeat 0 0"}, this.cid);
+    var back_tile = this.model.get("urlTemplate").replace("{z}", this.options.z).replace("{x}", this.options.x).replace("{y}", this.options.y)
+      , a = this.make("a", {"style": "background:url(" + back_tile + ") no-repeat 0 0"}, this.cid);
 
     this.$el.html(a);
 

@@ -15,7 +15,11 @@ cdb.admin.BaseMapView = cdb.core.View.extend({
   },
 
   render: function() {
-    this.$el.html('layer' + this.cid);
+    var madrid_tile = this.model.get("urlTemplate").replace("{z}", 12).replace("{x}", 2005).replace("{y}", 1544)
+      , a = this.make("a", {"style": "background:url(" + madrid_tile + ") no-repeat 0 0"}, this.cid);
+
+    this.$el.html(a);
+
     return this;
   },
 
@@ -77,14 +81,18 @@ cdb.admin.MapTab = cdb.core.View.extend({
   enableMap: function() {
     var self = this;
     if(!this.map_enabled) {
-        var div = $('<div>');
-        div.css({'height': '900px'});
+        var div = $('<div>').attr("id","map")
+          , base_maps = $('<div>').attr("class","base_maps");
+        // div.css({'height': '900px'});
         this.baseLayerChooser = new cdb.admin.BaseMapChooser({
           model: this.map,
           baseLayers: this.options.baseLayers
         });
-        this.$el.append(this.baseLayerChooser.render().el);
+        
+        base_maps.append(this.baseLayerChooser.render().el);
+
         this.$el.append(div);
+        this.$el.append(base_maps);
         this.mapView = new cdb.geo.LeafletMapView({
           el: div,
           map: this.map
@@ -121,7 +129,7 @@ cdb.admin.MapTab = cdb.core.View.extend({
   },
 
   render: function() {
-    this.$el.css({'height': '900px'});
+    // this.$el.css({'height': '900px'});
     return this;
   }
 

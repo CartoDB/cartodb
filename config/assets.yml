@@ -74,6 +74,7 @@ stylesheets:
     - public/css/footer.css
     - public/css/table.css
     - public/css/table_panel.css
+    - public/css/map.css
     - public/css/leaflet.css
     - public/css/background_importer.css
     - public/css/privacy_selector.css

@@ -20,6 +20,11 @@ feature "API 1.0 tags management" do
       response.status.should be_success
       response.body.should == [{"name"=>"tag 3", "count"=>1}, {"name"=>"tag 1", "count"=>1}, {"name"=>"tag 2", "count"=>1}]
     end
+
+    get_json v1_tags_url do |response|
+      response.status.should be_success
+      response.body.should == [{"name"=>"tag 3", "count"=>1}, {"name"=>"tag 1", "count"=>1}, {"name"=>"tag 2", "count"=>1}]
+    end
   end
 
 end

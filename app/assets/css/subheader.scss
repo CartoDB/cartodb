@@ -47,7 +47,7 @@
             @include transition-property("width");
             @include transition-duration(500ms);
 
-            &.boom {@include background(linear-gradient(#CB2828,#FF5255)); @include transform-style("linear"); @include transition-property("background"); @include transition-duration(500ms);}
+            &.boom {@include background(linear-gradient(#FF5255,#CB2828)); @include transform-style("linear"); @include transition-property("background"); @include transition-duration(500ms);}
             &.danger {@include background(linear-gradient(#F8B85C,#F49000)); @include transform-style("linear"); @include transition-property("background"); @include transition-duration(500ms);}
 
             &:after {

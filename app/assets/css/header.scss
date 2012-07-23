@@ -160,20 +160,23 @@
         margin-left:35px;
 
         hgroup {
+          @include inline-block();
           width:100%;
-          h1,h2 {
-            margin:2px 0 0 0;
+          height:50px;
+
+          h1,h2,a.status {
             @include inline-block();
-            width:auto;
+            margin:0;
+            vertical-align:middle;
             letter-spacing: 0px;
+            width:auto;
           }
+
           h2 {
             position:relative;
-            padding:0 0 0 18px;
-            margin:3px 0 0 0;
-            font-size:21px;
-
-            a {color:white;}
+            padding:0 0 1px 18px;
+            line-height:21px;
+            a {display:block; margin:0; padding:0; font-size:21px; line-height:21px; color:white;}
             
             &:before {
               position:absolute;
@@ -183,7 +186,23 @@
               left:0;
               margin:0 0 0 5px;
               font-size: 17px;
-              color:rgba(255,255,255,0.7);
+              color:rgba(255,255,255,1);
+            }
+          }
+
+          a.status {
+            margin-left:10px;
+            padding:2px 6px;
+            background:white;
+            @include border-radius(25px);
+            font-weight:bold;
+            font-size:11px;
+            line-height:12px;
+            color:#3474AF;
+            @include box-shadow(rgba(black,0.09) 0 0 2px 2px);
+            &:hover {
+              text-decoration:none;
+              @include box-shadow(rgba(black,0.19) 0 0 2px 2px);
             }
           }
         }

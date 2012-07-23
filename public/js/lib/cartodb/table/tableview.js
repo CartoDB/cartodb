@@ -20,13 +20,18 @@
       orderColumns: function(e) { },
 
       renameColumn: function(e) {
-        e.preventDefault();
+        e.preventdefault();
         this.hide();
         this.trigger('renameColumn');
         return false;
       },
 
-      changeType: function(e) { },
+      changeType: function(e) { 
+        e.preventDefault();
+        this.hide();
+        this.trigger('changeType');
+        return false;
+      },
 
       georeference: function(e) { },
 
@@ -75,6 +80,7 @@
         this.table = this.options.table;
         this.template = this.getTemplate('table/views/table_header_view');
         this.editing_name = false;
+        this.changing_type = false;
 
         HeaderView.colOptions= new HeaderDropdown({
           position: 'position',
@@ -89,7 +95,8 @@
         this.$el.append(this.template({
           col_name: this.column[0],
           col_type: this.column[1],
-          editing_name: this.editing_name
+          editing_name: this.editing_name,
+          changing_type: this.changing_type
         }));
         return this;
       },
@@ -103,6 +110,7 @@
         colOptions.setTable(this.table, this.column[0]);
 
         colOptions.bind('renameColumn', this._renameColumn, this);
+        colOptions.bind('changeType', this._changeType, this);
 
         // bind the stuff
         colOptions.open(e, e.target);
@@ -123,6 +131,13 @@
 
       _renameColumn: function() {
         this.editing_name = true;
+        this.changing_type = falsee;
+        this.render();
+      },
+
+      _changeType: function() {
+        this.editing_name = false;
+        this.changing_type = true;
         this.render();
       },
 
@@ -150,24 +165,47 @@
          this.constructor.__super__.initialize.apply(this);
          this.options.row_header = true;
          this.model.data().bind('newPage', this.newPage, this);
+         var topReached = false;
          setInterval(function() {
-           if(!self.$el.is(":visible")) {
+           if(!self.$el.is(":visible") || self.model.data().isFetchingPage()) {
              return;
            }
            var pos = $(this).scrollTop();
            var d = self.model.data();
-           if( pos + $(window).height() >= $(document).height() ) {
-             d.setPage(d.getPage() + 1);
+           // do not let to fetch previous pages 
+           // until the user dont scroll back a little bit
+           if(pos > 2) {
+             topReached = false;
+           }
+           var pageSize = $(window).height() - self.$el.offset().top;
+           var tableHeight = this.$('tbody').height();
+           var realPos = pos + pageSize;
+           if(realPos > tableHeight) {
+              console.log(realPos, tableHeight, tableHeight - realPos);
+              d.setPage(d.getPage() + 1);
            } else if (pos <= 0) {
-             d.setPage(d.getPage() - 1);
+             if(!topReached) {
+               d.setPage(d.getPage() - 1);
+             }
+             topReached = true;
            }
 
-         }, 300);
+         }, 2000);
 
         // Moving header when scrolls
         $(window).scroll(function(ev){
           self.$el.find("thead th div div").css({top: $(window).scrollTop() + "px"});
         });
+
+        this.model.data().bind('loadingRows', function(updown) {
+          var fn = updown === 'up'? 'prepend': 'append';
+          self.$('tbody')[fn]("<div style='padding: 50px 0;' class='dataloader'>LOADING</div>");
+        });
+
+        this.model.data().bind('endLoadingRows', function() {
+          self.$('.loader').remove();
+        });
+
       },
 
       /**
@@ -179,12 +217,12 @@
          var max_items = rowspp*4;
          if(d.size() > max_items) {
            var idx = currentPage*rowspp;
+           cdb.log.debug("removing rows: " + d.size() + " " + idx); 
            if(direction == 'up') {
              d.remove(d.models.slice(max_items, d.size()));
            } else {
              d.remove(d.models.slice(0, idx));
            }
-           cdb.log.debug("removing rows");
          }
       },
 

@@ -47,6 +47,7 @@ cdb.admin.mod.SQL = cdb.core.View.extend({
         error: function(e, resp) {
           var errors = JSON.parse(resp.responseText);
           self._parseError(errors);
+          self.model.useSQLView(null);
         }
       });
       //this.trigger('sqlQuery', sql);

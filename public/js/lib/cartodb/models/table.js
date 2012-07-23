@@ -306,7 +306,12 @@
       this.options.set(opt);
     },
 
+    isFetchingPage: function() {
+      return this._fetching;
+    },
+
     setPage: function(p) {
+      console.log("page: " + p);
       if(!this._fetching && p >= 0) {
         this.setOptions({page: p});
       }

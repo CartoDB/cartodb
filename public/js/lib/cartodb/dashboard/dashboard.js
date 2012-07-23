@@ -54,7 +54,7 @@ $(function() {
           // Bacground Importer
           var bkg_importer = this.bkg_importer = new cdb.ui.common.BackgroundImporter({
             template_base: 'common/views/background_importer'
-          })
+          });
           this.$el.append(this.bkg_importer.render().el);
 
           // Tipsy

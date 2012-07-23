@@ -42,4 +42,12 @@ feature "API 1.0 maps management" do
     end
   end
 
+  scenario "Drop a map" do
+    table = create_table(:user_id => @user.id)
+    map = create_map(:user_id => @user.id, :table_id => table.id)
+    
+    delete_json v1_map_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :id => map.id) do |response|
+      response.status.should eql(200)
+    end
+  end
 end

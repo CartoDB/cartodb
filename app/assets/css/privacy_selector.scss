@@ -1,33 +1,33 @@
 
-	/*
-	 *	Privacy selector
-	 */
+  /*
+   *  Privacy selector
+   */
 
-	 @import "compass";
+   @import "compass";
 
-	.privacy_selector {
-		position:absolute;
-		width:183px;
-		border:1px solid #999999;
-		@include border-radius(3px);
-		@include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
-		background:white;
+  .privacy_selector {
+    position:absolute;
+    width:183px;
+    border:1px solid #999999;
+    @include border-radius(3px);
+    @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
+    background:white;
 
-		ul {
-			display:block;
-			width:100%;
-			li {
-				padding:0!important;
-				margin:0;
-				a {
-					display:block;
-					padding:14px;
-				}
-			}
-			&:after, &:before {display:none;}
-		}
+    ul {
+      display:block;
+      width:100%;
+      li {
+        padding:0!important;
+        margin:0;
+        a {
+          display:block;
+          padding:14px;
+        }
+      }
+      &:after, &:before {display:none;}
+    }
 
-		&:after {
+    &:after {
       content:' ';
       position:absolute;
       display:block!important;
@@ -42,7 +42,7 @@
       z-index:10;
     }
 
-		&:before {
+    &:before {
       content:' ';
       position:absolute;
       display:block!important;
@@ -56,4 +56,4 @@
       border-right:6px solid transparent;
       z-index:5;
     }
-	}
+  }

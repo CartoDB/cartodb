@@ -5,7 +5,8 @@
 cdb.admin.Header = cdb.core.View.extend({
 
   events: {
-    'click .clearview': 'clearView'
+    'click .clearview': 'clearView',
+    'click .status': '_addPrivacySelector'
   },
 
   initialize: function() {
@@ -18,6 +19,9 @@ cdb.admin.Header = cdb.core.View.extend({
 
   tableName: function() {
     this.$('h2.special a').html(this.table.get('name'));
+    this.$('.status')
+      .addClass(this.table.get('privacy').toLowerCase())
+      .html(this.table.get('privacy'));
   },
 
   onSQLView: function() {
@@ -38,6 +42,21 @@ cdb.admin.Header = cdb.core.View.extend({
     e.preventDefault();
     this.table.useSQLView(null);
     return false;
-  }
+  },
 
+  _addPrivacySelector: function(ev) {
+    ev.preventDefault();
+
+    // Add privacy selector
+    var privacy = this.privacy = new cdb.admin.PrivacySelector({
+      model: this.table,
+      direction: 'down'
+    });
+
+    this.$el.append(this.privacy.render().el);
+
+    //TODO: fix showing many times
+    this.privacy.show(ev.target);
+    return false;
+  }
 });

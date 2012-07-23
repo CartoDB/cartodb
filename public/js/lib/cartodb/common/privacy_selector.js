@@ -27,6 +27,7 @@ cdb.admin.PrivacySelector = cdb.core.View.extend({
   },
 
   default_options: {
+    direction: 'up'
   },
 
   initialize: function() {
@@ -61,11 +62,17 @@ cdb.admin.PrivacySelector = cdb.core.View.extend({
       , el_width = this.$el.outerWidth()
       , el_height = this.$el.outerHeight()
 
+    //TODO: position dialog
+    var top = pos.top - el_height + "px";
+    if(this.options.direction === 'down') {
+      top = pos.top + el_height + "px";
+    }
+
     // Set css previous animation
     this.$el.css({
       opacity:0,
       display:"block",
-      top: pos.top - el_height + "px",
+      top: top,
       left: pos.left + (t_width/2) - (el_width/2) + "px",
       marginTop: "10px"
     });

@@ -14,7 +14,12 @@
 	}
 
 	div.panes {
-		margin:150px 0 0 0;
+		position:absolute;
+		top:150px;
+		left:0;
+		right:0;
+		bottom:0;
+		// margin:150px 0 0 0;
 	}
 
 	div.table {
@@ -52,7 +57,7 @@
 								padding:17px 0 15px;
 								@include background(linear-gradient(top,#FDFDFD,#F2F2F2));
 								border-bottom:1px solid #CCCCCC;
-								@include box-shadow(rgba(black,0.15) 3px 0 3px 0);
+								@include box-shadow(rgba(black,0.15) 3px 0 3px 1px);
 								z-index:0;
 
 								&:after {

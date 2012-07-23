@@ -85,6 +85,7 @@
 
       render: function() {
         this.$el.html('');
+
         this.$el.append(this.template({
           col_name: this.column[0],
           col_type: this.column[1],
@@ -190,8 +191,9 @@
           var v = new cdb.admin.HeaderView({ column: column, table: this.model});
           this.addView(v);
           return v.render().el;
+        } else {
+          return '<div><div></div></div>';
         }
-        return '';
       }
     });
 

@@ -3,11 +3,18 @@ cdb.admin.Map = cdb.geo.Map.extend({
 
   urlRoot: '/api/v1/maps',
 
-  relatedTo: function(o) {
-    this.table = o;
-    this.table.bind('change:map_id', this._fetchOrCreate, this);
+  initialize: function() {
+    this.constructor.__super__.initialize.apply(this);
     this.delayedSave = _.debounce(this.save, 1000);
     this.autoSave();
+  },
+
+  /**
+   * link to a table
+   */
+  relatedTo: function(table) {
+    this.table = table;
+    this.table.bind('change:map_id', this._fetchOrCreate, this);
   },
 
   parse: function(data) {

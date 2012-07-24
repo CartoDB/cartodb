@@ -283,18 +283,19 @@
         },
         error:function(e) {
 
-          if ( e.responseText ) {
-            var errors = JSON.parse(e.responseText);
-            var msg = '';
-            _.each(errors,function(ele,i){msg += ele + '<br/>';});
-            $('.cartocss_editor span.errors p').html(msg);
-
-            var errors_height = (errors.length * 16) + 23;
-            $('.cartocss_editor').find('.outer_textarea').css({'bottom':errors_height+'px'});
-            $('.cartocss_editor').addClass('error');
+          var errors;
+          try {
+            errors = JSON.parse(e.responseText);
+          } catch (err) {
+            errors = [ 'Malformed response from tileserver', 'Response: "' + e.responseText + '"', 'Parser error : ' + err.message ];
           }
-          // else it could be a cross-domain issue.
-          // TODO: how to deal with it ?
+          var msg = '';
+          _.each(errors,function(ele,i){msg += ele + '<br/>';});
+          $('.cartocss_editor span.errors p').html(msg);
+
+          var errors_height = (errors.length * 16) + 23;
+          $('.cartocss_editor').find('.outer_textarea').css({'bottom':errors_height+'px'});
+          $('.cartocss_editor').addClass('error');
 
           // see https://github.com/Vizzuality/cartodb/issues/833
           if (refresh)

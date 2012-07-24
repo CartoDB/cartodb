@@ -79,3 +79,4 @@ stylesheets:
     - public/css/background_importer.css
     - public/css/privacy_selector.css
     - public/css/infowindow.css
+    - public/css/floating.css

@@ -70,6 +70,11 @@
       return c;
     },
 
+    getColumnType: function(columnName) {
+      var c = this._getColumn(columnName);
+      return c.get('type');
+    },
+
     deleteColumn: function(columnName) {
       var self = this;
       var c = this._getColumn(columnName);
@@ -197,14 +202,31 @@
              sql.search(/insert/i) !== -1  ||
              sql.search(/update/i) !== -1  ||
              sql.search(/delete/i) !== -1
+    },
+
+    isReservedColumn: function(c) {
+      return _(cdb.admin.Row.RESERVED_COLUMNS).indexOf(c) !== -1;
     }
 
   });
 
   cdb.admin.Row = Backbone.Model.extend({
+
+
     url: function() {
-      return '/api/v1/tables/' + this.table.get('name') + '/records/' + this.get('id');
+      return '/api/v1/tables/' + this.table.get('name') + '/records/' + this.id;
+    },
+
+    toJSON: function() {
+      var attr = _.clone(this.attributes);
+      // remove read-only attributes
+      delete attr['updated_at'];
+      delete attr['created_at'];
+      return attr;
     }
+
+  }, {
+    RESERVED_COLUMNS: 'cartodb_id created_at updated_at'.split(' '),
   });
 
 
@@ -330,6 +352,12 @@
      */
     getRow: function(id) {
       var r = new cdb.admin.Row({id: id});
+      r.table = this.table;
+      return r;
+    },
+
+    getRowAt: function(index) {
+      var r = this.at(index);
       r.table = this.table;
       return r;
     },

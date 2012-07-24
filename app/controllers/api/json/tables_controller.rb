@@ -53,14 +53,19 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.name           = params[:name]          if params[:name]
     @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
     @table.force_schema   = params[:schema]        if params[:schema]
+    @table.tags           = params[:tags] if params[:tags]
 
     if @table.valid? && @table.save
+      @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
+                            from user_tables
+                            where id=?",@table.id).first
       render_jsonp( { :id              => @table.id,
                       :name            => @table.name,
                       :schema          => @table.schema,
                       :updated_at      => @table.updated_at,
                       :rows_counted    => @table.rows_estimated,
-                      :privacy         => table_privacy_text(@table)
+                      :privacy         => table_privacy_text(@table),
+                      :tags            => @table[:tags_names],
                     }, 200, {:location => table_path(@table)})
     else
       CartoDB::Logger.info "Error on tables#create", @table.errors.full_messages

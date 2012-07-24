@@ -123,11 +123,11 @@
     },
 
     _showLoader: function() {
-      cdb.log.info("start");
+      $("section.tables > div.head > div.loader").fadeIn();
     },
 
     _hideLoader: function() {
-      cdb.log.info("end");
+      $("section.tables > div.head > div.loader").fadeOut();
     }
   });
 

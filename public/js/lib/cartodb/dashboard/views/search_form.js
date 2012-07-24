@@ -13,16 +13,7 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
       "submit form" : "_onSubmit"
     },
 
-    initialize: function() {
-
-      // _.bindAll(this, "render");
-
-      // // If any change happened in the tables model, fetch tags model
-      // this.options.tables.bind('reset',   this._tableChange, this);
-      // this.options.tables.bind('change',  this._tableChange, this);
-
-      // this.add_related_model(this.model);
-    },
+    initialize: function() {},
 
     _onSubmit: function(ev) {
       ev.preventDefault();

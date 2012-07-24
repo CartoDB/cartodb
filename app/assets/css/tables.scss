@@ -32,6 +32,7 @@
         position:relative;
         padding:35px 40px; // Hack for line-height
         border-bottom:1px solid #E5E5E5;
+        
         h2 {
           @include inline-block();
           width:auto;
@@ -41,68 +42,14 @@
           line-height:normal;
         }
 
-        form {
+        div.loader {
           position:absolute;
-          right:34px;
-          top:34px;
-          width:auto;
-
-          input[type="text"] {
-            width:50px;
-            color: #397DB9;
-            font-size:15px;
-            padding:7px 24px 7px 10px;
-            border:1px solid white;
-            @include border-radius(4px);
-            @include transform-style("linear");
-            @include transition-property("border,width");
-            @include transition-duration(500ms);
-
-            &::-webkit-input-placeholder {
-              color: #397DB9;
-              font-size:15px;
-            }
-            &:-moz-placeholder {
-              color: #397DB9;
-              font-size:15px;
-            }
-
-            &:focus {
-              outline:none;
-              width:100px;
-              border-color:#397DB9;
-              @include transform-style("linear");
-              @include transition-property("border,width");
-              @include transition-duration(500ms);
-
-              &::-webkit-input-placeholder {
-                color: #DEDEDE;
-                @include transform-style("linear");
-                @include transition-property("color");
-                @include transition-duration(500ms);
-              }
-              &:-moz-placeholder {
-                color: #DEDEDE;
-                @include transform-style("linear");
-                @include transition-property("color");
-                @include transition-duration(500ms);
-              }
-            }
-          }
-
-          input[type="submit"] {
-            position:absolute;
-            top:13px;
-            right:6px;
-            width:13px;
-            height:13px;
-            border:none;
-            @include text-indent();
-            @include icons-sprite(lens_blue);
-            &:focus {
-              outline:none;
-            }
-          }
+          display:none;
+          top:48px;
+          right:40px;
+          width:38px;
+          height:16px;
+          background:url("/img/layout/loader.gif") no-repeat 0 0;
         }
       }
 

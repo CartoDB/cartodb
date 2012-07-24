@@ -21,10 +21,7 @@
 */
 
 
-
 (function() {
-
-  $.ajaxSetup({ cache: false });
 
   /**
    * Dasboard table stats
@@ -40,9 +37,8 @@
     },
 
     initialize: function() {
-      this.model = new cdb.admin.User({ id : this.options.userid });
 
-      // If the user doesn't want to see the warning anymore)
+      // If the user doesn't want to see the warning anymore
       this.warning = true;
 
       // If any change happened in the tables model, fetch the user stats

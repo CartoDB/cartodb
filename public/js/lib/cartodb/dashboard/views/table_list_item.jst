@@ -5,13 +5,17 @@
       <a href="#change_status" class="status <%= privacy.toLowerCase() %>"><%= privacy %></a>
     </hgroup>
     <p class="light">Description goes here, TODO!</p>
-    <p class="strong uppercase smaller light margin15">? KB · <%= rows_counted %> ROWS</p>
+    <p class="strong uppercase smaller light margin15">? KB · <%= rows_counted %> <%= rows_counted==1 ? 'ROW' : 'ROWS' %></p>
   </div>
   <div class="right">
     <hgroup class="right">
       <p class="smaller light"><% print(moment(updated_at).fromNow()); %></p>
       <a href="#delete" class="delete tooltip" data-table="<%= name %>" title="Delete">delete</a>
     </hgroup>
-    <span class="tags"><%= tags %></span>
+    <span class="tags">
+      <% for(var tag in tags) { %>
+        <a href="?tag_name=<%= tags[tag] %>"><%= tags[tag] %></a>
+      <% } %>
+    </span>
   </div>
 </div>

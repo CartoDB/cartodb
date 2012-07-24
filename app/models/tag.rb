@@ -7,6 +7,7 @@ class Tag < Sequel::Model
 
   set_allowed_columns(:name)
 
+  # TODO this should be on the user model
   def self.load_user_tags(user_id, options = {})
     options[:limit] ||= 5
     fetch("SELECT tags.name, count(*) AS count

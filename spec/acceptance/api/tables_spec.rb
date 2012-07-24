@@ -140,6 +140,17 @@ feature "API 1.0 tables management" do
     end
   end
 
+  scenario "Create a new table specifying tags" do
+    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+
+    post_json api_tables_url, {:name => "My new imported table", :tags => "environment,wadus" } do |response|
+      response.status.should be_success
+      response.body[:name].should == "my_new_imported_table"
+      response.body[:tags].should include("environment")
+      response.body[:tags].should include("wadus")
+    end
+  end
+
   pending "Fail nicely when you create a new table with bad schema" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     post_json api_tables_url, {:name => "My new imported table", :schema => "bla bla blat"} do |response|

@@ -1,24 +1,3 @@
-/**
- * User stats embeded in the dashboard
- *
- * It shows the tables and the space used in the user account
- * You must set the username, the user id and the tables model,
- * if not, it won't work.
- *
- * usage example:
- *
- *    this.tableStats = new cdb.admin.dashboard.TableStats({
- *      el: this.$('div.subheader'),
- *      username: "admin",
- *      userid: 1,
- *      tables: tables.model
- *    })
- *
- *
- * TODO:
- *  - Animate progress colors (not possible with gradients)
- *  - Animate numbers from the beginning
-*/
 
 cdb.admin.dashboard = cdb.admin.dashboard || {};
 
@@ -31,7 +10,7 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
   var CreateTable = cdb.core.View.extend({
 
     events: {
-      'click a[href=#create_new]':  '_showDialog'
+      'click a#create_new':  '_showDialog'
     },
 
     initialize: function() {

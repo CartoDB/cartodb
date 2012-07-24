@@ -16,12 +16,12 @@ $(function() {
     initialize: function() {
       this._initModels();
       this._initViews();
-      this.tables.fetch();
     },
 
     _initModels: function() {
       this.tables = new cdb.admin.Tables();
       this.user = new cdb.admin.User({ id : userid });
+      this.tags = new cdb.admin.Tags();
     },
 
     _initViews: function() {
@@ -36,7 +36,12 @@ $(function() {
         el: this.$('div.subheader'),
         tables: this.tables,
         model: this.user
-      });      
+      });
+
+      // Search form
+      var search_form = this.search_form = new cdb.admin.SearchView({
+        el: this.$('header ul li.search')
+      });  
 
       // User menu
       var user_menu = this.user_menu = new cdb.admin.UserMenu({
@@ -61,6 +66,13 @@ $(function() {
         model: this.user
       });
 
+      // Tables tags
+      var tagsView = this.tagsView = new cdb.admin.dashboard.TagsView({
+        el: this.$('aside div.content ul:eq(0)'),
+        tables: this.tables,
+        model: this.tags
+      });
+
       // Tipsy
       this.$el.find("a.tooltip").tipsy({gravity: 's', fade:true, live:true});
     },
@@ -73,17 +85,48 @@ $(function() {
   var DashboardRouter = Backbone.Router.extend({
 
     routes: {
-      '/': 'index'
+      '':                'index',
+      'tag/:tag/:p':      'searchTag',
+      'search/:query/:p': 'searchQuery' 
     },
 
-    index: function() {}
+    index: function() {
+      window.dashboard.tables.options.set({ 
+        "tag_name"  : "",
+        "q"         : "",
+        "page"      : 1
+      })
+    },
+    searchTag: function(tag,p) {
+      window.dashboard.tables.options.set({ 
+        "tag_name"  : tag,
+        "page"      : p,
+        "q"         : ""
+      })
+    },
+    searchQuery: function(query,p) {
+      window.dashboard.tables.options.set({ 
+        "tag_name"  : "",
+        "page"      : p,
+        "q"         : query
+      })
+    }
   });
 
   cdb.init(function() {
     var dashboard = new Dashboard();
-    var router = new DashboardRouter();
-    // expose to debug
+
+    // Expose to debug
     window.dashboard = dashboard;
+
+    // Routing
+    var router = new DashboardRouter();
+    Backbone.history.start();
+
+    if (window.dashboard.tables.options.get("tag_name") == "" 
+      && window.dashboard.tables.options.get("q") == "") {
+      window.dashboard.tables.fetch()
+    }
   });
 
 });

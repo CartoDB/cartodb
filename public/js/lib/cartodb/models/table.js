@@ -412,21 +412,45 @@
 
     model: cdb.admin.CartoDBTableMetadata,
 
+    _createUrlOptions: function() {
+      return _(this.options.attributes).map(function(v, k) { return k + "=" + encodeURIComponent(v); }).join('&');
+    },
+
     url: function() {
-      //TODO: use current host
-      //var name = this.options.user.get('name');
-      return '/api/v1/tables';
+      var u = '/api/v1/tables/';
+      u += "?" + this._createUrlOptions();
+      return u;
     },
 
     parse: function(response) {
+      this.total_entries = response.total_entries;
       return response.tables;
     },
 
     initialize: function() {
+      this.options = new Backbone.Model({
+        tag_name  : "",
+        q         : "",
+        page      : 1,
+        per_page  : 10
+      });
+
+      this.total_entries = 0;
+
+      this.options.bind("change", this._changeOptions, this);
+    },
+
+    _changeOptions: function() {
+      this.fetch();
     },
 
     create: function(m) {
       Backbone.Collection.prototype.create.call(this, m, {wait: true});
+    },
+
+    fetch: function(opts) {
+      this.trigger("loading", this);
+      Backbone.Collection.prototype.fetch.call(this,opts)
     }
   });
 

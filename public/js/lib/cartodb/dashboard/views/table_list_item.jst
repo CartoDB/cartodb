@@ -13,8 +13,11 @@
       <a href="#delete" class="delete tooltip" data-table="<%= name %>" title="Delete">delete</a>
     </hgroup>
     <span class="tags">
+      <% var tags = tags.split(","); %>
       <% for(var tag in tags) { %>
-        <a href="?tag_name=<%= tags[tag] %>"><%= tags[tag] %></a>
+        <% if (tags[tag] != "") { %>
+          <a href="#/tag/<%= tags[tag] %>/1"><%= tags[tag] %></a>
+        <% } %>
       <% } %>
     </span>
   </div>

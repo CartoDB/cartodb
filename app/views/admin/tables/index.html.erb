@@ -18,14 +18,6 @@
         <div class="head">
           <h2>
             <%= pluralize(@tables_count, 'table', 'tables') %>
-            <% if @tag_name %>
-            with the tag <%= @tag_name %>
-            <% end %>
-            <% if !params[:q]%>
-              in your account
-            <% else %>                
-              found
-            <% end %>
           </h2>
         </div>
         <div class="content">
@@ -36,15 +28,10 @@
       </section>
       <aside class="right">
         <div class="head">
-          <a href="#create_new" class="button green">Create a new table</a>
+          <a href="#create_new" id="create_new" class="button green">Create a new table</a>
         </div>
         <div class="content">
-          <ul>
-            <li><%= link_to "all tables (x)", dashboard_path, :class => ('selected' if !params[:tag_name]) %></li>
-            <% @tags.each do |tag| %>
-              <li><%= link_to tag[:name] + " (x)",dashboard_path(:tag_name => tag[:name]), :class => ('selected' if params[:tag_name] == tag[:name]) %></li>
-            <% end %>
-          </ul>
+          <ul></ul>
           <ul>
             <li><%= link_to "Popular public tables", "/public", :class => "popular" %></li>
           </ul>
@@ -52,5 +39,3 @@
       </aside>
     </div>
   </article>
-
-

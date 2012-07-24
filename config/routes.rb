@@ -8,7 +8,7 @@ CartoDB::Application.routes.draw do
   match '/status' => 'home#app_status'
 
   scope :module => "admin" do
-    match '/dashboard'        => 'tables#index', :as => :dashboard
+    match '/dashboard/'        => 'tables#index', :as => :dashboard
 
     resources :tables, :only => [:show] do
       get 'embed_map', :on => :member

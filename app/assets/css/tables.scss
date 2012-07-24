@@ -188,7 +188,19 @@
 
               span.tags {
                 float:right;
+                width:100%;
                 margin:30px 0 0 0!important;
+
+                a {
+                  float:right;
+                  width:auto;
+                  padding:2px 7px;
+                  margin:0 0 0 4px;
+                  font:normal 11px $text-fonts2;
+                  color:#666666;
+                  background:rgba(57,125,187,0.15);
+                  @include border-radius(2px);
+                }
               }
 
               .status {
@@ -209,13 +221,6 @@
                 }
               }
 
-              span.tags a {
-                padding:2px 7px;
-                font:normal 11px $text-fonts2;
-                color:#666666;
-                background:rgba(57,125,187,0.15);
-                @include border-radius(2px);
-              }
             }
 
             &:hover {
@@ -319,7 +324,7 @@
             &:last-child {margin:0}
           }
 
-          &:last-child {margin:30px 0 0 0; border:none;}
+          &:last-child {margin:25px 0 0 0; border:none;}
         }
       }
     }

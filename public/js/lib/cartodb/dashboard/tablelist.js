@@ -1,5 +1,5 @@
 
-cdb.admin.dashboard = cdb.admin.dashboard || {};
+
 
 (function() {
 
@@ -27,7 +27,6 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
 
     render: function() {
       this.$el.html(this.template(this.model.toJSON()));
-      console.log(this.model.attributes);
 
       return this;
     },
@@ -112,5 +111,4 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
   });
 
   cdb.admin.dashboard.TableList = TableList;
-
 })();

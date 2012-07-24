@@ -10,26 +10,29 @@ class Api::Json::TablesController < Api::ApplicationController
   def index
     limit  = params[:per_page].nil? || params[:per_page].to_i > 100 ? 100 : params[:per_page].to_i
     offset = params[:page].nil? || params[:page].to_i < 0 ? 0 : limit*(params[:page].to_i - 1)
+    q      = "%#{params[:q]}%"
     @tables = if !params[:tag_name].blank?
       tag_name = params[:tag_name].sanitize.tr('_',' ')
       tables_count = Table.fetch("select count(user_tables.id) as count
                           from user_tables, tags
-                          where user_tables.user_id = ?
-                            and user_tables.id = tags.table_id
-                            and tags.name = ?", current_user.id, tag_name).first[:count]
+                          where user_tables.user_id = ?" +
+                          (q.blank? ? "" : " and user_tables.name like ?") +
+                          "  and user_tables.id = tags.table_id
+                            and tags.name = ?", current_user.id, q, tag_name).first[:count]
       Table.fetch("select user_tables.*,
                       array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                           from user_tables, tags
-                          where user_tables.user_id = ?
-                            and user_tables.id = tags.table_id
+                          where user_tables.user_id = ?" +
+                          (q.blank? ? "" : " and user_tables.name like ?") +
+                          "  and user_tables.id = tags.table_id
                             and tags.name = ?
                           order by user_tables.id DESC
-                          limit ? offset ?", current_user.id, tag_name, limit, offset).all
+                          limit ? offset ?", current_user.id, q, tag_name, limit, offset).all
     else
       Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                           from user_tables
-                          where user_tables.user_id = ? order by id DESC
-                          limit ? offset ?", current_user.id, limit, offset).all
+                          where user_tables.user_id = ? " + (q.blank? ? "" : " and user_tables.name like ? ") + "order by id DESC
+                          limit ? offset ?", current_user.id, q, limit, offset).all
     end
 
     render_jsonp({ :total_entries => params[:tag_name] ? tables_count : current_user.tables_count,

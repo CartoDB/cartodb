@@ -62,8 +62,15 @@ cdb.admin.Header = cdb.core.View.extend({
   },
 
   _changeTitle: function(e) {
+    var self = this;
     e.preventDefault();
-    var dlg = new cdb.admin.EditTextDialog();
+    var dlg = new cdb.admin.EditTextDialog({
+      initial_value: this.table.get('name'),
+      res: function(val) {
+        self.table.set({ name: val }, {silent: true})
+        self.table.save(null, {wait: true});
+      }
+    });
     // auto add to body
     dlg.showAtElement(e.target);
   }

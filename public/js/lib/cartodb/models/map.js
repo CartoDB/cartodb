@@ -6,7 +6,7 @@ cdb.admin.Map = cdb.geo.Map.extend({
   initialize: function() {
     this.constructor.__super__.initialize.apply(this);
     this.delayedSave = _.debounce(this.save, 1000);
-    this.autoSave();
+    //this.autoSave();
   },
 
   /**

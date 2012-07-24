@@ -1,7 +1,7 @@
 
 /**
  * base class for all small dialogs
- * inherit from this class, see EditTextDialog 
+ * inherit from this class, see EditTextDialog
  * for an example
  */
 cdb.admin.SmallDialog = cdb.ui.common.Dialog.extend({
@@ -43,7 +43,9 @@ cdb.admin.SmallDialog = cdb.ui.common.Dialog.extend({
 
 cdb.admin.EditTextDialog = cdb.admin.SmallDialog.extend({
 
-  //events: cdb.core.View.extendEvents({ }),
+  events: cdb.core.View.extendEvents({
+    'keydown input': '_keyPress'
+  }),
 
   initialize: function() {
     _.extend(this.options, {
@@ -53,7 +55,18 @@ cdb.admin.EditTextDialog = cdb.admin.SmallDialog.extend({
   },
 
   render_content: function() {
-    return '<input value="' + this.initial_value + '"></input>';
+    return '<input value="' + this.options.initial_value + '"></input>';
+  },
+
+  _keyPress: function(e) {
+    if(e.keyCode === 13) {
+      if(this.options.res) {
+        this.options.res(this.$('input').val());
+      }
+      this._ok();
+    }
   }
+
+
 
 });

@@ -40,11 +40,13 @@ feature "API 1.0 tables management" do
     get_json api_tables_url(:page => 1, :per_page => 2) do |response|
       response.status.should be_success
       response.body[:tables].size.should == 2
+      response.body[:total_entries].should == 2
     end
 
     get_json api_tables_url(:page => 1, :per_page => 2, :q => "2") do |response|
       response.status.should be_success
       response.body[:tables].size.should == 1
+      response.body[:total_entries].should == 1
     end
   end
 

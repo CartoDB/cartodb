@@ -35,7 +35,7 @@ class Api::Json::TablesController < Api::ApplicationController
                           limit ? offset ?", current_user.id, q, limit, offset).all
     end
 
-    render_jsonp({ :total_entries => params[:tag_name] ? tables_count : current_user.tables_count,
+    render_jsonp({ :total_entries => @tables.size,
                     :tables => @tables.map { |table|
                         { :id => table.id,
                           :name => table.name,

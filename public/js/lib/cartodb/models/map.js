@@ -1,4 +1,25 @@
 
+cdb.admin.MapLayer = cdb.geo.MapLayer.extend({
+
+  parse: function(data) {
+    return JSON.parse(data);
+  }
+
+});
+
+cdb.admin.Layers = cdb.geo.Layers.extend({
+
+  model: cdb.admin.MapLayer,
+
+  url: function() {
+    return '/api/v1/maps/' +  this.map.id + '/layers';
+  },
+
+  parse: function(data) {
+    return data.layers;
+  }
+});
+
 cdb.admin.Map = cdb.geo.Map.extend({
 
   urlRoot: '/api/v1/maps',

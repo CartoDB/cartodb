@@ -235,6 +235,46 @@
           self.$('.dataloader').remove();
         });
 
+        this.bind('cellClick', this._editCell, this);
+
+      },
+
+      _editCell: function(e, cell, x, y) {
+        var self = this;
+        var column = self.model.columnName(x-1);
+        var columnType = this.model.getColumnType(column);
+
+        if(this.model.isReservedColumn(column)) {
+          return;
+        }
+
+        var editors = {
+          'string': cdb.admin.EditTextDialog,
+          'number': cdb.admin.EditTextDialog
+        };
+
+        var Editor = editors[columnType];
+
+        if(!Editor) {
+          cdb.log.error("editor not defined for column type " + columnType);
+          return;
+        }
+
+        var dlg = new Editor({
+          initial_value: self.model.data().getCell(y, column),
+          res: function(val) {
+            var update = {}
+            update[column] = val;
+            self.model.data().getRowAt(y).set(update).save();
+          }
+        });
+
+        // auto add to body
+        var offset = $(e.target).offset();
+        offset.top -= $(window).scrollTop();
+        offset.left -= $(window).scrollLeft();
+        dlg.showAt(offset.left, offset.top);
+
       },
 
       /**

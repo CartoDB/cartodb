@@ -74,14 +74,18 @@
     initialize: function() {
       _.bindAll(this, "_updateListHeader");
 
-      this.model.bind('reset', this._addAll, this);
-      this.model.bind('add', this._addTable, this);
-      this.model.bind('remove', this._tableRemoved, this);
+      this.model.bind('reset',    this._addAll, this);
+      this.model.bind('add',      this._addTable, this);
+      this.model.bind('remove',   this._tableRemoved, this);
+
+      this.model.bind('loading',  this._showLoader, this);
+
     },
 
     render: function() {
       var self = this;
       this.$el.html('');
+      this._updateListHeader();
       this.model.each(function(m) {
         self._addTable(m);
       });
@@ -89,6 +93,7 @@
 
     _addAll: function() {
       this.render();
+      this._hideLoader();
     },
 
     _addTable: function(m) {
@@ -103,11 +108,27 @@
     },
 
     _updateListHeader: function() {
-      $("section.tables > div.head > h2").text(
-        this.model.length == 1 ? this.model.length + " table in your account" :  this.model.length + " tables in your account"
-      );
-    }
 
+      var title =  this.model.total_entries + " " + ( this.model.total_entries != 1 ? "tables" : "table" );
+
+      if (this.model.options.attributes.tag_name != "") 
+        title += " with the tag \"" + this.model.options.attributes.tag_name + "\"";
+
+      if (this.model.options.attributes.q != "")
+        title += " with \"" + this.model.options.attributes.q +  "\" found";
+      else
+        title += " in your account";
+
+      $("section.tables > div.head > h2").text(title);
+    },
+
+    _showLoader: function() {
+      cdb.log.info("start");
+    },
+
+    _hideLoader: function() {
+      cdb.log.info("end");
+    }
   });
 
   cdb.admin.dashboard.TableList = TableList;

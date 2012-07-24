@@ -56,6 +56,9 @@ $(function() {
             })
           );
 
+          // fetch or create map id
+          this.map.relatedTo(this.table);
+
           this.dataLayer = new cdb.geo.CartoDBLayer({
             user_name: user_name,
             tiler_port: cdb.config.get('tiler_port'),
@@ -70,8 +73,6 @@ $(function() {
             self.map.addLayer(self.dataLayer);
           });
 
-          // fetch or create map id
-          this.map.relatedTo(this.table);
 
           //temporal
           this.table.bind('change:schema', function() {

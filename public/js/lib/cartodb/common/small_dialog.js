@@ -60,10 +60,13 @@ cdb.admin.EditTextDialog = cdb.admin.SmallDialog.extend({
 
   _keyPress: function(e) {
     if(e.keyCode === 13) {
-      if(this.options.res) {
-        this.options.res(this.$('input').val());
-      }
       this._ok();
+    }
+  },
+
+  ok: function() {
+    if(this.options.res) {
+      this.options.res(this.$('input').val());
     }
   }
 

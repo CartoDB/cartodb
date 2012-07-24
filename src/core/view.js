@@ -80,7 +80,22 @@
 
   }, {
     viewCount: 0,
-    views: {}
+    views: {},
+
+    /**
+     * when a view with events is inherit and you want to add more events
+     * this helper can be used:
+     * var MyView = new core.View({
+     *  events: cdb.core.View.extendEvents({
+     *      'click': 'fn'
+     *  })
+     * });
+     */
+    extendEvents: function(newEvents) {
+      return function() {
+        return _.extend(newEvents, this.constructor.__super__.events);
+      }
+    }
   });
 
 })();

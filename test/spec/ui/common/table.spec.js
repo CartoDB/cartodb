@@ -177,9 +177,9 @@ describe("common.ui.Table", function() {
       table.bind('cellClick', spy.click, spy);
       cell.trigger('click');
       expect(spy.click).toHaveBeenCalled();
-      expect(spy.click.mostRecentCall.args[0][0]).toEqual(cell[0]);
-      expect(spy.click.mostRecentCall.args[1]).toEqual(0);
-      expect(spy.click.mostRecentCall.args[2]).toEqual(1);
+      expect(spy.click.mostRecentCall.args[1][0]).toEqual(cell[0]);
+      expect(spy.click.mostRecentCall.args[2]).toEqual(0);
+      expect(spy.click.mostRecentCall.args[3]).toEqual(1);
 
     });
 

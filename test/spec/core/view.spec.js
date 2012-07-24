@@ -86,12 +86,25 @@ describe("core.view", function() {
       expect(view._subviews[v1.cid]).toEqual(undefined);
       expect(v1.clean).toHaveBeenCalled();
   });
+
   it("subview shuould be removed from its parent", function() {
       var v1 = new cdb.core.View();
       view.addView(v1);
       expect(view._subviews[v1.cid]).toEqual(v1);
       v1.clean();
       expect(view._subviews[v1.cid]).toEqual(undefined);
+  });
+
+  it("extendEvents should extend events", function() {
+      var V1 = cdb.core.View.extend({
+        events: cdb.core.View.extendEvents({
+          'click': 'hide'
+        })
+      });
+      var v1 = new V1();
+      expect(v1.el.style.display).not.toEqual('none');
+      v1.$el.trigger('click');
+      expect(v1.el.style.display).toEqual('none');
   });
 
 });

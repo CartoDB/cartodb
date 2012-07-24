@@ -6,7 +6,8 @@ cdb.admin.Header = cdb.core.View.extend({
 
   events: {
     'click .clearview': 'clearView',
-    'click .status': '_addPrivacySelector'
+    'click .status': '_addPrivacySelector',
+    'click .change_title': '_changeTitle'
   },
 
   initialize: function() {
@@ -58,5 +59,12 @@ cdb.admin.Header = cdb.core.View.extend({
     //TODO: fix showing many times
     this.privacy.show(ev.target);
     return false;
+  },
+
+  _changeTitle: function(e) {
+    e.preventDefault();
+    var dlg = new cdb.admin.EditTextDialog();
+    // auto add to body
+    dlg.showAtElement(e.target);
   }
 });

@@ -16,7 +16,8 @@ class Api::Json::UsersController < Api::ApplicationController
     	:byte_quota => user.quota_in_bytes,
     	:remaining_table_quota => user.remaining_table_quota,
     	:remaining_byte_quota => user.remaining_quota.to_f,
-    	:api_calls => (1..30).map{|i|i}
+    	:api_calls => (1..30).map{|i|i},
+      :api_key => user.get_map_key
     }
 
     render :json => data

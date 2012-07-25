@@ -10,7 +10,6 @@ feature "API 1.0 columns management" do
   end
 
   scenario "Get standard information for the user by id" do    
-    @user
     get_json api_user_url(@user.id) do |response|
       response.body.should == {:username          => "test", 
                                :account_type      => "FREE", 
@@ -20,10 +19,18 @@ feature "API 1.0 columns management" do
                                :remaining_table_quota => 5, 
                                :byte_quota        => 104857600, 
                                :remaining_byte_quota  => 103231488.0, 
+                               :api_key           => @user.get_map_key,
                                :api_calls         => (1..30).map{|i| i}}       
       response.status.should be_success      
     end
   end
+
+  pending "Get standard information without api_key" do
+    get_json "#{api_url_prefix}/users/#{@user.id}" do
+      response.status.should == 401
+    end
+  end
+
   scenario "Get standard information for the user by username" do    
     @user
     get_json api_user_url(@user.username) do |response|

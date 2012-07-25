@@ -46,23 +46,8 @@ group :development, :test do
   gem 'minitest', '~> 2.0.2', :require => 'minitest/unit'
   gem 'selenium-webdriver', '2.5.0'
 
-  # this is for Ruby 1.9.2 debugging. You should upgrade to ruby 1.9.3, it's much faster in development
-  if (RUBY_VERSION == "1.9.2")
-    gem "ruby-debug-base19x", '~>0.11.30.pre3', :require => "ruby-debug", :platforms => :mri_19
-    gem "ruby-debug19", '0.11.5', :require => "ruby-debug", :platforms => :mri_19
-    gem "mocha"
-  end
-
-  ########################
-  # This is for Ruby 1.9.3 debugging only. It requires that these gems are installed locally MANUALLY.
-  # ONCE AGAIN: These gems are NOT on rubygems.org
-  # ----------------------
-  if (RUBY_VERSION == "1.9.3")
-    gem "ruby-debug-base19", '0.11.26', :require => "ruby-debug", :platforms => :mri_19
-    gem "ruby-debug19", '0.11.6', :require => "ruby-debug", :platforms => :mri_19
-    gem "mocha", "~> 0.10.0"
-  end
-  ########################
+  gem "mocha"
+  gem "debugger"
 
   gem "steak", "2.0.0"
   gem "rspec-rails"

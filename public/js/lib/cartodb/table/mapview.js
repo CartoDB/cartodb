@@ -109,19 +109,26 @@ cdb.admin.MapTab = cdb.core.View.extend({
 
         this.map.layers.bind('add', function(lyr) {
           if(lyr.cid == self.options.dataLayer.cid) {
-            self.layerDataView = self.mapView.getLayerByCid(self.options.dataLayer.cid);
-
-            self.layerDataView.bind('featureClick', self.featureClick, self);
-            self.infowindow = new cdb.admin.MapInfowindow({
-              model: self.infowindowModel,
-              template: cdb.templates.getTemplate('table/views/infowindow'),
-              mapView: self.mapView,
-              table: self.options.table
-            });
-            self.mapView.$el.append(self.infowindow.el);
+            self._addDataLayer();
           }
         });
+        this._addDataLayer();
 
+    }
+  },
+
+  _addDataLayer: function() {
+    var self = this;
+    self.layerDataView = self.mapView.getLayerByCid(self.options.dataLayer.cid);
+    if(self.layerDataView) {
+      self.layerDataView.bind('featureClick', self.featureClick, self);
+      self.infowindow = new cdb.admin.MapInfowindow({
+        model: self.infowindowModel,
+        template: cdb.templates.getTemplate('table/views/infowindow'),
+        mapView: self.mapView,
+        table: self.options.table
+      });
+      self.mapView.$el.append(self.infowindow.el);
     }
   },
 

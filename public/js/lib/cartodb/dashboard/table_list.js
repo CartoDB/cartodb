@@ -1,4 +1,5 @@
 
+cdb.admin.dashboard = cdb.admin.dashboard || {};
 
 
 (function() {
@@ -116,7 +117,8 @@
 
       if (this.model.options.attributes.q != "")
         title += " with \"" + this.model.options.attributes.q +  "\" found";
-      else
+      
+      if (this.model.options.attributes.q == "" && this.model.options.attributes.tag_name == "")
         title += " in your account";
 
       $("section.tables > div.head > h2").text(title);

@@ -21,13 +21,35 @@ $(function() {
           this._initViews();
 
           // init data
+          // table change will raise the map and columns fetch
           this.table.fetch();
-          this.columns.fetch();
+
           // add base layer
-          this.map.addLayer(this.baseLayers.at(4).clone());
+          //this.map.addLayer(this.baseLayers.at(2).clone());
           // add cartodb layer
-          this.map.setZoom(4);
-          this.map.setCenter([34.30714385628804, 11.6015625]);
+          //this.map.setZoom(4);
+          //this.map.setCenter([34.30714385628804, 11.6015625]);
+        },
+
+        /**
+         * when there is no layers created the app can create
+         * default layers.
+         * Two layers are added:
+         *  - a base layer with base map (world tiles)
+         *  - a data layer which contains the data from the table
+         */
+        defaultLayers: function() {
+          this.map.addLayer(this.baseLayers.at(2).clone());
+          this.dataLayer = new cdb.geo.CartoDBLayer({
+                  table_name: this.table.get('name'),
+                  user_name: user_name,
+                  tiler_port: cdb.config.get('tiler_port'),
+                  tiler_domain: cdb.config.get('tiler_domain'),
+                  interactivity: 'cartodb_id'
+          });
+          this.map.addDataLayer(this.dataLayer);
+          //this.map.layers.at(0).save();
+          //this.dataLayer.save();
         },
 
         _initModels: function() {
@@ -45,8 +67,8 @@ $(function() {
           var layers = [
             'http://tile.stamen.com/toner/{z}/{x}/{y}.png',
             'http://a.tiles.mapbox.com/v3/mapbox.mapbox-light/{z}/{x}/{y}.png',
-            'http://tile.stamen.com/terrain/{z}/{x}/{y}.png',
-            'http://tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+            //'http://tile.stamen.com/terrain/{z}/{x}/{y}.png',
+            //'http://tile.stamen.com/watercolor/{z}/{x}/{y}.png',
             'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png'
           ];
 
@@ -58,21 +80,11 @@ $(function() {
 
           // fetch or create map id
           this.map.relatedTo(this.table);
-
-          this.dataLayer = new cdb.geo.CartoDBLayer({
-            user_name: user_name,
-            tiler_port: cdb.config.get('tiler_port'),
-            tiler_domain: cdb.config.get('tiler_domain'),
-            interactivity: 'cartodb_id'
+          this.map.layers.bind('reset', function() {
+            if(self.map.layers.size() === 0) {
+              self.defaultLayers();
+            }
           });
-
-          // when the table name is known the tiles from
-          // the tile server can be fetched
-          this.table.bind('change:name', function() {
-            self.dataLayer.set({table_name: this.get('name')});
-            self.map.addLayer(self.dataLayer);
-          });
-
 
           //temporal
           this.table.bind('change:schema', function() {
@@ -95,6 +107,7 @@ $(function() {
         },
 
         _initViews: function() {
+          var self = this;
 
           this.header = new cdb.admin.Header({
             el: this.$('header'),
@@ -116,7 +129,6 @@ $(function() {
           this.mapTab = new cdb.admin.MapTab({
             model: this.map,
             baseLayers: this.baseLayers,
-            dataLayer: this.dataLayer,
             table: this.table,
             infowindow: this.infowindow
           });
@@ -130,16 +142,23 @@ $(function() {
           this.$el.append(this.menu.render().el);
           this.menu.hide();
 
-          // lateral menu modules
-          var sql = new cdb.admin.mod.SQL({ model: this.table });
-          var carto = new cdb.admin.mod.Carto({ model: this.dataLayer });
-          var infowindow = new cdb.admin.mod.InfoWindow({ 
-            table: this.table,
-            model: this.infowindow
-          });
-          this.menu.addModule(sql.render(), ['table', 'map']);
-          this.menu.addModule(carto.render(), 'map');
-          this.menu.addModule(infowindow.render(), 'map');
+          this.map.bind('change:dataLayer', _.once(function() {
+            // lateral menu modules
+            var sql = new cdb.admin.mod.SQL({ 
+              model: this.table 
+            });
+            var carto = new cdb.admin.mod.Carto({ 
+              model: self.map.get('dataLayer')
+            });
+            var infowindow = new cdb.admin.mod.InfoWindow({ 
+              table: self.table,
+              model: self.infowindow
+            });
+            self.menu.addModule(sql.render(), ['table', 'map']);
+            self.menu.addModule(carto.render(), 'map');
+            self.menu.addModule(infowindow.render(), 'map');
+          }));
+
 
           //sql.bind('sqlQuery', this.table.sql);
 

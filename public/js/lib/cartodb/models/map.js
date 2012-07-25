@@ -1,15 +1,33 @@
 
-cdb.admin.MapLayer = cdb.geo.MapLayer.extend({
+_.extend(cdb.geo.MapLayer.prototype, {
+//cdb.admin.MapLayer = cdb.geo.MapLayer.extend({
 
   parse: function(data) {
-    return JSON.parse(data);
+    var c = {};
+    _.extend(c, JSON.parse(data.options), {
+      id: data.id,
+      type: data.kind
+    });
+    return c;
+  },
+
+  toJSON: function() {
+    var c = _.clone(this.attributes);
+    var d = {
+      kind: c.type,
+      options: c
+    };
+    if(c.id !== undefined) {
+      d.id = c.id;
+    }
+    return d;
   }
 
 });
 
 cdb.admin.Layers = cdb.geo.Layers.extend({
 
-  model: cdb.admin.MapLayer,
+  model: cdb.geo.MapLayer,
 
   url: function() {
     return '/api/v1/maps/' +  this.map.id + '/layers';
@@ -18,7 +36,18 @@ cdb.admin.Layers = cdb.geo.Layers.extend({
   parse: function(data) {
     return data.layers;
   }
+
+
 });
+
+/**
+ * this is a specialization of generic map prepared to hold two layers:
+ *  - a base layer
+ *  - a data layer which contains the table data
+ *
+ * cartodb only supports one data layer per map so this will change when
+ * that changes
+ */
 
 cdb.admin.Map = cdb.geo.Map.extend({
 
@@ -28,6 +57,21 @@ cdb.admin.Map = cdb.geo.Map.extend({
     this.constructor.__super__.initialize.apply(this);
     this.delayedSave = _.debounce(this.save, 1000);
     //this.autoSave();
+    this.bind('change:id', this._fetchLayers, this);
+    this.layers = new cdb.admin.Layers();
+    this.layers.map = this;
+    this.layers.bind('reset', this._layersChanged, this);
+  },
+
+  _layersChanged: function() {
+    if(this.layers.size() == 2) {
+      this.set({ dataLayer: this.layers.at(1) });
+    }
+  },
+
+  // fetch related layers
+  _fetchLayers: function() {
+    this.layers.fetch();
   },
 
   /**
@@ -61,6 +105,15 @@ cdb.admin.Map = cdb.geo.Map.extend({
     }
   },
 
+  /**
+   * the first version of cartodb contains one single layer
+   * per table with information.
+   */
+  addDataLayer: function(lyr) {
+    this.addLayer(lyr);
+    this.set({ dataLayer: lyr });
+  },
+
   create: function() {
     this.unset('id');
     this.set({ table_id: this.table.id });
@@ -73,6 +126,13 @@ cdb.admin.Map = cdb.geo.Map.extend({
   autoSave: function() {
     this.bind('change:center', this.delayedSave);
     this.bind('change:zoom', this.delayedSave);
+  },
+
+  toJSON: function() {
+    var c = _.clone(this.attributes);
+    // data layer is a helper to work in local
+    delete c.dataLayer;
+    return c;
   }
 
 });

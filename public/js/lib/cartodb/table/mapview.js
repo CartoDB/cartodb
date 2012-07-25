@@ -34,7 +34,7 @@ cdb.admin.BaseMapView = cdb.core.View.extend({
   activate: function(e) {
     e.preventDefault();
     var layer = this.map.getBaseLayer();
-    layer.set(this.model.toJSON());
+    layer.set(this.model.clone());
     cdb.log.debug("enabling layer: " + layer.get('urlTemplate'));
     return false;
   }
@@ -80,7 +80,7 @@ cdb.admin.MapTab = cdb.core.View.extend({
     this.map_enabled = false;
     this.infowindowModel = this.options.infowindow;
 
-    this.add_related_model(this.options.dataLayer);
+    //this.add_related_model(this.options.dataLayer);
     this.add_related_model(this.map);
     this.add_related_model(this.options.table);
     this.add_related_model(this.infowindowModel);
@@ -107,28 +107,32 @@ cdb.admin.MapTab = cdb.core.View.extend({
         });
         this.map_enabled = true;
 
-        this.map.layers.bind('add', function(lyr) {
-          if(lyr.cid == self.options.dataLayer.cid) {
-            self._addDataLayer();
-          }
+        this.map.bind('change:dataLayer', function(lyr) {
+          self._bindDataLayer();
         });
-        this._addDataLayer();
+
+        self.infowindow = new cdb.admin.MapInfowindow({
+          model: self.infowindowModel,
+          template: cdb.templates.getTemplate('table/views/infowindow'),
+          mapView: self.mapView,
+          table: self.options.table
+        });
+        self.mapView.$el.append(self.infowindow.el);
 
     }
   },
 
-  _addDataLayer: function() {
+  _bindDataLayer: function() {
     var self = this;
-    self.layerDataView = self.mapView.getLayerByCid(self.options.dataLayer.cid);
+
+    // unbind previos stuff
+    if(self.layerDataView) {
+      self.layerDataView.unbind(null, null, this);
+    }
+
+    self.layerDataView = self.mapView.getLayerByCid(self.map.get('dataLayer').cid);
     if(self.layerDataView) {
       self.layerDataView.bind('featureClick', self.featureClick, self);
-      self.infowindow = new cdb.admin.MapInfowindow({
-        model: self.infowindowModel,
-        template: cdb.templates.getTemplate('table/views/infowindow'),
-        mapView: self.mapView,
-        table: self.options.table
-      });
-      self.mapView.$el.append(self.infowindow.el);
     }
   },
 

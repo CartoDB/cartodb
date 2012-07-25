@@ -9,8 +9,6 @@ class Layer < Sequel::Model
 
   def before_validation
     if self.class == Layer
-    puts "FUUUUUUUUUUUUUUUUUUUUUUUU #{self.kind}"
-    puts "FUUUUUUUUUUUUUUUUUUUUUUUU #{kind}"
       case self.kind.to_s.strip.downcase
         when "carto" then self.kind = "Layer::Carto"
         when "tiled" then self.kind = "Layer::Tiled"

@@ -12,7 +12,7 @@ describe("cartodb.models.Map", function() {
     };
     spyOn(s, 'changed');
     map.bind('change:dataLayer', s.changed);
-    map.addDataLayer(new cdb.admin.MapLayer());
+    map.addDataLayer(new cdb.geo.MapLayer());
     expect(s.changed).toHaveBeenCalled();
   });
 
@@ -23,8 +23,8 @@ describe("cartodb.models.Map", function() {
     spyOn(s, 'changed');
     map.bind('change:dataLayer', s.changed);
     map.layers.reset([
-      new cdb.admin.MapLayer(),
-      new cdb.admin.MapLayer()
+      new cdb.geo.MapLayer(),
+      new cdb.geo.MapLayer()
     ]);
     expect(s.changed).toHaveBeenCalled();
   });

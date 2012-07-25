@@ -33,7 +33,7 @@ cdb.ui.common.TableData = Backbone.Collection.extend({
         return null;
       }
       return r.get(columnName);
-    },
+    }
 
 });
 

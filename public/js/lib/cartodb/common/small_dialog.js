@@ -70,6 +70,35 @@ cdb.admin.EditTextDialog = cdb.admin.SmallDialog.extend({
     }
   }
 
+});
 
+cdb.admin.EditGeometryDialog = cdb.admin.SmallDialog.extend({
+
+  events: cdb.core.View.extendEvents({
+    'keydown input': '_keyPress'
+  }),
+
+  initialize: function() {
+    _.extend(this.options, {
+        template_name: 'common/views/dialog_small_edit',
+    });
+    this.constructor.__super__.initialize.apply(this);
+  },
+
+  render_content: function() {
+    return '<input value="' + this.options.initial_value + '"></input>';
+  },
+
+  _keyPress: function(e) {
+    if(e.keyCode === 13) {
+      this._ok();
+    }
+  },
+
+  ok: function() {
+    if(this.options.res) {
+      this.options.res(this.$('input').val());
+    }
+  }
 
 });

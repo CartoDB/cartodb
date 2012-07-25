@@ -250,7 +250,8 @@
 
         var editors = {
           'string': cdb.admin.EditTextDialog,
-          'number': cdb.admin.EditTextDialog
+          'number': cdb.admin.EditTextDialog,
+          'geometry': cbd.admin.EditTextDialog
         };
 
         var Editor = editors[columnType];
@@ -259,13 +260,15 @@
           cdb.log.error("editor not defined for column type " + columnType);
           return;
         }
+        var row = self.model.data().getRowAt(y);
 
         var dlg = new Editor({
           initial_value: self.model.data().getCell(y, column),
+          row: row,
           res: function(val) {
-            var update = {}
+            var update = {};
             update[column] = val;
-            self.model.data().getRowAt(y).set(update).save();
+            row.set(update).save();
           }
         });
 

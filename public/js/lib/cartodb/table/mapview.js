@@ -22,6 +22,7 @@ cdb.admin.BaseMapView = cdb.core.View.extend({
   },
 
   render: function() {
+    //TODO: move this to model
     var back_tile = this.model.get("urlTemplate").replace("{z}", this.options.z).replace("{x}", this.options.x).replace("{y}", this.options.y)
       , a = this.make("a", {"style": "background:url(" + back_tile + ") no-repeat 0 0"}, this.cid);
 

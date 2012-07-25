@@ -154,6 +154,21 @@ describe("common.ui.Table", function() {
       expect(table.getCell(0, 2).parent().attr('data-y')).toEqual('2');
     });
 
+    it("should update cell indexes when remove a column", function() {
+      table.render();
+      cols.add({'id': 10, 'col1': 11, 'col2': 12, 'col3': 13}, {at: 1});
+      expect(table.$('tr').length).toEqual(4);
+      cols.remove(cols.at(0));
+      var cell = table.getCell(0, 1);
+      expect(cell.parent().attr('data-y')).toEqual('1');
+      /*
+      var cell = table.getCell(0, 1);
+      expect(cell.html()).toEqual('10');
+      expect(cell.parent().attr('data-y')).toEqual('1');
+      expect(table.getCell(0, 2).parent().attr('data-y')).toEqual('2');
+      */
+    });
+
     it("should remove rows", function() {
       table.render();
       cols.remove(cols.at(0));

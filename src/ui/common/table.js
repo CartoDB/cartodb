@@ -197,7 +197,12 @@ cdb.ui.common.Table = cdb.core.View.extend({
     });
 
     tr.bind('clean', function() {
-      self.rowViews.splice(_.indexOf(self.rowViews,this), 1);
+      var idx = _.indexOf(self.rowViews,this);
+      self.rowViews.splice(idx, 1);
+      // update index
+      for(var i = idx; i < self.rowViews.length; ++i) {
+        self.rowViews[i].$el.attr('data-y', i);
+      }
     });
 
     tr.render();

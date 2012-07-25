@@ -83,8 +83,10 @@ describe("admin table", function() {
         { a: 1, b:2 }
       ]);
       spyOn(table, 'fetch');
+      expect(sqlView.table).toEqual(table);
       table.useSQLView(null);
       expect(table.fetch).toHaveBeenCalled();
+      expect(sqlView.table).toEqual(null);
     });
 
     it("it should return a row", function() {

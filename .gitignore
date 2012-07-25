@@ -21,3 +21,4 @@ spec/support/data/failed_remote/*
 cartodb-importer
 env
 coverage
+.spin.rb

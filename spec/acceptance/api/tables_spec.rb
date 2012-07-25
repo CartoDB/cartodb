@@ -30,6 +30,7 @@ feature "API 1.0 tables management" do
       response.body[:total_entries].should == 2
       response.body[:tables][1]['id'].should == table1.id
       response.body[:tables][1]['name'].should == "my_table_1"
+      response.body[:tables][1]['table_size'].should == table1.table_size
       response.body[:tables][1]['tags'].split(',').should include('tag 3')
       response.body[:tables][1]['tags'].split(',').should include('tag 2')
       response.body[:tables][1]['tags'].split(',').should include('tag 1')
@@ -174,6 +175,7 @@ feature "API 1.0 tables management" do
       response.body[:id].should == table1.id
       response.body[:name].should == "my_table_1"
       response.body[:privacy].should == "PRIVATE"
+      response.body[:table_size].should == table1.table_size
       response.body[:tags].should include("tag 1")
       response.body[:tags].should include("tag 2")
       response.body[:tags].should include("tag 3")

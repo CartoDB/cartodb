@@ -47,6 +47,7 @@ feature "API 1.0 tables management" do
       response.status.should be_success
       response.body[:tables].size.should == 1
       response.body[:total_entries].should == 1
+      response.body[:tables][0]['name'].should == "my_table_2"
     end
   end
 

@@ -1,16 +1,19 @@
 
 describe("tablestats", function() {
   var tablestats
-    , tables;
+    , tables
+    , user;
 
   beforeEach(function() {
 
     tables = new cdb.admin.Tables();
+    user = new cdb.admin.User({ id : "1" });
+
     tables.reset([{name: 'test'}]);
 
     tablestats = new cdb.admin.dashboard.TableStats({
       username: "admin",
-      userid: "1",
+      model: user,
       tables: tables
     })
 

@@ -38,6 +38,19 @@ feature "API 1.0 layers management" do
     end
   end
 
+  scenario "Get a map layers" do
+    layer = Layer.create
+    layer2 = Layer.create
+    @map.add_layer layer
+    @map.add_layer layer2
+
+    get_json v1_map_layers_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :map_id => @map.id) do |response|
+      response.status.should be_success
+      response.body[:total_entries].should == 2
+      response.body[:layers].size.should == 2
+    end
+  end
+
   scenario "Update a layer" do
     layer = Layer.create
     @map.add_layer layer

@@ -148,6 +148,11 @@
         this.sqlView.unbind(null, null, this._data);
       }
 
+      // reset previous
+      if(!view && this.sqlView) {
+        this.sqlView.table = null;
+      }
+
       this.sqlView = view;
 
       if(view) {
@@ -157,6 +162,7 @@
         }, this);
         // swicth source data
         this.dataModel = this.sqlView;
+        view.table = this;
       } else {
         this._data.linkToSchema();
         this.dataModel = this._data;

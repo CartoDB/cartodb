@@ -35,7 +35,7 @@ var LeafLetTiledLayerView = function(layerModel, leafletMap) {
 
 _.extend(LeafLetTiledLayerView.prototype, LeafLetLayerView.prototype, {
   _update: function() {
-    _.defaults(this.leafletLayer.options, this.model.toJSON());
+    _.defaults(this.leafletLayer.options, _.clone(this.model.attributes));
     this.leafletLayer.setUrl(this.model.get('urlTemplate'));
   }
 });
@@ -51,7 +51,7 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
 
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
-  var opts = layerModel.toJSON();
+  var opts = _.clone(layerModel.attributes);
 
   opts.map =  leafletMap;
 

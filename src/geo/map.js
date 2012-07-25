@@ -104,7 +104,7 @@ cdb.geo.Map = Backbone.Model.extend({
       if (this.options.debug) {
         throw (options + ' options has to be an object');
       } else {
-        return
+        return;
       }
     }
 

@@ -6,11 +6,11 @@ describe("admin table", function() {
       beforeEach(function() {
         var table = new cdb.admin.CartoDBTableMetadata({
           name: 'testTable'
-        })
+        });
         column = new cdb.admin.Column({
           table: table,
           name: 'columnName'
-        })
+        });
       });
 
       it("should have correct url", function() {
@@ -85,6 +85,11 @@ describe("admin table", function() {
       spyOn(table, 'fetch');
       table.useSQLView(null);
       expect(table.fetch).toHaveBeenCalled();
+    });
+
+    it("it should return a row", function() {
+        var r = table.data().getRow(1234);
+        expect(r.id).toEqual(1234);
     });
 
     /*

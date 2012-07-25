@@ -351,7 +351,7 @@
      * return a model row
      */
     getRow: function(id) {
-      var r = new cdb.admin.Row({id: id});
+      var r = new cdb.admin.Row({cartodb_id: id});
       r.table = this.table;
       return r;
     },

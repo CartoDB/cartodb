@@ -7,13 +7,9 @@ class Api::Json::LayersController < Api::ApplicationController
 
   def index
     @layers = @map.layers
-    respond_to do |format|
-      format.json do
-        render_jsonp({ :total_entries => @layers.size,
-                       :layers => @layers.map { |layer| layer.to_json }
-                    })
-      end
-    end
+    render_jsonp({ :total_entries => @layers.size,
+                   :layers => @layers.map { |layer| layer.values.to_json }
+                })
   end
 
   def show

@@ -43,7 +43,9 @@ class Api::Json::TablesController < Api::ApplicationController
                           :tags => table[:tags_names],
                           :schema => table.schema,
                           :updated_at => table.updated_at,
-                          :rows_counted => table.rows_estimated }
+                          :rows_counted => table.rows_estimated,
+                          :table_size => table.table_size
+                        }
                       }
                     })
   end
@@ -69,6 +71,7 @@ class Api::Json::TablesController < Api::ApplicationController
                       :rows_counted    => @table.rows_estimated,
                       :privacy         => table_privacy_text(@table),
                       :tags            => @table[:tags_names],
+                      :table_size => @table.table_size
                     }, 200, {:location => table_path(@table)})
     else
       CartoDB::Logger.info "Error on tables#create", @table.errors.full_messages
@@ -103,7 +106,8 @@ class Api::Json::TablesController < Api::ApplicationController
                        :schema => @table.schema(:reload => true),
                        :updated_at => @table.updated_at,
                        :rows_counted => @table.rows_estimated,
-                       :map_id => @table.map_id
+                       :map_id => @table.map_id,
+                       :table_size => @table.table_size
                        })
       end
     end
@@ -141,7 +145,8 @@ class Api::Json::TablesController < Api::ApplicationController
                      :warnings => warnings,
                      :privacy => table_privacy_text(@table),
                      :tags => @table[:tags_names],
-                     :schema => @table.schema })
+                     :schema => @table.schema,
+                     :table_size => @table.table_size })
     else
       render_jsonp({ :errors => @table.errors.full_messages}, 400)
     end

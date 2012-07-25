@@ -85,7 +85,7 @@ $(function() {
   var DashboardRouter = Backbone.Router.extend({
 
     routes: {
-      '':                'index',
+      '':                 'index',
       'tag/:tag/:p':      'searchTag',
       'search/:query/:p': 'searchQuery' 
     },

@@ -40,6 +40,10 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
         this._activateCreate();
       }
 
+      /******************/
+      this._showDialog()
+      /*******************/
+
       return this;
     },
 
@@ -61,10 +65,14 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
 
       if (!this.active) return false;
 
-      ev.preventDefault();
-      var dialog = new cdb.admin.CreateTableDialog();
-      this.$el.append(dialog.render().el);
+      if (ev) ev.preventDefault();
+    
+      var dialog = new cdb.admin.CreateTableDialog({
+        tables : this.options.tables 
+      });
+      $("body").append(dialog.render().el);
       dialog.open();
+
       dialog.bind('importStarted', this._importStarted, this);
     },
 

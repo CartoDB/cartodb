@@ -3,5 +3,6 @@
    * Image sprites for using in CartoDB
    */
 	
+  $icons-file_type-spacing: 10px;
 	@import "img/icons/*.png";
 	@include all-icons-sprites;

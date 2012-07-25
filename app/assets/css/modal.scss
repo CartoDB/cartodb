@@ -49,5 +49,15 @@
         div.foot {border:none; padding-top:15px;}
         a.close {right:-18px; top:-18px;}
       }
+
+
+      // Create something new (table, row,...)
+      &.creation {
+        div.foot {
+          padding-top:0;
+          border:none;
+          a.cancel {display:none}
+        }
+      }
 		}
 	}

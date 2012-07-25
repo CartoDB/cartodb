@@ -15,6 +15,7 @@
 	 *	{@hover}
 	 *  {@active}
 	 *  {@focus}
+	 *  {@disabled}
 	 */
 	a.button.green,
 	button.green,
@@ -58,6 +59,15 @@
 			background:#749C33; // IE
 			@include background(linear-gradient(#94BE42,#749C33));
 		}
+		// Disabled
+		&.disabled {
+			@include opacity(0.5);
+			&:hover, &:active, &:focus {
+				background:#94BE42; // IE
+				@include background(linear-gradient(#94BE42,#7FA938));
+				cursor:default;
+			}
+		}
 	}
 
 
@@ -66,6 +76,7 @@
 	 *	{@hover}
 	 *  {@active}
 	 *  {@focus}
+	 *  {@disabled}
 	 */
 	a.button.grey,
 	button.grey,
@@ -99,38 +110,13 @@
 			background:#DEDEDE; // IE
 			@include background(linear-gradient(#F9F9F9,#DEDEDE));
 		}
-	}
-
-
-	/*
-	 *	Disabled button
-	 *	{@hover}
-	 *  {@active}
-	 *  {@focus}
-	 */
-	a.button.disabled,
-	button.disabled,
-	input[type="submit"].disabled {
-		@include background(linear-gradient(#D7D7D7,#ADADAD));
-		text-shadow: 0 1px #898989;
-		border-color: #999999;
-		// Hover
-		&:hover {
-			background:#D7D7D7; // IE
-			@include background(linear-gradient(#D7D7D7,#ADADAD));
-			text-decoration:none;
-			cursor:default;
-		}
-		// Active
-		&:active {
-			background:#D7D7D7; // IE
-			@include background(linear-gradient(#D7D7D7,#ADADAD));
-		}
-		// Focus = hover
-		&:focus {
-			outline:none;
-			background:#D7D7D7; // IE
-			@include background(linear-gradient(#D7D7D7,#ADADAD));
-			border-color:#797979;
+		// Disabled
+		&.disabled {
+			@include opacity(0.5);
+			&:hover, &:active, &:focus {
+				background:#F9F9F9; // IE
+				@include background(linear-gradient(#F9F9F9,#EBEBEB));
+				cursor:default;
+			}
 		}
 	}

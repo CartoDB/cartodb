@@ -14,11 +14,8 @@ class Api::Json::LayersController < Api::ApplicationController
 
   def show
     @layer = Layer[params[:id]]
-    respond_to do |format|
-      format.json do
-        render_jsonp(@layer.values.to_json)
-      end
-    end    
+
+    render_jsonp(@layer.values)
   end
 
   def create

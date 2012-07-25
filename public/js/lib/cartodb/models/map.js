@@ -4,17 +4,27 @@ _.extend(cdb.geo.MapLayer.prototype, {
 
   parse: function(data) {
     var c = {};
+    var typeMap = {
+      'Layer::Tiled': 'Tiled',
+      'Layer::Carto': 'CartoDB'
+    };
     _.extend(c, JSON.parse(data.options), {
       id: data.id,
-      type: data.kind
+      type: typeMap[data.kind]
     });
     return c;
   },
 
   toJSON: function() {
     var c = _.clone(this.attributes);
+    // api expects two kinds, map from layer types to 
+    // api kinds
+    var typeMap = {
+      'CartoDB': 'carto',
+      'Tiled': 'tiled'
+    };
     var d = {
-      kind: c.type,
+      kind:  typeMap[c.type],
       options: c
     };
     if(c.id !== undefined) {

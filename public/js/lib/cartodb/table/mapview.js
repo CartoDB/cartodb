@@ -17,12 +17,16 @@ cdb.admin.MapTab = cdb.core.View.extend({
     this.add_related_model(this.infowindowModel);
   },
 
+  /**
+   * map can't be loaded from the beggining, it needs the DOM to be loaded
+   * so we wait until is actually shown to create the mapview and show it
+   */
   enableMap: function() {
     var self = this;
     if(!this.map_enabled) {
         var div = $('<div>').attr("id","map")
           , base_maps = $('<div>').attr("class","base_maps");
-        // div.css({'height': '900px'});
+
         this.baseLayerChooser = new cdb.admin.BaseMapChooser({
           model: this.map,
           baseLayers: this.options.baseLayers

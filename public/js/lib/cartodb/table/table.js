@@ -15,8 +15,6 @@ $(function() {
 
         initialize: function() {
 
-          this.ctrlPressed = false;
-
           this._initModels();
           this._initViews();
 
@@ -24,11 +22,6 @@ $(function() {
           // table change will raise the map and columns fetch
           this.table.fetch();
 
-          // add base layer
-          //this.map.addLayer(this.baseLayers.at(2).clone());
-          // add cartodb layer
-          //this.map.setZoom(4);
-          //this.map.setCenter([34.30714385628804, 11.6015625]);
         },
 
         /**

@@ -53,6 +53,13 @@ describe("geo.map", function() {
       expect(map.layers.length).toEqual(1);
     });
 
+    it("should add layers on reset", function() {
+      map.layers.reset([
+        layer
+      ]);
+      expect(map.layers.length).toEqual(1);
+    });
+
     it("should create a layer view when adds a model", function() {
       map.addLayer(layer);
       expect(map.layers.length).toEqual(1);
@@ -77,6 +84,20 @@ describe("geo.map", function() {
       map.removeLayerByCid(cid);
       expect(map.layers.length).toEqual(0);
     });
+
+    it("should create a TiledLayerView when the layer is Tiled", function() {
+      var lyr = map.addLayer(layer);
+      var layerView = mapView.getLayerByCid(lyr);
+      expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetTiledLayerView);
+    });
+
+    it("should create a CartoDBLayer when the layer is cartodb", function() {
+      layer    = new cdb.geo.CartoDBLayer({});
+      var lyr = map.addLayer(layer);
+      var layerView = mapView.getLayerByCid(lyr);
+      expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetLayerCartoDBView);
+    });
+
 
   });
 

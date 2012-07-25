@@ -48,6 +48,7 @@ feature "API 1.0 layers management" do
       response.status.should be_success
       response.body[:total_entries].should == 2
       response.body[:layers].size.should == 2
+      response.body[:layers][0]['id'].should == layer.id
     end
   end
 

@@ -8,7 +8,7 @@ class Api::Json::LayersController < Api::ApplicationController
   def index
     @layers = @map.layers
     render_jsonp({ :total_entries => @layers.size,
-                   :layers => @layers.map(&:values)
+                   :layers => @layers.map(&:public_values)
                 })
   end
 

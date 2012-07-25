@@ -1,7 +1,7 @@
 
 describe("tablelist", function() {
-  var tablelist;
-  var tables;
+  var tablelist
+    , tables;
 
   beforeEach(function() {
 
@@ -25,8 +25,6 @@ describe("tablelist", function() {
   });
 
   it("should update header when new table removed", function() {
-
-    console.log(tablelist);
     tables.add({name: 'test'});
     spyOn(tablelist, '_updateListHeader');
     tables.pop();

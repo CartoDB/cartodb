@@ -21,6 +21,9 @@
 */
 
 
+cdb.admin.dashboard = cdb.admin.dashboard || {};
+
+
 (function() {
 
   /**

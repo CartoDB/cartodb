@@ -18,13 +18,13 @@ feature "API 1.0 layers management" do
     opts = { opt1: 'wadus', opt2: '1' }
 
     post_json v1_map_layers_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :map_id => @map.id), { 
-      :kind => 'Layer::Base', 
+      :kind => 'carto', 
       :options => opts } do |response|
       response.status.should be_success
       @map.layers.size.should == 1
       response.body[:id].should == @map.layers.first.id
       response.body[:options].should == opts.to_json
-      response.body[:kind].should == 'Layer::Base'
+      response.body[:kind].should == 'Layer::Carto'
     end
   end
 

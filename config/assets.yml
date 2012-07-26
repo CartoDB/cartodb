@@ -71,6 +71,7 @@ stylesheets:
     - public/css/core.css
     - public/css/buttons.css
     - public/css/block.css
+    - public/css/custom_objects.css
     - public/css/copy.css
     - public/css/tipsy.css
     - public/css/dropdown.css
@@ -89,3 +90,4 @@ stylesheets:
     - public/css/privacy_selector.css
     - public/css/infowindow.css
     - public/css/floating.css
+    - public/css/create_dialog.css

@@ -1,42 +1,32 @@
 /**
- * generic embbed notification, like twitter "new notifications"
+ * Show the request user has made in the last times (month or 21 days)
  *
- * it shows slowly the notification with a message and a close button.
- * Optionally you can set a timeout to close
+ * It just prints the requests data as a simple chart.
+ * It needs the data as an Array to work.
  *
- * usage example:
+ * Usage example:
  *
-      var notification = new cdb.ui.common.Notificaiton({
-          el: "#notification_element",
-          msg: "error!",
-          timeout: 1000
-      });
-      notification.show();
-      // close it
-      notification.close();
-*/
+ *    // D3 API Requests
+ *    this.stats = this.stats = new cdb.admin.D3Stats({
+ *      el: this.$el.find("li:eq(2)"),
+ *      api_calls: this.model.attributes.api_calls
+ *    });
+ */
 
 cdb.admin.D3Stats = cdb.core.View.extend({
 
   tagName: 'div',
   className: 'stats',
 
-  events: {
-    //'click .close': 'hide'
-  },
-
-  default_options: {
-  },
 
   initialize: function() {
-    _.defaults(this.options, this.default_options);
-
     // Get data
     this.requests = this.options.api_calls;
 
     // Render graphic!
     this.render();
   },
+
 
   render: function() {
 
@@ -61,7 +51,6 @@ cdb.admin.D3Stats = cdb.core.View.extend({
                 .y1(function(d) { return y(d); });
   
       // display the line by appending an svg:path element with the data line we created above
-
       svg.append("svg:path")
         .attr("d", area(this.requests))
         .style("fill", "#ECF5FA")

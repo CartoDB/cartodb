@@ -152,7 +152,8 @@
     /*
      * Disabled the warning upgrade flash
      */
-    _disableWarning: function() {
+    _disableWarning: function(ev) {
+      ev.preventDefault();
       this.warning = false;
       this._hideWarning();
     },

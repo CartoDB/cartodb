@@ -229,19 +229,19 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
 
   // Create a new table from scratch
   _createTable: function() {
-    // var self = this;
+    var self = this;
 
-    // // Bind tables change
-    // this.options.tables
-    //   .bind("add", function(m) {
-    //     window.location.href = "/tables/" + m.get("id");
-    //   },this)
-    //   .bind("error", function(m) {
-    //     self._hideLoader();
-    //   }, this)
+    // Bind tables change
+    this.options.tables
+      .bind("add", function(m) {
+        window.location.href = "/tables/" + m.get("id");
+      },this)
+      .bind("error", function(m) {
+        self._hideLoader();
+      }, this)
 
-    // // Create the new table
-    // this.options.tables.create();
+    // Create the new table
+    this.options.tables.create();
   },
 
 

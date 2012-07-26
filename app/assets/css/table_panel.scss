@@ -1,85 +1,134 @@
 
-	/*
+  /*
    * Right panel in the table view
    * - SQL, facets, ...
    */
 
-	@import "compass";
-	@import "mixins";
-	@import "sprites";
+  @import "compass";
+  @import "mixins";
+  @import "sprites";
 
-	.table_panel {
-		position:fixed;
-		right:0;
-		top:140px;
-		width:600px;
-		bottom:-1px;
-		background:white;
-		z-index:20;
-		letter-spacing:-4px;
-		border:1px solid #999999;
-		@include box-shadow(rgba(black,0.15) 0 0 2px 2px);
-		@include border-radius(4px);
-		
-		.sidebar {
-			position:relative;
-			@include inline-block();
-			width:65px;
-			height:100%;
-			background:#EDEDED;
-			letter-spacing:0;
-			@include border-left-radius(4px);
-			@include single-box-shadow(rgba(black,0.09), -4px, 0, 5px, 0, true);
+  .table_panel {
+    position:fixed;
+    right:0;
+    top:140px;
+    width:600px;
+    bottom:-1px;
+    background:white;
+    z-index:20;
+    letter-spacing:-4px;
+    border:1px solid #999999;
+    @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
+    @include border-radius(4px);
+    
+    .sidebar {
+      position:relative;
+      @include inline-block();
+      width:65px;
+      height:100%;
+      background:#EDEDED;
+      letter-spacing:0;
+      @include border-left-radius(4px);
+      @include single-box-shadow(rgba(black,0.09), -4px, 0, 5px, 0, true);
 
-			nav {
-				position:absolute;
-				left:0;
-				width:100%;
+      nav {
+        position:absolute;
+        left:0;
+        width:100%;
 
-				&.tools {
-					top:0;
-					a:first-child {@include border-top-left-radius(4px);}
-				}
+        &.tools {
+          top:0;
+          a:first-child {@include border-top-left-radius(4px);}
+        }
 
-				&.edit {
-					bottom:0;
-					&:last-child {
-						@include border-bottom-left-radius(4px);
-						border:none;
-					}
-				}
+        &.edit {
+          bottom:0;
+          &:last-child {
+            @include border-bottom-left-radius(4px);
+            border:none;
+          }
+        }
 
-				a {
-					display:block;
-					width:100%;
-					height:60px;
-					@include text-indent();
-					border-bottom:1px solid rgba(#999999,0.25);
-					z-index:0;
-					@include opacity(0.75);
+        a {
+          display:block;
+          width:100%;
+          height:60px;
+          @include text-indent();
+          border-bottom:1px solid rgba(#999999,0.25);
+          z-index:0;
+          @include opacity(0.75);
 
-					&.sql_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-3px);}
-					&.carto_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-372px);}
-					&.infowindow_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-431px);}
+          &.sql_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-3px);}
+          &.carto_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-372px);}
+          &.infowindow_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-431px);}
 
-					&:hover {
-						background-color:rgba(white,0.5);
-						cursor:pointer;
-						@include opacity(1);
-					}
+          &:hover {
+            background-color:rgba(white,0.5);
+            cursor:pointer;
+            @include opacity(1);
+          }
 
-					&.selected {
-						background-color:rgba(white,0.5);
-						@include opacity(1);
-					}
-				}
-			}
-		}
+          &.selected {
+            background-color:rgba(white,0.5);
+            @include opacity(1);
+          }
+        }
+      }
+    }
 
-		.views {
-			@include inline-block();
-			width:535px;
-			height:100%;
-			letter-spacing:0;
-		}
-	}
+    .views {
+      @include inline-block();
+      width:535px;
+      height:100%;
+      letter-spacing:0;
+
+      h1 {
+        padding: 22px 0 23px 30px;
+        border-bottom:1px solid rgba(#999999,0.25);
+        font-size: 15px;
+        color: #666666;
+      }
+
+      .infowindow_panel {
+        .selector {
+          padding: 23px 30px;
+          a {
+            @include inline-block();
+            width: 50%;
+            float: left;
+            background-color: #F2F2F2;
+            padding: (46px - 13px)/2 0;
+            font-size: 13px;
+            color: #397DB9;
+            text-align: center;
+            &.selectall {
+              margin-right: 1px;
+            }
+          }
+        }
+        .fields {
+          margin: 0px 30px;
+          li {
+            padding: (46px - 15px)/2 0;
+            font-size: 15px;
+            color: #CCCCCC;
+            border-bottom:1px solid rgba(#999999,0.25);
+            a {
+              color: #CCCCCC;
+            }
+            .switches {
+              float: right;
+            }
+            span.title {
+              margin-right: 20px;
+            }
+          }
+          li.enabled {
+            .switch {
+              color: #000000;
+            }
+          }
+        }
+      }
+    }
+  }

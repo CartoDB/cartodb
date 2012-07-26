@@ -7,10 +7,16 @@
   var MapInfowindow = cdb.geo.ui.Infowindow.extend({
 
     initialize: function() {
+      var self = this;
       this.table = this.options.table;
       this.model.set({ content: 'loading...' });
       // call parent
       this.constructor.__super__.initialize.apply(this);
+      this.model.bind('change', function() {
+        if(!this.hasChanged('content') && self.row) {
+          self.renderInfo();
+        }
+      });
     },
 
     setFeatureInfo: function(cartodb_id) {
@@ -26,8 +32,11 @@
     },
 
     renderInfo: function() {
+      var self = this;
       var html = _(this.row.attributes).map(function(v, k) {
-        return '<h4>' + k + '</h4>' + '<p>' + v + '</p>';
+        if(self.model.containsField(k)) {
+          return '<h4>' + k + '</h4>' + '<p>' + v + '</p>';
+        }
       }).join('\n');
       this.model.set({ content: "<div>" + html + "</div>" });
     },

@@ -94,14 +94,16 @@ describe("admin table", function() {
         expect(r.id).toEqual(1234);
     });
 
-    /*
-    it("it should fetch the model after changing a column", function() {
-        spyOn(table, 'fetch');
-        table.renameColumn('test', 'renamed');
-        expect(table.fetch).toHaveBeenCalledWith();
+    it("should be able to link to infowindow", function() {
+      info = new cdb.geo.ui.InfowindowModel();
+      info.addField('test').addField('test2');
+      table.linkToInfowindow(info);
+      table.trigger('columnRename', 'test', 'tt');
+      expect(info.containsField('test')).toEqual(false);
+      expect(info.containsField('tt')).toEqual(true);
+      table.trigger('columnRename', 'tt');
+      expect(info.containsField('tt')).toEqual(false);
     });
-    */
-
 
   });
 

@@ -12,10 +12,10 @@ var Field = cdb.core.View.extend({
   tagName: 'li',
 
   events: {
-    'click': 'toggle'
+    'click .switch': 'toggle'
   },
   
-  template: _.template('<a href="#"><%- fieldName %></a><span class="switch"></span>'),
+  template: _.template('<%- fieldName %><div class="switches"><span class="title">title</span><span class="switch">switch</span></div>'),
 
   initialize: function() {
     this.fieldName = this.options.field;
@@ -46,20 +46,25 @@ var Field = cdb.core.View.extend({
     return this;
   }
 
-
 });
 
 cdb.admin.mod.InfoWindow = cdb.core.View.extend({
 
     buttonClass: 'infowindow_mod',
+    className: 'infowindow_panel',
     type: 'tool',
 
     events: {
+      'click .selectall': '_selectAll',
+      'click .unselect': '_unselectAll'
+
     },
 
     initialize: function() {
       this.template = this.getTemplate('table/menu_modules/views/infowindow');
-      this.model.bind('change:fields', this.renderFields, this);
+      //this.model.bind('change:fields', this.renderFields, this);
+      this.options.table.bind('change:schema', this.renderFields, this);
+      this.options.table.linkToInfowindow(this.model);
     },
 
     activated: function() {
@@ -69,7 +74,7 @@ cdb.admin.mod.InfoWindow = cdb.core.View.extend({
       var self = this;
       this.clearSubViews();
       var $f = this.$('.fields');
-      _(this.model.get('fields')).each(function(f) {
+      _(this.options.table.columnNames()).each(function(f) {
         var v = new Field({model: self.model,  field: f });
         self.addView(v);
         $f.append(v.render().el);
@@ -80,6 +85,24 @@ cdb.admin.mod.InfoWindow = cdb.core.View.extend({
       this.$el.append(this.template({}));
       this.renderFields();
       return this;
+    },
+
+    _selectAll: function(e) {
+      var self = this;
+      e.preventDefault();
+      _(this.options.table.columnNames()).each(function(f) {
+        self.model.addField(f);
+      });
+      return 0;
+    },
+
+    _unselectAll: function(e) {
+      var self = this;
+      e.preventDefault();
+      _(this.options.table.columnNames()).each(function(f) {
+        self.model.removeField(f);
+      });
+      return 0;
     }
 
 });

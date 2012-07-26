@@ -15,7 +15,7 @@ feature "API 1.0 layers management" do
   end
 
   scenario "Create a new layer" do
-    opts = { opt1: 'wadus', opt2: '1' }
+    opts = { 'opt1' => 'wadus', 'opt2' => '1' }
 
     post_json v1_map_layers_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :map_id => @map.id), { 
       :kind => 'carto', 
@@ -23,8 +23,8 @@ feature "API 1.0 layers management" do
       response.status.should be_success
       @map.layers.size.should == 1
       response.body[:id].should == @map.layers.first.id
-      response.body[:options].should == opts.to_json
-      response.body[:kind].should == 'Layer::Carto'
+      response.body[:options].should == opts
+      response.body[:kind].should == 'carto'
     end
   end
 
@@ -60,7 +60,7 @@ feature "API 1.0 layers management" do
       :options => { :opt1 => 'value' } } do |response|
       response.status.should be_success
       response.body[:id].should == layer.id
-      response.body[:options].should == { :opt1 => 'value' }.to_json
+      response.body[:options].should == { 'opt1' => 'value' }
     end
   end
 

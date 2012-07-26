@@ -3,7 +3,7 @@ class Layer < Sequel::Model
   plugin :single_table_inheritance, :kind
   
   ALLOWED_KINDS = %W{ Layer::Carto Layer::Tiled Layer }
-  PUBLIC_ATTRIBUTES = %W{ options kind id }
+  PUBLIC_ATTRIBUTES = %W{ options kind_for_api id }
 
   many_to_many :maps
   plugin :association_dependencies, :maps => :nullify
@@ -19,7 +19,15 @@ class Layer < Sequel::Model
   end
 
   def public_values
-    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
+    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a.sub(/_for_api$/, ''), self.send(a)] }]
+  end
+
+  def kind_for_api
+    case self.kind
+      when "Layer::Carto" then "carto"
+      when "Layer::Tiled" then "tiled"
+      when "Layer"        then ""
+    end
   end
 
   def validate

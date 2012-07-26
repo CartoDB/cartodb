@@ -15,7 +15,7 @@ describe("tablestats", function() {
       username: "admin",
       model: user,
       tables: tables
-    })
+    });
 
   });
 

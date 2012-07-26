@@ -20,12 +20,12 @@ describe("tablelist", function() {
 
   it("should update header when new table is added", function() {
     spyOn(tablelist, '_updateListHeader');
-    tables.add({name: 'test'});
+    tables.add({id: 1, name: 'test', privacy: 'PRIVATE', rows_counted: 1, updated_at: new Date(), tags: 'a'});
     expect(tablelist._updateListHeader).toHaveBeenCalled();
   });
 
   it("should update header when new table removed", function() {
-    tables.add({name: 'test'});
+    tables.add({id: 1, name: 'test', privacy: 'PRIVATE', rows_counted: 1, updated_at: new Date(), tags: 'a'});
     spyOn(tablelist, '_updateListHeader');
     tables.pop();
     expect(tablelist._updateListHeader).toHaveBeenCalled();

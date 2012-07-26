@@ -1,5 +1,5 @@
 /**
- *  entry point for dashboard
+ *  Entry point for dashboard
  */
 
 
@@ -39,7 +39,7 @@ $(function() {
       });
 
       // Search form
-      var search_form = this.search_form = new cdb.admin.SearchView({
+      var search_form = this.search_form = new cdb.ui.common.SearchView({
         el: this.$('header ul li.search')
       });  
 
@@ -85,7 +85,7 @@ $(function() {
   var DashboardRouter = Backbone.Router.extend({
 
     routes: {
-      '':                'index',
+      '':                 'index',
       'tag/:tag/:p':      'searchTag',
       'search/:query/:p': 'searchQuery' 
     },
@@ -123,6 +123,7 @@ $(function() {
     var router = new DashboardRouter();
     Backbone.history.start();
 
+    // No route => tables fetch 
     if (window.dashboard.tables.options.get("tag_name") == "" 
       && window.dashboard.tables.options.get("q") == "") {
       window.dashboard.tables.fetch()

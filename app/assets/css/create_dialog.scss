@@ -1,0 +1,244 @@
+
+  /*
+   * Create modal dialog styles!
+   */
+
+  @import "compass";
+  @import "sprites";
+  @import "mixins";
+
+  section.creation {
+    position:relative;
+
+    div.content {
+      min-height:50px;
+
+      ul {
+        margin:0;
+        li {
+          position:relative;
+          margin:0;
+          margin-bottom:22px;
+          border-bottom:0;
+          
+          div.cont {
+            display:none;
+
+            label {
+              position:absolute;
+              top:3px;
+              right:0;
+            }
+
+            div.upload {
+              position:relative;
+              display:block;
+              margin:10px 0 0 20px;
+              padding:10px;
+              border:1px solid #CCCCCC;
+              @include border-radius(4px);
+              background:white;
+              z-index:10;
+
+              span.file {
+                @include inline-block();
+                vertical-align:middle;
+                width:24px;
+                height:24px;
+                margin:0 8px 0 0;
+                border-right:1px solid #CCCCCC;
+                @include icons-sprite(file_type, $offset_y:4px, $offset_x:1px);
+              }
+
+
+              div {
+                @include inline-block();
+                vertical-align:middle;
+              }
+
+              div.url {
+                position:relative;
+                p {
+                  z-index:0;
+                }
+              }
+
+              input[type="text"] {
+                position:absolute;
+                top:50%;
+                left:43px;
+                right:10px;
+                margin:-10px 0 0 0;
+                font-size:15px;
+                font-style:italic;
+                color:#666;
+                background:none;
+                border:none;
+                outline:none;
+                z-index:0;
+              }
+
+              div.uploader {
+                .qq-upload-button {
+                  margin:0 0 1px 3px;
+                  color:#397DBA;
+                  text-decoration:underline;
+                  font-style:italic;
+                  font-size:15px!important;
+                  cursor:pointer;
+
+                  &:hover {
+                    color:#333333;
+                  }
+                }
+
+                .qq-upload-drop-area {
+                  position:absolute;
+                  top:0;
+                  left:0;
+                  right:0;
+                  bottom:0;
+                  display:block;
+                  padding:14px 0 0 0;
+                  background:rgba(0,0,0,0.5);
+                  text-align:center;
+                  font-weight:bold;
+                  font-size: 16px;
+                  color:white;
+                  z-index:100;
+                  @include border-radius(4px);
+                }
+
+                .qq-upload-list {
+                  display:none;
+                }
+              }
+            }
+
+            div.info {
+              display:none;
+              margin:-50px 0 0 20px;
+              padding:20px 13px 13px;
+              border:1px solid #CCCCCC;
+              @include border-radius(4px);
+              z-index:-1;
+              background:#FFF7EA;
+              @include transform-style("linear");
+              @include transition-property("margin");
+              @include transition-duration(500ms);
+
+              p {font-style:italic; font-size:13px;}
+
+              &.error {background:#FEEAEB}
+              &.active {
+                display:block;
+                @include transform-style("linear");
+                @include transition-property("margin");
+                @include transition-duration(500ms);
+                margin-top:-7px;
+              }
+            }
+          }     
+        
+          // States
+          &.active {
+            div.cont {display:block}
+          }
+
+          &.disabled {
+            @include opacity(0.4);
+          }
+          
+          // Position
+          &:last-child {
+            margin-bottom:0;
+          }
+        }
+      }
+
+      div.progress {
+        position:absolute;
+        display:none;
+        top:150px;
+        left:40px;
+        right:40px;
+        //width:518px;
+        height:44px;
+        padding:1px;
+        border:1px solid #CCCCCC;
+        z-index:10;
+        @include background(#DEDEDE);
+        @include border-radius(4px);
+        @include opacity(0);
+
+        p {
+          position:absolute;
+          top:12px;
+          left:15px;
+          font-weight:bold;
+          font-size:17px;
+          color:white;
+          text-shadow: 0 1px #204466;
+        }
+
+        span {
+          display:block;
+          height:100%;
+          width:2%;
+          background-color:#5290D0;
+          @include box-sizing(border-box);
+          @include background-size(30px 30px);
+          @include border-radius(4px);
+          @include progress-background(rgba(74, 132, 194, 1));
+          overflow: hidden;          
+        }
+
+        &.uploading {
+          display:block;
+          @include opacity(1);
+          @include transform-style("linear");
+          @include transition-property("opacity,margin");
+          @include transition-duration(500ms);
+        }
+
+        &.creating {
+          display:block;
+          @include opacity(1);
+          @include transform-style("linear");
+          @include transition-property("opacity,margin");
+          @include transition-duration(500ms);
+          span {
+            -webkit-animation:progress .7s linear infinite;
+            -moz-animation:progress .7s linear infinite;
+            -ms-animation:progress .7s linear infinite;
+            animation:progress .7s linear infinite;
+          }
+        }
+      }      
+    }
+
+    div.foot {
+      p.left {
+        width:285px;
+      }
+    }
+  }
+
+
+
+  @-webkit-keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  } 
+  @-moz-keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  } 
+  @-ms-keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  } 
+  @keyframes progress{
+    0% {background-position: 0 0;}
+    100% {background-position: 30px 30px;}
+  } 

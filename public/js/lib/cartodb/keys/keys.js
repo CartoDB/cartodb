@@ -1,5 +1,5 @@
 /**
- *  entry point for api keys and oauth
+ *  Entry point for api keys and oauth
  */
 
 
@@ -29,15 +29,31 @@ $(function() {
           target: 'a.account',
           model: {username: username},
           template_base: "dashboard/views/settings_item"
-        })
-        .on("optionClicked",function(ev){})
+        });
         
         cdb.god.bind("closeDialogs", user_menu.hide, user_menu);
-        
         this.$el.append(this.user_menu.render().el);
 
+        // Search form
+        var search_form = this.search_form = new cdb.ui.common.SearchView({
+          el: this.$('header ul li.search')
+        });
+
+        // Manage notification
+        var notification = this.notification = new cdb.admin.keys.Notification({
+          el: this.$('li.flash')
+        });
+
         // Tipsy
-        this.$el.find("a.tooltip").tipsy({gravity: 's', fade:true});
+        this.$el.find(".zclip")
+          .tipsy({
+            gravity: 's',
+            live: true,
+            fade: true,
+            title: function() {
+              return "Copy this"
+            }
+          });
       },
 
       _initCopy: function() {
@@ -53,7 +69,7 @@ $(function() {
         ev.preventDefault();
         ev.stopPropagation();
 
-        var dialog = new cdb.admin.RegenerateDialog({
+        var dialog = new cdb.admin.keys.RegenerateDialog({
           clean_on_hide: true,
           title: type == "oauth" ? "You are about to regenerate your OAuth key and secret" : "You are about to regenerate your Api key",
           content: type == "oauth" ? 

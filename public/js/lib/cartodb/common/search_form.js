@@ -1,6 +1,8 @@
 
   /**
-   * Create a new tags view
+   * Header search form
+   *
+   * It will work differently if it is in "user dashboard" or in "settings", "keys",...
    */
   cdb.ui.common.SearchView = cdb.core.View.extend({
 

@@ -44,7 +44,7 @@ $(function() {
           el: this.$('li.flash')
         });
 
-        // Tipsy
+        // Tipsy tooltip ready!
         this.$el.find(".zclip")
           .tipsy({
             gravity: 's',

@@ -39,7 +39,7 @@ $(function() {
       });
 
       // Search form
-      var search_form = this.search_form = new cdb.admin.SearchView({
+      var search_form = this.search_form = new cdb.ui.common.SearchView({
         el: this.$('header ul li.search')
       });  
 

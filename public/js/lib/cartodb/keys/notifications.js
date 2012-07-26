@@ -3,7 +3,10 @@
 
   /**
    * Flash notification
+   *
+   *  It will hide the notification with a click in close button or after 3000ms
    */
+
   cdb.admin.keys.Notification = cdb.core.View.extend({
 
     events: {

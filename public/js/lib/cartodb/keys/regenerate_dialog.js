@@ -1,7 +1,12 @@
 
   cdb.admin.keys = cdb.admin.keys || {};
 
-  
+  /**
+   * Get a new api keys dialog
+   *
+   * This window is an extend of the generic dialog for requesting
+   * a new api key or new oauth credentials
+   */
 
   cdb.admin.keys.RegenerateDialog = cdb.ui.common.Dialog.extend({
     

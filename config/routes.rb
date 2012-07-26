@@ -7,6 +7,8 @@ CartoDB::Application.routes.draw do
   match '/limits' => 'home#limits', :as => :limits
   match '/status' => 'home#app_status'
 
+  get   '/test' => 'test#index', :as => :test
+
   scope :module => "admin" do
     match '/dashboard/'        => 'tables#index', :as => :dashboard
 

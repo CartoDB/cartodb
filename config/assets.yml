@@ -2,6 +2,7 @@ package_assets: on
 compress_assets: on
 embed_assets: off
 javascripts:
+
   common:
     - public/js/vendor/jquery.min.js
     - public/js/vendor/jquery.tipsy.js
@@ -17,9 +18,9 @@ javascripts:
     - public/js/lib/cdb.js/src/ui/**/*.js
     - public/js/lib/cdb.js/src/geo/map.js
     - public/js/lib/cdb.js/src/geo/**/*.js
+    - public/js/lib/cartodb/app.js
 
   dashboard:
-    - public/js/lib/cartodb/app.js
     - public/js/vendor/d3.v2.js
     - public/js/vendor/fileuploader.js
     - public/js/lib/cartodb/models/**/*.js
@@ -30,7 +31,6 @@ javascripts:
     - public/js/vendor/moment.js
 
   keys:
-    - public/js/lib/cartodb/app.js
     - public/js/vendor/ZeroClipboard.js
     - public/js/lib/cartodb/models/**/*.js
     - public/js/lib/cartodb/common/**/*.js
@@ -39,7 +39,6 @@ javascripts:
     - public/js/lib/cartodb/**/*.jst
 
   table:
-    - public/js/lib/cartodb/app.js
     - public/js/lib/cartodb/models/**/*.js
     - public/js/lib/cartodb/common/**/*.js
     - public/js/lib/cartodb/table/**/*.js
@@ -54,7 +53,17 @@ javascripts:
     - public/js/lib/cartodb/login/error.js
     - public/js/lib/cartodb/login/login.js
 
+  specs:
+    - public/js/lib/test/lib/jasmine-1.2.0/jasmine.js
+    - public/js/lib/test/lib/jasmine-1.2.0/jasmine-html.js
+    - public/js/lib/test/lib/sinon-1.3.4.js
+    - public/js/lib/test/spec/SpecHelper.js
+    - public/js/lib/test/spec/**/*.js
+
 stylesheets:
+  specs:
+    - public/js/lib/test/**/*.css
+
   common:
     - public/css/helpers.css
     - public/css/fonts.css

@@ -23,7 +23,7 @@ describe("tableview", function() {
 
     it('should render', function() {
       view.render();
-      expect(view.$('label > a').html()).toEqual('name');
+      expect(view.$('label > a').html().trim()).toEqual('name');
       expect(view.$('p > a').html()).toEqual('type');
     });
   });

@@ -245,6 +245,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     if (layer_view) {
       var isBaseLayer = this.layers.length === 1;
       this.map_leaflet.addLayer(layer_view.leafletLayer, isBaseLayer);
+      this.trigger('newLayerView', layer_view, this);
     } else {
       cdb.log.error("layer type not supported");
     }

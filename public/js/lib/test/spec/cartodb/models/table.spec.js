@@ -149,4 +149,25 @@ describe("admin table", function() {
 
   });
 
+  describe("cbd.admin.SQLViewData", function() {
+
+    var sqlView;
+
+    beforeEach(function() {
+      sqlView = new cdb.admin.SQLViewData(null, { sql: 'select * from a' });
+    });
+
+    it("should generate schema from data", function() {
+      expect(sqlView.schemaFromData()).toEqual([]);
+      sqlView.reset([
+        {a: 1, b: 2}
+      ]);
+      expect(sqlView.schemaFromData()).toEqual([
+        ['a', 'undefined'],
+        ['b', 'undefined']
+      ]);
+
+    });
+  });
+
 });

@@ -58,6 +58,10 @@
       });
     },
 
+    columnNames: function() {
+      return _(this.get('schema')).pluck(0);
+    }, 
+
     _getColumn: function(columnName) {
       if(this._columnType[columnName] === undefined) {
         throw "the column does not exists";
@@ -81,6 +85,7 @@
       this.notice('deleting column');
       c.destroy({
           success: function() {
+            self.trigger('columnDelete', columnName);
             self.fetch();
           },
           error: function () {
@@ -100,6 +105,7 @@
       this.notice('renaming column');
       c.save(null,  {
           success: function() {
+            self.trigger('columnRename', new_name, old_name);
             self.fetch();
           },
           error: function(e, resp) {
@@ -212,6 +218,23 @@
 
     isReservedColumn: function(c) {
       return _(cdb.admin.Row.RESERVED_COLUMNS).indexOf(c) !== -1;
+    },
+
+    /**
+     * when a table is linked to a infowindow each time a column
+     * is renamed or removed the table pings to infowindow to remove 
+     * or rename the fields
+     */
+    linkToInfowindow: function(infowindow) {
+      this.bind('columnRename', function(oldName, newName) {
+        if(infowindow.containsField(oldName)) {
+          infowindow.removeField(oldName);
+          infowindow.addField(newName);
+        }
+      }, infowindow);
+      this.bind('columnDelete', function(oldName, newName) {
+        infowindow.removeField(oldName);
+      }, infowindow);
     }
 
   });

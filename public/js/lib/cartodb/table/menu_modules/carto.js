@@ -19,7 +19,7 @@ cdb.admin.mod.Carto = cdb.core.View.extend({
 
     initialize: function() {
       this.template = this.getTemplate('table/menu_modules/views/carto');
-      this.model.bind('change:style', this._updateStyle, this);
+      this.model.bind('change:tile_style', this._updateStyle, this);
     },
 
     activated: function() {
@@ -33,7 +33,7 @@ cdb.admin.mod.Carto = cdb.core.View.extend({
     },
 
     _updateStyle: function(){
-      this.$('textarea').val(this.model.get('style'));
+      this.$('textarea').val(this.model.get('tile_style'));
     },
 
     _parseError: function(err) {
@@ -49,6 +49,7 @@ cdb.admin.mod.Carto = cdb.core.View.extend({
       var style = this.$('textarea').val();
       // compile and validate
       this.model.set({ tile_style: style });
+      this.model.save();
     }
 
 });

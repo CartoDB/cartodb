@@ -136,12 +136,15 @@ $(function() {
           this.menu.hide();
 
           this.map.bind('change:dataLayer', _.once(function() {
+
+            self.dataLayer = self.map.get('dataLayer');
+
             // lateral menu modules
             var sql = new cdb.admin.mod.SQL({
               model: this.table
             });
             var carto = new cdb.admin.mod.Carto({
-              model: self.map.get('dataLayer')
+              model: self.dataLayer
             });
             var infowindow = new cdb.admin.mod.InfoWindow({
               table: self.table,
@@ -150,6 +153,7 @@ $(function() {
             self.menu.addModule(sql.render(), ['table', 'map']);
             self.menu.addModule(carto.render(), 'map');
             self.menu.addModule(infowindow.render(), 'map');
+
           }));
 
 

@@ -209,6 +209,7 @@
            var pageSize = $(window).height() - self.$el.offset().top;
            var tableHeight = this.$('tbody').height();
            var realPos = pos + pageSize;
+           if(tableHeight < pageSize) return;
            if(realPos > tableHeight) {
               console.log(realPos, tableHeight, tableHeight - realPos);
               d.setPage(d.getPage() + 1);
@@ -251,7 +252,7 @@
         var editors = {
           'string': cdb.admin.EditTextDialog,
           'number': cdb.admin.EditTextDialog,
-          'geometry': cbd.admin.EditTextDialog
+          'geometry': cdb.admin.EditTextDialog
         };
 
         var Editor = editors[columnType];

@@ -32,8 +32,6 @@ cdb.admin.Import = Backbone.Model.extend({
 
     _checkFinish: function() {
       if(this.get('state') === 'complete') {
-
-        debugger;
         cdb.log.debug("job finished");
         clearInterval(this.pollTimer);
         this.trigger('importComplete');

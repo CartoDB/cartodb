@@ -20,7 +20,7 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
       this.active = true;
 
       /******************/
-      this._showDialog()
+      //this._showDialog()
       /*******************/
 
       // If any change happened in the tables model, fetch the user stats
@@ -69,7 +69,7 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
     
       // Create a new dialog
       var dialog = new cdb.admin.CreateTableDialog({
-        tables : this.options.tables 
+        tables : this.options.tables
       });
 
       $("body").append(dialog.render().el);

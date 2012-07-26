@@ -4,5 +4,7 @@
    */
 	
   $icons-file_type-spacing: 10px;
+  $icons-question-spacing: 10px;
+  $icons-background_loader_error-spacing: 10px;
 	@import "img/icons/*.png";
 	@include all-icons-sprites;

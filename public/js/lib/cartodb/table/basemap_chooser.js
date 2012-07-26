@@ -35,6 +35,7 @@ cdb.admin.BaseMapView = cdb.core.View.extend({
     e.preventDefault();
     var layer = this.map.getBaseLayer();
     layer.set(this.model.clone());
+    layer.save();
     cdb.log.debug("enabling layer: " + layer.get('urlTemplate'));
     return false;
   }

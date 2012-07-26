@@ -7,6 +7,7 @@ _.extend(cdb.geo.MapLayer.prototype, {
     var typeMap = {
       'Layer::Tiled': 'Tiled',
       'Layer::Carto': 'CartoDB',
+      'tiled': 'Tiled',
       'carto': 'CartoDB'
     };
     _.extend(c, data.options, {
@@ -46,6 +47,31 @@ cdb.admin.Layers = cdb.geo.Layers.extend({
 
   parse: function(data) {
     return data.layers;
+  },
+
+  /**
+   * on reset order the layers so tiled layer are under cartodb layers
+   */
+  reset: function(models, options) {
+    var sortOrder = {
+      'Tiled': 0,
+      'CartoDB': 1,
+      'tiled': 0,
+      'carto': 1
+    };
+    var sortModels = function(a, b) {
+      return sortOrder[a.get('type')] - sortOrder[b.get('type')];
+    };
+    var sortRaw = function(a, b) {
+      return sortOrder[a.kind] - sortOrder[b.kind];
+    };
+
+    if(_.size(models)) {
+      // if is not a model use raw sort
+      _(models).sort(models[0].get === undefined ? sortRaw : sortModels);
+    }
+
+    Backbone.Collection.prototype.reset.call(this, models, options);
   }
 
 
@@ -72,6 +98,7 @@ cdb.admin.Map = cdb.geo.Map.extend({
     this.layers = new cdb.admin.Layers();
     this.layers.map = this;
     this.layers.bind('reset', this._layersChanged, this);
+    this.layers.bind('add', this._layersChanged, this);
   },
 
   _layersChanged: function() {

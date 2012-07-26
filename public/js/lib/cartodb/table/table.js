@@ -41,8 +41,8 @@ $(function() {
                   interactivity: 'cartodb_id'
           });
           this.map.addDataLayer(this.dataLayer);
-          //this.map.layers.at(0).save();
-          //this.dataLayer.save();
+          this.map.layers.at(0).save();
+          this.dataLayer.save();
         },
 
         _initModels: function() {

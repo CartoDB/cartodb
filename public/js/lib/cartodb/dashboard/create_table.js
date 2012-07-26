@@ -19,6 +19,10 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
       // Set default to active
       this.active = true;
 
+      /******************/
+      this._showDialog()
+      /*******************/
+
       // If any change happened in the tables model, fetch the user stats
       this.options.tables.bind('add',     this._tableChange, this);
       this.options.tables.bind('remove',  this._tableChange, this);
@@ -39,10 +43,6 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
       } else {
         this._activateCreate();
       }
-
-      /******************/
-      this._showDialog()
-      /*******************/
 
       return this;
     },
@@ -67,9 +67,11 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
 
       if (ev) ev.preventDefault();
     
+      // Create a new dialog
       var dialog = new cdb.admin.CreateTableDialog({
         tables : this.options.tables 
       });
+
       $("body").append(dialog.render().el);
       dialog.open();
 

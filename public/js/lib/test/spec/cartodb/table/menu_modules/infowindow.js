@@ -26,12 +26,22 @@ describe("mod.infowindow", function() {
 
   it("should toggle fields", function() {
     view.render();
-    model.set({'fields': ['name1', 'name2']});
+    model.addField('name1').addField('name2');
     expect($(view.$el.find('li')[0]).hasClass('enabled')).toEqual(true);
     expect($(view.$el.find('li')[1]).hasClass('enabled')).toEqual(true);
     model.removeField('name1');
     expect($(view.$el.find('li')[0]).hasClass('enabled')).toEqual(false);
     expect($(view.$el.find('li')[1]).hasClass('enabled')).toEqual(true);
+  });
+
+  it("should toggle titles", function() {
+    view.render();
+    model.addField('name1').addField('name2');
+    expect($(view.$el.find('.title')[0]).hasClass('enabled')).toEqual(true);
+    expect($(view.$el.find('.title')[1]).hasClass('enabled')).toEqual(true);
+    model.setFieldProperty('name1', 'title', false);
+    expect($(view.$el.find('.title')[0]).hasClass('enabled')).toEqual(false);
+    expect($(view.$el.find('.title')[1]).hasClass('enabled')).toEqual(true);
   });
 
 

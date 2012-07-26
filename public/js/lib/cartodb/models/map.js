@@ -152,6 +152,9 @@ cdb.admin.Map = cdb.geo.Map.extend({
     this.set({ dataLayer: lyr });
   },
 
+  /**
+   * create a new map. this is a helper to use from javascript command line
+   */
   create: function() {
     this.unset('id');
     this.set({ table_id: this.table.id });
@@ -160,6 +163,7 @@ cdb.admin.Map = cdb.geo.Map.extend({
 
   /**
    * enable save map each time the viewport changes
+   * not working
    */
   autoSave: function() {
     this.bind('change:center', this.delayedSave);

@@ -49,7 +49,7 @@ cdb.admin.EditTextDialog = cdb.admin.SmallDialog.extend({
 
   initialize: function() {
     _.extend(this.options, {
-        template_name: 'common/views/dialog_small_edit',
+        template_name: 'common/views/dialog_small_edit'
     });
     this.constructor.__super__.initialize.apply(this);
   },
@@ -80,7 +80,7 @@ cdb.admin.EditGeometryDialog = cdb.admin.SmallDialog.extend({
 
   initialize: function() {
     _.extend(this.options, {
-        template_name: 'common/views/dialog_small_edit',
+        template_name: 'common/views/dialog_small_edit'
     });
     this.constructor.__super__.initialize.apply(this);
   },

@@ -277,7 +277,7 @@
         }
 
         opt.success = function(_coll, resp) {
-          if(resp.rows.length !== 0) {
+          if(resp.rows && resp.rows.length !== 0) {
             if(opt.changingPage) {
               self.trigger('newPage', self.options.get('page'), opt.at === 0? 'up': 'down');
             }
@@ -412,9 +412,12 @@
 
     schemaFromData: function() {
       var self = this;
-      var schema = _(self.models[0].attributes).map(function(k, v) {
-         return [v, self.UNDEFINED_TYPE_COLUMN];
-      });
+      var schema = [];
+      if(self.size()) {
+        schema = _(self.models[0].attributes).map(function(k, v) {
+           return [v, self.UNDEFINED_TYPE_COLUMN];
+        });
+      }
       return schema;
     },
 

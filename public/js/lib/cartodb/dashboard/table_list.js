@@ -78,15 +78,13 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
       this.model.bind('reset',    this._addAll, this);
       this.model.bind('add',      this._addTable, this);
       this.model.bind('remove',   this._tableRemoved, this);
-
       this.model.bind('loading',  this._showLoader, this);
-
     },
 
     render: function() {
       var self = this;
       this.$el.html('');
-      this._updateListHeader();
+      //this._updateListHeader();
       this.model.each(function(m) {
         self._addTable(m);
       });
@@ -108,8 +106,7 @@ cdb.admin.dashboard = cdb.admin.dashboard || {};
       this._updateListHeader();
     },
 
-    _updateListHeader: function() {
-
+    _updateListHeader: function(sync) {
       var title =  this.model.total_entries + " " + ( this.model.total_entries != 1 ? "tables" : "table" );
 
       if (this.model.options.attributes.tag_name != "") 

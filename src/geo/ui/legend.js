@@ -36,6 +36,8 @@ cdb.geo.ui.Legend = cdb.core.View.extend({
 
     this.map = this.model;
 
+    this.add_related_model(this.model);
+
     _.bindAll(this, "render", "show", "hide");
 
     _.defaults(this.options, this.default_options);

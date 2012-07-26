@@ -39,6 +39,12 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     'click .close': '_cancel'
   },
 
+  keydown: function(e) {
+
+    if (e.keyCode == 27)      this._cancel();
+
+  },
+
   default_options: {
     title: 'title',
     description: '',
@@ -55,6 +61,11 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
   initialize: function() {
     _.defaults(this.options, this.default_options);
+
+    _.bindAll(this, 'render', 'keydown');
+
+    $(document).bind('keydown', this.keydown);
+
     this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate(this.options.template_name);
   },
 
@@ -68,52 +79,54 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
       'margin-top': -this.options.height>>1
     });
 
-   // TODO: Review previous block & replace it with
-   // the following:
-   //
-   // $el.css({
-   //   width: this.options.width,
-   //   height: this.options.height,
-   //   'top': "50%",
-   //   'left': "50%",
-   //   'margin-left': -this.options.width / 2,
-   //   'margin-top':  -this.options.height / 2
-   // });
-
     $el.html(this.template_base(this.options));
+
     if(this.render_content) {
+
       this.$('.content').append(this.render_content());
     }
+
     return this;
   },
 
   _ok: function(ev) {
+
    if(ev) ev.preventDefault();
 
-    if(this.ok) {
+    if (this.ok) {
       this.ok();
     }
+
     this.hide();
+
   },
 
   _cancel: function(ev) {
+
     if (ev) ev.preventDefault();
 
-    if(this.cancel) {
+    if (this.cancel) {
       this.cancel();
     }
+
     this.hide();
+
   },
 
   hide: function() {
+
     this.$el.hide();
-    if(this.options.clean_on_hide) {
+
+    if (this.options.clean_on_hide) {
       this.clean();
     }
+
   },
 
   open: function() {
+
     this.$el.show();
+
   }
 
 });

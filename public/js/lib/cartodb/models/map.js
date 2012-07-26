@@ -8,7 +8,7 @@ _.extend(cdb.geo.MapLayer.prototype, {
       'Layer::Tiled': 'Tiled',
       'Layer::Carto': 'CartoDB'
     };
-    _.extend(c, JSON.parse(data.options), {
+    _.extend(c, data.options, {
       id: data.id,
       type: typeMap[data.kind]
     });

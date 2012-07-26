@@ -1,5 +1,9 @@
 
-  cdb.admin.RegenerateDialog = cdb.ui.common.Dialog.extend({
+  cdb.admin.keys = cdb.admin.keys || {};
+
+  
+
+  cdb.admin.keys.RegenerateDialog = cdb.ui.common.Dialog.extend({
     
     render_content: function() {
       return "<p>" + this.options.content + "</p>"

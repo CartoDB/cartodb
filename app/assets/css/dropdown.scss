@@ -25,8 +25,12 @@
 
       li {
         display:block;
-        padding:13px 13px 15px 13px;
         border-top:1px solid rgba(#CCCCCC,0.35);
+
+        a {
+          display:block;
+          padding:13px 13px 15px 13px;
+        }
 
         &:first-child {@include border-top-radius(3px)}
         &:last-child {@include border-bottom-radius(3px)}

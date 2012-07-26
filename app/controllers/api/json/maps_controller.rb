@@ -6,11 +6,7 @@ class Api::Json::MapsController < Api::ApplicationController
   before_filter :load_map, :except => :create
 
   def show
-    respond_to do |format|
-      format.json do
-        render_jsonp(@map.values.to_json)
-      end
-    end
+    render_jsonp(@map.public_values)
   end
 
   def create
@@ -18,7 +14,7 @@ class Api::Json::MapsController < Api::ApplicationController
     @map.user_id = current_user.id
 
     if @map.save
-      render_jsonp(@map.values.to_json)
+      render_jsonp(@map.public_values)
     else
       CartoDB::Logger.info "Error on maps#create", @map.errors.full_messages
       render_jsonp( { :description => @map.errors.full_messages,
@@ -29,7 +25,7 @@ class Api::Json::MapsController < Api::ApplicationController
 
   def update
     if @map.update(params.slice(:provider, :bounding_box_sw, :bounding_box_ne, :center, :zoom, :table_id))
-      render_jsonp(@map.values.to_json)
+      render_jsonp(@map.public_values)
     else
       CartoDB::Logger.info "Error on maps#update", @map.errors.full_messages
       render_jsonp({ :description => @map.errors.full_messages, 

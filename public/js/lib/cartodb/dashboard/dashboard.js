@@ -1,5 +1,5 @@
 /**
- *  entry point for dashboard
+ *  Entry point for dashboard
  */
 
 
@@ -123,6 +123,7 @@ $(function() {
     var router = new DashboardRouter();
     Backbone.history.start();
 
+    // No route => tables fetch 
     if (window.dashboard.tables.options.get("tag_name") == "" 
       && window.dashboard.tables.options.get("q") == "") {
       window.dashboard.tables.fetch()

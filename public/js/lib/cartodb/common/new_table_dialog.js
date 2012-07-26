@@ -37,7 +37,7 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
     _.extend(this.options, {
       title: 'New table',
       description: 'Choose between the following options to create a new table.',
-      template_name: 'common/views/dialog_base',
+      template_name: 'dashboard/views/dialog_base',
       clean_on_hide: true,
       ok_button_classes: "button green disabled",
       ok_title: "Create table",
@@ -51,16 +51,22 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
    * Render the content for the create dialog
    */
   render_content: function() {
+
     // Add correct html
     var $content = this.$content = $("<div>");
     this.temp_content = cdb.templates.getTemplate('dashboard/views/create_dialog_content');
     $content.append(this.temp_content());
 
     // Save references
-    this.$loader  = $content.find("div.progress");
-    this.$list    = $content.find("ul");
-    this.$import  = $content.find("div.upload");
-    this.$holder  = $content.find("div.holder");
+    this.$loader      = $content.find("div.progress");
+    this.$list        = $content.find("ul");
+    this.$import      = $content.find("div.upload");
+    this.$holder      = $content.find("div.holder");
+    this.$error       = this.$el.find("section.modal.error");
+    this.$importation = this.$el.find("section.modal:eq(0)");
+
+    // Hide error... for the moment
+    this.$error.hide();
 
     // Bind events
     var $upload = $content.find("div.uploader")
@@ -180,7 +186,7 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
 
   _onUploadComplete: function(id, fileName, responseJSON) {
     this._changeState("importing");
-    //this._importTable(fileName,responseJSON.file_uri)
+    this._importTable(fileName,responseJSON.file_uri)
   },
 
   _onUploadError: function(message) {
@@ -202,17 +208,22 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
   // Import table from a url
   _importTable: function(fileName,file_uri) {
 
-    // var opts  = {
-    //   table_name: fileName,
-    //   file_uri: file_uri
-    // };
+    var opts  = {
+      table_name: fileName,
+      file_uri: file_uri
+    };
 
-    // var imp = new cdb.admin.Import(opts).bind("importComplete", function(){
-    //   console.log("final!!");
-    // },this)
-    // this.trigger('importStarted', imp);
-    // imp.save();
-    //self.hide();
+    var imp = new cdb.admin.Import(opts)
+     .bind("importComplete", function(){
+        console.log("final!!");
+      },this)
+      .bind("importError", function(){
+        self._showError('404','Unable to read SHP file.','what about');
+      },this);
+
+    this.trigger('importStarted', imp);
+    imp.save();
+    this.hide();
   },
 
 
@@ -237,7 +248,36 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
 
 
 
+  _showError: function(number,description,wadus) {
 
+
+    // Add data
+    var template = cdb.templates.getTemplate("dashboard/views/error_dialog_content")
+      , opts = {number: number, description: description, about:wadus};
+
+    this.$error.find("div.error_content").html(template(opts));
+
+    // Show error and hide importation window
+    this.$el.find(".modal:eq(0)").animate({
+      opacity: 0,
+      marginTop: 0,
+      height: 0,
+      top: 0
+    },function(){
+      $(this).remove();
+    });
+
+    this.$el.find(".modal:eq(1)")
+      .css({
+        opacity:0,
+        display:"block",
+        marginTop: "0px"
+      })
+      .animate({
+        opacity: 1,
+        marginTop: "100px"
+      },600);
+  },
 
 
 
@@ -267,30 +307,30 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
     switch (mode) {
       case "reset":
         // Remove additional and error info
-        this.$content
+        this.$importation
           .find("div.info")
           .removeClass("active");
 
         // Change title
-        this.$el
+        this.$importation
           .find("h3")
           .text("New table");
 
         // Change description
-        this.$el
+        this.$importation
           .find("div.head p")
           .text("Choose between the following options to create a new table.");
  
         // Hide close
-        this.$el.find("a.close").fadeIn();
+        this.$importation.find("a.close").fadeIn();
 
         // Remove foot description
-        this.$el.find("div.foot p").remove();
+        this.$importation.find("div.foot p").remove();
 
         // Disable ok button and disabled dialog
         this.enable = true;
         this.option = 0;
-        this.$el.find("div.foot a.ok").addClass("disabled green").removeClass("grey");
+        this.$importation.find("div.foot a.ok").addClass("disabled green").removeClass("grey");
 
         // Show options list
         this.$list.animate({
@@ -316,26 +356,26 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
       case "creating":
 
         // Remove additional and error info
-        this.$content
+        this.$importation
           .find("div.info")
           .removeClass("active");
 
         // Change title
-        this.$el
+        this.$importation
           .find("h3")
           .text("Creating your table...");
 
         // Change description
-        this.$el
+        this.$importation
           .find("div.head p")
           .text("Give us some second to create it and then you will be redirected...");
  
         // Hide close
-        this.$el.find("a.close").fadeOut();
+        this.$importation.find("a.close").fadeOut();
 
         // Disable ok button and disabled dialog
         this.enable = false;
-        this.$el.find("div.foot a.ok").addClass("disabled");
+        this.$importation.find("div.foot a.ok").addClass("disabled");
 
         // Hide options list
         this.$list.animate({
@@ -362,26 +402,26 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
       case "uploading":
 
         // Remove additional and error info
-        this.$content
+        this.$importation
           .find("div.info")
           .removeClass("active");
 
         // Change title
-        this.$el
+        this.$importation
           .find("h3")
           .text("Uploading your data");
 
         // Change description
-        this.$el
+        this.$importation
           .find("div.head p")
           .text("It will take us some time...");
  
         // Hide close
-        this.$el.find("a.close").fadeOut();
+        this.$importation.find("a.close").fadeOut();
 
         // Disable ok button and disabled dialog
         this.enable = false;
-        this.$el.find("div.foot a.ok").addClass("disabled");
+        this.$importation.find("div.foot a.ok").addClass("disabled");
 
         // Hide options list
         this.$list.animate({
@@ -409,34 +449,34 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
         break;
       case "importing":
         // Remove additional and error info
-        this.$content
+        this.$importation
           .find("div.info")
           .removeClass("active");
 
         // Change title
-        this.$el
+        this.$importation
           .find("h3")
           .text("Creating your table...");
 
         // Changing head description
-        this.$el
+        this.$importation
           .find("div.head p")
           .text("Now, you can hide this window and your table creation will continue.");
 
         // Adding foot description
         var $desc_f = $("<p>").addClass("margin5 left small").text("When hiding this window, follow the progress in the bottom left corner of your screen.");
 
-        this.$el
+        this.$importation
           .find("div.foot")
           .append($desc_f);
  
         // Hide close
-        this.$el.find("a.close").fadeOut();
+        this.$importation.find("a.close").fadeOut();
 
         // Ok button now hides the dialog
         this.enable = true;
         this.option = 3;
-        this.$el.find("div.foot a.ok")
+        this.$importation.find("div.foot a.ok")
           .addClass("grey")
           .removeClass("green disabled")
           .text("Hide this window");
@@ -466,10 +506,6 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
       default:
     }
   },
-
-
-
-
 
 
 
@@ -520,8 +556,6 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
       default: cdb.log.info(":S");
     }
   },
-
-
 
 
   /**

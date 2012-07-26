@@ -31,7 +31,7 @@ cdb.admin.MapTab = cdb.core.View.extend({
           model: this.map,
           baseLayers: this.options.baseLayers
         });
-        
+
         base_maps.append(this.baseLayerChooser.render().el);
 
         this.$el.append(div);
@@ -42,9 +42,7 @@ cdb.admin.MapTab = cdb.core.View.extend({
         });
         this.map_enabled = true;
 
-        this.map.bind('change:dataLayer', function(lyr) {
-          self._bindDataLayer();
-        });
+        this.mapView.bind('newLayerView', self._bindDataLayer, self);
 
         self.infowindow = new cdb.admin.MapInfowindow({
           model: self.infowindowModel,
@@ -57,17 +55,22 @@ cdb.admin.MapTab = cdb.core.View.extend({
     }
   },
 
-  _bindDataLayer: function() {
+  /**
+   * when the layer view is created this method is called
+   * to attach all the click events
+   */
+  _bindDataLayer: function(layer) {
     var self = this;
+    if(layer.model.get('type') === 'CartoDB') {
+      // unbind previos stuff
+      if(self.layerDataView) {
+        self.layerDataView.unbind(null, null, this);
+      }
 
-    // unbind previos stuff
-    if(self.layerDataView) {
-      self.layerDataView.unbind(null, null, this);
-    }
-
-    self.layerDataView = self.mapView.getLayerByCid(self.map.get('dataLayer').cid);
-    if(self.layerDataView) {
-      self.layerDataView.bind('featureClick', self.featureClick, self);
+      self.layerDataView = self.mapView.getLayerByCid(self.map.get('dataLayer').cid);
+      if(self.layerDataView) {
+        self.layerDataView.bind('featureClick', self.featureClick, self);
+      }
     }
   },
 

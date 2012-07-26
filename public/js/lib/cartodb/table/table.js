@@ -137,13 +137,13 @@ $(function() {
 
           this.map.bind('change:dataLayer', _.once(function() {
             // lateral menu modules
-            var sql = new cdb.admin.mod.SQL({ 
-              model: this.table 
+            var sql = new cdb.admin.mod.SQL({
+              model: this.table
             });
-            var carto = new cdb.admin.mod.Carto({ 
+            var carto = new cdb.admin.mod.Carto({
               model: self.map.get('dataLayer')
             });
-            var infowindow = new cdb.admin.mod.InfoWindow({ 
+            var infowindow = new cdb.admin.mod.InfoWindow({
               table: self.table,
               model: self.infowindow
             });

@@ -15,24 +15,28 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   },
 
   addField: function(fieldName) {
-    var fields = _.clone(this.get('fields')) || [];
-    fields.push(fieldName);
-    this.set({'fields': fields});
+    if(!this.containsField(fieldName)) {
+      var fields = _.clone(this.get('fields')) || [];
+      fields.push(fieldName);
+      this.set({'fields': fields});
+    }
     return this;
   },
 
   containsField: function(fieldName) {
-    var fields = _.clone(this.get('fields')) || [];
+    var fields = this.get('fields') || [];
     return _.contains(fields, fieldName);
   },
 
   removeField: function(fieldName) {
-    var fields = _.clone(this.get('fields')) || [];
-    var idx = _.indexOf(fields, fieldName);
-    if(idx >= 0) {
-      fields.splice(idx, 1);
+    if(this.containsField(fieldName)) {
+      var fields = _.clone(this.get('fields')) || [];
+      var idx = _.indexOf(fields, fieldName);
+      if(idx >= 0) {
+        fields.splice(idx, 1);
+      }
+      this.set({'fields': fields});
     }
-    this.set({'fields': fields});
     return this;
   }
 

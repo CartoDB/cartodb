@@ -6,7 +6,8 @@ _.extend(cdb.geo.MapLayer.prototype, {
     var c = {};
     var typeMap = {
       'Layer::Tiled': 'Tiled',
-      'Layer::Carto': 'CartoDB'
+      'Layer::Carto': 'CartoDB',
+      'carto': 'CartoDB'
     };
     _.extend(c, data.options, {
       id: data.id,

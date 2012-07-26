@@ -59,7 +59,10 @@ cdb.geo.Map = Backbone.Model.extend({
 
   defaults: {
     center: [0, 0],
-    zoom: 9
+    zoom: 9,
+    bounding_box_sw: [0, 0],
+    bounding_box_ne: [0, 0],
+    provider: 'leaflet'
   },
 
   initialize: function() {
@@ -101,7 +104,7 @@ cdb.geo.Map = Backbone.Model.extend({
       if (this.options.debug) {
         throw (options + ' options has to be an object');
       } else {
-        return
+        return;
       }
     }
 

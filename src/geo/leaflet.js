@@ -35,7 +35,7 @@ var LeafLetTiledLayerView = function(layerModel, leafletMap) {
 
 _.extend(LeafLetTiledLayerView.prototype, LeafLetLayerView.prototype, {
   _update: function() {
-    _.defaults(this.leafletLayer.options, this.model.toJSON());
+    _.defaults(this.leafletLayer.options, _.clone(this.model.attributes));
     this.leafletLayer.setUrl(this.model.get('urlTemplate'));
   }
 });
@@ -51,7 +51,7 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
 
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
-  var opts = layerModel.toJSON();
+  var opts = _.clone(layerModel.attributes);
 
   opts.map =  leafletMap;
 
@@ -83,7 +83,7 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
 _.extend(LeafLetLayerCartoDBView.prototype, LeafLetLayerView.prototype, {
 
   _update: function() {
-    this.leafletLayer.setOptions(this.model.toJSON());
+    this.leafletLayer.setOptions(_.clone(this.model.attributes));
   },
 
   featureOver: function(e, latlon, pixelPos, data) {
@@ -98,7 +98,7 @@ _.extend(LeafLetLayerCartoDBView.prototype, LeafLetLayerView.prototype, {
   featureClick: function(e, latlon, pixelPos, data) {
     // dont pass leaflet lat/lon
     this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data);
-  },
+  }
 
 });
 
@@ -131,12 +131,11 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     this.map.bind('set_view', this._setView, this);
     this.map.layers.bind('add', this._addLayer, this);
     this.map.layers.bind('remove', this._removeLayer, this);
+    this.map.layers.bind('reset', this._addLayers, this);
 
     this._bindModel();
 
-    this.map.layers.each(function(lyr) {
-      self._addLayer(lyr);
-    });
+    this._addLayers();
 
     this.map_leaflet.on('layeradd', function(lyr) {
       this.trigger('layeradd', lyr, self);
@@ -222,6 +221,14 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
   },
 
+
+  _addLayers: function() {
+    var self = this;
+    this.map.layers.each(function(lyr) {
+      self._addLayer(lyr);
+    });
+  }, 
+
   _addLayer: function(layer) {
     var lyr, layer_view;
 
@@ -238,6 +245,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     if (layer_view) {
       var isBaseLayer = this.layers.length === 1;
       this.map_leaflet.addLayer(layer_view.leafletLayer, isBaseLayer);
+      this.trigger('newLayerView', layer_view, this);
     } else {
       cdb.log.error("layer type not supported");
     }

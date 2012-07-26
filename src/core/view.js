@@ -28,6 +28,13 @@
       delete this._subviews[v.cid];
     },
 
+    clearSubViews: function() {
+      _(this._subviews).each(function(v) {
+        v.clean();
+      });
+      this._subviews = {};
+    },
+
     /**
      * this methid clean removes the view
      * and clean and events associated. call it when 
@@ -36,10 +43,7 @@
     clean: function() {
       var self = this;
       this.trigger('clean');
-      _(this._subviews).each(function(v) {
-        v.clean();
-      });
-      this._subviews = {};
+      this.clearSubViews();
       // remove from parent
       if(this._parent) {
         this._parent.removeView(this);
@@ -76,7 +80,22 @@
 
   }, {
     viewCount: 0,
-    views: {}
+    views: {},
+
+    /**
+     * when a view with events is inherit and you want to add more events
+     * this helper can be used:
+     * var MyView = new core.View({
+     *  events: cdb.core.View.extendEvents({
+     *      'click': 'fn'
+     *  })
+     * });
+     */
+    extendEvents: function(newEvents) {
+      return function() {
+        return _.extend(newEvents, this.constructor.__super__.events);
+      }
+    }
   });
 
 })();

@@ -41,10 +41,15 @@ cdb.ui.common.TableData = Backbone.Collection.extend({
  * contains information about the table, mainly the schema
  */
 cdb.ui.common.TableProperties = Backbone.Model.extend({
+
   columnNames: function() {
     return _.map(this.get('schema'), function(c) {
       return c[0];
     });
+  },
+
+  columnName: function(idx) {
+    return this.columnNames()[idx];
   }
 });
 
@@ -192,7 +197,12 @@ cdb.ui.common.Table = cdb.core.View.extend({
     });
 
     tr.bind('clean', function() {
-      self.rowViews.splice(_.indexOf(self.rowViews,this), 1);
+      var idx = _.indexOf(self.rowViews,this);
+      self.rowViews.splice(idx, 1);
+      // update index
+      for(var i = idx; i < self.rowViews.length; ++i) {
+        self.rowViews[i].$el.attr('data-y', i);
+      }
     });
 
     tr.render();
@@ -254,10 +264,10 @@ cdb.ui.common.Table = cdb.core.View.extend({
 
   _cellClick: function(e) {
     e.preventDefault();
-    var cell = $(e.target);
+    var cell = $(e.currentTarget || e.target);
     var x = parseInt(cell.attr('data-x'), 10);
     var y = parseInt(cell.parent().attr('data-y'), 10);
-    this.trigger('cellClick', cell, x, y);
+    this.trigger('cellClick', e, cell, x, y);
   }
 
 

@@ -35,7 +35,12 @@
       var self = this;
       var html = _(this.row.attributes).map(function(v, k) {
         if(self.model.containsField(k)) {
-          return '<h4>' + k + '</h4>' + '<p>' + v + '</p>';
+          var h = '';
+          if(self.model.getFieldProperty(k, 'title')) {
+            h += '<h4>' + k + '</h4>' ;
+          }
+          h += '<p>' + v + '</p>';
+          return h;
         }
       }).join('\n');
       this.model.set({ content: "<div>" + html + "</div>" });

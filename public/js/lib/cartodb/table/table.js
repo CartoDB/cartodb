@@ -48,7 +48,7 @@ $(function() {
         _initModels: function() {
           var self = this;
           this.table = new cdb.admin.CartoDBTableMetadata({
-            id: table_id
+            id: this.options.table_id
           });
           this.columns = this.table.data();
           this.map = new cdb.admin.Map();
@@ -179,6 +179,9 @@ $(function() {
 
     });
 
+    cdb._test = cdb._test || {};
+    cdb._test.Table = Table;
+
     var TableRouter = Backbone.Router.extend({
 
         initialize: function(table) {
@@ -210,7 +213,9 @@ $(function() {
         tiler_port: '8181',
         tiler_domain: 'localhost.lan'
       });
-      var table = new Table();
+      var table = new Table({
+        table_id: table_id
+      });
       var router = new TableRouter(table);
       // expose to debug
       window.table = table;

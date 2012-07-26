@@ -12,6 +12,7 @@
       this.model.set({ content: 'loading...' });
       // call parent
       this.constructor.__super__.initialize.apply(this);
+      this.model.set('offset', [216/2, 0]);
       this.model.bind('change', function() {
         if(!this.hasChanged('content') && self.row) {
           self.renderInfo();

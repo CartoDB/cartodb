@@ -29,18 +29,19 @@ feature "API 1.0 layers management" do
   end
 
   scenario "Get layer information" do
-    layer = Layer.create
+    layer = Layer.create :kind => 'carto'
     @map.add_layer layer
 
     get_json v1_map_layer_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :id => layer.id, :map_id => @map.id) do |response|
       response.status.should be_success
       response.body[:id].should == layer.id
+      response.body[:kind].should == 'carto'
     end
   end
 
   scenario "Get a map layers" do
-    layer = Layer.create
-    layer2 = Layer.create
+    layer = Layer.create :kind => 'carto'
+    layer2 = Layer.create :kind => 'tiled'
     @map.add_layer layer
     @map.add_layer layer2
 
@@ -53,19 +54,21 @@ feature "API 1.0 layers management" do
   end
 
   scenario "Update a layer" do
-    layer = Layer.create
+    layer = Layer.create :kind => 'carto'
     @map.add_layer layer
 
     put_json v1_map_layer_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :id => layer.id, :map_id => @map.id), {
-      :options => { :opt1 => 'value' } } do |response|
+      :options => { :opt1 => 'value' },
+      :kind => 'carto' } do |response|
       response.status.should be_success
       response.body[:id].should == layer.id
       response.body[:options].should == { 'opt1' => 'value' }
+      response.body[:kind].should == 'carto'      
     end
   end
 
   scenario "Drop a layer" do
-    layer = Layer.create
+    layer = Layer.create :kind => 'carto'
     @map.add_layer layer
     
     delete_json v1_map_layer_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :id => layer.id, :map_id => @map.id) do |response|

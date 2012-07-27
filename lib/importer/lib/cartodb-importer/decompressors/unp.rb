@@ -23,7 +23,13 @@ module CartoDB
         curdir = Dir.pwd
         Dir.chdir(tmp_dir)
         tarcmd = "unp #{@path}"
-        utr = `#{tarcmd}`
+        begin
+          utr = `#{tarcmd}`
+          raise "unp: Can't find #{@path}" unless utr =~ /.*inflating: .*/
+        rescue => e
+          @data_import.log_update("unp: Can't find #{@path}")
+          raise e
+        end
         Dir.chdir(curdir)
 
 

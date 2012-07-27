@@ -12,6 +12,7 @@
       this.model.set({ content: 'loading...' });
       // call parent
       this.constructor.__super__.initialize.apply(this);
+      this.model.set('offset', [216/2, 0]);
       this.model.bind('change', function() {
         if(!this.hasChanged('content') && self.row) {
           self.renderInfo();
@@ -35,7 +36,12 @@
       var self = this;
       var html = _(this.row.attributes).map(function(v, k) {
         if(self.model.containsField(k)) {
-          return '<h4>' + k + '</h4>' + '<p>' + v + '</p>';
+          var h = '';
+          if(self.model.getFieldProperty(k, 'title')) {
+            h += '<h4>' + k + '</h4>' ;
+          }
+          h += '<p>' + v + '</p>';
+          return h;
         }
       }).join('\n');
       this.model.set({ content: "<div>" + html + "</div>" });

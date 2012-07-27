@@ -270,6 +270,7 @@ qq.FileUploaderBasic = function(o){
         onCancel: function(id, fileName){},
         // messages
         messages: {
+            shpError: "All SHP files should also contain a PRJ file",
             typeError: "Please, select a valid format file",
             sizeError: "File too large. Remaining quota is {sizeLimit}",
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
@@ -412,7 +413,12 @@ qq.FileUploaderBasic.prototype = {
         }
 
         if (! this._isAllowedExtension(name)){
-            this._error('typeError', name);
+            if(/.*\.(shp|prj|shx|dbf)$/.test(name)) {
+                this._error('shpError', name);
+            }
+            else {
+                this._error('typeError', name);
+            }
             return false;
 
         } else if (size === 0){

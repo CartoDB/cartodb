@@ -83,6 +83,10 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
         showMessage: this._onUploadError
       });
 
+    if (this.options.drop) {
+      uploader._uploadFileList(this.options.drop.files);
+    }
+
     return this.$content;
   },
 
@@ -223,7 +227,7 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
 
     this.trigger('importStarted', imp);
     imp.save();
-    this.hide();
+    //this.hide();
   },
 
 

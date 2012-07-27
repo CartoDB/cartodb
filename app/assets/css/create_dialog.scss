@@ -7,6 +7,38 @@
   @import "sprites";
   @import "mixins";
 
+
+  // Big mamufas css
+  div.drag_mamufas {    
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    display:none;
+    background:rgba(black,0.5);
+    z-index:10;
+
+    span {
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:160px;
+      height:160px;
+      margin:-80px 0 0 -80px;
+      @include icons-sprite(droparea);
+    }
+
+    p {
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:240px;
+      margin:80px 0 0 -120px;
+      color:rgba(white,0.4);
+    }
+  }
+
   section.creation {
     position:relative;
 

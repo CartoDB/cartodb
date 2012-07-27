@@ -104,6 +104,7 @@ class DataImport < Sequel::Model
 
     rescue => e
       reload
+      failed!
       # Add semantics based on the users creation method.
       # TODO: The importer should throw these specific errors
       if !e.is_a? CartoDB::QuotaExceeded
@@ -111,7 +112,8 @@ class DataImport < Sequel::Model
         e = CartoDB::InvalidFile.new    e.message    if file?
         e = CartoDB::TableCopyError.new e.message    if table_copy?
       end
-      CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
+      CartoDB::Logger.info "Exception on tables#create", e.inspect
+
       true # FIXME: our exception handler returns true so that the after_create method doesnt rollback
     end
   end
@@ -120,9 +122,11 @@ class DataImport < Sequel::Model
     self.updated_now
   end
 
+  # FIXME: after a rollback the object doesn't exist on the
+  # database anymore, so no save
   def after_rollback(*args, &block)
-    self.save
-    set_callback(:rollback, :after, *args, &block)
+    #self.save
+    #set_callback(:rollback, :after, *args, &block)
   end
 
   def updated_now(transition=nil)
@@ -326,5 +330,9 @@ class DataImport < Sequel::Model
 
   def url?
     data_type == 'url'
+  end
+
+  def table_copy?
+    table_copy.present?
   end
 end

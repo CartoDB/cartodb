@@ -4,6 +4,60 @@
 (function() {
 
   /**
+   * Mamufas drag
+   */
+  var MamufasDrag = cdb.core.View.extend({
+
+    events: {
+      'drop .drag_mamufas'      : '_onDrop',
+      'dragleave .drag_mamufas' : '_onLeave',
+      'dragenter .drag_mamufas' : '_onMamufasEnter',
+      'dragenter'               : '_onWindowEnter'
+    },
+
+    initialize: function() {
+      _.bindAll(this, "_onWindowEnter", "_onLeave", "_onDrop");
+      var drag_mamufas = this.$drag_mamufas =  this.$("div.drag_mamufas");
+    },
+
+    render: function() {
+
+    },
+
+    _onWindowEnter: function(ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      this.$drag_mamufas.show();
+      console.log("enter body");
+    },
+
+    _onMamufasEnter: function(ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      console.log("enter mamufas");
+    },
+
+    _onLeave: function(ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      this.$drag_mamufas.hide();
+      console.log("leave");
+    },
+
+    _onDrop: function(ev) {
+      console.log("drop");
+      ev.stopPropagation();
+      ev.preventDefault();
+      this.$drag_mamufas.hide();
+      this.trigger("fileDropped", ev.originalEvent.dataTransfer, this);
+    }
+  });
+
+
+
+  /**
    * Create a new table view
    */
   var CreateTable = cdb.core.View.extend({
@@ -29,10 +83,36 @@
 
       // Any change, render this view
       this.model.bind('change', this.render, this);
+
+      // Bind big mamufas upload
+      var self = this;
+      this.drag = new MamufasDrag({
+        el: document.body
+      }).on("fileDropped", function(data) {
+        self._showDialog(null,data)
+      })
+
+      // var $upload = this.$el.find('div.mamufas_upload')
+      //   , self = this
+      //   , $uploader = this.big_upload = new qq.FileUploader({
+      //     element: $upload[0],
+      //     action: '/api/v1/uploads',
+      //     sizeLimit: 0, // max size   
+      //     minSizeLimit: 0, // min size
+      //     onSubmit: function(id,fileName) {
+      //       self._showDialog(null,fileName);
+      //     }
+      //   });
+// 570 - fileuploader.js
+
+      
+    },
+
+    _tableChange: function() {
+      this.model.fetch();
     },
 
     render: function() {
-
       var attrs = this.model.attributes;
 
       // Check tables count quota status
@@ -57,10 +137,11 @@
       this.$el.find("a").addClass("disabled");
     },
 
+
     /*
      * 
      */
-    _showDialog: function(ev) {
+    _showDialog: function(ev,data) {
 
       if (!this.active) return false;
 
@@ -68,7 +149,8 @@
     
       // Create a new dialog
       var dialog = new cdb.admin.CreateTableDialog({
-        tables : this.options.tables
+        tables : this.options.tables,
+        drop: data
       });
 
       $("body").append(dialog.render().el);

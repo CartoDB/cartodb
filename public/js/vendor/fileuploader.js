@@ -548,6 +548,7 @@ qq.extend(qq.FileUploader.prototype, {
         return element;
     },
     _setupDragDrop: function(){
+
         var self = this,
             dropArea = this._find(this._element, 'drop');                        
 
@@ -566,7 +567,7 @@ qq.extend(qq.FileUploader.prototype, {
             onDrop: function(e){
                 dropArea.style.display = 'none';
                 qq.removeClass(dropArea, self._classes.dropActive);
-                self._uploadFileList(e.dataTransfer.files);    
+                self._uploadFileList(e.dataTransfer.files);
             }
         });
                 

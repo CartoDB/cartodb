@@ -12,7 +12,8 @@ var Field = cdb.core.View.extend({
   tagName: 'li',
 
   events: {
-    'click .switch': 'toggle'
+    'click .switch': 'toggle',
+    'click .title': 'toggleTitle'
   },
   
   template: _.template('<%- fieldName %><div class="switches"><span class="title">title</span><span class="switch">switch</span></div>'),
@@ -23,10 +24,17 @@ var Field = cdb.core.View.extend({
   },
 
   fieldChange: function() {
-    if(_.include(this.model.get('fields'), this.fieldName)) {
+    if(this.model.containsField(this.fieldName)) {
       this.$el.removeClass('disabled').addClass('enabled');
     } else {
       this.$el.removeClass('enabled').addClass('disabled');
+    }
+    // title
+    var t = this.model.getFieldProperty(this.fieldName, 'title');
+    if(t) {
+      this.$('.title').removeClass('disabled').addClass('enabled');
+    } else {
+      this.$('.title').removeClass('enabled').addClass('disabled');
     }
   },
 
@@ -37,6 +45,13 @@ var Field = cdb.core.View.extend({
     } else {
       this.model.removeField(this.fieldName);
     }
+    return false;
+  },
+
+  toggleTitle: function(e) {
+    e.preventDefault();
+    var t = this.model.getFieldProperty(this.fieldName, 'title');
+    this.model.setFieldProperty(this.fieldName, 'title', !t);
     return false;
   },
 

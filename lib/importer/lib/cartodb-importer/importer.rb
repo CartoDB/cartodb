@@ -234,6 +234,7 @@ module CartoDB
               errors << OpenStruct.new({ :description => @data_import.get_error_text,
                                          :stack       => @data_import.log_json,
                                          :code        => @data_import.error_code })
+              raise e
             end
           end
         }

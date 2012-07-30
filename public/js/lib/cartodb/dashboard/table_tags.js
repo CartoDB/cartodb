@@ -2,7 +2,6 @@
 
 (function() {
 
-
   /**
    * Create a new tag view
    */
@@ -20,6 +19,8 @@
       return this;
     }
   });
+
+
 
 
   /**
@@ -40,6 +41,10 @@
       this.add_related_model(this.model);
     },
 
+
+    /**
+     *  When a table change, fetch tags model
+     */
     _tableChange: function() {
       var self = this;
       this.model.fetch({
@@ -47,6 +52,7 @@
         success: this.render
       });
     },
+
 
     render: function(m) {
 

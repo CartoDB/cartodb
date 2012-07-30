@@ -30,7 +30,7 @@
       @include transition-duration(1000ms);
       // If there is NO tables, this section is active
       &.active {
-        margin:0 0 -15px 0; // Hacky hacky
+        margin:-15px 0 -15px 0; // Hacky hacky
         padding:40px 0 80px;
       }
     }
@@ -60,6 +60,7 @@
 
       div.content {
         padding:100px 36px 0 40px;
+        background:url("/img/layout/empty_dashboard_bkg.png") repeat-y 0 0;
         overflow:hidden;
         div.left {
           width:280px;
@@ -76,7 +77,7 @@
           li {
             @include inline-block();
             width:285px;
-            margin:0 25px 0 0;
+            margin:0 27px 0 0;
 
             a {
               height:46px;

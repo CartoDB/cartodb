@@ -10,21 +10,6 @@
     <%= include_stylesheets :common, :media => 'all' %>
   <% end %>
 
-  <%# 
-    Calculate if the user has tables or not to decide which scenario show from the beginning:
-
-    - No tables 
-      -> article.no_tables  -> addClass("active")
-      -> article.tables     -> removeClass("active")
-      -> div.subheader      -> removeClass("active")
-
-    - Tables
-      -> article.no_tables  -> removeClass("active")
-      -> article.tables     -> addClass("active")
-      -> div.subheader      -> addClass("active")
-  %>
-
-
   <%= render 'admin/shared/subheader' %>
 
   <article class="no_tables <%= 'active' if @tables_count == 0 %>">
@@ -34,7 +19,7 @@
           <div class="left">
             <h2>Welcome <%= current_user.username %>!</h2>
             <p class="margin20">Start dropping here your data or just creating a table from scratch. Once you have your data imported you will be able to create your first map!</p>
-            <p class="margin40"><a href="#create_a_table" class="green button create">Create your first table</a></p>
+            <p class="margin40"><a href="#create_a_table" class="green button create_new">Create your first table</a></p>
           </div>
           <div class="right">
             <%= image_tag "/img/layout/empty_dashboard.png", :title => "Drop here!", :alt => "Drop here!" %>
@@ -68,7 +53,7 @@
       </section>
       <aside class="right">
         <div class="head">
-          <a href="#create_new" id="create_new" class="button green">Create a new table</a>
+          <a href="#create_new" class="button green create_new">Create a new table</a>
           <div class="drag_mamufas">
             <span class="file"></span>
             <p class="bigger strong">Drop here your file to create a new table with it</p>
@@ -77,9 +62,7 @@
         </div>
         <div class="content">
           <ul></ul>
-          <ul>
-            <li><%= link_to "Popular public tables", "/public", :class => "popular" %></li>
-          </ul>
+          <!-- ul><li><%= link_to "Popular public tables", "/public", :class => "popular" %></li></ul-->
         </div>
       </aside>
     </div>

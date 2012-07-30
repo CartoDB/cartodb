@@ -14,10 +14,6 @@
  *      tables: tables.model
  *    })
  *
- *
- * TODO:
- *  - Animate progress colors (not possible with gradients)
- *  - Animate numbers from the beginning
 */
 
 

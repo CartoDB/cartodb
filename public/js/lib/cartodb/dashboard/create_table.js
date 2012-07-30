@@ -6,55 +6,55 @@
   /**
    * Mamufas drag
    */
-  var MamufasDrag = cdb.core.View.extend({
+  // var MamufasDrag = cdb.core.View.extend({
 
-    events: {
-      'drop div.mask'       : '_onDrop',
-      'dragenter'           : '_onEnter',
-      'dragover div.mask'   : '_onDragover',
-      'dragleave div.mask'  : '_onLeave'
-    },
+  //   events: {
+  //     'drop div.mask'       : '_onDrop',
+  //     'dragenter'           : '_onEnter',
+  //     'dragover div.mask'   : '_onDragover',
+  //     'dragleave div.mask'  : '_onLeave'
+  //   },
 
-    initialize: function() {
-      _.bindAll(this, "_onEnter", "_onLeave", "_onDrop");
-      console.log(this.$el[0].document);
-      var drag_mamufas = this.$drag_mamufas = $(this.$el[0].document).find("div.drag_mamufas");
-      this.active = true;
-    },
+  //   initialize: function() {
+  //     _.bindAll(this, "_onEnter", "_onLeave", "_onDrop");
+  //     console.log(this.$el[0].document);
+  //     var drag_mamufas = this.$drag_mamufas = $(this.$el[0].document).find("div.drag_mamufas");
+  //     this.active = true;
+  //   },
 
-    _onDragover: function(ev) {},
+  //   _onDragover: function(ev) {},
 
-    _onEnter: function(ev) {
-      console.log("enter");
-      if (this.active)
-        this.$drag_mamufas.show();
-    },
+  //   _onEnter: function(ev) {
+  //     console.log("enter");
+  //     if (this.active)
+  //       this.$drag_mamufas.show();
+  //   },
 
-    _onLeave: function(e) {
-      console.log("leave");
-      if (this.active)
-        this.$drag_mamufas.hide();
-    },
+  //   _onLeave: function(e) {
+  //     console.log("leave");
+  //     if (this.active)
+  //       this.$drag_mamufas.hide();
+  //   },
 
-    _onDrop: function(ev) {
-      console.log("drop");
-      // ev.stopPropagation();
-      // ev.preventDefault();
-      if (this.active) {
-        this.$drag_mamufas.hide();
-        this.trigger("fileDropped", ev.originalEvent.dataTransfer, this);
-      }
-      return false;
-    },
+  //   _onDrop: function(ev) {
+  //     console.log("drop");
+  //     // ev.stopPropagation();
+  //     // ev.preventDefault();
+  //     if (this.active) {
+  //       this.$drag_mamufas.hide();
+  //       this.trigger("fileDropped", ev.originalEvent.dataTransfer, this);
+  //     }
+  //     return false;
+  //   },
 
-    enable: function() {
-      this.active = true;
-    },
+  //   enable: function() {
+  //     this.active = true;
+  //   },
 
-    disable: function() {
-      this.active = false;
-    }
-  });
+  //   disable: function() {
+  //     this.active = false;
+  //   }
+  // });
 
 
 
@@ -64,7 +64,7 @@
   var CreateTable = cdb.core.View.extend({
 
     events: {
-      'click a#create_new':  '_showDialog'
+      'click a.create_new':  '_showDialog'
     },
 
     initialize: function() {
@@ -161,7 +161,7 @@
         drop: files
       });
 
-      $("body").append(dialog.render().el);
+      this.$el.append(dialog.render().el);
       dialog.open();
 
       var self = this;

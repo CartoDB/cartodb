@@ -40,7 +40,7 @@ $(function() {
 
       // Choose sceneario
       this.scenario = new cdb.admin.dashboard.Scenario({
-        el: this,
+        el: this.$el,
         model: this.user
       });
 
@@ -66,7 +66,7 @@ $(function() {
 
       // Create new table view
       var createTable = this.createTable = new cdb.admin.dashboard.CreateTable({
-        el: this.$('aside div.head'),
+        el: this.$el,
         importer: bkg_importer,
         tables: this.tables,
         model: this.user

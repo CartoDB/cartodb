@@ -2,7 +2,7 @@
 
 (function() {
   /**
-   * Manage which article shows, empty-dashboard or table-list
+   * Manage which scenario should show, empty-dashboard or table-list
    */
   var Scenario = cdb.core.View.extend({
 
@@ -10,9 +10,9 @@
       _.bindAll(this, "_updateScenario");
 
       // Article when there is NO tables
-      this.$empty_article = this.el.$("article.no_tables");
+      this.$empty_article = this.$el.find("article.no_tables");
       // Article when there are tables
-      this.$tables_article = this.el.$("article.tables");
+      this.$tables_article = this.$el.find("article.tables");
 
       this.model.bind('change', this._updateScenario, this);
     },
@@ -29,6 +29,9 @@
       }
     },
 
+    /**
+     * Update the scenario
+     */    
     _updateScenario: function() {
       this.render();
     }

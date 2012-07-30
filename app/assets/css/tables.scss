@@ -18,9 +18,80 @@
   article {
     @include inline-block();
     width:100%;
-    padding:40px 0 80px;
     background:url("/img/layout/bkg.jpg") repeat 0 0;
     letter-spacing:-4px;
+
+    // Empty dashboard -> article
+    &.no_tables {
+      margin:-750px 0 0 0;
+      padding:0;
+      @include transform-style("linear");
+      @include transition-property("margin");
+      @include transition-duration(1000ms);
+      // If there is NO tables, this section is active
+      &.active {
+        margin:0 0 -15px 0; // Hacky hacky
+        padding:40px 0 80px;
+      }
+    }
+
+    // Tables dashboard -> article
+    &.tables {
+      height:0;
+      margin:0;
+      @include opacity(0);
+      @include transform-style("linear");
+      @include transition-property("all");
+      @include transition-duration(1000ms);
+      // If there is NO tables, this section is active
+      &.active {
+        height:auto;
+        margin:-15px 0 0 0; // Hacky hacky
+        @include opacity(1);
+        padding:40px 0 80px;
+      }
+    }
+
+
+    section.empty {
+      margin: 0;
+      border:1px solid #D1D1D1;
+      z-index:0;
+
+      div.content {
+        padding:100px 36px 0 40px;
+        overflow:hidden;
+        div.left {
+          width:280px;
+          padding:43px 0 0 0;
+          h2 {font-size:27px;}
+        }
+        div.right {
+          img {position:relative; display:block; margin:0; padding:0;}  
+        }
+      }
+      div.foot {
+        ul {
+          display:block;
+          li {
+            @include inline-block();
+            width:285px;
+            margin:0 25px 0 0;
+
+            a {
+              height:46px;
+              display:block;
+              padding:10px 0 0 55px;
+              line-height:18px;
+              @include icons-sprite(download_dataset);
+            }
+
+            &:last-child {width:235px; margin:0;}
+          }
+        }
+        h3 {letter-spacing:-1px; line-height:25px;}
+      }
+    }
     
     section.tables {
       @include inline-block();

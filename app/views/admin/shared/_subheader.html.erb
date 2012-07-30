@@ -1,4 +1,4 @@
-<div class="subheader">
+<div class="subheader <%= 'active' if @tables_count > 0 %>">
   <section class="stats">
     <div class="inner">
       <ul>
@@ -21,7 +21,6 @@
       </ul>
     </div>
   </section>
-
   <section class="warning">
     <div class="inner">
       <p class="dark">Hey <strong><%= current_user.username %></strong>, looks like you are close to reach your account limits. Start thinking on <%= link_to "upgrading your plan", upgrade_url, :class => "underline" %>.</p>

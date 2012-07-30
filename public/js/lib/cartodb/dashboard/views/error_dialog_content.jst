@@ -1,6 +1,6 @@
 <div class="block">
   <h4 class="exclamation">Error <%= number %></h4>
-  <p class="margin5"><%= description %></p>
+  <p class="margin5"><%= description.replace(/\n/g, "</br>") %></p>
 </div>
 <div class="block margin20">
     <h4 class="question">What about...</h4>

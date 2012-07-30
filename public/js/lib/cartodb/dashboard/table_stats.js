@@ -143,7 +143,10 @@
         },500);
 
       // Space change
-      $space.find("p").html("<strong>" + (( attrs.byte_quota - attrs.remaining_byte_quota ) / (1024*1024)).toFixed(2) + " of " + (attrs.byte_quota / (1024*1024)).toFixed(0) + "</strong> used megabytes");
+      var remaining_quota = (( attrs.byte_quota - attrs.remaining_byte_quota ) / (1024*1024)).toFixed(2)
+        , remaining_in_bytes = remaining_quota == 0.00 ? 0 : remaining_quota;
+
+      $space.find("p").html("<strong>" + remaining_in_bytes + " of " + (attrs.byte_quota / (1024*1024)).toFixed(0) + "</strong> used megabytes");
       $space.find("div.progress span")
         .removeAttr("class").addClass(attrs.byte_quota_status)
         .animate({

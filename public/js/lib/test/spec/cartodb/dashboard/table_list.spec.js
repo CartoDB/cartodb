@@ -1,7 +1,8 @@
 
 describe("tables-list", function() {
   var tablelist
-    , tables;
+    , tables
+    , user;
 
   beforeEach(function() {
 
@@ -11,9 +12,11 @@ describe("tables-list", function() {
     }));
 
     tables = new cdb.admin.Tables();
+    user = new cdb.admin.User({ id : "1" });
 
     tablelist = new cdb.admin.dashboard.TableList({
-      model: tables
+      model: tables,
+      user: user
     });
 
   });

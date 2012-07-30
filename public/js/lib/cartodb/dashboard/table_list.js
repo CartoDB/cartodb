@@ -101,13 +101,13 @@
       var tableList = new cdb.admin.dashboard.TableList({
         el: this.$('#tablelist'),
         model: this.tables*,
-        user: this.user**
+        user: this.user**   // it needs it to know if the user has limitations or not
       });
 
       *   It needs a tables model to run correctly.
       **  It needs a user model to work properly.
    */
-   
+
   var TableList = cdb.core.View.extend({
     tagName: 'ul',
 

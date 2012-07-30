@@ -6,6 +6,10 @@
 		
 	@import "compass";
 
+	article {
+		padding:40px 0 50px 0;
+	}
+
 	section.block {
 		background:white;
 		@include border-radius(4px);

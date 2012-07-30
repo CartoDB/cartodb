@@ -1,61 +1,61 @@
-  <% content_for(:page_title) do %>
-    OAuth |
-  <% end %>
-  <%= content_for(:js) do %>
-    <%= include_javascripts :common, :cdbjs, :keys %>
-    <script type="text/javascript">var username = "<%= current_user.username %>", type = "oauth";</script>
-  <% end %>
-  <%= content_for(:css) do %>
-    <%= include_stylesheets :common, :media => 'all' %>
-  <% end %>
+<% content_for(:page_title) do %>
+  OAuth |
+<% end %>
+<%= content_for(:js) do %>
+  <%= include_javascripts :common, :cdbjs, :keys %>
+  <script type="text/javascript">var username = "<%= current_user.username %>", type = "oauth";</script>
+<% end %>
+<%= content_for(:css) do %>
+  <%= include_stylesheets :common, :media => 'all' %>
+<% end %>
 
 
-  <article>
-    <div class="inner">
-      <section class="left block long">
-        <div class="head">
-          <h2>Your OAuth credentials</h2>
-          <nav>
-            <%= link_to "SIMPLE KEY", "/your_apps/api_key", :class => "strong smaller uppercase" %>
-            <%= link_to "OAUTH", "/your_apps/oauth", :class => "strong smaller uppercase selected" %>
-          </nav>
-        </div>
-        <div class="content">
-          <ul>
-            <%= render :partial => 'shared/flash_message' %>
-            <li>
-              <div class="copy">
-                <label class="uppercase smaller strong lighter">CONSUMER KEY</label>
-                <p class="margin5"><%= current_user.client_application.key %></p>
-                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
-              </div>
-              <div class="copy margin20">
-                <label class="uppercase smaller strong lighter">CONSUMER SECRET</label>
-                <p class="margin5"><%= current_user.client_application.secret %></p>
-                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
-              </div>
-              <span class="separate"></span>
-              <div class="copy">
-                <label class="uppercase smaller strong lighter">REQUEST TOKEN URL</label>
-                <p class="margin5">https://<%= current_user.username %>.cartodb.com/oauth/request_token</p>
-                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
-              </div>
-              <div class="copy margin20">
-                <label class="uppercase smaller strong lighter">ACCESS TOKEN URL</label>
-                <p class="margin5">https://<%= current_user.username %>.cartodb.com/oauth/access_token</p>
-                <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <div class="foot">
-          <%= form_tag(oauth_credentials_url, :method => "DELETE", :id => 'regenerate_api_key') do %>
-            <%= link_to "Request a new key", "#request_new_key", :class => "right underline red regenerate" %>
-          <% end %>
-        </div>
-      </section>
-      <aside class="right">
-        <%= render :partial => 'create_first' %>
-      </aside>
-    </div>
-  </article>
+<article>
+  <div class="inner">
+    <section class="left block long">
+      <div class="head">
+        <h2>Your OAuth credentials</h2>
+        <nav>
+          <%= link_to "SIMPLE KEY", "/your_apps/api_key", :class => "strong smaller uppercase" %>
+          <%= link_to "OAUTH", "/your_apps/oauth", :class => "strong smaller uppercase selected" %>
+        </nav>
+      </div>
+      <div class="content">
+        <ul>
+          <%= render :partial => 'shared/flash_message' %>
+          <li>
+            <div class="copy">
+              <label class="uppercase smaller strong lighter">CONSUMER KEY</label>
+              <p class="margin5"><%= current_user.client_application.key %></p>
+              <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
+            </div>
+            <div class="copy margin20">
+              <label class="uppercase smaller strong lighter">CONSUMER SECRET</label>
+              <p class="margin5"><%= current_user.client_application.secret %></p>
+              <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
+            </div>
+            <span class="separate"></span>
+            <div class="copy">
+              <label class="uppercase smaller strong lighter">REQUEST TOKEN URL</label>
+              <p class="margin5">https://<%= current_user.username %>.cartodb.com/oauth/request_token</p>
+              <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
+            </div>
+            <div class="copy margin20">
+              <label class="uppercase smaller strong lighter">ACCESS TOKEN URL</label>
+              <p class="margin5">https://<%= current_user.username %>.cartodb.com/oauth/access_token</p>
+              <a class="copy tooltip" href="#copy" title="Copy this">copy</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="foot">
+        <%= form_tag(oauth_credentials_url, :method => "DELETE", :id => 'regenerate_api_key') do %>
+          <%= link_to "Request a new key", "#request_new_key", :class => "right underline red regenerate" %>
+        <% end %>
+      </div>
+    </section>
+    <aside class="right">
+      <%= render :partial => 'create_first' %>
+    </aside>
+  </div>
+</article>

@@ -28,7 +28,8 @@ $(function() {
       // Table list
       this.tableList = new cdb.admin.dashboard.TableList({
         el: this.$('#tablelist'),
-        model: this.tables
+        model: this.tables,
+        user: this.user
       });
 
       // User data

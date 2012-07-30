@@ -33,6 +33,7 @@ cdb.admin.PrivacySelector = cdb.core.View.extend({
   initialize: function() {
     _.bindAll(this, "_optionClicked");
 
+    // Extend options
     _.defaults(this.options, this.default_options);
 
     // Dropdown template
@@ -48,7 +49,15 @@ cdb.admin.PrivacySelector = cdb.core.View.extend({
     $el.html(this.template_base());
 
     // Add selected
+    var selected = this.model.get("privacy").toLowerCase();
+    $el.find("a." + selected).addClass("selected");
 
+    // Can user make private tables?
+    if (this.options.limitation) {
+      $el.find("a.private")
+        .html("<span class='radio'></span>Private (only paid users)")
+        .addClass("disabled");
+    }
 
     return this;
   },
@@ -62,7 +71,7 @@ cdb.admin.PrivacySelector = cdb.core.View.extend({
       , el_width = this.$el.outerWidth()
       , el_height = this.$el.outerHeight()
 
-    //TODO: position dialog
+
     var top = pos.top - el_height + "px";
     if(this.options.direction === 'down') {
       top = pos.top + el_height + "px";
@@ -85,7 +94,6 @@ cdb.admin.PrivacySelector = cdb.core.View.extend({
   },
 
   hide: function(target) {
-
     // Animate
     this.$el.animate({
       marginTop: "-10px",
@@ -104,6 +112,10 @@ cdb.admin.PrivacySelector = cdb.core.View.extend({
     if ($(ev.target).hasClass("public")) {
       new_status = "PUBLIC";
     } else {
+      if (this.options.limitation) {
+        this.hide();
+        return false;
+      }
       new_status = "PRIVATE";
     }
 

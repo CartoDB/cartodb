@@ -18,11 +18,12 @@
     initialize: function() {
       _.bindAll(this, "_addPrivacySelector");
 
+      _.defaults(this.options, this.default_options);
+
       this.template = cdb.templates.getTemplate('dashboard/views/table_list_item');
 
       this.model.bind('destroy', this.clean, this);
       this.model.bind('change', this.render, this);
-
     },
 
     render: function() {
@@ -36,7 +37,8 @@
 
       // Add privacy selector
       var privacy = this.privacy = new cdb.admin.PrivacySelector({
-        model: this.model
+        model: this.model,
+        limitation: this.options.limitation
       });
 
       this.$el.append(this.privacy.render().el);
@@ -74,6 +76,8 @@
     initialize: function() {
       _.bindAll(this, "_updateListHeader");
 
+      _.defaults(this.options, this.default_options);
+
       this.model.bind('reset',    this._addAll, this);
       this.model.bind('add',      this._addTable, this);
       this.model.bind('remove',   this._tableRemoved, this);
@@ -83,7 +87,7 @@
     render: function() {
       var self = this;
       this.$el.html('');
-      //this._updateListHeader();
+      this._updateListHeader();
       this.model.each(function(m) {
         self._addTable(m);
       });
@@ -95,7 +99,7 @@
     },
 
     _addTable: function(m) {
-      var li = new TableView({ model: m });
+      var li = new TableView({ model: m, limitation: !this.options.user.get("private_tables") });
       this.$el.append(li.render().el);
       this.addView(li);
       this._updateListHeader();

@@ -5,7 +5,7 @@
       <a href="#change_status" class="status <%= privacy.toLowerCase() %>"><%= privacy %></a>
     </hgroup>
     <p class="light">Description goes here, TODO!</p>
-    <p class="strong uppercase smaller light margin15"><%= table_size %> KB · <%= rows_counted %> <%= rows_counted==1 ? 'ROW' : 'ROWS' %></p>
+    <p class="strong uppercase smaller light margin15"><%= table_size!=0 ? (table_size/1024) : table_size %> KB · <%= rows_counted %> <%= rows_counted==1 ? 'ROW' : 'ROWS' %></p>
   </div>
   <div class="right">
     <hgroup class="right">

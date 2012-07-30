@@ -1,6 +1,6 @@
 
 /**
- * small moving label used to show errors in operations
+ * Small moving label used to show errors in operations
  */
 
 cdb.admin.GlobalError = cdb.core.View.extend({

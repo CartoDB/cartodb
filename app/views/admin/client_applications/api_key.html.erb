@@ -1,13 +1,13 @@
-  <% content_for(:page_title) do %>
-    Api key |
-  <% end %>
-  <%= content_for(:js) do %>
-    <%= include_javascripts :common, :cdbjs, :keys %>
-    <script type="text/javascript">var username = "<%= current_user.username %>", type = "key";</script>
-  <% end %>
-  <%= content_for(:css) do %>
-    <%= include_stylesheets :common, :media => 'all' %>
-  <% end %>
+<% content_for(:page_title) do %>
+  Api key |
+<% end %>
+<%= content_for(:js) do %>
+  <%= include_javascripts :common, :cdbjs, :keys %>
+  <script type="text/javascript">var username = "<%= current_user.username %>", type = "key";</script>
+<% end %>
+<%= content_for(:css) do %>
+  <%= include_stylesheets :common, :media => 'all' %>
+<% end %>
 
 
 <article>

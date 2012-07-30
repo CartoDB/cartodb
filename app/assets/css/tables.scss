@@ -39,6 +39,7 @@
     &.tables {
       height:0;
       margin:0;
+      padding:0;
       @include opacity(0);
       @include transform-style("linear");
       @include transition-property("all");

@@ -19,6 +19,7 @@
 */
 
 cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
+
   defaults: {
     template_name: 'geo/infowindow',
     latlng: [0, 0],
@@ -33,10 +34,35 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     this.set({fields: []});
   },
 
+  _cloneFields: function() {
+    return _(this.get('fields')).map(function(v) {
+      return _.clone(v);
+    });
+  },
+
   addField: function(fieldName) {
     if(!this.containsField(fieldName)) {
-      var fields = _.clone(this.get('fields')) || [];
-      fields.push(fieldName);
+      var fields = this._cloneFields() || [];
+      fields.push({name: fieldName, title: true});
+      this.set({'fields': fields});
+    }
+    return this;
+  },
+
+  getFieldProperty: function(fieldName, k) {
+    if(this.containsField(fieldName)) {
+      var fields = this.get('fields') || [];
+      var idx = _.indexOf(_(fields).pluck('name'), fieldName);
+      return fields[idx][k];
+    }
+    return null;
+  },
+
+  setFieldProperty: function(fieldName, k, v) {
+    if(this.containsField(fieldName)) {
+      var fields = this._cloneFields() || [];
+      var idx = _.indexOf(_(fields).pluck('name'), fieldName);
+      fields[idx][k] = v;
       this.set({'fields': fields});
     }
     return this;
@@ -44,13 +70,13 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 
   containsField: function(fieldName) {
     var fields = this.get('fields') || [];
-    return _.contains(fields, fieldName);
+    return _.contains(_(fields).pluck('name'), fieldName);
   },
 
   removeField: function(fieldName) {
     if(this.containsField(fieldName)) {
-      var fields = _.clone(this.get('fields')) || [];
-      var idx = _.indexOf(fields, fieldName);
+      var fields = this._cloneFields() || [];
+      var idx = _.indexOf(_(fields).pluck('name'), fieldName);
       if(idx >= 0) {
         fields.splice(idx, 1);
       }
@@ -203,6 +229,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (adjustOffset.x || adjustOffset.y) {
       map.panBy(adjustOffset);
     }
-  },
+  }
 
 });

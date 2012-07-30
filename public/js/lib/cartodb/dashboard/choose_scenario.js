@@ -1,9 +1,23 @@
 
 
 (function() {
+
   /**
    * Manage which scenario should show, empty-dashboard or table-list
-   */
+   *
+   * If the user doesn't have any table, the "dashboard empty article"
+   * will show up, else, the table list will be present.
+   *
+   * Usage example:
+   *
+      var scenario = new cdb.admin.dashboard.Scenario({
+        el: $("body"),
+        model: model.user*
+      });
+
+      * It needs a user model to run correctly.
+  */
+
   var Scenario = cdb.core.View.extend({
 
     initialize: function() {

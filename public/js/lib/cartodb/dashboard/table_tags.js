@@ -4,6 +4,12 @@
 
   /**
    * Create a new tag view
+   *
+   * Needs to know if the user is viewing a tag (current)
+   *
+   * Usage example:
+   *
+      var li = new TagView({ name: "protected areas", count: "3", current: "" });
    */
   var TagView = cdb.core.View.extend({
 
@@ -22,10 +28,24 @@
 
 
 
-
   /**
    * Create a new tags view
+   *
+   * It will show the most popular tags of the user tables
+   *
+   * Usage example:
+   *
+      var tagsView = new cdb.admin.dashboard.TagsView({
+        el: $('aside'),
+        tables: this.tables*,
+        model: this.tags**
+      });
+
+      *   It needs a tables model to run correctly.
+      **  It needs a user model to run correctly.
+   *
    */
+
   var TagsView = cdb.core.View.extend({
 
     events: {},
@@ -39,18 +59,6 @@
       this.options.tables.bind('change',  this._tableChange, this);
 
       this.add_related_model(this.model);
-    },
-
-
-    /**
-     *  When a table change, fetch tags model
-     */
-    _tableChange: function() {
-      var self = this;
-      this.model.fetch({
-        data: {limit: "5"},
-        success: this.render
-      });
     },
 
 
@@ -71,6 +79,18 @@
       this.$el.prepend('<li><a href="#/" class="' + ((tag_name=="") ? "selected" : "" ) + '">all tables</a></a>');
 
       return this;
+    },
+
+
+    /**
+     *  When a table change, fetch tags model
+     */
+    _tableChange: function() {
+      var self = this;
+      this.model.fetch({
+        data: {limit: "5"},
+        success: this.render
+      });
     }
   });
 

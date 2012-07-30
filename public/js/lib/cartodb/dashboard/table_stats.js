@@ -1,28 +1,27 @@
-/**
- * User stats embeded in the dashboard
- *
- * It shows the tables and the space used in the user account
- * You must set the username, the user id and the tables model,
- * if not, it won't work.
- *
- * usage example:
- *
- *    this.tableStats = new cdb.admin.dashboard.TableStats({
- *      el: this.$('div.subheader'),
- *      username: "admin",
- *      userid: 1,
- *      tables: tables.model
- *    })
- *
-*/
-
 
 
 (function() {
 
   /**
-   * Dasboard table stats
+   * User stats embeded in the dashboard
+   *
+   * It shows the tables and the space used in the user account
+   * You must set the username, the user id and the tables model,
+   * if not, it won't work.
+   *
+   * Usage example:
+   *
+      this.tableStats = new cdb.admin.dashboard.TableStats({
+        el: $('div.subheader'),
+        tables: this.tables*,
+        model: this.user**
+      })
+
+      *   It needs a table model to run correctly.
+      **  It needs a table model to work properly.
+   *
    */
+
   var TableStats = cdb.core.View.extend({
     
     defaults: {

@@ -7,7 +7,7 @@
 
   .privacy_selector {
     position:absolute;
-    width:183px;
+    width:190px;
     border:1px solid #999999;
     @include border-radius(3px);
     @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
@@ -19,9 +19,76 @@
       li {
         padding:0!important;
         margin:0;
+        border-top:1px solid rgba(#CCCCCC,0.35)!important;
+
+        &:first-child {border:none!important}
+        &:before {display:none!important;}
+        &:after {display:none!important;}
+
         a {
           display:block;
           padding:14px;
+          font-size:13px;
+          font-weight:normal;
+
+          &.public {
+            color:#83AD3A;
+            span {
+              border-color:#83AD3A;
+              &:before {
+                background:#83AD3A;
+              }
+            }
+            &:hover {
+              span {border-color:#83AD3A;}
+            }
+          }
+
+          &.private {
+            color:rgba(#FF0000,0.4);
+            span {
+              border-color:rgba(#FF0000,0.4);
+              &:before {
+                background:rgba(#FF0000,0.4);
+              }
+            }
+            &:hover {
+              span {border-color:rgba(#FF0000,0.4);}
+            }
+          }
+
+          &.selected {
+            color:#999999;
+            span {
+              border-color:#999999!important;
+              &:before {
+                background:#999999;
+              }
+            }
+            &:hover {
+              cursor:default;
+              span {
+                border-color:#999999;
+              }
+            }
+          }
+
+          &.disabled {
+            @include opacity(0.5);
+            color:#999999;
+            span {
+              border-color:#999999!important;
+              &:before {
+                background:#999999;
+              }
+            }
+            &:hover {
+              cursor:default;
+              span {
+                border-color:#999999;
+              }
+            }
+          }
         }
       }
       &:after, &:before {display:none;}

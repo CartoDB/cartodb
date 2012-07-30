@@ -13,7 +13,6 @@ CartoDB::Application.configure do
 
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
-  config.action_view.debug_rjs             = true
   config.action_controller.perform_caching = false
 
   # Don't care if the mailer can't send
@@ -32,4 +31,10 @@ CartoDB::Application.configure do
   # config.middleware.use Rack::ReverseProxy do
   #  reverse_proxy /api\/v1\/sql(.*)/, 'http://vizzuality.localhost.lan:8080/api/v1/sql$1'
   # end
+  
+  # Do not compress assets
+  config.assets.compress = false
+  
+  # Expands the lines which load the assets
+  config.assets.debug = true
 end

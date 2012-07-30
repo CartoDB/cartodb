@@ -289,7 +289,8 @@ class User < Sequel::Model
   def db_size_in_bytes
     size = in_database(:as => :superuser).fetch("SELECT sum(pg_relation_size(table_name))
       FROM information_schema.tables
-      WHERE table_catalog = '#{database_name}' AND table_schema = 'public'").first[:sum]
+      WHERE table_catalog = '#{database_name}' AND table_schema = 'public'
+      AND table_name != 'spatial_ref_sys'").first[:sum]
 
     # hack for the_geom_webmercator
     size / 2

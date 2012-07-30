@@ -1,6 +1,7 @@
 package_assets: on
 compress_assets: on
 embed_assets: off
+javascript_compressor: uglifier
 javascripts:
 
   common:

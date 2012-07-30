@@ -217,12 +217,15 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
       file_uri: file_uri
     };
 
+    var self = this;
+
     var imp = new cdb.admin.Import(opts)
      .bind("importComplete", function(){
         console.log("final!!");
       },this)
-      .bind("importError", function(){
-        self._showError('404','Unable to read SHP file.','what about');
+      .bind("importError", function(e){
+        console.log(e);
+        self._showError(e.attributes.error_code,e.attributes.logger,'what about');
       },this);
 
     this.trigger('importStarted', imp);
@@ -555,7 +558,7 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
         break;
       case 3:
         // Background importer dude!
-
+        this.hide();
         break;
       default: cdb.log.info(":S");
     }
@@ -577,6 +580,7 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
       }
     });
     this.$el.find(".mamufas").fadeOut(300);
+    this.trigger("closedDialog", this , this);
   },
 
 

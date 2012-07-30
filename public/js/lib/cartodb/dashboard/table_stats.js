@@ -65,6 +65,13 @@
       // Calculate quotas first
       this._calculateQuotas();
 
+      // If there is no tables in this account, activate or desactivate
+      if (this.model.get("table_count") > 0) {
+        this._activate();
+      } else {
+        this._desactivate();
+      }
+
       // If there is danger...
       if (this.model.attributes.byte_quota_status != "" || this.model.attributes.table_quota_status != "") {
         this._showWarning();
@@ -83,6 +90,7 @@
         });
       }
 
+      // Animate the stats change
       this._animateChange();
 
       return this;
@@ -173,6 +181,22 @@
      */
     _hideWarning: function() {
       this.$el.find("section.warning").removeClass("visible");
+    },
+
+
+    /*
+     * Activate the table stats
+     */
+    _activate: function() {
+      this.$el.addClass("active");
+    },
+
+
+    /*
+     * Desactivate the table stats
+     */
+    _desactivate: function() {
+      this.$el.removeClass("active");
     }
   });
 

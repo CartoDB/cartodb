@@ -9,49 +9,50 @@
   var MamufasDrag = cdb.core.View.extend({
 
     events: {
-      'drop .drag_mamufas'      : '_onDrop',
-      'dragleave .drag_mamufas' : '_onLeave',
-      'dragenter .drag_mamufas' : '_onMamufasEnter',
-      'dragenter'               : '_onWindowEnter'
+      'drop div.mask'       : '_onDrop',
+      'dragenter'           : '_onEnter',
+      'dragover div.mask'   : '_onDragover',
+      'dragleave div.mask'  : '_onLeave'
     },
 
     initialize: function() {
-      _.bindAll(this, "_onWindowEnter", "_onLeave", "_onDrop");
-      var drag_mamufas = this.$drag_mamufas =  this.$("div.drag_mamufas");
+      _.bindAll(this, "_onEnter", "_onLeave", "_onDrop");
+      console.log(this.$el[0].document);
+      var drag_mamufas = this.$drag_mamufas = $(this.$el[0].document).find("div.drag_mamufas");
+      this.active = true;
     },
 
-    render: function() {
+    _onDragover: function(ev) {},
 
+    _onEnter: function(ev) {
+      console.log("enter");
+      if (this.active)
+        this.$drag_mamufas.show();
     },
 
-    _onWindowEnter: function(ev) {
-      ev.preventDefault();
-      ev.stopPropagation();
-
-      this.$drag_mamufas.show();
-      console.log("enter body");
-    },
-
-    _onMamufasEnter: function(ev) {
-      ev.preventDefault();
-      ev.stopPropagation();
-      console.log("enter mamufas");
-    },
-
-    _onLeave: function(ev) {
-      ev.preventDefault();
-      ev.stopPropagation();
-
-      this.$drag_mamufas.hide();
+    _onLeave: function(e) {
       console.log("leave");
+      if (this.active)
+        this.$drag_mamufas.hide();
     },
 
     _onDrop: function(ev) {
       console.log("drop");
-      ev.stopPropagation();
-      ev.preventDefault();
-      this.$drag_mamufas.hide();
-      this.trigger("fileDropped", ev.originalEvent.dataTransfer, this);
+      // ev.stopPropagation();
+      // ev.preventDefault();
+      if (this.active) {
+        this.$drag_mamufas.hide();
+        this.trigger("fileDropped", ev.originalEvent.dataTransfer, this);
+      }
+      return false;
+    },
+
+    enable: function() {
+      this.active = true;
+    },
+
+    disable: function() {
+      this.active = false;
     }
   });
 
@@ -85,27 +86,32 @@
       this.model.bind('change', this.render, this);
 
       // Bind big mamufas upload
-      var self = this;
-      this.drag = new MamufasDrag({
-        el: document.body
-      }).on("fileDropped", function(data) {
-        self._showDialog(null,data)
-      })
+      //var self = this;
+      // this.drag = new MamufasDrag({
+      //   el: window
+      // }).on("fileDropped", function(data) {
+      //   self._showDialog(null,data)
+      // })
 
-      // var $upload = this.$el.find('div.mamufas_upload')
-      //   , self = this
-      //   , $uploader = this.big_upload = new qq.FileUploader({
+
+      // var $upload = this.$el.find("div.drag_mamufas");
+      // $upload.bind("inventada", function(ev) {
+      //   console.log(ev);
+      // });
+
+      // var uploader = this.uploader = new qq.FileUploader({
       //     element: $upload[0],
       //     action: '/api/v1/uploads',
       //     sizeLimit: 0, // max size   
       //     minSizeLimit: 0, // min size
-      //     onSubmit: function(id,fileName) {
-      //       self._showDialog(null,fileName);
+      //     onSubmit: function(ev,id) {
+      //       //self._showDialog(null,id);
+      //       return false;
       //     }
-      //   });
-// 570 - fileuploader.js
+      //   })
 
-      
+        
+
     },
 
     _tableChange: function() {
@@ -141,7 +147,9 @@
     /*
      * 
      */
-    _showDialog: function(ev,data) {
+    _showDialog: function(ev,files) {
+
+      //this.drag.disable();      
 
       if (!this.active) return false;
 
@@ -150,13 +158,18 @@
       // Create a new dialog
       var dialog = new cdb.admin.CreateTableDialog({
         tables : this.options.tables,
-        drop: data
+        drop: files
       });
 
       $("body").append(dialog.render().el);
       dialog.open();
 
-      dialog.bind('importStarted', this._importStarted, this);
+      var self = this;
+      dialog
+        .bind('importStarted', this._importStarted, this)
+        .bind('closedDialog', function() {
+          //self.drag.enable();
+        });
     },
 
     _importStarted: function(imp) {

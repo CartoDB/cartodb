@@ -38,6 +38,12 @@ $(function() {
         model: this.user
       });
 
+      // Choose sceneario
+      this.scenario = new cdb.admin.dashboard.Scenario({
+        el: this,
+        model: this.user
+      });
+
       // Search form
       var search_form = this.search_form = new cdb.ui.common.SearchView({
         el: this.$('header ul li.search')

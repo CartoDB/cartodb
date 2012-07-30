@@ -7,106 +7,122 @@
   @import "sprites";
   @import "mixins";
 
-  section.stats {
+  div.subheader {
     position:relative;
-    @include inline-block();
-    width:100%;
-    height:145px;
-    background:white;
-    border-bottom:1px solid #CDCDCD;
-    @include single-box-shadow(rgba(0,0,0,0.07), 0, 4px, 3px, 0, false);
-    z-index:2;
+    margin:-150px 0 0 0; 
+    @include transform-style("linear");
+    @include transition-property("all");
+    @include transition-duration(500ms);
+    // If there is NO tables, this section is active
+    &.active {
+      margin:0;
+    }
 
-    ul {
-      letter-spacing:-4px;
-      li {
-        @include inline-block();
-        width:239px;
-        padding:40px;
-        border-right: 1px solid #E5E5E5;
-        letter-spacing:0;
+    z-index:1;
 
-        &:first-child {width:279px; padding-left:0}
-        &:last-child {width:279px; padding-right:0; border:none;}
+    section.stats {
+      position:relative;
+      @include inline-block();
+      width:100%;
+      height:145px;
+      background:white;
+      border-bottom:1px solid #CDCDCD;
+      @include single-box-shadow(rgba(0,0,0,0.07), 0, 4px, 3px, 0, false);
+      z-index:2;
 
-        div.progress {
-          display:block;
-          height:36px;
-          background:#E7E7E7; //IE
-          @include background(linear-gradient(#E5E5E5,#E9E9E9));
-          @include border-radius(3px);
-          span {
-            position:relative;
-            @include inline-block();
-            width:0;
-            min-width:5px;
+      ul {
+        letter-spacing:-4px;
+        li {
+          @include inline-block();
+          width:239px;
+          padding:40px;
+          border-right: 1px solid #E5E5E5;
+          letter-spacing:0;
+
+          &:first-child {width:279px; padding-left:0}
+          &:last-child {width:279px; padding-right:0; border:none;}
+
+          div.progress {
+            display:block;
             height:36px;
+            background:#E7E7E7; //IE
+            @include background(linear-gradient(#E5E5E5,#E9E9E9));
             @include border-radius(3px);
-            @include background(linear-gradient(#85ACDC,#5990CE));
-            @include transform-style("linear");
-            @include transition-property("width");
-            @include transition-duration(500ms);
-
-            &.boom {@include background(linear-gradient(#FF5255,#CB2828)); @include transform-style("linear"); @include transition-property("background"); @include transition-duration(500ms);}
-            &.danger {@include background(linear-gradient(#F8B85C,#F49000)); @include transform-style("linear"); @include transition-property("background"); @include transition-duration(500ms);}
-
-            &:after {
-              position:absolute;
-              content:' ';
-              width:100%;
-              height:100%;
-              top:0;
-              left:0;
+            span {
+              position:relative;
+              @include inline-block();
+              width:0;
+              min-width:5px;
+              height:36px;
               @include border-radius(3px);
-              @include background(linear-gradient(left,rgba(255,255,255,0.35), rgba(255,255,255,0)));
+              @include background(linear-gradient(#85ACDC,#5990CE));
+              @include transform-style("linear");
+              @include transition-property("width");
+              @include transition-duration(500ms);
+
+              &.boom {@include background(linear-gradient(#FF5255,#CB2828)); @include transform-style("linear"); @include transition-property("background"); @include transition-duration(500ms);}
+              &.danger {@include background(linear-gradient(#F8B85C,#F49000)); @include transform-style("linear"); @include transition-property("background"); @include transition-duration(500ms);}
+
+              &:after {
+                position:absolute;
+                content:' ';
+                width:100%;
+                height:100%;
+                top:0;
+                left:0;
+                @include border-radius(3px);
+                @include background(linear-gradient(left,rgba(255,255,255,0.35), rgba(255,255,255,0)));
+              }
             }
           }
-        }
 
-        div.stats {
-          display:block;
-          height:36px;
+          div.stats {
+            display:block;
+            height:36px;
+          }
+          
+          p {
+            margin:10px 0 0 0;
+            font-size:15px;
+            color:#666666;
+            @include transform-style("linear");
+            @include transition-property("all");
+            @include transition-duration(500ms);
+
+            strong {font-weight:bold}
+          }
         }
+      }
+    }
+
+    section.warning {
+      margin:-70px 0 0 0;
+      padding:25px 0;
+      background:#FFF7EA;
+      border-bottom:1px solid rgba(#CCCCCC,0.5);
+      z-index:-1;
+      @include transform-style("linear");
+      @include transition-property("all");
+      @include transition-duration(500ms);
+
+      a.close {
+        position:absolute;
+        right:0;
+        top:3px;
+        width:13px;
+        height:13px;
+        @include icons-sprite(close_flash);
+        @include text-indent();
         
-        p {
-          margin:10px 0 0 0;
-          font-size:15px;
-          color:#666666;
-          @include transform-style("linear");
-          @include transition-property("all");
-          @include transition-duration(500ms);
+        &:hover {@include icons-sprite(close_flash, $offset-y: -13px);}
+        &:active {@include icons-sprite(close_flash, $offset-y: -26px);}
+      }
 
-          strong {font-weight:bold}
-        }
+      &.visible {
+        margin:0;
+        z-index:0;
       }
     }
   }
 
-  section.warning {
-    margin:-70px 0 0 0;
-    padding:25px 0;
-    background:#FFF7EA;
-    border-bottom:1px solid rgba(#CCCCCC,0.5);
-    z-index:-1;
-    @include transform-style("linear");
-    @include transition-property("all");
-    @include transition-duration(500ms);
-
-    a.close {
-      position:absolute;
-      right:0;
-      top:3px;
-      width:13px;
-      height:13px;
-      @include icons-sprite(close_flash);
-      @include text-indent();
-      
-      &:hover {@include icons-sprite(close_flash, $offset-y: -13px);}
-      &:active {@include icons-sprite(close_flash, $offset-y: -26px);}
-    }
-
-    &.visible {
-      margin:0;
-      z-index:0;
-    }
-  }
+  

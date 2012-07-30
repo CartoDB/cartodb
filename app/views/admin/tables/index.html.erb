@@ -10,10 +10,49 @@
     <%= include_stylesheets :common, :media => 'all' %>
   <% end %>
 
+  <%# 
+    Calculate if the user has tables or not to decide which scenario show from the beginning:
+
+    - No tables 
+      -> article.no_tables  -> addClass("active")
+      -> article.tables     -> removeClass("active")
+      -> div.subheader      -> removeClass("active")
+
+    - Tables
+      -> article.no_tables  -> removeClass("active")
+      -> article.tables     -> addClass("active")
+      -> div.subheader      -> addClass("active")
+  %>
+
+
   <%= render 'admin/shared/subheader' %>
 
-  <article>
+  <article class="no_tables <%= 'active' if @tables_count == 0 %>">
     <div class="inner">
+      <section class="block longer empty">
+        <div class="content">
+          <div class="left">
+            <h2>Welcome <%= current_user.username %>!</h2>
+            <p class="margin20">Start dropping here your data or just creating a table from scratch. Once you have your data imported you will be able to create your first map!</p>
+            <p class="margin40"><a href="#create_a_table" class="green button create">Create your first table</a></p>
+          </div>
+          <div class="right">
+            <%= image_tag "/img/layout/empty_dashboard.png", :title => "Drop here!", :alt => "Drop here!" %>
+          </div>
+        </div>
+        <div class="foot">
+          <ul>
+            <li><h3>Do you need some example data?</h3></li>
+            <li><a class="population" href="">Download country borders<br/>with population numbers</a></li>
+            <li><a class="twitter" href="">Download tweets around NYC during May, 2012</a></li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </article>
+
+  <article class="tables <%= 'active' if @tables_count > 0 %>">
+    <div class="inner">   
       <section class="left block tables">
         <div class="head">
           <h2>
@@ -33,6 +72,7 @@
           <div class="drag_mamufas">
             <span class="file"></span>
             <p class="bigger strong">Drop here your file to create a new table with it</p>
+            <div class="mask"></div>
           </div>
         </div>
         <div class="content">

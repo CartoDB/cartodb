@@ -43,14 +43,14 @@
 
 		// Hover
 		&:hover {
-			background:#94BE12; // IE
+			background:#749C33; // IE
 			@include background(linear-gradient(#94BE42,#749C33)); 
 			text-decoration:none;
 			cursor:pointer;
 		}
 		// Active
 		&:active {
-			background:#749C33; // IE
+			background:#94BE42; // IE
 			@include background(linear-gradient(#749C33,#94BE42));
 		}
 		// Focus = hover

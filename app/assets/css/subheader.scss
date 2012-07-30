@@ -59,13 +59,27 @@
               min-width:5px;
               height:36px;
               @include border-radius(3px);
+              background:#85ACDC;
               @include background(linear-gradient(#85ACDC,#5990CE));
               @include transform-style("linear");
               @include transition-property("width");
               @include transition-duration(500ms);
 
-              &.boom {@include background(linear-gradient(#FF5255,#CB2828)); @include transform-style("linear"); @include transition-property("background"); @include transition-duration(500ms);}
-              &.danger {@include background(linear-gradient(#F8B85C,#F49000)); @include transform-style("linear"); @include transition-property("background"); @include transition-duration(500ms);}
+              &.boom {
+                background:#FF5255;
+                @include background(linear-gradient(#FF5255,#CB2828));
+                @include transform-style("linear");
+                @include transition-property("background");
+                @include transition-duration(500ms);
+              }
+              
+              &.danger {
+                background:#F8B85C;
+                @include background(linear-gradient(#F8B85C,#F49000));
+                @include transform-style("linear");
+                @include transition-property("background");
+                @include transition-duration(500ms);
+              }
 
               &:after {
                 position:absolute;
@@ -75,6 +89,7 @@
                 top:0;
                 left:0;
                 @include border-radius(3px);
+                background:rgba(255,255,255,0.05);
                 @include background(linear-gradient(left,rgba(255,255,255,0.35), rgba(255,255,255,0)));
               }
             }

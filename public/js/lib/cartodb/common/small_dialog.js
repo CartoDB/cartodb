@@ -82,14 +82,24 @@ cdb.admin.EditGeometryDialog = cdb.admin.SmallDialog.extend({
   }),
 
   initialize: function() {
+    var self = this;
     _.extend(this.options, {
         template_name: 'common/views/dialog_small_edit'
     });
     this.constructor.__super__.initialize.apply(this);
+    this.$el.addClass('edit_text_dialog');
+    this.options.row.fetch();
+    this.input = self.$('textarea');
+    self.input.attr('disabled', 'disabled');
+    this.options.row.bind('change', function() {
+        self.input.val(self.options.row.get('the_geom'));
+        self.input.removeAttr('disabled');
+    }, this);
+    this.add_related_model(this.options.row);
   },
 
   render_content: function() {
-    return '<input value="' + this.options.initial_value + '"></input>';
+    return '<textarea>loading...</textarea>';
   },
 
   _keyPress: function(e) {

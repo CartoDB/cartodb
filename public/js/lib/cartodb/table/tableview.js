@@ -247,7 +247,7 @@
         var editors = {
           'string': cdb.admin.EditTextDialog,
           'number': cdb.admin.EditTextDialog,
-          'geometry': cdb.admin.EditTextDialog
+          'geometry': cdb.admin.EditGeometryDialog
         };
 
         // clean previous if exits

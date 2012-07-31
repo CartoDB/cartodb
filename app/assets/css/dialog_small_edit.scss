@@ -1,0 +1,36 @@
+
+@import "compass";
+@import "vars";
+
+.edit_text_dialog {
+  padding: 11px;
+  @include box-shadow(rgba(black, 0.15) 0 0 4px 1px);
+  @include border-radius(4px);
+  @include background(linear-gradient(#FEFEFE, #F4F4F4));
+  border-bottom: 1px solid #F4F4F4;
+
+  a.button {
+    margin-top: 9px;
+    padding: 5px 13px;
+    letter-spacing: 0;
+  }
+
+  a.cancel {
+    margin-top: 19px;
+    font-size: 13px;
+    text-decoration: underline;
+    text-transform: lowercase;
+  }
+
+  input {
+    font-family: $text-fonts;
+    margin: 0;
+    border: 1px solid #C0C1C2;
+    background: #FFF;
+    @include border-radius(4px);
+    padding: 11px;
+    font-size: 15px;
+    color: #666666;
+  }
+
+}

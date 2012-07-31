@@ -196,6 +196,7 @@
          this.options.row_header = true;
          this.model.data().bind('newPage', this.newPage, this);
          var topReached = false;
+         this._editorsOpened = null;
          setInterval(function() {
            if(!self.$el.is(":visible") || self.model.data().isFetchingPage()) {
              return;
@@ -241,6 +242,23 @@
 
       },
 
+      _getEditor: function(columnType, opts) {
+
+        var editors = {
+          'string': cdb.admin.EditTextDialog,
+          'number': cdb.admin.EditTextDialog,
+          'geometry': cdb.admin.EditTextDialog
+        };
+
+        // clean previous if exits
+        var view = this._editorsOpened;
+        if(view) {
+          view.clean();
+        }
+        var Editor = editors[columnType];
+        return this._editorsOpened = new Editor(opts);
+      },
+
       _editCell: function(e, cell, x, y) {
         var self = this;
         var column = self.model.columnName(x-1);
@@ -250,21 +268,10 @@
           return;
         }
 
-        var editors = {
-          'string': cdb.admin.EditTextDialog,
-          'number': cdb.admin.EditTextDialog,
-          'geometry': cdb.admin.EditTextDialog
-        };
 
-        var Editor = editors[columnType];
-
-        if(!Editor) {
-          cdb.log.error("editor not defined for column type " + columnType);
-          return;
-        }
         var row = self.model.data().getRowAt(y);
 
-        var dlg = new Editor({
+        var dlg = this._getEditor(columnType, {
           initial_value: self.model.data().getCell(y, column),
           row: row,
           res: function(val) {
@@ -273,6 +280,11 @@
             row.set(update).save();
           }
         });
+
+        if(!dlg) {
+          cdb.log.error("editor not defined for column type " + columnType);
+          return;
+        }
 
         // auto add to body
         var offset = $(e.target).offset();

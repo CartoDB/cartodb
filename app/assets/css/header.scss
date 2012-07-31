@@ -153,6 +153,7 @@
     &.table {
       height:90px;
       overflow:visible;
+      @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
 
       .inner {width:auto;}
       

@@ -1,7 +1,7 @@
 # coding: UTF-8
 
 class ApplicationController < ActionController::Base
-  include SslRequirement
+  include ::SslRequirement
   protect_from_forgery
 
   helper :all

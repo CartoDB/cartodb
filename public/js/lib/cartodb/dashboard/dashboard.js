@@ -10,7 +10,6 @@ $(function() {
     el: document.body,
 
     events: {
-      'click':  'onClickOut'
     },
 
     initialize: function() {
@@ -82,11 +81,11 @@ $(function() {
 
       // Tipsy
       this.$el.find("a.tooltip").tipsy({gravity: 's', fade:true, live:true});
+
+      // global click
+      enableClickOut(this.$el);
     },
 
-    onClickOut: function(ev) {
-      cdb.god.trigger("closeDialogs");
-    }
   });
 
   var DashboardRouter = Backbone.Router.extend({

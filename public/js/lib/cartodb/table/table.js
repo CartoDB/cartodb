@@ -7,7 +7,9 @@ $(function() {
 
 
     var Table = cdb.core.View.extend({
+
         el: document.body,
+
         events: {
           'keypress': 'keyPress',
           'keyup': 'keyUp'
@@ -172,6 +174,9 @@ $(function() {
 
           this.workView.bind('tabEnabled', this.tabs.activate);
           this.workView.active('table');
+
+          // global click
+          enableClickOut(this.$el);
 
         },
 

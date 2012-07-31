@@ -116,6 +116,7 @@
           template_base: "table/views/table_header_options"
         });
         HeaderView.colOptions.render();
+        cdb.god.bind("closeDialogs", HeaderView.colOptions.hide, HeaderView.colOptions);
       },
 
       render: function() {

@@ -137,7 +137,13 @@ $(function() {
 
           this.map.bind('change:dataLayer', _.once(function() {
 
+            // TODO: link table name to layer table name
+
             self.dataLayer = self.map.get('dataLayer');
+
+            self.table.bind('change:name', function() {
+              self.dataLayer.set({ table_name: self.table.get('name') });
+            })
 
             // lateral menu modules
             var sql = new cdb.admin.mod.SQL({

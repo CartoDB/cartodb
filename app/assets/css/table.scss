@@ -32,13 +32,6 @@
     // margin:150px 0 0 0;
   }
 
-  div.order_selector {
-    float: right;
-    a {
-      @include inline-block();
-    }
-  }
-
   div.table {
     table {
       //position:relative;
@@ -211,6 +204,27 @@
             }
           }
         }
+      }
+    }
+  }
+
+
+
+  div.order_selector {
+    position:absolute;
+    right:0;
+    top:0;
+    a.asc, a.desc {
+      position:relative;
+      @include inline-block();
+      padding:0;
+      
+      &:before {
+        content: '|';
+        position:absolute;
+        top:0;
+        right:0;
+        height:100%;
       }
     }
   }

@@ -296,7 +296,6 @@
     }
 
     aside {
-
       div.head {
         padding-top:40px;
         border:none;
@@ -346,6 +345,55 @@
 
           &:last-child {margin:25px 0 0 0; border:none;}
         }
+      }
+    }
+
+    div.paginator {
+      position:relative;
+      float:left;
+      display:block;
+      margin:20px auto 0;
+      width:638px;
+      height:20px;
+
+      ul {
+        position:absolute;
+        top:0;
+        left:50%;
+        letter-spacing:-4px;
+
+        li {
+          @include inline-block();
+          letter-spacing:0;
+          width:12px;
+          height:12px;
+          vertical-align:top;
+
+          a {
+            display:block;
+            width:100%;
+            height:100%;
+            margin:0;
+            @include border-radius(20px);
+            background:#DEDEDE;
+            border:1px solid #D1D1D1;
+            @include box-shadow(rgba(0,0,0,0.07) 0 0 4px 1px);
+            @include text-indent();
+
+            &:hover {
+              cursor:pointer;
+              background: white;
+            }
+
+            &.selected {
+              background:white;
+              &:hover {
+                background:white;
+                cursor:default;
+              }
+            }
+          }
+        }     
       }
     }
   }

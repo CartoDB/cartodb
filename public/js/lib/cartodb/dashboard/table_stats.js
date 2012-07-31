@@ -13,12 +13,10 @@
    *
       this.tableStats = new cdb.admin.dashboard.TableStats({
         el: $('div.subheader'),
-        tables: this.tables*,
         model: this.user**
       })
 
-      *   It needs a table model to run correctly.
-      **  It needs a table model to work properly.
+      **  It needs a user model to work properly.
    *
    */
 
@@ -36,11 +34,6 @@
 
       // If the user doesn't want to see the warning anymore
       this.warning = true;
-
-      // If any change happened in the tables model, fetch the user stats
-      this.options.tables.bind('add',     this._tableChange, this);
-      this.options.tables.bind('remove',  this._tableChange, this);
-      this.options.tables.bind('reset',   this._tableChange, this);
 
       // Any change, render this view
       this.model.bind('change', this.render, this);

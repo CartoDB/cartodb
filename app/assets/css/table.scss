@@ -6,6 +6,7 @@
 
 
   @import "compass";
+  @import "vars";
 
   header.table {
     position:fixed;
@@ -214,17 +215,35 @@
     position:absolute;
     right:0;
     top:0;
+    a.asc {
+      margin-right: 1px;
+      @include border-left-radius(2px);
+    }
+    a.desc {
+      margin-right: 10px;
+      @include border-right-radius(2px);
+    }
     a.asc, a.desc {
+      text-transform: uppercase;
       position:relative;
       @include inline-block();
       padding:0;
-      
-      &:before {
-        content: '|';
-        position:absolute;
-        top:0;
-        right:0;
-        height:100%;
+      background-color: $button-bkg-color;
+      color: #397DB9;
+      margin-top: 13px;
+      padding: (21px - 9px)/2 8px;
+      font-size: 9px;
+      font-weight: bold;
+      &:hover {
+        background-color: #397DB9;
+        color: $button-bkg-color;
+      }
+      &.selected {
+        cursor: default;
+        background-color: #397DB9;
+        color: $button-bkg-color;
       }
     }
+
+
   }

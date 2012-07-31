@@ -156,11 +156,16 @@
                   font-size:18px;
                   line-height:normal;
                   vertical-align:middle;
+
                   a {
+                    max-width: 285px;
                     padding:0;
                     margin:0;
                     vertical-align:top;
                     line-height:18px;
+                    text-overflow:ellipsis; 
+                    overflow:hidden;
+                    white-space:nowrap;
                     @include transform-style("linear");
                     @include transition-property("color");
                     @include transition-duration(500ms);

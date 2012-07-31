@@ -472,6 +472,30 @@
 
     model: cdb.admin.CartoDBTableMetadata,
 
+    initialize: function() {
+      this.options = new Backbone.Model({
+        tag_name  : "",
+        q         : "",
+        page      : 1,
+        per_page  : 10
+      });
+
+      this.total_entries = 0;
+
+      this.options.bind("change", this._changeOptions, this);
+      this.bind("add",            this._incrementTable, this);
+      this.bind("remove",         this._decrementTable, this);
+
+    },
+
+    _incrementTable: function() {
+      this.total_entries++;
+    },
+
+    _decrementTable: function() {
+      this.total_entries--;
+    },
+
     _createUrlOptions: function() {
       return _(this.options.attributes).map(function(v, k) { return k + "=" + encodeURIComponent(v); }).join('&');
     },
@@ -485,19 +509,6 @@
     parse: function(response) {
       this.total_entries = response.total_entries;
       return response.tables;
-    },
-
-    initialize: function() {
-      this.options = new Backbone.Model({
-        tag_name  : "",
-        q         : "",
-        page      : 1,
-        per_page  : 10
-      });
-
-      this.total_entries = 0;
-
-      this.options.bind("change", this._changeOptions, this);
     },
 
     _changeOptions: function() {

@@ -7,6 +7,7 @@
   @import "compass";
   @import "mixins";
   @import "sprites";
+  @import "vars";
 
   .table_panel {
     position:fixed;
@@ -96,7 +97,7 @@
             @include inline-block();
             width: 50%;
             float: left;
-            background-color: #F2F2F2;
+            background-color: $button-bkg-color;
             padding: (46px - 13px)/2 0;
             font-size: 13px;
             color: #397DB9;

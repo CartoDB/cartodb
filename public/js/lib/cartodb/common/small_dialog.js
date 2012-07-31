@@ -49,9 +49,12 @@ cdb.admin.EditTextDialog = cdb.admin.SmallDialog.extend({
 
   initialize: function() {
     _.extend(this.options, {
-        template_name: 'common/views/dialog_small_edit'
+        template_name: 'common/views/dialog_small_edit',
+        ok_title: 'Save'
     });
     this.constructor.__super__.initialize.apply(this);
+    this.$el.addClass('edit_text_dialog');
+
   },
 
   render_content: function() {

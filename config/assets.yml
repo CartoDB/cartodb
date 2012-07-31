@@ -93,3 +93,4 @@ stylesheets:
     - public/css/infowindow.css
     - public/css/floating.css
     - public/css/create_dialog.css
+    - public/css/dialog_small_edit.css

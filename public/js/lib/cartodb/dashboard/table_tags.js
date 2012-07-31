@@ -55,8 +55,7 @@
       _.bindAll(this, "render");
 
       // If any change happened in the tables model, fetch tags model
-      this.options.tables.bind('reset',   this._tableChange, this);
-      this.options.tables.bind('change',  this._tableChange, this);
+      this.options.tables.bind('reset change add remove',   this._tableChange, this);
 
       this.add_related_model(this.model);
     },

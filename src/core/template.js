@@ -55,12 +55,12 @@ cdb.templates = new cdb.core.TemplateList();
  */
 cdb._loadJST = function() {
   if(typeof(window.JST) !== undefined) {
-      cdb.templates.reset(
-        _(JST).map(function(tmpl, name) {
-          return { name: name, compiled: tmpl };
-        })
-      );
+    cdb.templates.reset(
+      _(JST).map(function(tmpl, name) {
+        return { name: name, compiled: tmpl };
+      })
+    );
   }
 }
 
-cdb._loadJST();
+//cdb._loadJST();

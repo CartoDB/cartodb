@@ -14,8 +14,6 @@ describe("table-tags", function() {
       tables: tables,
       model: tags
     });
-
-    tables.reset([{name: 'test'}]);
   });
 
   it("should update table tags when tables model is fetched", function() {
@@ -25,6 +23,7 @@ describe("table-tags", function() {
   });
 
   it("should update user tags when a table is removed", function() {
+    tables.add({id: 1, name: 'test', privacy: 'PRIVATE', rows_counted: 1, updated_at: new Date(), tags: 'a', table_size: 100}, { silent: true } );
     spyOn(tagsView.model, 'fetch');
     tables.pop();
     expect(tagsView.model.fetch).toHaveBeenCalled();

@@ -1,10 +1,10 @@
 /**
- * classes to manage maps
- */
+* Classes to manage maps
+*/
 
 /**
- * Map layer, could be tiled or whatever
- */
+* Map layer, could be tiled or whatever
+*/
 cdb.geo.MapLayer = Backbone.Model.extend({
 
   defaults: {
@@ -15,8 +15,8 @@ cdb.geo.MapLayer = Backbone.Model.extend({
 });
 
 /**
- * list of layers
- */
+* list of layers
+*/
 cdb.geo.Layers = Backbone.Collection.extend({
   model: cdb.geo.MapLayer
 });
@@ -53,8 +53,8 @@ cdb.geo.MapLayers = Backbone.Collection.extend({
 });
 
 /**
- * map model itself
- */
+* map model itself
+*/
 cdb.geo.Map = Backbone.Model.extend({
 
   defaults: {
@@ -96,9 +96,9 @@ cdb.geo.Map = Backbone.Model.extend({
   },
 
   /**
-   * Change multiple options at the same time
-   * @params {Object} New options object
-   */
+  * Change multiple options at the same time
+  * @params {Object} New options object
+  */
   setOptions: function(options) {
     if (typeof options != "object" || options.length) {
       if (this.options.debug) {
@@ -113,6 +113,12 @@ cdb.geo.Map = Backbone.Model.extend({
 
   },
 
+  getLayerAt: function(i) {
+    return this.layers.at(i);
+  },
+  getLayerByCid: function(cid) {
+    return this.layers.getByCid(cid);
+  },
   addLayer: function(layer) {
     this.layers.add(layer);
 
@@ -151,8 +157,8 @@ cdb.geo.Map = Backbone.Model.extend({
 
 
 /**
- * base view for all impl
- */
+* Base view for all impl
+*/
 cdb.geo.MapView = cdb.core.View.extend({
 
   initialize: function() {
@@ -170,6 +176,3 @@ cdb.geo.MapView = cdb.core.View.extend({
   }
 
 });
-
-
-

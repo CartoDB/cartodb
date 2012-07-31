@@ -6,7 +6,7 @@ cdb.geo.ui.SelectorItems = Backbone.Collection.extend({
 
 cdb.geo.ui.SelectorItem = cdb.core.View.extend({
 
-  tagName: "li",
+  tagName: "option",
 
   events: {
 
@@ -79,6 +79,7 @@ cdb.geo.ui.Selector = cdb.core.View.extend({
   },
 
   hide: function() {
+  console.log(this.$el);
     this.$el.fadeOut(250);
   },
 
@@ -104,7 +105,7 @@ cdb.geo.ui.Selector = cdb.core.View.extend({
       this.collection.each(function(item) {
 
         var view = new cdb.geo.ui.SelectorItem({ parent: self, className: item.get("className"), model: item });
-        self.$el.find("ul").append(view.render());
+        self.$el.find("select").append(view.render());
 
       });
     }

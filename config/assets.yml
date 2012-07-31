@@ -66,6 +66,7 @@ stylesheets:
     - public/js/lib/test/**/*.css
 
   common:
+    - public/css/vars.css
     - public/css/helpers.css
     - public/css/fonts.css
     - public/css/sprites.css
@@ -92,3 +93,4 @@ stylesheets:
     - public/css/infowindow.css
     - public/css/floating.css
     - public/css/create_dialog.css
+    - public/css/dialog_small_edit.css

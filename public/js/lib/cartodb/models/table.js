@@ -252,6 +252,11 @@
       delete attr['updated_at'];
       delete attr['created_at'];
       return attr;
+    },
+
+    isGeomLoaded: function() {
+      var geojson = this.get('the_geom');
+      return geojson !== 'GeoJSON';
     }
 
   }, {

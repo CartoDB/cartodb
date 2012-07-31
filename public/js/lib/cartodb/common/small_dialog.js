@@ -88,18 +88,21 @@ cdb.admin.EditGeometryDialog = cdb.admin.SmallDialog.extend({
     });
     this.constructor.__super__.initialize.apply(this);
     this.$el.addClass('edit_text_dialog');
-    this.options.row.fetch();
     this.input = self.$('textarea');
     self.input.attr('disabled', 'disabled');
     this.options.row.bind('change', function() {
         self.input.val(self.options.row.get('the_geom'));
         self.input.removeAttr('disabled');
     }, this);
+    this.options.row.fetch();
     this.add_related_model(this.options.row);
   },
 
   render_content: function() {
-    return '<textarea>loading...</textarea>';
+    // render loading if the GeoJSON is not loaded
+    var geojson = this.options.row.get('the_geom');
+    geojson = this.options.row.isGeomLoaded() ? geojson: 'loading...';
+    return '<textarea>' + geojson + '</textarea>';
   },
 
   _keyPress: function(e) {
@@ -110,7 +113,7 @@ cdb.admin.EditGeometryDialog = cdb.admin.SmallDialog.extend({
 
   ok: function() {
     if(this.options.res) {
-      this.options.res(this.$('input').val());
+      this.options.res(this.input.val());
     }
   }
 

@@ -223,10 +223,12 @@
 
          }, 2000);
 
+
         // Moving header when scrolls
         $(window).scroll(function(ev){
-          self.$el.find("thead th div div").css({top: $(window).scrollTop() + "px"});
+          self.$el.find("thead > tr > th > div").css({marginLeft: -$(window).scrollLeft() + "px"});
         });
+
 
         this.model.data().bind('loadingRows', function(updown) {
           var fn = updown === 'up'? 'prepend': 'append';

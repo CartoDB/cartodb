@@ -134,7 +134,6 @@
       _openColOptions: function(e) {
         var colOptions = HeaderView.colOptions;
         colOptions.off();
-        this.$el.append(colOptions.el);
 
         // set data for column and table currently editing
         colOptions.setTable(this.table, this.column[0]);
@@ -143,7 +142,10 @@
         colOptions.bind('changeType', this._changeType, this);
 
         // bind the stuff
-        colOptions.open(e, e.target);
+        var container = $(e.target).parent().parent();
+        container.append(colOptions.el);
+
+        colOptions.openAt(0, 0);
       },
 
       _checkEditColnameInput: function(e) {

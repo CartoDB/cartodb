@@ -4,7 +4,7 @@ embed_assets: off
 javascripts:
 
   common:
-    - public/js/vendor/jquery.min.js
+    - public/js/lib/cdb.js/vendor/jquery.min.js
     - public/js/vendor/jquery.tipsy.js
     - public/js/rails.js
 
@@ -12,7 +12,8 @@ javascripts:
     - public/js/lib/cdb.js/vendor/underscore-min.js
     - public/js/lib/cdb.js/vendor/backbone.js
     - public/js/lib/cdb.js/vendor/leaflet.js
-    - public/js/lib/cdb.js/vendor/*.js
+    - public/js/lib/cdb.js/vendor/wax.leaf.js
+    - public/js/lib/cdb.js/vendor/cartodb-leaflet.js
     - public/js/lib/cdb.js/src/cartodb.js
     - public/js/lib/cdb.js/src/core/**/*.js
     - public/js/lib/cdb.js/src/ui/**/*.js

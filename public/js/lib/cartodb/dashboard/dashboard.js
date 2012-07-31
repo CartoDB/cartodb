@@ -73,6 +73,12 @@ $(function() {
         model: this.user
       });
 
+      // Paginator
+      var paginator = this.paginator = new cdb.admin.dashboard.DashboardPaginator({
+        el: this.$("div.paginator"),
+        model: this.tables
+      });
+
       // Tables tags
       var tagsView = this.tagsView = new cdb.admin.dashboard.TagsView({
         el: this.$('aside div.content ul:eq(0)'),
@@ -93,29 +99,37 @@ $(function() {
 
     routes: {
       '':                 'index',
+      'page/:p':          'paginate',
       'tag/:tag/:p':      'searchTag',
       'search/:query/:p': 'searchQuery' 
     },
 
     index: function() {
-      window.dashboard.tables.options.set({ 
+      window.dashboard.tables.options.set({
         "tag_name"  : "",
         "q"         : "",
         "page"      : 1
       })
     },
     searchTag: function(tag,p) {
-      window.dashboard.tables.options.set({ 
+      window.dashboard.tables.options.set({
         "tag_name"  : tag,
         "page"      : p,
         "q"         : ""
       })
     },
     searchQuery: function(query,p) {
-      window.dashboard.tables.options.set({ 
+      window.dashboard.tables.options.set({
         "tag_name"  : "",
         "page"      : p,
         "q"         : query
+      })
+    },
+    paginate: function(p) {
+      window.dashboard.tables.options.set({
+        "tag_name"  : "",
+        "page"      : p,
+        "q"         : ""
       })
     }
   });

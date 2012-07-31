@@ -173,8 +173,7 @@ describe("admin table", function() {
   });
 
 
-    describe("Tables", function() {
-
+  describe("Tables", function() {
     var tables;
 
     beforeEach(function() {
@@ -191,6 +190,18 @@ describe("admin table", function() {
       tables.pop();
       expect(tables.total_entries).toEqual(0);
     });
+
+    it("should fetch when request a page", function() {
+      spyOn(tables, 'fetch');
+      tables.options.set({page:2});
+      expect(tables.fetch).toHaveBeenCalled();
+    });
+
+    it("should know the number of pages", function() {
+      tables.total_entries = 22;
+      expect(tables.getTotalPages()).toEqual(3);
+    });
+
   });
 
 });

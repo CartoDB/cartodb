@@ -485,7 +485,10 @@
       this.options.bind("change", this._changeOptions, this);
       this.bind("add",            this._incrementTable, this);
       this.bind("remove",         this._decrementTable, this);
+    },
 
+    getTotalPages: function() {
+      return Math.ceil(this.total_entries / this.options.get("per_page"));
     },
 
     _incrementTable: function() {

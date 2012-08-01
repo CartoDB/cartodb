@@ -72,6 +72,7 @@ stylesheets:
     - public/css/fonts.css
     - public/css/sprites.css
     - public/css/core.css
+    - public/css/forms.css
     - public/css/buttons.css
     - public/css/block.css
     - public/css/custom_objects.css
@@ -95,3 +96,4 @@ stylesheets:
     - public/css/floating.css
     - public/css/create_dialog.css
     - public/css/dialog_small_edit.css
+    - public/css/new_column_dialog.css

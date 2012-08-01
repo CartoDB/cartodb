@@ -23,10 +23,10 @@
   /* SECTIONS */
   section {
     position:relative;
-  	width:960px;
-  	margin:0 auto;
-  	@include border-radius(3px);
-  	background:white;
+    width:960px;
+    margin:0 auto;
+    @include border-radius(3px);
+    background:white;
 
 
     /* skeleton of a section */
@@ -66,13 +66,13 @@
     }
 
     /* border radius only in the top */
-  	&.top {
+    &.top {
       @include border-bottom-radius(0px);
       border-bottom:none\9; // IE
     }
 
     /* border radius only in the bottom */
-  	&.bottom {
+    &.bottom {
       @include border-top-radius(0px);
       border-top:none\9; // IE
     }

@@ -9,7 +9,14 @@ class Table < Sequel::Model(:user_tables)
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
-
+  PUBLIC_ATTRIBUTES = { :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
+                        :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
+                        :table_size => :table_size, :map_id => :map_id }
+  
+  def public_values
+    Hash[PUBLIC_ATTRIBUTES.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
+  end
+  
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
 
@@ -1507,6 +1514,10 @@ SQL
     geo_json = RGeo::GeoJSON.decode(attributes[THE_GEOM], :json_parser => :json).try(:as_text)
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?
     owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
+  end
+
+  def privacy_text
+    self.private? ? 'PRIVATE' : 'PUBLIC'
   end
 
   def manage_tags

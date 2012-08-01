@@ -1,5 +1,4 @@
 # Require any additional compass plugins here.
-project_type          = :rails
 sass_dir              = "scss"
 sass_path             = "app/assets"
 css_path              = "public"

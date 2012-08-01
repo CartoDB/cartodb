@@ -1,6 +1,33 @@
 
 (function() {
 
+    /**
+     * view for dropdown show when user click on row options
+     */
+    var RowHeaderDropdown = cdb.admin.UserMenu.extend({ 
+
+      events: {
+        'click .delete_row': 'deleteRow',
+        'click .add_row': 'addRow'
+      },
+
+      setRow: function(row) {
+        this.row = row;
+      },
+
+      deleteRow: function(e) {
+        e.preventDefault();
+        this.row.destroy();
+        return false;
+      },
+
+      addRow: function(e) {
+        e.preventDefault();
+        return false;
+      }
+
+    });
+
     var HeaderDropdown = cdb.admin.UserMenu.extend({ 
 
       events: {
@@ -80,17 +107,45 @@
      */
     cdb.admin.RowView = cdb.ui.common.RowView.extend({
 
+      events: {
+        'click .row_header': 'click_header'
+      },
+
       initialize: function() {
          this.constructor.__super__.initialize.apply(this);
          this.options.row_header = true;
+         if(!cdb.admin.RowView.rowOptions) {
+           cdb.admin.RowView.rowOptions= new RowHeaderDropdown({
+            position: 'position',
+            template_base: "table/views/table_row_header_options",
+            orientation: 'orientation_left'
+          });
+          cdb.admin.RowView.rowOptions.render();
+         }
       },
+
+      click_header: function(e) {
+        e.preventDefault();
+        $(e.target).append(cdb.admin.RowView.rowOptions.el);
+        var pos = $(e.target).position();
+        cdb.admin.RowView.rowOptions.setRow(this.model);
+        cdb.admin.RowView.rowOptions.openAt(pos.left + 20, pos.top + 5);
+        return false;
+      },
+
       /**
        * return each cell view
        */
       valueView: function(colName, value) {
-        var obj = $('<div>').append(value);
+        var obj = $('<div>').append(value).addClass('cell');
         if(cdb.admin.Row.isReservedColumn(colName)) {
           obj.addClass('disabled');
+        }
+        if(colName === '' && value === '') {
+          obj.addClass('row_header');
+          //some space
+          //TODO: do it with css
+          obj.append('&nbsp;&nbsp;&nbsp;&nbsp;');
         }
         return obj;
       }

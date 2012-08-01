@@ -184,7 +184,7 @@
             border-left:1px solid #ECECEC;
             border-right:1px solid #ECECEC;
 
-            div {
+            div.cell {
               @include inline-block();
               padding:15px 10px;
               max-height:26px;
@@ -194,6 +194,9 @@
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
+              &.disabled {
+                color: #AAA;
+              }
             }
 
             &:last-child {

@@ -49,14 +49,14 @@
       };
   };
 
-  if(typeof(cdb) == undefined) {
+  if(typeof(cdb) !== "undefined") {
     cdb.core.Profiler = Profiler;
   } else {
-      window.Profiler = Profiler;
+    window.Profiler = Profiler;
   }
 
   //mini jquery
-  var $ = function(id) {
+  var $ = $ || function(id) {
       var $el = {};
       if(id.el) {
         $el.el = id.el;

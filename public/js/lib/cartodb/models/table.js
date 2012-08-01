@@ -242,12 +242,12 @@
   cdb.admin.Row = Backbone.Model.extend({
 
 
-    url: function() {
+    urlRoot: function() {
       var table = this.table || this.collection.table;
       if(!table) {
         cdb.log.error("row has no table assined");
       }
-      return '/api/v1/tables/' + table.get('name') + '/records/' + this.id;
+      return '/api/v1/tables/' + table.get('name') + '/records/';
     },
 
     toJSON: function() {
@@ -384,8 +384,10 @@
       return this.options.get('page');
     },
 
-    addRow: function() {
-      this.create(null, { wait: true });
+    addRow: function(opts) {
+      opts = opts || {};
+      _.extend(opts, { wait: true });
+      this.create(null, opts);
     },
 
     /**

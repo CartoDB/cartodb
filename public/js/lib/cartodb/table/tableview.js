@@ -18,11 +18,15 @@
       deleteRow: function(e) {
         e.preventDefault();
         this.row.destroy();
+        this.hide();
         return false;
       },
 
       addRow: function(e) {
         e.preventDefault();
+        var rowIndex = this.row.collection.indexOf(this.row);
+        this.options.tableData.addRow({ at: rowIndex + 1 });
+        this.hide();
         return false;
       }
 
@@ -114,22 +118,28 @@
       initialize: function() {
          this.constructor.__super__.initialize.apply(this);
          this.options.row_header = true;
-         if(!cdb.admin.RowView.rowOptions) {
-           cdb.admin.RowView.rowOptions= new RowHeaderDropdown({
+      },
+
+      _getRowOptions: function() {
+        if(!cdb.admin.RowView.rowOptions) {
+           var rowOptions = cdb.admin.RowView.rowOptions= new RowHeaderDropdown({
             position: 'position',
             template_base: "table/views/table_row_header_options",
-            orientation: 'orientation_left'
+            orientation: 'orientation_left',
+            tableData: this.getTableView().dataModel
           });
-          cdb.admin.RowView.rowOptions.render();
-         }
+          rowOptions.render();
+        }
+        return cdb.admin.RowView.rowOptions;
       },
 
       click_header: function(e) {
+        var rowOptions = this._getRowOptions();
         e.preventDefault();
-        $(e.target).append(cdb.admin.RowView.rowOptions.el);
+        $(e.target).append(rowOptions.el);
         var pos = $(e.target).position();
-        cdb.admin.RowView.rowOptions.setRow(this.model);
-        cdb.admin.RowView.rowOptions.openAt(pos.left + 20, pos.top + 5);
+        rowOptions.setRow(this.model);
+        rowOptions.openAt(pos.left + 20, pos.top + 5);
         return false;
       },
 

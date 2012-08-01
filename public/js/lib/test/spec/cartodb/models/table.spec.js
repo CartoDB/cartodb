@@ -180,17 +180,6 @@ describe("admin table", function() {
       tables = new cdb.admin.Tables();
     });
 
-    it("should increment the tables count", function() {
-      tables.add({id: 1, name: 'test', privacy: 'PRIVATE', rows_counted: 1, updated_at: new Date(), tags: 'a', table_size: 100});
-      expect(tables.total_entries).toEqual(1);
-    });
-
-    it("should decrement the tables count", function() {
-      tables.add({id: 1, name: 'test', privacy: 'PRIVATE', rows_counted: 1, updated_at: new Date(), tags: 'a', table_size: 100});
-      tables.pop();
-      expect(tables.total_entries).toEqual(0);
-    });
-
     it("should fetch when request a page", function() {
       spyOn(tables, 'fetch');
       tables.options.set({page:2});

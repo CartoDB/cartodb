@@ -488,7 +488,6 @@
       this.total_entries = 0;
 
       this.options.bind("change", this._changeOptions, this);
-      // this.bind("add",            this._incrementTable, this);
       this.bind("reset",          this._checkPage, this);
       this.bind("add remove",     this._fetchAgain, this);
     },
@@ -509,14 +508,6 @@
         this.options.set({"page": 1})
       }
     },
-
-    // _incrementTable: function() {
-    //   this.total_entries++;
-    // },
-
-    // _decrementTable: function() {
-    //   this.total_entries--;
-    // },
 
     _createUrlOptions: function() {
       return _(this.options.attributes).map(function(v, k) { return k + "=" + encodeURIComponent(v); }).join('&');

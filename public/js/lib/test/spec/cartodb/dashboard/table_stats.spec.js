@@ -7,7 +7,14 @@ describe("table-stats", function() {
   beforeEach(function() {
 
     tables = new cdb.admin.Tables();
-    user = new cdb.admin.User({ id : "1" });
+    user = new cdb.admin.User({ 
+      id : "1",
+      name: 'test',
+      table_quota: 1,
+      byte_quota: 1000000,
+      remaining_byte_quota: 10000,
+      api_calls: [2,1,23]
+    });
 
     tables.reset([{name: 'test'}]);
 
@@ -19,22 +26,10 @@ describe("table-stats", function() {
 
   });
 
-  it("should update user stats when tables model is fetched", function() {
-    spyOn(tablestats.model, 'fetch');
-    tables.reset([{name: 'test'}]);
-    expect(tablestats.model.fetch).toHaveBeenCalled();
+  it("should update user stats when user model is fetched", function() {
+    spyOn(tablestats, '_calculateQuotas');
+    user.set({ name: 'test2' });
+    expect(tablestats._calculateQuotas).toHaveBeenCalled();
   });
 
-  it("should update user stats when new table is added", function() {
-    spyOn(tablestats.model, 'fetch');
-    tables.add({name: 'test'});
-    expect(tablestats.model.fetch).toHaveBeenCalled();
-  });
-
-  it("should update user stats when a table is removed", function() {
-    tables.add({name: 'test'});
-    spyOn(tablestats.model, 'fetch');
-    tables.remove(tables.at(0));
-    expect(tablestats.model.fetch).toHaveBeenCalled();
-  });
 });

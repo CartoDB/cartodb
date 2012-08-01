@@ -21,16 +21,19 @@ describe("tables-list", function() {
 
   });
 
-  it("should update header when new table is added", function() {
+  it("should update header on reset", function() {
     spyOn(tablelist, '_updateListHeader');
-    tables.add({id: 1, name: 'test', privacy: 'PRIVATE', rows_counted: 1, updated_at: new Date(), tags: 'a', table_size: 100});
+    tables.reset([
+      {id: 1, name: 'test', privacy: 'PRIVATE', rows_counted: 1, updated_at: new Date(), tags: 'a', table_size: 100}
+    ]);
     expect(tablelist._updateListHeader).toHaveBeenCalled();
   });
 
-  it("should update header when new table removed", function() {
-    tables.add({id: 1, name: 'test', privacy: 'PRIVATE', rows_counted: 1, updated_at: new Date(), tags: 'a', table_size: 100});
-    spyOn(tablelist, '_updateListHeader');
-    tables.pop();
-    expect(tablelist._updateListHeader).toHaveBeenCalled();
+  it("should render tables on reset", function() {
+    tables.reset([
+      {id: 1, name: 'test', privacy: 'PRIVATE', rows_counted: 1, updated_at: new Date(), tags: 'a', table_size: 100},
+      {id: 2, name: 'test', privacy: 'PRIVATE', rows_counted: 1, updated_at: new Date(), tags: 'a', table_size: 100}
+    ]);
+    expect(tablelist.$('li').length).toEqual(2);
   });
 });

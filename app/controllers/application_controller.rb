@@ -102,7 +102,7 @@ class ApplicationController < ActionController::Base
 
   def table_privacy_text(table)
     if table.is_a?(Table)
-      table.private? ? 'PRIVATE' : 'PUBLIC'
+      table.privacy_text
     elsif table.is_a?(Hash)
       table["privacy"]
     end

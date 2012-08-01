@@ -13,6 +13,8 @@
      */
     window.JST = window.JST || {};
 
+    cdb._loadJST();
+
     cdb.files = [
         "../vendor/jquery.min.js",
         "../vendor/underscore-min.js",

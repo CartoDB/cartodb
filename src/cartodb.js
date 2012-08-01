@@ -46,6 +46,7 @@
       var Class = cdb.Class = function() {};
       _.extend(Class.prototype, Backbone.Events);
 
+      cdb._loadJST();
       window.cdb.god = new Backbone.Model();
 
       ready && ready();

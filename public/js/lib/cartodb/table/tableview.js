@@ -144,8 +144,10 @@
         // bind the stuff
         var container = $(e.target).parent().parent();
         container.append(colOptions.el);
+        var th = container.parent();
 
-        colOptions.openAt(0, 0);
+        // align to the right of the cell with a little of margin
+        colOptions.openAt(th.width() - colOptions.options.width - 10 , 3*th.height()/4);
       },
 
       _checkEditColnameInput: function(e) {

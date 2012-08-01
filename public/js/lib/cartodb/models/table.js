@@ -503,9 +503,9 @@
     _checkPage: function() {
       var total = this.getTotalPages();
       if (this.options.get("page") > total ) {
-        this.options.set({"page": total})
+        this.options.set({"page": total});
       } else if (this.options.get("page") < 1) {
-        this.options.set({"page": 1})
+        this.options.set({"page": 1});
       }
     },
 
@@ -534,7 +534,7 @@
 
     fetch: function(opts) {
       this.trigger("loading", this);
-      Backbone.Collection.prototype.fetch.call(this,opts)
+      Backbone.Collection.prototype.fetch.call(this,opts);
     }
   });
 

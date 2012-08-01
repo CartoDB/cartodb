@@ -43,31 +43,33 @@
       $(target).addClass("selected");
 
       // Show
+      this._show();
+    },
+
+    _show: function() {
       this.$el.animate({
         margin: "0px 0 0 0",
         opacity: 1
       },this.options.speedIn);
     },
 
+    /**
+     * open the dialog at x, y
+     */
     openAt: function(x, y) {
 
       this.$el.css({
-        top: 0, //x +  10,
-        left: 0,//y  - this.options.width + 15,
+        top: y, 
+        left: x,
         width: this.options.width,
         margin: "-10px 0 0 0",
         display: "block",
         opacity: 0
       });
 
-      // Add selected class to the target
-      //$(target).addClass("selected");
-
       // Show
-      this.$el.animate({
-        margin: "0px 0 0 0",
-        opacity: 1
-      },this.options.speedIn);
+      this._show();
+
     },
 
     hide: function(done) {

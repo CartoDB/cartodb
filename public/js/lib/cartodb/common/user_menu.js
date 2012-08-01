@@ -47,6 +47,10 @@
     },
 
     _show: function() {
+      //sometimes this dialog is child of a node that is removed
+      //for that reason we link again DOM events just in case
+      this.delegateEvents();
+      this.$el.addClass(this.options.orientation || "orientation_top");
       this.$el.animate({
         margin: "0px 0 0 0",
         opacity: 1

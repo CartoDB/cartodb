@@ -10,6 +10,42 @@
     display:none;
     z-index:20;
 
+    &.orientation_top {
+      ul {
+        &:before {
+          content:' ';
+          position:absolute;
+          display:block!important;
+          top:-5px;
+          right:10px;
+          width:0;
+          height:0;
+          border-bottom:8px solid white;
+          border-left:8px solid transparent;
+          border-right:8px solid transparent;
+          z-index:10;
+        }
+      }
+    }
+
+    &.orientation_left {
+      ul {
+        &:before {
+          content:' ';
+          position:absolute;
+          display:block!important;
+          top: 5px;
+          left: -8px;
+          width:0;
+          height:0;
+          border-right:8px solid #FFF;
+          border-bottom:8px solid transparent;
+          border-top:8px solid transparent;
+          z-index:10;
+        }
+      }
+    }
+
     ul {
       position:relative;
       @include inline-block();
@@ -41,18 +77,5 @@
         }
       }
 
-      &:before {
-        content:' ';
-        position:absolute;
-        display:block!important;
-        top:-5px;
-        right:10px;
-        width:0;
-        height:0;
-        border-bottom:8px solid white;
-        border-left:8px solid transparent;
-        border-right:8px solid transparent;
-        z-index:10;
-      }
     }
   }

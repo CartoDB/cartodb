@@ -243,7 +243,11 @@
 
 
     url: function() {
-      return '/api/v1/tables/' + this.table.get('name') + '/records/' + this.id;
+      var table = this.table || this.collection.table;
+      if(!table) {
+        cdb.log.error("row has no table assined");
+      }
+      return '/api/v1/tables/' + table.get('name') + '/records/' + this.id;
     },
 
     toJSON: function() {

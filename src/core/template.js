@@ -63,4 +63,3 @@ cdb._loadJST = function() {
   }
 }
 
-cdb._loadJST();

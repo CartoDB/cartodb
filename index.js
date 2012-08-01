@@ -19,7 +19,6 @@
 //= require cdb/src/geo/ui/zoom
 //= require cdb/src/geo/ui/legend
 //= require cdb/src/geo/ui/switcher
-//= require cdb/src/geo/ui/selector
 //= require cdb/src/geo/ui/infowindow
 //= require cdb/src/ui/common/tabpane
 //= require cdb/src/ui/common/dialog

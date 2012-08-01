@@ -25,19 +25,8 @@ class Api::Json::TablesController < Api::ApplicationController
     
     page     = params[:page].to_i > 0 ? params[:page].to_i : 1
     per_page = params[:per_page].to_i > 0 ? params[:per_page].to_i : 1000
-    render_jsonp({ :tables => @tables.paginate(page, per_page).all.map { |table|
-                        { :id => table.id,
-                          :name => table.name,
-                          :privacy => table_privacy_text(table),
-                          :tags => table[:tags_names],
-                          :schema => table.schema,
-                          :updated_at => table.updated_at,
-                          :rows_counted => table.rows_estimated,
-                          :table_size => table.table_size
-                        }
-                      },
-                      :total_entries => @tables.count
-                    })
+    render_jsonp({ :tables => @tables.paginate(page, per_page).all.map(&:public_values),
+                   :total_entries => @tables.count })
   end
 
   # Very basic controller method to simply make blank tables
@@ -48,21 +37,13 @@ class Api::Json::TablesController < Api::ApplicationController
     @table.name           = params[:name]          if params[:name]
     @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
     @table.force_schema   = params[:schema]        if params[:schema]
-    @table.tags           = params[:tags] if params[:tags]
+    @table.tags           = params[:tags]          if params[:tags]
 
     if @table.valid? && @table.save
       @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                             from user_tables
                             where id=?",@table.id).first
-      render_jsonp( { :id              => @table.id,
-                      :name            => @table.name,
-                      :schema          => @table.schema,
-                      :updated_at      => @table.updated_at,
-                      :rows_counted    => @table.rows_estimated,
-                      :privacy         => table_privacy_text(@table),
-                      :tags            => @table[:tags_names],
-                      :table_size => @table.table_size
-                    }, 200, {:location => table_path(@table)})
+      render_jsonp(@table.public_values, 200, { :location => table_path(@table) })
     else
       CartoDB::Logger.info "Error on tables#create", @table.errors.full_messages
       render_jsonp( { :description => @table.errors.full_messages,
@@ -89,16 +70,7 @@ class Api::Json::TablesController < Api::ApplicationController
           :disposition => "attachment; filename=#{@table.name}.kmz"
       end
       format.json do
-        render_jsonp({ :id => @table.id,
-                       :name => @table.name,
-                       :privacy => table_privacy_text(@table),
-                       :tags => @table[:tags_names],
-                       :schema => @table.schema(:reload => true),
-                       :updated_at => @table.updated_at,
-                       :rows_counted => @table.rows_estimated,
-                       :map_id => @table.map_id,
-                       :table_size => @table.table_size
-                       })
+        render_jsonp(@table.public_values)
       end
     end
   end
@@ -130,13 +102,7 @@ class Api::Json::TablesController < Api::ApplicationController
           end
         end
       end
-      render_jsonp({ :id => @table.id,
-                     :name => @table.name,
-                     :warnings => warnings,
-                     :privacy => table_privacy_text(@table),
-                     :tags => @table[:tags_names],
-                     :schema => @table.schema,
-                     :table_size => @table.table_size })
+      render_jsonp(@table.public_values.merge(warnings: warnings))
     else
       render_jsonp({ :errors => @table.errors.full_messages}, 400)
     end

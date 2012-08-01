@@ -1,122 +1,122 @@
 
-	/*
-	 * CartoDB buttons
-	 * - Green, grey and disabled
-	 */
+  /*
+   * CartoDB buttons
+   * - Green, grey and disabled
+   */
 
-	@import "compass"; 
-	@import "compass/css3";
-	@import "vars";
-	@import "sprites";
+  @import "compass"; 
+  @import "compass/css3";
+  @import "vars";
+  @import "sprites";
 
 
-	/*
-	 *	Green button
-	 *	{@hover}
-	 *  {@active}
-	 *  {@focus}
-	 *  {@disabled}
-	 */
-	a.button.green,
-	button.green,
-	input[type="submit"].green {
-		padding:12px 13px;
-		font:bold 19px $text-fonts2;
-		line-height:normal;
-		color:white;
-		text-shadow:0 1px 0 #455D1E;
-		background:#94BE42; // IE
-		@include background(linear-gradient(#94BE42,#7FA938));
-		@include border-radius(3px);
-		border:1px solid #6A8C2D;
-		letter-spacing:-1px;
-		word-spacing:1px;
+  /*
+   *  Green button
+   *  {@hover}
+   *  {@active}
+   *  {@focus}
+   *  {@disabled}
+   */
+  a.button.green,
+  button.green,
+  input[type="submit"].green {
+    padding:12px 13px;
+    font:bold 19px $text-fonts2;
+    line-height:normal;
+    color:white;
+    text-shadow:0 1px 0 #455D1E;
+    background:#94BE42; // IE
+    @include background(linear-gradient(#94BE42,#7FA938));
+    @include border-radius(3px);
+    border:1px solid #6A8C2D;
+    letter-spacing:-1px;
+    word-spacing:1px;
 
-		/* TYPES */
-		// Session type
-		&.sessions {
+    /* TYPES */
+    // Session type
+    &.sessions {
       width:312px;
       padding-left:0;
       padding-right:0;
       text-align:center;
-		}
+    }
 
-		// Hover
-		&:hover {
-			background:#749C33; // IE
-			@include background(linear-gradient(#94BE42,#749C33)); 
-			text-decoration:none;
-			cursor:pointer;
-		}
-		// Active
-		&:active {
-			background:#94BE42; // IE
-			@include background(linear-gradient(#749C33,#94BE42));
-		}
-		// Focus = hover
-		&:focus {
-			outline:none;
-			background:#749C33; // IE
-			@include background(linear-gradient(#94BE42,#749C33));
-		}
-		// Disabled
-		&.disabled {
-			@include opacity(0.5);
-			&:hover, &:active, &:focus {
-				background:#94BE42; // IE
-				@include background(linear-gradient(#94BE42,#7FA938));
-				cursor:default;
-			}
-		}
-	}
-
-
-	/*
-	 *	Grey button
-	 *	{@hover}
-	 *  {@active}
-	 *  {@focus}
-	 *  {@disabled}
-	 */
-	a.button.grey,
-	button.grey,
-	input[type="submit"].grey {
-		padding:12px 13px;
-		font:bold 17px $text-fonts2;
-		line-height:normal;
-		color:#333333;
-		text-shadow:0 1px 0 white;
-		background:#F9F9F9; // IE
-		@include background(linear-gradient(#F9F9F9,#EBEBEB));
-		@include border-radius(3px);
-		border:1px solid #B0B0B0;
+    // Hover
+    &:hover {
+      background:#749C33; // IE
+      @include background(linear-gradient(#94BE42,#749C33)); 
+      text-decoration:none;
+      cursor:pointer;
+    }
+    // Active
+    &:active {
+      background:#94BE42; // IE
+      @include background(linear-gradient(#749C33,#94BE42));
+    }
+    // Focus = hover
+    &:focus {
+      outline:none;
+      background:#749C33; // IE
+      @include background(linear-gradient(#94BE42,#749C33));
+    }
+    // Disabled
+    &.disabled {
+      @include opacity(0.5);
+      &:hover, &:active, &:focus {
+        background:#94BE42; // IE
+        @include background(linear-gradient(#94BE42,#7FA938));
+        cursor:default;
+      }
+    }
+  }
 
 
-		// Hover
-		&:hover {
-			background:#DEDEDE; // IE
-			@include background(linear-gradient(#F9F9F9,#DEDEDE)); 
-			text-decoration:none;
-			cursor:pointer;
-		}
-		// Active
-		&:active {
-			background:#D3D3D3; // IE
-			@include background(linear-gradient(#D3D3D3,#F9F9F9));
-		}
-		// Focus = hover
-		&:focus {
-			outline:none;
-			background:#DEDEDE; // IE
-			@include background(linear-gradient(#F9F9F9,#DEDEDE));
-		}
-		// Disabled
-		&.disabled {
-			@include opacity(0.5);
-			&:hover, &:active, &:focus {
-				background:#F9F9F9; // IE
-				@include background(linear-gradient(#F9F9F9,#EBEBEB));
-				cursor:default;
-			}
-		}
-	}
+  /*
+   *  Grey button
+   *  {@hover}
+   *  {@active}
+   *  {@focus}
+   *  {@disabled}
+   */
+  a.button.grey,
+  button.grey,
+  input[type="submit"].grey {
+    padding:12px 13px;
+    font:bold 17px $text-fonts2;
+    line-height:normal;
+    color:#333333;
+    text-shadow:0 1px 0 white;
+    background:#F9F9F9; // IE
+    @include background(linear-gradient(#F9F9F9,#EBEBEB));
+    @include border-radius(3px);
+    border:1px solid #B0B0B0;
+
+
+    // Hover
+    &:hover {
+      background:#DEDEDE; // IE
+      @include background(linear-gradient(#F9F9F9,#DEDEDE)); 
+      text-decoration:none;
+      cursor:pointer;
+    }
+    // Active
+    &:active {
+      background:#D3D3D3; // IE
+      @include background(linear-gradient(#D3D3D3,#F9F9F9));
+    }
+    // Focus = hover
+    &:focus {
+      outline:none;
+      background:#DEDEDE; // IE
+      @include background(linear-gradient(#F9F9F9,#DEDEDE));
+    }
+    // Disabled
+    &.disabled {
+      @include opacity(0.5);
+      &:hover, &:active, &:focus {
+        background:#F9F9F9; // IE
+        @include background(linear-gradient(#F9F9F9,#EBEBEB));
+        cursor:default;
+      }
+    }
+  }

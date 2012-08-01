@@ -41,7 +41,8 @@ cdb.admin.CreateTableDialog = cdb.ui.common.Dialog.extend({
       clean_on_hide: true,
       ok_button_classes: "button green disabled",
       ok_title: "Create table",
-      modal_type: "creation"
+      modal_type: "creation",
+      width: 600
     });
     this.constructor.__super__.initialize.apply(this);
   },

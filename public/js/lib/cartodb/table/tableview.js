@@ -41,7 +41,8 @@
         'click .change_data_type': 'changeType',
         'click .georeference': 'georeference',
         'click .filter_by_this_column': 'filterColumn',
-        'click .delete_column': 'deleteColumn'
+        'click .delete_column': 'deleteColumn',
+        'click .add_new_column': 'addColumn'
       },
 
       setTable: function(table, column) {
@@ -102,6 +103,17 @@
         cdb.log.debug("removing column: " + this.column);
         this.hide();
         this.table.deleteColumn(this.column);
+        return false;
+      },
+
+      addColumn: function(e) {
+        e.preventDefault();
+        var dlg = new cdb.admin.NewColumnDialog({
+          table: this.table
+        });
+        $('body').append(dlg.render().el);
+        this.hide();
+        dlg.show();
         return false;
       }
     });

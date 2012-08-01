@@ -9,8 +9,8 @@
 
     idAttribute: 'name',
 
-    url: function() {
-      return '/api/v1/tables/' + this.table.get('name') + '/columns/' + this.get('name');
+    urlRoot: function() {
+      return '/api/v1/tables/' + this.table.get('name') + '/columns/';
     },
 
     initialize: function() {
@@ -19,7 +19,17 @@
         throw "you should specify a table model";
       }
       this.unset('table', { silent: true });
+    },
+
+    toJSON: function() {
+      var c = _.clone(this.attributes);
+      if(c._name) {
+        c.name = c._name;
+        delete c._name;
+      }
+      return c;
     }
+
 
   });
 
@@ -46,7 +56,7 @@
     },
 
     error: function(msg, resp) {
-      var err =  JSON.parse(resp.responseText).errors[0];
+      var err =  resp && JSON.parse(resp.responseText).errors[0];
       this.trigger('notice', msg + " " + err, 'error');
     },
 
@@ -79,6 +89,26 @@
       return c.get('type');
     },
 
+    addColumn: function(columnName, columnType) {
+      var self = this;
+      var c = new cdb.admin.Column({
+        table: this,
+        _name: columnName,
+        type: columnType || 'string'
+      });
+      this.notice('adding new column');
+      c.save(null, {
+          success: function() {
+            self.trigger('columnDelete', columnName);
+            self.fetch();
+          },
+          error: function(e, resp) {
+            self.error('error adding column', resp);
+          },
+          wait: true
+      });
+    },
+
     deleteColumn: function(columnName) {
       var self = this;
       var c = this._getColumn(columnName);
@@ -88,8 +118,8 @@
             self.trigger('columnDelete', columnName);
             self.fetch();
           },
-          error: function () {
-            self.error('error deleting column');
+          error: function(e, resp) {
+            self.error('error deleting column', resp);
           },
           wait: true
       });
@@ -98,6 +128,7 @@
     renameColumn: function(columnName, newName) {
       var self = this;
       var c = this._getColumn(columnName);
+      var oldName = c.get('name');
       c.set({
         new_name: newName,
         old_name: c.get('name')
@@ -105,7 +136,7 @@
       this.notice('renaming column');
       c.save(null,  {
           success: function() {
-            self.trigger('columnRename', new_name, old_name);
+            self.trigger('columnRename', newName, oldName);
             self.fetch();
           },
           error: function(e, resp) {
@@ -125,8 +156,8 @@
           success: function() {
             self.fetch();
           },
-          error: function() {
-            self.error('error chaging column ttype');
+          error: function(e, resp) {
+            self.error('error chaging column ttype', resp);
           },
           wait: true
       });

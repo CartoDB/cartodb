@@ -87,8 +87,7 @@
     _tableChange: function() {
       var self = this;
       this.model.fetch({
-        data: {limit: "5"},
-        success: this.render
+        data: {limit: "5"}
       });
     }
   });

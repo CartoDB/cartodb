@@ -117,8 +117,8 @@
       _.defaults(this.options, this.default_options);
 
       this.model.bind('reset',    this._addAll, this);
-      this.model.bind('add',      this._addTable, this);
-      this.model.bind('remove',   this._tableRemoved, this);
+      // this.model.bind('add',      this._addTable, this);
+      // this.model.bind('remove',   this._tableRemoved, this);
       this.model.bind('loading',  this._showLoader, this);
     },
 

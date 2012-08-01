@@ -488,21 +488,35 @@
       this.total_entries = 0;
 
       this.options.bind("change", this._changeOptions, this);
-      this.bind("add",            this._incrementTable, this);
-      this.bind("remove",         this._decrementTable, this);
+      // this.bind("add",            this._incrementTable, this);
+      this.bind("reset",          this._checkPage, this);
+      this.bind("add remove",     this._fetchAgain, this);
     },
 
     getTotalPages: function() {
       return Math.ceil(this.total_entries / this.options.get("per_page"));
     },
 
-    _incrementTable: function() {
-      this.total_entries++;
+    _fetchAgain: function() {
+      this.fetch();
     },
 
-    _decrementTable: function() {
-      this.total_entries--;
+    _checkPage: function() {
+      var total = this.getTotalPages();
+      if (this.options.get("page") > total ) {
+        this.options.set({"page": total})
+      } else if (this.options.get("page") < 1) {
+        this.options.set({"page": 1})
+      }
     },
+
+    // _incrementTable: function() {
+    //   this.total_entries++;
+    // },
+
+    // _decrementTable: function() {
+    //   this.total_entries--;
+    // },
 
     _createUrlOptions: function() {
       return _(this.options.attributes).map(function(v, k) { return k + "=" + encodeURIComponent(v); }).join('&');

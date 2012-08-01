@@ -372,13 +372,16 @@
           letter-spacing:0;
           width:12px;
           height:12px;
+          margin:0 5px 0 0;
           vertical-align:top;
+          
+
+          &:last-child {margin:0}          
 
           a {
-            display:block;
+            @include inline-block();
             width:100%;
             height:100%;
-            margin:0;
             @include border-radius(20px);
             background:#DEDEDE;
             border:1px solid #D1D1D1;

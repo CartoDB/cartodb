@@ -77,11 +77,6 @@
       //this._showDialog()
       /*******************/
 
-      // If any change happened in the tables model, fetch the user stats
-      this.options.tables.bind('add',     this._tableChange, this);
-      this.options.tables.bind('remove',  this._tableChange, this);
-      this.options.tables.bind('reset',   this._tableChange, this);
-
       // Any change, render this view
       this.model.bind('change', this.render, this);
 

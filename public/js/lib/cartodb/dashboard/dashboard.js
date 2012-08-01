@@ -21,6 +21,9 @@ $(function() {
       this.tables = new cdb.admin.Tables();
       this.user = new cdb.admin.User({ id : userid });
       this.tags = new cdb.admin.Tags();
+
+      // The user model has to update every time the table model
+      this.tables.bind('add remove reset', function(){ this.user.fetch() }, this);
     },
 
     _initViews: function() {
@@ -34,7 +37,6 @@ $(function() {
       // User data
       this.tableStats = new cdb.admin.dashboard.TableStats({
         el: this.$('div.subheader'),
-        tables: this.tables,
         model: this.user
       });
 
@@ -101,6 +103,16 @@ $(function() {
       'page/:p':          'paginate',
       'tag/:tag/:p':      'searchTag',
       'search/:query/:p': 'searchQuery' 
+    },
+
+    initialize: function() {
+      window.dashboard.tables.options.bind("change", this.update ,this)
+    },
+
+    update: function() {
+      var hash = window.location.hash.split("/");
+      hash[hash.length - 1] = window.dashboard.tables.options.get("page");
+      this.navigate(hash.join("/"));
     },
 
     index: function() {

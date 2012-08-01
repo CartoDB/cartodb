@@ -39,15 +39,6 @@
       this.model.bind('change', this.render, this);
     },
 
-
-    /*
-     * Table change function -> Fetch model!
-     */
-    _tableChange: function() {
-      this.model.fetch();
-    },
-
-
     render: function() {
 
       // Calculate quotas first

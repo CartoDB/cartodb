@@ -88,7 +88,11 @@
        * return each cell view
        */
       valueView: function(colName, value) {
-        return $('<div>').append(value);
+        var obj = $('<div>').append(value);
+        if(cdb.admin.Row.isReservedColumn(colName)) {
+          obj.addClass('disabled');
+        }
+        return obj;
       }
     });
 
@@ -215,7 +219,9 @@
            var pageSize = $(window).height() - self.$el.offset().top;
            var tableHeight = this.$('tbody').height();
            var realPos = pos + pageSize;
-           if(tableHeight < pageSize) return;
+           if(tableHeight < pageSize) {
+             return;
+           }
            if(realPos > tableHeight) {
               console.log(realPos, tableHeight, tableHeight - realPos);
               d.setPage(d.getPage() + 1);
@@ -262,7 +268,8 @@
           view.clean();
         }
         var Editor = editors[columnType];
-        return this._editorsOpened = new Editor(opts);
+        this._editorsOpened = new Editor(opts);
+        return this._editorsOpened;
       },
 
       _editCell: function(e, cell, x, y) {

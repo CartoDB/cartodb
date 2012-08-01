@@ -203,7 +203,7 @@
      */
     alterTable: function(sql) {
       return sql.search(/alter/i) !== -1   ||
-             sql.search(/drop/i)  !== -1
+             sql.search(/drop/i)  !== -1;
     },
 
     /**
@@ -213,11 +213,11 @@
       return this.alterTable(sql)       ||
              sql.search(/insert/i) !== -1  ||
              sql.search(/update/i) !== -1  ||
-             sql.search(/delete/i) !== -1
+             sql.search(/delete/i) !== -1;
     },
 
     isReservedColumn: function(c) {
-      return _(cdb.admin.Row.RESERVED_COLUMNS).indexOf(c) !== -1;
+      return cdb.admin.Row.isReservedColumn(c);
     },
 
     /**
@@ -261,6 +261,9 @@
 
   }, {
     RESERVED_COLUMNS: 'cartodb_id created_at updated_at'.split(' '),
+    isReservedColumn: function(c) {
+      return _(cdb.admin.Row.RESERVED_COLUMNS).indexOf(c) !== -1;
+    }
   });
 
 

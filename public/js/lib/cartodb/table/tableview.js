@@ -32,6 +32,42 @@
 
     });
 
+    /**
+     * dropdown to select the column type when user clicks
+     * on the type
+     */
+    var ColumntypeDropdown = cdb.admin.UserMenu.extend({ 
+      events: {
+        'click .string': 'setString',
+        'click .number': 'setNumber',
+        'click .date': 'setDate'
+      },
+
+      setTable: function(table, column) {
+        this.table = table;
+        this.column = column;
+      },
+
+      setString: function(e) {
+        e.preventDefault();
+        this.table.changeColumnType(this.column, 'string');
+      },
+
+      setNumber: function(e) {
+        e.preventDefault();
+        this.table.changeColumnType(this.column, 'number');
+      },
+
+      setDate: function(e) {
+        e.preventDefault();
+        this.table.changeColumnType(this.column, 'date');
+      }
+
+    });
+
+    /**
+     * dropdown when user clicks on a column name
+     */
     var HeaderDropdown = cdb.admin.UserMenu.extend({ 
 
       events: {
@@ -43,6 +79,11 @@
         'click .filter_by_this_column': 'filterColumn',
         'click .delete_column': 'deleteColumn',
         'click .add_new_column': 'addColumn'
+      },
+
+      initialize: function() {
+        this.options.reserved_column = false;
+        this.constructor.__super__.initialize.apply(this);
       },
 
       setTable: function(table, column) {
@@ -58,6 +99,10 @@
           this.$('.asc').removeClass('selected');
         }
 
+        // depending on column type (reserved, normal) some fields should not be shown
+        // so render the dropdown again
+        this.options.reserved_column = this.table.isReservedColumn(column);
+        this.render();
       },
 
       orderColumnsAsc: function(e) { 
@@ -117,6 +162,8 @@
         return false;
       }
     });
+
+    cdb.admin.HeaderDropdown = HeaderDropdown;
 
     /**
      * view used to render each row
@@ -182,6 +229,7 @@
 
       events: {
         'click    .coloptions':      'showColumnOptions',
+        'click    .coltype':         'showColumnTypeOptions',
         'keydown  .col_name_edit':   '_checkEditColnameInput'
       },
 
@@ -197,7 +245,15 @@
           template_base: "table/views/table_header_options"
         });
         HeaderView.colOptions.render();
+
+        HeaderView.colTypeOptions= new ColumntypeDropdown({
+          position: 'position',
+          template_base: "table/views/table_column_type_options"
+        });
+        HeaderView.colTypeOptions.render();
+
         cdb.god.bind("closeDialogs", HeaderView.colOptions.hide, HeaderView.colOptions);
+        cdb.god.bind("closeDialogs", HeaderView.colTypeOptions.hide, HeaderView.colTypeOptions);
       },
 
       render: function() {
@@ -231,6 +287,22 @@
         colOptions.openAt(th.width() - colOptions.options.width - 10 , 3*th.height()/4);
       },
 
+      _openColTypeOptions: function(e) {
+        var colOptions = HeaderView.colTypeOptions;
+        colOptions.off();
+
+        // set data for column and table currently editing
+        colOptions.setTable(this.table, this.column[0]);
+
+        // bind the stuff
+        var container = $(e.target).parent().parent();
+        container.append(colOptions.el);
+        var th = container.parent();
+
+        // align to the right of the cell with a little of margin
+        colOptions.openAt(th.width() - colOptions.options.width - 10 , th.height());
+      },
+
       _checkEditColnameInput: function(e) {
         if(e.keyCode === 13) {
           this.table.renameColumn(this.column[0], $('.col_name_edit').val());
@@ -262,6 +334,16 @@
         var colOptions = HeaderView.colOptions;
         colOptions.hide(function() {
           self._openColOptions(e);
+        });
+        return false;
+      },
+
+      showColumnTypeOptions: function(e) {
+        var self = this;
+        e.preventDefault();
+        var colOptions = HeaderView.colTypeOptions;
+        colOptions.hide(function() {
+          self._openColTypeOptions(e);
         });
         return false;
       }

@@ -3,11 +3,11 @@
     <%= current_user.username %> |
   <% end %>
   <%= content_for(:js) do %>
-    <%= include_javascripts :common, :cdbjs, :dashboard %>
+    <%= javascript_include_tag :application, :cdb, :dashboard %>
     <script type="text/javascript">var username = "<%= current_user.username %>", userid = "<%= current_user.id %>";</script>
   <% end %>
   <%= content_for(:css) do %>
-    <%= include_stylesheets :common, :media => 'all' %>
+    <%= stylesheet_link_tag :common, :media => 'all' %>
   <% end %>
 
   <%= render 'admin/shared/subheader' %>

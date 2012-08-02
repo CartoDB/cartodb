@@ -55,6 +55,7 @@ $(function() {
       var user_menu = this.user_menu = new cdb.admin.UserMenu({
         target: 'a.account',
         model: {username: username},
+        username: username,
         template_base: 'dashboard/views/settings_item'
       });
       cdb.god.bind("closeDialogs", user_menu.hide, user_menu);
@@ -106,7 +107,7 @@ $(function() {
     },
 
     initialize: function() {
-      window.dashboard.tables.options.bind("change", this.update ,this)
+      window.dashboard.tables.options.bind("change", this.update ,this);
     },
 
     update: function() {

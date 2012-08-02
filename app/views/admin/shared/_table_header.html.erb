@@ -13,10 +13,10 @@
         <%= link_to "map view",     "#map",     :class => "smaller strong uppercase tab" %>
       </nav>
     </div>
-    <ul class="right">
+    <ul class="right options">
       <li><%= link_to "georeference", "#georeference" %></li>
-      <li><%= link_to "options", "#options", :class => "dropdown" %></li>
-      <li><%= link_to current_user.username, "#" + current_user.username, :class => "dropdown" %></li>
+      <li><%= link_to "options", "#options", :class => "dropdown options" %></li>
+      <li><%= link_to current_user.username, "#" + current_user.username, :class => "dropdown account" %></li>
     </ul>
   </div>
 </header>

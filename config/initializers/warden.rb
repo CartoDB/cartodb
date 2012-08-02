@@ -59,23 +59,19 @@ Warden::Strategies.add(:api_key) do
     begin
       if (api_key = params[:api_key]) && api_key.present?
         user_name = request.subdomain
-        if $users_metadata.SISMEMBER "rails:users:#{user_name}:map_key", api_key
+        if $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
           user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
           return fail! if user_id.blank?
           user    = User[user_id]
           success!(user)
         else
-          fail!
+          return fail!
         end
       else
-        fail!
+        return fail!
       end
     rescue
-      fail!
+      return fail!
     end
   end
-end
-
-Warden::Manager.after_authentication do |user,auth,opts|
-  user.set_map_key
 end

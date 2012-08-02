@@ -14,6 +14,7 @@
         template_base: 'dashboard/views/settings_item'
       });
    *
+   * TODO: rename to dropdown
    */
 
 

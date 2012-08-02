@@ -5,19 +5,14 @@ describe("tableview", function() {
 
   describe("headerview", function() {
     var view;
+    var model = new cdb.admin.CartoDBTableMetadata({
+        name: 'test'
+    });
     beforeEach(function() {
-      cdb.templates.add(new cdb.core.Template({
-        name: 'table/views/table_header_view',
-        compiled: _.template("<label><a><%= col_name %></a></label><p><a><%= col_type %></a></p>")
-      }));
-
-      cdb.templates.add(new cdb.core.Template({
-        name: 'table/views/table_header_options',
-        compiled: _.template("<ul></ul>")
-      }));
-
       view = new cdb.admin.HeaderView({
-        column: ['name', 'type']
+        el: $('<div>'),
+        column: ['name', 'type'],
+        table: model
       });
     });
 
@@ -25,6 +20,18 @@ describe("tableview", function() {
       view.render();
       expect(view.$('label > a').html().trim()).toEqual('name');
       expect(view.$('p > a').html()).toEqual('type');
+    });
+
+    it("when click on column name a menu should be opened", function() {
+      runs(function() {
+        view.render();
+        view.$('.coloptions').trigger('click');
+      });
+      //WTF i need to wait this time to click to be triggered?
+      waits(400);
+      runs(function() {
+        expect(cdb.admin.HeaderView.colOptions.$el.css('display')).toEqual('block');
+      });
     });
   });
 
@@ -71,4 +78,33 @@ describe("tableview", function() {
     });
 
   });
+
+
+  describe('HeaderDropdown', function() {
+    var view; 
+    var model;
+
+    beforeEach(function() {
+      model = new cdb.admin.CartoDBTableMetadata({
+        name: 'test'
+      });
+      view = new cdb.admin.HeaderDropdown({
+        position: 'position',
+        template_base: "table/views/table_header_options"
+      });
+    });
+
+    it("should render all options for normal fields", function() {
+      view.setTable(model, 'normal');
+      expect(view.$('li').length).toEqual(7);
+    });
+
+    it("should render all options for reserved column", function() {
+      view.setTable(model, 'cartodb_id');
+      expect(view.$('li').length).toEqual(2);
+      view.setTable(model, 'normal');
+      expect(view.$('li').length).toEqual(7);
+    });
+  });
+
 });

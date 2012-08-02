@@ -30,10 +30,14 @@ gem "yajl-ruby",              "1.1.0", :require => "yajl"
 gem "airbrake",               "3.0.9"
 gem "nokogiri",               "1.5.3"
 gem "statsd-client",          "0.0.7", :require => "statsd"
-gem "jammit",                 "0.6.5"
 
+gem 'ejs'
 group :assets do
-  gem "compass-rails",        "1.0.3"
+  gem 'sass-rails',           '~> 3.2.3'
+  gem 'uglifier',             '~> 1.0.3'
+  gem 'therubyracer',         '~> 0.9.10'
+  gem 'compass',              '~> 0.12.1'
+  gem 'compass-rails',        '~> 1.0.1'  
 end
 
 # Importer

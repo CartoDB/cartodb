@@ -1,4 +1,4 @@
-# coding: utf-8 
+# coding: utf-8
 
 class Admin::ClientApplicationsController < ApplicationController
   ssl_required :oauth, :api_key, :regenerate_api_key
@@ -16,7 +16,7 @@ class Admin::ClientApplicationsController < ApplicationController
   end
 
   def regenerate_api_key
-    current_user.regenerate_map_key
+    current_user.set_map_key
     redirect_to api_key_credentials_path, :flash => {:success => "Your API key has been regenerated successfully"}
   end
 

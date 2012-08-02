@@ -1,5 +1,0 @@
-// This file is part of the "jQuery.Syntax" project, and is licensed under the GNU AGPLv3.
-// Copyright 2010 Samuel Williams. All rights reserved.
-// For more information, please see <http://www.oriontransfer.co.nz/software/jquery-syntax>
-
-Syntax.register('xml',function(brush){brush.push({pattern:/(<!(\[CDATA\[)([\s\S]*?)(\]\])>)/gm,matches:Syntax.extractMatches({klass:'cdata',allow:['cdata-content','cdata-tag']},{klass:'cdata-tag'},{klass:'cdata-content'},{klass:'cdata-tag'})});brush.push({pattern:/<[^>]+>/g,klass:'tag',allow:'*'});brush.push({pattern:/<\/?((?:[\w_\-]+:)?)([\w_\-\.]+)[\s\S]*?>/g,matches:Syntax.extractMatches({klass:'namespace'},{klass:'tag-name'})});brush.push({pattern:/([\w_\-\.]+)=(".*?"|'.*?'|\S+)/g,matches:Syntax.extractMatches({klass:'attribute',only:['tag']},{klass:'string',only:['tag']}),});brush.push({pattern:/&\w+;/g,klass:'entity'});brush.push({pattern:/(%[0-9a-f]{2})/gi,klass:'percent-escape',only:['string']});brush.push(Syntax.lib.xmlComment);brush.push(Syntax.lib.singleQuotedString);brush.push(Syntax.lib.doubleQuotedString);brush.push(Syntax.lib.webLink);});

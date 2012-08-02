@@ -1,0 +1,16 @@
+
+@import "compass";
+@import "vars";
+
+@mixin default-input {
+  input {
+    font-family: $text-fonts;
+    margin: 0;
+    border: 1px solid #C0C1C2;
+    background: #FFF;
+    @include border-radius(4px);
+    padding: 11px;
+    font-size: 15px;
+    color: #666666;
+  }
+}

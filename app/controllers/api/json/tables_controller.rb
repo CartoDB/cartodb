@@ -113,7 +113,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def destroy
     @table.destroy
-    head :ok
+    head :no_content
   end
 
   # expects the infowindow data in the infowindow parameter

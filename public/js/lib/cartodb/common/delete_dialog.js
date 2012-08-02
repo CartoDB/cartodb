@@ -7,26 +7,40 @@
    * Usage example:
    *
       var delete_dialog = new cdb.admin.DeleteDialog({
-        clean_on_hide: true,
-        title: "You are about to delete this table",
-        content: "You will not be able to recover this information. We really recommend you <a href='#export' class='underline'>export the data</a> before deleting it.",
-        ok_button_classes: "button grey",
-        ok_title: "Delete this table",
-        cancel_button_classes: "underline margin15",
-        modal_type: "confirmation",
-        model: this.model
+        model: table_model
       });
    *
    */
 
   cdb.admin.DeleteDialog = cdb.ui.common.Dialog.extend({
-    
+
+    initialize: function() {
+      _.extend(this.options, {
+        title: "You are about to delete this table",
+        description: '',
+        template_name: 'common/views/dialog_base',
+        clean_on_hide: true,
+        ok_button_classes: "button grey",
+        ok_title: "Delete this table",
+        cancel_button_classes: "underline margin15",
+        modal_type: "confirmation",
+        width: 510,
+        modal_class: 'delete_table_dialog'
+      });
+      this.constructor.__super__.initialize.apply(this);
+    },
+
     render_content: function() {
-      return "<p>" + this.options.content + "</p>"
+      return this.getTemplate('common/views/delete_table_dialog')();
     },
 
     ok: function(ev) {
-      this.model.destroy();
+      var self = this;
+      this.model.destroy({
+        success: function() {
+          self.options.ok && self.options.ok();
+        }
+      });
     },
 
     hide: function() {

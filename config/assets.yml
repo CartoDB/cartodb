@@ -26,6 +26,7 @@ javascripts:
     - public/js/vendor/d3.v2.js
     - public/js/vendor/fileuploader.js
     - public/js/lib/cartodb/models/**/*.js
+    - public/js/lib/cartodb/common/user_menu.js
     - public/js/lib/cartodb/common/**/*.js
     - public/js/lib/cartodb/dashboard/**/*.js
     - public/js/lib/cartodb/dashboard/dashboard.js
@@ -35,6 +36,7 @@ javascripts:
   keys:
     - public/js/vendor/ZeroClipboard.js
     - public/js/lib/cartodb/models/**/*.js
+    - public/js/lib/cartodb/common/user_menu.js
     - public/js/lib/cartodb/common/**/*.js
     - public/js/lib/cartodb/keys/**/*.js
     - public/js/lib/cartodb/keys/keys.js
@@ -42,6 +44,7 @@ javascripts:
 
   table:
     - public/js/lib/cartodb/models/**/*.js
+    - public/js/lib/cartodb/common/user_menu.js
     - public/js/lib/cartodb/common/**/*.js
     - public/js/lib/cartodb/table/**/*.js
     - public/js/lib/cartodb/table/table.js

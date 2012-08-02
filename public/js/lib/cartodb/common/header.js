@@ -2,6 +2,38 @@
 /**
  * common header for map/table views
  */
+
+var OptionsMenu = cdb.admin.UserMenu.extend({
+  events: {
+    'click .export': '_export',
+    'click .duplicate': '_duplicate',
+    'click .append': '_append',
+    'click .delete_table': '_delete'
+  },
+
+  _export: function(e){
+    e.preventDefault();
+  },
+  _duplicate: function(e){
+    e.preventDefault();
+  },
+  _append: function(e){
+    e.preventDefault();
+  },
+  _delete: function(e){
+    e.preventDefault();
+    var delete_dialog = new cdb.admin.DeleteDialog({
+      model: this.options.table,
+      ok: function() {
+        location = "/dashboard";
+      }
+    });
+
+    $("body").append(delete_dialog.render().el);
+    delete_dialog.open();
+  }
+});
+
 cdb.admin.Header = cdb.core.View.extend({
 
   events: {
@@ -16,6 +48,24 @@ cdb.admin.Header = cdb.core.View.extend({
     this.table.bind('change:dataSource', this.onSQLView, this);
     this.add_related_model(this.table);
     this.$('.clearview').hide();
+    this.user_menu = new cdb.admin.UserMenu({
+      target: 'a.account',
+      model: { username: user_name },
+      username: user_name,
+      template_base: 'dashboard/views/settings_item'
+    });
+    cdb.god.bind("closeDialogs", this.user_menu.hide, this.user_menu);
+    $('body').append(this.user_menu.render().el);
+
+    this.options_menu = new OptionsMenu({
+      target: 'a.options',
+      model: { username: user_name },
+      username: user_name,
+      table: this.table,
+      template_base: 'table/views/header_table_options'
+    });
+    cdb.god.bind("closeDialogs", this.options_menu.hide, this.options_menu);
+    $('body').append(this.options_menu.render().el);
   },
 
   tableName: function() {

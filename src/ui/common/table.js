@@ -108,6 +108,10 @@ cdb.ui.common.RowView = cdb.core.View.extend({
       ++x;
     }
     return this.$('td:eq(' + x + ')');
+  },
+
+  getTableView: function() {
+    return this.tableView;
   }
 
 });
@@ -195,6 +199,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
       model: row,
       order: this.model.columnNames()
     });
+    tr.tableView = this;
 
     tr.bind('clean', function() {
       var idx = _.indexOf(self.rowViews,this);

@@ -51,7 +51,7 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
   render: function() {
     // Render
     var $el = this.$el;
-    $el.html(this.template_base());
+    $el.html(this.template_base(this.options));
     return this;
   },
 
@@ -82,7 +82,7 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
     // Positionate
     var targetPos = $(this.options.target).offset()
       , targetWidth = $(this.options.target).outerWidth()
-      , targetHeight = $(this.options.target).outerHeight()
+      , targetHeight = $(this.options.target).outerHeight();
 
     this.$el.css({
       top: targetPos.top + targetHeight + 10,

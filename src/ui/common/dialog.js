@@ -25,7 +25,7 @@
  *
  * TODO: implement draggable
  * TODO: modal
- * TODO: ESC button
+ * TODO: document modal_type
  */
 
 cdb.ui.common.Dialog = cdb.core.View.extend({
@@ -41,7 +41,9 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
   keydown: function(e) {
 
-    if (e.keyCode == 27)      this._cancel();
+    if (e.keyCode === 27) { 
+      this._cancel();
+    }
 
   },
 
@@ -56,7 +58,8 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     template_name: 'common/views/dialog_base',
     ok_button_classes: 'button green',
     cancel_button_classes: '',
-    modal_type: ''
+    modal_type: '',
+    modal_class: ''
   },
 
   initialize: function() {
@@ -72,18 +75,22 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   render: function() {
     var $el = this.$el;
 
-    $el.find(".modal").css({
-      width: this.options.width,
-      height: this.options.height,
-      'margin-left': -this.options.width>>1,
-      'margin-top': -this.options.height>>1
-    });
-
     $el.html(this.template_base(this.options));
+
+    $el.find(".modal").css({
+      width: this.options.width
+      //height: this.options.height
+      //'margin-left': -this.options.width>>1,
+      //'margin-top': -this.options.height>>1
+    });
 
     if(this.render_content) {
 
       this.$('.content').append(this.render_content());
+    }
+
+    if(this.options.modal_class) {
+      this.$el.addClass(this.options.modal_class);
     }
 
     return this;

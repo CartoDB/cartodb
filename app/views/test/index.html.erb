@@ -8,12 +8,13 @@
   <link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
 
   <%= stylesheet_link_tag :specs %>
-  <%= javascript_include_tag :common, :cdbjs, :dashboard, :table, :specs %>
+  <%= javascript_include_tag :application, :common, :cdb, :dashboard, :table, :specs %>
 
   <script type="text/javascript">
     // replace the cdb.init function for a dummy in order to not run the apps
     var old_init = cdb.init;
     cdb.init = function() { old_init(); };
+    cdb.templates.namespace = 'cartodb/';
 
     (function() {
       var jasmineEnv = jasmine.getEnv();

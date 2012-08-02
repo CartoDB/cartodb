@@ -186,11 +186,16 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var offset = this.model.get("offset");
 
     var
-    pos  = this.mapView.latLonToPixel(this.model.get("latlng")),
-    left = pos.x - offset[0],
-    top  = pos.y - this.$el.outerHeight(true) - offset[1];
+    pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
+    x               = this.$el.position().left,
+    y               = this.$el.position().top,
+    containerHeight = this.$el.outerHeight(true),
+    containerWidth  = this.$el.width(),
+    left            = pos.x - offset[0],
+    size            = this.map.getSize(),
+    bottom          = -1*(pos.y - offset[1] - size.y);
 
-    this.$el.css({ top: top, left: left });
+    this.$el.css({ bottom: bottom, left: left });
   },
 
   _adjustPan: function () {
@@ -210,16 +215,16 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     adjustOffset    = new L.Point(0, 0),
     size            = map.getSize();
 
-    if (pos.x < containerWidth) {
-      adjustOffset.x = pos.x  + offset[0]- containerWidth;
+    if (pos.x - offset[0] < 0) {
+      adjustOffset.x = pos.x - offset[0] - 10;
     }
 
-    if (pos.x + containerWidth > size.x) {
-      adjustOffset.x = pos.x + offset[0] + containerWidth - size.x;
+    if (pos.x - offset[0] + containerWidth > size.x) {
+      adjustOffset.x = pos.x + containerWidth - size.x - offset[0] + 10;
     }
 
-    if (pos.y <= containerHeight) {
-      adjustOffset.y = pos.y - containerHeight;
+    if (pos.y - containerHeight < 0) {
+      adjustOffset.y = pos.y - containerHeight - 10;
     }
 
     if (pos.y - containerHeight > size.y) {

@@ -59,7 +59,8 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     ok_button_classes: 'button green',
     cancel_button_classes: '',
     modal_type: '',
-    modal_class: ''
+    modal_class: '',
+    include_footer: true
   },
 
   initialize: function() {

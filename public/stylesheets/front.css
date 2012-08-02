@@ -1,16 +1,14 @@
 /*
-Syntax error: File to import not found or unreadable: vars.
+Syntax error: File to import not found or unreadable: mixins.
               Load paths:
                 /Users/javi/wrk/viz/cartodb/cartodb/app/assets
                 /Users/javi/.rvm/gems/ruby-1.9.2-p180@cartodb/gems/compass-0.12.2/frameworks/blueprint/stylesheets
                 /Users/javi/.rvm/gems/ruby-1.9.2-p180@cartodb/gems/compass-0.12.2/frameworks/compass/stylesheets
                 Compass::SpriteImporter
-        on line 3 of /Users/javi/wrk/viz/cartodb/cartodb/app/assets/css/forms.scss
-
-1: /Users/javi/wrk/viz/cartodb/cartodb/app/assets/css/forms.scss
+        on line 10 of /Users/javi/wrk/viz/cartodb/cartodb/app/assets/stylesheets/front.css.scss
 
 Backtrace:
-/Users/javi/wrk/viz/cartodb/cartodb/app/assets/css/forms.scss:3
+/Users/javi/wrk/viz/cartodb/cartodb/app/assets/stylesheets/front.css.scss:10
 /Users/javi/.rvm/gems/ruby-1.9.2-p180@cartodb/gems/sass-3.1.20/lib/sass/tree/import_node.rb:64:in `rescue in import'
 /Users/javi/.rvm/gems/ruby-1.9.2-p180@cartodb/gems/sass-3.1.20/lib/sass/tree/import_node.rb:42:in `import'
 /Users/javi/.rvm/gems/ruby-1.9.2-p180@cartodb/gems/sass-3.1.20/lib/sass/tree/import_node.rb:25:in `imported_file'
@@ -73,4 +71,4 @@ Backtrace:
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: File to import not found or unreadable: vars.\A               Load paths:\A                 /Users/javi/wrk/viz/cartodb/cartodb/app/assets\A                 /Users/javi/.rvm/gems/ruby-1.9.2-p180@cartodb/gems/compass-0.12.2/frameworks/blueprint/stylesheets\A                 /Users/javi/.rvm/gems/ruby-1.9.2-p180@cartodb/gems/compass-0.12.2/frameworks/compass/stylesheets\A                 Compass::SpriteImporter\A         on line 3 of /Users/javi/wrk/viz/cartodb/cartodb/app/assets/css/forms.scss\A \A 1: /Users/javi/wrk/viz/cartodb/cartodb/app/assets/css/forms.scss"; }
+  content: "Syntax error: File to import not found or unreadable: mixins.\A               Load paths:\A                 /Users/javi/wrk/viz/cartodb/cartodb/app/assets\A                 /Users/javi/.rvm/gems/ruby-1.9.2-p180@cartodb/gems/compass-0.12.2/frameworks/blueprint/stylesheets\A                 /Users/javi/.rvm/gems/ruby-1.9.2-p180@cartodb/gems/compass-0.12.2/frameworks/compass/stylesheets\A                 Compass::SpriteImporter\A         on line 10 of /Users/javi/wrk/viz/cartodb/cartodb/app/assets/stylesheets/front.css.scss"; }

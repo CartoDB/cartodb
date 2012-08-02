@@ -7,8 +7,8 @@
   <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.2.0/jasmine_favicon.png">
   <link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
 
-  <%= include_stylesheets :specs %>
-  <%= include_javascripts :common, :cdbjs, :dashboard, :table, :specs %>
+  <%= stylesheet_link_tag :specs %>
+  <%= javascript_include_tag :common, :cdbjs, :dashboard, :table, :specs %>
 
   <script type="text/javascript">
     // replace the cdb.init function for a dummy in order to not run the apps

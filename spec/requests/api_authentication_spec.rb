@@ -3,7 +3,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe "API Authentication" do
 
   before(:each) do
+    User.all.each(&:destroy)
     @user = create_user(:email => "client@example.com", :password => "clientex")
+    @user.reset_client_application!
+    @user.set_map_key
     @oauth_consumer = OAuth::Consumer.new(@user.client_application.key, @user.client_application.secret, {
       :site => "http://testhost.lan", :scheme => :query_string, :http_method => :post
     })
@@ -73,4 +76,42 @@ describe "API Authentication" do
     end
   end
 
+  describe "Api key auth" do
+
+    before(:each) do
+      @random_string = (0...8).map{65.+(rand(25)).chr}.join
+    end
+
+    it "should grant access using a valid api_key param" do
+      get v1_tables_path, {:api_key => @user.get_map_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
+      status.should == 200
+    end
+
+    it "should not grant access using an invalid api_key param" do
+      get v1_tables_path, {:api_key => @random_string }, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
+      status.should == 401
+    end
+
+    it "should not grant access not using any kind of authentication" do
+      get v1_tables_path, {}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
+      status.should == 401
+    end
+
+    it "should not grant access after regenerating the api_key and keep using the old one" do
+      get v1_tables_path, {:api_key => @user.get_map_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
+      status.should == 200
+
+      old_api_key = @user.get_map_key
+      @user.set_map_key
+
+      get v1_tables_path, {:api_key => old_api_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
+      status.should == 401
+
+      get v1_tables_path, {:api_key => @user.get_map_key}, {'HTTP_HOST' => "#{@user.username}.testhost.lan"}
+      status.should == 200
+    end
+
+  end
+
 end
+

@@ -233,22 +233,10 @@ class User < Sequel::Model
   def set_map_key
     token = self.class.make_token
     $users_metadata.HMSET key, 'map_key',  token
-    $users_metadata.SADD "#{key}:map_key", token
   end
 
   def get_map_key
     $users_metadata.HMGET(key, 'map_key').first
-  end
-  
-  def regenerate_map_key
-    # GET CURRENT KEY
-    old_key = self.get_map_key
-    
-    # SET NEW KEY
-    self.set_map_key
-    
-    # REMOVE OLD KEY FROM KEY SET
-    $users_metadata.SREM "#{key}:map_key", old_key
   end
 
   def reset_client_application!
@@ -378,7 +366,7 @@ class User < Sequel::Model
       user_database.transaction do
         glob = RAILS_ROOT + '/lib/sql/*.sql'
 
-        Dir.glob(glob).each do |f|          
+        Dir.glob(glob).each do |f|
           @sql = File.new(f).read
           user_database.run(@sql)
         end
@@ -393,7 +381,7 @@ class User < Sequel::Model
       user_database.transaction do
 	config = ::Rails::Sequel.configuration.environment_for(Rails.env)
         env  = " PGUSER=#{database_username}"
-        env += " PGPORT=#{config['port']}" 
+        env += " PGPORT=#{config['port']}"
         env += " PGHOST=#{config['host']}"
         env += " PGPASSWORD=#{database_password}"
         glob = RAILS_ROOT + '/lib/sql/test/*.sql'

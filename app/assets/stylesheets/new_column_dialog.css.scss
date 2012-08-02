@@ -1,0 +1,9 @@
+
+@import "forms";
+
+.new_column_dialog {
+  @include default-input;
+  input {
+    width: 253px - 11*2px;
+  }
+}

@@ -2,9 +2,9 @@ source 'http://rubygems.org'
 
 gem "rails", "3.2.0"
 
-gem "pg",                     "0.11"
-gem "sequel",                 "3.37.0"
-gem "sequel_pg",              "1.2.0", :require => "sequel"
+gem "pg",                      "0.11"
+gem "sequel",                  "3.37.0"
+gem "sequel_pg",               "1.2.0", :require => "sequel"
 
 # TODO remove this when everything works
 # gem "sequel_column_type_array", "0.0.4"
@@ -12,24 +12,24 @@ gem "sequel_pg",              "1.2.0", :require => "sequel"
 # gem "sequel-rails-cartodb", "~> 0.1.7", :require => "sequel-rails"
 # gem "text-hyphen", "1.2.0"
 
-gem "talentbox-sequel-rails", :git => "git://github.com/Vizzuality/sequel-rails.git"
+gem "vizzuality-sequel-rails", "0.3.4"
 
-gem "rails_warden",           "0.5.2" # Auth via the Warden Rack framework
-gem "oauth",                  "0.4.5"
-gem "oauth-plugin",           "0.4.0.pre4"
+gem "rails_warden",            "0.5.2" # Auth via the Warden Rack framework
+gem "oauth",                   "0.4.5"
+gem "oauth-plugin",            "0.4.0.pre4"
 
-gem "htmlentities",           "4.3.1" # Encoding and decoding of named or numerical entities
+gem "htmlentities",            "4.3.1" # Encoding and decoding of named or numerical entities
 
-gem "rgeo",                   "0.3.2" # Geospatial data library
-gem "rgeo-geojson",           "0.2.1", :require => "rgeo/geo_json"
+gem "rgeo",                    "0.3.2" # Geospatial data library
+gem "rgeo-geojson",            "0.2.1", :require => "rgeo/geo_json"
 
-gem "redis",                  "2.2.2"
-gem "resque",                 "1.19.0"
-gem "resque-result",          "1.0.1"
-gem "yajl-ruby",              "1.1.0", :require => "yajl"
-gem "airbrake",               "3.0.9"
-gem "nokogiri",               "1.5.3"
-gem "statsd-client",          "0.0.7", :require => "statsd"
+gem "redis",                   "2.2.2"
+gem "resque",                  "1.19.0"
+gem "resque-result",           "1.0.1"
+gem "yajl-ruby",               "1.1.0", :require => "yajl"
+gem "airbrake",                "3.0.9"
+gem "nokogiri",                "1.5.3"
+gem "statsd-client",           "0.0.7", :require => "statsd"
 
 gem 'ejs'
 group :assets do

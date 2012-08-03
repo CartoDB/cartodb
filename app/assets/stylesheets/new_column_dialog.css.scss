@@ -2,8 +2,18 @@
 @import "forms";
 
 .new_column_dialog {
+
   @include default-input;
+
   input {
     width: 253px - 11*2px;
   }
+
+  select {
+    margin-top: 20px;
+    width: 253px;
+    border: 10px solid rgb(242, 242, 242);
+    padding: 11px;
+  }
+
 }

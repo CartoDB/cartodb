@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
   rescue_from RecordNotFound,   :with => :render_404
 
   # this disables SSL requirement in non-production environments
-  unless Rails.env.production?
+  unless Rails.env.production? || Rails.env.staging?
     def self.ssl_required(*splat)
       false
     end
@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def allow_cross_domain_access
-    unless Rails.env.production?
+    unless Rails.env.production? || Rails.env.staging?
       response.headers["Access-Control-Allow-Origin"] = "*"
       response.headers["Access-Control-Allow-Methods"] = "*"
     end
@@ -84,7 +84,7 @@ class ApplicationController < ActionController::Base
   # TODO: REMOVE. this was to redirect the user to their own cartodb. 
   # A legacy from when cartoedb only supported 1 user login at a time.
   def check_domain
-    if Rails.env.production?
+    if Rails.env.production? || Rails.env.staging?
      protocol   = 'https'
      port       = ""
     else

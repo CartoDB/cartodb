@@ -9,7 +9,7 @@ module CartoDB
   end
   
   def self.domain
-    @@domain ||= if Rails.env.production?
+    @@domain ||= if Rails.env.production? || Rails.env.staging?
       `hostname -f`.strip
     elsif Rails.env.development?
       "vizzuality#{session_domain}"
@@ -19,7 +19,7 @@ module CartoDB
   end
   
   def self.hostname
-    @@hostname ||= if Rails.env.production?
+    @@hostname ||= if Rails.env.production? || Rails.env.staging?
       "https://#{domain}"
     elsif Rails.env.development?
       "http://#{domain}:3000"

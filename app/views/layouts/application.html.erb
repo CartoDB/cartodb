@@ -3,7 +3,7 @@
   <head>
     <meta charset='utf-8' />
     <title><%= yield :page_title %>CartoDB</title>
-    <link id="favicon" rel="shortcut icon" href="/img/favicon.ico" />
+    <link id="favicon" rel="shortcut icon" href="<%= asset_path "favicon.ico" %>" />
     <%= yield :css %>
     <%= yield :js %>
     <%= csrf_meta_tag %>

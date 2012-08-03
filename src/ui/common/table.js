@@ -197,7 +197,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
     var self = this;
     var tr = new self.rowView({
       model: row,
-      order: this.model.columnNames()
+      order: this.model.columnNames(),
+      row_header: this.options.row_header
     });
     tr.tableView = this;
 

@@ -159,7 +159,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (this.model.get("visibility")) {
       that.$el.css({ left: -5000 });
       that.$el.fadeIn(250, function() {
-        that._updatePosition();
+        that._update();
       });
     }
 

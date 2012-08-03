@@ -1,11 +1,3 @@
-GIT
-  remote: git://github.com/Vizzuality/sequel-rails.git
-  revision: 06df9c6b3156b12431522a631e3f1c3d16783623
-  specs:
-    talentbox-sequel-rails (0.3.4)
-      rails (~> 3.2.0)
-      sequel (~> 3.28)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -253,6 +245,9 @@ GEM
     uuidtools (2.1.3)
     vegas (0.1.11)
       rack (>= 1.0.0)
+    vizzuality-sequel-rails (0.3.4)
+      rails (~> 3.2.0)
+      sequel (~> 3.28)
     warden (1.2.1)
       rack (>= 1.0)
     xpath (0.1.4)
@@ -306,8 +301,8 @@ DEPENDENCIES
   state_machine (= 1.1.2)
   statsd-client (= 0.0.7)
   steak (= 2.0.0)
-  talentbox-sequel-rails!
   therubyracer (~> 0.9.10)
   timecop (= 0.3.5)
   uglifier (~> 1.0.3)
+  vizzuality-sequel-rails (= 0.3.4)
   yajl-ruby (= 1.1.0)

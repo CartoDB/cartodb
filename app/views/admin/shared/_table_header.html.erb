@@ -14,7 +14,7 @@
       </nav>
     </div>
     <ul class="right options">
-      <li><%= link_to "georeference", "#georeference" %></li>
+        <li><%= link_to "georeference", "#georeference", :class => "georeference" %></li>
       <li><%= link_to "options", "#options", :class => "dropdown options" %></li>
       <li><%= link_to current_user.username, "#" + current_user.username, :class => "dropdown account" %></li>
     </ul>

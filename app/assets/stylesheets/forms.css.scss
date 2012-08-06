@@ -14,3 +14,12 @@
     color: #666666;
   }
 }
+
+@mixin default-select {
+  select {
+    margin-top: 20px;
+    width: 253px;
+    border: 10px solid rgb(242, 242, 242);
+    padding: 11px;
+  }
+}

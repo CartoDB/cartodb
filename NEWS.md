@@ -1,5 +1,5 @@
-0.10 (26/08/12)
------
+0.9.10 (26/08/12)
+------
 * Allow quoting identifiers when performing a query (closes #834)
 * Refresh map on style change, even on error (closes #833)
 * Add error message specific for SHP files (closes #843)

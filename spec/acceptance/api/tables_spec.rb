@@ -21,7 +21,7 @@ feature "API 1.0 tables management" do
 
     another_user = create_user
 
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3", :description => 'Testing is awesome'
     table2 = create_table :user_id => @user.id, :name => 'My table #2', :privacy => Table::PRIVATE
     table3 = create_table :user_id => another_user.id, :name => 'Another table #3', :privacy => Table::PRIVATE
 
@@ -49,6 +49,12 @@ feature "API 1.0 tables management" do
       response.body[:tables].size.should == 1
       response.body[:total_entries].should == 1
       response.body[:tables][0]['name'].should == "my_table_2"
+    end
+
+    get_json api_tables_url(:page => 1, :per_page => 10, :q => "tesTing") do |response|
+      response.status.should be_success
+      response.body[:tables].size.should == 1
+      response.body[:tables][0]['name'].should == "my_table_1"
     end
   end
 
@@ -97,12 +103,13 @@ feature "API 1.0 tables management" do
     end
   end
 
-  scenario "Create a new table specifing a name and a schema" do
+  scenario "Create a new table specifing a name, description and a schema" do
     CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
 
-    post_json api_tables_url, {:name => "My new imported table", :schema => "code varchar, title varchar, did integer, date_prod timestamp, kind varchar"} do |response|
+    post_json api_tables_url, {:name => "My new imported table", :schema => "code varchar, title varchar, did integer, date_prod timestamp, kind varchar", :description => "Testing is awesome"} do |response|
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
+      response.body[:description].should == "Testing is awesome"
       (response.body[:schema] - [
          ["cartodb_id", "number"], ["code", "string"], ["title", "string"], ["did", "number"],
          ["date_prod", "date"], ["kind", "string"], ["created_at", "date"], ["updated_at", "date"]
@@ -168,12 +175,13 @@ feature "API 1.0 tables management" do
   end  
 
   scenario "Get a table metadata information" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3", :description => "Testing is awesome"
 
     get_json api_table_url(table1.name) do |response|
       response.status.should be_success
       response.body[:id].should == table1.id
       response.body[:name].should == "my_table_1"
+      response.body[:description].should == "Testing is awesome"
       response.body[:privacy].should == "PRIVATE"
       response.body[:table_size].should == table1.table_size
       response.body[:tags].should include("tag 1")
@@ -184,13 +192,14 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Update the metadata of a table" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1',  :tags => "tag 1, tag 2,tag 3, tag 3"
+    table1 = create_table :user_id => @user.id, :name => 'My table #1',  :tags => "tag 1, tag 2,tag 3, tag 3", :description => ""
 
-    put_json api_table_url(table1.name), {:name => "my_table_2", :tags => "bars,disco", :privacy => Table::PRIVATE} do |response|
+    put_json api_table_url(table1.name), {:name => "my_table_2", :tags => "bars,disco", :privacy => Table::PRIVATE, :description => "Testing is awesome"} do |response|
       response.status.should be_success
       response.body[:id].should == table1.id
       response.body[:name].should == "my_table_2"
       response.body[:privacy] == "PRIVATE"
+      response.body[:description].should == "Testing is awesome"      
       response.body[:tags].split(',').should include("disco")
       response.body[:tags].split(',').should include("bars")
       (response.body[:schema] - default_schema).should be_empty

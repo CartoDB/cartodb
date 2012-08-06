@@ -17,11 +17,11 @@ class Api::Json::TablesController < Api::ApplicationController
                           and user_tables.id = tags.table_id
                           and tags.name = ? order by user_tables.id desc", current_user.id, tag_name)
     else
-      where = (params[:q].to_s.strip.blank? ? {} : :name.like("%#{params[:q]}%"))
       current_user.tables.select("*, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names".lit)
-        .where(where).order(:id.desc)
+        .order(:id.desc)
     end
 
+    @tables = @tables.search(params[:q]) unless params[:q].blank?
     
     page     = params[:page].to_i > 0 ? params[:page].to_i : 1
     per_page = params[:per_page].to_i > 0 ? params[:per_page].to_i : 1000
@@ -35,6 +35,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @table = Table.new
     @table.user_id        = current_user.id
     @table.name           = params[:name]          if params[:name]
+    @table.description    = params[:description]   if params[:description]
     @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
     @table.force_schema   = params[:schema]        if params[:schema]
     @table.tags           = params[:tags]          if params[:tags]

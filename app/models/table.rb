@@ -11,17 +11,24 @@ class Table < Sequel::Model(:user_tables)
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = { :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
                         :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
-                        :table_size => :table_size, :map_id => :map_id }
+                        :table_size => :table_size, :map_id => :map_id, :description => :description }
   
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
   end
-  
+
+  def_dataset_method(:search) do |query|
+    conditions = <<-EOS
+      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?)
+      EOS
+    where(conditions, query)
+  end
+
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
 
   # Allowed columns
-  set_allowed_columns(:privacy, :tags)
+  set_allowed_columns(:privacy, :tags, :description)
 
   attr_accessor :force_schema, :import_from_file,:import_from_url, :import_from_query,
                 :import_from_table_copy, :importing_encoding,

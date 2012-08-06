@@ -1,12 +1,12 @@
 /**
- * View to control the zoom of the map.
- *
- * Usage:
- *
- * var zoomControl = new cdb.geo.ui.Zoom({ model: map });
- * mapView.$el.append(zoom.render().$el);
- *
- */
+* View to control the zoom of the map.
+*
+* Usage:
+*
+* var zoomControl = new cdb.geo.ui.Zoom({ model: map });
+* mapView.$el.append(zoom.render().$el);
+*
+*/
 
 cdb.geo.ui.Zoom = cdb.core.View.extend({
 
@@ -18,17 +18,17 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
   },
 
   default_options: {
-      timeout: 0,
-      msg: ''
+    timeout: 0,
+    msg: ''
   },
 
   initialize: function() {
-      this.map = this.model;
+    this.map = this.model;
 
-      _.defaults(this.options, this.default_options);
+    _.defaults(this.options, this.default_options);
 
-      this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
-      //TODO: bind zoom change to disable zoom+/zoom-
+    this.template = this.options.template ? this.options.template : cdb.templates.getTemplate('geo/zoom');
+    //TODO: bind zoom change to disable zoom+/zoom-
   },
 
   render: function() {
@@ -37,11 +37,13 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
   },
 
   zoom_in: function() {
-      this.map.setZoom(this.map.getZoom() + 1);
+    if (this.map.get("maxZoom") <= this.map.getZoom()) return;
+    this.map.setZoom(this.map.getZoom() + 1);
   },
 
   zoom_out: function() {
-      this.map.setZoom(this.map.getZoom() - 1);
+    if (this.map.get("minZoom") >= this.map.getZoom()) return;
+    this.map.setZoom(this.map.getZoom() - 1);
   }
 
 });

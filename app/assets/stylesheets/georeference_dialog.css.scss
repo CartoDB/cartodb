@@ -1,0 +1,53 @@
+
+@import "vars";
+@import "forms";
+@import "compass";
+
+.georeference_dialog {
+
+  @include default-input;
+
+  input {
+    width: 472px;
+  }
+
+  .cont{
+    margin-left: 20px;
+    p {
+      margin: 10px 0 ;
+      text-family: $text-fonts;
+      &.info {
+        color: #999999;
+        font-size: 15px;
+      }
+      &.hint_text {
+        text-family: $text-fonts2;
+        color: #666666;
+        margin-left: 50px;
+      }
+    }
+    .hint {
+      margin-top: 10px;
+      float: left;
+      color: #333333;
+      font-weight: bold;
+      font-size: 11px;
+      text-family: $text-fonts2;
+    }
+  }
+
+  .column_selector {
+    display: inline-block;
+    background-color: rgb(242, 242, 242);
+    margin-top: 20px;
+    width: 223px;
+    padding: 11px;
+    @include border-radius(3px);
+    span {
+      font: 15px;
+      color: #CCCCCC;
+      margin-right: 20px;
+    }
+  }
+
+}

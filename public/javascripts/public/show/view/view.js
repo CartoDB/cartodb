@@ -24,9 +24,8 @@
 
         $('div.mamufas div.export_window').show();
         $('div.mamufas').fadeIn('fast');
-
         // Set form url correctly before choose a export option
-				$('div.export_window').find('form').attr('action','/tables/' + table_name + '.' + $('#export_format').val());
+				$('div.export_window').find('form').attr('action','/tables/' + table_name);
 
         bindESC();
 	    });

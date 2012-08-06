@@ -1,3 +1,14 @@
+0.9.10 (26/08/12)
+------
+* Allow quoting identifiers when performing a query (closes #834)
+* Refresh map on style change, even on error (closes #833)
+* Add error message specific for SHP files (closes #843)
+* Excluding spatial_ref_sys from user quota calculation (closes #856)
+* Fixed security bugs with api_key auth
+* Removes old regenerate_map_key code
+* Correctly setting the export table url, the format is sent via a hidden field
+
+
 0.9.9 (29/06/12)
 -----
 * Added module to send some statistics to a StatsD server

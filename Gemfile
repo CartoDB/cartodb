@@ -6,7 +6,8 @@ gem "pg", "0.11"
 gem "sequel", "3.29.0"
 gem "sequel_pg", "1.2.0", :require=>'sequel'
 gem "sequel_column_type_array", "~> 0.0.2"
-gem "sequel-rails", :git => "git://github.com/tokumine/sequel-rails.git", :tag => '0.3.6'
+#gem "sequel-rails", :git => "git://github.com/tokumine/sequel-rails.git", :tag => '0.3.6'
+gem "sequel-rails-cartodb", "0.1.7", :require => "sequel-rails"
 gem "rails_warden", "0.5.2"
 gem "oauth", "0.4.5"
 gem "oauth-plugin", "0.4.0.pre4"
@@ -32,6 +33,8 @@ gem "builder"
 gem "state_machine", "~> 1.0"
 
 group :development, :test do
+  gem 'minitest', '~> 2.0.2', :require => 'minitest/unit'
+
   # this is for Ruby 1.9.2 debugging. You should upgrade to ruby 1.9.3, it's much faster in development
   if (RUBY_VERSION == "1.9.2")
     gem "ruby-debug-base19x", '~>0.11.30.pre3', :require => "ruby-debug", :platforms => :mri_19
@@ -57,7 +60,6 @@ group :development, :test do
   gem "timecop"
   gem "email_spec"
   gem "rack-reverse-proxy", "~> 0.4.1", :require => 'rack/reverse_proxy'
-  gem 'minitest', '~> 2.0.2'
   gem 'foreman'
   gem 'aws-sdk'
 end

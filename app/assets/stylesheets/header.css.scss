@@ -156,6 +156,13 @@
       @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
 
       .inner {width:auto;}
+
+      p.table_description {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.5);
+        margin-left: 113px;
+        margin-top: 5px;
+      }
       
       div.left {
         position:relative;

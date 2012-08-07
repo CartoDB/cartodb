@@ -37,6 +37,15 @@ describe("common.ui.Dialog", function() {
     expect(dialog.cancel).toHaveBeenCalled();
   });
 
+  it("should append it to body and be rendered", function() {
+    var s = sinon.stub(dialog, 'render');
+    s.returns(dialog);
+    var r = dialog.appendToBody();
+    expect(s.called).toEqual(true);
+    expect(dialog.$el.parent()[0]).toEqual(document.body);
+    expect(r).toEqual(dialog);
+  });
+
   it("should render title", function() {
       var dialog = new cdb.ui.common.Dialog({
         title: 'test',

@@ -97,6 +97,14 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     return this;
   },
 
+  /**
+   * helper method that renders the dialog and appends it to body
+   */
+  appendToBody: function() {
+    $('body').append(this.render().el);
+    return this;
+  },
+
   _ok: function(ev) {
 
    if(ev) ev.preventDefault();

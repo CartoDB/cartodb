@@ -84,6 +84,7 @@ class Api::Json::TablesController < Api::ApplicationController
       latitude_column  = params[:latitude_column]  == "nil" ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == "nil" ? nil : params[:longitude_column].try(:to_sym)
       @table.georeference_from!(:latitude_column => latitude_column, :longitude_column => longitude_column)
+      render_jsonp(@table.public_values.merge(warnings: warnings)) and return
     end
     @table.tags = params[:tags] if params[:tags]
     if @table.update(@table.values.delete_if {|k,v| k == :tags_names})

@@ -27,7 +27,7 @@ module CartoDB
       command = "`which redis-server` #{Rails.root}/spec/support/redis/redis.conf"
       system(command)
       sleep 2
-      puts "[redis] Running test server in #{APP_CONFIG[:redis]['host']}:#{APP_CONFIG[:redis]['port']}: #{command}"
+      puts "[redis] Running test server in #{Cartodb.config[:redis]['host']}:#{Cartodb.config[:redis]['port']}: #{command}"
     end
     
   end

@@ -123,12 +123,12 @@ class ApplicationController < ActionController::Base
       when Sequel::DatabaseError
         # TODO: rationalise these error codes
         if exception.message.include?("transform: couldn't project")
-          ERROR_CODES[:geometries_error].merge(:raw_error => exception.message)
+          Cartodb.error_codes[:geometries_error].merge(:raw_error => exception.message)
         else
-          ERROR_CODES[:unknown_error].merge(:raw_error => exception.message)
+          Cartodb.error_codes[:unknown_error].merge(:raw_error => exception.message)
         end
       else
-        ERROR_CODES[:unknown_error].merge(:raw_error => exception.message)
+        Cartodb.error_codes[:unknown_error].merge(:raw_error => exception.message)
     end.to_json
   end
 

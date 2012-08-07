@@ -13,31 +13,31 @@ module CartoDB
   # importer errors
   class EmptyFile < StandardError 
     def detail
-      ERROR_CODES[:empty_file]
+      Cartodb.error_codes[:empty_file]
     end  
   end
 
   class InvalidUrl < StandardError 
     def detail
-      ERROR_CODES[:url_error]
+      Cartodb.error_codes[:url_error]
     end  
   end
 
   class InvalidFile < StandardError 
     def detail
-      ERROR_CODES[:file_error]
+      Cartodb.error_codes[:file_error]
     end  
   end
   
   class TableCopyError < StandardError 
     def detail
-      ERROR_CODES[:table_copy_error]
+      Cartodb.error_codes[:table_copy_error]
     end  
   end
   
   class QuotaExceeded < StandardError
     def detail
-      ERROR_CODES[:quota_error].merge(:raw_error => self.message)      
+      Cartodb.error_codes[:quota_error].merge(:raw_error => self.message)      
     end  
   end
 

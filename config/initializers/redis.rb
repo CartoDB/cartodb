@@ -1,4 +1,4 @@
-if APP_CONFIG[:redis].blank?
+if Cartodb.config[:redis].blank?
   raise <<-MESSAGE
 Please, configure Redis in your config/app_config.yml file as this:
   development:
@@ -9,10 +9,10 @@ Please, configure Redis in your config/app_config.yml file as this:
 MESSAGE
 end
 
-$tables_metadata = Redis.new(:host => APP_CONFIG[:redis]['host'], :port => APP_CONFIG[:redis]['port'], :db => 0)
-$threshold = Redis.new(:host => APP_CONFIG[:redis]['host'], :port => APP_CONFIG[:redis]['port'],       :db => 2)
-$api_credentials = Redis.new(:host => APP_CONFIG[:redis]['host'], :port => APP_CONFIG[:redis]['port'], :db => 3)
-$users_metadata = Redis.new(:host => APP_CONFIG[:redis]['host'], :port => APP_CONFIG[:redis]['port'], :db => 5)
+$tables_metadata = Redis.new(:host => Cartodb.config[:redis]['host'], :port => Cartodb.config[:redis]['port'], :db => 0)
+$threshold = Redis.new(:host => Cartodb.config[:redis]['host'], :port => Cartodb.config[:redis]['port'],       :db => 2)
+$api_credentials = Redis.new(:host => Cartodb.config[:redis]['host'], :port => Cartodb.config[:redis]['port'], :db => 3)
+$users_metadata = Redis.new(:host => Cartodb.config[:redis]['host'], :port => Cartodb.config[:redis]['port'], :db => 5)
 
 # TO ACTIVATE when decided how to do it more efficiently without filling the Redis
-# $queries_log = Redis.new(:host => APP_CONFIG[:redis]['host'], :port => APP_CONFIG[:redis]['port'],     :db => 1)
+# $queries_log = Redis.new(:host => Cartodb.config[:redis]['host'], :port => Cartodb.config[:redis]['port'],     :db => 1)

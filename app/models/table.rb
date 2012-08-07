@@ -1261,8 +1261,8 @@ TRIGGER
   # move to C
   def set_trigger_cache_timestamp
 
-    varnish_host = APP_CONFIG[:varnish_management].try(:[],'host') || '127.0.0.1'
-    varnish_port = APP_CONFIG[:varnish_management].try(:[],'port') || 6082
+    varnish_host = Cartodb.config[:varnish_management].try(:[],'host') || '127.0.0.1'
+    varnish_port = Cartodb.config[:varnish_management].try(:[],'port') || 6082
 
     owner.in_database(:as => :superuser).run(<<-TRIGGER
     CREATE OR REPLACE FUNCTION update_timestamp() RETURNS trigger AS
@@ -1595,11 +1595,11 @@ SQL
   end
 
   def tile_request(request_method, request_uri, form = {})
-    uri  = "#{owner.username}.#{APP_CONFIG[:tile_host]}"
-    ip   = APP_CONFIG[:tile_ip] || '127.0.0.1'
-    port = APP_CONFIG[:tile_port] || 80
+    uri  = "#{owner.username}.#{Cartodb.config[:tile_host]}"
+    ip   = Cartodb.config[:tile_ip] || '127.0.0.1'
+    port = Cartodb.config[:tile_port] || 80
     http_req = Net::HTTP.new ip, port
-    request_headers = {'Host' => "#{owner.username}.#{APP_CONFIG[:tile_host]}"}
+    request_headers = {'Host' => "#{owner.username}.#{Cartodb.config[:tile_host]}"}
     case request_method
       when 'GET'
         http_res = http_req.request_get(request_uri, request_headers)

@@ -34,3 +34,29 @@
   }
 
 }
+
+.edit_name_dialog {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 5px;
+  @include border-radius(4px);
+  input {
+    font-size: 15px;
+    color: #333333;
+    border: 1px solid #000;
+    padding: (36px - 15px)/2;
+    @include border-radius(4px);
+    margin: 0 3px 0 0;
+  }
+  .content {
+    @include inline-block();
+    float: left;
+  }
+  a {
+    padding: 1px + (36px - 15px)/2 !important;
+    border: 1px solid #000 !important;
+    font-size: 15px !important;
+    font-weight: bold !important;
+    @include border-radius(4px);
+  }
+
+}

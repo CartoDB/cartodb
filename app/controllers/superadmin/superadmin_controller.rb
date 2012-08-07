@@ -6,7 +6,7 @@ class Superadmin::SuperadminController < ActionController::Base
 
   def authenticate
     authenticate_or_request_with_http_basic do |username, password|
-      username == APP_CONFIG[:superadmin]["username"] && password == APP_CONFIG[:superadmin]["password"]
+      username == Cartodb.config[:superadmin]["username"] && password == Cartodb.config[:superadmin]["password"]
     end
   end
 end

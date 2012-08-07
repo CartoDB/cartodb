@@ -36,7 +36,7 @@
     <div class="header">
       <a class="logo" href="<%= CartoDB.hostname %>">CartoDB</a>
       <ul>
-        <li><a href="<%= APP_CONFIG[:developers_host] %>">Developers</a></li>
+        <li><a href="<%= Cartodb.config[:developers_host] %>">Developers</a></li>
         <li><a href="http://cartodb.tumblr.com" target="_blank">Blog</a></li>
         <li class="last">
           <% if env['warden'].authenticated?(request.subdomain) %>

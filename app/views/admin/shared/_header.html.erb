@@ -9,7 +9,7 @@
           <input type="submit" value="Search" />
         </form>
       </li>
-      <li><%= link_to 'developers', APP_CONFIG[:developers_host] %></a></li>
+      <li><%= link_to 'developers', Cartodb.config[:developers_host] %></a></li>
       <% if current_user.admin %>
         <li><%= link_to 'sheriff', superadmin_users_path %></li>
       <% end %>

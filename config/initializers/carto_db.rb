@@ -1,11 +1,11 @@
 module CartoDB
   
   def self.session_domain
-    APP_CONFIG[:session_domain]
+    Cartodb.config[:session_domain]
   end
   
   def self.secret_token
-    APP_CONFIG[:secret_token]
+    Cartodb.config[:secret_token]
   end
   
   def self.domain
@@ -29,11 +29,11 @@ module CartoDB
   end
   
   def self.account_host
-    APP_CONFIG[:account_host]
+    Cartodb.config[:account_host]
   end
   
   def self.account_path
-    APP_CONFIG[:account_path]
+    Cartodb.config[:account_path]
   end
   
   module API

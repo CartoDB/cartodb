@@ -5,7 +5,7 @@ class Api::Json::UsersController < Api::ApplicationController
   end
 
   def show
-    user = User.filter({ :username => params[:id] }).first || User[params[:id]]
+    user = current_user
     render :json => user.data
   end
 end

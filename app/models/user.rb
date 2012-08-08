@@ -410,6 +410,21 @@ class User < Sequel::Model
     end
   end
 
+  def data
+    {
+      :username => self.username,
+      :account_type => self.account_type,
+      :private_tables => self.private_tables_enabled,
+      :table_quota => self.table_quota,
+      :table_count => self.table_count,
+      :byte_quota => self.quota_in_bytes,
+      :remaining_table_quota => self.remaining_table_quota,
+      :remaining_byte_quota => self.remaining_quota.to_f,
+      :api_calls => (1..30).map{|i|i},
+      :api_key => self.get_map_key
+    }
+  end
+
   # Whitelist Permissions
   def set_database_permissions
     in_database(:as => :superuser) do |user_database|

@@ -127,6 +127,11 @@
         maxZoom: this.map.get('maxZoom')
       });
 
+      this.layerTypeMap = {
+        "Tiled": cdb.geo.LeafLetTiledLayerView,
+        "CartoDB": cdb.geo.LeafLetLayerCartoDBView
+      };
+
       // this var stores views information for each model
       this.layers = {};
 
@@ -234,10 +239,10 @@
     _addLayer: function(layer) {
       var lyr, layer_view;
 
-      if (layer.get('type') == "Tiled") {
-        layer_view = new cdb.geo.LeafLetTiledLayerView(layer, this.map_leaflet);
-      } else if (layer.get('type') == 'CartoDB') {
-        layer_view = new cdb.geo.LeafLetLayerCartoDBView(layer, this.map_leaflet);
+      var layerClass = this.layerTypeMap[layer.get('type')];
+
+      if (layerClass) {
+        layer_view = new layerClass(layer, this.map_leaflet);
       } else {
         cdb.log.error("MAP: " + layer.get('type') + " can't be created");
       }

@@ -1,6 +1,7 @@
 //= require codemirror
 //= require simple-hint
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
+//= require ../../../lib/assets/javascripts/utils/carto.codemirror
 //= require_tree ../../../lib/assets/javascripts/cartodb/models
 //= require ../../../lib/assets/javascripts/cartodb/common/user_menu
 //= require_tree ../../../lib/assets/javascripts/cartodb/common

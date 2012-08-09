@@ -18,6 +18,10 @@
     @include background(image-url("img/layout/relief.png") repeat 0 0,linear-gradient(#519FD9,#4278BB)); 
     @include box-shadow(rgba(black, 0.3) 0 0 12px, rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
 
+    &.query {
+      @include background(image-url("img/layout/relief.png") repeat 0 0,linear-gradient(#FF9900,#F37611)); 
+    }
+
     border-bottom: 1px solid #2F567E;
     z-index:2;
 
@@ -176,7 +180,7 @@
           width:100%;
           height:50px;
 
-          h1,h2,a.status {
+          h1,h2,a.button_header{
             @include inline-block();
             margin:0;
             vertical-align:middle;
@@ -202,7 +206,7 @@
             }
           }
 
-          a.status {
+          a.button_header {
             margin-left:10px;
             padding:2px 6px;
             background:white;
@@ -216,6 +220,7 @@
               text-decoration:none;
               @include box-shadow(rgba(black,0.19) 0 0 2px 2px);
             }
+            text-transform: uppercase;
           }
         }
 

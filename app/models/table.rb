@@ -560,8 +560,8 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def infowindow_with_new_model=(value)
-    layer = map.try(:layers).try(:first)
-    layer.set(:infowindow => value)
+    layer = map.layers.first
+    layer.update(:infowindow => value)
     self.infowindow_without_new_model = value
   end
   alias_method_chain :infowindow=, :new_model
@@ -571,7 +571,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def infowindow_with_new_model
-    map.try(:layers).try(:first).try(:infowindow)
+    map.layers.first.infowindow
   end
   alias_method_chain :infowindow, :new_model
 

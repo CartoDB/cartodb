@@ -54,6 +54,17 @@ describe Table do
       table2.name.should == "untitled_table_2"
     end
 
+    it "should create default associated map and layers" do
+      table = Table.new
+      table.user_id = @user.id
+      table.save.reload
+
+      table.map.should be_an_instance_of(Map)
+      table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}
+      table.map.layers.count.should == 2
+      table.map.layers.map(&:kind).should == ['tiled', 'carto']
+    end
+
     it "should return a sequel interface" do
       table = create_table :user_id => @user.id
       table.sequel.class.should == Sequel::Postgres::Dataset
@@ -1344,6 +1355,7 @@ describe Table do
       table.infowindow = "id, name, description"
 
       table.infowindow.should == "id, name, description"
+      table.infowindow_without_new_model.should == "id, name, description"
     end
 
     it "should let a user save map_metadata and retrieve it" do

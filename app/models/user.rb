@@ -412,6 +412,7 @@ class User < Sequel::Model
 
   def data
     {
+      :id => self.id,
       :username => self.username,
       :account_type => self.account_type,
       :private_tables => self.private_tables_enabled,

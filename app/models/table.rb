@@ -13,6 +13,8 @@ class Table < Sequel::Model(:user_tables)
                         :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
                         :table_size => :table_size, :map_id => :map_id, :description => :description }
   
+  many_to_one :map
+
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
   end
@@ -443,6 +445,9 @@ class Table < Sequel::Model(:user_tables)
 
   def after_create
     super
+
+    self.create_default_map_and_layers
+
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
     owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
     add_python
@@ -467,6 +472,13 @@ class Table < Sequel::Model(:user_tables)
       @data_import.finished
     end
     add_table_to_stats
+  end
+
+  def create_default_map_and_layers
+    m = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
+    self.map_id = m.id
+    m.add_layer(Layer.create(Layer::DEFAULT_BASE_OPTIONS))
+    m.add_layer(Layer.create(Layer::DEFAULT_DATA_OPTIONS))
   end
 
   def after_update
@@ -547,9 +559,21 @@ class Table < Sequel::Model(:user_tables)
     $tables_metadata.hset(key, 'infowindow', value)
   end
 
+  def infowindow_with_new_model=(value)
+    layer = map.layers.first
+    layer.update(:infowindow => value)
+    self.infowindow_without_new_model = value
+  end
+  alias_method_chain :infowindow=, :new_model
+
   def infowindow
     $tables_metadata.hget(key, 'infowindow')
   end
+
+  def infowindow_with_new_model
+    map.layers.first.infowindow
+  end
+  alias_method_chain :infowindow, :new_model
 
   def map_metadata=(value)
     $tables_metadata.hset(key, 'map_metadata', value)

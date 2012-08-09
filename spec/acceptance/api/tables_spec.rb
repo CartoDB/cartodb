@@ -230,7 +230,7 @@ feature "API 1.0 tables management" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
     delete_json api_table_url(table1.name) do |response|
-      response.status.should be_success
+      response.status.should == 204
     end
   end
 

@@ -3,6 +3,10 @@ module Cartodb
     return @config if @config
     config_file_hash = YAML.load_file("#{Rails.root}/config/app_config.yml")
     @config ||= config_file_hash[Rails.env].try(:to_options!)
+
+    if @config.blank?
+      raise "Can't find App configuration for #{Rails.env} environment on app_config.yml"
+    end
   end
 
   def self.error_codes

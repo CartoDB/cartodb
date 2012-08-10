@@ -46,4 +46,23 @@ class Layer < Sequel::Model
 
     errors.add(:kind, "not accepted") unless ALLOWED_KINDS.include?(kind)
   end
+
+  def to_tilejson
+    o = JSON.parse(self.values[:options])
+    if self.kind == 'carto'
+
+      url = o['tiler_protocol'] + "://" + o['user_name'] + "." + o['tiler_domain'] + ":" + o ['tiler_port'] + "/tiles/" + o['table_name'] + "/{z}/{x}/{y}.png"
+
+    else
+      url = o['urlTemplate']
+    end
+
+    return {
+      "version" => "1.0.0",
+      "scheme" => "xyz",
+      "tiles" => [url]
+    }.to_json
+
+  end
 end
+

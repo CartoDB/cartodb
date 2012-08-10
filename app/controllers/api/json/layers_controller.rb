@@ -15,7 +15,14 @@ class Api::Json::LayersController < Api::ApplicationController
   def show
     @layer = Layer[params[:id]]
 
-    render_jsonp(@layer.public_values)
+    respond_to do |format|
+      format.tilejson do 
+       render :text => "#{params[:callback]}( #{@layer.to_tilejson} )"
+      end
+      format.json do 
+        render_jsonp(@layer.public_values)
+      end
+    end
   end
 
   def create

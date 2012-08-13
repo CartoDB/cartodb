@@ -5,9 +5,9 @@
    */
 
   @import "compass";
-  @import "mixins";
-  @import "sprites";
-  @import "vars";
+  @import "../common/mixins";
+  @import "../common/sprites";
+  @import "../common/vars";
 
   .table_panel {
     position:fixed;

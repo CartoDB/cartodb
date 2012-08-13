@@ -1,5 +1,6 @@
 
-@import "forms";
+@import "../common/forms";
+
 
 .new_column_dialog {
 
@@ -9,6 +10,4 @@
   input {
     width: 253px - 11*2px;
   }
-
-
 }

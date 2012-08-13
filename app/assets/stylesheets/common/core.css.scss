@@ -7,8 +7,8 @@
   @import "compass";
   @import "compass/reset";
   @import "compass/css3";
-  @import "mixins";
-  @import "vars";
+  @import "../common/sprites";
+  @import "../common/vars";
 
 
   /*
@@ -32,10 +32,12 @@
   h3 {font-size:25px;}
   strong {font-weight:bold;}
 
+
   /*
    *  HELP CLASSES
-   *  Some help classes to help you in the view
+   *  Some classes to help you in the view
    */
+
   .left {float:left}
   .right {float:right}
   .inner {position:relative; width:$w; margin:0 auto;}

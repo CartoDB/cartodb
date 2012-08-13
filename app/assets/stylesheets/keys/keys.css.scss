@@ -5,6 +5,13 @@
 
 	@import "compass";
 
+	article {
+		@include inline-block();
+		width:100%;
+		padding:40px 0 50px 0;
+		background: image-url('layout/bkg.jpg') repeat 0 0;
+	}
+
 	section.long {
 
 		div.head {

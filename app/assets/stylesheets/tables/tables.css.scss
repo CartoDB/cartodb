@@ -5,9 +5,9 @@
 
   @import "compass";
   @import "compass/css3";
-  @import "mixins";
-  @import "fonts";
-  @import "sprites";
+  @import "../common/mixins";
+  @import "../common/fonts";
+  @import "../common/sprites";
 
 
   $text-fonts: "Helvetica Neue", "Helvetica", Arial;

@@ -1,11 +1,10 @@
 
-
   /*
    * Map panel for table view
    */
 
   @import "compass";
-  @import "mixins";
+  @import "../common/mixins";
 
   div.map {
     position:absolute;

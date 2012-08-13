@@ -5,9 +5,8 @@
    */
 
   @import "compass";
-  @import "compass/css3";
-  @import "sprites";
-  @import "mixins";
+  @import "../common/sprites";
+  @import "../common/mixins";
 
   .flash {
     position:relative;

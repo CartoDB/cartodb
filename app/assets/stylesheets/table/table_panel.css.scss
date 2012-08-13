@@ -144,6 +144,28 @@
         .CodeMirror {
           border-bottom:1px solid rgba(#999999,0.25);
         }
+
+        .vis_options {
+          li {
+            @include inline-block();
+          }
+        }
+
+        .forms {
+          padding: 30px;
+          li {
+            padding: (46px - 15px)/2 0;
+            font-size: 15px;
+            color: #CCCCCC;
+            border-bottom:1px solid rgba(#999999,0.25);
+          }
+          span {
+            @include inline-block();
+            &.field {
+              float: right;
+            }
+          }
+        }
       }
     }
   }

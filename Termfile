@@ -12,7 +12,7 @@ end
 
 tab "cartodb app server" do
   run "echo 'Hello developer, this is cartodb app server'"
-  run "cd $CARTODB_PATH"
+  run "cd $CARTODB10_PATH"
   run "git pull"
   run "bundle install"
   run "bin/rake db:reset"
@@ -20,14 +20,14 @@ tab "cartodb app server" do
 end
 
 tab "cartodb resque server" do
-  run "cd $CARTODB_PATH"
+  run "cd $CARTODB10_PATH"
   run "sleep 30"
   run "script/resque"
 end
 
 tab "cartodb textmate" do
   run "cd $CARTODB_PATH"
-  run "mate ."
+  run "subl ."
 end
 
 tab "cartodb sql api" do
@@ -36,6 +36,6 @@ tab "cartodb sql api" do
 end
 
 tab "cartodb tiler" do
-  run "cd $CARTODB_PATH/../Windshaft-cartodb"
+  run "cd $CARTODB10_PATH/../Windshaft-cartodb"
   run "node app.js development"
 end

@@ -26,7 +26,7 @@
           <li>
             <div class="copy">
               <label class="uppercase smaller strong lighter">YOUR API KEY</label>
-              <p class="margin5"><%= current_user.get_map_key %></p>
+              <p class="margin5 <%= "light italic" if !current_user.get_map_key %>"><%= current_user.get_map_key || "No api key" %></p>
               <a class="tooltip copy" href="#copy" title="Copy this">copy</a>
             </div>
           </li>

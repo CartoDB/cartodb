@@ -1,12 +1,12 @@
 
   /*
-   * Headerof CartoDB
+   * Header of CartoDB
    */
 
   @import "compass";
   @import "compass/css3";
-  @import "mixins";
-  @import "sprites";
+  @import "../common/mixins";
+  @import "../common/sprites";
 
   header {
     position:relative;

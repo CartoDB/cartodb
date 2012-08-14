@@ -114,17 +114,12 @@
             font-size: 15px;
             color: #CCCCCC;
             border-bottom:1px solid rgba(#999999,0.25);
-            a {
-              color: #CCCCCC;
-            }
+
             .switches {
               float: right;
             }
             span.title {
               margin-right: 20px;
-            }
-            .title.enabled {
-              color: #000000;
             }
           }
           li.enabled {

@@ -160,7 +160,7 @@ beforehand.
 
 ## Install Varnish
 
-[Varish](https://www.varnish-cache.org) is a web application
+[Varnish](https://www.varnish-cache.org) is a web application
 accelerator. Components like Windshaft use it to speed up serving tiles
 via the Maps API. 
 

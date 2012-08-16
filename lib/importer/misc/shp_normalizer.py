@@ -10,6 +10,9 @@ from urllib2 import urlopen
 import json
 import subprocess
 
+if len(sys.argv) != 3:
+    print "usage: python %s shp_file name" % sys.argv[0]
+    sys.exit()
 shp_file = sys.argv[1]
 name = sys.argv[2]
 

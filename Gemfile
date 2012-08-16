@@ -38,7 +38,9 @@ group :assets do
   gem 'uglifier',             '~> 1.0.3'
   gem 'therubyracer',         '~> 0.9.10'
   gem 'compass',              '~> 0.12.1'
-  gem 'compass-rails',        '~> 1.0.1'  
+  gem 'compass-rails',        '~> 1.0.1'
+  gem 'chunky_png',           '~> 1.2.6'
+  gem 'oily_png',             '~> 1.0.2'
 end
 
 # Importer

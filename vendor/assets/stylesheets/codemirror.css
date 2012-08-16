@@ -1,9 +1,17 @@
 .CodeMirror {
+  position:absolute;
+  top:61px;
+  bottom:80px;
+  left:0;
+  right:0;
+  display:block;
+  padding: 8px 0;
   line-height: 1em;
-  font-family: monospace;
+  font-family: monospace, "Courier";
+  z-index:1;
 
   /* Necessary so the scrollbar can be absolutely positioned within the wrapper on Lion. */
-  position: relative;
+  /*position: relative;*/
   /* This prevents unwanted scrollbars from showing up on the body and wrapper in IE. */
   overflow: hidden;
 }
@@ -11,7 +19,7 @@
 .CodeMirror-scroll {
   overflow-x: auto;
   overflow-y: hidden;
-  height: 300px;
+  height: 100%;
   /* This is needed to prevent an IE[67] bug where the scrolled content
      is visible outside of the scrolling box. */
   position: relative;
@@ -52,23 +60,28 @@
 .CodeMirror-gutter {
   position: absolute; left: 0; top: 0;
   z-index: 10;
-  background-color: #f7f7f7;
-  border-right: 1px solid #eee;
+  background-color: white;
   min-width: 2em;
   height: 100%;
 }
 .CodeMirror-gutter-text {
   color: #aaa;
   text-align: right;
-  padding: .4em .2em .4em .4em;
+  padding: .5em .2em .4em .4em;
   white-space: pre !important;
   cursor: default;
+  font-size:11px;
 }
 .CodeMirror-lines {
   padding: .4em;
   white-space: pre;
   cursor: text;
 }
+
+.CodeMirror-lines > div {
+  margin-left:45px!important;
+}
+
 .CodeMirror-lines * {
   /* Necessary for throw-scrolling to decelerate properly on Safari. */
   pointer-events: none;
@@ -86,7 +99,7 @@
   white-space: pre;
   word-wrap: normal;
   line-height: inherit;
-  color: inherit;
+  color: #666666;
 }
 
 .CodeMirror-wrap pre {
@@ -136,11 +149,11 @@ div.CodeMirror-selected { background: #d9d9d9; }
 
 /* Default theme */
 
-.cm-s-default span.cm-keyword {color: #708;}
+.cm-s-default span.cm-keyword {color: #FF9900;}
 .cm-s-default span.cm-atom {color: #219;}
 .cm-s-default span.cm-number {color: #164;}
 .cm-s-default span.cm-def {color: #00f;}
-.cm-s-default span.cm-variable {color: black;}
+.cm-s-default span.cm-variable {color: #666666;}
 .cm-s-default span.cm-variable-2 {color: #05a;}
 .cm-s-default span.cm-variable-3 {color: #085;}
 .cm-s-default span.cm-property {color: black;}

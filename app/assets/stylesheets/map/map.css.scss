@@ -90,7 +90,7 @@
       top:85px;
       left:20px;
       width:29px;
-      @include box-shadow(rgba(black,0.2) 0 0 2px 2px);
+      @include box-shadow(rgba(black,0.2) 0 0 4px 2px);
       z-index:5;
       background:white;
       @include border-radius(4px);
@@ -111,8 +111,8 @@
         }
 
         &.zoom_out {
-          padding:0 0 17px;
-          line-height:14px;
+          padding:0 0 18px;
+          line-height:13px;
         }
 
         &:hover {

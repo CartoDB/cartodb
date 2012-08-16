@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   before_filter :browser_is_html5_compliant?
   before_filter :check_domain
   before_filter :allow_cross_domain_access
+  before_filter :set_asset_debugging
   after_filter  :remove_flash_cookie
   
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
@@ -26,6 +27,10 @@ class ApplicationController < ActionController::Base
 
 
   protected
+
+  def set_asset_debugging
+    CartoDB::Application.config.assets.debug = false if Rails.env.development?
+  end
 
   def allow_cross_domain_access
     unless Rails.env.production? || Rails.env.staging?

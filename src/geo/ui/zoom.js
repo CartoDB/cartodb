@@ -1,12 +1,13 @@
 /**
-* View to control the zoom of the map.
-*
-* Usage:
-*
-* var zoomControl = new cdb.geo.ui.Zoom({ model: map });
-* mapView.$el.append(zoom.render().$el);
-*
-*/
+ * View to control the zoom of the map.
+ *
+ * Usage:
+ *
+ * var zoomControl = new cdb.geo.ui.Zoom({ model: map });
+ * mapWrapper.$el.append(zoomControl.render().$el);
+ *
+ */
+
 
 cdb.geo.ui.Zoom = cdb.core.View.extend({
 
@@ -36,14 +37,15 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
     return this;
   },
 
-  zoom_in: function() {
-    if (this.map.get("maxZoom") <= this.map.getZoom()) return;
+  zoom_in: function(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
     this.map.setZoom(this.map.getZoom() + 1);
   },
 
-  zoom_out: function() {
-    if (this.map.get("minZoom") >= this.map.getZoom()) return;
+  zoom_out: function(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
     this.map.setZoom(this.map.getZoom() - 1);
   }
-
 });

@@ -78,18 +78,84 @@
     }
 
     .views {
+      position:relative;
       @include inline-block();
       width:535px;
       height:100%;
       letter-spacing:0;
 
-      h1 {
-        padding: 22px 0 23px 30px;
+      h3 {
+        padding: 22px 0 21px 30px;
         border-bottom:1px solid rgba(#999999,0.25);
-        font-size: 15px;
+        font:normal 15px $text-fonts;
+        line-height:normal;
         color: #666666;
       }
 
+
+      // SQL PANEL & CARTO PANEL
+      .sql_panel, .carto_mod {
+        @include inline-block();
+        width:535px;
+        height:100%;
+
+        h3 {padding-left:52px;}
+
+        div.actions {
+          position:absolute;
+          bottom:0;
+          left:0;
+          right:0;
+          padding:18px 18px 18px 52px;
+          display:block;
+          height:45px;
+          border-top:1px solid rgba(#999999,0.25);
+          z-index:1;
+        }
+
+        div.error {
+          display:none;
+          position:absolute;
+          bottom:81px;
+          right:0;
+          left:0;
+          width:100%;
+          padding:17px 17px 17px 52px;
+          background:rgba(#FFD7E3,0.5);
+          color:#EB2466;
+          z-index:2;
+          font-size:13px;
+          border-top:1px solid #EBDCE0;
+        }
+      }
+
+
+      // SQL PANEL
+      .sql_panel {
+        &:after {
+          position:absolute;
+          content:' ';
+          top:0;
+          left:34px;
+          bottom:0;
+          width:1px;
+          height:100%;
+          background:rgba(#CCCCCC,0.50);
+        }
+        &:before {
+          position:absolute;
+          content:' ';
+          top:0;
+          left:36px;
+          bottom:0;
+          width:1px;
+          height:100%;
+          background:rgba(#509DD7,0.25);
+        }
+      }
+
+
+      // INFOWINDOW PANEL
       .infowindow_panel {
         .selector {
           padding: 23px 30px;
@@ -131,37 +197,190 @@
         }
       }
 
+
+      // CARTO PANEL
       .carto_mod {
-        .apply {
-          float: right;
-          margin-top: 30px;
-          margin-right: 30px;
-        }
-        .CodeMirror {
+        
+        nav {
+          display:block;
+          width:100%;
+          height:60px;
+          padding:0 0 0 20px;
           border-bottom:1px solid rgba(#999999,0.25);
-        }
-
-        .vis_options {
-          li {
+          a {
+            position:relative;
             @include inline-block();
-          }
-        }
+            vertical-align:bottom;
+            margin:16px 4px 0 0;
+            padding:14px 10px;
+            height:17px;
+            line-height:normal;
+            border:1px solid #E5E5E5;
+            border-bottom:0;
+            @include border-radius(3px);
 
-        .forms {
-          padding: 30px;
-          li {
-            padding: (46px - 15px)/2 0;
-            font-size: 15px;
-            color: #CCCCCC;
-            border-bottom:1px solid rgba(#999999,0.25);
-          }
-          span {
-            @include inline-block();
-            &.field {
-              float: right;
+            &.selected {
+              color:#333;
+              text-decoration:none;
+
+              &:before {
+                position:absolute;
+                content:' ';
+                bottom:1px;
+                left:0;
+                right:0;
+                height:1px;
+                width:100%;
+                background:white;
+              }
+              &:hover {
+                cursor:default;
+                text-decoration:none;
+              }
+            }
+
+            &.disabled {
+              @include opacity(0.3);
+              &:hover {
+                color:$link-color;
+                text-decoration:none;
+              }
             }
           }
         }
+
+        /* wizard */
+        div.wizard {
+          padding:30px;
+
+          ul.vis_options {
+
+            display:table;
+            width:100%;
+            letter-spacing:-4px;
+            
+            li {
+              display:table-cell;
+              padding:0 1px 0 0;
+
+              letter-spacing:0;
+
+              &:first-child {
+                a {@include border-left-radius(3px)}
+              }
+              &:last-child {
+                margin:0;
+                a {@include border-right-radius(3px)}
+              }
+
+
+              a {
+                display:block;
+                width:100%;
+                padding:15px 0;
+                font-size:13px;
+                color:#397DBA;
+                background:#F2F2F2;
+                text-align:center;
+
+                &:hover {
+                  color:white;
+                  background:#397DBA;
+                }
+
+                &.selected {
+                  color:white;
+                  background:#397DBA;
+
+                  &:hover {
+                    cursor:default;
+                    color:white;
+                    background:#397DBA;
+                  }
+                }
+
+                &.disabled {
+                  @include opacity(0.3);
+                  &:hover {
+                    color:#397DBA;
+                    background:#F2F2F2;
+                  }
+                }
+              }
+            }
+          }
+
+          div.forms {
+            ul {
+              width:100%;
+              margin:15px 0 0 0;
+
+              li {
+                overflow:auto;
+                display:block;
+                width:100%;
+                padding:13px 0;
+                border-bottom:1px solid rgba(#E5E5E5,0.5);
+
+                & span:first-child {
+                  float:left;
+                  color:#CCCCCC;
+                }
+
+                & span:last-child {
+                  float:right;
+                }
+              }
+            }
+          }
+        }
+
+        /* carto css editor */
+        div.editor {
+          &:after {
+            position:absolute;
+            content:' ';
+            top:61px;
+            left:34px;
+            bottom:0;
+            width:1px;
+            height:100%;
+            background:rgba(#CCCCCC,0.50);
+          }
+          &:before {
+            position:absolute;
+            content:' ';
+            top:61px;
+            left:36px;
+            bottom:0;
+            width:1px;
+            height:100%;
+            background:rgba(#509DD7,0.25);
+          }
+        }
+
+
+        // .vis_options {
+        //   li {
+        //     @include inline-block();
+        //   }
+        // }
+
+        // .forms {
+        //   padding: 30px;
+        //   li {
+        //     padding: (46px - 15px)/2 0;
+        //     font-size: 15px;
+        //     color: #CCCCCC;
+        //     border-bottom:1px solid rgba(#999999,0.25);
+        //   }
+        //   span {
+        //     @include inline-block();
+        //     &.field {
+        //       float: right;
+        //     }
+        //   }
+        // }
       }
     }
   }

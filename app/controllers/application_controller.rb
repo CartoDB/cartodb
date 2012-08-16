@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def set_asset_debugging
-    CartoDB::Application.config.assets.debug = false if Rails.env.development?
+    CartoDB::Application.config.assets.debug = true if Rails.env.development?
   end
 
   def allow_cross_domain_access

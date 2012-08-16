@@ -3,14 +3,14 @@
     <%= current_user.username %> |
   <% end %>
   <%= content_for(:js) do %>
-    <%= javascript_include_tag :application, :cdb, :dashboard %>
+    <%= javascript_include_tag :application, :cdb, :dashboard, :debug => false %>
     <script type="text/javascript">
       var username = "<%= current_user.username %>"
         , user_data = JSON.parse('<%=raw current_user.data.to_json %>');
     </script>
   <% end %>
   <%= content_for(:css) do %>
-    <%= stylesheet_link_tag :common, :tables, :media => 'all' %>
+    <%= stylesheet_link_tag :common, :tables, :media => 'all', :debug => false %>
   <% end %>
 
   <%= render 'admin/shared/subheader' %>

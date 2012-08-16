@@ -208,4 +208,26 @@ describe('core.ui.common.TabPane', function() {
     expect(v2.el.style.display).toEqual('none');
 
   });
+
+  it("should call activated and deactivaed on tab if exists", function() {
+
+    var // Let's create the views
+    v1 = new cdb.core.View(),
+    v2 = new cdb.core.View();
+
+    v1.activated = function() {};
+    v2.deactivated = function() {};
+
+    spyOn(spy, 'tabDisabled');
+    spyOn(spy, 'tabEnabled');
+
+    pane.addTab('tab1', v1);
+    pane.addTab('tab2', v2);
+    var a = spyOn(v1, 'activated');
+    var d = spyOn(v2, 'deactivated');
+    pane.active('tab1');
+    expect(a).toHaveBeenCalled();
+    expect(d).toHaveBeenCalled();
+  });
+
 });

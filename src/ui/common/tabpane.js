@@ -104,6 +104,9 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
           vid_old.hide();
           self.trigger('tabDisabled', this.activeTab , vid_old);
           self.trigger('tabDisabled:' + this.activeTab,  vid_old);
+          if(vid_old.deactivated) {
+            vid_old.deactivated();
+          }
         }
 
         v.show();

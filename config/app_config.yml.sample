@@ -19,6 +19,27 @@ development:
     username: "superadmin"
     password: "monkey"
 
+staging:
+  session_domain: 'staging.cartodb.com'
+  secret_token: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+  account_host: 'localhost.lan:4000'
+  account_path: '/account'
+  tile_host: 'localhost.lan'
+  tile_port: '8181'
+  developers_host: 'http://developers.localhost.lan:3000'
+  secret_token: "some_secret"
+  amazon_access_key: ''
+  amazon_secret_key: ''
+  varnish_management:
+    host: '127.0.0.1'
+    post: 6082
+  redis:
+    host: '127.0.0.1'
+    port: 6379
+  superadmin:
+    username: "superadmin"
+    password: "monkey"
+
 test:
   session_domain: '.localhost.lan'
   secret_token: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'

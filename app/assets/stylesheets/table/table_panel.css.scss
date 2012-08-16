@@ -282,6 +282,7 @@
                 color:#397DBA;
                 background:#F2F2F2;
                 text-align:center;
+                text-transform:capitalize;
 
                 &:hover {
                   color:white;
@@ -330,6 +331,8 @@
                 & span:last-child {
                   float:right;
                 }
+
+                &:last-child {border:none;}
               }
             }
           }

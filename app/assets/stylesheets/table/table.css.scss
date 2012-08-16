@@ -225,6 +225,9 @@
             }
 
             &:last-child {
+              div {
+                padding-right:75px;
+              }
               border-right:none;
             }
           }

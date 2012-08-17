@@ -5,46 +5,73 @@
 
   @import "compass";
 
-  .dropdown {
+  div.dropdown {
     position:absolute;
     display:none;
-    z-index:20;
+    background:white;
+    @include border-radius(3px);
+    border:none;
+    @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
+    z-index:50;
 
-    &.orientation_top {
-      ul {
+    &:before {
+      content:' ';
+      position:absolute;
+      display:block!important;
+      width:0;
+      height:0;
+      z-index:10;
+    }
+
+    // Tick for 12 possibilities
+    &.tick_top, &.tick_middle, &.tick_bottom {
+      &.horizontal_left {
         &:before {
-          content:' ';
-          position:absolute;
-          display:block!important;
+          left:-5px;
+          border-right:8px solid white;
+          border-top:8px solid transparent;
+          border-bottom:8px solid transparent;
+        }
+      }
+      &.horizontal_right {
+        &:before {
+          right:-5px;
+          border-left:8px solid white;
+          border-top:8px solid transparent;
+          border-bottom:8px solid transparent;
+        }
+      }
+    }
+
+    &.tick_top:before {top:10px;}
+    &.tick_middle:before {left:50%; margin-top:-4px;}
+    &.tick_bottom:before {bottom:10px;}
+
+
+    &.tick_left, &.tick_center, &.tick_right {
+      &.vertical_top {
+        &:before {
+          bottom:-5px;
+          border-top:8px solid white;
+          border-left:8px solid transparent;
+          border-right:8px solid transparent;
+        }
+      }
+      &.vertical_bottom {
+        &:before {
           top:-5px;
-          right:10px;
-          width:0;
-          height:0;
           border-bottom:8px solid white;
           border-left:8px solid transparent;
           border-right:8px solid transparent;
-          z-index:10;
         }
       }
     }
 
-    &.orientation_left {
-      ul {
-        &:before {
-          content:' ';
-          position:absolute;
-          display:block!important;
-          top: 5px;
-          left: -8px;
-          width:0;
-          height:0;
-          border-right:8px solid #FFF;
-          border-bottom:8px solid transparent;
-          border-top:8px solid transparent;
-          z-index:10;
-        }
-      }
-    }
+    &.tick_left:before {left:10px;}
+    &.tick_center:before {left:50%; margin-left:-4px;}
+    &.tick_right:before {right:10px;}
+
+
 
     ul {
       position:relative;
@@ -52,10 +79,6 @@
       width:100%;
       margin:0;
       padding:0;
-      background:white;
-      @include border-radius(3px);
-      border:none;
-      @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
       list-style:none;
       overflow:visible;
 

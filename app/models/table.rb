@@ -554,13 +554,9 @@ class Table < Sequel::Model(:user_tables)
   def manage_privacy
     if privacy == PRIVATE
       owner.in_database(:as => :superuser).run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
-      # TODO: deprecate setting "privacy" in redis, see:
-      # https://github.com/Vizzuality/Windshaft-cartodb/commit/9f2b5420
       $tables_metadata.hset key, "privacy", PRIVATE
     elsif privacy == PUBLIC
       owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
-      # TODO: deprecate setting "privacy" in redis, see:
-      # https://github.com/Vizzuality/Windshaft-cartodb/commit/9f2b5420
       $tables_metadata.hset key, "privacy", PUBLIC 
     end        
   end

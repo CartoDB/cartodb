@@ -22,13 +22,17 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
   className: 'dropdown',
 
   events: {
-    "click ul>li>a" : "_fireClick"
+    "click ul li a" : "_fireClick"
   },
 
   default_options: {
     width: 160,
     speedIn: 150,
-    speedOut: 300
+    speedOut: 300,
+    vertical_position: "down",
+    horizontal_position: "right",
+    tick: "right",
+    horizontal_offset: 0
   },
 
   initialize: function() {
@@ -51,7 +55,11 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
   render: function() {
     // Render
     var $el = this.$el;
-    $el.html(this.template_base(this.options));
+    $el
+      .html(this.template_base(this.options))
+      .css({
+        width: this.options.width
+      })
     return this;
   },
 
@@ -70,31 +78,53 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
   },
 
   hide: function() {
-    var self = this;
     this.isOpen = false;
     this.$el.hide();
   },
 
-  open: function() {
-      
-    this.isOpen = true;
-
-    // Positionate
-    var targetPos = $(this.options.target).offset()
-      , targetWidth = $(this.options.target).outerWidth()
-      , targetHeight = $(this.options.target).outerHeight();
-
+  show: function() {
     this.$el.css({
-      top: targetPos.top + targetHeight + 10,
-      left: targetPos.left + targetWidth - this.options.width + 15,
-      width: this.options.width,
       display: "block",
       opacity: 1
     });
+    this.isOpen = true;
+  },
+
+  open: function(ev,target) {
+    // Target
+    var $target = target && $(target) || this.options.target;
+    this.options.target = $target;
+
+    // Positionate
+    var targetPos     = $target[this.options.position || 'offset']()
+      , targetWidth   = $target.outerWidth()
+      , targetHeight  = $target.outerHeight()
+      , elementWidth  = this.$el.outerWidth()
+      , elementHeight = this.$el.outerHeight()
+      , self = this;
+
+    this.$el.css({
+      top: targetPos.top + parseInt((self.options.vertical_position == "up") ? (- elementHeight - 10) : (targetHeight + 10)),
+      left: targetPos.left + parseInt((self.options.horizontal_position == "left") ? (self.options.horizontal_offset - 15) : (targetWidth - elementWidth + 15 - self.options.horizontal_offset))
+    })
+    .addClass(
+      // Add vertical and horizontal position class
+      (this.options.vertical_position == "up" ? "vertical_top" : "vertical_bottom" ) 
+      + " " +
+      (this.options.horizontal_position == "right" ? "horizontal_right" : "horizontal_left" )
+      + " " +
+      // Add tick class
+      "tick_" + this.options.tick
+    )
+
+    // Show it
+    this.show();
+
+    // Dropdown openned
+    this.isOpen = true;
   },
 
   _fireClick: function(ev) {
     this.trigger("optionClicked", ev, this.el);
   }
-
 });

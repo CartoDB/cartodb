@@ -1,21 +1,19 @@
 /**
  * @name cartodb-leaflet
- * @version 0.49 [July 16, 2012]
+ * @version 0.51 [August 15, 2012]
  * @author: jmedina@vizzuality.com
  * @fileoverview <b>Author:</b> jmedina@vizzuality.com<br/> <b>Licence:</b>
  *               Licensed under <a
  *               href="http://opensource.org/licenses/mit-license.php">MIT</a>
  *               license.<br/> This library lets you to use CartoDB with Leaflet.
- *
+ *                 
  */
-
+ 
 
 if (typeof(L.CartoDBLayer) === "undefined") {
 
   L.CartoDBLayer = L.Class.extend({
-
-    version: "0.49",
-
+    
     includes: L.Mixin.Events,
 
     options: {
@@ -57,8 +55,8 @@ if (typeof(L.CartoDBLayer) === "undefined") {
      *    sql_domain        -     SQL API domain (opcional - default = 'cartodb.com')
      *    sql_port          -     SQL API port as a string (opcional - default = '80')
      *    extra_params      -     In case you want to pass aditional params to cartodb tiler, pass them
-     *                            as an object
-     *    cdn_url           -     If you want to use a CDN as a proxy set the URL
+     *                            as an object     
+     *    cdn_url           -     If you want to use a CDN as a proxy set the URL   
      */
 
     initialize: function (options) {
@@ -71,7 +69,7 @@ if (typeof(L.CartoDBLayer) === "undefined") {
           throw('cartodb-leaflet needs at least a CartoDB table name and the Leaflet map object :(');
         } else { return }
       }
-
+      
       // Bounds? CartoDB does it
       if (options.auto_bound)
         this.setBounds();
@@ -195,9 +193,11 @@ if (typeof(L.CartoDBLayer) === "undefined") {
       if (this.interaction) {
         if (bool) {
           var self = this;
-          this.interaction.on('on', function(o) {self._bindWaxEvents(self.options.map,o)});
+          this.interaction.on('on', function(o) {self._bindWaxOnEvents(self.options.map,o)});
+          this.interaction.on('off', function(o) {self._bindWaxOffEvents()});
         } else {
           this.interaction.off('on');
+          this.interaction.off('off');
         }
       }
     },
@@ -362,34 +362,19 @@ if (typeof(L.CartoDBLayer) === "undefined") {
      */
     _addSimple: function () {
 
+      // Then add the cartodb tiles
+      var tile_style = (this.options.tile_style)? encodeURIComponent(this.options.tile_style.replace(/\{\{table_name\}\}/g,this.options.table_name)) : ''
+        , query = encodeURIComponent(this.options.query.replace(/\{\{table_name\}\}/g,this.options.table_name));
+
       // Add the cartodb tiles
-      var cartodb_url = this.generateUrl("tiler") + '/tiles/' + this.options.table_name + '/{z}/{x}/{y}.png?'
-
-      // set params
-      var params = {};
-      if(this.options.query) {
-        params.sql = this.options.query;
-      }
-      if(this.options.style) {
-        params.style = this.options.style;
-      }
-      var url_params = [];
-      for(var k in params) {
-        var q = encodeURIComponent(
-          params[k].replace(/\{\{table_name\}\}/g, this.options.table_name)
-        );
-        url_params.push(k + "=" + q);
-      }
-
-      cartodb_url += url_params.join('&');
-
-      // extra_params?
+      var cartodb_url = this.generateUrl("tiler") + '/tiles/' + this.options.table_name + '/{z}/{x}/{y}.png?sql=' + query +'&style=' + tile_style;
+      
+      // extra_params? 
       for (_param in this.options.extra_params) {
          cartodb_url += "&"+_param+"="+this.options.extra_params[_param];
       }
 
-      cartodb_url = cartodb_url.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-
+      
       this.layer = new L.TileLayer(cartodb_url,{attribution:'CartoDB', opacity: this.options.opacity});
 
       this.options.map.addLayer(this.layer,false);
@@ -400,7 +385,7 @@ if (typeof(L.CartoDBLayer) === "undefined") {
      * Add interaction cartodb tiles to the map
      */
     _addInteraction: function () {
-
+      
       var self = this;
 
       // interaction placeholder
@@ -412,14 +397,8 @@ if (typeof(L.CartoDBLayer) === "undefined") {
       this.interaction = wax.leaf.interaction()
         .map(this.options.map)
         .tilejson(this.tilejson)
-        .on('on',function(o) {self._bindWaxEvents(self.options.map,o)})
-        .on('off', function(){
-          if (self.options.featureOut) {
-            return self.options.featureOut && self.options.featureOut();
-          } else {
-            if (self.options.debug) throw('featureOut function not defined');
-          }
-        });
+        .on('on', function(o) {self._bindWaxOnEvents(self.options.map,o)})
+        .on('off', function(o) {self._bindWaxOffEvents()});
     },
 
 
@@ -428,7 +407,7 @@ if (typeof(L.CartoDBLayer) === "undefined") {
      * @param {Object} Layer map object
      * @param {Event} Wax event
      */
-    _bindWaxEvents: function(map,o) {
+    _bindWaxOnEvents: function(map,o) {
       var layer_point = this._findPos(map,o)
         , latlng = map.layerPointToLatLng(layer_point);
 
@@ -457,25 +436,35 @@ if (typeof(L.CartoDBLayer) === "undefined") {
 
 
     /**
+     * Bind off event for wax interaction
+     */
+    _bindWaxOffEvents: function(){
+      if (this.options.featureOut) {
+        return this.options.featureOut && this.options.featureOut();
+      } else {
+        if (this.options.debug) throw('featureOut function not defined');
+      }
+    },
+
+
+    /**
      * Generate tilejson for wax
      * @return {Object} Options for L.TileLayer
      */
     _generateTileJson: function () {
-      var core_url = this.generateUrl("tiler");
+      var core_url = this.generateUrl("tiler");  
       var base_url = core_url + '/tiles/' + this.options.table_name + '/{z}/{x}/{y}';
       var tile_url = base_url + '.png';
       var grid_url = base_url + '.grid.json';
-
+      
       // SQL?
       if (this.options.query) {
         var query = 'sql=' + encodeURIComponent(this.options.query.replace(/\{\{table_name\}\}/g,this.options.table_name));
-        query = query.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-
         tile_url = this._addUrlData(tile_url, query);
         grid_url = this._addUrlData(grid_url, query);
       }
-
-      // extra_params?
+      
+      // extra_params? 
       for (_param in this.options.extra_params) {
         tile_url = this._addUrlData(tile_url, _param+"="+this.options.extra_params[_param]);
         grid_url = this._addUrlData(grid_url, _param+"="+this.options.extra_params[_param]);
@@ -495,10 +484,10 @@ if (typeof(L.CartoDBLayer) === "undefined") {
         tile_url = this._addUrlData(tile_url, interactivity);
         grid_url = this._addUrlData(grid_url, interactivity);
       }
-
+      
       // Build up the tileJSON
       return {
-        blankImage: '../img/blank_tile.png',
+        blankImage: '../img/blank_tile.png', 
         tilejson: '1.0.0',
         scheme: 'xyz',
         tiles: [tile_url],
@@ -521,7 +510,7 @@ if (typeof(L.CartoDBLayer) === "undefined") {
      * Parse URI
      * @params {String} Tile url
      * @return {String} URI parsed
-     */
+     */    
     _parseUri: function (str) {
       var o = {
         strictMode: false,
@@ -559,27 +548,27 @@ if (typeof(L.CartoDBLayer) === "undefined") {
       url += (this._parseUri(url).query) ? '&' : '?';
       return url += data;
     },
-
+    
 
     /**
      * Generate a URL for the tiler
      * @params {String} Options including tiler_protocol, user_name, tiler_domain and tiler_port
-     */
+     */    
     generateUrl: function(type){
       //First check if we are using a CDN which in that case we dont need to do all this.
       if(this.options.cdn_url) {
         return this.options.cdn_url;
       }
-
+      
       if (type == "sql") {
-         return this.options.sql_protocol +
-             "://" + ((this.options.user_name)?this.options.user_name+".":"")  +
-             this.options.sql_domain +
+         return this.options.sql_protocol + 
+             "://" + ((this.options.user_name)?this.options.user_name+".":"")  + 
+             this.options.sql_domain + 
              ((this.options.sql_port != "") ? (":" + this.options.sql_port) : "");
        } else {
-         return this.options.tiler_protocol +
-             "://" + ((this.options.user_name)?this.options.user_name+".":"")  +
-             this.options.tiler_domain +
+         return this.options.tiler_protocol + 
+             "://" + ((this.options.user_name)?this.options.user_name+".":"")  + 
+             this.options.tiler_domain + 
              ((this.options.tiler_port != "") ? (":" + this.options.tiler_port) : "");
        }
     },
@@ -593,20 +582,21 @@ if (typeof(L.CartoDBLayer) === "undefined") {
     _findPos: function (map,o) {
       var curleft = curtop = 0;
       var obj = map._container;
+
+
       if (obj.offsetParent) {
         // Modern browsers
         do {
           curleft += obj.offsetLeft;
           curtop += obj.offsetTop;
         } while (obj = obj.offsetParent);
-        return map.containerPointToLayerPoint(new L.Point(o.e.clientX - curleft,o.e.clientY - curtop))
+        return map.containerPointToLayerPoint(new L.Point((o.e.clientX || o.e.changedTouches[0].clientX) - curleft,(o.e.clientY || o.e.changedTouches[0].clientY) - curtop))
       } else {
         // IE
-        console.log(map.mouseEventToLayerPoint(o.e));
         return map.mouseEventToLayerPoint(o.e)
       }
     }
-
+    
   });
 }
 

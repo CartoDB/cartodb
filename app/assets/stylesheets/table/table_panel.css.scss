@@ -324,16 +324,18 @@
                 padding:13px 0;
                 border-bottom:1px solid rgba(#E5E5E5,0.5);
 
-                & span:first-child {
+                & > span:first-child {
                   float:left;
                   color:#CCCCCC;
                 }
 
-                & span:last-child {
+                & > span:last-child {
                   float:right;
                 }
 
                 &:last-child {border:none;}
+
+                span.field > div {margin-left:5px;}
               }
             }
           }

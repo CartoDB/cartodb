@@ -1,6 +1,6 @@
 /**
  * @name cartodb-leaflet
- * @version 0.49 [July 16, 2012]
+ * @version 0.51 [August 15, 2012]
  * @author: jmedina@vizzuality.com
  * @fileoverview <b>Author:</b> jmedina@vizzuality.com<br/> <b>Licence:</b>
  *               Licensed under <a
@@ -14,7 +14,7 @@ if (typeof(L.CartoDBLayer) === "undefined") {
 
   L.CartoDBLayer = L.Class.extend({
 
-    version: "0.49",
+    version: "0.51",
 
     includes: L.Mixin.Events,
 
@@ -195,9 +195,11 @@ if (typeof(L.CartoDBLayer) === "undefined") {
       if (this.interaction) {
         if (bool) {
           var self = this;
-          this.interaction.on('on', function(o) {self._bindWaxEvents(self.options.map,o)});
+          this.interaction.on('on', function(o) {self._bindWaxOnEvents(self.options.map,o)});
+          this.interaction.on('off', function(o) {self._bindWaxOffEvents()});
         } else {
           this.interaction.off('on');
+          this.interaction.off('off');
         }
       }
     },
@@ -380,15 +382,14 @@ if (typeof(L.CartoDBLayer) === "undefined") {
         );
         url_params.push(k + "=" + q);
       }
-
       cartodb_url += url_params.join('&');
+
 
       // extra_params?
       for (_param in this.options.extra_params) {
          cartodb_url += "&"+_param+"="+this.options.extra_params[_param];
       }
 
-      cartodb_url = cartodb_url.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
 
       this.layer = new L.TileLayer(cartodb_url,{attribution:'CartoDB', opacity: this.options.opacity});
 
@@ -412,14 +413,8 @@ if (typeof(L.CartoDBLayer) === "undefined") {
       this.interaction = wax.leaf.interaction()
         .map(this.options.map)
         .tilejson(this.tilejson)
-        .on('on',function(o) {self._bindWaxEvents(self.options.map,o)})
-        .on('off', function(){
-          if (self.options.featureOut) {
-            return self.options.featureOut && self.options.featureOut();
-          } else {
-            if (self.options.debug) throw('featureOut function not defined');
-          }
-        });
+        .on('on', function(o) {self._bindWaxOnEvents(self.options.map,o)})
+        .on('off', function(o) {self._bindWaxOffEvents()});
     },
 
 
@@ -428,7 +423,7 @@ if (typeof(L.CartoDBLayer) === "undefined") {
      * @param {Object} Layer map object
      * @param {Event} Wax event
      */
-    _bindWaxEvents: function(map,o) {
+    _bindWaxOnEvents: function(map,o) {
       var layer_point = this._findPos(map,o)
         , latlng = map.layerPointToLatLng(layer_point);
 
@@ -457,6 +452,18 @@ if (typeof(L.CartoDBLayer) === "undefined") {
 
 
     /**
+     * Bind off event for wax interaction
+     */
+    _bindWaxOffEvents: function(){
+      if (this.options.featureOut) {
+        return this.options.featureOut && this.options.featureOut();
+      } else {
+        if (this.options.debug) throw('featureOut function not defined');
+      }
+    },
+
+
+    /**
      * Generate tilejson for wax
      * @return {Object} Options for L.TileLayer
      */
@@ -469,8 +476,6 @@ if (typeof(L.CartoDBLayer) === "undefined") {
       // SQL?
       if (this.options.query) {
         var query = 'sql=' + encodeURIComponent(this.options.query.replace(/\{\{table_name\}\}/g,this.options.table_name));
-        query = query.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-
         tile_url = this._addUrlData(tile_url, query);
         grid_url = this._addUrlData(grid_url, query);
       }
@@ -593,16 +598,17 @@ if (typeof(L.CartoDBLayer) === "undefined") {
     _findPos: function (map,o) {
       var curleft = curtop = 0;
       var obj = map._container;
+
+
       if (obj.offsetParent) {
         // Modern browsers
         do {
           curleft += obj.offsetLeft;
           curtop += obj.offsetTop;
         } while (obj = obj.offsetParent);
-        return map.containerPointToLayerPoint(new L.Point(o.e.clientX - curleft,o.e.clientY - curtop))
+        return map.containerPointToLayerPoint(new L.Point((o.e.clientX || o.e.changedTouches[0].clientX) - curleft,(o.e.clientY || o.e.changedTouches[0].clientY) - curtop))
       } else {
         // IE
-        console.log(map.mouseEventToLayerPoint(o.e));
         return map.mouseEventToLayerPoint(o.e)
       }
     }

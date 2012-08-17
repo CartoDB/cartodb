@@ -130,7 +130,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   render: function() {
-    this.$el.html($(this.template(this.model.toJSON())));
+    this.$el.html($(this.template(_.clone(this.model.attributes))));
     this._update();
 
     return this;

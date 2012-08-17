@@ -5,46 +5,64 @@
 
   @import "compass";
 
-  .dropdown {
+  div.dropdown {
     position:absolute;
     display:none;
-    z-index:20;
+    background:white;
+    @include border-radius(3px);
+    border:none;
+    @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
+    z-index:50;
 
-    &.orientation_top {
-      ul {
-        &:before {
-          content:' ';
-          position:absolute;
-          display:block!important;
-          top:-5px;
-          right:10px;
-          width:0;
-          height:0;
-          border-bottom:8px solid white;
-          border-left:8px solid transparent;
-          border-right:8px solid transparent;
-          z-index:10;
-        }
+
+    &.vertical_bottom {
+      &:before {
+        content:' ';
+        position:absolute;
+        display:block!important;
+        top:-5px;
+        right:10px;
+        width:0;
+        height:0;
+        border-bottom:8px solid white;
+        border-left:8px solid transparent;
+        border-right:8px solid transparent;
+        z-index:10;
       }
     }
 
-    &.orientation_left {
-      ul {
-        &:before {
-          content:' ';
-          position:absolute;
-          display:block!important;
-          top: 5px;
-          left: -8px;
-          width:0;
-          height:0;
-          border-right:8px solid #FFF;
-          border-bottom:8px solid transparent;
-          border-top:8px solid transparent;
-          z-index:10;
-        }
+    &.vertical_top {
+      &:before {
+        content:' ';
+        position:absolute;
+        display:block!important;
+        bottom:-5px;
+        right:10px;
+        width:0;
+        height:0;
+        border-top:8px solid white;
+        border-left:8px solid transparent;
+        border-right:8px solid transparent;
+        z-index:10;
       }
     }
+
+    &.horizontal_left {
+      &:before {
+        content:' ';
+        position:absolute;
+        display:block!important;
+        top: -5px;
+        left: 8px;
+        width:0;
+        height:0;
+        border-bottom:8px solid #FFF;
+        border-left:8px solid transparent;
+        border-right:8px solid transparent;
+        z-index:10;
+      }
+    }
+
 
     ul {
       position:relative;
@@ -52,10 +70,6 @@
       width:100%;
       margin:0;
       padding:0;
-      background:white;
-      @include border-radius(3px);
-      border:none;
-      @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
       list-style:none;
       overflow:visible;
 

@@ -285,6 +285,7 @@
           &:last-child {
             padding-right:0;
             &:after {display:none}
+            a.account:after {display:none}
           }
         }
       }

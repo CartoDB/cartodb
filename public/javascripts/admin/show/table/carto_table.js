@@ -1237,6 +1237,12 @@
                 $('div.edit_cell div.point').show();
                 var len = $('div.table_position div.edit_cell div.point span input#longitude_value').text().length;
               } else {
+
+                // Destroy and create a new textarea (prevent bug "hiding" it)
+                $('div.edit_cell textarea').remove();
+                var $textarea = $("<textarea>");
+                $('div.edit_cell div.free').append($textarea);
+
                 if (type=="number"){
                   $('div.edit_cell textarea').css({'min-height' : '16px','height' : '16px' });
                 }else{
@@ -2606,6 +2612,7 @@
                               });
                               break;
         case "new_column":    methods.closeTablePopups();
+                              break;
         default:              break;
       }
     },

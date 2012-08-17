@@ -23,22 +23,3 @@
     padding: 11px;
   }
 }
-
-.form_spinner {
-  border:1px solid rgba(#999999,0.25);
-  @include border-radius(2px);
-  @include inline-block();
-  width: 43px;
-  height: 21px;
-}
-
-.form_color {
-  border:1px solid rgba(#999999,0.25);
-  @include border-radius(2px);
-  @include inline-block();
-  span.color {
-    width: 43px;
-    height: 21px;
-  }
-
-}

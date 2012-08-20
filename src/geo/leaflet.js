@@ -261,6 +261,17 @@
     latLonToPixel: function(latlon) {
       var point = this.map_leaflet.latLngToLayerPoint(new L.LatLng(latlon[0], latlon[1]));
       return this.map_leaflet.layerPointToContainerPoint(point);
+    },
+
+    // return the current bounds of the map view
+    getBounds: function() {
+      var b = this.map_leaflet.getBounds();
+      var sw = b.getSouthWest();
+      var ne = b.getNorthEast();
+      return [
+        [sw.lat, sw.lng],
+        [ne.lat, ne.lng]
+      ];
     }
 
   });

@@ -15,7 +15,7 @@
     width:100%;
     height:100%;
 
-    div.base_maps {
+    div.map_toolbar {
       position:absolute;
       left:0;
       top:0;
@@ -25,7 +25,13 @@
       z-index:2;
       @include box-shadow(rgba(black,0.15) 0 3px 3px 0);
       @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
-
+    }
+    div.share {
+      float: right;
+      margin:22px 0 10px 10px;
+      margin-right: 80px;
+    }
+    div.base_maps {
       ul {
         margin:10px 0 10px 10px;
         letter-spacing:-4px;
@@ -85,47 +91,48 @@
       z-index:1;
     }
 
-    div#zoom {
-      position:absolute;
-      top:85px;
-      left:20px;
+  }
+
+  div#zoom {
+    position:absolute;
+    top:85px;
+    left:20px;
+    width:29px;
+    @include box-shadow(rgba(black,0.2) 0 0 4px 2px);
+    z-index:5;
+    background:white;
+    @include border-radius(4px);
+    border:1px solid #999999;
+
+    a {
+      display:block;
       width:29px;
-      @include box-shadow(rgba(black,0.2) 0 0 4px 2px);
-      z-index:5;
-      background:white;
-      @include border-radius(4px);
-      border:1px solid #999999;
+      padding:4px 0;
+      font:bold 20px "Arial";
+      color:#999999;
+      text-align:center;
+      line-height:normal;
+      text-decoration:none;
 
-      a {
-        display:block;
-        width:29px;
-        padding:4px 0;
-        font:bold 20px "Arial";
-        color:#999999;
-        text-align:center;
-        line-height:normal;
-        text-decoration:none;
+      &.zoom_in {
+        border-bottom:1px solid rgba(#999999,0.25);
+      }
 
-        &.zoom_in {
-          border-bottom:1px solid rgba(#999999,0.25);
-        }
+      &.zoom_out {
+        padding:0 0 18px;
+        line-height:13px;
+      }
 
-        &.zoom_out {
-          padding:0 0 18px;
-          line-height:13px;
-        }
+      &:hover {
+        cursor:pointer;
+        color:#666666;
+      }
 
+      &.disabled {
+        @include opacity(0.2);
         &:hover {
-          cursor:pointer;
-          color:#666666;
-        }
-
-        &.disabled {
-          @include opacity(0.2);
-          &:hover {
-            cursor:default;
-            color:#999999;
-          }
+          cursor:default;
+          color:#999999;
         }
       }
     }

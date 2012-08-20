@@ -1,0 +1,30 @@
+
+@import "compass";
+
+.map_share_dialog {
+  .map_wrapper {
+    position: relative;
+    width: 521px;
+    height: 249px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    @include border-radius(5px);
+
+    .map {
+      height: auto;
+      width: 100%;
+      @include border-radius(5px);
+    }
+
+    .map_header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #FFF;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+      height: 70px;
+    }
+
+  }
+
+}

@@ -12,7 +12,7 @@
       @media print {html, body {height: auto;}#map_canvas {height: 650px;}}
       div#outer_map_cartodb_container {position:relative; width:100%; height:100%; background:white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
       div#map_cartodb_container {position:absolute; top:0; left:0; right:0; bottom:0; z-index:0;}
-      span.cartodb_map_controls {position:absolute; top:10px; left:10px; width:26px; height:100px; z-index:10;}
+      span.cartodb_map_controls {position:absolute; top:100px; left:10px; width:26px; height:100px; z-index:10;}
       span.cartodb_map_controls a.cartodb_map_embed_zoom_in {display:block; width:30px; height:32px; text-indent:-9999px; line-height:0; font-size:0; background:url('https://cartodb.s3.amazonaws.com/embed/sprite.png') no-repeat -289px -142px;}
       span.cartodb_map_controls a.cartodb_map_embed_zoom_in:hover {background-position:-320px -142px; cursor:pointer;}
       span.cartodb_map_controls a.cartodb_map_embed_zoom_out {display:block; width:30px; height:32px; text-indent:-9999px; line-height:0; font-size:0; background:url('https://cartodb.s3.amazonaws.com/embed/sprite.png') no-repeat -289px -174px;}
@@ -36,6 +36,30 @@
         background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
       a.cartodb_logo {position:absolute; bottom:7px; left:75px; display:block; width:71px; height:29px; background:url('https://cartodb.s3.amazonaws.com/embed/new_logo.png') no-repeat 0 0;
               text-indent:-9999px; line-height:0; font-size:0; text-transform:capitalize;}
+
+
+      #header {
+        position: absolute;
+        width: 100%;
+        background: #FFF;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        z-index: 2;
+      }
+      #header h1 {
+        font:normal 17px 'Helvetica Neue', Helvetica, sans-serif;
+        color: #397DBA;
+        font-weight: bold;
+        margin: 0 0 5px 0 ;
+      }
+
+      #header p {
+        margin: 0;
+        font:normal 13px 'Helvetica Neue', Helvetica, sans-serif;
+        color: #999999;
+      }
+      .no_description span.cartodb_map_controls {top: 10px; }
+    }
     </style>
 
   <%= stylesheet_link_tag :leaflet, :media => 'all' %>
@@ -43,7 +67,11 @@
 
   <noscript><meta http-equiv="refresh" content="0;url=https://cartodb.com/no_javascript.html"></noscript>
   </head>
-  <body>
+  <body class="no_description">
+    <div id="header" style="display:none">
+      <h1 id="title"></h1>
+      <p id="description"></p>
+    </div>
     <% if @table.public? %>
       <div id="outer_map_cartodb_container">
         <div id="map_cartodb_container"></div>
@@ -61,12 +89,50 @@
   <script>
     var base_layer_tilejson = <%=raw @tilejson_base %>;
     var data_layer_tilejson = <%=raw @tilejson_data %>;
+    // those two parameters should be in tilejson
+    var table_name = '<%= @table.name %>';
+    var table_description = '<%= @table.description %>';
   </script>
 
+  // TODO: extract this script to a file
   <script>
+    function get_url_params() {
+      var tokens = location.search.slice(1).split('&');
+      var params = {}
+      for(var i = 0; i < tokens.length; ++i) {
+        var tk = tokens[i].split('=');
+        params[tk[0]] = decodeURIComponent(tk[1]);
+      }
+      return params;
+    }
+
+    var opt = get_url_params();
+
+    var southWest = new L.LatLng(opt.sw_lat, opt.sw_lon);
+    var northEast = new L.LatLng(opt.ne_lat, opt.ne_lon);
+    var bounds = new L.LatLngBounds(southWest, northEast);
+
     var map = new L.Map('map_cartodb_container')
       .addLayer(new wax.leaf.connector(base_layer_tilejson))
       .addLayer(new wax.leaf.connector(data_layer_tilejson))
-      .setView(new L.LatLng(51, 0), 1);
+      .fitBounds(bounds)
+      /*
+      .setView(
+          new L.LatLng(opt.lat || 0 , opt.lon || 0), 
+          opt.zoom || 0
+      );
+      */
+
+    var header = document.getElementById('header');
+    if(opt.title === "true") {
+      document.getElementById('title').innerHTML = table_name;
+      header.style.display = 'block';
+      document.body.setAttribute('class', '');
+    }
+    if(opt.description === "true") {
+      document.getElementById('description').innerHTML = table_description;
+      header.style.display = 'block';
+      document.body.setAttribute('class', '');
+    }
   </script>
 </html>

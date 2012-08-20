@@ -436,7 +436,7 @@
     </a>
   */
 
-  .switch {
+  .switch, .form_switch {
     position:relative;
     @include inline-block();
     @include text-indent();

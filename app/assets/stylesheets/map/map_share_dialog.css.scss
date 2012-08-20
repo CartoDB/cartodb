@@ -1,5 +1,9 @@
 
+/**
+ * share map dialog
+ */
 @import "compass";
+@import "../common/vars";
 
 .map_share_dialog {
   .map_wrapper {
@@ -22,9 +26,39 @@
       width: 100%;
       background: #FFF;
       border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-      height: 70px;
+      padding: 20px;
+      h1 {
+        font:normal 17px $text-fonts;
+        color: #397DBA;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      p {
+        font:normal 13px $text-fonts;
+        color: #999999;
+      }
     }
+  }
 
+  ul.switches {
+    margin-top: 30px;
+    li {
+      @include inline-block();
+      border: none !important;
+      width: 154px;
+      color: #999999;
+      margin-right: 24px;
+      font:normal 15px $text-fonts;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      a.form_switch {
+        float: right;
+      }
+    }
+    
   }
 
 }

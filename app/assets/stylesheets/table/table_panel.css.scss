@@ -195,21 +195,10 @@
 
       // INFOWINDOW PANEL
       .infowindow_panel {
-        .selector {
-          padding: 23px 30px;
-          a {
-            @include inline-block();
-            width: 50%;
-            float: left;
-            background-color: $button-bkg-color;
-            padding: (46px - 13px)/2 0;
-            font-size: 13px;
-            color: #397DB9;
-            text-align: center;
-            &.selectall {
-              margin-right: 1px;
-            }
-          }
+        .all {
+          padding:15px 0;
+          overflow:auto;
+          span.label {margin-right:12px;}
         }
         .fields {
           li {
@@ -217,6 +206,23 @@
             font-size: 15px;
             color: #CCCCCC;
             border-bottom:1px solid rgba(#999999,0.25);
+            overflow:hidden;
+
+            & > span {
+              @include inline-block();
+              vertical-align:middle;
+            }
+
+            .form_combo {
+              float:right;
+              width:auto;
+
+              .select2-container {width:130px;}
+            }
+
+            .form_combo ~ span {
+              margin-top:3px;
+            }
 
             .switches {
               float: right;
@@ -237,7 +243,7 @@
 
       // CARTO PANEL
       .carto_mod {
-        
+
         nav {
           display:block;
           width:100%;
@@ -355,7 +361,7 @@
               margin:15px 0 0 0;
 
               li {
-                overflow:auto;
+                overflow:hidden;
                 display:block;
                 width:100%;
                 padding:13px 0;

@@ -1,5 +1,17 @@
-# See http://www.robotstxt.org/wc/norobots.html for documentation on how to use the robots.txt file
-#
-# To ban all spiders from the entire site uncomment the next two lines:
-# User-Agent: *
-# Disallow: /
+# Contact us at support@cartodb.com if you are having problems
+# while trying to access our API or whatever
+
+User-agent: Googlebot
+Disallow: /api/
+
+User-Agent: Slurp
+Disallow: /api/
+
+User-agent: Yandex
+Disallow: /api/
+
+User-Agent: msnbot
+Disallow: /api/
+
+User-agent: baiduspider
+Disallow: /api/

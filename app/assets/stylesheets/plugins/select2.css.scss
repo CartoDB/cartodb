@@ -58,12 +58,9 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
     text-decoration: none;
 }
 
-.select2-container.select2-drop-above .select2-choice
-{
+.select2-container.select2-drop-above .select2-choice {
     border-bottom-color: #aaa;
-    -webkit-border-radius:0px 0px 4px 4px;
-    -moz-border-radius:0px 0px 4px 4px;
-    border-radius:0px 0px 4px 4px;
+    @include border-radius(4px);
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(0.9, white));
     background-image: -webkit-linear-gradient(center bottom, #eeeeee 0%, white 90%);
     background-image: -moz-linear-gradient(center bottom, #eeeeee 0%, white 90%);
@@ -115,17 +112,10 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-drop.select2-drop-above {
-    -webkit-border-radius: 4px 4px 0px 0px;
-    -moz-border-radius: 4px 4px 0px 0px;
-    border-radius: 4px 4px 0px 0px;
-    margin-top:1px;
+    margin-top:-5px;
     border-top: 1px solid #aaa;
-    border-bottom: 0;
-
-    -webkit-box-shadow: 0 -4px 5px rgba(0, 0, 0, .15);
-    -moz-box-shadow: 0 -4px 5px rgba(0, 0, 0, .15);
-    -o-box-shadow: 0 -4px 5px rgba(0, 0, 0, .15);
-    box-shadow: 0 -4px 5px rgba(0, 0, 0, .15);
+    @include border-radius(4px);
+    @include box-shadow(rgba(0,0,0,0.2) 0 0 5px);
 }
 
 .select2-container .select2-choice div {

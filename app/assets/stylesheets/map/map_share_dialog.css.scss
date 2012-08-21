@@ -59,8 +59,14 @@
       a.form_switch {
         float: right;
       }
+    } 
+  } // ul.switches
+
+  ul.format_selector {
+    float:right;
+    li {
+      @include inline-block();
     }
-    
-  }
+  } // ul.format_selector
 
 }

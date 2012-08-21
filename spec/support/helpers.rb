@@ -24,7 +24,7 @@ module HelperMethods
   def serve_file(file_path)
     require 'webrick'
 
-    server = WEBrick::HTTPServer.new(:Port => 9999, :DocumentRoot => File.dirname(file_path))
+    server = WEBrick::HTTPServer.new(:AccessLog => [], :Logger => WEBrick::Log::new("/dev/null", 7), :Port => 9999, :DocumentRoot => File.dirname(file_path))
 
     trap("INT"){ server.shutdown }
 

@@ -73,6 +73,7 @@ class DataImport < Sequel::Model
       self.values[:data_source] = Rails.root.join("public#{data_source}").to_s
     elsif Addressable::URI.parse(data_source).host.present?
       self.values[:data_type] = 'url'
+      self.values[:data_source] = data_source
     else
       # TODO: handle invalid uri or missing file
     end
@@ -213,25 +214,22 @@ class DataImport < Sequel::Model
       return importer, errors
       #import from URL
     elsif method == 'url'
-      self.data_type = 'url'
-      self.data_source = import_from_url
       download
-      save
-      importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).symbolize_keys.merge(
-        :database        => table_owner.database_name,
-        :logger          => ::Rails.logger,
-        :username        => table_owner.database_username,
-        :password        => table_owner.database_password,
-        :import_from_url => import_from_url,
-        :debug           => (Rails.env.development?),
-        :remaining_quota => table_owner.remaining_quota,
-        :data_import_id  => id
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).symbolize_keys.merge(
+        :database         => table_owner.database_name,
+        :logger           => ::Rails.logger,
+        :username         => table_owner.database_username,
+        :password         => table_owner.database_password,
+        :import_from_file => import_source,
+        :debug            => (Rails.env.development?),
+        :remaining_quota  => table_owner.remaining_quota,
+        :data_import_id   => id
       )
+      importer = CartoDB::Importer.new hash_in
       importer, errors = importer.import!
       reload
       imported
-      save
-      return [importer, errors]
+      return importer, errors
     end
   end
 

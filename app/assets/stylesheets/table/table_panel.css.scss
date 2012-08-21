@@ -125,10 +125,18 @@
         position:absolute;
         top:61px;
         left:0;
-        right:0;
+        right:0; // Hack for nano scroller
         bottom:0;
         padding:0 30px;
-        overflow:auto!important;
+        overflow:auto;
+        
+        &.nano {
+          left:0;
+          right:0; // Hack for nano scroller
+          overflow-x: hidden!important;
+        }
+        
+        div.content {left:30px; right:30px!important; overflow-x:visible;}
       }
 
       // SQL PANEL & CARTO PANEL
@@ -376,6 +384,10 @@
                   float:right;
                 }
 
+                .form_combo {
+                  @include inline-block();
+                }
+
                 &:last-child {border:none;}
 
                 span.field > div {margin-left:5px;}
@@ -407,29 +419,6 @@
             background:rgba(#509DD7,0.25);
           }
         }
-
-
-        // .vis_options {
-        //   li {
-        //     @include inline-block();
-        //   }
-        // }
-
-        // .forms {
-        //   padding: 30px;
-        //   li {
-        //     padding: (46px - 15px)/2 0;
-        //     font-size: 15px;
-        //     color: #CCCCCC;
-        //     border-bottom:1px solid rgba(#999999,0.25);
-        //   }
-        //   span {
-        //     @include inline-block();
-        //     &.field {
-        //       float: right;
-        //     }
-        //   }
-        // }
       }
     }
   }

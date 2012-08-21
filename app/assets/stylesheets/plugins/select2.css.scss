@@ -1,3 +1,5 @@
+@import "compass";
+
 /*
 Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 */
@@ -101,23 +103,15 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-drop {
+    position: absolute;
+    top: 100%;
+    z-index: 9999;
+    width:100%;
+    margin-top:5px;
     background: #fff;
     color: #000;
     border: 1px solid #aaa;
-    border-top: 0;
-    position: absolute;
-    top: 100%;
-    -webkit-box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
-    -moz-box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
-    -o-box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
-    box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
-    z-index: 9999;
-    width:100%;
-    margin-top:-1px;
-
-  -webkit-border-radius: 0 0 4px 4px;
-  -moz-border-radius: 0 0 4px 4px;
-  border-radius: 0 0 4px 4px;
+    @include border-radius(3px);
 }
 
 .select2-drop.select2-drop-above {
@@ -249,7 +243,6 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 
 .select2-dropdown-open .select2-choice {
   border: 1px solid #aaa;
-  border-bottom-color: transparent;
   -webkit-box-shadow: 0 1px 0 #fff inset;
   -moz-box-shadow   : 0 1px 0 #fff inset;
   -o-box-shadow     : 0 1px 0 #fff inset;
@@ -262,12 +255,6 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   background-image: -ms-linear-gradient(top, #ffffff 0%,#eeeeee 50%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eeeeee',GradientType=0 );
   background-image: linear-gradient(top, #ffffff 0%,#eeeeee 50%);
-  -webkit-border-bottom-left-radius : 0;
-  -webkit-border-bottom-right-radius: 0;
-  -moz-border-radius-bottomleft : 0;
-  -moz-border-radius-bottomright: 0;
-  border-bottom-left-radius : 0;
-  border-bottom-right-radius: 0;
 }
 
 .select2-dropdown-open .select2-choice div {
@@ -281,12 +268,12 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 
 /* results */
 .select2-results {
-  margin: 4px 4px 4px 0;
-  padding: 0 0 0 4px;
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
   max-height: 200px;
+  padding:0;
+  margin:0;
 }
 
 .select2-results ul.select2-result-sub {
@@ -304,6 +291,12 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 .select2-results li {
   list-style: none;
   display: list-item;
+  padding:5px 0;
+  border-top:1px solid rgba(black,0.1);
+  border-bottom:1px solid rgba(black,0);
+  color:#666666;
+
+  &:first-child {border-top:none;}
 }
 
 .select2-results li.select2-result-with-children > .select2-result-label {
@@ -318,8 +311,10 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-results .select2-highlighted {
-  background: #3875d7;
+  background: #397DBA;
   color: #fff;
+  border-bottom:1px solid rgba(black,0.1);
+  &:last-child {border-bottom:none;}
 }
 .select2-results li em {
   background: #feffde;

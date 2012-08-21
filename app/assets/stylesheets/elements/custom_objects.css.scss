@@ -10,6 +10,86 @@
   @import "../common/vars";
 
 
+  // HORIZONTAL SLIDER (SPINNER)
+
+  /*
+    <div class="dropdown spinner_slider">
+      <div class="slider horizontal"></div>
+    </div>
+  */
+
+  .dropdown.spinner_slider {
+    border:1px solid #999999;
+    padding-top:10px;
+    padding-bottom:10px;
+    height:81px;
+
+    &.vertical_top {
+      &:before {
+        content:' ';
+        position:absolute;
+        display:block!important;
+        bottom:-6px;
+        right:5px;
+        width:0;
+        height:0;
+        border-top:6px solid white;
+        border-left:6px solid transparent;
+        border-right:6px solid transparent;
+        z-index:2;
+      }
+
+      &:after {
+        content:' ';
+        position:absolute;
+        display:block!important;
+        bottom:-7px;
+        right:7px;
+        width:0;
+        height:0;
+        border-top:6px solid #999;
+        border-left:6px solid transparent;
+        border-right:6px solid transparent;
+        z-index:1;
+      }
+    }
+
+    .ui-slider-vertical {
+      position:absolute;
+      top:10px;
+      left:11px;
+      width:4px;
+      height:81px;
+      @include border-radius(10px);
+      background:#E5E5E5;
+
+      .ui-slider-handle {
+        position: absolute;
+        outline:none;
+        width:8px;
+        height:8px;
+        left: 2px;
+        margin-left: -5px;
+        margin-bottom: -5px;
+        background:#397DBA;
+        border:1px solid #255078;
+        z-index: 2;
+        @include border-radius(4px);
+
+        &.ui-state-active,
+        &.ui-state-focus,
+        &.ui-state-hover {@include box-shadow(rgba(0,0,0,0.15) 0 0 3px 3px)}
+      }
+    }
+
+    .ui-slider-vertical .ui-slider-handle {  }
+    .ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
+    .ui-slider-vertical .ui-slider-range-min { bottom: 0; }
+    .ui-slider-vertical .ui-slider-range-max { top: 0; }    
+  }
+
+
+
 
   // FORM COLOR
 
@@ -234,21 +314,28 @@
     @include inline-block();
     min-width:20px;
     width:auto!important;
-    padding:1px 19px 3px 4px;
+    padding:2px 19px 2px 4px;
     height:15px;
     margin:0;
     border:1px solid #9E9E9E;
     @include border-radius(3px);
     @include background(linear-gradient(#FFF,#F2F2F2));
 
+    &:hover {
+      cursor:pointer;
+    }
+
     span.value {
       float:none;
-      font-size:13px;
       margin:0;
       padding:0;
       text-align:left;
-      line-height:normal;
+      line-height:15px;
+      font-size:13px;
       color:#666666;
+      &:hover {
+        cursor:pointer;
+      }
     }
 
     a {

@@ -1,6 +1,8 @@
 //= require codemirror
 //= require simple-hint
 //= require select2.min
+//= require jquery.nanoscroller
+//= require rgbcolor
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror
 //= require_tree ../../../lib/assets/javascripts/cartodb/models

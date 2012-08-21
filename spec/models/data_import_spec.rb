@@ -47,4 +47,19 @@ describe DataImport do
     duplicated_table.records[:rows].should have(5).items
   end
 
+  it 'should allow to create a table from a url' do
+    data_import = nil
+    serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
+      data_import = DataImport.create(
+        :user_id       => @user.id,
+        :data_source   => url,
+        :updated_at    => Time.now )
+    end
+
+    puts data_import.table_id
+    table = Table[data_import.table_id]
+    table.should_not be_nil
+    table.name.should be == 'clubbing'
+    table.records[:rows].should have(10).items
+  end
 end

@@ -21,4 +21,17 @@ module HelperMethods
     JSON.parse(response.body)['file_uri']
   end
 
+  def serve_file(file_path)
+    require 'webrick'
+
+    server = WEBrick::HTTPServer.new(:Port => 9999, :DocumentRoot => File.dirname(file_path))
+
+    trap("INT"){ server.shutdown }
+
+    Thread.new { server.start }
+
+    yield "http://localhost:9999/#{File.basename(file_path)}" if block_given?
+
+    Thread.new { server.shutdown }
+  end
 end

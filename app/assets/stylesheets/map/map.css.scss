@@ -27,10 +27,17 @@
       @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
     }
     div.share {
-      float: right;
-      margin:22px 0 10px 10px;
-      margin-right: 80px;
+      position:absolute;
+      top:0;
+      right:0px;
+      @include inline-block();
+      padding:9px 20px 8px 30px;
+      @include background(linear-gradient(rgba(#F2F2F2,0.01), rgba(#F2F2F2,0.2) 15%));
+      z-index:50;
+
+      a {float:left;}
     }
+
     div.base_maps {
       ul {
         margin:10px 0 10px 10px;

@@ -39,14 +39,6 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     'click .close': '_cancel'
   },
 
-  keydown: function(e) {
-
-    if (e.keyCode === 27) { 
-      this._cancel();
-    }
-
-  },
-
   default_options: {
     title: 'title',
     description: '',
@@ -66,9 +58,9 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
   initialize: function() {
     _.defaults(this.options, this.default_options);
 
-    _.bindAll(this, 'render', 'keydown');
+    _.bindAll(this, 'render', '_keydown');
 
-    $(document).bind('keydown', this.keydown);
+    $(document).bind('keydown', this._keydown);
 
     this.template_base = this.options.template_base ? _.template(this.options.template_base) : cdb.templates.getTemplate(this.options.template_name);
   },
@@ -95,6 +87,13 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     }
 
     return this;
+  },
+
+
+  _keydown: function(e) {
+    if (e.keyCode === 27) { 
+      this._cancel();
+    }
   },
 
   /**

@@ -230,4 +230,23 @@ describe('core.ui.common.TabPane', function() {
     expect(d).toHaveBeenCalled();
   });
 
+  it("each should call function for each tab", function() {
+    var // Let's create the views
+    v1 = new cdb.core.View(),
+    v2 = new cdb.core.View();
+    pane.addTab('tab1', v1);
+    pane.addTab('tab2', v2);
+    var t = [];
+    pane.each(function(name, tab) {
+      t.push([name, tab]);
+    });
+
+    expect(t.length).toEqual(2);
+    expect(t[0][0]).toEqual('tab1')
+    expect(t[1][0]).toEqual('tab2')
+    expect(t[0][1].cid).toEqual(v1.cid);
+    expect(t[1][1].cid).toEqual(v2.cid);
+
+  });
+
 });

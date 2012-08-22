@@ -127,6 +127,13 @@ cdb.ui.common.TabPane = cdb.core.View.extend({
 
   render: function() {
       return this;
+  },
+
+  each: function(fn) {
+    var self = this;
+    _.each(this.tabs, function(cid, tab) {
+      fn(tab, self.getPane(tab));
+    });
   }
 
 });

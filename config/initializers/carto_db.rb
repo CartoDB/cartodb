@@ -99,5 +99,6 @@ module CartoDB
     8000 => 'CartoDB account error',
     8001 => 'Over account storage limit, please upgrade',
     8002 => 'Over account table limit, please upgrade',
+    8003 => 'Database statement timeout',
     99999 => 'Unknown' }
 end

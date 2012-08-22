@@ -49,7 +49,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @data_import = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
-    
+    current_user.in_database.run('SET statement_timeout TO 600000')    
     #get info about any import data coming
     multifiles = ['.bz2','.osm']
     if params[:url] || params[:file]
@@ -151,7 +151,9 @@ class Api::Json::TablesController < Api::ApplicationController
         end
       end
     end
+    current_user.in_database.run('SET statement_timeout TO DEFAULT')
   rescue => e
+    current_user.in_database.run('SET statement_timeout TO DEFAULT')
     @data_import.reload
     # Add semantics based on the users creation method. 
     # TODO: The importer should throw these specific errors
@@ -159,11 +161,11 @@ class Api::Json::TablesController < Api::ApplicationController
       e = CartoDB::InvalidUrl.new     e.message    if params[:url]    
       e = CartoDB::InvalidFile.new    e.message    if params[:file]    
       e = CartoDB::TableCopyError.new e.message    if params[:table_copy]    
-    end  
+    end
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     
     @data_import.reload
-    render_jsonp({ :description => @data_import.get_error_text, :stack =>  @data_import.log_json, :code => @data_import.error_code }, 400)
+    render_jsonp({ :message => @data_import.get_error_text, :stack =>  @data_import.log_json, :code => @data_import.error_code }, 400)
   end
 
   def show

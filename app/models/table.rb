@@ -378,6 +378,7 @@ class Table < Sequel::Model(:user_tables)
     if @data_import
       @data_import.reload
       @data_import.log_error("Table error, #{e.inspect}")
+      @data_import.set_error_code(8003) if e.message.to_s =~ /statement timeout/
     end   
     unless self.name.blank?
       $tables_metadata.del key

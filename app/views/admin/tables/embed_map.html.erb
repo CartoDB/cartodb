@@ -4,7 +4,7 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
   	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
   	<link rel="shortcut icon" href="https://cartodb.com/assets/favicon.ico" />
-    <title>CartoDB - <%= @table.description %> </title>
+    <title>CartoDB - <%= @table.name %> </title>
 
     <style type="text/css">
       html, body {height: 100%; margin: 0; padding: 0;}
@@ -62,12 +62,9 @@
     }
     </style>
 
-  <%= stylesheet_link_tag :leaflet, :media => 'all' %>
-
-
-  <noscript><meta http-equiv="refresh" content="0;url=https://cartodb.com/no_javascript.html"></noscript>
+    <%= stylesheet_link_tag :leaflet, :media => 'all' %>
   </head>
-  <body class="no_description">
+  <body class="no_description" onload="init()">
     <div id="header" style="display:none">
       <h1 id="title"></h1>
       <p id="description"></p>
@@ -86,16 +83,15 @@
 
   <%= javascript_include_tag :cdb %>
 
+
+  // TODO: extract this script to a file
   <script>
     var base_layer_tilejson = <%=raw @tilejson_base %>;
     var data_layer_tilejson = <%=raw @tilejson_data %>;
     // those two parameters should be in tilejson
     var table_name = '<%= @table.name %>';
     var table_description = '<%= @table.description %>';
-  </script>
 
-  // TODO: extract this script to a file
-  <script>
     function get_url_params() {
       var tokens = location.search.slice(1).split('&');
       var params = {}
@@ -106,33 +102,32 @@
       return params;
     }
 
-    var opt = get_url_params();
+    function init() {
+      var opt = get_url_params();
 
-    var southWest = new L.LatLng(opt.sw_lat, opt.sw_lon);
-    var northEast = new L.LatLng(opt.ne_lat, opt.ne_lon);
-    var bounds = new L.LatLngBounds(southWest, northEast);
+      var southWest = new L.LatLng(opt.sw_lat || -40, opt.sw_lon || -80)
+        , northEast = new L.LatLng(opt.ne_lat || 72, opt.ne_lon || 80)
+        , bounds = new L.LatLngBounds(southWest, northEast);
 
-    var map = new L.Map('map_cartodb_container')
-      .addLayer(new wax.leaf.connector(base_layer_tilejson))
-      .addLayer(new wax.leaf.connector(data_layer_tilejson))
-      .fitBounds(bounds)
-      /*
-      .setView(
-          new L.LatLng(opt.lat || 0 , opt.lon || 0), 
-          opt.zoom || 0
-      );
-      */
 
-    var header = document.getElementById('header');
-    if(opt.title === "true") {
-      document.getElementById('title').innerHTML = table_name;
-      header.style.display = 'block';
-      document.body.setAttribute('class', '');
+      var map = new L.Map('map_cartodb_container')
+        .addLayer(new wax.leaf.connector(base_layer_tilejson))
+        .addLayer(new wax.leaf.connector(data_layer_tilejson))
+        .fitBounds(bounds)
+
+      var header = document.getElementById('header');
+      if(opt.title === "true") {
+        document.getElementById('title').innerHTML = table_name;
+        header.style.display = 'block';
+        document.body.setAttribute('class', '');
+      }
+      if(opt.description === "true") {
+        document.getElementById('description').innerHTML = table_description;
+        header.style.display = 'block';
+        document.body.setAttribute('class', '');
+      }
+  
     }
-    if(opt.description === "true") {
-      document.getElementById('description').innerHTML = table_description;
-      header.style.display = 'block';
-      document.body.setAttribute('class', '');
-    }
-  </script>
+
+      </script>
 </html>

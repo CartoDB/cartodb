@@ -1,8 +1,8 @@
 /**
  * @name cartodb-leaflet
- * @version 0.51 [August 15, 2012]
- * @author: jmedina@vizzuality.com
- * @fileoverview <b>Author:</b> jmedina@vizzuality.com<br/> <b>Licence:</b>
+ * @version 0.52 [August 22, 2012]
+ * @author: Vizzuality.com
+ * @fileoverview <b>Author:</b> Vizzuality.com<br/> <b>Licence:</b>
  *               Licensed under <a
  *               href="http://opensource.org/licenses/mit-license.php">MIT</a>
  *               license.<br/> This library lets you to use CartoDB with Leaflet.
@@ -14,7 +14,7 @@ if (typeof(L.CartoDBLayer) === "undefined") {
 
   L.CartoDBLayer = L.Class.extend({
 
-    version: "0.51",
+    version: "0.52",
 
     includes: L.Mixin.Events,
 
@@ -262,8 +262,11 @@ if (typeof(L.CartoDBLayer) === "undefined") {
      * Remove CartoDB layer
      */
     _remove: function() {
-      // Remove interaction
+      // Unbind interaction
       this.setInteraction(false);
+
+      // Remove interacion
+      this.interaction.remove();
 
       // Remove layer
       this.options.map.removeLayer(this.layer);

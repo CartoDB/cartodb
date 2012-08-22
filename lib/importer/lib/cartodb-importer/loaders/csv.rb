@@ -12,6 +12,13 @@ module CartoDB
         # run Chardet + Iconv
         fix_encoding
         
+        # Check if file has only one header, add a blank column
+        # if so. See Vizzuality/CartoDB#202
+        headers = File.open("#{@path}") {|f| f.readline}
+        unless headers =~ /[\,\;]/
+          `sed -ie "1 s/$/;/" #{@path}`
+        end
+
         @data_import.log_update("ogr2ogr #{@suggested_name}")
         ogr2ogr_bin_path = `which ogr2ogr`.strip
         ogr2ogr_command = %Q{#{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@path} -nln #{@suggested_name}}

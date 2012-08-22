@@ -36,7 +36,7 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
   },
 
   initialize: function() {
-    _.bindAll(this, "open", "hide", "_handleClick");
+    _.bindAll(this, "open", "hide", "_handleClick", "_keydown");
 
     // Extend options
     _.defaults(this.options, this.default_options);
@@ -46,6 +46,9 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
 
     // Bind to target
     $(this.options.target).bind({"click": this._handleClick});
+
+    // Bind ESC key
+    $(document).bind('keydown', this._keydown);
 
     // Is open flag
     this.isOpen = false;
@@ -74,6 +77,12 @@ cdb.ui.common.Dropdown = cdb.core.View.extend({
       this.hide();
     }else{
       this.open();
+    }
+  },
+
+  _keydown: function(e) {
+    if (e.keyCode === 27) { 
+      this.hide();
     }
   },
 

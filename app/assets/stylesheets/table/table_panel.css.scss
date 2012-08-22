@@ -23,7 +23,10 @@
     @include border-radius(4px);
     
     .sidebar {
-      position:relative;
+      position:absolute;
+      top:0;
+      bottom:0;
+      left:0;
       @include inline-block();
       width:65px;
       height:100%;
@@ -104,7 +107,10 @@
     }
 
     .views {
-      position:relative;
+      position:absolute;
+      top:0;
+      right:0;
+      bottom:0;
       @include inline-block();
       width:535px;
       height:100%;

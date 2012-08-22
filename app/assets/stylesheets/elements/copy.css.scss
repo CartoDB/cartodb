@@ -25,6 +25,10 @@
 			line-height:normal;
 			border:1px solid #CCCCCC;
 			background:#F5F5F5;
+			text-overflow:ellipsis;
+			overflow:hidden;
+			white-space:nowrap;
+
 			&:hover {
 				border-color:#999999;
 			}

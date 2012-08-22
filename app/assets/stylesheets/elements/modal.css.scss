@@ -42,6 +42,11 @@
         }
       }
 
+      // Compressed (footer fewer space, eg: share map window)
+      &.compressed {
+        div.content, div.error_content {padding:40px 40px 15px 40px;}
+        div.foot {border:none; padding-top:15px;}
+      }
 
       // Red one, important! - Confirm or error.
       &.confirmation, &.error {

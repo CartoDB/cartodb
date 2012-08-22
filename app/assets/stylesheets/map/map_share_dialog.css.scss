@@ -8,25 +8,48 @@
 .map_share_dialog {
   .map_wrapper {
     position: relative;
-    width: 521px;
+    display:block;
     height: 249px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    @include border-radius(5px);
+    border: 1px solid #CCC;
+    margin:0;
+    @include translateZ(10px);
+    @include border-radius(3px);
+    @include translate3d(0,0,10px);
+    overflow:hidden!important;
 
     .map {
       height: auto;
       width: 100%;
-      @include border-radius(5px);
+      @include border-radius(3px);
+      overflow:hidden!important;
+    }
+
+    .leaflef-container {
+      @include border-radius(3px);
+      @include translate3d(0,0,0);
+      @include translateZ(0);
+      overflow:hidden;
+    }
+
+    .leaflet-control-attribution {
+      @include border-bottom-right-radius(1px);
+      @include border-top-left-radius(1px);
+      overflow:hidden;
     }
 
     .map_header {
       position: relative;
-      top: 0;
-      left: 0;
+      display:block;
       width: 100%;
       background: #FFF;
+      border:none;
       border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+      margin:0;
       padding: 20px 0 20px 0;
+      @include border-top-radius(1px);
+      @include box-shadow(rgba(0,0,0,0.10) 0 0 4px 4px);
+      @include translateZ(10px);
+
       h1 {
         font:normal 17px $text-fonts;
         color: #397DBA;
@@ -40,10 +63,17 @@
         margin-left: 20px;
       }
     }
+
+    #zoom {
+      position:relative;
+      top:0;
+      margin:20px 0 0 0;
+    }
   }
 
   ul.switches {
-    margin-top: 30px;
+    margin-top: 18px;
+
     li {
       @include inline-block();
       border: none !important;

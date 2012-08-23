@@ -102,6 +102,13 @@ describe("geo.map", function() {
       expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetLayerCartoDBView);
     });
 
+    it("should create a PlaiLayer when the layer is cartodb", function() {
+      layer    = new cdb.geo.PlainLayer({});
+      var lyr = map.addLayer(layer);
+      var layerView = mapView.getLayerByCid(lyr);
+      expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetPlainLayerView);
+    });
+
 
   });
 

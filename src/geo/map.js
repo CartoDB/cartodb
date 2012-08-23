@@ -27,6 +27,16 @@ cdb.geo.TileLayer = cdb.geo.MapLayer.extend({
   }
 });
 
+/**
+ * this layer allows to put a plain color or image as layer (instead of tiles)
+ */
+cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
+  defaults: {
+    type: 'Plain',
+    color: '#FFFFFF'
+  }
+});
+
 // CartoDB layer
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   defaults: {

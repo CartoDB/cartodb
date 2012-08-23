@@ -3,6 +3,37 @@
 */
 (function() {
 
+  var PlainLayer = L.TileLayer.extend({
+
+    initialize: function (options) {
+        L.Util.setOptions(this, options);
+    },
+
+    _redrawTile: function (tile) {
+      tile.style['background-color'] = this.options.color;
+    },
+
+    _createTileProto: function () {
+        var proto = this._divProto = L.DomUtil.create('div', 'leaflet-tile leaflet-tile-loaded');
+        var tileSize = this.options.tileSize;
+        proto.style.width = tileSize + 'px';
+        proto.style.height = tileSize + 'px';
+
+    },
+
+    _loadTile: function (tile, tilePoint, zoom) {
+    },
+
+    _createTile: function () {
+        var tile = this._divProto.cloneNode(false);
+        //set options here
+        tile.onselectstart = tile.onmousemove = L.Util.falseFn;
+        this._redrawTile(tile);
+        return tile;
+    }
+
+  });
+
   /**
   * base layer for all leaflet layers
   */
@@ -27,6 +58,18 @@
 
   });
 
+  // -- plain layer view
+  var LeafLetPlainLayerView = function(layerModel, leafletMap) {
+    var leafletLayer = new PlainLayer(layerModel.attributes);
+    LeafLetLayerView.call(this, layerModel, leafletLayer, leafletMap);
+  };
+  _.extend(LeafLetPlainLayerView.prototype, LeafLetLayerView.prototype, {
+    _update: function() {
+    }
+  });
+  cdb.geo.LeafLetPlainLayerView = LeafLetPlainLayerView;
+
+  // -- tiled layer view
 
   var LeafLetTiledLayerView = function(layerModel, leafletMap) {
     var leafletLayer = new L.TileLayer(layerModel.get('urlTemplate'));
@@ -129,7 +172,8 @@
 
       this.layerTypeMap = {
         "Tiled": cdb.geo.LeafLetTiledLayerView,
-        "CartoDB": cdb.geo.LeafLetLayerCartoDBView
+        "CartoDB": cdb.geo.LeafLetLayerCartoDBView,
+        "Plain": cdb.geo.LeafLetPlainLayerView
       };
 
       // this var stores views information for each model

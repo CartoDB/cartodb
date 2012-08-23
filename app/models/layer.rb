@@ -1,7 +1,7 @@
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow
   
-  ALLOWED_KINDS = %W{ carto tiled }
+  ALLOWED_KINDS = %W{ carto tiled background }
   PUBLIC_ATTRIBUTES = %W{ options kind infowindow id }
 
   DEFAULT_BASE_OPTIONS = {
@@ -11,6 +11,11 @@ class Layer < Sequel::Model
       type:        "Tiled", 
       urlTemplate: "http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png"
     }
+  }
+
+  DEFAULT_BACKGROUND_OPTIONS = {
+    kind: "background",
+    options: { color: '#ffffff' }
   }
 
   DEFAULT_DATA_OPTIONS = { 

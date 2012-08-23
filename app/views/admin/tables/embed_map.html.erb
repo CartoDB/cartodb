@@ -109,6 +109,9 @@
         , northEast = new L.LatLng(opt.ne_lat || 72, opt.ne_lon || 80)
         , bounds = new L.LatLngBounds(southWest, northEast);
 
+      if(opt.sql) {
+        data_layer_tilejson.tiles[0] = data_layer_tilejson.tiles[0] + "?sql=" + encodeURIComponent(opt.sql);
+      }
 
       var map = new L.Map('map_cartodb_container')
         .addLayer(new wax.leaf.connector(base_layer_tilejson))

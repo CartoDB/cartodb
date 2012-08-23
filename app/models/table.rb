@@ -479,6 +479,7 @@ class Table < Sequel::Model(:user_tables)
     self.map_id = m.id
     m.add_layer(Layer.create(Layer::DEFAULT_BASE_OPTIONS))
     m.add_layer(Layer.create(Layer::DEFAULT_DATA_OPTIONS))
+    m.add_layer(Layer.create(Layer::DEFAULT_BACKGROUND_OPTIONS))
   end
 
   def after_update

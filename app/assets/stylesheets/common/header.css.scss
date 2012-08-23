@@ -180,7 +180,7 @@
           width:100%;
           height:50px;
 
-          h1,h2,a.button_header{
+          h1,h2,a.button_header {
             @include inline-block();
             margin:0;
             vertical-align:middle;

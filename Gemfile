@@ -1,8 +1,8 @@
 source 'http://rubygems.org'
 
-gem "rails", "3.2.0"
+gem "rails",                   "3.2.0"
 
-gem "rake",  "0.9.2.2"
+gem "rake",                    "0.9.2.2"
 gem "pg",                      "0.11"
 gem "sequel",                  "3.37.0"
 gem "sequel_pg",               "1.2.0", :require => "sequel"
@@ -32,16 +32,18 @@ gem "airbrake",                "3.0.9"
 gem "nokogiri",                "1.5.3"
 gem "statsd-client",           "0.0.7", :require => "statsd"
 
-gem 'ejs'
+gem "ejs",                     "~> 1.1.1"
 group :assets do
-  gem 'sass-rails',           '~> 3.2.3'
-  gem 'uglifier',             '~> 1.0.3'
-  gem 'therubyracer',         '~> 0.9.10'
-  gem 'compass',              '~> 0.12.1'
-  gem 'compass-rails',        '~> 1.0.1'
-  gem 'chunky_png',           '~> 1.2.6'
-  gem 'oily_png',             '~> 1.0.2'
+  gem 'sass-rails',            "~> 3.2.3"
+  gem 'uglifier',              "~> 1.0.3"
+  gem 'therubyracer',          "~> 0.9.10"
+  gem 'compass',               "~> 0.12.1"
+  gem 'compass-rails',         "~> 1.0.1"
+  gem 'chunky_png',            "~> 1.2.6"
+  gem 'oily_png',              "~> 1.0.2"
 end
+
+gem "newrelic_rpm",            "~> 3.4.1"
 
 # Importer
 gem "ruby-ole",                "1.2.11.3"

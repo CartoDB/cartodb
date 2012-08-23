@@ -17,6 +17,7 @@ development:
     password: "monkey"
 
 staging:
+  google_analytics_ua: 'UA-20934186-3'
   session_domain: '.localhost.lan'
   secret_token: '71c2b25921b84a1cb21c71503ab8fb23'
   account_host: 'localhost:3000'

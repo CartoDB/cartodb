@@ -59,7 +59,7 @@
         map.setZoom(3);
 
         map.bind('change:center', function(model, center) {
-          console.log(center[0], center[1]);
+          //console.log(center[0], center[1]);
         });
 
         // Adds a TileLayer
@@ -78,6 +78,7 @@
           featureOver:  function() { console.log('over'); },
           featureClick: function() { console.log('click'); }
         };
+
 
         var layer = new cdb.geo.CartoDBLayer(options);
         map.addLayer(layer);

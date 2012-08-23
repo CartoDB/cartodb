@@ -19,7 +19,8 @@
         "../vendor/backbone.js",
 
         "../vendor/leaflet.js",
-        "../vendor/wax.leaf.min-6.2.3-touched.js",
+        "../vendor/wax.leaf.js",
+        "../vendor/cartodb-leaflet.js",
 
         'core/config.js',
         'core/log.js',

@@ -19,7 +19,8 @@
         "../vendor/backbone.js",
 
         "../vendor/leaflet.js",
-        "../vendor/wax.leaf.min-6.2.3-touched.js",
+        "../vendor/wax.leaf.js",
+        "../vendor/cartodb-leaflet.js",
 
         'core/config.js',
         'core/log.js',
@@ -31,8 +32,9 @@
         'geo/ui/zoom.js',
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
-        'geo/ui/selector.js',
+        //'geo/ui/selector.js',
         'geo/ui/infowindow.js',
+        'geo/leaflet.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',

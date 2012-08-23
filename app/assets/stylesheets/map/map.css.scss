@@ -82,6 +82,41 @@
                 border:1px solid rgba(#999999,1);
               }
             }
+
+            // Add new base map
+            &.add {
+              position:relative;
+
+              span {
+                &:after, &:before {
+                  position:absolute;
+                  content:'';
+                  top:50%;
+                  left:50%;
+                  @include border-radius(3px);
+                  background:#397DBA;
+                }
+
+                &:after {
+                  margin:-2px 0 0 -8px;
+                  width:16px;
+                  height:4px;
+                }
+
+                &:before {
+                  margin:-8px 0 0 -2px;
+                  width:4px;
+                  height:16px;
+                }
+              }
+              
+
+              &:hover {
+                span:after,span:before {
+                  background:#24527B;
+                }
+              }
+            } // a.add
           }
         }  
       }

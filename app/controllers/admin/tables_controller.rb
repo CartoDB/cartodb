@@ -6,6 +6,7 @@ class Admin::TablesController < ApplicationController
   skip_before_filter :check_domain,                :only => [:embed_map, :show, :show_public]
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]  
   before_filter      :login_required,              :only => [:index]
+  after_filter       :update_user_last_activity,   :only => [:index, :show]
 
   def index    
     @tags          = Tag.load_user_tags(current_user.id, :limit => 100)
@@ -78,5 +79,10 @@ class Admin::TablesController < ApplicationController
   def send_data_conf table, type, ext
     { :type => "application/#{type}; charset=binary; header=present",
       :disposition => "attachment; filename=#{table.name}.#{ext}" }
+  end
+
+  def update_user_last_activity
+    current_user.last_active_time = Time.now
+    current_user.save(:last_active_time, :validate => false)
   end
 end

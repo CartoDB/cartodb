@@ -4,6 +4,7 @@
    */
 
   @import "compass";
+  @import "../common/vars";
   @import "../common/mixins";
 
   div.map {
@@ -63,6 +64,45 @@
             @include border-radius(4px);
             @include text-indent();
 
+            span.color {
+              position:absolute;
+              display:block;
+              top:50%;
+              left:0;
+              width:100%;
+              margin:-6px 0 0 0;
+              text-indent:0;
+              font:bold 9px $text-fonts;
+              color:rgba(#999,0.8);
+              text-shadow:0 0 1px rgba(#FFF,0.5);
+              text-transform:uppercase;
+              text-align:center;
+            }
+
+            span.button {
+              position:absolute;
+              bottom:2px;
+              right:2px;
+              width:10px;
+              height:10px;
+              text-indent:0;
+              @include border-radius(10px);
+              background:white;
+              z-index:2;
+
+              &:before {
+                position:absolute;
+                content:' ';
+                top:4px;
+                left:3px;
+                width:0;
+                height:0;
+                border-left:2px solid transparent;
+                border-right:2px solid transparent;
+                border-top:3px solid #397DBA;
+              }
+            }
+
             &:before {
               content:' ';
               position:absolute;
@@ -82,6 +122,41 @@
                 border:1px solid rgba(#999999,1);
               }
             }
+
+            // Add new base map
+            &.add {
+              position:relative;
+
+              span {
+                &:after, &:before {
+                  position:absolute;
+                  content:'';
+                  top:50%;
+                  left:50%;
+                  @include border-radius(3px);
+                  background:#397DBA;
+                }
+
+                &:after {
+                  margin:-2px 0 0 -8px;
+                  width:16px;
+                  height:4px;
+                }
+
+                &:before {
+                  margin:-8px 0 0 -2px;
+                  width:4px;
+                  height:16px;
+                }
+              }
+              
+
+              &:hover {
+                span:after,span:before {
+                  background:#24527B;
+                }
+              }
+            } // a.add
 
             // Add new base map
             &.add {

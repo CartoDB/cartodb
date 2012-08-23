@@ -19,7 +19,6 @@
     @include background(image-url("layout/relief.png") repeat 0 0);
     background-color: #519FD9;
     @include box-shadow(rgba(black, 0.3) 0 0 12px, rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
-
     @include transform-style("linear");
     @include transition-property("background-color");
     @include transition-duration(500ms);

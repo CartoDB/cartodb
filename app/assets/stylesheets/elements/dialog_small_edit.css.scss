@@ -36,16 +36,23 @@
 }
 
 .floating.edit_name_dialog {
-  @include background(linear-gradient(rgba(black, 0.5), rgba(#212121,0.5)));
+  min-width:280px;
   padding: 5px;
+  @include background(linear-gradient(rgba(black, 0.5), rgba(#212121,0.5)));
   @include border-radius(4px);
   @include box-shadow(rgba(0,0,0,0.12) 0 0 2px 2px);
   
   input {
+    position:absolute;
+    top:5px;
+    left:5px;
+    right:64px;
+    bottom:5px;
     font-size: 15px;
     color: #333333;
     border: 1px solid #000;
     padding: (36px - 15px)/2;
+    line-height:normal;
     @include border-radius(4px);
     margin: 0 3px 0 0;
     &:focus {

@@ -5,6 +5,7 @@
 //= require rgbcolor
 //= require jquery-ui.slider
 //= require ZeroClipboard
+//= require tag-it
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror
 //= require_tree ../../../lib/assets/javascripts/cartodb/models

@@ -7,6 +7,7 @@
   @import "compass/css3";
   @import "../common/mixins";
   @import "../common/sprites";
+  @import "../common/vars";
 
   header {
     position:relative;
@@ -15,11 +16,28 @@
     height: 36px;
     padding: 30px 0;
     background: image-url('layout/relief.png') repeat 0 0 #377CB9; // IE
-    @include background(image-url("layout/relief.png") repeat 0 0,linear-gradient(#519FD9,#4278BB)); 
+    @include background(image-url("layout/relief.png") repeat 0 0);
+    background-color: #519FD9;
     @include box-shadow(rgba(black, 0.3) 0 0 12px, rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
 
+    @include transform-style("linear");
+    @include transition-property("background-color");
+    @include transition-duration(500ms);
+
     &.query {
-      @include background(image-url("layout/relief.png") repeat 0 0,linear-gradient(#FF9900,#F37611)); 
+      background-color:#FF9900;
+      a.clearview {color:#FF9900!important;}
+    }
+
+    &:before {
+      position:absolute;
+      content:' ';
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      @include background(linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0.1)));
+      z-index:0;
     }
 
     border-bottom: 1px solid #2F567E;
@@ -155,30 +173,23 @@
 
     // Header for the table :)
     &.table {
-      height:90px;
+      padding:20px 0;
+      height:110px;
       overflow:visible;
       @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
 
       .inner {width:auto;}
-
-      p.table_description {
-        font-size: 15px;
-        color: rgba(255, 255, 255, 0.5);
-        margin-left: 113px;
-        margin-top: 5px;
-      }
       
       div.left {
         position:relative;
         width:65%;
-        height:121px;
+        height:131px;
         margin-left:35px;
 
         hgroup {
           @include inline-block();
           margin:10px 0 0 0;
           width:100%;
-          height:50px;
 
           h1,h2,a.button_header {
             @include inline-block();
@@ -191,8 +202,20 @@
           h2 {
             position:relative;
             padding:0 0 1px 18px;
-            line-height:21px;
-            a {display:block; margin:0; padding:0; font-size:21px; line-height:21px; color:white;}
+            line-height:23px;
+
+            a {
+              overflow:hidden;
+              display:block;
+              max-width:440px;
+              margin:0;
+              font-size:21px;
+              line-height:23px;
+              color:white;
+              text-overflow:ellipsis;
+              padding:0;
+              white-space:nowrap;
+            }
             
             &:before {
               position:absolute;
@@ -221,6 +244,57 @@
               @include box-shadow(rgba(black,0.19) 0 0 2px 2px);
             }
             text-transform: uppercase;
+          }
+        }
+
+        span.table_description {
+          display:block;
+          margin: 5px 0 0 113px;
+
+          p {
+            @include inline-block();
+            width:auto;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.5);
+            &:hover {cursor:pointer; color:rgba(255, 255, 255, 1);}
+          }
+        }
+
+        span.tags {
+          display:block;
+          margin:5px 0 0 113px;
+
+          p {
+            @include inline-block();
+            vertical-align:middle;
+            overflow:hidden;
+            width:auto;
+            padding:0;
+            text-overflow:ellipsis;
+            line-height:18px;
+            white-space:nowrap;
+
+            em {
+              height:13px;
+              padding:3px;
+              margin:0 3px 0 0;
+              font:normal 11px $text-fonts;
+              color:white;
+              background:rgba(0,0,0,0.25);
+              @include border-radius(2px);
+              line-height:20px;
+
+              &:last-child {
+                margin-right:8px;
+              }
+            }
+          }
+
+          a {
+            @include inline-block();
+            vertical-align:middle;
+            font:normal 11px $text-fonts;
+            color:white;
           }
         }
 
@@ -266,7 +340,7 @@
 
       ul.options {
         width:auto;
-        margin:10px 35px 0 0;
+        margin:13px 35px 0 0;
 
         li {
           position:relative;

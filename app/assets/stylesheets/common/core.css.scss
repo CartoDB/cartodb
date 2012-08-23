@@ -21,6 +21,7 @@
     color:#2483B4;
     text-decoration:none;
     &:hover {text-decoration:underline; color:#333}
+    &.disabled { @include opacity(0.3); &:hover {color:$link-color;}}
   }
   p {
     color:#666666;

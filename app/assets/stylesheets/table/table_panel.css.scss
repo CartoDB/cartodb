@@ -20,7 +20,7 @@
     letter-spacing:-4px;
     border:1px solid #999999;
     @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
-    @include border-radius(4px);
+    @include border-top-left-radius(4px);
     
     .sidebar {
       position:absolute;

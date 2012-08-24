@@ -332,6 +332,8 @@ class User < Sequel::Model
       self.database_name = case Rails.env
         when 'development'
           "cartodb_dev_user_#{self.id}_db"
+        when 'staging'
+          "cartodb_staging_user_#{self.id}_db"
         when 'test'
           "cartodb_test_user_#{self.id}_db"
         else

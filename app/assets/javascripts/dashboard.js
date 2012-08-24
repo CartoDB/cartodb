@@ -1,5 +1,6 @@
 //= require d3.v2
 //= require fileuploader
+//= require jquery-ui.core.min
 //= require_tree ../../../lib/assets/javascripts/cartodb/models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
 //= require_tree ../../../lib/assets/javascripts/cartodb/common

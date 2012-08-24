@@ -16,11 +16,36 @@ describe("geo.map", function() {
     });
   });
 
+  describe("Layers", function() {
+    var layers;
+    beforeEach(function() {
+      layers = new cdb.geo.Layers();
+    });
+
+    it("should clone", function() {
+      var layer = new cdb.geo.CartoDBLayer();
+      layers.add(layer);
+      var copy = layers.clone();
+      expect(copy.size()).toEqual(layers.size());
+      expect(copy.models[0].attributes).toEqual(layers.models[0].attributes);
+    });
+
+  });
   describe("Map", function() {
     var map;
     beforeEach(function() {
       map = new cdb.geo.Map();
     });
+
+    it("should clone", function() {
+      var old = new cdb.geo.CartoDBLayer({});
+      map.setCenter([1,0]);
+      map.addLayer(old);
+      var m = map.clone();
+      expect(m.layers.size()).toEqual(1);
+      expect(m.get('center')).toEqual([1,0]);
+    });
+
 
     it("should set base layer", function() {
       var old = new cdb.geo.CartoDBLayer({});

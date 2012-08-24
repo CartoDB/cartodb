@@ -14,13 +14,6 @@ cdb.geo.MapLayer = Backbone.Model.extend({
 
 });
 
-/**
-* list of layers
-*/
-cdb.geo.Layers = Backbone.Collection.extend({
-  model: cdb.geo.MapLayer
-});
-
 // Good old fashioned tile layer
 cdb.geo.TileLayer = cdb.geo.MapLayer.extend({
   getTileLayer: function() {
@@ -58,8 +51,21 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   }
 });
 
-cdb.geo.MapLayers = Backbone.Collection.extend({
-  model: cdb.geo.MapLayer
+cdb.geo.Layers = Backbone.Collection.extend({
+
+  model: cdb.geo.MapLayer,
+
+  clone: function() {
+    var layers = new cdb.geo.Layers();
+    this.each(function(layer) {
+      if(layer.clone) {
+        layers.add(layer.clone());
+      } else {
+        layers.add(_.clone(layer.attributes));
+      }
+    });
+    return layers;
+  }
 });
 
 /**
@@ -78,7 +84,7 @@ cdb.geo.Map = Backbone.Model.extend({
   },
 
   initialize: function() {
-    this.layers = new cdb.geo.MapLayers();
+    this.layers = new cdb.geo.Layers();
   },
 
   setView: function(latlng, zoom) {
@@ -105,6 +111,20 @@ cdb.geo.Map = Backbone.Model.extend({
     this.set({
       center: latlng
     });
+  },
+
+  clone: function() {
+    var m = new cdb.geo.Map(_.clone(this.attributes));
+    // clone lists
+    m.set({
+      center: _.clone(this.attributes.center),
+      bounding_box_sw: _.clone(this.attributes.bounding_box_sw),
+      bounding_box_ne: _.clone(this.attributes.bounding_box_ne)
+    });
+    // layers
+    m.layers = this.layers.clone();
+    return m;
+
   },
 
   /**

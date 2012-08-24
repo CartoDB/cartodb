@@ -1,2 +1,3 @@
-var TILESERVER = "http://ec2-50-16-103-51.compute-1.amazonaws.com";
+var TILEHTTP = "https";
+var TILESERVER = "cartodb.com";
 var global_api_url = '/api/v1/';

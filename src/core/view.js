@@ -5,6 +5,7 @@
    * DO NOT USE Backbone.View directly
    */
   var View = cdb.core.View = Backbone.View.extend({
+
     constructor: function(options) {
       this._models = [];
       this._subviews = {};
@@ -94,7 +95,28 @@
     extendEvents: function(newEvents) {
       return function() {
         return _.extend(newEvents, this.constructor.__super__.events);
-      }
+      };
+    },
+
+    /**
+     * search for views in a view and check if they are added as subviews
+     */
+    runChecker: function() {
+      _.each(cdb.core.View.views, function(view) {
+        _.each(view, function(prop, k) {
+          if( k !== '_parent' && 
+              view.hasOwnProperty(k) && 
+              prop instanceof cdb.core.View &&
+              view._subviews[prop.cid] === undefined) {
+            console.log("=========");
+            console.log("untracked view: ");
+            console.log(prop.el);
+            console.log('parent');
+            console.log(view.el);
+            console.log(" ");
+          }
+        });
+      });
     }
   });
 

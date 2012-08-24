@@ -16,6 +16,26 @@ describe("geo.map", function() {
     });
   });
 
+  describe("Map", function() {
+    var map;
+    beforeEach(function() {
+      map = new cdb.geo.Map();
+    });
+
+    it("should set base layer", function() {
+      var old = new cdb.geo.CartoDBLayer({});
+      map.addLayer(old);
+      var layer    = new cdb.geo.CartoDBLayer({});
+      map.addLayer(layer);
+      var base = new cdb.geo.CartoDBLayer({});
+      var r = map.setBaseLayer(base);
+      expect(r).toEqual(old);
+      expect(map.layers.at(0)).toEqual(base);
+    });
+
+  });
+
+
   describe('LeafletMapView', function() {
     var mapView;
     var map;
@@ -107,6 +127,20 @@ describe("geo.map", function() {
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
       expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetPlainLayerView);
+    });
+
+    it("should inser layer in specified order", function() {
+      var layer    = new cdb.geo.CartoDBLayer({});
+      map.addLayer(layer);
+
+      spyOn(mapView.map_leaflet,'addLayer');
+      layer    = new cdb.geo.PlainLayer({});
+      map.addLayer(layer, {at: 0});
+
+      expect(mapView.map_leaflet.addLayer.mostRecentCall.args[1]).toEqual(true);
+      //expect(mapView.map_leaflet.addLayer).toHaveBeenCalledWith(mapView.layers[layer.cid].leafletLayer, true);
+
+
     });
 
 

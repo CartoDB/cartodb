@@ -280,7 +280,7 @@
       });
     },
 
-    _addLayer: function(layer) {
+    _addLayer: function(layer, layers, opts) {
       var lyr, layer_view;
 
       var layerClass = this.layerTypeMap[layer.get('type')];
@@ -294,7 +294,7 @@
       this.layers[layer.cid] = layer_view;
 
       if (layer_view) {
-        var isBaseLayer = this.layers.length === 1;
+        var isBaseLayer = this.layers.length === 1 || (opts && opts.index === 0);
         this.map_leaflet.addLayer(layer_view.leafletLayer, isBaseLayer);
         this.trigger('newLayerView', layer_view, this);
       } else {

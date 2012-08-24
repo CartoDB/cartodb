@@ -128,12 +128,13 @@ cdb.geo.Map = Backbone.Model.extend({
   getLayerAt: function(i) {
     return this.layers.at(i);
   },
+
   getLayerByCid: function(cid) {
     return this.layers.getByCid(cid);
   },
-  addLayer: function(layer) {
-    this.layers.add(layer);
 
+  addLayer: function(layer, opts) {
+    this.layers.add(layer, opts);
     return layer.cid;
   },
 
@@ -164,6 +165,17 @@ cdb.geo.Map = Backbone.Model.extend({
   // by default the base layer is the layer at index 0
   getBaseLayer: function() {
     return this.layers.at(0);
+  },
+
+  // remove current base layer and set the specified
+  // the base layer is not deleted, it is only removed 
+  // from the layer list
+  // return the old one
+  setBaseLayer: function(layer) {
+    var old = this.layers.at(0);
+    this.layers.remove(old);
+    this.layers.add(layer, { at: 0 });
+    return old;
   }
 });
 

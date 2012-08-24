@@ -6,7 +6,7 @@ class Admin::TablesController < ApplicationController
   skip_before_filter :check_domain,                :only => [:embed_map, :show, :show_public]
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]  
   before_filter      :login_required,              :only => [:index]
-  after_filter       :update_user_last_activity,   :only => [:index, :show]
+  after_filter       :update_user_last_activity,   :only => [:index]
 
   def index    
     @tags          = Tag.load_user_tags(current_user.id, :limit => 100)
@@ -21,6 +21,7 @@ class Admin::TablesController < ApplicationController
   # if the user is not logged in, we redirect them to the public page
   def show    
     if current_user.present?          
+      update_user_last_activity
       @table = Table.find_by_identifier(current_user.id, params[:id])
       begin
         respond_to do |format|

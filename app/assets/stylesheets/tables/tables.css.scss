@@ -229,18 +229,22 @@
                 }
               }
 
+              div.full {width:100%;}
+
               span.tags {
-                float:right;
-                width:100%;
+                display:block;
+                width:auto!important;
                 margin:30px 0 0 0!important;
 
                 a {
                   float:right;
                   width:auto;
                   padding:2px 7px;
+                  height:14px;
                   margin:0 0 0 4px;
                   font:normal 11px $text-fonts2;
                   color:#666666;
+                  line-height:14px;
                   background:rgba(57,125,187,0.15);
                   @include border-radius(2px);
                 }
@@ -284,8 +288,43 @@
               &:before {content:' '; position:absolute; left:0; top:0px; width:100%; height:1px; background:#E8E8E8}
             }
 
-            &:last-child {
+            &.empty {
+              img {
+                margin-left:165px;
+              }
               &:hover {
+                background:white;
+              }
+            }
+
+            &.drop {
+              background:#F7F7F7;
+              & + li div.table_info {border-color:white}
+              &:after {content:' '; position:absolute; left:0; bottom:0px; width:100%; height:1px; background:#E8E8E8;}
+              &:before {content:' '; position:absolute; left:0; top:0px; width:100%; height:1px; background:#E8E8E8}
+              span.tags {
+                position:relative;
+
+                &:before {
+                  position:absolute;
+                  content:'+';
+                  top:0;
+                  left:-17px;
+                  width:18px;
+                  height:14px;
+                  padding:2px 0;
+                  background:#397DBA;
+                  font:bold 14px "Arial";
+                  line-height:14px;
+                  color:white;
+                  text-align:center;
+                  @include border-radius(2px);
+                }
+              }
+            }            
+
+            &:last-child {
+              &:hover,&.drop {
                 @include border-bottom-radius(4px);
                 &:after {display:none;}  
               }
@@ -294,7 +333,7 @@
             &:first-child {
               border:none;
               div.table_info {border:none}
-              &:hover {
+              &:hover,&.drop {
                 &:before {display:none;}  
               }
             }
@@ -311,15 +350,6 @@
                 &:after {display:none;}
                 &:before {display:none;}
                 cursor:default;
-              }
-            }
-
-            &.empty {
-              img {
-                margin-left:165px;
-              }
-              &:hover {
-                background:white;
               }
             }
           } // li

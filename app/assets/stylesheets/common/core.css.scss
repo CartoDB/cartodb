@@ -6,7 +6,6 @@
 
   @import "compass";
   @import "compass/reset";
-  @import "compass/css3";
   @import "../common/sprites";
   @import "../common/vars";
 
@@ -23,11 +22,13 @@
     &:hover {text-decoration:underline; color:#333}
     &.disabled { @include opacity(0.3); &:hover {color:$link-color;}}
     &.tag {
-      padding:2px 7px;
-      font:normal 11px $text-fonts2;
-      color:#666666;
-      background:rgba(57,125,187,0.15);
+      padding:6px 7px;
+      font:normal 15px $text-fonts2;
+      color:#397DB9;
+      background:#E1ECF5;
       @include border-radius(2px);
+      border:1px solid #397DBA;
+      @include box-shadow(rgba(0,0,0,0.12) 0 0 2px 2px);
     }
   }
   p {

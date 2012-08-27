@@ -47,10 +47,8 @@
 
         &.edit {
           bottom:0;
-          &:last-child {
-            @include border-bottom-left-radius(4px);
-            border:none;
-          }
+          a:first-child {border-top:1px solid rgba(#999999,0.25);}
+          &:last-child {border:none;}
         }
 
         a {
@@ -68,8 +66,8 @@
           &.infowindow_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-431px);}
 
           // tool buttons
-          &.add_row {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-313px);}
-          &.add_column {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-254px);}
+          &.add_row {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}
+          &.add_column {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-247px);}
 
           &:hover {
             cursor:pointer;

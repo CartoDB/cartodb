@@ -113,6 +113,25 @@
           letter-spacing:-1px;
           color:#333333;
           line-height:normal;
+
+          a {
+            position:relative;
+            padding:0;
+            color:#333333;
+            text-decoration:none;
+            font-family:$title-fonts;
+            letter-spacing:-1px;
+
+            &:before {
+              position:absolute;
+              bottom:-1px;
+              right:-8px;
+              content:'x';
+              color:rgba(red,0.6);
+              font:bold 13px $text-fonts2;
+            }
+            &:hover {color:black; &:before {color:red;}}
+          }
         }
 
         div.loader {
@@ -135,7 +154,6 @@
             border:none;
             position:relative;
             padding:0 40px;
-            //overflow:hidden;
 
             div.table_info {
               padding:40px 0;
@@ -295,7 +313,16 @@
                 cursor:default;
               }
             }
-          }
+
+            &.empty {
+              img {
+                margin-left:165px;
+              }
+              &:hover {
+                background:white;
+              }
+            }
+          } // li
         }
       }
     }

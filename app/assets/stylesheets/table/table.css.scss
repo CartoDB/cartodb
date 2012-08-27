@@ -207,6 +207,8 @@
             & + tr {
               border-top-color:#CCCCCC;
             }
+
+            td:first-child > div {display:block;}
           }
 
           td {
@@ -225,6 +227,46 @@
               white-space: nowrap;
               &.disabled {
                 color: #AAA;
+              }
+            }
+
+            &:first-child {
+              position:relative;
+
+              & > div {
+                display:none;
+                width:12px;
+                height:12px;
+                margin:10px;
+                padding:0;
+                border:1px solid #999999;
+                @include border-radius(3px);
+                background:#FAFAFA;
+                @include background(linear-gradient(#FAFAFA,#E8E8E8));
+                
+                &:before {
+                  position:absolute;
+                  @include opacity(1);
+                  content:' ';
+                  top:20px;
+                  left:15px;
+                  width:0;
+                  height:0;
+                  border-left:2px solid transparent;
+                  border-right:2px solid transparent;
+                  border-top:3px solid #666666;
+                }
+
+                &:hover {
+                  background:#E8E8E8;
+                  @include background(linear-gradient(#FAFAFA,#E3D3E3));
+                  cursor:pointer;
+                }
+
+                &:active {
+                  background:#E3D3E3;
+                  @include background(linear-gradient(#E3D3E3,#FAFAFA));
+                }
               }
             }
 

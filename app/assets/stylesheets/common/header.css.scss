@@ -192,7 +192,7 @@
         padding:0;
         overflow:hidden;
         text-align:center;
-        z-index:0;
+        z-index:-1;
 
         p {
           @include border-top-radius(3px);

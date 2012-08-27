@@ -8,30 +8,12 @@
   @import "../common/vars";
   @import "../common/sprites";
 
-
-  header.table {
-    position:fixed;
-    min-width:960px;
-    left:0;
-    top:0;
-    z-index:2;
-  }
-
-  div.globalerror {
-    position: absolute;
-    top:150px;
-    right: 50%;
-    padding: 10px;
-    z-index:2;
-  }
-
   div.panes {
     position:absolute;
     top:150px;
     left:0;
     right:0;
     bottom:0;
-    // margin:150px 0 0 0;
   }
 
   div.table {

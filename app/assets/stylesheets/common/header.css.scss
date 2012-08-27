@@ -172,10 +172,41 @@
 
     // Header for the table :)
     &.table {
-      padding:20px 0;
+      position:fixed;
+      left:0;
+      top:0;
+      min-width:960px;
       height:110px;
+      padding:20px 0;
       overflow:visible;
       @include box-shadow(rgba(0,0,0,0.09) 0 -5px 3px 0 inset);
+      z-index:2;
+
+      div.globalerror {
+        position: absolute;
+        top:auto;
+        bottom:0;
+        left:0;
+        width:100%;
+        height:39px;
+        padding:0;
+        overflow:hidden;
+        text-align:center;
+        z-index:0;
+
+        p {
+          @include border-top-radius(3px);
+          margin-top:39px;
+          @include inline-block();
+          height:15px;
+          width:auto;
+          padding:12px 15px;
+          line-height:15px;
+          background:rgba(0,0,0,0.35);
+          font:normal 13px $text-fonts;
+          color:white;
+        }
+      }
 
       .inner {width:auto;}
       

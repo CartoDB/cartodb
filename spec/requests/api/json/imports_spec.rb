@@ -11,8 +11,12 @@ describe "Imports API" do
   end
 
   it 'allows users to perform asynchronous imports' do
+    f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
+    post v1_imports_url(:host    => 'test.localhost.lan', 
+                        :qqfile  => File.basename('column_number_to_boolean.csv'),
+                        :api_key => @user.get_map_key,
+                        :table_name => "wadus"), f.read.force_encoding('UTF-8')
 
-    post v1_imports_url(:host => 'test.localhost.lan'), :file_uri => upload_file('db/fake_data/column_string_to_boolean.csv', 'text/plain'), :api_key => @user.get_map_key
 
     response.code.should be == '200'
 
@@ -22,12 +26,19 @@ describe "Imports API" do
 
     last_import = DataImport.order(:updated_at.desc).first
     last_import.queue_id.should be == response_json['item_queue_id']
-    last_import.state.should be == 'complete'
+    last_import.state.should_not be == 'failure'
+  end
+
+  it 'allows users to perform synchronous imports' do
   end
 
   it 'allows users to get a list of all performed imports' do
-    %w(arrivals_BCN clubbing column_number_to_boolean column_string_to_boolean).each do |file_name|
-      post v1_imports_url(:host => 'test.localhost.lan'), :file_uri => upload_file("db/fake_data/#{file_name}.csv", 'text/plain'), :api_key => @user.get_map_key
+    %w(column_number_to_boolean column_string_to_boolean).each do |file_name|
+      post v1_imports_url(:host => 'test.localhost.lan', 
+                          :api_key => @user.get_map_key, 
+                          :table_name => file_name, 
+                          :qqfile => File.basename('wadus.csv')), 
+                          upload_file("db/fake_data/#{file_name}.csv", 'text/csv').read
     end
 
     get v1_imports_url(:host => 'test.localhost.lan'), :api_key => @user.get_map_key
@@ -37,13 +48,15 @@ describe "Imports API" do
     response_json = JSON.parse(response.body)
     response_json.should_not be_nil
     imports = response_json['imports']
-    imports.should have(4).items
+    imports.should have(2).items
   end
 
   it 'allows users to get the detail of an import' do
-    post v1_imports_url(:host => 'test.localhost.lan'), :file_uri       => upload_file('db/fake_data/clubbing.csv', 'text/plain'),
-                                                        :table_name     => 'wadus',
-                                                        :api_key        => @user.get_map_key
+    post v1_imports_url(:host => 'test.localhost.lan', 
+                        :table_name => 'wadus',
+                        :qqfile => File.basename('wadus.csv'),
+                        :api_key => @user.get_map_key),
+                        upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 

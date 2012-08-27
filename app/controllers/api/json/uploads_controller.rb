@@ -27,7 +27,6 @@ class Api::Json::UploadsController < Api::ApplicationController
       file = File.new(Rails.root.join('public/uploads').join(random_token).join(File.basename(filename)), 'w')
       file.write filedata
       file.close
-
       render :json => {:file_uri => file.path[/(\/uploads\/.*)/, 1], :success => true}
     rescue => e
       logger.error e

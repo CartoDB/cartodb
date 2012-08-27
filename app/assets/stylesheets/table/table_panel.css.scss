@@ -67,6 +67,10 @@
           &.carto_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-372px);}
           &.infowindow_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-431px);}
 
+          // tool buttons
+          &.add_row {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-313px);}
+          &.add_column {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-254px);}
+
           &:hover {
             cursor:pointer;
             @include opacity(1);

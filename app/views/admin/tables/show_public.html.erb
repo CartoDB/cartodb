@@ -35,7 +35,7 @@
         ,	TILESERVER = "localhost.lan:8181"
         ,	SQL_SERVER = 'localhost.lan:8080'
         ,	global_api_url = '/api/v1/';
-      <% elsif Rails.env == "staging" || Rails.env == "test" %>
+      <% elsif Rails.env == "test" %>
         ,	TILEHTTP = "http"
         ,	TILESERVER = "ec2-50-16-103-51.compute-1.amazonaws.com"
         ,	global_api_url = '/api/v1/';

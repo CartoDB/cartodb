@@ -39,8 +39,8 @@ class Api::Json::ImportsController < Api::ApplicationController
     temp_file = filename = filedata = nil
 
     case
-    when params[:qqfile].present? && request.body.present?
-      filename = params[:qqfile]
+    when params[:filename].present? && request.body.present?
+      filename = "waduswadus"
       filedata = request.body.read.force_encoding('utf-8')
     when params[:file].present?
       filename = params[:file].original_filename

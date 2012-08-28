@@ -13,7 +13,7 @@ describe "Imports API" do
   it 'allows users to perform asynchronous imports' do
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
     post v1_imports_url(:host    => 'test.localhost.lan', 
-                        :qqfile  => File.basename('column_number_to_boolean.csv'),
+                        :filename  => File.basename('column_number_to_boolean.csv'),
                         :api_key => @user.get_map_key,
                         :table_name => "wadus"), f.read.force_encoding('UTF-8')
 
@@ -37,7 +37,7 @@ describe "Imports API" do
       post v1_imports_url(:host => 'test.localhost.lan', 
                           :api_key => @user.get_map_key, 
                           :table_name => file_name, 
-                          :qqfile => File.basename('wadus.csv')), 
+                          :filename => File.basename('wadus.csv')), 
                           upload_file("db/fake_data/#{file_name}.csv", 'text/csv').read
     end
 
@@ -54,7 +54,7 @@ describe "Imports API" do
   it 'allows users to get the detail of an import' do
     post v1_imports_url(:host => 'test.localhost.lan', 
                         :table_name => 'wadus',
-                        :qqfile => File.basename('wadus.csv'),
+                        :filename => File.basename('wadus.csv'),
                         :api_key => @user.get_map_key),
                         upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
 

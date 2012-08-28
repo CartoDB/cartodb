@@ -233,6 +233,10 @@ class User < Sequel::Model
   def set_map_key
     token = self.class.make_token
     $users_metadata.HMSET key, 'map_key',  token
+    require 'net/telnet'
+    varnish_conn = Net::Telnet::new("Host" => "localhost", "Port" => "6082", "Prompt" => /200 0/)
+    varnish_conn.cmd("purge obj.http.X-Cache-Channel ~ cartodb_user_2_db.*")
+    varnish_conn.close
   end
 
   def get_map_key

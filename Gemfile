@@ -41,6 +41,7 @@ group :assets do
   gem 'compass-rails',         "~> 1.0.1"
   gem 'chunky_png',            "~> 1.2.6"
   gem 'oily_png',              "~> 1.0.2"
+  gem 'mustache-trimmer',      :git => 'https://github.com/josh/mustache-trimmer.git'
 end
 
 gem "newrelic_rpm",            "~> 3.4.1"

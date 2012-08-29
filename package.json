@@ -1,0 +1,25 @@
+{
+    "name": "cartodb.js",
+    "version": "0.1.0",
+    "description": "CartoDB javascript library",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/CartoDB/cdb.js.git"
+    },
+    "author": {
+        "name": "Vizzuality",
+        "url": "http://vizzuality.com/",
+        "email": "wadus@vizzuality.com"
+    },
+    "contributors": [
+        "Javier Arce <javierarce@vizzuality.com>",
+        "Javier Alvarez <jamedina@vizzuality.com>",
+        "Javier Santana <jsantana@vizzuality.com>"
+    ],
+    "licenses": [{
+      "type": "BSD"
+    }],
+    "devDependencies": {
+      "uglify-js": "1.0.x"
+    }
+}

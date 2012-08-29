@@ -1,6 +1,6 @@
 // entry point
 (function() {
-    window.cdb = {};
+    var cdb = window.cdb = {};
     window.cdb.config = {};
     window.cdb.core = {};
     window.cdb.geo = {};

@@ -121,5 +121,13 @@ $width: 216px;
     color: #666666;
     text-shadow: 0 1px white;
   }
+
+  div.cartodb-popup div.cartodb-popup-header {
+    background: #EEE;
+    border-bottom: #CCC;
+  }
+  div.cartodb-popup div.cartodb-popup-header h1 {
+    font-size: 34px;
+  }
 }
 

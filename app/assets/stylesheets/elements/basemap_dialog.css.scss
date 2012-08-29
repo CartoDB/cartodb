@@ -1,0 +1,94 @@
+
+  
+  /**
+   *  Styles for basemap chooser dialog
+   */
+
+  @import "compass";
+  @import "../common/vars";
+  @import "../common/sprites";
+
+  .basemap_chooser {
+
+    div.input {
+      position:relative;
+      display:block;
+      border:1px solid #CCCCCC;
+      @include border-radius(3px);
+      height:25px;
+      padding:10px 15px;
+      z-index:1;
+      background:white;
+
+      div.loader {
+        position:absolute;
+        display:none;
+        top:12px;
+        left:12px;
+        height:24px;
+        width:24px;
+        background:white;
+      }
+
+      span.type {
+        @include inline-block();
+        vertical-align:top;
+        width:24px;
+        height:25px;
+        margin:0 9px 0 0;
+        padding:0;
+        @include icons-sprite(file_type,$offset-y:-48px);
+        border-right:1px solid #CCCCCC;
+      }
+
+      input[type="text"] {
+        @include inline-block();
+        vertical-align:middle;
+        width:360px;
+        border:none;
+        font:normal 15px $text-fonts2;
+        color:#999999;
+        line-height:normal;
+
+        &::-webkit-input-placeholder {
+          font-style:italic;
+          color:#CCC;
+        }
+
+        &::-moz-placeholder {
+          font-style:italic;
+          color:#CCC;
+        }
+
+        &.error {
+          color:rgba(red,0.5);
+        }
+
+        &:focus {outline:none;}
+      }
+    }
+
+
+    div.info {
+      display:block;
+      @include opacity(0);
+      margin:-50px 0 0 0;
+      padding:20px 13px 13px;
+      border:1px solid #CCCCCC;
+      @include border-radius(4px);
+      z-index:-1;
+      background:#FFF7EA;
+      @include transform-style("linear");
+      @include transition-property("all");
+      @include transition-duration(500ms);
+
+      p {font-style:italic; font-size:13px;}
+
+      &.error {background:#FEEAEB}
+      &.active {
+        display:block;
+        margin-top:-8px;
+        @include opacity(1);
+      }
+    }
+  }

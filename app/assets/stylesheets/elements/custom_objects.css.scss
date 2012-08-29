@@ -177,6 +177,22 @@
       }
     }
 
+    &.vertical_bottom {
+      &:after {
+        content:' ';
+        position:absolute;
+        display:block!important;
+        top:-6px;
+        left:12px;
+        width:0;
+        height:0;
+        border-bottom:6px solid #888;
+        border-left:6px solid transparent;
+        border-right:6px solid transparent;
+        z-index:2;
+      }
+    }
+
     div.colors {
       position:relative;
       width:100%;

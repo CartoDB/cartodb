@@ -38,7 +38,9 @@
 
         'ui/common/dialog.js',
         'ui/common/notification.js',
-        'ui/common/table.js'
+        'ui/common/table.js',
+
+        'vis.js'
     ];
 
     cdb.init = function(ready) {

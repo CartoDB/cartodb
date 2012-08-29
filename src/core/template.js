@@ -53,6 +53,12 @@ cdb.core.Template = Backbone.Model.extend({
   compilers: {
     'underscore': _.template,
     'mustache': typeof(Mustache) === 'undefined' ? null: Mustache.compile
+  }, 
+  compile: function(tmpl, type) {
+    var t = new cdb.core.Template({
+      template: tmpl
+    });
+    return _.bind(t.render, t);
   }
 }
 );

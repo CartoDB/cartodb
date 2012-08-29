@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CartoDB map demo</title>
+
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="http://leaflet.cloudmade.com/dist/leaflet.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+  </body>
+
+  <script src="../src/cartodb.js"></script>
+  <script>
+    window.onload = function() {
+      cdb.load('../src/', function() {
+
+         var vis = new Vis({el: $('#map')});
+         vis.load({
+           center: [0, 0],
+           zoom: 4,
+
+           overlays: [
+            { 
+              type: 'zoom',
+              pos: [20, 20],
+              template: '<div id="zoom_controls"> <a class="zoom_in">+</a> <a class="zoom_out">-</a> </div>'
+            }
+           ]
+         });
+         var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
+
+         vis.map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
+ 
+        window.map = map; // to play in console
+      });
+    };
+  </script>
+</html>

@@ -42,6 +42,10 @@
           name: 'geo/zoom',
           template: $('#zoom_tmpl').html()
         })
+        cdb.templates.add({
+          name: 'geo/infowindow',
+          template: '<div style="position: absolute; width: 216px;padding:0;" ><div>'
+        })
         // create a map
         var map = new cdb.geo.Map();
         var mapView = new cdb.geo.LeafletMapView({
@@ -61,6 +65,18 @@
         map.bind('change:center', function(model, center) {
           //console.log(center[0], center[1]);
         });
+
+        var infowindowModel = new cdb.geo.ui.InfowindowModel({
+           template_name: 'templates/map/infowindow',
+           latlng: [72, -45],
+           offset: [100, 10]
+        });
+
+        var infowindow = new cdb.geo.ui.Infowindow({
+           model: infowindowModel,
+           mapView: mapView
+        });
+
 
         // Adds a TileLayer
         var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';

@@ -28,6 +28,9 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     content: "",
     visibility: false,
     fields: null // contains the fields displayed in the infowindow
+    // this field contains a mustache template
+    // you can render the content using it passing all the needed params
+    content_template: '{{#fields}} {{#name}}<h4>{{name}}</h4>{{/name}}<p>{{description}}</p>{{/fields}}'
   },
 
   clearFields: function() {

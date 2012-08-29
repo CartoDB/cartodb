@@ -67,6 +67,7 @@
       @include opacity(0.5);
       &:hover, &:active, &:focus {
         background:#94BE42; // IE
+        color:white;
         @include background(linear-gradient(#94BE42,#7FA938));
         cursor:default;
       }

@@ -40,7 +40,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     case
     when params[:filename].present? && request.body.present?
-      filename = "waduswadus"
+      filename = "addresses.csv"#params[:filename]
       filedata = request.body.read.force_encoding('utf-8')
     when params[:file].present?
       filename = params[:file].original_filename

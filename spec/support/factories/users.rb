@@ -28,6 +28,7 @@ module CartoDB
     def create_user(attributes = {})
       user = new_user(attributes)
       user.save
+      user
     end
 
     def create_admin(attributes = {})

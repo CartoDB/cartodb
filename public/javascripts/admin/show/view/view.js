@@ -1287,7 +1287,12 @@
         successActionPerforming(param,value,old_value);
       },
       error: function(e) {
+        try {
+        window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
+        }
+        catch(e) {
         window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText));
+        }
         errorActionPerforming(param,old_value,$.parseJSON(e.responseText));
       }
     });

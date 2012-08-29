@@ -20,7 +20,7 @@ RSpec.configure do |config|
     CartoDB::RedisTest.up
   end  
 
-  config.before(:each) do
+  config.before(:all) do
     $threshold.flushdb
     # $queries_log.flushdb
     $tables_metadata.flushdb
@@ -30,7 +30,7 @@ RSpec.configure do |config|
     Rails::Sequel.connection.tables.each{ |t| next if t == :schema_migrations; Rails::Sequel.connection[t].truncate }
   end
 
-  config.after(:each) do
+  config.after(:all) do
     $pool.close_connections!
     Rails::Sequel.connection[
       "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"

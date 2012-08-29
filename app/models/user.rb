@@ -361,10 +361,9 @@ class User < Sequel::Model
 
   # Cartodb functions
   def load_cartodb_functions
-    puts "Loading functions in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        glob = RAILS_ROOT + '/lib/sql/*.sql'
+        glob = ::Rails.root.to_s + '/lib/sql/*.sql'
 
         Dir.glob(glob).each do |f|
           @sql = File.new(f).read
@@ -384,7 +383,7 @@ class User < Sequel::Model
         env += " PGPORT=#{config['port']}"
         env += " PGHOST=#{config['host']}"
         env += " PGPASSWORD=#{database_password}"
-        glob = RAILS_ROOT + '/lib/sql/test/*.sql'
+        glob = ::Rails.root.to_s + '/lib/sql/test/*.sql'
         #puts " Scanning #{glob}"
         Dir.glob(glob).each do |f|
           tname = File.basename(f, '.sql')

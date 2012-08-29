@@ -30,7 +30,7 @@ class Table < Sequel::Model(:user_tables)
 
     # userid and table name tuple must be unique
     validates_unique [:name, :user_id], :message => 'is already taken'
-    
+
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
   

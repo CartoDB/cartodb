@@ -198,8 +198,24 @@ class Api::Json::TablesController < Api::ApplicationController
   def update
     @table = Table.filter(:user_id => current_user.id, :name => params[:id]).first
     warnings = []
-    
-    @table.set_all(params)
+
+    # Perform name validations
+    # TODO move this to the model!
+    unless params[:name].nil? 
+      if params[:name].downcase != @table.name
+        owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
+        if params[:name] =~ /^[0-9_]/
+          raise "Table names can't start with numbers or dashes."
+        elsif owner.tables.filter(:name.like(/^#{params[:name]}/)).select_map(:name).include?(params[:name].downcase)
+          raise "Table '#{params[:name].downcase}' already exists."
+        else
+          @table.set_all(:name => params[:name].downcase)
+          @table.save(:name)
+        end
+      end
+    end
+
+    @table.set_except(params, :name)
     if params.keys.include?("latitude_column") && params.keys.include?("longitude_column")
       latitude_column  = params[:latitude_column]  == "nil" ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == "nil" ? nil : params[:longitude_column].try(:to_sym)
@@ -210,19 +226,7 @@ class Api::Json::TablesController < Api::ApplicationController
       @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                             from user_tables
                             where id=?",@table.id).first
-                            
-      # wont allow users to set a table to same name, sends error
-      unless params[:name].nil? 
-        if params[:name].downcase != @table.name
-          owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
-          if params[:name][0].match(/[^0-9]/).nil?
-            warnings << "Table names can't start with a number."
-          elsif owner.tables.filter(:name.like(/^#{params[:name]}/)).select_map(:name).include?(params[:name].downcase)
-          #raise "Table name already exists"
-            warnings << "Table '#{params[:name].downcase}' already existed"
-          end
-        end
-      end
+
       render_jsonp({ :id => @table.id,                 
                      :name => @table.name,
                      :warnings => warnings,

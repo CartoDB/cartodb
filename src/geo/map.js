@@ -217,6 +217,14 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   render: function() {
     return this;
+  },
+
+  /**
+   * add a infowindow to the map
+   */
+  addInfowindow: function(infoWindowView) {
+    this.$el.append(infoWindowView.render().el);
+    this.addView(infoWindowView);
   }
 
 });

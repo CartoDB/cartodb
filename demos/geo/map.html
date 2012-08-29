@@ -38,68 +38,74 @@
   <script>
     window.onload = function() {
       cdb.load('../../src/', function() {
-        cdb.templates.add({
-          name: 'geo/zoom',
-          template: $('#zoom_tmpl').html()
-        })
-        cdb.templates.add({
-          name: 'geo/infowindow',
-          template: '<div style="position: absolute; width: 216px;padding:0;" ><div>'
-        })
-        // create a map
-        var map = new cdb.geo.Map();
-        var mapView = new cdb.geo.LeafletMapView({
-          el: $('#map'),
-          map: map
+        $.get('infowindow.tmpl', function(data) {
+          cdb.templates.add({
+            name: 'geo/zoom',
+            template: $('#zoom_tmpl').html()
+          })
+          cdb.templates.add({
+            name: 'geo/infowindow',
+            template: data
+          })
+          // create a map
+          var map = new cdb.geo.Map();
+          var mapView = new cdb.geo.LeafletMapView({
+            el: $('#map'),
+            map: map
+          });
+
+          var zoom = new cdb.geo.ui.Zoom({
+            model: map,
+            el: $('#zoom')
+          })
+          zoom.render();
+
+          map.setCenter([34.95799531086792, -0.6591796875])
+          map.setZoom(3);
+
+          map.bind('change:center', function(model, center) {
+            //console.log(center[0], center[1]);
+          });
+
+          var infowindowModel = new cdb.geo.ui.InfowindowModel({
+             latlng: [72, -45],
+             offset: [216/2, 10],
+             content: "testing"
+          });
+
+          var infowindow = new cdb.geo.ui.Infowindow({
+             model: infowindowModel,
+             mapView: mapView
+          });
+          infowindow.el.setAttribute('style', "position: absolute; width: 216px;padding:0;");
+
+          mapView.addInfowindow(infowindow);
+
+
+          // Adds a TileLayer
+          var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
+
+          map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
+
+          // Adds a CartoDBLayer
+          var options = {
+            user_name: 'examples',
+            table_name: 'earthquakes',
+            query: 'SELECT * FROM {{table_name}}',
+            tile_style: "#{{table_name}}{marker-fill:red}",
+            interactivity: "cartodb_id, magnitude"
+          };
+
+
+          var layer = new cdb.geo.CartoDBLayer(options);
+          map.addLayer(layer);
+          var dataLayer = mapView.getLayerByCid(layer.cid);
+          dataLayer.bind('featureClick', function(e, latlng) {
+            infowindow.setLatLng(latlng).showInfowindow();
+          });
+
+          window.map = map; // to play in console
         });
-
-        var zoom = new cdb.geo.ui.Zoom({
-          model: map,
-          el: $('#zoom')
-        })
-        zoom.render();
-
-        map.setCenter([34.95799531086792, -0.6591796875])
-        map.setZoom(3);
-
-        map.bind('change:center', function(model, center) {
-          //console.log(center[0], center[1]);
-        });
-
-        var infowindowModel = new cdb.geo.ui.InfowindowModel({
-           template_name: 'templates/map/infowindow',
-           latlng: [72, -45],
-           offset: [100, 10]
-        });
-
-        var infowindow = new cdb.geo.ui.Infowindow({
-           model: infowindowModel,
-           mapView: mapView
-        });
-
-
-        // Adds a TileLayer
-        var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
-
-        map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
-
-        // Adds a CartoDBLayer
-        var options = {
-          user_name: 'examples',
-          table_name: 'earthquakes',
-          query: 'SELECT * FROM {{table_name}}',
-          tile_style: "#{{table_name}}{marker-fill:red}",
-          interactivity: "cartodb_id, magnitude",
-          featureOut:   function() { console.log('out'); },
-          featureOver:  function() { console.log('over'); },
-          featureClick: function() { console.log('click'); }
-        };
-
-
-        var layer = new cdb.geo.CartoDBLayer(options);
-        map.addLayer(layer);
-
-        window.map = map; // to play in console
       });
     };
   </script>

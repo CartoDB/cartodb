@@ -1,23 +1,47 @@
 /**
  * template system
- */
+ * usage:
+   var tmpl = new cdb.core.Template({
+     template: "hi, my name is {{ name }}",
+     type: 'mustache' // undescore by default
+   });
+   console.log(tmpl.render({name: 'rambo'})));
+   // prints "hi, my name is rambo"
+  
 
+   you could pass the compiled tempalte directly:
+
+   var tmpl = new cdb.core.Template({
+     compiled: function() { return 'my compiled template'; }
+   });
+ */
 
 cdb.core.Template = Backbone.Model.extend({
 
   initialize: function() {
-    this.bind('change:template', this._invalidate);
+    this.bind('change', this._invalidate);
   },
 
   _invalidate: function() {
     this.compiled = null;
   },
 
+  compile: function() {
+    var tmpl_type = this.get('type') || 'underscore';
+    var fn = cdb.core.Template.compilers[tmpl_type];
+    if(fn) {
+      return fn(this.get('template'));
+    } else {
+      cdb.log.error("can't get rendered for " + tmpl_type);
+    }
+    return null;
+  },
+
   /**
    * renders the template with specified vars
    */
   render: function(vars) {
-    var c = this.compiled = this.compiled || this.get('compiled') || _.template(this.get('template'));
+    var c = this.compiled = this.compiled || this.get('compiled') || this.compile();
     var r = cdb.core.Profiler.get('template_render');
     r.start();
     var rendered = c(vars);
@@ -25,7 +49,13 @@ cdb.core.Template = Backbone.Model.extend({
     return rendered;
   }
 
-});
+}, {
+  compilers: {
+    'underscore': _.template,
+    'mustache': typeof(Mustache) === 'undefined' ? null: Mustache.compile
+  }
+}
+);
 
 cdb.core.TemplateList = Backbone.Collection.extend({
 

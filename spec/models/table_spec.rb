@@ -61,8 +61,8 @@ describe Table do
 
       table.map.should be_an_instance_of(Map)
       table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}
-      table.map.layers.count.should == 3
-      table.map.layers.map(&:kind).should == ['tiled', 'carto', 'background']
+      table.map.layers.count.should == 2
+      table.map.layers.map(&:kind).should == ['tiled', 'carto']
     end
 
     it "should return a sequel interface" do

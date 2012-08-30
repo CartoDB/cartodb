@@ -197,16 +197,16 @@
           button {margin:0;}
         }
 
-        div.error {
+        div.info {
           display:none;
           position:absolute;
-          bottom:81px;
+          bottom:78px;
           right:0;
           left:0;
           width:100%;
           padding:17px 17px 17px 52px;
-          background:rgba(#FFD7E3,0.5);
-          color:#EB2466;
+          background:rgba(yellow,0.5);
+          color:#888;
           z-index:2;
           font-size:13px;
           border-top:1px solid #EBDCE0;

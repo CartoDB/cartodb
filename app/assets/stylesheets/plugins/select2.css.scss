@@ -211,13 +211,13 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 }
 
 .select2-search input.select2-active {
-    background: #fff url('spinner.gif') no-repeat 100%;
-    background: url('spinner.gif') no-repeat 100%, -webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #eeeeee));
-    background: url('spinner.gif') no-repeat 100%, -webkit-linear-gradient(center bottom, white 85%, #eeeeee 99%);
-    background: url('spinner.gif') no-repeat 100%, -moz-linear-gradient(center bottom, white 85%, #eeeeee 99%);
-    background: url('spinner.gif') no-repeat 100%, -o-linear-gradient(bottom, white 85%, #eeeeee 99%);
-    background: url('spinner.gif') no-repeat 100%, -ms-linear-gradient(top, #ffffff 85%, #eeeeee 99%);
-    background: url('spinner.gif') no-repeat 100%, linear-gradient(top, #ffffff 85%, #eeeeee 99%);
+    background: #fff;
+    background: -webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #eeeeee));
+    background: -webkit-linear-gradient(center bottom, white 85%, #eeeeee 99%);
+    background: -moz-linear-gradient(center bottom, white 85%, #eeeeee 99%);
+    background: -o-linear-gradient(bottom, white 85%, #eeeeee 99%);
+    background: -ms-linear-gradient(top, #ffffff 85%, #eeeeee 99%);
+    background: linear-gradient(top, #ffffff 85%, #eeeeee 99%);
 }
 
 

@@ -339,7 +339,7 @@ disabled look for already selected choices in the results dropdown
 }
 
 .select2-more-results.select2-active {
-    background: #f4f4f4 url('spinner.gif') no-repeat 100%;
+    background: #f4f4f4;
 }
 
 .select2-more-results {
@@ -421,7 +421,7 @@ disabled look for already selected choices in the results dropdown
 }
 
 .select2-container-multi .select2-choices .select2-search-field input.select2-active {
-    background: #fff url('spinner.gif') no-repeat 100% !important;
+    background: #fff !important;
 }
 
 .select2-default {
@@ -511,3 +511,66 @@ disabled look for already selected choices in the results dropdown
 .select2-result-unselectable .select2-match { text-decoration: none; }
 
 .select2-offscreen { position: absolute; left: -10000px; }
+
+
+
+
+
+// COLOR RAMPS
+.select2-choice {
+  ul {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:20px;
+    margin:0!important;
+    padding-right:8px;
+    display:table;
+    overflow:hidden;
+
+    li {
+      position:relative!important;
+      width:auto!important;
+      padding:0!important;
+      border:1px solid transparent!important;
+      display: table-cell!important;
+
+      &:first-child {
+        @include border-left-radius(4px);  
+      }
+      &:last-child {
+        border-bottom: 1px solid rgba(229, 229, 229, 0.2)!important;
+      }
+    }
+  }
+}
+
+.select2-result-label {
+  ul {
+    position:relative;
+    display:table;
+    width:100%;
+    padding:0!important;
+    border:1px solid rgba(black,0.25);
+    @include border-radius(4px);  
+
+    li {
+      width:auto;
+      height:10px;
+      padding:0!important;
+      display:table-cell;
+      border:1px solid transparent;
+
+      &:first-child {
+        @include border-left-radius(2px);  
+      }
+      &:last-child {
+        border-bottom:1px solid transparent;
+        @include border-right-radius(2px);
+      }
+    }
+
+
+  }
+}

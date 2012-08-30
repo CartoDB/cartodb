@@ -1,0 +1,36 @@
+
+  /**
+   * Delete & export table dialog :)
+   */
+
+  @import "compass";
+
+  .delete_table_dialog {
+    .export_content {
+      padding:40px;
+    }
+
+    .modal.export {
+      display:none;
+      nav {
+        display:table;
+        width:100%;
+
+        a.button.grey {
+          display: table-cell;
+          text-align:center;
+          @include border-radius(0px);
+          border-right-width:0;
+
+          &:first-child {
+            @include border-left-radius(3px);
+          }
+
+          &:last-child {
+            border-right-width:1px;
+            @include border-right-radius(3px);
+          }
+        }
+      }
+    }
+  }

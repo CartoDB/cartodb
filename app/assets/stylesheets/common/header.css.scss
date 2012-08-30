@@ -136,11 +136,12 @@
             @include transform-style("linear");
             @include transition-property("background,color");
             @include transition-duration(500ms);
+            
             &::-webkit-input-placeholder {
               color:#9AB2CB;
             }
 
-            &::-moz-placeholder {
+            &:-moz-placeholder {
               color:#9AB2CB;
             }
 

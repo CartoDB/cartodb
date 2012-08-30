@@ -116,19 +116,35 @@
 
           a {
             position:relative;
-            padding:0;
+            padding:0 40px 6px 10px;
+            margin:0 3px;
             color:#333333;
             text-decoration:none;
             font-family:$title-fonts;
             letter-spacing:-1px;
+            background:#E1ECF5;
+            border:1px solid #C7D1D9;
+            @include border-radius(3px);
 
             &:before {
               position:absolute;
-              bottom:-1px;
-              right:-8px;
+              display:block;
+              top:11px;
+              right:12px;
               content:'x';
-              color:rgba(red,0.6);
-              font:bold 13px $text-fonts2;
+              color:#2483B4;
+              font:normal 15px $text-fonts2;
+              line-height:normal;
+            }
+            &:after {
+              position:absolute;
+              top:0px;
+              bottom:0px;
+              right:30px;
+              content:'';
+              width:1px;
+              height:100%;
+              background:#C7D1D9;
             }
             &:hover {color:black; &:before {color:red;}}
           }
@@ -247,6 +263,8 @@
                   line-height:14px;
                   background:rgba(57,125,187,0.15);
                   @include border-radius(2px);
+                  border:1px solid #C7D1D9;
+                  &:hover {color:#333333;}
                 }
               }
 

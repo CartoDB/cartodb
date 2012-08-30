@@ -20,7 +20,7 @@
     color:#2483B4;
     text-decoration:none;
     &:hover {text-decoration:underline; color:#333}
-    &.disabled { @include opacity(0.3); &:hover {color:$link-color;}}
+    &.disabled { @include opacity(0.3); &:hover {color:$link-color; text-decoration:none;}}
     &.tag {
       padding:6px 7px;
       font:normal 15px $text-fonts2;

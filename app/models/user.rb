@@ -13,6 +13,7 @@ class User < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
 
+
   # Restrict to_json attributes
   @json_serializer_opts = {
     :except => [ :crypted_password,
@@ -24,6 +25,8 @@ class User < Sequel::Model
                  :map_enabled],
     :naked => true # avoid adding json_class to result
   }
+
+  SYSTEM_TABLE_NAMES = %w( spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews )
 
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
@@ -284,6 +287,29 @@ class User < Sequel::Model
 
     # hack for the_geom_webmercator
     size / 2
+  end
+
+  # Looks for tables created on the user database
+  # but not linked to the Rails app database. Creates
+  # required records to link them
+  def link_ghost_tables
+    real_tables = self.in_database(:as => :superuser)
+                      .select(:table_name).from(:information_schema__tables)
+                      .where(:table_catalog => self.database_name, :table_schema => 'public')
+                      .all.map {|t| t[:table_name]} - SYSTEM_TABLE_NAMES
+
+    ghost_tables = real_tables - self.tables.select(:name).map(&:name)
+
+    ghost_tables.each do |t| 
+      table = Table.new
+      table.user_id = self.id
+      table.migrate_existing_table = t
+      begin
+        table.save
+      rescue Sequel::DatabaseError => e
+        raise unless e.message =~ /must be owner of relation/
+      end
+    end
   end
 
   def exceeded_quota?

@@ -7,7 +7,7 @@
   @import "compass"; 
   @import "compass/css3";
   @import "vars";
-  @import "../common/sprites";
+  @import "sprites";
 
   /*
    *  Green button
@@ -111,6 +111,7 @@
     }
     // Disabled
     &.disabled {
+      color:#333333;
       @include opacity(0.5);
       &:hover, &:active, &:focus {
         background:#F9F9F9; // IE

@@ -369,5 +369,18 @@ describe User do
     $users_metadata.HGET(user.key, 'id').should == user.id.to_s
     $users_metadata.HGET(user.key, 'database_name').should == user.database_name
   end
-  
+
+  it "should clean the cache after regenerate api key" do
+    user = create_user
+
+    require 'net/telnet'
+    varnish_conn = mock()
+    varnish_host = APP_CONFIG[:varnish_management].try(:[],'host') || '127.0.0.1'
+    varnish_port = APP_CONFIG[:varnish_management].try(:[],'port') || 6082
+    Net::Telnet.expects(:new).with("Host" => varnish_host, "Port" => varnish_port, "Prompt" => /200 0/).returns(varnish_conn)
+    varnish_conn.expects(:cmd).with("purge obj.http.X-Cache-Channel ~ #{user.database_name}.*")
+    varnish_conn.expects(:close)
+
+    user.set_map_key
+  end
 end

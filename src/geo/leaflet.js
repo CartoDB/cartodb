@@ -171,9 +171,9 @@
       });
 
       this.layerTypeMap = {
-        "Tiled": cdb.geo.LeafLetTiledLayerView,
-        "CartoDB": cdb.geo.LeafLetLayerCartoDBView,
-        "Plain": cdb.geo.LeafLetPlainLayerView
+        "tiled": cdb.geo.LeafLetTiledLayerView,
+        "cartodb": cdb.geo.LeafLetLayerCartoDBView,
+        "plain": cdb.geo.LeafLetPlainLayerView
       };
 
       // this var stores views information for each model
@@ -283,7 +283,7 @@
     _addLayer: function(layer, layers, opts) {
       var lyr, layer_view;
 
-      var layerClass = this.layerTypeMap[layer.get('type')];
+      var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
 
       if (layerClass) {
         layer_view = new layerClass(layer, this.map_leaflet);

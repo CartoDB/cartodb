@@ -7,6 +7,7 @@
     window.cdb.geo.ui = {};
     window.cdb.ui = {};
     window.cdb.ui.common = {};
+    window.cdb.vis = {};
 
     /**
      * global variables
@@ -34,13 +35,16 @@
         'geo/ui/switcher.js',
         //'geo/ui/selector.js',
         'geo/ui/infowindow.js',
+        'geo/ui/header.js',
         'geo/leaflet.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',
         'ui/common/table.js',
 
-        'vis.js'
+        'vis/vis.js',
+        'vis/overlays.js',
+        'vis/layers.js'
     ];
 
     cdb.init = function(ready) {

@@ -11,6 +11,7 @@
       }
     </style>
     <link rel="stylesheet" href="http://leaflet.cloudmade.com/dist/leaflet.css" />
+    <link rel="stylesheet" href="../themes/light.css" />
   </head>
   <body>
     <div id="map"></div>
@@ -23,20 +24,46 @@
 
          var vis = new Vis({el: $('#map')});
          vis.load({
+
+           title: "visualization title",
+           description: "this is my description",
            center: [0, 0],
            zoom: 4,
 
            overlays: [
             { 
               type: 'zoom',
-              pos: [20, 20],
+              pos: [100, 20],
               template: '<div id="zoom_controls"> <a class="zoom_in">+</a> <a class="zoom_out">-</a> </div>'
+            }, 
+            {
+              type: 'header'
             }
-           ]
-         });
-         var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
+          ],
 
-         vis.map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
+          layers: [
+            {
+              type: 'tilejson',
+              version: '1.0.0',
+              tiles: [
+                'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png'
+              ]
+            },
+            {
+              type: 'cartodb',
+              user_name: 'examples',
+              table_name: 'earthquakes',
+              query: 'SELECT * FROM {{table_name}}',
+              tile_style: "#{{table_name}}{marker-fill:red}",
+              interactivity: "cartodb_id, magnitude",
+              infowindow: {
+                template:'<div class="cartodb-popup"> <div class="cartodb-popup-content-wrapper"> <a class="cartodb-popup-close-button">x</a> <div class="cartodb-popup-content"> {{ content }} </div> </div> <div class="cartodb-popup-tip-container"> </div> </div>'
+              }
+            }
+          ]
+
+
+         });
  
         window.map = map; // to play in console
       });

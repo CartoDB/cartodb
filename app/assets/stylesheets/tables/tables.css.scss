@@ -307,9 +307,11 @@
             }
 
             &.empty {
-              img {
-                margin-left:165px;
-              }
+              padding-top:150px;
+              padding-bottom:200px;
+
+              p {font-family: $text-fonts2; letter-spacing:0;}
+
               &:hover {
                 background:white;
               }

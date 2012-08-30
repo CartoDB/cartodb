@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem "rails",                   "3.2.0"
+gem "rails",                   "3.2.2"
 
 gem "rake",                    "0.9.2.2"
 gem "pg",                      "0.11"
@@ -71,7 +71,7 @@ group :development, :test do
   gem "mocha",                 "0.10.5"
 
   # TODO fix debugger readline conflicts with resque
-  gem "debugger", "1.2.0"
+  #gem "debugger", "1.2.0"
 
   gem "steak",                 "2.0.0"
   gem "rspec-rails",           "2.10.1"

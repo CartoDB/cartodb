@@ -30,6 +30,9 @@
     border:1px solid #6A8C2D;
     letter-spacing:-1px;
     word-spacing:1px;
+    @include transform-style("linear");
+    @include transition-property("box-shadow,border");
+    @include transition-duration(250ms);
 
     /* TYPES */
     // Session type
@@ -43,14 +46,15 @@
     // Hover
     &:hover {
       background:#749C33; // IE
-      @include background(linear-gradient(#94BE42,#749C33)); 
+      @include background(linear-gradient(#94BE42,#799E33)); 
       text-decoration:none;
       cursor:pointer;
     }
     // Active
     &:active {
       background:#94BE42; // IE
-      @include background(linear-gradient(#749C33,#94BE42));
+      @include background(linear-gradient(#94BE42,#799E33));
+      @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(0,0,0,0.35) 0 1px 4px 0 inset,#fff 0 1px 0 0);
     }
     // Focus = hover
     &:focus {
@@ -89,25 +93,35 @@
     @include background(linear-gradient(#F9F9F9,#EBEBEB));
     @include border-radius(3px);
     border:1px solid #B0B0B0;
+    @include transform-style("linear");
+    @include transition-property("box-shadow,border");
+    @include transition-duration(250ms);
 
+    &.small {
+      padding:9px 10px;
+      font-size:15px;
+    }
 
     // Hover
     &:hover {
       background:#DEDEDE; // IE
-      @include background(linear-gradient(#F9F9F9,#DEDEDE)); 
+      @include background(linear-gradient(#F9F9F9,#E1E1E1)); 
       text-decoration:none;
       cursor:pointer;
     }
     // Active
     &:active {
+      border-color:#ACACAC;
       background:#D3D3D3; // IE
-      @include background(linear-gradient(#D3D3D3,#F9F9F9));
+      @include background(linear-gradient(#F9F9F9,#E1E1E1));
+      @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset,#fff 0 1px 0 0);
     }
     // Focus = hover
     &:focus {
+      border-color:#ACACAC;
       outline:none;
       background:#DEDEDE; // IE
-      @include background(linear-gradient(#F9F9F9,#DEDEDE));
+      @include background(linear-gradient(#F9F9F9,#E1E1E1));
     }
     // Disabled
     &.disabled {

@@ -33,7 +33,7 @@
       background:#EDEDED;
       letter-spacing:0;
       @include border-left-radius(4px);
-      @include single-box-shadow(rgba(black,0.09), -4px, 0, 5px, 0, true);
+      @include single-box-shadow(rgba(black,0.03), -4px, 0, 5px, 0, true);
 
       nav {
         position:absolute;
@@ -100,7 +100,7 @@
               height:0;
               border-top:7px solid transparent;
               border-bottom:7px solid transparent;
-              border-right:7px solid #E7E7E7;
+              border-right:7px solid #E5E5E5;
               z-index:1; 
             }
           }
@@ -210,6 +210,11 @@
           z-index:2;
           font-size:13px;
           border-top:1px solid #EBDCE0;
+
+          &.error {
+            background:rgba(#FFD7E3,0.5);
+            color:#EB2466;
+          }
         }
       }
 

@@ -1,4 +1,9 @@
-0.9.10 (26/08/12)
+0.9.11 (30/08/12)
+------
+* Override statement_timeout in shp import
+* Invalidate varnish cache after regenerating api_key
+
+0.9.10 (06/08/12)
 ------
 * Allow quoting identifiers when performing a query (closes #834)
 * Refresh map on style change, even on error (closes #833)

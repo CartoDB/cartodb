@@ -7,7 +7,6 @@ class ApplicationController < ActionController::Base
   helper :all
 
   before_filter :browser_is_html5_compliant?
-  before_filter :check_domain
   before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
   after_filter  :remove_flash_cookie
@@ -29,7 +28,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def set_asset_debugging
-    CartoDB::Application.config.assets.debug = true if Rails.env.development?
+    CartoDB::Application.config.assets.debug = false if Rails.env.development?
   end
 
   def allow_cross_domain_access
@@ -82,25 +81,6 @@ class ApplicationController < ActionController::Base
       end
       format.json do
         head :unauthorized
-      end
-    end
-  end
-
-  # TODO: REMOVE. this was to redirect the user to their own cartodb. 
-  # A legacy from when cartoedb only supported 1 user login at a time.
-  def check_domain
-    if Rails.env.production? || Rails.env.staging?
-     protocol   = 'https'
-     port       = ""
-    else
-     protocol   = 'http'
-     port       = ":#{request.port}"
-    end
-    app_domain = CartoDB.session_domain
-
-    if logged_in?
-      if current_user.present? and request.host !~ /^#{current_user.username}#{app_domain}$/
-        redirect_to "#{protocol}://#{current_user.username}#{app_domain}#{port}"
       end
     end
   end

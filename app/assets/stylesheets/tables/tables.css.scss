@@ -116,19 +116,35 @@
 
           a {
             position:relative;
-            padding:0;
+            padding:0 40px 6px 10px;
+            margin:0 3px;
             color:#333333;
             text-decoration:none;
             font-family:$title-fonts;
             letter-spacing:-1px;
+            background:#E1ECF5;
+            border:1px solid #C7D1D9;
+            @include border-radius(3px);
 
             &:before {
               position:absolute;
-              bottom:-1px;
-              right:-8px;
+              display:block;
+              top:11px;
+              right:12px;
               content:'x';
-              color:rgba(red,0.6);
-              font:bold 13px $text-fonts2;
+              color:#2483B4;
+              font:normal 15px $text-fonts2;
+              line-height:normal;
+            }
+            &:after {
+              position:absolute;
+              top:0px;
+              bottom:0px;
+              right:30px;
+              content:'';
+              width:1px;
+              height:100%;
+              background:#C7D1D9;
             }
             &:hover {color:black; &:before {color:red;}}
           }
@@ -247,6 +263,8 @@
                   line-height:14px;
                   background:rgba(57,125,187,0.15);
                   @include border-radius(2px);
+                  border:1px solid #C7D1D9;
+                  &:hover {color:#333333;}
                 }
               }
 
@@ -289,9 +307,11 @@
             }
 
             &.empty {
-              img {
-                margin-left:165px;
-              }
+              padding-top:150px;
+              padding-bottom:200px;
+
+              p {font-family: $text-fonts2; letter-spacing:0;}
+
               &:hover {
                 background:white;
               }
@@ -309,13 +329,13 @@
                   position:absolute;
                   content:'+';
                   top:0;
-                  left:-17px;
-                  width:18px;
-                  height:14px;
+                  left:-21px;
+                  width:20px;
+                  height:16px;
                   padding:2px 0;
                   background:#397DBA;
                   font:bold 14px "Arial";
-                  line-height:14px;
+                  line-height:normal;
                   color:white;
                   text-align:center;
                   @include border-radius(2px);

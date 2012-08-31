@@ -143,131 +143,34 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def import_to_cartodb
-      # if import_from_file.present?
-      #         @data_import.data_type = 'file'
-      #         @data_import.data_source = import_from_file
-      #         @data_import.upload
-      #         @data_import.save
-      #
-      #         hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      #           "database" => database_name,
-      #           :logger => ::Rails.logger,
-      #           "username" => owner.database_username,
-      #           "password" => owner.database_password,
-      #           :import_from_file => import_from_file,
-      #           :debug => (Rails.env.development?),
-      #           :remaining_quota => owner.remaining_quota,
-      #           :data_import_id => @data_import.id
-      #         ).symbolize_keys
-      #
-      #         importer = CartoDB::Importer.new hash_in
-      #         importer = importer.import!
-      #         @data_import.reload
-      #         @data_import.imported
-      #         return importer.name
-      #       end
-      #       #import from URL
-      #       if import_from_url.present?
-      #         @data_import.data_type = 'url'
-      #         @data_import.data_source = import_from_url
-      #         @data_import.download
-      #         @data_import.save
-      #         importer = CartoDB::Importer.new ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      #           "database" => database_name,
-      #           :logger => ::Rails.logger,
-      #           "username" => owner.database_username,
-      #           "password" => owner.database_password,
-      #           :import_from_url => import_from_url,
-      #           :debug => (Rails.env.development?),
-      #           :remaining_quota => owner.remaining_quota,
-      #           :data_import_id => @data_import.id
-      #         ).symbolize_keys
-      #         importer = importer.import!
-      #         @data_import.reload
-      #         @data_import.imported
-      #         @data_import.save
-      #         return importer.name
-      #       end
-      #Import from the results of a query
-      # if import_from_query.present?
-      #     @data_import.data_type = 'query'
-      #     @data_import.data_source = import_from_query
-      #     @data_import.migrate
-      #     @data_import.save
-      #
-      #     # ensure unique name
-      #     uniname = get_valid_name(self.name)
-      #
-      #     # create a table based on the query
-      #     owner.in_database.run("CREATE TABLE #{uniname} AS #{self.import_from_query}")
-      #
-      #     # with table #{uniname} table created now run migrator to CartoDBify
-      #     hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-      #       "database" => database_name,
-      #       :logger => ::Rails.logger,
-      #       "username" => owner.database_username,
-      #       "password" => owner.database_password,
-      #       :current_name => uniname,
-      #       :suggested_name => uniname,
-      #       :debug => (Rails.env.development?),
-      #       :remaining_quota => owner.remaining_quota,
-      #       :data_import_id => @data_import.id
-      #     ).symbolize_keys
-      #     importer = CartoDB::Migrator.new hash_in
-      #     importer = importer.migrate!
-      #     @data_import.reload
-      #     @data_import.migrated
-      #     @data_import.save
-      #     return importer.name
-      #   end
-      #Register a table not created throug the UI
-      if migrate_existing_table.present?
-        @data_import.data_type = 'external_table'
-        @data_import.data_source = migrate_existing_table
-        @data_import.migrate
-        @data_import.save
+    if migrate_existing_table.present?
+      @data_import.data_type = 'external_table'
+      @data_import.data_source = migrate_existing_table
+      @data_import.migrate
+      @data_import.save
 
-        # ensure unique name, also ensures self.name can override any imported table name
-        uniname = self.name ? get_valid_name(self.name) : get_valid_name(migrate_existing_table)
+      # ensure unique name, also ensures self.name can override any imported table name
+      uniname = self.name ? get_valid_name(self.name) : get_valid_name(migrate_existing_table)
 
-        # with table #{uniname} table created now run migrator to CartoDBify
-        hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
-          "database" => database_name,
-          :logger => ::Rails.logger,
-          "username" => owner.database_username,
-          "password" => owner.database_password,
-          :current_name => migrate_existing_table,
-          :suggested_name => uniname,
-          :debug => (Rails.env.development?),
-          :remaining_quota => owner.remaining_quota,
-          :data_import_id => @data_import.id
-        ).symbolize_keys
-        importer = CartoDB::Migrator.new hash_in
-        importer = importer.migrate!
-        @data_import.reload
-        @data_import.migrated
-        @data_import.save
-        return importer.name
-      end
-      #Import from copying another table
-      # if import_from_table_copy.present?
-      #   @data_import.data_type = 'table'
-      #   @data_import.data_source = migrate_existing_table
-      #   @data_import.migrate
-      #   @data_import.save
-      #   # ensure unique name
-      #   uniname = get_valid_name(self.name)
-      #   owner.in_database.run("CREATE TABLE #{uniname} AS SELECT * FROM #{import_from_table_copy}")
-      #   @data_import.imported
-      #   owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(the_geom)")
-      #   owner.in_database.run("CREATE INDEX ON #{uniname} USING GIST(#{THE_GEOM_WEBMERCATOR})")
-      #   owner.in_database.run("UPDATE #{uniname} SET created_at = now()")
-      #   owner.in_database.run("UPDATE #{uniname} SET updated_at = now()")
-      #   owner.in_database.run("ALTER TABLE #{uniname} ALTER COLUMN created_at SET DEFAULT now()")
-      #   set_trigger_the_geom_webmercator
-      #   @data_import.migrated
-      #   return uniname
-      # end
+      # with table #{uniname} table created now run migrator to CartoDBify
+      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).merge(
+        "database" => database_name,
+        :logger => ::Rails.logger,
+        "username" => owner.database_username,
+        "password" => owner.database_password,
+        :current_name => migrate_existing_table,
+        :suggested_name => uniname,
+        :debug => (Rails.env.development?),
+        :remaining_quota => owner.remaining_quota,
+        :data_import_id => @data_import.id
+      ).symbolize_keys
+      importer = CartoDB::Migrator.new hash_in
+      importer = importer.migrate!
+      @data_import.reload
+      @data_import.migrated
+      @data_import.save
+      return importer.name
+    end
   end
 
   def import_cleanup
@@ -477,8 +380,8 @@ class Table < Sequel::Model(:user_tables)
   def create_default_map_and_layers
     m = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
     self.map_id = m.id
-    m.add_layer(Layer.create(Layer::DEFAULT_BASE_OPTIONS))
-    m.add_layer(Layer.create(Layer::DEFAULT_DATA_OPTIONS))
+    m.add_layer(Layer.create(Cartodb.config[:layer_opts]["base"]))
+    m.add_layer(Layer.create(Cartodb.config[:layer_opts]["data"]))
   end
 
   def after_update

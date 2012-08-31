@@ -58,6 +58,16 @@ feature "API 1.0 tables management" do
     end
   end
 
+  scenario "Get ghost table" do
+    @user.in_database.run('CREATE TABLE my_new_ghost_table (id integer)')
+
+    get_json api_tables_url do |response|
+      response.status.should be_success
+      response.body[:tables].size.should == 1
+      response.body[:tables][0]['name'].should == "my_new_ghost_table"
+    end    
+  end
+
   scenario "Get tables from a tag" do
     another_user = create_user
 
@@ -325,4 +335,5 @@ feature "API 1.0 tables management" do
       response.status.should == 200
     end
   end
+
 end

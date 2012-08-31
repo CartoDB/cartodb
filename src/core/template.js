@@ -20,10 +20,24 @@ cdb.core.Template = Backbone.Model.extend({
 
   initialize: function() {
     this.bind('change', this._invalidate);
+    this._invalidate();
+  },
+
+  url: function() {
+    return this.get('template_url');
+  },
+
+  parse: function(data) {
+    return {
+      'template': data
+    };
   },
 
   _invalidate: function() {
     this.compiled = null;
+    if(this.get('template_url')) {
+      this.fetch();
+    }
   },
 
   compile: function() {
@@ -47,12 +61,23 @@ cdb.core.Template = Backbone.Model.extend({
     var rendered = c(vars);
     r.end();
     return rendered;
+  },
+
+  asFunction: function() {
+    return _.bind(this.render, this);
   }
 
 }, {
   compilers: {
     'underscore': _.template,
     'mustache': typeof(Mustache) === 'undefined' ? null: Mustache.compile
+  }, 
+  compile: function(tmpl, type) {
+    var t = new cdb.core.Template({
+      template: tmpl,
+      type: type || 'underscore'
+    });
+    return _.bind(t.render, t);
   }
 }
 );
@@ -94,5 +119,5 @@ cdb._loadJST = function() {
       })
     );
   }
-}
+};
 

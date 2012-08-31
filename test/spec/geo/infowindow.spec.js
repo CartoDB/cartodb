@@ -18,6 +18,13 @@ describe("cdb.geo.ui.infowindow", function() {
     expect(model.containsField('test2')).toEqual(false);
   });
 
+  it("should add a field in order", function() {
+    model.addField('test', 1);
+    model.addField('test2', 0);
+    expect(model.get('fields')[0].name).toEqual('test2');
+    expect(model.get('fields')[1].name).toEqual('test');
+  });
+
   it("should allow modify field properties", function() {
     var spy = sinon.spy();
     model.addField('test');

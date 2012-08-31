@@ -35,7 +35,11 @@ var Layers = {
   },
 
   create: function(type, vis, data) {
-    var t = this._types[type];
+    if(!type) {
+      cdb.log.error("creating a layer without type");
+      return null;
+    }
+    var t = this._types[type.toLowerCase()];
     return new t(vis, data);
   }
 
@@ -86,7 +90,7 @@ var Vis = cdb.core.View.extend({
       var layer_cid = map.addLayer(Layers.create(layerData.type, this, layerData));
 
       // add the associated overlays
-      if(layerData.type == 'cartodb' && layerData.infowindow) {
+      if(layerData.type.toLowerCase() == 'cartodb' && layerData.infowindow) {
           var infowindow = Overlay.create('infowindow', this, layerData.infowindow, true);
           mapView.addInfowindow(infowindow);
           var dataLayer = mapView.getLayerByCid(layer_cid);
@@ -113,4 +117,4 @@ var Vis = cdb.core.View.extend({
 
 });
 
-cdb.Vis = Vis;
+cdb.vis.Vis = Vis;

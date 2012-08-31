@@ -15,7 +15,7 @@ cdb.vis.Overlay.register('zoom', function(data) {
 cdb.vis.Overlay.register('header', function(data) {
 
   var template = cdb.core.Template.compile( 
-    data.template || "<h1>{{title}}</h1><p>{{description}}</p>",
+    data.template || "{{#title}}<h1>{{title}}</h1>{{/title}} {{#description}}<p>{{description}}</p>{{/description}}",
     'mustache'
   );
 

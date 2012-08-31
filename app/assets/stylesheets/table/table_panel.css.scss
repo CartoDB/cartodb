@@ -33,7 +33,7 @@
       background:#EDEDED;
       letter-spacing:0;
       @include border-left-radius(4px);
-      @include single-box-shadow(rgba(black,0.09), -4px, 0, 5px, 0, true);
+      @include single-box-shadow(rgba(black,0.03), -4px, 0, 5px, 0, true);
 
       nav {
         position:absolute;
@@ -100,7 +100,7 @@
               height:0;
               border-top:7px solid transparent;
               border-bottom:7px solid transparent;
-              border-right:7px solid #E7E7E7;
+              border-right:7px solid #E5E5E5;
               z-index:1; 
             }
           }
@@ -160,26 +160,61 @@
           bottom:0;
           left:0;
           right:0;
-          padding:18px 18px 18px 52px;
+          padding:20px 20px 20px 56px;
           display:block;
-          height:45px;
+          height:38px;
           border-top:1px solid rgba(#999999,0.25);
           z-index:1;
+
+          a.next, a.back {
+            @include text-indent();
+            padding:0;
+            height:35px;
+            width:35px;
+          }
+
+          a.next {
+            @include border-left-radius(0);
+            @include text-indent();
+            @include background(sprite($icons-sprites, unredo, $offset-x:-37, $offset-y:14) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+            border-left:0;
+
+            &:hover, &:active {
+              @include background(sprite($icons-sprites, unredo, $offset-x:-37, $offset-y:-8) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
+            }
+          }
+
+          a.back {
+            @include border-right-radius(0);
+            @include text-indent();
+            @include background(sprite($icons-sprites, unredo, $offset-x:12, $offset-y:14) no-repeat, linear-gradient(#F9F9F9,#EBEBEB));
+
+            &:hover, &:active {
+              @include background(sprite($icons-sprites, unredo, $offset-x:12, $offset-y:-8) no-repeat, linear-gradient(#F9F9F9,#DEDEDE));
+            }
+          }
+
+          button {margin:0;}
         }
 
-        div.error {
+        div.info {
           display:none;
           position:absolute;
-          bottom:81px;
+          bottom:78px;
           right:0;
           left:0;
           width:100%;
           padding:17px 17px 17px 52px;
-          background:rgba(#FFD7E3,0.5);
-          color:#EB2466;
+          background:rgba(yellow,0.5);
+          color:#888;
           z-index:2;
           font-size:13px;
           border-top:1px solid #EBDCE0;
+
+          &.error {
+            background:rgba(#FFD7E3,0.5);
+            color:#EB2466;
+          }
         }
       }
 
@@ -346,6 +381,7 @@
                 &:hover {
                   color:white;
                   background:#397DBA;
+                  text-decoration:none;
                 }
 
                 &.selected {
@@ -400,6 +436,10 @@
 
                 span.field > div {margin-left:5px;}
               }
+            }
+
+            &.panel_content {
+              top:155px;
             }
           }
         }

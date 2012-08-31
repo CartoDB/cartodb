@@ -27,3 +27,4 @@
 //= require cdb/src/ui/common/table
 //= require cdb/src/vis/vis
 //= require cdb/src/vis/overlays
+//= require cdb/src/vis/layers

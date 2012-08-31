@@ -32,7 +32,7 @@ gem "airbrake",                "3.0.9"
 gem "nokogiri",                "1.5.3"
 gem "statsd-client",           "0.0.7", :require => "statsd"
 
-gem "addressable",             "2.2.8"
+gem "addressable",             "2.2.8", :require => "addressable/uri"
 
 gem "ejs",                     "~> 1.1.1"
 group :assets do

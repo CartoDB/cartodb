@@ -109,4 +109,8 @@ module ApplicationHelper
       sql_api_port: Cartodb.config[:sql_api_port]
     }.to_json
   end
+
+  def stringified_member_type
+    current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
+  end
 end

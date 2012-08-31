@@ -31,13 +31,12 @@
            zoom: 4,
 
            overlays: [
-            { 
-              type: 'zoom',
-              pos: [100, 20],
-              template: '<div id="zoom_controls"> <a class="zoom_in">+</a> <a class="zoom_out">-</a> </div>'
-            }, 
             {
               type: 'header'
+            },
+            { 
+              type: 'zoom',
+              template: '<a class="zoom_in">+</a> <a class="zoom_out">-</a>'
             }
           ],
 
@@ -55,14 +54,12 @@
               table_name: 'earthquakes',
               query: 'SELECT * FROM {{table_name}}',
               tile_style: "#{{table_name}}{marker-fill:red}",
-              interactivity: "cartodb_id, magnitude",
               infowindow: {
-                template:'<div class="cartodb-popup"> <div class="cartodb-popup-content-wrapper"> <a class="cartodb-popup-close-button">x</a> <div class="cartodb-popup-content"> {{ content }} </div> </div> <div class="cartodb-popup-tip-container"> </div> </div>'
+                fields: [{ name: 'magnitude', title: true }, {name: 'catalog', title: true}],
+                template: '<div class="cartodb-popup"> <div class="cartodb-popup-content-wrapper"> <div class="cartodb-popup-content"> {{#content.fields}} {{#title}}<h4>{{title}}</h4>{{/title}} <p>{{value}}</p> {{/content.fields}} </div> </div> <div class="cartodb-popup-tip-container"> </div> </div>'
               }
             }
           ]
-
-
          });
  
         window.map = map; // to play in console

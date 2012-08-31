@@ -2,29 +2,7 @@
  * defines the container for an overlay.
  * It places the overlay
  */
-var Overlay = cdb.vis.Overlay = cdb.core.View.extend({
-
-  initialize: function() {
-    this.widget = this.options.widget;
-    this.addView(this.widget);
-    var pos = this._calculatePosition();
-    this.$el.css({
-      position: 'absolute',
-      top: pos.top,
-      left: pos.left
-    });
-    this.$el.append(this.widget.el);
-  },
-
-  _calculatePosition: function() {
-    var pos = this.options.data.pos || [0, 0];
-    return {
-      top: pos[1],
-      left: pos[0]
-    };
-  }
-
-}, {
+var Overlay = {
 
   _types: {},
 
@@ -35,21 +13,17 @@ var Overlay = cdb.vis.Overlay = cdb.core.View.extend({
 
   // create a type given the data
   // raise an exception if the type does not exist
-  create: function(type, vis, data, nowrap) {
+  create: function(type, vis, data) {
     var t = Overlay._types[type];
     if(!t) {
       cdb.log.error("Overlay: " + type + " does not exist");
     }
     var widget = t(data, vis);
-    if(nowrap) {
-      return new Overlay({
-        widget: widget,
-        data: data
-      });
-    }
     return widget;
   }
-});
+};
+
+cdb.vis.Overlay = Overlay;
 
 // layer factory
 var Layers = {
@@ -113,10 +87,21 @@ var Vis = cdb.core.View.extend({
 
       // add the associated overlays
       if(layerData.type == 'cartodb' && layerData.infowindow) {
-          var infowindow = Overlay.create('infowindow', this, layerData.infowindow, false);
+          var infowindow = Overlay.create('infowindow', this, layerData.infowindow, true);
           mapView.addInfowindow(infowindow);
           var dataLayer = mapView.getLayerByCid(layer_cid);
-          dataLayer.bind('featureClick', function(e, latlng) {
+          dataLayer.bind('featureClick', function(e, latlng, pos, interact_data) {
+            // prepare data
+            var render_fields= [];
+            var fields = map.layers.getByCid(layer_cid).get('infowindow').fields;
+            for(var i = 0; i < fields.length; ++i) {
+              var f = fields[i];
+              render_fields.push({
+                title: f.title ? f.name: null,
+                value: interact_data[f.name]
+              });
+            }
+            infowindow.model.set({ content:  { fields: render_fields } });
             infowindow.setLatLng(latlng).showInfowindow();
           });
       }

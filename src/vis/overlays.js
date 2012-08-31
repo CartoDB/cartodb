@@ -4,7 +4,6 @@ cdb.vis.Overlay.register('zoom', function(data) {
 
   var zoom = new cdb.geo.ui.Zoom({
     model: data.map,
-    el: $('<div>'),
     template: cdb.core.Template.compile(data.template)
   });
 
@@ -39,7 +38,7 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
   var infowindow = new cdb.geo.ui.Infowindow({
      model: infowindowModel,
      mapView: vis.mapView,
-     template: new cdb.core.Template({ template: data.template }).asFunction()
+     template: new cdb.core.Template({ template: data.template, type: 'mustache' }).asFunction()
   });
 
   return infowindow;

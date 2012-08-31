@@ -5,6 +5,9 @@ defaults: &defaults
   account_path: '/account'
   tile_host: 'localhost.lan'
   tile_port: '8181'
+  sql_api_domain: 'development.localhost.lan'
+  sql_api_endpoint: '/api/v1/sql'
+  sql_api_port: 8080
   developers_host: 'http://developers.localhost.lan:3000'
   amazon_access_key: ''
   amazon_secret_key: ''

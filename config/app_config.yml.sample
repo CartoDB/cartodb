@@ -1,23 +1,4 @@
-development:
-  account_host: 'localhost.lan:4000'
-  account_path: '/account'
-  developers_host: 'http://developers.localhost.lan:3000'
-  secret_token: "some_longer_secret_reaching_30_chars"
-  session_domain: '.localhost.lan'
-  amazon_access_key: ''
-  amazon_secret_key: ''
-  varnish_management: 
-    host: '127.0.0.1'
-    post: 6082
-  redis:
-    host: '127.0.0.1'
-    port: 6379
-  superadmin:
-    username: "superadmin"
-    password: "monkey"
-
-staging:
-  google_analytics_ua: 'UA-20934186-3'
+defaults: &defaults
   session_domain: '.localhost.lan'
   secret_token: '71c2b25921b84a1cb21c71503ab8fb23'
   account_host: 'localhost:3000'
@@ -36,21 +17,48 @@ staging:
   superadmin:
     username: "superadmin"
     password: "monkey"
+  layer_opts:
+    data: 
+      kind: "carto"
+      options:
+        type:               "CartoDB"
+        query:              nil
+        opacity:            0.99
+        auto_bound:         false
+        interactivity:      "cartodb_id"
+        debug:              false
+        visible:            true
+        tiler_domain:       "localhost.lan"
+        tiler_port:         "8181"
+        tiler_protocol:     "http"
+        sql_domain:         "cartodb.com"
+        sql_port:           "80"
+        sql_protocol:       "http"
+        extra_params:       {}
+        cdn_url:            nil
+        table_name:         "untitled_table"
+        user_name:          "development"
+        tile_style_history: []
+    background:
+      kind: "background"
+      options: { color: '#ffffff' }
+    base:
+      kind: "tiled"
+      options:
+        visible:     true
+        type:        "Tiled"
+        urlTemplate: "http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png"
+
+development:
+  <<: *defaults
 
 test:
-  account_host: 'testhost.lan'
-  account_path: '/account'
-  developers_host: 'http://developers.testhost.lan:53716'
-  secret_token: "some_longer_secret_reaching_30_chars"
-  session_domain: '.testhost.lan'
-  amazon_access_key: ''
-  amazon_secret_key: ''
-  varnish_management: 
-    host: '127.0.0.1'
-    post: 6082
-  redis:
-    host: '127.0.0.1'
-    port: 6380
-  superadmin:
-    username: "superadmin"
-    password: "monkeytest"
+  <<: *defaults
+
+staging:
+  <<: *defaults
+  google_analytics_ua: 'UA-20934186-3'
+
+production:
+  <<: *defaults
+  google_analytics_ua: 'UA-20934186-3'

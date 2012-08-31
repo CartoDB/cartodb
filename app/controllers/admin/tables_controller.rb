@@ -3,7 +3,6 @@
 class Admin::TablesController < ApplicationController
   ssl_required :index, :show, :embed_map, :show_public, :index_public
 
-  skip_before_filter :check_domain,                :only => [:embed_map, :show, :show_public]
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]  
   before_filter      :login_required,              :only => [:index]
   after_filter       :update_user_last_activity,   :only => [:index, :show]

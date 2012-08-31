@@ -59,7 +59,9 @@ class Admin::TablesController < ApplicationController
     @subdomain  = request.subdomain
     @table      = Table.find_by_subdomain(@subdomain, params[:id])
     @tilejson_base = @table.map.layers.first.to_tilejson
-    @tilejson_data = @table.map.layers.last.to_tilejson
+    data_layer = @table.map.layers.last.public_values
+    @layer_data = data_layer['options'].to_json
+    @layer_data_infowindow = data_layer['infowindow'].to_json
     
     if @table.blank? || @table.private?
       head :forbidden

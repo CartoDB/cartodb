@@ -2,14 +2,18 @@
 <html lang="en">
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-  	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-  	<link rel="shortcut icon" href="https://cartodb.com/favicon.ico" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="https://cartodb.com/favicon.ico" />
     <title>CartoDB - <%= @table.name %> </title>
 
     <style type="text/css">
-      html, body {height: 100%; margin: 0; padding: 0;}
-      #map_canvas {height: 100%;}
-      @media print {html, body {height: auto;}#map_canvas {height: 650px;}}
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      @media print {html, body {height: auto;} #map {height: 650px;}}
       div#outer_map_cartodb_container {position:relative; width:100%; height:100%; background:white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
       div#map_cartodb_container {position:absolute; top:0; left:0; right:0; bottom:0; z-index:0;}
       span.cartodb_map_controls {position:absolute; top:100px; left:10px; width:26px; height:100px; z-index:10;}
@@ -36,62 +40,47 @@
         background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
       a.cartodb_logo {position:absolute; bottom:7px; left:75px; display:block; width:71px; height:29px; background:url('https://cartodb.s3.amazonaws.com/embed/new_logo.png') no-repeat 0 0;
               text-indent:-9999px; line-height:0; font-size:0; text-transform:capitalize;}
-
-
-      #header {
-        position: absolute;
-        width: 100%;
-        background: #FFF;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-        padding: 20px;
-        z-index: 2;
-      }
-      #header h1 {
-        font:normal 17px 'Helvetica Neue', Helvetica, sans-serif;
-        color: #397DBA;
-        font-weight: bold;
-        margin: 0 0 5px 0 ;
-      }
-
-      #header p {
-        margin: 0;
-        font:normal 13px 'Helvetica Neue', Helvetica, sans-serif;
-        color: #999999;
-      }
-      .no_description span.cartodb_map_controls {top: 10px; }
-    }
     </style>
 
-    <%= stylesheet_link_tag :leaflet, :media => 'all' %>
+    <%= stylesheet_link_tag :cdb, :media => 'all' %>
+
+    <script id="infowindow_template" type="text/tmpl">
+      <div class="cartodb-popup">
+        <div class="cartodb-popup-content-wrapper">
+          <div class="cartodb-popup-content"> 
+            {{#content.fields}} 
+            {{#title}}<h4>{{title}}</h4>{{/title}}
+            <p>{{value}}</p> {{/content.fields}}
+          </div>
+        </div> 
+        <div class="cartodb-popup-tip-container"> 
+        </div> 
+      </div>
+    </script>
+
     <%= render 'shared/analytics' %>
   </head>
-  <body class="no_description" onload="init()">
-    <div id="header" style="display:none">
-      <h1 id="title"></h1>
-      <p id="description"></p>
-    </div>
+  <body >
     <% if @table.public? %>
-      <div id="outer_map_cartodb_container">
-        <div id="map_cartodb_container"></div>
-      </div>
-      <span class="cartodb_map_controls">
-        <a href="#zoom_in" class="cartodb_map_embed_zoom_in">+</a>
-        <a href="#zoom_out" class="cartodb_map_embed_zoom_out">-</a>
-      </span>
-      <a href="https://cartodb.com" class="cartodb_logo" target="_blank">CartoDB</a>
+    <div id="map"></div>
     <% end %>
   </body>
 
-  <%= javascript_include_tag :cdb %>
+  <%= javascript_include_tag :jquery, :cdb %>
 
-
-  // TODO: extract this script to a file
   <script>
     var base_layer_tilejson = <%=raw @tilejson_base %>;
-    var data_layer_tilejson = <%=raw @tilejson_data %>;
+    var data_layer_tilejson = <%=raw @layer_data %>;
+    data_layer_tilejson.infowindow = <%=raw @layer_data_infowindow %>;
     // those two parameters should be in tilejson
     var table_name = '<%= @table.name %>';
     var table_description = '<%= @table.description %>';
+
+    if(data_layer_tilejson.infowindow) {
+      data_layer_tilejson.infowindow.template = $('#infowindow_template').html()
+    }
+
+    base_layer_tilejson.type = 'tilejson';
 
     function get_url_params() {
       var tokens = location.search.slice(1).split('&');
@@ -103,35 +92,41 @@
       return params;
     }
 
-    function init() {
-      var opt = get_url_params();
+    var vis_data = {
+       title: table_name,
+       description: table_description,
+       center: [0, 0],
+       zoom: 4,
 
-      var southWest = new L.LatLng(opt.sw_lat || -40, opt.sw_lon || -80)
-        , northEast = new L.LatLng(opt.ne_lat || 72, opt.ne_lon || 80)
-        , bounds = new L.LatLngBounds(southWest, northEast);
+       overlays: [
+        {
+          type: 'header'
+        },
+        { 
+          type: 'zoom',
+          template: '<a class="zoom_in">+</a> <a class="zoom_out">-</a>'
+        }
+      ],
 
-      if(opt.sql) {
-        data_layer_tilejson.tiles[0] = data_layer_tilejson.tiles[0] + "?sql=" + encodeURIComponent(opt.sql);
-      }
+      layers: [
+        base_layer_tilejson,
+        data_layer_tilejson 
+      ]
+    };
 
-      var map = new L.Map('map_cartodb_container')
-        .addLayer(new wax.leaf.connector(base_layer_tilejson))
-        .addLayer(new wax.leaf.connector(data_layer_tilejson))
-        .fitBounds(bounds)
+    var opt = get_url_params();
 
-      var header = document.getElementById('header');
-      if(opt.title === "true") {
-        document.getElementById('title').innerHTML = table_name;
-        header.style.display = 'block';
-        document.body.setAttribute('class', '');
-      }
-      if(opt.description === "true") {
-        document.getElementById('description').innerHTML = table_description;
-        header.style.display = 'block';
-        document.body.setAttribute('class', '');
-      }
-  
+    var southWest = new L.LatLng(opt.sw_lat || -40, opt.sw_lon || -80)
+      , northEast = new L.LatLng(opt.ne_lat || 72, opt.ne_lon || 80)
+      , bounds = new L.LatLngBounds(southWest, northEast);
+
+    if(opt.sql) {
+      data_layer_tilejson.query = opt.sql;
     }
 
-      </script>
+    var vis = new cdb.vis.Vis({el: $('#map')});
+    vis.load(vis_data);
+
+
+  </script>
 </html>

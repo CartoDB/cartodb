@@ -47,14 +47,14 @@
     <script id="infowindow_template" type="text/tmpl">
       <div class="cartodb-popup">
         <div class="cartodb-popup-content-wrapper">
-          <div class="cartodb-popup-content"> 
-            {{#content.fields}} 
+          <div class="cartodb-popup-content">
+            {{#content.fields}}
             {{#title}}<h4>{{title}}</h4>{{/title}}
             <p>{{value}}</p> {{/content.fields}}
           </div>
-        </div> 
-        <div class="cartodb-popup-tip-container"> 
-        </div> 
+        </div>
+        <div class="cartodb-popup-tip-container">
+        </div>
       </div>
     </script>
 
@@ -92,17 +92,13 @@
       return params;
     }
 
-    var vis_data = {
-       title: table_name,
-       description: table_description,
-       center: [0, 0],
-       zoom: 4,
+    var opt = get_url_params();
 
+    var vis_data = {
+       title: opt.title === 'true' ? table_name:null,
+       description: opt.description === 'true' ? table_description: null,
        overlays: [
         {
-          type: 'header'
-        },
-        { 
           type: 'zoom',
           template: '<a class="zoom_in">+</a> <a class="zoom_out">-</a>'
         }
@@ -110,15 +106,18 @@
 
       layers: [
         base_layer_tilejson,
-        data_layer_tilejson 
+        data_layer_tilejson
       ]
     };
 
-    var opt = get_url_params();
+    if(opt.title === 'true' || opt.description === 'true') {
+      vis_data.overlays.splice(0, 0, { type: 'header' });
+    }
 
-    var southWest = new L.LatLng(opt.sw_lat || -40, opt.sw_lon || -80)
-      , northEast = new L.LatLng(opt.ne_lat || 72, opt.ne_lon || 80)
-      , bounds = new L.LatLngBounds(southWest, northEast);
+    vis_data.bounds = [
+      [opt.sw_lat, opt.sw_lon],
+      [opt.ne_lat, opt.ne_lon],
+    ];
 
     if(opt.sql) {
       data_layer_tilejson.query = opt.sql;

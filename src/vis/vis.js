@@ -111,8 +111,12 @@ var Vis = cdb.core.View.extend({
       }
     }
 
-    map.setCenter(data.center || [0, 0]);
-    map.setZoom(data.zoom || 4);
+    if(data.bounds) {
+      mapView.showBounds(data.bounds);
+    } else {
+      map.setCenter(data.center || [0, 0]);
+      map.setZoom(data.zoom || 4);
+    }
   },
 
 });

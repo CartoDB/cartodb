@@ -1,7 +1,7 @@
 # coding: UTF-8
 
 class Api::Json::LayersController < Api::ApplicationController
-  ssl_required :show
+  ssl_required :index, :show, :create, :update, :destroy
 
   before_filter :load_map
 

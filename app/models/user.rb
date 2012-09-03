@@ -294,11 +294,11 @@ class User < Sequel::Model
   # required records to link them
   def link_ghost_tables
     real_tables = self.in_database(:as => :superuser)
-                      .select(:table_name).from(:information_schema__tables)
-                      .where(:table_catalog => self.database_name, :table_schema => 'public')
-                      .all.map {|t| t[:table_name]} - SYSTEM_TABLE_NAMES
+                      .select(:tablename).from(:pg_tables)
+                      .where(:tableowner => self.database_username)
+                      .all.map {|t| t[:tableownername]} - SYSTEM_TABLE_NAMES
 
-    ghost_tables = real_tables - self.tables.select(:name).map(&:name)
+    ghost_tables = (real_tables - self.tables.select(:name).map(&:name)).compact
 
     ghost_tables.each do |t| 
       table = Table.new

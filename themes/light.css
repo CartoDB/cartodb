@@ -78,8 +78,9 @@ div.cartodb-popup div.cartodb-popup-tip-container {
   height: 36px;
   /*padding: 11px 16px 10px 10px;*/
   margin: 0;
-  /*background: image-url("icons/infowindow.png") no-repeat right top;*/ }
+  /*background: image-url("icons/infowindow.png") no-repeat right top;*/ 
   background: #FFF;
+}
 
 div.cartodb-popup div.cartodb-popup-tip-container label {
   float: left;

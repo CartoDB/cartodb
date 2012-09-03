@@ -233,12 +233,19 @@ class User < Sequel::Model
   def set_map_key
     token = self.class.make_token
     $users_metadata.HMSET key, 'map_key',  token
+    # TODO: use varnish.VarnishHandler as in app/models/table.rb ?
     require 'net/telnet'
     varnish_host = APP_CONFIG[:varnish_management].try(:[],'host') || '127.0.0.1'
     varnish_port = APP_CONFIG[:varnish_management].try(:[],'port') || 6082
-    varnish_conn = Net::Telnet.new("Host" => varnish_host, "Port" => varnish_port, "Prompt" => /200 0/)
-    varnish_conn.cmd("purge obj.http.X-Cache-Channel ~ #{self.database_name}.*")
-    varnish_conn.close
+
+    begin
+      varnish_conn = Net::Telnet.new("Host" => varnish_host, "Port" => varnish_port, "Prompt" => /200 0/)
+      varnish_conn.cmd("purge obj.http.X-Cache-Channel ~ #{self.database_name}.*")
+      varnish_conn.close
+    rescue => e
+      # See https://github.com/Vizzuality/cartodb/issues/875
+      CartoDB::Logger.info "Could not clear varnish cache", "#{e.inspect}"
+    end
   end
 
   def get_map_key

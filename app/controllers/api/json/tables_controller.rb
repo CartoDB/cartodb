@@ -1,7 +1,7 @@
 # coding: UTF-8
 
 class Api::Json::TablesController < Api::ApplicationController
-  ssl_required :index, :show, :update, :destroy, :set_infowindow, :duplicate, :set_map_metadata, :get_map_metadata
+  ssl_required :index, :show, :create, :update, :destroy, :set_infowindow, :duplicate, :set_map_metadata, :get_map_metadata
 
   before_filter :load_table, :except => [:index, :create]
   before_filter :set_start_time

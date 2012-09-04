@@ -62,6 +62,7 @@ module CartoDB
     def delete_user_data user
       user.tables.destroy
       user.maps_dataset.destroy
+      user.layers_dataset.destroy
     end
   end
 end

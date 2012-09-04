@@ -1,7 +1,7 @@
 # coding: UTF-8
 require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
 
-feature "API 1.0 layers management" do
+feature "API 1.0 map layers management" do
 
   before(:all) do
     Capybara.current_driver = :rack_test
@@ -14,7 +14,7 @@ feature "API 1.0 layers management" do
     @map = create_map(:user_id => @user.id, :table_id => @table.id)
   end
 
-  scenario "Create a new layer" do
+  scenario "Create a new layer associated to a map" do
     opts = { 'opt1' => 'wadus', 'opt2' => '1' }
     infowindow = ['column1', 'column2', 'column3']
 
@@ -42,7 +42,7 @@ feature "API 1.0 layers management" do
     end
   end
 
-  scenario "Get a map layers" do
+  scenario "Get all map layers" do
     layer = Layer.create :kind => 'carto'
     layer2 = Layer.create :kind => 'tiled'
     @map.add_layer layer

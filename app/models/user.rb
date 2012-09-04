@@ -6,7 +6,8 @@ class User < Sequel::Model
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
-  plugin :association_dependencies, :maps => :destroy
+  many_to_many :layers, :order => :id
+  plugin :association_dependencies, :maps => :destroy, :layers => :nullify
 
   # Sequel setup & plugins
   set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled
@@ -95,8 +96,8 @@ class User < Sequel::Model
   def database_username
     if Rails.env.production?
       "cartodb_user_#{id}"
-    #elsif Rails.env.staging?
-    #  "cartodb_staging_user_#{self.id}"
+    elsif Rails.env.staging?
+      "cartodb_staging_user_#{self.id}"
     else
       "#{Rails.env}_cartodb_user_#{id}"
     end
@@ -360,8 +361,8 @@ class User < Sequel::Model
       self.database_name = case Rails.env
         when 'development'
           "cartodb_dev_user_#{self.id}_db"
-        #when 'staging'
-        #  "cartodb_staging_user_#{self.id}_db"
+        when 'staging'
+          "cartodb_staging_user_#{self.id}_db"
         when 'test'
           "cartodb_test_user_#{self.id}_db"
         else

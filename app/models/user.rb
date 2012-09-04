@@ -96,8 +96,8 @@ class User < Sequel::Model
   def database_username
     if Rails.env.production?
       "cartodb_user_#{id}"
-    #elsif Rails.env.staging?
-    #  "cartodb_staging_user_#{self.id}"
+    elsif Rails.env.staging?
+      "cartodb_staging_user_#{self.id}"
     else
       "#{Rails.env}_cartodb_user_#{id}"
     end

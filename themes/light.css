@@ -74,7 +74,7 @@ div.cartodb-popup div.cartodb-popup-content p.empty {
 }
 
 div.cartodb-popup div.cartodb-popup-tip-container {
-  width: $width;
+  width: 216px;
   height: 36px;
   /*padding: 11px 16px 10px 10px;*/
   margin: 0;

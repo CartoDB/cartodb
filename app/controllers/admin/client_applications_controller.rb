@@ -16,8 +16,27 @@ class Admin::ClientApplicationsController < ApplicationController
   end
 
   def regenerate_api_key
-    current_user.set_map_key
-    redirect_to api_key_credentials_path, :flash => {:success => "Your API key has been regenerated successfully"}
+    require 'net/telnet'
+    varnish_host = APP_CONFIG[:varnish_management].try(:[],'host') || '127.0.0.1'
+    varnish_port = APP_CONFIG[:varnish_management].try(:[],'port') || 6082
+    begin
+      varnish_conn = Net::Telnet.new("Host" => varnish_host, "Port" => varnish_port, "Prompt" => /200 0/)
+      varnish_conn.cmd("purge obj.http.X-Cache-Channel ~ #{current_user.database_name}.*")
+      varnish_conn.close
+      current_user.set_map_key
+      flash_message = "Your API key has been regenerated successfully"
+    rescue Errno::ECONNREFUSED => e
+      CartoDB::Logger.info "Could not clear varnish cache", "#{e.inspect}"
+      if Rails.env.development?
+        current_user.set_map_key
+        flash_message = "Your API key has been regenerated succesfully but the varnish cache has not been invalidated."
+      else
+        raise e
+      end
+    rescue => e
+      raise e
+    end 
+    redirect_to api_key_credentials_path, :flash => {:success => flash_message}
   end
 
 end

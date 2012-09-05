@@ -225,6 +225,11 @@ cdb.geo.MapView = cdb.core.View.extend({
   addInfowindow: function(infoWindowView) {
     this.$el.append(infoWindowView.render().el);
     this.addView(infoWindowView);
+  },
+
+  showBounds: function(bounds) {
+    throw "to be implemented";
   }
+
 
 });

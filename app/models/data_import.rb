@@ -196,41 +196,22 @@ class DataImport < Sequel::Model
   end
 
   def import_to_cartodb method, import_source
-    if method == 'file'
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).symbolize_keys.merge(
-        :database         => current_user.database_name,
-        :logger           => ::Rails.logger,
-        :username         => current_user.database_username,
-        :password         => current_user.database_password,
-        :import_from_file => import_source,
-        :debug            => (Rails.env.development?),
-        :remaining_quota  => current_user.remaining_quota,
-        :data_import_id   => id
-      )
-      importer = CartoDB::Importer.new hash_in
-      importer, errors = importer.import!
-      reload
-      imported
-      return importer, errors
-      #import from URL
-    elsif method == 'url'
-      download
-      hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).symbolize_keys.merge(
-        :database         => table_owner.database_name,
-        :logger           => ::Rails.logger,
-        :username         => table_owner.database_username,
-        :password         => table_owner.database_password,
-        :import_from_file => import_source,
-        :debug            => (Rails.env.development?),
-        :remaining_quota  => table_owner.remaining_quota,
-        :data_import_id   => id
-      )
-      importer = CartoDB::Importer.new hash_in
-      importer, errors = importer.import!
-      reload
-      imported
-      return importer, errors
-    end
+    download if method == 'url'
+    hash_in = ::Rails::Sequel.configuration.environment_for(Rails.env).symbolize_keys.merge(
+      :database         => current_user.database_name,
+      :logger           => ::Rails.logger,
+      :username         => current_user.database_username,
+      :password         => current_user.database_password,
+      :import_from_file => import_source,
+      :debug            => (Rails.env.development?),
+      :remaining_quota  => current_user.remaining_quota,
+      :data_import_id   => id
+    )
+    importer = CartoDB::Importer.new hash_in
+    importer, errors = importer.import!
+    reload
+    imported
+    return importer, errors
   end
 
   def import_from_query name, query

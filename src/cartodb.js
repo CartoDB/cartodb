@@ -37,6 +37,7 @@
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/leaflet.js',
+        'geo/gmaps.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',

@@ -213,6 +213,9 @@ cdb.geo.MapView = cdb.core.View.extend({
 
     this.map = this.options.map;
     this.add_related_model(this.map);
+
+    // this var stores views information for each model
+    this.layers = {};
   },
 
   render: function() {
@@ -228,6 +231,59 @@ cdb.geo.MapView = cdb.core.View.extend({
   },
 
   showBounds: function(bounds) {
+    throw "to be implemented";
+  },
+
+  /**
+  * set model property but unbind changes first in order to not create an infinite loop
+  */
+  _setModelProperty: function(prop) {
+    this._unbindModel();
+    this.map.set(prop);
+    this._bindModel();
+  },
+
+  /** bind model properties */
+  _bindModel: function() {
+    this.map.bind('change:zoom',   this._setZoom, this);
+    this.map.bind('change:center', this._setCenter, this);
+  },
+
+  /** unbind model properties */
+  _unbindModel: function() {
+    this.map.unbind('change:zoom',   this._setZoom, this);
+    this.map.unbind('change:center', this._setCenter, this);
+  },
+
+  _addLayers: function() {
+    var self = this;
+    this.map.layers.each(function(lyr) {
+      self._addLayer(lyr);
+    });
+  },
+
+  _removeLayer: function(layer) {
+    this.layers[layer.cid].remove();
+    delete this.layers[layer.cid];
+  },
+
+  getLayerByCid: function(cid) {
+    var l = this.layers[cid];
+    if(!l) {
+      cdb.log.error("layer with cid " + cid + " can't be get");
+    }
+    return l;
+  },
+
+  _setZoom: function(model, z) {
+    throw "to be implemented";
+  },
+
+  _setCenter: function(model, center) {
+    throw "to be implemented";
+  },
+
+  _addLayer: function(layer, layers, opts) {
     throw "to be implemented";
   }
 

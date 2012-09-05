@@ -152,6 +152,12 @@
   */
   cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
+    layerTypeMap: {
+      "tiled": cdb.geo.LeafLetTiledLayerView,
+      "cartodb": cdb.geo.LeafLetLayerCartoDBView,
+      "plain": cdb.geo.LeafLetPlainLayerView
+    },
+
     initialize: function() {
 
       _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
@@ -170,14 +176,7 @@
         maxZoom: this.map.get('maxZoom')
       });
 
-      this.layerTypeMap = {
-        "tiled": cdb.geo.LeafLetTiledLayerView,
-        "cartodb": cdb.geo.LeafLetLayerCartoDBView,
-        "plain": cdb.geo.LeafLetPlainLayerView
-      };
 
-      // this var stores views information for each model
-      this.layers = {};
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
@@ -212,26 +211,7 @@
 
     },
 
-    /** bind model properties */
-    _bindModel: function() {
-      this.map.bind('change:zoom',   this._setZoom, this);
-      this.map.bind('change:center', this._setCenter, this);
-    },
 
-    /** unbind model properties */
-    _unbindModel: function() {
-      this.map.unbind('change:zoom',   this._setZoom, this);
-      this.map.unbind('change:center', this._setCenter, this);
-    },
-
-    /**
-    * set model property but unbind changes first in order to not create an infinite loop
-    */
-    _setModelProperty: function(prop) {
-      this._unbindModel();
-      this.map.set(prop);
-      this._bindModel();
-    },
 
     _setZoom: function(model, z) {
       this.map_leaflet.setZoom(z);
@@ -254,30 +234,8 @@
 
     },
 
-    getLayerByCid: function(cid) {
-      var l = this.layers[cid];
-      if(!l) {
-        cdb.log.error("layer with cid " + cid + " can't be get");
-      }
-      return l;
-    },
-
-    _removeLayer: function(layer) {
-      //this.map_leaflet.removeLayer(layer.lyr);
-      this.layers[layer.cid].remove();
-      delete this.layers[layer.cid];
-    },
-
     _setView: function() {
       this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
-    },
-
-
-    _addLayers: function() {
-      var self = this;
-      this.map.layers.each(function(lyr) {
-        self._addLayer(lyr);
-      });
     },
 
     _addLayer: function(layer, layers, opts) {

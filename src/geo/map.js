@@ -141,7 +141,7 @@ cdb.geo.Map = Backbone.Model.extend({
     }
 
     // Set options
-    L.Util.setOptions(this, options);
+    _.defauls(this.options, options);
 
   },
 

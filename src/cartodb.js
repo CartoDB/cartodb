@@ -8,7 +8,7 @@
     window.cdb.ui = {};
     window.cdb.ui.common = {};
     window.cdb.vis = {};
-
+    window.cdb.decorators = {};
     /**
      * global variables
      */

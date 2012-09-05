@@ -1,5 +1,12 @@
-cdb.decorators = {};
+/**
+* Decorators to extend funcionality of cdb related objects
+*/
 
+/**
+* Adds .super method to call for the same method of the parent class
+* usage:
+*   insanceOfClass.super('name_of_the_method');
+*/
 cdb.decorators.super = (function() {
   // we need to backup one of the backbone extend models
   // (it doesn't matter which, they are all the same method)
@@ -27,9 +34,9 @@ cdb.decorators.super = (function() {
       var child = backboneExtend.call(this, protoProps, classProps);
 
       child.prototype.parent = this.prototype;
-      child.prototype.super = function(method) {
+      child.prototype.super = function(method, options) {
           if (method) {
-              return superMethod.call(this, method);
+              return superMethod.call(this, method, options);
           } else {
               return child.prototype.parent;
           }

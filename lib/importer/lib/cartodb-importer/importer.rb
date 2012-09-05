@@ -201,8 +201,7 @@ module CartoDB
                   processed_imports << d
                 }
                 @data_import.log_update('file preprocessed')
-              rescue => ex
-                require 'debugger'; debugger
+              rescue
                 @data_import.reload
                 errors << OpenStruct.new({ :description => @data_import.get_error_text,
                                              :stack =>  @data_import.log_json,

@@ -34,7 +34,7 @@ class Api::Json::RecordsController < Api::ApplicationController
       begin
         resp = @table.update_row!(params[:id], params.reject{|k,v| REJECT_PARAMS.include?(k)}.symbolize_keys)
         if resp > 0
-          head :ok
+          render_jsonp(get_record(params[:id]))
         else
           render_jsonp({ :errors => ["row identified with #{params[:id]} not found"] }, 404) and return
         end

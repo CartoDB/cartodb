@@ -241,7 +241,7 @@ module CartoDB
           }
 
           @data_import.refresh
-          @data_import.log_update("file successfully imported")
+          @data_import.log_update("file successfully imported") if errors.blank?
 
           #remove all files from disk
           cleanup_disk

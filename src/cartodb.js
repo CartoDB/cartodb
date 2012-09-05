@@ -23,6 +23,7 @@
         "../vendor/wax.leaf.js",
         "../vendor/cartodb-leaflet.js",
 
+        'core/decorator.js',
         'core/config.js',
         'core/log.js',
         'core/profiler.js',

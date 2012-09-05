@@ -236,7 +236,6 @@ module CartoDB
                 errors << OpenStruct.new({ :description => @data_import.get_error_text,
                                            :stack       => @data_import.log_json,
                                            :code        => @data_import.error_code })
-                raise e
               end
             end
           }
@@ -257,7 +256,7 @@ module CartoDB
           log e.backtrace
           log "====================="
           begin  # TODO: Do we really mean nil here? What if a table is created?
-            @db_connection.drop_table @suggested_name
+            @db_connection.drop_table @suggested_name.nil? ? suggested : @suggested_name
           rescue # silent try to drop the table
           end
 

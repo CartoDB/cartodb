@@ -5,10 +5,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
 feature "API 1.0 records management" do
 
   before(:all) do
-    puts "\n[rspec][records_spec] Creating test user database..."
     Capybara.current_driver = :rack_test
-    @user = create_user(:username => 'test')
-    puts "[rspec][records_spec] Running..."
+    @user = create_user({:username => 'test'})
   end
 
   before(:each) do
@@ -25,7 +23,7 @@ feature "API 1.0 records management" do
 
     content = @user.run_query("select * from \"#{@table.name}\"")[:rows]
 
-    get_json "#{api_table_records_url(@table.name)}?rows_per_page=2" do |response|
+    get_json api_table_records_url(@table.name, :rows_per_page => 2) do |response|
       response.status.should be_success
       response.body[:id].should == @table.id
       response.body[:name].should == @table.name
@@ -61,7 +59,7 @@ feature "API 1.0 records management" do
 
     content = @user.run_query("select * from \"#{@table.name}\"")[:rows]
     
-    get_json "#{api_table_records_url(@table.name)}?order_by=name&mode=asc" do |response|
+    get_json api_table_records_url(@table.name, :order_by => 'name', :mode => 'asc') do |response|
       response.status.should be_success
       response.body[:id].should == @table.id
       response.body[:name].should == @table.name
@@ -72,7 +70,7 @@ feature "API 1.0 records management" do
         should == content[1].slice(:cartodb_id, :name, :location, :description)
     end
     
-    get_json "#{api_table_records_url(@table.name)}?order_by=name&mode=desc" do |response|
+    get_json api_table_records_url(@table.name, :order_by => 'name', :mode => 'desc') do |response|
       response.status.should be_success
       response.body[:id].should == @table.id
       response.body[:name].should == @table.name

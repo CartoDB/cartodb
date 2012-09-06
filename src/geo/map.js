@@ -20,6 +20,15 @@ cdb.geo.TileLayer = cdb.geo.MapLayer.extend({
   }
 });
 
+cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
+  OPTIONS: ['roadmap', 'satellite', 'terrain', 'custom'],
+  defaults: {
+    type: 'GMapsBase',
+    base_type: 'roadmap',
+    style: null
+  }
+});
+
 /**
  * this layer allows to put a plain color or image as layer (instead of tiles)
  */

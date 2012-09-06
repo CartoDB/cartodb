@@ -2,6 +2,7 @@
 // if google maps is not defined do not load the class
 if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
+var DEFAULT_MAP_STYLE = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
 /**
 * base layer for all leaflet layers
 */
@@ -24,6 +25,31 @@ _.extend(GMapsLayerView.prototype, {
     this.unbind();
   }
 
+});
+
+
+// gmaps base view, dummy
+var GMapsBaseLayerView = function(layerModel, gmapsMap) { 
+  GMapsLayerView.call(this, layerModel, null, gmapsMap);
+};
+_.extend(GMapsBaseLayerView.prototype, GMapsLayerView.prototype, {
+  _update: function() {
+    var m = this.model;
+    var types = {
+      "roadmap": google.maps.MapTypeId.ROADMAP,
+      "satellite": google.maps.MapTypeId.SATELLITE,
+      "terrain": google.maps.MapTypeId.TERRAIN
+    };
+
+    this.gmapsMap.setOptions({
+      mapTypeId: types[m.get('base_type')]
+    });
+
+    this.gmapsMap.setOptions({ 
+      styles: m.get('style') || DEFAULT_MAP_STYLE
+    });
+  },
+  remove: function() { }
 });
 
 var GMapsPlainLayerView = function(layerModel, gmapsMap) {
@@ -169,7 +195,8 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   layerTypeMap: {
     "tiled": cdb.geo.GMapsTiledLayerView,
     "cartodb": cdb.geo.GMapsCartoDBLayerView,
-    "plain": cdb.geo.GMapsPlainLayerView
+    "plain": cdb.geo.GMapsPlainLayerView,
+    "gmapsbase": GMapsBaseLayerView
   },
 
   initialize: function() {
@@ -233,12 +260,17 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.layers[layer.cid] = layer_view;
 
     if (layer_view) {
-      var idx = this.map.layers.length - 1;
-      var isBaseLayer = this.map.layers.length === 1 || (opts && opts.index === 0);
+      var idx = _.keys(this.layers).length  - 1;
+      var isBaseLayer = idx === 0 || (opts && opts.index === 0);
       // set base layer
       if(isBaseLayer) {
-        this.map_googlemaps.mapTypes.set('_baseLayer', layer_view.gmapsLayer);
-        this.map_googlemaps.setMapTypeId('_baseLayer');
+        var m = layer_view.model;
+        if(m.get('type') == 'GMapsBase') {
+            layer_view._update();
+        } else {
+          this.map_googlemaps.mapTypes.set('_baseLayer', layer_view.gmapsLayer);
+          this.map_googlemaps.setMapTypeId('_baseLayer');
+        }
       } else {
         idx -= 1;
         self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
@@ -268,7 +300,6 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     p.y += pc.y;
     var ll = this.projector.pixelToLatLng(p);
     this.map.setCenter([ll.lat(), ll.lng()]);
-
   }
 
 });

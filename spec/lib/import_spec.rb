@@ -164,6 +164,16 @@ describe CartoDB::Importer do
 
         results[0].import_type.should == '.csv'
       end
+
+      it "should import a CSV file with only one column" do
+        importer = create_importer 'csv_with_one_column.csv', 'csv_with_one_column'
+        results, errors = importer.import!
+
+        results[0].name.should == 'csv_with_one_column'
+        results[0].rows_imported.should == 38
+
+        results[0].import_type.should == '.csv'
+      end
     end
 
     describe "#XLSX" do

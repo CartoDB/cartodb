@@ -24,7 +24,22 @@
         });
         map.setCenter([34.95799531086792, -0.6591796875])
         map.setZoom(4);
+        var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
+
+        map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
+        var options = {
+          user_name: 'examples',
+          table_name: 'earthquakes',
+          query: 'SELECT * FROM {{table_name}}',
+          tile_style: "#{{table_name}}{marker-fill:red}",
+          interactivity: "cartodb_id, magnitude"
+        };
+
+
+        var layer = new cdb.geo.CartoDBLayer(options);
+        map.addLayer(layer);
         window.map = map;
+        window.mapv = mapView;
       });
 
   </script>

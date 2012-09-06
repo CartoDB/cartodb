@@ -191,10 +191,19 @@
         this.trigger('layeradd', lyr, self);
       }, this);
 
+      this.map_leaflet.on('zoomstart', function() {
+        self.trigger('zoomstart');
+      });
+
+      this.map_leaflet.on('click', function() {
+        self.trigger('click');
+      });
+
       this.map_leaflet.on('zoomend', function() {
         self._setModelProperty({
           zoom: self.map_leaflet.getZoom()
         });
+        self.trigger('zoomend');
       }, this);
 
       this.map_leaflet.on('move', function() {
@@ -207,6 +216,7 @@
         self._setModelProperty({
           center: [c.lat, c.lng]
         });
+        self.trigger('drag');
       }, this);
 
     },
@@ -282,6 +292,14 @@
       var southWest = new L.LatLng(sw[0], sw[1]);
       var northEast = new L.LatLng(ne[0], ne[1]);
       this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
+    },
+
+    getSize: function() {
+      this.map_leaflet.getSize();
+    }, 
+
+    panBy: function(p) {
+      this.map_leaflet.panBy(new L.Point(p.x, p.y));
     }
 
   });

@@ -77,22 +77,21 @@
       var layerView = mapView.getLayerByCid(lyr);
       expect(layerView.__proto__.constructor).toEqual(cdb.geo.GMapsTiledLayerView);
     });
-    /*
 
     it("should create a CartoDBLayer when the layer is cartodb", function() {
       layer    = new cdb.geo.CartoDBLayer({});
+      map.addLayer(new cdb.geo.PlainLayer({}));
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetLayerCartoDBView);
+      expect(layerView.__proto__.constructor).toEqual(cdb.geo.GMapsCartoDBLayerView);
     });
 
     it("should create a PlaiLayer when the layer is cartodb", function() {
       layer    = new cdb.geo.PlainLayer({});
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetPlainLayerView);
+      expect(layerView.__proto__.constructor).toEqual(cdb.geo.GMapsPlainLayerView);
     });
-    */
 /*
 
     it("should inser layer in specified order", function() {

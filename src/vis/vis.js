@@ -73,7 +73,7 @@ var Vis = cdb.core.View.extend({
     });
     this.map = map;
     this.mapView = mapView;
-    
+
 
     // overlays
     for(var i in data.overlays) {
@@ -94,12 +94,13 @@ var Vis = cdb.core.View.extend({
           var infowindow = Overlay.create('infowindow', this, layerData.infowindow, true);
           mapView.addInfowindow(infowindow);
           var dataLayer = mapView.getLayerByCid(layer_cid);
+          dataLayer.cid = layer_cid;
           dataLayer.bind('featureClick', function(e, latlng, pos, interact_data) {
             // prepare data
             var render_fields= [];
-            var fields = map.layers.getByCid(layer_cid).get('infowindow').fields;
-            for(var i = 0; i < fields.length; ++i) {
-              var f = fields[i];
+            var fields = map.layers.getByCid(this.cid).get('infowindow').fields;
+            for(var j = 0; j < fields.length; ++j) {
+              var f = fields[j];
               render_fields.push({
                 title: f.title ? f.name: null,
                 value: interact_data[f.name]

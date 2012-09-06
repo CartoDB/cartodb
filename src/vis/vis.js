@@ -97,17 +97,21 @@ var Vis = cdb.core.View.extend({
           dataLayer.cid = layer_cid;
           dataLayer.bind('featureClick', function(e, latlng, pos, interact_data) {
             // prepare data
-            var render_fields= [];
-            var fields = map.layers.getByCid(this.cid).get('infowindow').fields;
-            for(var j = 0; j < fields.length; ++j) {
-              var f = fields[j];
-              render_fields.push({
-                title: f.title ? f.name: null,
-                value: interact_data[f.name]
-              });
+            var layer = map.layers.getByCid(this.cid);
+            // infoWindow only shows if the layer is active
+            if(layer.get('active')) {
+              var render_fields= [];
+              var fields = layer.get('infowindow').fields;
+              for(var j = 0; j < fields.length; ++j) {
+                var f = fields[j];
+                render_fields.push({
+                  title: f.title ? f.name: null,
+                  value: interact_data[f.name]
+                });
+              }
+              infowindow.model.set({ content:  { fields: render_fields } });
+              infowindow.setLatLng(latlng).showInfowindow();
             }
-            infowindow.model.set({ content:  { fields: render_fields } });
-            infowindow.setLatLng(latlng).showInfowindow();
           });
       }
     }

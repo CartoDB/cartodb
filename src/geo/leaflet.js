@@ -167,9 +167,9 @@
         center: new L.LatLng(center[0], center[1]),
         zoom: this.map.get('zoom'),
         minZoom: this.map.get('minZoom'),
-        maxZoom: this.map.get('maxZoom')
+        maxZoom: this.map.get('maxZoom'),
+        maxBounds: [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')]
       });
-
       this.layerTypeMap = {
         "tiled": cdb.geo.LeafLetTiledLayerView,
         "cartodb": cdb.geo.LeafLetLayerCartoDBView,

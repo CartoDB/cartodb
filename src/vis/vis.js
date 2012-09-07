@@ -56,11 +56,18 @@ var Vis = cdb.core.View.extend({
   },
 
   load: function(data) {
-
     // map
+    data.maxZoom || (data.maxZoom = 20);
+    data.minZoom || (data.minZoom = 0);
+    data.bounding_box_sw || (data.bounding_box_sw = [0,0]);
+    data.bounding_box_ne || (data.bounding_box_ne= [0,0]);
     var map = new cdb.geo.Map({
       title: data.title,
-      description: data.description
+      description: data.description,
+      maxZoom: data.maxZoom,
+      minZoom: data.minZoom,
+      bounding_box_sw: data.bounding_box_sw,
+      bounding_box_ne: data.bounding_box_ne,
     });
     var div = $('<div>').css({
       width: '100%',
@@ -73,7 +80,7 @@ var Vis = cdb.core.View.extend({
     });
     this.map = map;
     this.mapView = mapView;
-    
+
 
     // overlays
     for(var i in data.overlays) {
@@ -94,19 +101,24 @@ var Vis = cdb.core.View.extend({
           var infowindow = Overlay.create('infowindow', this, layerData.infowindow, true);
           mapView.addInfowindow(infowindow);
           var dataLayer = mapView.getLayerByCid(layer_cid);
+          dataLayer.cid = layer_cid;
           dataLayer.bind('featureClick', function(e, latlng, pos, interact_data) {
             // prepare data
-            var render_fields= [];
-            var fields = map.layers.getByCid(layer_cid).get('infowindow').fields;
-            for(var i = 0; i < fields.length; ++i) {
-              var f = fields[i];
-              render_fields.push({
-                title: f.title ? f.name: null,
-                value: interact_data[f.name]
-              });
+            var layer = map.layers.getByCid(this.cid);
+            // infoWindow only shows if the layer is active
+            if(layer.get('active')) {
+              var render_fields= [];
+              var fields = layer.get('infowindow').fields;
+              for(var j = 0; j < fields.length; ++j) {
+                var f = fields[j];
+                render_fields.push({
+                  title: f.title ? f.name: null,
+                  value: interact_data[f.name]
+                });
+              }
+              infowindow.model.set({ content:  { fields: render_fields } });
+              infowindow.setLatLng(latlng).showInfowindow();
             }
-            infowindow.model.set({ content:  { fields: render_fields } });
-            infowindow.setLatLng(latlng).showInfowindow();
           });
       }
     }

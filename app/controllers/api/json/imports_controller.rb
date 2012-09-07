@@ -40,7 +40,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     case
     when params[:filename].present? && request.body.present?
-      filename = params[:filename].original_filename
+      filename = params[:filename].original_filename rescue params[:filename].to_s
       filedata = request.body.read.force_encoding('utf-8')
     when params[:file].present?
       filename = params[:file].original_filename rescue params[:file].to_s

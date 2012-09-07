@@ -9,6 +9,7 @@
 //= require cdb/vendor/cartodb-leaflet
 //= require cdb/vendor/wax.leaf
 //= require cdb/src/cartodb
+//= require cdb/src/core/decorator
 //= require cdb/src/core/config
 //= require cdb/src/core/log
 //= require cdb/src/core/profiler

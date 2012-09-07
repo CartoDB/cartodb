@@ -67,7 +67,7 @@ var Vis = cdb.core.View.extend({
       maxZoom: data.maxZoom,
       minZoom: data.minZoom,
       bounding_box_sw: data.bounding_box_sw,
-      bounding_box_ne: data.bounding_box_ne,
+      bounding_box_ne: data.bounding_box_ne
     });
     var div = $('<div>').css({
       width: '100%',

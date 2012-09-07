@@ -29,8 +29,27 @@ describe "Imports API" do
     last_import.state.should_not be == 'failure'
   end
 
-  it 'allows users to perform synchronous imports' do
+  it 'allows users to perform asynchronous url imports' do
+    serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
+      post v1_imports_url(:host    => 'test.localhost.lan', 
+                          :url  => url,
+                          :api_key => @user.get_map_key,
+                          :table_name => "wadus")
+    end
+
+
+    response.code.should be == '200'
+
+    response_json = JSON.parse(response.body)
+    response_json.should_not be_nil
+    response_json['item_queue_id'].should_not be_empty
+
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.queue_id.should be == response_json['item_queue_id']
+    last_import.state.should_not be == 'failure'
   end
+
+  it 'allows users to perform synchronous imports'
 
   it 'allows users to get a list of all performed imports' do
     %w(column_number_to_boolean column_string_to_boolean).each do |file_name|

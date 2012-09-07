@@ -295,7 +295,7 @@
     },
 
     getSize: function() {
-      this.map_leaflet.getSize();
+      return this.map_leaflet.getSize();
     }, 
 
     panBy: function(p) {

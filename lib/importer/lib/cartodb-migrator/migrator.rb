@@ -64,6 +64,7 @@ module CartoDB
       # Rename our table
       if @current_name != @suggested_name
         @db_connection.run("ALTER TABLE #{@current_name} RENAME TO #{@suggested_name}")
+        @current_name = @suggested_name
       end
 
       if column_names.include? "cartodb_id"

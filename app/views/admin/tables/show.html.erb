@@ -10,7 +10,8 @@
   <script>
     var table_name = '<%= @table.name %>'
       , table_id = '<%= @table.id %>'
-      , user_data = JSON.parse('<%=raw current_user.data.to_json %>');
+      , user_data = JSON.parse('<%=raw current_user.data.to_json %>')
+      , config = JSON.parse('<%=raw frontend_config %>');
   </script>
 
   <% content_for(:js) do %>

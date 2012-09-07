@@ -18,7 +18,6 @@ src/
 spec/support/data/failed_remote/*
 *.swp
 *.swo
-cartodb-importer
 env
 coverage
 .spin.rb

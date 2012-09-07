@@ -59,11 +59,15 @@ var Vis = cdb.core.View.extend({
     // map
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
+    data.bounding_box_sw || (data.bounding_box_sw = [0,0]);
+    data.bounding_box_ne || (data.bounding_box_ne= [0,0]);
     var map = new cdb.geo.Map({
       title: data.title,
       description: data.description,
       maxZoom: data.maxZoom,
-      minZoom: data.minZoom
+      minZoom: data.minZoom,
+      bounding_box_sw: data.bounding_box_sw,
+      bounding_box_ne: data.bounding_box_ne
     });
     var div = $('<div>').css({
       width: '100%',

@@ -1440,7 +1440,7 @@ SQL
   end
 
   def update_the_geom!(attributes, primary_key)
-    return unless attributes[THE_GEOM]
+    return unless attributes[THE_GEOM].present? && attributes[THE_GEOM] != 'GeoJSON'
     # TODO: use this once the server geojson is updated
     # begin
     #   owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON('#{attributes[THE_GEOM].sanitize_sql}'),#{CartoDB::SRID}) where cartodb_id = #{primary_key}")

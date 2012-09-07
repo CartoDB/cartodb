@@ -55,6 +55,21 @@ describe "Imports API" do
     import['state'].should be == 'complete'
   end
 
+  it 'allows users to import files with weird filenames' do
+    post v1_imports_url(:host => 'test.localhost.lan'), :file_uri       => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'text/plain'),
+                                                        :table_name     => '_penguins_below_80\ \(2\).tgz',
+                                                        :api_key        => @user.get_map_key
+
+    item_queue_id = JSON.parse(response.body)['item_queue_id']
+
+    get v1_import_url(:host => 'test.localhost.lan', :id => item_queue_id), :api_key => @user.get_map_key
+
+    response.code.should be == '200'
+
+    import = JSON.parse(response.body)
+    import['state'].should be == 'complete'
+  end
+
   it 'allows users to get a list of pending imports'
   it 'allows users to get a list of failed imports'
   it 'allows users to get a list of succeeded imports'

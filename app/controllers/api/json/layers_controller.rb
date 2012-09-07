@@ -1,12 +1,12 @@
 # coding: UTF-8
 
 class Api::Json::LayersController < Api::ApplicationController
-  ssl_required :show
+  ssl_required :index, :show, :create, :update, :destroy
 
-  before_filter :load_map
+  before_filter :load_parent
 
   def index
-    @layers = @map.layers
+    @layers = @parent.layers
     render_jsonp({ :total_entries => @layers.size,
                    :layers => @layers.map(&:public_values)
                 })
@@ -29,7 +29,7 @@ class Api::Json::LayersController < Api::ApplicationController
     @layer = Layer.new(params.slice(:kind, :options, :infowindow))
 
     if @layer.save
-      @layer.add_map(@map.id)
+      @parent.add_layer(@layer.id)
       render_jsonp(@layer.public_values)
     else
       CartoDB::Logger.info "Error on layers#create", @layer.errors.full_messages
@@ -59,9 +59,12 @@ class Api::Json::LayersController < Api::ApplicationController
 
   protected
   
-  def load_map
-    @map = Map.filter(:user_id => current_user.id, :id => params[:map_id]).first
-    raise RecordNotFound if @map.nil?
+  def load_parent
+    if params[:user_id]
+      @parent = current_user
+    elsif params[:map_id]
+      @parent = Map.filter(:user_id => current_user.id, :id => params[:map_id]).first
+    end
+    raise RecordNotFound if @parent.nil?
   end
- 
 end

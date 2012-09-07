@@ -320,12 +320,12 @@ describe User do
     $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
   end
   
-  it "should store it's metadata automatically after creation" do    
+  it "should store its metadata automatically after creation" do    
     $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
     $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
   end  
 
-  it "should remove it's metadata from redis after deletion" do
+  it "should remove its metadata from redis after deletion" do
     doomed_user = create_user :email => 'doomed@example.com', :username => 'doomed', :password => 'doomed123'
     $users_metadata.HGET(doomed_user.key, 'id').should == doomed_user.id.to_s
     key = doomed_user.key
@@ -333,7 +333,7 @@ describe User do
     $users_metadata.HGET(doomed_user.key, 'id').should be_nil
   end
 
-  it "should remove it's database and database user after deletion" do
+  it "should remove its database and database user after deletion" do
     doomed_user = create_user :email => 'doomed1@example.com', :username => 'doomed1', :password => 'doomed123'
     create_table :user_id => doomed_user.id, :name => 'My first table', :privacy => Table::PUBLIC
     doomed_user.reload

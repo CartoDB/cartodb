@@ -86,7 +86,7 @@
   button.grey,
   input[type="submit"].grey {
     padding:12px 13px;
-    font:bold 17px $text-fonts2;
+    font:bold 19px $text-fonts2;
     line-height:normal;
     color:#333333;
     text-shadow:0 1px 0 white;
@@ -94,6 +94,7 @@
     @include background(linear-gradient(#F9F9F9,#EBEBEB));
     @include border-radius(3px);
     border:1px solid #B0B0B0;
+    letter-spacing:-1px;
     @include transform-style("linear");
     @include transition-property("box-shadow,border");
     @include transition-duration(250ms);
@@ -130,6 +131,7 @@
       @include opacity(0.5);
       &:hover, &:active, &:focus {
         background:#F9F9F9; // IE
+        color:#333333;
         @include background(linear-gradient(#F9F9F9,#EBEBEB));
         cursor:default;
       }

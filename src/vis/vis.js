@@ -56,11 +56,14 @@ var Vis = cdb.core.View.extend({
   },
 
   load: function(data) {
-
     // map
+    data.maxZoom || (data.maxZoom = 20);
+    data.minZoom || (data.minZoom = 0);
     var map = new cdb.geo.Map({
       title: data.title,
-      description: data.description
+      description: data.description,
+      maxZoom: data.maxZoom,
+      minZoom: data.minZoom
     });
     var div = $('<div>').css({
       width: '100%',

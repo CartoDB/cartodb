@@ -324,4 +324,33 @@ describe User do
     $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
     $users_metadata.HGET(@user.key, 'database_name').should == @user.database_name
   end  
+
+  it "should remove it's metadata from redis after deletion" do
+    doomed_user = create_user :email => 'doomed@example.com', :username => 'doomed', :password => 'doomed123'
+    $users_metadata.HGET(doomed_user.key, 'id').should == doomed_user.id.to_s
+    key = doomed_user.key
+    doomed_user.destroy
+    $users_metadata.HGET(doomed_user.key, 'id').should be_nil
+  end
+
+  it "should remove it's database and database user after deletion" do
+    doomed_user = create_user :email => 'doomed1@example.com', :username => 'doomed1', :password => 'doomed123'
+    create_table :user_id => doomed_user.id, :name => 'My first table', :privacy => Table::PUBLIC
+    doomed_user.reload
+    Rails::Sequel.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
+      .first[:count].should == 1
+    Rails::Sequel.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
+      .first[:count].should == 1
+    
+    doomed_user.destroy
+
+    Rails::Sequel.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
+      .first[:count].should == 0
+    Rails::Sequel.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
+      .first[:count].should == 0
+  end
+
+  it "should invalidate its Varnish cache after deletion" do
+    doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
+  end
 end

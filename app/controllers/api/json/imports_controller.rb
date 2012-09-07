@@ -16,14 +16,14 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def create
-    file_uri = upload_file
+    file_uri = params[:url].present? ? params[:url] : upload_file
 
     if synchronous_import?
       #@data_import = Resque::ImporterJobs.process(current_user[:id], params[:table_name], file_uri)
       #render :json => {:item_queue_id => job_meta.meta_id, :success => true}
     else
-      job_meta = Resque::ImporterJobs.enqueue(current_user[:id], params[:table_name], file_uri)
-      render_jsonp({:item_queue_id => job_meta.meta_id, :success => true})
+      job = Resque::ImporterJobs.enqueue(current_user[:id], params[:table_name], file_uri)
+      render_jsonp({:item_queue_id => job.meta_id, :success => true})
     end
   #rescue => e
   #  render_jsonp({ :description => e.message, :code => (@data_import.error_code rescue '') }, 400)
@@ -40,10 +40,10 @@ class Api::Json::ImportsController < Api::ApplicationController
 
     case
     when params[:filename].present? && request.body.present?
-      filename = "addresses.csv"#params[:filename]
+      filename = params[:filename].original_filename
       filedata = request.body.read.force_encoding('utf-8')
     when params[:file].present?
-      filename = params[:file].original_filename
+      filename = params[:file].original_filename rescue params[:file].to_s
       filedata = params[:file].read.force_encoding('utf-8')
     end
 

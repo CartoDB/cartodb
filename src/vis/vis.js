@@ -102,7 +102,11 @@ var Vis = cdb.core.View.extend({
           mapView.addInfowindow(infowindow);
           var dataLayer = mapView.getLayerByCid(layer_cid);
           dataLayer.cid = layer_cid;
-          dataLayer.bind('featureClick', function(e, latlng, pos, interact_data) {
+          var eventType = '';
+          layerData.infowindow.eventType?
+            eventType = layerData.infowindow.eventType:
+            eventType = 'featureClick';
+          dataLayer.bind(eventType, function(e, latlng, pos, interact_data) {
             // prepare data
             var layer = map.layers.getByCid(this.cid);
             // infoWindow only shows if the layer is active

@@ -13,6 +13,7 @@ $width: 216px;
   display: block;
   width: $width;
   padding: 0;
+  z-index: 10;
   -webkit-transform: translateZ(10000px); /*Hack for Safari*/
 
   div.cartodb-popup:hover {

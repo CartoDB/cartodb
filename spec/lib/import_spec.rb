@@ -80,6 +80,7 @@ describe CartoDB::Importer do
         results,errors   = importer.import!
 
         # Assertions
+        errors.should be_empty
         results[0].name.should          == 'data'
         results[0].rows_imported.should == 4
         results[0].import_type.should   == '.csv'
@@ -89,6 +90,7 @@ describe CartoDB::Importer do
         results, errors   = importer.import!
 
         # Assertions
+        errors.should be_empty
         results[0].name.should          == 'table123'
         results[0].rows_imported.should == 4
         results[0].import_type.should   == '.csv'
@@ -100,6 +102,7 @@ describe CartoDB::Importer do
         importer = create_importer 'clubbing.csv', 'clubsaregood'
         results,errors = importer.import!
 
+        errors.should be_empty
         results[0].name.should          == 'clubsaregood'
         results[0].rows_imported.should == 1998
         results[0].import_type.should   == '.csv'
@@ -109,6 +112,7 @@ describe CartoDB::Importer do
         importer = create_importer 'estaciones2.csv'
         results,errors = importer.import!
 
+        errors.should be_empty
         results[0].name.should          == 'estaciones2'
         results[0].rows_imported.should == 30
         results[0].import_type.should   == '.csv'
@@ -118,6 +122,7 @@ describe CartoDB::Importer do
         importer = create_importer 'walmart.csv'
         results,errors = importer.import!
 
+        errors.should be_empty
         results[0].name.should == 'walmart'
         results[0].rows_imported.should == 3176
         results[0].import_type.should == '.csv'
@@ -127,15 +132,17 @@ describe CartoDB::Importer do
         importer = create_importer 'walmart_latlon.csv', 'walmart_latlon'
         results,errors = importer.import!
 
+        errors.should be_empty
         results[0].name.should == 'walmart_latlon'
         results[0].rows_imported.should == 3176
         results[0].import_type.should == '.csv'
       end
 
-      pending "should CartoDB CSV export with latitude & longitude columns" do
+      pending "should import CSV export with latitude & longitude columns" do
         importer = create_importer 'CartoDB_csv_export.zip', 'cartodb_csv_export'
         results,errors = importer.import!
 
+        errors.should be_empty
         results[0].name.should == 'cartodb_csv_export'
         results[0].rows_imported.should == 155
         results[0].import_type.should == '.csv'
@@ -146,10 +153,11 @@ describe CartoDB::Importer do
         res[:st_y].should == res[:latitude].to_f
       end
 
-      it "should CartoDB CSV export with the_geom in geojson" do
+      it "should import CSV export with the_geom in geojson" do
         importer = create_importer 'CartoDB_csv_multipoly_export.zip', 'cartodb_csv_multipoly_export'
         results,errors = importer.import!
 
+        errors.should be_empty
         results[0].name.should == 'cartodb_csv_multipol'
         results[0].rows_imported.should == 601
         results[0].import_type.should == '.csv'
@@ -159,6 +167,7 @@ describe CartoDB::Importer do
         importer = create_importer 'csv_with_number_columns.csv', 'csv_with_number_columns'
         results,errors = importer.import!
 
+        errors.should be_empty
         results[0].name.should == 'csv_with_number_colu'
         results[0].rows_imported.should == 177
 
@@ -169,6 +178,7 @@ describe CartoDB::Importer do
         importer = create_importer 'csv_with_one_column.csv', 'csv_with_one_column'
         results, errors = importer.import!
 
+        errors.should be_empty
         results[0].name.should == 'csv_with_one_column'
         results[0].rows_imported.should == 38
 
@@ -181,7 +191,7 @@ describe CartoDB::Importer do
         importer = create_importer 'ngos.xlsx'
         results,errors = importer.import!
 
-        errors.length.should            == 0
+        errors.should be_empty
         results[0].name.should          == 'ngos'
         results[0].rows_imported.should == 76
         results[0].import_type.should   == '.xlsx'
@@ -193,6 +203,7 @@ describe CartoDB::Importer do
         importer = create_importer 'rmnp.kmz', "rmnp2"
         results,errors = importer.import!
 
+        errors.should be_empty
         results.length.should           == 1
         results[0].name.should          == 'rmnp2'
         results[0].rows_imported.should == 1
@@ -205,9 +216,9 @@ describe CartoDB::Importer do
         importer = create_importer 'simple.json'
         results,errors = importer.import!
 
+        errors.should be_empty
         results[0].name.should          == 'simple'
         results[0].rows_imported.should == 11
-
         results[0].import_type.should   == '.json'
       end
 
@@ -215,9 +226,9 @@ describe CartoDB::Importer do
         importer = create_importer 'geojson.geojson'
         results,errors = importer.import!
 
+        errors.should be_empty
         results[0].name.should          == 'geojson'
         results[0].rows_imported.should == 4
-
         results[0].import_type.should   == '.geojson'
       end
 

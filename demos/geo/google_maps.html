@@ -27,7 +27,7 @@
         var URL = 'http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png';
 
         //map.addLayer(new cdb.geo.TileLayer({urlTemplate: URL}));
-        map.addLayer(new cdb.geo.GMapsBaseLayer());
+        map.addLayer(new cdb.geo.GMapsBaseLayer({ base_type: 'terrain' }));
         var options = {
           user_name: 'examples',
           table_name: 'earthquakes',

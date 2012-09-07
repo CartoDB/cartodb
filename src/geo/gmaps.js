@@ -23,6 +23,18 @@ _.extend(GMapsLayerView.prototype, {
     this.gmapsMap.overlayMapTypes.removeAt(this.index);
     this.model.unbind(null, null, this);
     this.unbind();
+  },
+
+  refreshView: function() {
+    //reset to update
+    if(this.isBase) {
+      var a = '_baseLayer';
+      this.gmapsMap.setMapTypeId(null);
+      this.gmapsMap.mapTypes.set(a, this.gmapsLayer);
+      this.gmapsMap.setMapTypeId(a);
+    } else {
+      this.gmapsMap.overlayMapTypes.setAt(this.index, this.gmapsLayer);
+    }
   }
 
 });
@@ -76,7 +88,8 @@ cdb.geo.GMapsPlainLayerView = GMapsPlainLayerView;
 _.extend(GMapsPlainLayerView.prototype, GMapsLayerView.prototype, {
   _update: function() {
     this.gmapsLayer.color = this.model.get('color');
-    google.maps.event.trigger(this.layer, 'updated');
+    google.maps.event.trigger(this.gmapsLayer, 'updated');
+    this.refreshView();
   }
 });
 
@@ -85,36 +98,42 @@ _.extend(GMapsPlainLayerView.prototype, GMapsLayerView.prototype, {
 
 // TILED LAYER
 var GMapsTiledLayerView = function(layerModel, gmapsMap) {
-  var layer = new google.maps.ImageMapType({
-    getTileUrl: function(tile, zoom) {
-      var y = tile.y;
-      var tileRange = 1 << zoom;
-      if (y < 0 || y  >= tileRange) {
-        return null;
-      }
-      var x = tile.x;
-      if (x < 0 || x >= tileRange) {
-        x = (x % tileRange + tileRange) % tileRange;
-      }
-      return this.urlPattern
-                  .replace("{x}",x)
-                  .replace("{y}",y)
-                  .replace("{z}",zoom);
-    },
-    tileSize: new google.maps.Size(256, 256),
-    opacity: 1.0,
-    isPng: true,
-    urlPattern: layerModel.get('urlTemplate'),
-    maxZoom: 22,
-    minZoom: 0,
-    name: 'cartodb tiled layer'
-  });
+  var layer = this._getLayer(layerModel);
   GMapsLayerView.call(this, layerModel, layer, gmapsMap);
 };
 
 _.extend(GMapsTiledLayerView.prototype, GMapsLayerView.prototype, {
+
   _update: function() {
-    this.gmapsLayer.urlPattern = this.model.get('urlTemplate');
+    gmapsLayer = this._getLayer(this.model);
+    this.refreshView();
+  },
+
+  _getLayer: function(layerModel) {
+    return new google.maps.ImageMapType({
+      getTileUrl: function(tile, zoom) {
+        var y = tile.y;
+        var tileRange = 1 << zoom;
+        if (y < 0 || y  >= tileRange) {
+          return null;
+        }
+        var x = tile.x;
+        if (x < 0 || x >= tileRange) {
+          x = (x % tileRange + tileRange) % tileRange;
+        }
+        var urlPattern = layerModel.get('urlTemplate');
+        return urlPattern
+                    .replace("{x}",x)
+                    .replace("{y}",y)
+                    .replace("{z}",zoom);
+      },
+      tileSize: new google.maps.Size(256, 256),
+      opacity: 1.0,
+      isPng: true,
+      maxZoom: 22,
+      minZoom: 0,
+      name: 'cartodb tiled layer' + Math.random()
+    });
   }
 });
 
@@ -165,8 +184,7 @@ _.extend(GMapsCartoDBLayerView.prototype, GMapsLayerView.prototype, {
   _update: function() {
     _.extend(this.gmapsLayer.opts, this.model.attributes);
     this.gmapsLayer.update();
-    //reset to update
-    this.gmapsMap.overlayMapTypes.setAt(this.index, this.gmapsLayer);
+    this.refreshView();
   },
 
   remove: function() {
@@ -266,10 +284,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
       if(isBaseLayer) {
         var m = layer_view.model;
         if(m.get('type') == 'GMapsBase') {
-            layer_view._update();
+          layer_view._update();
         } else {
-          this.map_googlemaps.mapTypes.set('_baseLayer', layer_view.gmapsLayer);
-          this.map_googlemaps.setMapTypeId('_baseLayer');
+          layer_view.isBase = true;
+          layer_view._update();
         }
       } else {
         idx -= 1;

@@ -24,7 +24,25 @@ Projector.prototype.pixelToLatLng = function(point) {
 };
 
 var CartoDBLayer = function(opts) {
-  this.opts = opts;
+
+   var default_options = {
+        query:          "SELECT * FROM {{table_name}}",
+        opacity:        1,
+        auto_bound:     false,
+        debug:          false,
+        visible:        true,
+        added:          false,
+        loaded:         null,
+        loading:        null, 
+        layer_order:    "top",
+        tiler_domain:   "cartodb.com",
+        tiler_port:     "80",
+        tiler_protocol: "http",
+        sql_domain:     "cartodb.com",
+        sql_port:       "80",
+        sql_protocol:   "http"
+  };
+  this.opts = _.defaults(opts, default_options);
   opts.tiles = [
     this._tilesUrl()
   ];
@@ -37,19 +55,29 @@ CartoDBLayer.Projector = Projector;
 
 CartoDBLayer.prototype = new wax.g.connector();
 
+CartoDBLayer.prototype.setOpacity = function(opacity) {
+
+  if (isNaN(opacity) || opacity > 1 || opacity < 0) {
+    throw(opacity + ' is not a valid value, should be in [0, 1] range');
+  }
+  this.opacity = this.opts.opacity = opacity;
+  for(var key in this.cache) {
+    var img = this.cache[key];
+    img.setAttribute("style","opacity: " + opacity + "; filter: alpha(opacity="+(opacity*100)+");");
+  }
+
+};
+
 CartoDBLayer.prototype.addInteraction = function () {
   var self = this;
   // add interaction
-  if(this._interaction) return;
+  if(this._interaction) { 
+    return;
+  }
   this._interaction = wax.g.interaction()
     .map(this.opts.map)
-    .tilejson(this._tileJSON())
-    .on('on',function(o) { 
-      self._manageOnEvents(self.opts.map, o); 
-    })
-    .on('off', function(o) { 
-      self._manageOffEvents(); 
-    });
+    .tilejson(this._tileJSON());
+  this.setInteraction(true);
 };
 
 CartoDBLayer.prototype.remove = function () {
@@ -64,6 +92,72 @@ CartoDBLayer.prototype.update = function () {
     this.cache = {};
     this._interaction.tilejson(tilejson);
 };
+/**
+ * Hide the CartoDB layer
+ */
+CartoDBLayer.prototype.hide = function() {
+
+  if (!this.opts.visible) {
+    return;
+  }
+
+  this.opts.visible = false;
+  // Save previous opacity
+  this.opts.previous_opacity = this.opts.opacity;
+  // Hide it!
+  this.setOpacity(0);
+  this.setInteraction(false);
+  google.maps.event.trigger(this, 'hidden');
+};
+
+
+/**
+ * Show the CartoDB layer
+ */
+CartoDBLayer.prototype.show = function() {
+
+  if (this.opts.visible) {
+    return;
+  }
+  this.opts.visible = true;
+  this.setOpacity(this.opts.previous_opacity);
+  delete this.opts.previous_opacity;
+  this.setInteraction(true);
+  google.maps.event.trigger(this, 'shown');
+};
+
+/**
+ * Active or desactive interaction
+ * @params {Boolean} Choose if wants interaction or not
+ */
+CartoDBLayer.prototype.setInteraction = function(enable) {
+  var self = this;
+
+  if (enable !== false && enable !== true) {
+      throw(enable + ' should be a enableean');
+  }
+
+  if (this._interaction) {
+    if (enable) {
+      this._interaction
+        .on('on',function(o) { 
+          self._manageOnEvents(self.opts.map, o); 
+        })
+        .on('off', function(o) { 
+          self._manageOffEvents(); 
+        });
+    } else {
+      this._interaction.off('on');
+      this._interaction.off('off');
+    }
+  }
+};
+
+
+CartoDBLayer.prototype.setOptions = function (opts) {
+  _.extend(this.opts, opts);
+  this.update();
+}
 
 CartoDBLayer.prototype._tileJSON = function () {
     return {
@@ -74,6 +168,7 @@ CartoDBLayer.prototype._tileJSON = function () {
         formatter: function(options, data) { return data; }
     };
 };
+
 CartoDBLayer.prototype._findPos = function (map,o) {
       var curleft, cartop;
       curleft = curtop = 0;
@@ -108,17 +203,17 @@ CartoDBLayer.prototype._manageOnEvents = function(map,o) {
       switch (o.e.type) {
         case 'mousemove': 
           if (this.opts.featureOver) {
-            return this.opts.featureOver(o.e,latlng,o.pos,o.data);
+            return this.opts.featureOver(o.e,latlng, point, o.data);
           } 
           break;
         case 'click':   
           if (this.opts.featureClick) {
-            this.opts.featureClick(o.e,latlng,o.pos,o.data);
+            this.opts.featureClick(o.e,latlng, point, o.data);
           } 
           break;
         case 'touchend':  
           if (this.opts.featureClick) {
-            this.opts.featureClick(o.e,latlng,o.pos,o.data);
+            this.opts.featureClick(o.e,latlng, point, o.data);
           }
           break;
         default: 

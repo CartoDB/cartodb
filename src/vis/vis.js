@@ -61,14 +61,22 @@ var Vis = cdb.core.View.extend({
     data.minZoom || (data.minZoom = 0);
     data.bounding_box_sw || (data.bounding_box_sw = [0,0]);
     data.bounding_box_ne || (data.bounding_box_ne= [0,0]);
-    var map = new cdb.geo.Map({
+
+    var mapConfig = {
       title: data.title,
       description: data.description,
       maxZoom: data.maxZoom,
-      minZoom: data.minZoom,
-      bounding_box_sw: data.bounding_box_sw,
-      bounding_box_ne: data.bounding_box_ne
-    });
+      minZoom: data.minZoom
+    };
+
+    // if the boundaries are defined, we add them to the map
+    if(data.bounding_box_sw && data.bounding_box_ne) {
+      mapConfig.bounding_box_sw = data.bounding_box_sw;
+      mapConfig.bounding_box_ne = data.bounding_box_ne;
+    }
+
+    var map = new cdb.geo.Map(mapConfig);
+
     var div = $('<div>').css({
       width: '100%',
       height: '100%'

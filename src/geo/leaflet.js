@@ -168,14 +168,18 @@
 
       var center = this.map.get('center');
 
-      this.map_leaflet = new L.Map(this.el, {
+      var mapConfig = {
         zoomControl: false,
         center: new L.LatLng(center[0], center[1]),
         zoom: this.map.get('zoom'),
         minZoom: this.map.get('minZoom'),
-        maxZoom: this.map.get('maxZoom'),
-        maxBounds: [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')]
-      });
+        maxZoom: this.map.get('maxZoom')
+      };
+      if (this.map.get('bounding_box_ne')) {
+        mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
+      }
+
+      this.map_leaflet = new L.Map(this.el, mapConfig);
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
@@ -295,7 +299,7 @@
 
     getSize: function() {
       return this.map_leaflet.getSize();
-    }, 
+    },
 
     panBy: function(p) {
       this.map_leaflet.panBy(new L.Point(p.x, p.y));

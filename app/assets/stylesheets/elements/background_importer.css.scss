@@ -11,7 +11,7 @@
 		position: fixed;
 		z-index: 100;
 		background: white;
-		bottom: 0px;
+		bottom: -100px;
 		left: 0px;
 		padding: 8px 12px 8px 8px;
 		border-top: solid 1px #CCC;
@@ -36,6 +36,12 @@
 				@include icons-sprite(background_loader_error);
 				margin:0;
 				color:#EB2466;
+
+				a {
+					color:#EB2466;
+					text-decoration:underline;
+					&:hover {color:#C61D54;}
+				}
 			}
 
 		}

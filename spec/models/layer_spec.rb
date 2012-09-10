@@ -39,11 +39,13 @@ describe Layer do
       map2.layers.first.should == layer
       layer.maps.should include(map, map2)
     end
-    
+
     it "should allow to be linked to many users" do
-      layer = Layer.create(:kind => 'carto', :user_id => @user.id)
-      @user.layers.should include(layer)
-      layer.user.should == @user
+      layer = Layer.create(:kind => 'carto')
+      layer.add_user(@user)
+
+      @user.reload.layers.should include(layer)
+      layer.users.should include(@user)
     end
 
   end

@@ -1,0 +1,64 @@
+
+
+  /**
+   *  Popular tables dialog styles
+   */
+
+  @import "compass";
+  @import "../common/vars";
+  @import "../common/sprites";
+
+  .popular_tables {
+    section.modal {
+      div.content {
+        padding:0;
+        max-height:460px;
+        overflow:auto;
+
+        li {
+          padding:30px 0 30px 60px;
+          margin:0 30px;
+          @include icons-sprite(download_dataset, $offset-y:30px, $offset-x:0);
+          border-top:1px solid rgba(#CCCCCC,0.35);
+          border-bottom:0;
+
+          h3 a {
+            font-size:21px;
+            font-family: $title-fonts!important;
+            letter-spacing:-1px;
+            @include transform-style("linear");
+            @include transition-property("color");
+            @include transition-duration(500ms);
+
+            &:hover {text-decoration:none;}
+          }
+
+          &:first-child {border:none;}
+
+          &:hover {
+            padding:30px 30px 30px 90px;
+            margin:0;
+            @include icons-sprite(download_dataset, $offset-y:30px, $offset-x:30px);
+            background-color:rgba(#F0F0F0,0.5);
+            h3 a {color:#333333;}
+
+
+            & + li {
+              padding:30px 30px 30px 90px;
+              margin:0;
+              @include icons-sprite(download_dataset, $offset-y:30px, $offset-x:30px);
+            }
+          }
+
+          &:last-child:hover {
+            border-bottom:0;
+            & + li {
+              padding:0;
+              margin:30px!important;
+              border:none;
+            }
+          }
+        }
+      }
+    }
+  }

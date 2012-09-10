@@ -1,3 +1,4 @@
+#encoding: UTF-8
 module HelperMethods
 
   def prepare_oauth_request(consumer, url, options={})
@@ -15,10 +16,6 @@ module HelperMethods
 
   def upload_file(file_path, mime_type)
     file = Rack::Test::UploadedFile.new(Rails.root.join(file_path), mime_type)
-
-    post v1_uploads_url(:host => 'test.localhost.lan'), :file => file, :api_key => @user.get_map_key
-
-    JSON.parse(response.body)['file_uri']
   end
 
   def serve_file(file_path)

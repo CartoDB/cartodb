@@ -9,7 +9,7 @@ describe Map do
   end
 
   context "layer setups" do
-    
+
     it "should allow to be linked to a table" do
       table = Table.new
       table.user_id = @user.id
@@ -19,8 +19,8 @@ describe Map do
       table.reload
 
       table.map.should == map
-      map.table.should == table
+      map.table.should include(table)
     end
-  
+
   end
 end

@@ -480,4 +480,28 @@
         }     
       }
     }
+
+    // Dedicated support
+    &.support {
+      position:relative;
+      display:none;
+      padding:16px 0 22px;
+      @include background(image-url('layout/bkg.jpg') repeat);
+      border-top:1px solid rgba(black,0.05);
+
+      &:before {
+        position:absolute;
+        content:'';
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        background:rgba(black,0.02);
+        z-index:0;
+      }
+
+      h3,p {letter-spacing:0;}
+      h3 {letter-spacing:-1px; font-size:21px;}
+      a.button {float:left; margin-top:5px; padding-right:15px; padding-left:15px;}
+    }
   }

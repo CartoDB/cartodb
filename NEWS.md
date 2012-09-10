@@ -1,3 +1,14 @@
+0.9.12 (10/09/12)
+------
+* Removed SQL export option
+* Staging environment
+* Disallow robots to index the API
+* Some fixes in table import timeouts
+* Fixed problem with 1-column csv imports
+* Fixed links in infowindow
+* Improved regenerate_api_key with different varnish scenarios
+* General fixes
+
 0.9.11 (30/08/12)
 ------
 * Override statement_timeout in shp import

@@ -1,3 +1,4 @@
+require "open3"
 module CartoDB
   module Import
     class SHP < CartoDB::Import::Loader

@@ -59,8 +59,6 @@ var Vis = cdb.core.View.extend({
     // map
     data.maxZoom || (data.maxZoom = 20);
     data.minZoom || (data.minZoom = 0);
-    data.bounding_box_sw || (data.bounding_box_sw = [0,0]);
-    data.bounding_box_ne || (data.bounding_box_ne= [0,0]);
 
     var mapConfig = {
       title: data.title,

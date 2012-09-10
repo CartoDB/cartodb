@@ -104,8 +104,6 @@ cdb.geo.Map = Backbone.Model.extend({
     zoom: 3,
     minZoom: 0,
     maxZoom: 20,
-    bounding_box_sw: [0, 0],
-    bounding_box_ne: [0, 0],
     provider: 'leaflet'
   },
 

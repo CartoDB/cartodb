@@ -162,14 +162,22 @@
 
       var center = this.map.get('center');
 
-      this.map_leaflet = new L.Map(this.el, {
+      var mapConfig = {
         zoomControl: false,
         center: new L.LatLng(center[0], center[1]),
         zoom: this.map.get('zoom'),
         minZoom: this.map.get('minZoom'),
         maxZoom: this.map.get('maxZoom'),
-        maxBounds: [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')]
-      });
+      };
+
+      // if we have defined boundaries for our map, we added them to the map config
+      var top_ne = this.map.get('bounding_box_ne');
+      var bottom_sw = this.map.get('bounding_box_sw');
+      if(top_ne && bottom_sw && (top_ne != bottom_sw)) {
+        mapConfig.maxBounds = [top_ne, bottom_sw];
+      }
+
+      this.map_leaflet = new L.Map(this.el, mapConfig);
 
       this.layerTypeMap = {
         "tiled": cdb.geo.LeafLetTiledLayerView,

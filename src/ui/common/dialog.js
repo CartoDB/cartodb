@@ -118,7 +118,10 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
   _cancel: function(ev) {
 
-    if (ev) ev.preventDefault();
+    if (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+    }
 
     if (this.cancel) {
       this.cancel();

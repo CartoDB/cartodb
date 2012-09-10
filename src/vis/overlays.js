@@ -16,7 +16,7 @@ cdb.vis.Overlay.register('header', function(data) {
 
   var template = cdb.core.Template.compile(
     data.template || "{{#title}}<h1>{{title}}</h1>{{/title}} {{#description}}<p>{{description}}</p>{{/description}}",
-    data.template_type || 'mustache'
+    data.templateType || 'mustache'
   );
 
   var header = new cdb.geo.ui.Header({

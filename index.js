@@ -9,6 +9,7 @@
 //= require cdb/vendor/cartodb-leaflet
 //= require cdb/vendor/wax.leaf
 //= require cdb/src/cartodb
+//= require cdb/src/core/decorator
 //= require cdb/src/core/config
 //= require cdb/src/core/log
 //= require cdb/src/core/profiler
@@ -20,7 +21,11 @@
 //= require cdb/src/geo/ui/legend
 //= require cdb/src/geo/ui/switcher
 //= require cdb/src/geo/ui/infowindow
+//= require cdb/src/geo/ui/header
 //= require cdb/src/ui/common/tabpane
 //= require cdb/src/ui/common/dialog
 //= require cdb/src/ui/common/notification
 //= require cdb/src/ui/common/table
+//= require cdb/src/vis/vis
+//= require cdb/src/vis/overlays
+//= require cdb/src/vis/layers

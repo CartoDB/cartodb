@@ -1,0 +1,189 @@
+.infowindow {
+  position: absolute;
+}
+
+div.cartodb-popup a.cartodb-popup-close-button {
+    top: 2px;
+    left: 3px;
+    width:22px; 
+    height: 15px;
+    padding: 4px 0 3px 0;
+    background: none;
+
+    text-align: right;
+    font: bold 15px "Helvetica",Arial;
+    color: #666666;
+    text-decoration: none;
+    line-height: 15px;
+    text-indent: 0;
+    overflow: visible;
+}
+
+div.cartodb-popup a.cartodb-popup-close-button:hover {
+  color: #333333;
+  cursor: pointer;
+}
+
+div.cartodb-popup div.cartodb-popup-content-wrapper {
+  width: 186px;
+  padding: 25px 18px 5px 10px;
+  margin: 0;
+  /*background: image-url("icons/infowindow.png") 0 top;*/
+  background: #FFF;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+}
+
+div.cartodb-popup div.cartodb-popup-content {
+  width: 186px;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+div.cartodb-popup div.cartodb-popup-content label {
+  display: block;
+  width: auto;
+  padding: 0 0 0 5px;
+  font: normal 11px Arial;
+  color: #B3B3B3;
+  text-shadow: 0 1px white;
+}
+
+div.cartodb-popup div.cartodb-popup-content p {
+  display: block;
+  width: 170px;
+  max-width: 170px;
+  padding: 2px 4px!important;
+  margin: 2px 0 7px!important;
+  font: bold 11px 'Helvetica',Arial;
+  color: #666666;
+  border: none;
+  background: none;
+  text-shadow: 0 1px white;
+}
+
+div.cartodb-popup div.cartodb-popup-content p.empty {
+  font-weight: normal;
+  font-style: italic;
+  color: #b7b7b7; 
+}
+
+div.cartodb-popup div.cartodb-popup-tip-container {
+  width: 216px;
+  height: 36px;
+  /*padding: 11px 16px 10px 10px;*/
+  margin: 0;
+  /*background: image-url("icons/infowindow.png") no-repeat right top;*/ 
+  background: #FFF;
+}
+
+div.cartodb-popup div.cartodb-popup-tip-container label {
+  float: left;
+  margin: 5px 0 0 3px;
+  font: normal 11px Arial;
+  color: #B3B3B3;
+  text-shadow: 0 1px white;
+}
+
+div.cartodb-popup div.cartodb-popup-tip-container label strong {
+  font: bold 11px 'Helvetica',Arial;
+  color: #666666;
+  text-shadow: 0 1px white;
+}
+
+.header {
+  position: relative;
+  display: block;
+  width: 100%;
+  background: #FFF;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  margin: 0;
+  padding: 20px 0 20px 0;
+  -moz-border-radius-topleft: 1px;
+  -webkit-border-top-left-radius: 1px;
+  border-top-left-radius: 1px;
+  -moz-border-radius-topright: 1px;
+  -webkit-border-top-right-radius: 1px;
+  border-top-right-radius: 1px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 4px;
+  -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 4px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px 4px;
+  -webkit-transform: translateZ(10px);
+  -moz-transform: translateZ(10px);
+  -ms-transform: translateZ(10px);
+  -o-transform: translateZ(10px);
+  transform: translateZ(10px);
+  z-index: 2;
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+}
+.header h1 {
+  font-weight:normal;
+  font-size: 17px;
+  color: #397DBA;
+  font-weight: bold;
+  margin: 0 0 5px 20px;
+
+}
+
+.header p {
+  margin: 0;
+  font-weight: normal;
+  font-size: 13px;
+  color: #999999;
+  margin: 0 0 5px 20px;
+}
+.no_description span.cartodb_map_controls {top: 10px; }
+
+
+div#zoom {
+  position: absolute;
+  margin: 20px 0 0 20px;
+  width: 29px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
+  z-index: 5;
+  background: white;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #999999;
+}
+div#zoom a {
+  display: block;
+  width: 29px;
+  padding: 4px 0;
+  font: bold 20px "Arial";
+  color: #999999;
+  text-align: center;
+  line-height: normal;
+  text-decoration: none;
+}
+div#zoom a.zoom_in {
+  border-bottom: 1px solid rgba(153, 153, 153, 0.25);
+}
+div#zoom a.zoom_out {
+  padding: 0 0 2px;
+  line-height: 28px;
+}
+div#zoom a:hover {
+  cursor: pointer;
+  color: #666666;
+}
+div#zoom a.disabled {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);
+  opacity: 0.2;
+}
+
+div#zoom a.disabled:hover {
+  cursor: default;
+  color: #999999;
+}

@@ -167,13 +167,13 @@
         center: new L.LatLng(center[0], center[1]),
         zoom: this.map.get('zoom'),
         minZoom: this.map.get('minZoom'),
-        maxZoom: this.map.get('maxZoom')
+        maxZoom: this.map.get('maxZoom'),
+        maxBounds: [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')]
       });
-
       this.layerTypeMap = {
-        "Tiled": cdb.geo.LeafLetTiledLayerView,
-        "CartoDB": cdb.geo.LeafLetLayerCartoDBView,
-        "Plain": cdb.geo.LeafLetPlainLayerView
+        "tiled": cdb.geo.LeafLetTiledLayerView,
+        "cartodb": cdb.geo.LeafLetLayerCartoDBView,
+        "plain": cdb.geo.LeafLetPlainLayerView
       };
 
       // this var stores views information for each model
@@ -283,7 +283,7 @@
     _addLayer: function(layer, layers, opts) {
       var lyr, layer_view;
 
-      var layerClass = this.layerTypeMap[layer.get('type')];
+      var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
 
       if (layerClass) {
         layer_view = new layerClass(layer, this.map_leaflet);
@@ -316,6 +316,14 @@
         [sw.lat, sw.lng],
         [ne.lat, ne.lng]
       ];
+    },
+
+    showBounds: function(bounds) {
+      var sw = bounds[0];
+      var ne = bounds[1];
+      var southWest = new L.LatLng(sw[0], sw[1]);
+      var northEast = new L.LatLng(ne[0], ne[1]);
+      this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
     }
 
   });

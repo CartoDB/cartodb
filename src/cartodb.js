@@ -1,13 +1,14 @@
 // entry point
 (function() {
-    window.cdb = {};
+    var cdb = window.cdb = {};
     window.cdb.config = {};
     window.cdb.core = {};
     window.cdb.geo = {};
     window.cdb.geo.ui = {};
     window.cdb.ui = {};
     window.cdb.ui.common = {};
-
+    window.cdb.vis = {};
+    window.cdb.decorators = {};
     /**
      * global variables
      */
@@ -22,6 +23,7 @@
         "../vendor/wax.leaf.js",
         "../vendor/cartodb-leaflet.js",
 
+        'core/decorator.js',
         'core/config.js',
         'core/log.js',
         'core/profiler.js',
@@ -34,11 +36,16 @@
         'geo/ui/switcher.js',
         //'geo/ui/selector.js',
         'geo/ui/infowindow.js',
+        'geo/ui/header.js',
         'geo/leaflet.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',
-        'ui/common/table.js'
+        'ui/common/table.js',
+
+        'vis/vis.js',
+        'vis/overlays.js',
+        'vis/layers.js'
     ];
 
     cdb.init = function(ready) {

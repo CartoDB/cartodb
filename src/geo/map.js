@@ -34,6 +34,7 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   defaults: {
     type: 'CartoDB',
+    active: true,
     query: null,
     opacity: 0.99,
     auto_bound: false,
@@ -48,6 +49,22 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     sql_protocol: "http",
     extra_params: {},
     cdn_url: null
+  },
+
+  activate: function() {
+    this.set({active: true, opacity: 0.99, visible: true})
+  },
+
+  deactivate: function() {
+    this.set({active: false, opacity: 0, visible: false})
+  },
+
+  toggle: function() {
+    if(this.get('active')) {
+      this.deactivate();
+    } else {
+      this.activate();
+    }
   }
 });
 
@@ -188,7 +205,7 @@ cdb.geo.Map = Backbone.Model.extend({
   },
 
   // remove current base layer and set the specified
-  // the base layer is not deleted, it is only removed 
+  // the base layer is not deleted, it is only removed
   // from the layer list
   // return the old one
   setBaseLayer: function(layer) {
@@ -225,6 +242,11 @@ cdb.geo.MapView = cdb.core.View.extend({
   addInfowindow: function(infoWindowView) {
     this.$el.append(infoWindowView.render().el);
     this.addView(infoWindowView);
+  },
+
+  showBounds: function(bounds) {
+    throw "to be implemented";
   }
+
 
 });

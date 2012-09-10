@@ -7,20 +7,20 @@ module CartoDB
         $threshold.get(key(user_id, args_for_keys)).to_i
       end
     end
-    
+
     def self.incr(user_id, type_of_query, time_spent = nil)
       return unless %W{ select insert update delete other }.include?(type_of_query)
-      $threshold.incr(key(user_id, "total"))      
-      $threshold.incr(key(user_id, Date.today.strftime("%Y-%m-%d")))      
-      $threshold.incr(key(user_id, Date.today.strftime("%Y-%m")))      
-      $threshold.incr(key(user_id, Date.today.strftime("%Y-%m"), type_of_query))      
+      $threshold.incr(key(user_id, "total"))
+      $threshold.incr(key(user_id, Date.today.strftime("%Y-%m-%d")))
+      $threshold.incr(key(user_id, Date.today.strftime("%Y-%m")))
+      $threshold.incr(key(user_id, Date.today.strftime("%Y-%m"), type_of_query))
       increase_time(user_id, time_spent) if time_spent
     end
-    
+
     def self.analyze(user_id, sql, time = nil)
       return if sql.blank?
       increase_time(user_id, time) if time
-      
+
       sql.split(';').each do |raw_query|
         raw_query.strip!
         next if raw_query.blank?
@@ -37,13 +37,13 @@ module CartoDB
         end
       end
     end
-    
+
     private
-    
+
     def self.key(user_id, *args_for_keys)
       "rails:users:#{user_id}:queries:#{args_for_keys.join(':')}"
     end
-    
+
     def self.increase_time(user_id, time)
       old_time = $threshold.get(key(user_id, Date.today.strftime("%Y-%m-%d"),"time")).to_f
       $threshold.set(key(user_id, Date.today.strftime("%Y-%m-%d"),"time"),old_time + time.to_f)

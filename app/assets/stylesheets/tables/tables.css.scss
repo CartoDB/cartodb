@@ -39,6 +39,7 @@
       height:0;
       margin:0;
       padding:0;
+      overflow:hidden;
       @include opacity(0);
       @include transform-style("linear");
       @include transition-property("all");
@@ -171,12 +172,13 @@
             padding:0 40px;
 
             div.table_info {
-              padding:40px 0;
+              padding:30px 0 40px 0;
               border-top:1px solid #EDEDED;
               overflow:hidden;
 
               .left {width:65%;}
               .right {width:35%;}
+
               hgroup {
                 display:block;
                 width:100%;
@@ -186,7 +188,6 @@
                   margin:0 8px 0 0;
                   padding:0;
                   letter-spacing:0;
-                  font-size:18px;
                   line-height:normal;
                   vertical-align:middle;
 
@@ -195,10 +196,13 @@
                     padding:0;
                     margin:0;
                     vertical-align:top;
-                    line-height:18px;
+                    line-height:normal;
                     text-overflow:ellipsis; 
                     overflow:hidden;
                     white-space:nowrap;
+                    font-family: $title-fonts;
+                    font-size:21px;
+                    letter-spacing:-1px;
                     @include transform-style("linear");
                     @include transition-property("color");
                     @include transition-duration(500ms);
@@ -206,7 +210,7 @@
                 }
                 a {
                   @include inline-block(); width:auto; letter-spacing:0;
-                  &.status {vertical-align:top;}
+                  &.status {vertical-align:top; margin:8px 0 0 0;}
                 }
 
                 p {
@@ -238,9 +242,10 @@
 
                 &.right {
                   display:block;
+                  width:auto;
+                  margin:5px 0 0;
                   filter: alpha(opacity=0)!important;
                   opacity:0;
-                  width:auto;
                 }
               }
 
@@ -328,9 +333,9 @@
                   position:absolute;
                   content:'+';
                   top:0;
-                  left:-21px;
-                  width:20px;
-                  height:16px;
+                  left:-18px;
+                  width:18px;
+                  height:14px;
                   padding:2px 0;
                   background:#397DBA;
                   font:bold 14px "Arial";
@@ -479,5 +484,29 @@
           }
         }     
       }
+    }
+
+    // Dedicated support
+    &.support {
+      position:relative;
+      display:none;
+      padding:16px 0 22px;
+      @include background(image-url('layout/bkg.jpg') repeat);
+      border-top:1px solid rgba(black,0.05);
+
+      &:before {
+        position:absolute;
+        content:'';
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        background:rgba(black,0.02);
+        z-index:0;
+      }
+
+      h3,p {letter-spacing:0;}
+      h3 {letter-spacing:-1px; font-size:21px;}
+      a.button {float:left; margin-top:5px; padding-right:15px; padding-left:15px;}
     }
   }

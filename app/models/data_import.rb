@@ -115,7 +115,7 @@ class DataImport < Sequel::Model
       end
       CartoDB::Logger.info "Exception on tables#create", e.inspect
 
-      true # FIXME: our exception handler returns true so that the after_create method doesnt rollback
+      #true # FIXME: our exception handler returns true so that the after_create method doesnt rollback
     end
   end
 

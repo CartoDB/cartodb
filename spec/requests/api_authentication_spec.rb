@@ -6,6 +6,7 @@ describe "API Authentication" do
     User.all.each(&:destroy)
     @user = create_user(:email => "client@example.com", :password => "clientex")
     @user.reset_client_application!
+    @user.reload
     @user.set_map_key
     @oauth_consumer = OAuth::Consumer.new(@user.client_application.key, @user.client_application.secret, {
       :site => "http://testhost.lan", :scheme => :query_string, :http_method => :post

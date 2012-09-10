@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   PUBLIC_ATTRIBUTES = { :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
                         :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
                         :table_size => :table_size, :map_id => :map_id, :description => :description }
-  
+
   many_to_one :map
 
   def public_values
@@ -520,7 +520,7 @@ class Table < Sequel::Model(:user_tables)
       self[:privacy] = PUBLIC
     end
   end
-  
+
   def key
     Table.key(database_name, name)
   rescue

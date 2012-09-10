@@ -188,7 +188,6 @@ describe("geo.map", function() {
 
     })
 
-
   });
 
 });

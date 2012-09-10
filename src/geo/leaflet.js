@@ -152,6 +152,12 @@
   */
   cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
+    layerTypeMap: {
+      "tiled": cdb.geo.LeafLetTiledLayerView,
+      "cartodb": cdb.geo.LeafLetLayerCartoDBView,
+      "plain": cdb.geo.LeafLetPlainLayerView
+    },
+
     initialize: function() {
 
       _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
@@ -170,14 +176,6 @@
         maxZoom: this.map.get('maxZoom'),
         maxBounds: [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')]
       });
-      this.layerTypeMap = {
-        "tiled": cdb.geo.LeafLetTiledLayerView,
-        "cartodb": cdb.geo.LeafLetLayerCartoDBView,
-        "plain": cdb.geo.LeafLetPlainLayerView
-      };
-
-      // this var stores views information for each model
-      this.layers = {};
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
@@ -192,10 +190,19 @@
         this.trigger('layeradd', lyr, self);
       }, this);
 
+      this.map_leaflet.on('zoomstart', function() {
+        self.trigger('zoomstart');
+      });
+
+      this.map_leaflet.on('click', function() {
+        self.trigger('click');
+      });
+
       this.map_leaflet.on('zoomend', function() {
         self._setModelProperty({
           zoom: self.map_leaflet.getZoom()
         });
+        self.trigger('zoomend');
       }, this);
 
       this.map_leaflet.on('move', function() {
@@ -208,30 +215,12 @@
         self._setModelProperty({
           center: [c.lat, c.lng]
         });
+        self.trigger('drag');
       }, this);
 
     },
 
-    /** bind model properties */
-    _bindModel: function() {
-      this.map.bind('change:zoom',   this._setZoom, this);
-      this.map.bind('change:center', this._setCenter, this);
-    },
 
-    /** unbind model properties */
-    _unbindModel: function() {
-      this.map.unbind('change:zoom',   this._setZoom, this);
-      this.map.unbind('change:center', this._setCenter, this);
-    },
-
-    /**
-    * set model property but unbind changes first in order to not create an infinite loop
-    */
-    _setModelProperty: function(prop) {
-      this._unbindModel();
-      this.map.set(prop);
-      this._bindModel();
-    },
 
     _setZoom: function(model, z) {
       this.map_leaflet.setZoom(z);
@@ -254,30 +243,8 @@
 
     },
 
-    getLayerByCid: function(cid) {
-      var l = this.layers[cid];
-      if(!l) {
-        cdb.log.error("layer with cid " + cid + " can't be get");
-      }
-      return l;
-    },
-
-    _removeLayer: function(layer) {
-      //this.map_leaflet.removeLayer(layer.lyr);
-      this.layers[layer.cid].remove();
-      delete this.layers[layer.cid];
-    },
-
     _setView: function() {
       this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
-    },
-
-
-    _addLayers: function() {
-      var self = this;
-      this.map.layers.each(function(lyr) {
-        self._addLayer(lyr);
-      });
     },
 
     _addLayer: function(layer, layers, opts) {
@@ -324,6 +291,14 @@
       var southWest = new L.LatLng(sw[0], sw[1]);
       var northEast = new L.LatLng(ne[0], ne[1]);
       this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
+    },
+
+    getSize: function() {
+      return this.map_leaflet.getSize();
+    }, 
+
+    panBy: function(p) {
+      this.map_leaflet.panBy(new L.Point(p.x, p.y));
     }
 
   });

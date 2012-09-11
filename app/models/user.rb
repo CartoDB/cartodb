@@ -344,8 +344,9 @@ class User < Sequel::Model
         begin
           conn.run("SET statement_timeout TO 600000")
           conn.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
-        rescue
+        rescue => e
           puts "#{Time.now} USER SETUP ERROR: USER #{database_username} already exists: #{$!}"
+          raise e
         ensure
           conn.run("SET statement_timeout TO DEFAULT")
         end
@@ -358,8 +359,9 @@ class User < Sequel::Model
           OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
           ENCODING = 'UTF8'
           CONNECTION LIMIT=-1")
-        rescue
+        rescue => e
           puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
+          raise e
         ensure
           conn.run("SET statement_timeout TO DEFAULT")
         end

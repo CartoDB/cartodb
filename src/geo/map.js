@@ -250,8 +250,22 @@ cdb.geo.MapView = cdb.core.View.extend({
    * add a infowindow to the map
    */
   addInfowindow: function(infoWindowView) {
+
     this.$el.append(infoWindowView.render().el);
     this.addView(infoWindowView);
+  },
+
+  /**
+  * search in the subviews and return the infowindows
+  */
+  getInfoWindows: function() {
+    var result = [];
+    for (var s in this._subviews) {
+      if(this._subviews[s] instanceof cdb.geo.ui.Infowindow) {
+        result.push(this._subviews[s]);
+      }
+    }
+    return result;
   },
 
   showBounds: function(bounds) {

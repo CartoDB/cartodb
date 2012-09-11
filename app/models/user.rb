@@ -339,19 +339,29 @@ class User < Sequel::Model
 
       Thread.new do
         conn = Rails::Sequel.connection
+
+        # User creation
         begin
+          conn.run("SET statement_timeout TO 600000")
           conn.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
         rescue
-          puts "USER #{database_username} already exists: #{$!}"
+          puts "#{Time.now} USER SETUP ERROR: USER #{database_username} already exists: #{$!}"
+        ensure
+          conn.run("SET statement_timeout TO DEFAULT")
         end
+
+        # Database creation
         begin
+          conn.run("SET statement_timeout TO 600000")
           conn.run("CREATE DATABASE #{self.database_name}
           WITH TEMPLATE = template_postgis
           OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
           ENCODING = 'UTF8'
           CONNECTION LIMIT=-1")
         rescue
-          puts "DATABASE #{self.database_name} already exists: #{$!}"
+          puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
+        ensure
+          conn.run("SET statement_timeout TO DEFAULT")
         end
       end.join
       set_database_permissions

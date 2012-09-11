@@ -49,7 +49,7 @@ describe String do
       "number".convert_to_db_type.should == "double precision"
     end
     it "should convert string to varchar" do
-      "string".convert_to_db_type.should == "varchar"
+      "string".convert_to_db_type.should == "text"
     end
     it "should convert date to timestamp" do
       "date".convert_to_db_type.should == "timestamp"

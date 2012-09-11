@@ -52,6 +52,11 @@ defaults: &defaults
         visible:     true
         type:        "Tiled"
         urlTemplate: "http://a.tiles.mapbox.com/v3/mapbox.mapbox-streets/{z}/{x}/{y}.png"
+    gmaps:
+      kind: "gmapsbase"
+      options:
+        base_type: "roadmap"
+        style: ""
 
 development:
   <<: *defaults

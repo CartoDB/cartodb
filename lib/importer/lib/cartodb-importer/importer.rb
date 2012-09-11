@@ -13,7 +13,7 @@ module CartoDB
 
       @@debug = true
       RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid }
-      SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .tar .gz .tgz .osm .bz2 .geojson .gpx }
+      SUPPORTED_FORMATS     = %W{ .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz .js .json .tar .gz .tgz .osm .bz2 .geojson .gpx .json }
 
       attr_accessor :import_from_file,
                     :db_configuration,
@@ -236,13 +236,12 @@ module CartoDB
                 errors << OpenStruct.new({ :description => @data_import.get_error_text,
                                            :stack       => @data_import.log_json,
                                            :code        => @data_import.error_code })
-                raise e
               end
             end
           }
 
           @data_import.refresh
-          @data_import.log_update("file successfully imported")
+          @data_import.log_update("file successfully imported") if errors.blank?
 
           #remove all files from disk
           cleanup_disk
@@ -257,7 +256,7 @@ module CartoDB
           log e.backtrace
           log "====================="
           begin  # TODO: Do we really mean nil here? What if a table is created?
-            @db_connection.drop_table @suggested_name
+            @db_connection.drop_table @suggested_name.nil? ? suggested : @suggested_name
           rescue # silent try to drop the table
           end
 

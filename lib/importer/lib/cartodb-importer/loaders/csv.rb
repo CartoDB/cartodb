@@ -9,6 +9,11 @@ module CartoDB
       def process!
         @data_import = DataImport.find(:id=>@data_import_id)
 
+        if File.extname(@path) == '.txt'
+          File.rename(@path, "#{@path}.csv")
+          @path = "#{@path}.csv"
+        end
+
         # run Chardet + Iconv
         fix_encoding
         

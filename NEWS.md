@@ -8,6 +8,7 @@
 * Fixed links in infowindow
 * Improved regenerate_api_key with different varnish scenarios
 * General fixes
+* Fixed problem importing csv files with txt extension
 
 0.9.11 (30/08/12)
 ------

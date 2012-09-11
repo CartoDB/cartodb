@@ -3,15 +3,19 @@
 @import "../common/vars";
 
 .edit_text_dialog {
+  position:absolute!important;
   padding: 11px;
-  @include box-shadow(rgba(black, 0.15) 0 0 4px 1px);
+  @include box-shadow(rgba(black, 0.17) 0 0 6px 1px);
   @include border-radius(4px);
   @include background(linear-gradient(#FEFEFE, #F4F4F4));
-  border-bottom: 1px solid #F4F4F4;
+  border: 1px solid #B7B7B7;
+  max-width:500px;
+  max-height:500px;
+  z-index:0!important;
 
   a.button {
     margin-top: 9px;
-    padding: 5px 13px;
+    padding: 6px 15px!important;
     letter-spacing: 0;
   }
 
@@ -23,14 +27,23 @@
   }
 
   input, textarea {
-    font-family: $text-fonts;
+    position:relative;
+    display:block;
+    max-width:500px - 22;
+    max-height:500px - 60;
     margin: 0;
+    padding: 10px;
+    font-family: $text-fonts;
+    font-size: 15px;
+    color: #666666;
     border: 1px solid #C0C1C2;
     background: #FFF;
     @include border-radius(4px);
-    padding: 11px;
-    font-size: 15px;
-    color: #666666;
+
+    &:focus {
+      outline:none;
+      border-color:#999999;
+    }
   }
 
 }

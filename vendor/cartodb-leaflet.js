@@ -266,7 +266,9 @@ if (typeof(L.CartoDBLayer) === "undefined") {
       this.setInteraction(false);
 
       // Remove interacion
-      this.interaction.remove();
+      if(this.interacion) {
+        this.interaction.remove();
+      }
 
       // Remove layer
       this.options.map.removeLayer(this.layer);

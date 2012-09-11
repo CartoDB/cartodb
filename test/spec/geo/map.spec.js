@@ -164,8 +164,14 @@ describe("geo.map", function() {
 
       expect(mapView.map_leaflet.addLayer.mostRecentCall.args[1]).toEqual(true);
       //expect(mapView.map_leaflet.addLayer).toHaveBeenCalledWith(mapView.layers[layer.cid].leafletLayer, true);
+    });
 
-
+    it("shoule remove all layers when map view is cleaned", function() {
+      var layer    = new cdb.geo.CartoDBLayer({});
+      map.addLayer(layer);
+      expect(_.size(mapView.layers)).toEqual(1);
+      mapView.clean();
+      expect(_.size(mapView.layers)).toEqual(0);
     });
 
 

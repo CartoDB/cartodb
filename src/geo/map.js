@@ -85,6 +85,7 @@ cdb.geo.Map = Backbone.Model.extend({
 
   initialize: function() {
     this.layers = new cdb.geo.Layers();
+
   },
 
   setView: function(latlng, zoom) {
@@ -213,6 +214,11 @@ cdb.geo.MapView = cdb.core.View.extend({
 
     this.map = this.options.map;
     this.add_related_model(this.map);
+
+    // this var stores views information for each model
+    this.layers = {};
+
+    this.bind('clean', this._removeLayers, this);
   },
 
   render: function() {
@@ -229,6 +235,13 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   showBounds: function(bounds) {
     throw "to be implemented";
+  },
+
+  _removeLayers: function() {
+    for(var layer in this.layers) {
+      this.layers[layer].remove();
+    }
+    this.layers = {}
   }
 
 

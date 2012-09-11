@@ -48,15 +48,19 @@ cdb.ui.common.Notification = cdb.core.View.extend({
 
   hide: function() {
     clearTimeout(this.closeTimeout);
-    this.$el.hide();
+    var hideMethod = this.options.hideMethod || 'hide';
+    this.$el[hideMethod]();
   },
 
-  open: function() {
+  open: function(method) {
+    if(!method) {
+      method = 'show'
+    }
     this.render();
-    this.$el.show();
+    this.$el[method]();
     if(this.options.timeout) {
         this.closeTimeout = setTimeout(_.bind(this.hide, this), this.options.timeout);
     }
-  }
+  },
 
 });

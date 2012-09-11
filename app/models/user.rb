@@ -6,7 +6,8 @@ class User < Sequel::Model
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
-  plugin :association_dependencies, :maps => :destroy
+  many_to_many :layers, :order => :id
+  plugin :association_dependencies, :maps => :destroy, :layers => :nullify
 
   # Sequel setup & plugins
   set_allowed_columns :email, :map_enabled, :password_confirmation, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled
@@ -53,6 +54,22 @@ class User < Sequel::Model
     save_metadata
   end
 
+  def after_destroy_commit
+    # Remove metadata from redis
+    $users_metadata.DEL(self.key)
+
+    # Remove database
+    Thread.new do
+      conn = Rails::Sequel.connection
+        conn.run("UPDATE pg_database SET datallowconn = 'false' WHERE datname = '#{database_name}'")
+        conn.run("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '#{database_name}'")
+        conn.run("DROP DATABASE #{database_name}")
+        conn.run("DROP USER #{database_username}")
+    end.join
+
+    # Invalidate cache from Varnish
+  end
+
   ## Authentication
   AUTH_DIGEST = '47f940ec20a0993b5e9e4310461cc8a6a7fb84e3'
 
@@ -95,8 +112,8 @@ class User < Sequel::Model
   def database_username
     if Rails.env.production?
       "cartodb_user_#{id}"
-    #elsif Rails.env.staging?
-    #  "cartodb_staging_user_#{self.id}"
+    elsif Rails.env.staging?
+      "cartodb_staging_user_#{self.id}"
     else
       "#{Rails.env}_cartodb_user_#{id}"
     end
@@ -360,8 +377,8 @@ class User < Sequel::Model
       self.database_name = case Rails.env
         when 'development'
           "cartodb_dev_user_#{self.id}_db"
-        #when 'staging'
-        #  "cartodb_staging_user_#{self.id}_db"
+        when 'staging'
+          "cartodb_staging_user_#{self.id}_db"
         when 'test'
           "cartodb_test_user_#{self.id}_db"
         else

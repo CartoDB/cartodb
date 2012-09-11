@@ -12,7 +12,7 @@ class Table < Sequel::Model(:user_tables)
   PUBLIC_ATTRIBUTES = { :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
                         :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
                         :table_size => :table_size, :map_id => :map_id, :description => :description }
-  
+
   many_to_one :map
 
   def public_values
@@ -520,7 +520,7 @@ class Table < Sequel::Model(:user_tables)
       self[:privacy] = PUBLIC
     end
   end
-  
+
   def key
     Table.key(database_name, name)
   rescue
@@ -1440,7 +1440,7 @@ SQL
   end
 
   def update_the_geom!(attributes, primary_key)
-    return unless attributes[THE_GEOM]
+    return unless attributes[THE_GEOM].present? && attributes[THE_GEOM] != 'GeoJSON'
     # TODO: use this once the server geojson is updated
     # begin
     #   owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_SetSRID(ST_GeomFromGeoJSON('#{attributes[THE_GEOM].sanitize_sql}'),#{CartoDB::SRID}) where cartodb_id = #{primary_key}")

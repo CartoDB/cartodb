@@ -2,26 +2,29 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/acceptance_helper')
 
-feature "Tables" do
+feature "Tables", :js => true do
 
   background do
-    @user = create_user
-    @table = create_table :user_id => @user.id, :name => 'Twitter followers', :privacy => Table::PRIVATE,
-                          :tags => 'twitter'
+    @user  = FactoryGirl.create(:user_with_private_tables)
+    @table = FactoryGirl.create(:table, :user_id => @user.id,
+                                        :name => 'Twitter followers',
+                                        :privacy => Table::PRIVATE,
+                                        :tags => 'twitter')
 
     log_in_as @user
 
     click_link_or_button("twitter_followers")
   end
 
-  scenario "can access embedded map if public" do 
+  scenario "can access embedded map if public" do
     click_link_or_button("PRIVATE")
-    page.find(".privacy_window .public a").click
-    visit "#{page.current_path}/embed_map"    
+    click_on 'Make this table public'
+    visit embed_map_table_path(@table)
+    page.current_path.should be == embed_map_table_path(@table)
   end
 
-  pending "cannot access embedded map if private" do 
-    visit "#{page.current_path}/embed_map"    
+  pending "cannot access embedded map if private" do
+    visit "#{page.current_path}/embed_map"
   end
 
   # By the moment threre is no privacy in the table
@@ -147,5 +150,5 @@ feature "Tables" do
 
     page.find("th[c='age'][type='number'] h3").text.should == "age"
   end
-  
+
 end

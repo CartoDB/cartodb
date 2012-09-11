@@ -10,21 +10,25 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 #Capybara.default_driver    = :selenium
 Capybara.javascript_driver = :poltergeist
-Capybara.default_wait_time = 30
 Capybara.default_host      = "http://admin.localhost.lan:53716"
 Capybara.app_host          = "http://admin.localhost.lan:53716"
 Capybara.server_port       = 53716
-# Capybara.register_driver :selenium do |app|
-#   Capybara::Driver::Selenium.new(app, :browser => :chrome)
-# end
 
 RSpec.configure do |config|
   config.include Warden::Test::Helpers
   config.include Capybara::DSL, :type => :acceptance
 
+  config.before(:suite) do
+    #require 'rake'
+    #require 'sprockets/railtie'
+    #CartoDB::Application.load_tasks
+    #Rake::Task['assets:precompile'].invoke
+  end
+
   config.before(:each) do
-    Rails.cache.clear
-    Capybara.reset_sessions! 
+    # Clearing cache makes assets pipeline to compile from scratch all assets, making specs to timeout
+    #Rails.cache.clear
+    Capybara.reset_sessions!
   end
 
   config.after(:each) do

@@ -57,6 +57,7 @@
     position:relative;
 
     div.content {
+      overflow:hidden;
       min-height:50px;
 
       ul {
@@ -86,6 +87,23 @@
               background:white;
               z-index:10;
 
+              span.drop {
+                display:none;
+                position:absolute;
+                top:0;
+                left:0;
+                bottom:0;
+                right:0;
+                background:rgba(black,0.6);
+                border:4px solid rgba(black,0.1);
+                color:white;
+                font-weight:bold;
+                text-align:center;
+                line-height:37px;
+                @include border-radius(4px);
+                z-index:100;
+              }
+
               span.file {
                 @include inline-block();
                 vertical-align:middle;
@@ -109,6 +127,36 @@
                 }
               }
 
+
+              .fileinput-button {
+                position: relative;
+                overflow: hidden;
+                @include inline-block();
+                margin:0 0 0 3px;
+                color:#397DBA;
+                text-decoration:underline;
+                font-style:italic;
+                font-size:15px!important;
+                cursor:pointer;
+                &:hover {
+                  color:#333333;
+                }
+              }
+
+              .fileinput-button input {
+                position: absolute;
+                top: 0;
+                right: 0;
+                margin: 0;
+                border: solid transparent;
+                border-width: 0 0 100px 200px;
+                opacity: 0;
+                filter: alpha(opacity=0);
+                -moz-transform: translate(-300px, 0) scale(4);
+                direction: ltr;
+                cursor: pointer;
+              }
+
               input[type="text"] {
                 position:absolute;
                 top:50%;
@@ -122,42 +170,6 @@
                 border:none;
                 outline:none;
                 z-index:0;
-              }
-
-              div.uploader {
-                .qq-upload-button {
-                  margin:0 0 1px 3px;
-                  color:#397DBA;
-                  text-decoration:underline;
-                  font-style:italic;
-                  font-size:15px!important;
-                  cursor:pointer;
-
-                  &:hover {
-                    color:#333333;
-                  }
-                }
-
-                .qq-upload-drop-area {
-                  position:absolute;
-                  top:0;
-                  left:0;
-                  right:0;
-                  bottom:0;
-                  display:block;
-                  padding:14px 0 0 0;
-                  background:rgba(0,0,0,0.5);
-                  text-align:center;
-                  font-weight:bold;
-                  font-size: 16px;
-                  color:white;
-                  z-index:100;
-                  @include border-radius(4px);
-                }
-
-                .qq-upload-list {
-                  display:none;
-                }
               }
             }
 
@@ -184,7 +196,13 @@
                 margin-top:-7px;
               }
             }
-          }     
+          }
+
+          form.drop div.upload {
+            span.drop {
+              display:block;
+            }
+          }
         
           // States
           &.active {
@@ -239,12 +257,31 @@
           overflow: hidden;          
         }
 
+        a.stop {
+          position:absolute;
+          display:block;
+          top:16px;
+          right:12px;
+          width:14px;
+          height:14px;
+          margin:0;
+          padding:0;
+          @include icons-sprite(cancel_upload);
+          @include text-indent();
+          &:hover {
+            @include icons-sprite(cancel_upload, $offset-y:-16px);
+          }
+        }
+
         &.uploading {
           display:block;
           @include opacity(1);
           @include transform-style("linear");
           @include transition-property("opacity,margin");
           @include transition-duration(500ms);
+          a.stop {
+            display:block;
+          }
         }
 
         &.creating {
@@ -259,8 +296,11 @@
             -ms-animation:progress .7s linear infinite;
             animation:progress .7s linear infinite;
           }
+          a.stop {
+            display:none;
+          }
         }
-      }      
+      }
     }
 
     div.foot {

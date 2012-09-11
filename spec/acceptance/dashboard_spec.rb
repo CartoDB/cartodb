@@ -17,28 +17,27 @@ feature "Dashboard", %q{
                              :table_quota    => 100,
                              :account_type   => 'Coronelli',
                              :private_tables_enabled => true})
-    t = Time.now - 6.minutes
-    Timecop.travel(t)
+    Timecop.travel(6.minutes.ago)
     20.times do |i|
       create_table :user_id => user.id, :name => "Table ##{20 - i}", :privacy => Table::PRIVATE, :tags => 'personal'
     end
     20.times do |i|
       create_table :user_id => the_other.id, :name => "Other Table ##{20 - i}", :privacy => Table::PRIVATE, :tags => 'vodka'
     end
-    Timecop.travel(t + 1.minute)
+    Timecop.travel(5.minutes.ago)
     create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PRIVATE,
                  :tags => "4sq, personal, feed aggregator"
-    Timecop.travel(t + 2.minutes)
+    Timecop.travel(4.minutes.ago)
     create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE,
                  :tags => "movies, personal"
-    Timecop.travel(t + 3.minutes)
+    Timecop.travel(3.minutes.ago)
     create_table :user_id => the_other.id, :name => 'Favourite restaurants', :privacy => Table::PRIVATE,
                  :tags => "restaurants"
-    Timecop.travel(t + 4.minutes)
+    Timecop.travel(2.minutes.ago)
     create_table :user_id => the_other.id, :name => 'Secret vodkas', :privacy => Table::PRIVATE,
                  :tags => "vodka, drinking"
 
-    Timecop.travel(t + 6.minutes)
+    Timecop.return
 
     log_in_as user
 
@@ -50,6 +49,7 @@ feature "Dashboard", %q{
 
     page.should have_css("ul#tablelist")
 
+    peich
     page.should have_content("22 tables in your account")
 
     within("ul#tablelist li:eq(1)") do
@@ -108,28 +108,27 @@ feature "Dashboard", %q{
   scenario "Browse by tags" do
     user = create_user
     the_other = create_user
-    t = Time.now - 6.minutes
-    Timecop.travel(t)
+    Timecop.travel(6.minutes.ago)
     20.times do |i|
       create_table :user_id => user.id, :name => "Table ##{20 - i}", :privacy => Table::PRIVATE, :tags => 'personal'
     end
     20.times do |i|
       create_table :user_id => the_other.id, :name => "Other Table ##{20 - i}", :privacy => Table::PRIVATE, :tags => 'vodka'
     end
-    Timecop.travel(t + 1.minute)
+    Timecop.travel(5.minutes.ago)
     create_table :user_id => user.id, :name => 'My check-ins', :privacy => Table::PRIVATE,
                  :tags => "4sq, personal, feed aggregator"
-    Timecop.travel(t + 2.minutes)
+    Timecop.travel(4.minutes.ago)
     create_table :user_id => user.id, :name => 'Downloaded movies', :privacy => Table::PRIVATE,
                  :tags => "movies"
-    Timecop.travel(t + 3.minutes)
+    Timecop.travel(3.minutes.ago)
     create_table :user_id => the_other.id, :name => 'Favourite restaurants', :privacy => Table::PRIVATE,
                  :tags => "restaurants"
-    Timecop.travel(t + 4.minutes)
+    Timecop.travel(2.minutes.ago)
     create_table :user_id => the_other.id, :name => 'Secret vodkas', :privacy => Table::PRIVATE,
                  :tags => "vodka, drinking"
 
-    Timecop.travel(t + 6.minutes)
+    Timecop.return
 
     log_in_as user
 

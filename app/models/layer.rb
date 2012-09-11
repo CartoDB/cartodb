@@ -1,11 +1,12 @@
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow
   
-  ALLOWED_KINDS = %W{ carto tiled background }
+  ALLOWED_KINDS = %W{ carto tiled background gmapsbase }
   PUBLIC_ATTRIBUTES = %W{ options kind infowindow id }
 
   many_to_many :maps
-  plugin :association_dependencies, :maps => :nullify
+  many_to_many :users
+  plugin :association_dependencies, :maps => :nullify, :users => :nullify
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |a| [a.sub(/_for_api$/, ''), self.send(a)] }]

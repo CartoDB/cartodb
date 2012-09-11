@@ -2,6 +2,7 @@
 //= require simple-hint
 //= require select2.min
 //= require jquery.nanoscroller
+//= require jquery.faviconNotify
 //= require rgbcolor
 //= require jquery-ui.slider
 //= require ZeroClipboard

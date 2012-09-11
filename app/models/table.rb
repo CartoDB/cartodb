@@ -30,7 +30,7 @@ class Table < Sequel::Model(:user_tables)
 
     # userid and table name tuple must be unique
     validates_unique [:name, :user_id], :message => 'is already taken'
-    
+
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
   
@@ -378,6 +378,7 @@ class Table < Sequel::Model(:user_tables)
     if @data_import
       @data_import.reload
       @data_import.log_error("Table error, #{e.inspect}")
+      @data_import.set_error_code(8003) if e.message.to_s =~ /statement timeout/
     end   
     unless self.name.blank?
       $tables_metadata.del key
@@ -554,13 +555,9 @@ class Table < Sequel::Model(:user_tables)
   def manage_privacy
     if privacy == PRIVATE
       owner.in_database(:as => :superuser).run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
-      # TODO: deprecate setting "privacy" in redis, see:
-      # https://github.com/Vizzuality/Windshaft-cartodb/commit/9f2b5420
       $tables_metadata.hset key, "privacy", PRIVATE
     elsif privacy == PUBLIC
       owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
-      # TODO: deprecate setting "privacy" in redis, see:
-      # https://github.com/Vizzuality/Windshaft-cartodb/commit/9f2b5420
       $tables_metadata.hset key, "privacy", PUBLIC 
     end        
   end

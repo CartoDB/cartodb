@@ -356,10 +356,10 @@
 					position = 0;
 			
 			function split( val ) {
-				return val.split( /,\s*| \s*/ );
+				return val.split( /,\s*| \s*|\s* / );
 			}
 			function extractLast( term ) {
-				return split( term ).pop();
+				return term.split( /,\s*| \s*/ ).pop();
 			}
 
 			$( "div.georeference_window input.address_input")
@@ -387,6 +387,18 @@
 					},
 					select: function( event, ui ) {
 						var terms = split( this.value );
+
+            // Check there was a comma after the term -> "term ," or "term,"
+            for (term in terms) {
+              var start = this.value.search(terms[term])
+                , length = terms[term].length
+                , pos = start + length;
+
+              if (this.value.substr(pos,1) == "," || this.value.substr(pos,2) == " ,") {
+                terms[term] += ",";
+              }
+            }
+
 						terms.pop();
 						terms.push( ui.item.value );
 						terms.push( "" );
@@ -1275,7 +1287,12 @@
         successActionPerforming(param,value,old_value);
       },
       error: function(e) {
+        try {
+        window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText).errors[0]);
+        }
+        catch(e) {
         window.ops_queue.responseRequest(requestId,'error',$.parseJSON(e.responseText));
+        }
         errorActionPerforming(param,old_value,$.parseJSON(e.responseText));
       }
     });

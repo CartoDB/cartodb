@@ -4,10 +4,10 @@ require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
 
 feature "API 1.0 tables management" do
 
-  background do
+  before(:all) do
     Capybara.current_driver = :rack_test
-    @user = create_user
-    login_as @user
+    User.all.each(&:destroy)
+    @user = create_user({:username => 'test'})
   end
 
   scenario "Get tables" do
@@ -76,7 +76,7 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table without schema" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     post_json api_tables_url do |response|
       response.status.should be_success
       response.body[:id].should == response.headers['Location'].match(/\/(\d+)$/)[1].to_i
@@ -86,7 +86,7 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifing a name and a schema" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {:name => "My new imported table", :schema => "bla bla blat"} do |response|
       response.status.should == 400
@@ -103,7 +103,7 @@ feature "API 1.0 tables management" do
   end
   
   scenario "Create a new table specifying a geometry of type point" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Point" } do |response|
       response.status.should be_success
@@ -116,7 +116,7 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifying a geometry of type polygon" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Polygon" } do |response|
       response.status.should be_success
@@ -129,7 +129,7 @@ feature "API 1.0 tables management" do
   end
   
   scenario "Create a new table specifying a geometry of type line" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {:name => "My new imported table", :the_geom_type => "Line" } do |response|
       response.status.should be_success
@@ -142,7 +142,7 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table specifing an schema and a file from which import data" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {
                :name => "Twitts",
@@ -200,7 +200,7 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Delete a table of mine" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
 
@@ -210,7 +210,7 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Delete a table of another user" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).never
     
     another_user = create_user
     table1 = create_table :user_id => another_user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
@@ -274,7 +274,7 @@ feature "API 1.0 tables management" do
   end
   
   scenario "Create a new table importing file twitters.csv" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {
       :file => "#{Rails.root}/db/fake_data/twitters.csv"
@@ -291,7 +291,7 @@ feature "API 1.0 tables management" do
   end
 
   scenario "Create a new table importing file ngos.xlsx" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {
       :file => "#{Rails.root}/db/fake_data/ngos.xlsx"
@@ -313,7 +313,7 @@ feature "API 1.0 tables management" do
   end
   
   scenario "Create a new table importing file EjemploVizzuality.zip" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {
       :file => "#{Rails.root}/db/fake_data/EjemploVizzuality.zip",
@@ -332,7 +332,7 @@ feature "API 1.0 tables management" do
   end
   
   scenario "Create a new table importing file shp not working.zip" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).once
     
     post_json api_tables_url, {
       :file => "#{Rails.root}/db/fake_data/shp\ not\ working.zip",
@@ -352,7 +352,7 @@ feature "API 1.0 tables management" do
   
   
   scenario "Create a table, remove a table, and recreate it with the same name" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).times(3)
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "other", any_parameters).times(3)
     
     post_json api_tables_url, {:file => "#{Rails.root}/db/fake_data/twitters.csv"} do |response|
       response.status.should be_success

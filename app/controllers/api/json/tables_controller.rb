@@ -49,7 +49,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @data_import = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
-    
+    current_user.in_database.run('SET statement_timeout TO 600000')    
     #get info about any import data coming
     multifiles = ['.bz2','.osm']
     if params[:url] || params[:file]
@@ -151,7 +151,9 @@ class Api::Json::TablesController < Api::ApplicationController
         end
       end
     end
+    current_user.in_database.run('SET statement_timeout TO DEFAULT')
   rescue => e
+    current_user.in_database.run('SET statement_timeout TO DEFAULT')
     @data_import.reload
     # Add semantics based on the users creation method. 
     # TODO: The importer should throw these specific errors
@@ -159,11 +161,11 @@ class Api::Json::TablesController < Api::ApplicationController
       e = CartoDB::InvalidUrl.new     e.message    if params[:url]    
       e = CartoDB::InvalidFile.new    e.message    if params[:file]    
       e = CartoDB::TableCopyError.new e.message    if params[:table_copy]    
-    end  
+    end
     CartoDB::Logger.info "Exception on tables#create", translate_error(e).inspect
     
     @data_import.reload
-    render_jsonp({ :description => @data_import.get_error_text, :stack =>  @data_import.log_json, :code => @data_import.error_code }, 400)
+    render_jsonp({ :message => @data_import.get_error_text, :stack =>  @data_import.log_json, :code => @data_import.error_code }, 400)
   end
 
   def show
@@ -196,8 +198,24 @@ class Api::Json::TablesController < Api::ApplicationController
   def update
     @table = Table.filter(:user_id => current_user.id, :name => params[:id]).first
     warnings = []
-    
-    @table.set_all(params)
+
+    # Perform name validations
+    # TODO move this to the model!
+    unless params[:name].nil? 
+      if params[:name].downcase != @table.name
+        owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
+        if params[:name] =~ /^[0-9_]/
+          raise "Table names can't start with numbers or dashes."
+        elsif owner.tables.filter(:name.like(/^#{params[:name]}/)).select_map(:name).include?(params[:name].downcase)
+          raise "Table '#{params[:name].downcase}' already exists."
+        else
+          @table.set_all(:name => params[:name].downcase)
+          @table.save(:name)
+        end
+      end
+    end
+
+    @table.set_except(params, :name)
     if params.keys.include?("latitude_column") && params.keys.include?("longitude_column")
       latitude_column  = params[:latitude_column]  == "nil" ? nil : params[:latitude_column].try(:to_sym)
       longitude_column = params[:longitude_column] == "nil" ? nil : params[:longitude_column].try(:to_sym)
@@ -208,19 +226,7 @@ class Api::Json::TablesController < Api::ApplicationController
       @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                             from user_tables
                             where id=?",@table.id).first
-                            
-      # wont allow users to set a table to same name, sends error
-      unless params[:name].nil? 
-        if params[:name].downcase != @table.name
-          owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
-          if params[:name][0].match(/[^0-9]/).nil?
-            warnings << "Table names can't start with a number."
-          elsif owner.tables.filter(:name.like(/^#{params[:name]}/)).select_map(:name).include?(params[:name].downcase)
-          #raise "Table name already exists"
-            warnings << "Table '#{params[:name].downcase}' already existed"
-          end
-        end
-      end
+
       render_jsonp({ :id => @table.id,                 
                      :name => @table.name,
                      :warnings => warnings,

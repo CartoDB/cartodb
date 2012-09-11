@@ -233,12 +233,6 @@ class User < Sequel::Model
   def set_map_key
     token = self.class.make_token
     $users_metadata.HMSET key, 'map_key',  token
-    require 'net/telnet'
-    varnish_host = APP_CONFIG[:varnish_management].try(:[],'host') || '127.0.0.1'
-    varnish_port = APP_CONFIG[:varnish_management].try(:[],'port') || 6082
-    varnish_conn = Net::Telnet.new("Host" => varnish_host, "Port" => varnish_port, "Prompt" => /200 0/)
-    varnish_conn.cmd("purge obj.http.X-Cache-Channel ~ #{self.database_name}.*")
-    varnish_conn.close
   end
 
   def get_map_key
@@ -367,10 +361,9 @@ class User < Sequel::Model
 
   # Cartodb functions
   def load_cartodb_functions
-    puts "Loading functions in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
-        glob = RAILS_ROOT + '/lib/sql/*.sql'
+        glob = ::Rails.root.to_s + '/lib/sql/*.sql'
 
         Dir.glob(glob).each do |f|
           @sql = File.new(f).read
@@ -390,7 +383,7 @@ class User < Sequel::Model
         env += " PGPORT=#{config['port']}"
         env += " PGHOST=#{config['host']}"
         env += " PGPASSWORD=#{database_password}"
-        glob = RAILS_ROOT + '/lib/sql/test/*.sql'
+        glob = ::Rails.root.to_s + '/lib/sql/test/*.sql'
         #puts " Scanning #{glob}"
         Dir.glob(glob).each do |f|
           tname = File.basename(f, '.sql')

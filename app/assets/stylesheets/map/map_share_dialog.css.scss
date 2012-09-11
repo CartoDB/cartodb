@@ -4,6 +4,8 @@
  */
 @import "compass";
 @import "../common/vars";
+@import "../common/sprites";
+@import "../common/mixins";
 
 .map_share_dialog {
   .map_wrapper {
@@ -62,6 +64,22 @@
         color: #999999;
         margin-left: 20px;
       }
+
+      div.header_shareable {
+        position:absolute;
+        top:10px;
+        right:10px;
+        display:none;
+
+        a {
+          @include inline-block();
+          width:26px;
+          height:26px;
+          @include text-indent();
+          &.twitter {@include icons-sprite(twitter)} 
+          &.facebook {@include icons-sprite(facebook)} 
+        }
+      }
     }
 
     #zoom {
@@ -77,7 +95,7 @@
     li {
       @include inline-block();
       border: none !important;
-      width: 154px;
+      width: 127px;
       color: #999999;
       margin-right: 24px;
       font:normal 15px $text-fonts;

@@ -14,9 +14,9 @@ cdb.vis.Overlay.register('zoom', function(data) {
 // header to show informtion (title and description)
 cdb.vis.Overlay.register('header', function(data) {
 
-  var template = cdb.core.Template.compile( 
+  var template = cdb.core.Template.compile(
     data.template || "{{#title}}<h1>{{title}}</h1>{{/title}} {{#description}}<p>{{description}}</p>{{/description}}",
-    'mustache'
+    data.templateType || 'mustache'
   );
 
   var header = new cdb.geo.ui.Header({
@@ -35,10 +35,12 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
     fields: data.fields
   });
 
+  var templateType = data.templateType || 'mustache'
+
   var infowindow = new cdb.geo.ui.Infowindow({
      model: infowindowModel,
      mapView: vis.mapView,
-     template: new cdb.core.Template({ template: data.template, type: 'mustache' }).asFunction()
+     template: new cdb.core.Template({ template: data.template, type: templateType}).asFunction()
   });
 
   return infowindow;

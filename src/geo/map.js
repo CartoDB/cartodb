@@ -20,6 +20,15 @@ cdb.geo.TileLayer = cdb.geo.MapLayer.extend({
   }
 });
 
+cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
+  OPTIONS: ['roadmap', 'satellite', 'terrain', 'custom'],
+  defaults: {
+    type: 'GMapsBase',
+    base_type: 'roadmap',
+    style: null
+  }
+});
+
 /**
  * this layer allows to put a plain color or image as layer (instead of tiles)
  */
@@ -34,6 +43,7 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
   defaults: {
     type: 'CartoDB',
+    active: true,
     query: null,
     opacity: 0.99,
     auto_bound: false,
@@ -48,6 +58,22 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     sql_protocol: "http",
     extra_params: {},
     cdn_url: null
+  },
+
+  activate: function() {
+    this.set({active: true, opacity: 0.99, visible: true})
+  },
+
+  deactivate: function() {
+    this.set({active: false, opacity: 0, visible: false})
+  },
+
+  toggle: function() {
+    if(this.get('active')) {
+      this.deactivate();
+    } else {
+      this.activate();
+    }
   }
 });
 
@@ -78,8 +104,6 @@ cdb.geo.Map = Backbone.Model.extend({
     zoom: 3,
     minZoom: 0,
     maxZoom: 20,
-    bounding_box_sw: [0, 0],
-    bounding_box_ne: [0, 0],
     provider: 'leaflet'
   },
 
@@ -142,7 +166,7 @@ cdb.geo.Map = Backbone.Model.extend({
     }
 
     // Set options
-    L.Util.setOptions(this, options);
+    _.defauls(this.options, options);
 
   },
 
@@ -189,7 +213,7 @@ cdb.geo.Map = Backbone.Model.extend({
   },
 
   // remove current base layer and set the specified
-  // the base layer is not deleted, it is only removed 
+  // the base layer is not deleted, it is only removed
   // from the layer list
   // return the old one
   setBaseLayer: function(layer) {
@@ -229,8 +253,22 @@ cdb.geo.MapView = cdb.core.View.extend({
    * add a infowindow to the map
    */
   addInfowindow: function(infoWindowView) {
+
     this.$el.append(infoWindowView.render().el);
     this.addView(infoWindowView);
+  },
+
+  /**
+  * search in the subviews and return the infowindows
+  */
+  getInfoWindows: function() {
+    var result = [];
+    for (var s in this._subviews) {
+      if(this._subviews[s] instanceof cdb.geo.ui.Infowindow) {
+        result.push(this._subviews[s]);
+      }
+    }
+    return result;
   },
 
   showBounds: function(bounds) {
@@ -242,6 +280,59 @@ cdb.geo.MapView = cdb.core.View.extend({
       this.layers[layer].remove();
     }
     this.layers = {}
+  },
+
+  /**
+  * set model property but unbind changes first in order to not create an infinite loop
+  */
+  _setModelProperty: function(prop) {
+    this._unbindModel();
+    this.map.set(prop);
+    this._bindModel();
+  },
+
+  /** bind model properties */
+  _bindModel: function() {
+    this.map.bind('change:zoom',   this._setZoom, this);
+    this.map.bind('change:center', this._setCenter, this);
+  },
+
+  /** unbind model properties */
+  _unbindModel: function() {
+    this.map.unbind('change:zoom',   this._setZoom, this);
+    this.map.unbind('change:center', this._setCenter, this);
+  },
+
+  _addLayers: function() {
+    var self = this;
+    this.map.layers.each(function(lyr) {
+      self._addLayer(lyr);
+    });
+  },
+
+  _removeLayer: function(layer) {
+    this.layers[layer.cid].remove();
+    delete this.layers[layer.cid];
+  },
+
+  getLayerByCid: function(cid) {
+    var l = this.layers[cid];
+    if(!l) {
+      cdb.log.error("layer with cid " + cid + " can't be get");
+    }
+    return l;
+  },
+
+  _setZoom: function(model, z) {
+    throw "to be implemented";
+  },
+
+  _setCenter: function(model, center) {
+    throw "to be implemented";
+  },
+
+  _addLayer: function(layer, layers, opts) {
+    throw "to be implemented";
   }
 
 

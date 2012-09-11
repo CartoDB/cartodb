@@ -100,7 +100,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
 
     this.mapView = this.options.mapView;
-    this.map     = this.mapView.map_leaflet;
 
     this.template = this.options.template ? this.options.template : cdb.templates.getTemplate(this.model.get("template_name"));
 
@@ -113,11 +112,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.mapView.map.bind('change', this._updatePosition, this);
     //this.map.on('viewreset', this._updatePosition, this);
-    this.map.on('drag', this._updatePosition, this);
-    this.map.on('zoomstart', this.hide, this);
-    this.map.on('zoomend', this.show, this);
+    this.mapView.bind('drag', this._updatePosition, this);
+    this.mapView.bind('zoomstart', this.hide, this);
+    this.mapView.bind('zoomend', this.show, this);
 
-    this.map.on('click', function() {
+    this.mapView.bind('click', function() {
       self.model.set("visibility", false);
     });
 
@@ -197,28 +196,27 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     containerHeight = this.$el.outerHeight(true),
     containerWidth  = this.$el.width(),
     left            = pos.x - offset[0],
-    size            = this.map.getSize(),
+    size            = this.mapView.getSize(),
     bottom          = -1*(pos.y - offset[1] - size.y);
 
     this.$el.css({ bottom: bottom, left: left });
   },
 
   _adjustPan: function () {
+	return;
 
     var offset = this.model.get("offset");
 
     if (!this.model.get("autoPan")) { return; }
 
     var
-    map             = this.map,
     x               = this.$el.position().left,
     y               = this.$el.position().top,
     containerHeight = this.$el.outerHeight(true),
     containerWidth  = this.$el.width(),
-    layerPos        = new L.Point(x, y),
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
-    adjustOffset    = new L.Point(0, 0),
-    size            = map.getSize();
+    adjustOffset    = {x: 0, y: 0};
+    size            = this.mapView.getSize();
 
     if (pos.x - offset[0] < 0) {
       adjustOffset.x = pos.x - offset[0] - 10;
@@ -237,7 +235,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     }
 
     if (adjustOffset.x || adjustOffset.y) {
-      map.panBy(adjustOffset);
+      this.mapView.panBy(adjustOffset);
     }
   }
 

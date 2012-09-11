@@ -8,7 +8,7 @@
     window.cdb.ui = {};
     window.cdb.ui.common = {};
     window.cdb.vis = {};
-
+    window.cdb.decorators = {};
     /**
      * global variables
      */
@@ -21,8 +21,10 @@
 
         "../vendor/leaflet.js",
         "../vendor/wax.leaf.js",
+        "../vendor/wax.g.min.js",
         "../vendor/cartodb-leaflet.js",
 
+        'core/decorator.js',
         'core/config.js',
         'core/log.js',
         'core/profiler.js',
@@ -37,6 +39,8 @@
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/leaflet.js',
+        'geo/gmaps_cartodb_layer.js',
+        'geo/gmaps.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',

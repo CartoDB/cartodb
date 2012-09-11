@@ -11,7 +11,9 @@ Layers.register('cartodb', function(vis, data) {
     for(var i = 0; i < fields.length; ++i) {
       names.push(fields[i].name);
     }
-    data.interactivity = names.join(',');
+    data.interactivity?
+     data.interactivity = data.interactivity + ',' + names.join(','):
+     data.interactivity = names.join(',');
   }
 
   return new cdb.geo.CartoDBLayer(data);

@@ -64,12 +64,13 @@ var Vis = cdb.core.View.extend({
       title: data.title,
       description: data.description,
       maxZoom: data.maxZoom,
-      minZoom: data.minZoom,
+      minZoom: data.minZoom
     };
 
-    if(data && data.bounding_box_sw && data.bounding_box_ne) {
+    // if the boundaries are defined, we add them to the map
+    if(data.bounding_box_sw && data.bounding_box_ne) {
       mapConfig.bounding_box_sw = data.bounding_box_sw;
-      mapConfig.bounding_box_ne =  data.bounding_box_ne;
+      mapConfig.bounding_box_ne = data.bounding_box_ne;
     }
 
     var map = new cdb.geo.Map(mapConfig);
@@ -107,7 +108,11 @@ var Vis = cdb.core.View.extend({
           mapView.addInfowindow(infowindow);
           var dataLayer = mapView.getLayerByCid(layer_cid);
           dataLayer.cid = layer_cid;
-          dataLayer.bind('featureClick', function(e, latlng, pos, interact_data) {
+          var eventType = '';
+          layerData.infowindow.eventType?
+            eventType = layerData.infowindow.eventType:
+            eventType = 'featureClick';
+          dataLayer.bind(eventType, function(e, latlng, pos, interact_data) {
             // prepare data
             var layer = map.layers.getByCid(this.cid);
             // infoWindow only shows if the layer is active

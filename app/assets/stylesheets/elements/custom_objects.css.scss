@@ -597,6 +597,7 @@
     }
 
     &.disabled {
+      @include opacity(1);
       border-color:#CCCCCC;
       background:#D8D8D8;
       span.handle {
@@ -604,4 +605,6 @@
         border-color:#999999;
       }
     }
+
+    &:hover {cursor:pointer!important;}
   }

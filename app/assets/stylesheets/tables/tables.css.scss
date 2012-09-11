@@ -65,7 +65,7 @@
           h2 {font-size:27px;}
         }
         div.right {
-          img {position:relative; display:block; margin:0; padding:0;}  
+          img {position:relative; display:block; margin:0; padding:0;}
         }
       }
       div.foot {
@@ -90,7 +90,7 @@
         h3 {letter-spacing:-1px; line-height:25px;}
       }
     }
-    
+
     section.tables {
       @include inline-block();
       width:638px;
@@ -101,7 +101,7 @@
         position:relative;
         padding:35px 40px; // Hack for line-height
         border-bottom:1px solid #E5E5E5;
-        
+
         h2 {
           @include inline-block();
           width:auto;
@@ -160,7 +160,7 @@
       // Tables list
       div.content {
         padding:0;
-        
+
         ul {
           li {
             border:none;
@@ -189,11 +189,11 @@
 
                   a {
                     max-width: 285px;
-                    padding:0;
+                    padding:0 1px 0 0;
                     margin:0;
                     vertical-align:top;
                     line-height:normal;
-                    text-overflow:ellipsis; 
+                    text-overflow:ellipsis;
                     overflow:hidden;
                     white-space:nowrap;
                     font-family: $title-fonts;
@@ -291,7 +291,7 @@
             &:hover {
               background:#F7F7F7;
               & + li div.table_info {border-color:white}
-              
+
               hgroup {filter: alpha(opacity=100)!important; opacity:1!important;}
 
               & h3 a {
@@ -341,12 +341,12 @@
                   @include border-radius(2px);
                 }
               }
-            }            
+            }
 
             &:last-child {
               &:hover,&.drop {
                 @include border-bottom-radius(4px);
-                &:after {display:none;}  
+                &:after {display:none;}
               }
             }
 
@@ -354,7 +354,7 @@
               border:none;
               div.table_info {border:none}
               &:hover,&.drop {
-                &:before {display:none;}  
+                &:before {display:none;}
               }
             }
 
@@ -451,9 +451,9 @@
           height:12px;
           margin:0 5px 0 0;
           vertical-align:top;
-          
 
-          &:last-child {margin:0}          
+
+          &:last-child {margin:0}
 
           a {
             @include inline-block();
@@ -478,7 +478,7 @@
               }
             }
           }
-        }     
+        }
       }
     }
 
@@ -505,4 +505,10 @@
       h3 {letter-spacing:-1px; font-size:21px;}
       a.button {float:left; margin-top:5px; padding-right:15px; padding-left:15px;}
     }
+  }
+
+  .dragging {
+    z-index:999999;
+    position: absolute;
+
   }

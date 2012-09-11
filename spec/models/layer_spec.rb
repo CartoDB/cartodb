@@ -20,6 +20,9 @@ describe Layer do
       l = Layer.create(Cartodb.config[:layer_opts]["base"]).reload
       l.kind.should == 'tiled'
       l.options.should == Cartodb.config[:layer_opts]["base"]["options"]
+      l = Layer.create(Cartodb.config[:layer_opts]["gmaps"]).reload
+      l.kind.should == 'gmapsbase'
+      l.options.should == Cartodb.config[:layer_opts]["gmaps"]["options"]
     end
 
     it "should not allow to create layers of unkown types" do

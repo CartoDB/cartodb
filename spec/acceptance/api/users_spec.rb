@@ -2,7 +2,7 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../acceptance_helper')
 
-feature "API 1.0 columns management" do
+feature "API 1.0 users management" do
 
   before(:all) do
     Capybara.current_driver = :rack_test

@@ -1,7 +1,7 @@
 class Layer < Sequel::Model
   plugin :serialization, :json, :options, :infowindow
   
-  ALLOWED_KINDS = %W{ carto tiled background }
+  ALLOWED_KINDS = %W{ carto tiled background gmapsbase }
   PUBLIC_ATTRIBUTES = %W{ options kind infowindow id }
 
   many_to_many :maps

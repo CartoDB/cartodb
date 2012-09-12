@@ -37,7 +37,8 @@
         line-height:14px;
         text-align:center;
         z-index:5;
-        &:hover {
+        &:focus, &:hover {
+          outline:none;
           color:black;
           text-decoration:none;
         }

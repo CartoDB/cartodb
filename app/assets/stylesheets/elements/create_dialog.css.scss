@@ -6,6 +6,7 @@
   @import "compass";
   @import "../common/sprites";
   @import "../common/mixins";
+  @import "../common/forms";
 
 
   // Big mamufas css
@@ -173,28 +174,9 @@
               }
             }
 
+            @include default-form-info();
             div.info {
-              display:none;
               margin:-50px 0 0 20px;
-              padding:20px 13px 13px;
-              border:1px solid #CCCCCC;
-              @include border-radius(4px);
-              z-index:-1;
-              background:#FFF7EA;
-              @include transform-style("linear");
-              @include transition-property("margin");
-              @include transition-duration(500ms);
-
-              p {font-style:italic; font-size:13px;}
-
-              &.error {background:#FEEAEB}
-              &.active {
-                display:block;
-                @include transform-style("linear");
-                @include transition-property("margin");
-                @include transition-duration(500ms);
-                margin-top:-7px;
-              }
             }
           }
 

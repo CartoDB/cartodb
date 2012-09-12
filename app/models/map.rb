@@ -1,8 +1,9 @@
 class Map < Sequel::Model
-  many_to_many :layers, :order => :id
+  many_to_many :layers, :order => :order
   one_to_many :table
 
   plugin :association_dependencies, :layers => :nullify
+  self.raise_on_save_failure = false
 
   PUBLIC_ATTRIBUTES = %W{ id user_id provider bounding_box_sw bounding_box_ne center zoom }
 
@@ -32,5 +33,7 @@ class Map < Sequel::Model
     super
 
     errors.add(:user_id, "can't be blank") if user_id.blank?
+    #errors.add(:user_id, "does not exist") if user_id.present? && User[user_id].nil?
+    #errors.add(:table_id, "table #{table_id} doesn't belong to user #{user_id}") if user_id.present? && !User[user_id].tables.select(:id).map(&:id).include?(table_id)
   end
 end

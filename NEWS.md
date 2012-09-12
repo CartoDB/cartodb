@@ -1,3 +1,9 @@
+0.9.13 (12/09/12)
+------
+* Fixed statement timeout when creating user database
+* Better exception raise when there is a error creating a new user
+* Small fixes
+
 0.9.12 (10/09/12)
 ------
 * Removed SQL export option

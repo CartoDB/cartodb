@@ -362,6 +362,7 @@
               position:relative;
               padding:22px 40px;
               border-bottom:1px solid rgba(#CCCCCC,0.5);
+              border-top:1px solid rgba(#CCCCCC,0.5);
 
               & + li div.table_info {border-color:white}
 
@@ -371,6 +372,8 @@
                 &:before {display:none;}
                 cursor:default;
               }
+              &:first-child {border-top:none;}
+              &:last-child {border-bottom:none;}
             }
           } // li
         }

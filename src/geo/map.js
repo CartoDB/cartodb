@@ -81,16 +81,34 @@ cdb.geo.Layers = Backbone.Collection.extend({
 
   model: cdb.geo.MapLayer,
 
+  initialize: function() {
+    this.bind('add remove', this._asignIndexes, this);
+  },
+
   clone: function() {
     var layers = new cdb.geo.Layers();
     this.each(function(layer) {
       if(layer.clone) {
-        layers.add(layer.clone());
+        var lyr = layer.clone();
+        lyr.set('id', null);
+        layers.add(lyr);
       } else {
-        layers.add(_.clone(layer.attributes));
+        var attrs = _.clone(layer.attributes);
+        delete attrs.id;
+        layers.add(attrs);
       }
     });
     return layers;
+  },
+
+  /**
+   * each time a layer is added or removed
+   * the index should be recalculated
+   */
+  _asignIndexes: function() {
+    for(var i = 0; i < this.size(); ++i) {
+      this.models[i].set({ order: i }, { silent: true });
+    }
   }
 });
 
@@ -213,14 +231,13 @@ cdb.geo.Map = Backbone.Model.extend({
   },
 
   // remove current base layer and set the specified
-  // the base layer is not deleted, it is only removed
-  // from the layer list
-  // return the old one
+  // current base layer is removed
   setBaseLayer: function(layer) {
     var old = this.layers.at(0);
-    this.layers.remove(old);
+    old.destroy();
+    //this.layers.remove(old);
     this.layers.add(layer, { at: 0 });
-    return old;
+    return layer;
   }
 });
 
@@ -238,6 +255,7 @@ cdb.geo.MapView = cdb.core.View.extend({
 
     this.map = this.options.map;
     this.add_related_model(this.map);
+    this.add_related_model(this.map.layers);
 
     // this var stores views information for each model
     this.layers = {};
@@ -311,8 +329,11 @@ cdb.geo.MapView = cdb.core.View.extend({
   },
 
   _removeLayer: function(layer) {
-    this.layers[layer.cid].remove();
-    delete this.layers[layer.cid];
+    var layer_view = this.layers[layer.cid];
+    if(layer_view) {
+      layer_view.remove();
+      delete this.layers[layer.cid];
+    }
   },
 
   getLayerByCid: function(cid) {

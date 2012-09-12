@@ -176,7 +176,7 @@
         maxZoom: this.map.get('maxZoom')
       };
       if (this.map.get('bounding_box_ne')) {
-        mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
+        //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
       }
 
       this.map_leaflet = new L.Map(this.el, mapConfig);
@@ -234,19 +234,6 @@
       this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
     },
 
-    /**
-    * Adds interactivity to a layer
-    *
-    * @params {String} tileJSON
-    * @params {String} featureOver
-    * @return {String} featureOut
-    */
-    addInteraction: function(tileJSON, featureOver, featureOut) {
-
-      return wax.leaf.interaction().map(this.map_leaflet).tilejson(tileJSON).on('on', featureOver).on('off', featureOut);
-
-    },
-
     _setView: function() {
       this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
     },
@@ -260,6 +247,7 @@
         layer_view = new layerClass(layer, this.map_leaflet);
       } else {
         cdb.log.error("MAP: " + layer.get('type') + " can't be created");
+        return;
       }
 
       this.layers[layer.cid] = layer_view;

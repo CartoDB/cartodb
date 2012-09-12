@@ -28,6 +28,22 @@ describe("geo.map", function() {
       var copy = layers.clone();
       expect(copy.size()).toEqual(layers.size());
       expect(copy.models[0].attributes).toEqual(layers.models[0].attributes);
+      expect(copy.get('id')).toEqual(undefined);
+    });
+
+    it("should assign order each time is added", function() {
+      var layer = new cdb.geo.CartoDBLayer();
+      layers.add(layer);
+      expect(layer.get('order')).toEqual(0);
+      var layer2 = new cdb.geo.CartoDBLayer();
+      layers.add(layer2);
+      expect(layer2.get('order')).toEqual(1);
+      layer.destroy();
+      expect(layer2.get('order')).toEqual(0);
+      layers.add(new cdb.geo.CartoDBLayer(),{at: 0});
+      expect(layer2.get('order')).toEqual(1);
+
+
     });
 
   });
@@ -54,7 +70,7 @@ describe("geo.map", function() {
       map.addLayer(layer);
       var base = new cdb.geo.CartoDBLayer({});
       var r = map.setBaseLayer(base);
-      expect(r).toEqual(old);
+      expect(r).toEqual(base);
       expect(map.layers.at(0)).toEqual(base);
     });
 
@@ -205,6 +221,13 @@ describe("geo.map", function() {
       mapView.clean();
       expect(_.size(mapView.layers)).toEqual(0);
     });
+
+    it("should not all a layer when it can't be creadted", function() {
+      var layer    = new cdb.geo.GMapsBaseLayer();
+      map.addLayer(layer);
+      expect(_.size(mapView.layers)).toEqual(0);
+    });
+
 
 
   });

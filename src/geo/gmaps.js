@@ -20,9 +20,11 @@ _.extend(GMapsLayerView.prototype, {
   * remove layer from the map and unbind events
   */
   remove: function() {
-    this.gmapsMap.overlayMapTypes.removeAt(this.index);
-    this.model.unbind(null, null, this);
-    this.unbind();
+    if(!this.isBase) {
+      this.gmapsMap.overlayMapTypes.removeAt(this.index);
+      this.model.unbind(null, null, this);
+      this.unbind();
+    }
   },
 
   refreshView: function() {
@@ -189,7 +191,7 @@ _.extend(GMapsCartoDBLayerView.prototype, GMapsLayerView.prototype, {
 
   remove: function() {
     GMapsLayerView.prototype.remove.call(this);
-    this.layer.remove();
+    this.gmapsLayer.remove();
   },
 
   featureOver: function(e, latlon, pixelPos, data) {

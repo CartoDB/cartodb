@@ -43,16 +43,20 @@ feature "API 1.0 map layers management" do
   end
 
   scenario "Get all map layers" do
-    layer = Layer.create :kind => 'carto'
-    layer2 = Layer.create :kind => 'tiled'
+    layer  = Layer.create :kind => 'carto', :order => 3
+    layer2 = Layer.create :kind => 'tiled', :order => 2
+    layer3 = Layer.create :kind => 'tiled', :order => 1
     @map.add_layer layer
     @map.add_layer layer2
+    @map.add_layer layer3
 
     get_json v1_map_layers_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :map_id => @map.id) do |response|
       response.status.should be_success
-      response.body[:total_entries].should == 2
-      response.body[:layers].size.should == 2
-      response.body[:layers][0]['id'].should == layer.id
+      response.body[:total_entries].should == 3
+      response.body[:layers].size.should == 3
+      response.body[:layers][0]['id'].should == layer3.id
+      response.body[:layers][1]['id'].should == layer2.id
+      response.body[:layers][2]['id'].should == layer.id
     end
   end
 

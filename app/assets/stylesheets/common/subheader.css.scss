@@ -65,6 +65,13 @@
               @include transition-property("width");
               @include transition-duration(500ms);
 
+              &.green {
+                background:rgba(green,0.55);
+                @include transform-style("linear");
+                @include transition-property("background");
+                @include transition-duration(500ms);
+              }
+
               &.boom {
                 background:#FF5255;
                 @include background(linear-gradient(#FF5255,#CB2828));

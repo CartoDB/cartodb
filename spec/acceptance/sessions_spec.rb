@@ -38,4 +38,12 @@ feature "Sessions" do
       response.body.should == { :uid => user.id, :email => 'fernando.blat@vizzuality.com', :username => 'blat' }
     end
   end
+
+  scenario "should redirect you to the user login page if unauthorized", :js => true do
+    @user  = FactoryGirl.create(:user_with_private_tables, :username => 'test')
+
+    visit api_key_credentials_url(:host => 'test.localhost.lan', :port => Capybara.server_port)
+    current_url.should be == login_url(:host => 'test.localhost.lan', :port => Capybara.server_port)
+  end
+
 end

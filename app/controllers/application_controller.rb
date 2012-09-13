@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   before_filter :allow_cross_domain_access
   before_filter :set_asset_debugging
   after_filter  :remove_flash_cookie
-  
+
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound,   :with => :render_404
 
@@ -61,7 +61,7 @@ class ApplicationController < ActionController::Base
       render :file => "public/500.html", :status => 500, :layout => false
     end
     format.json do
-      render :status => 500      
+      render :status => 500
     end
   end
 
@@ -69,7 +69,7 @@ class ApplicationController < ActionController::Base
     authenticated?(request.subdomain) || not_authorized
   end
 
-  def api_authorization_required 
+  def api_authorization_required
     authenticate!(:api_key, :api_authentication, :scope => request.subdomain)
   end
 
@@ -77,7 +77,7 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.html do
         session[:return_to] = request.url
-        redirect_to login_url(:host => CartoDB.account_host) and return
+        redirect_to login_path and return
       end
       format.json do
         head :unauthorized

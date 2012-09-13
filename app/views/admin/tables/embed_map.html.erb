@@ -66,6 +66,11 @@
     <% end %>
   </body>
 
+  <% if @map_provider == 'googlemaps' %>
+      <script type="text/javascript"
+        src="https://maps.google.com/maps/api/js?sensor=false">
+      </script>
+  <% end %>
   <%= javascript_include_tag :jquery, :cdb %>
 
   <script>
@@ -75,12 +80,13 @@
     // those two parameters should be in tilejson
     var table_name = '<%= @table.name %>';
     var table_description = '<%= @table.description %>';
+    var map_provider = '<%= @map_provider %>';
 
     if(data_layer_tilejson.infowindow) {
       data_layer_tilejson.infowindow.template = $('#infowindow_template').html()
     }
 
-    base_layer_tilejson.type = 'tilejson';
+    //base_layer_tilejson.type = 'tilejson';
 
     function get_url_params() {
       var tokens = location.search.slice(1).split('&');
@@ -97,6 +103,7 @@
     var vis_data = {
        title: opt.title === 'true' ? table_name:null,
        description: opt.description === 'true' ? table_description: null,
+       provider: map_provider,
        overlays: [
         {
           type: 'zoom',

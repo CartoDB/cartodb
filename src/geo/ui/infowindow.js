@@ -40,15 +40,17 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     });
   },
 
+  _setFields: function(f) {
+    f.sort(function(a, b) { return a.position -  b.position; });
+    this.set({'fields': f});
+  },
+
   addField: function(fieldName, at) {
     if(!this.containsField(fieldName)) {
       var fields = this._cloneFields() || [];
       fields.push({name: fieldName, title: true, position: at});
       //sort fields
-      fields.sort(function(a, b) {
-        return a.position -  b.position;
-      });
-      this.set({'fields': fields});
+      this._setFields(fields);
     }
     return this;
   },
@@ -67,7 +69,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       var fields = this._cloneFields() || [];
       var idx = _.indexOf(_(fields).pluck('name'), fieldName);
       fields[idx][k] = v;
-      this.set({'fields': fields});
+      this._setFields(fields);
     }
     return this;
   },
@@ -92,7 +94,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
       if(idx >= 0) {
         fields.splice(idx, 1);
       }
-      this.set({'fields': fields});
+      this._setFields(fields);
     }
     return this;
   }

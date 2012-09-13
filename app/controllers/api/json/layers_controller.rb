@@ -26,7 +26,7 @@ class Api::Json::LayersController < Api::ApplicationController
   end
 
   def create
-    @layer = Layer.new(params.slice(:kind, :options, :infowindow))
+    @layer = Layer.new(params.slice(:kind, :options, :infowindow, :order))
 
     if @layer.save
       @parent.add_layer(@layer.id)
@@ -42,7 +42,7 @@ class Api::Json::LayersController < Api::ApplicationController
   def update
     @layer = Layer[params[:id]]
 
-    if @layer.update(params.slice(:options, :kind, :infowindow))
+    if @layer.update(params.slice(:options, :kind, :infowindow, :order))
       render_jsonp(@layer.public_values)
     else
       CartoDB::Logger.info "Error on layers#update", @layer.errors.full_messages

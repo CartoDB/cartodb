@@ -262,6 +262,7 @@
             & > span {
               @include inline-block();
               vertical-align:middle;
+              &:hover {cursor:all-scroll;}
             }
 
             .form_combo {
@@ -282,10 +283,21 @@
             span.title {
               margin-right: 20px;
             }
-          }
-          li.enabled {
-            .switch {
-              color: #000000;
+
+            &.ui-sortable-helper {
+              padding:15px;
+              margin-left:-15px!important;
+              @include box-shadow(rgba(0,0,0,0.1) 0 0 5px 2px);
+              border-top:1px solid rgba(#999999,0.25);
+              background:white;
+              @include border-radius(3px);
+              cursor:all-scroll;
+            }
+          
+            &.enabled {
+              .switch {
+                color: #000000;
+              }
             }
           }
         }
@@ -435,6 +447,8 @@
                 &:last-child {border:none;}
 
                 span.field > div {margin-left:5px;}
+
+                span.field span.text {margin:0 10px 0 13px;}
               }
             }
 

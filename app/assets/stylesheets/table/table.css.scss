@@ -7,6 +7,7 @@
   @import "compass";
   @import "../common/vars";
   @import "../common/sprites";
+  @import "../common/forms";
 
   div.panes {
     position:absolute;
@@ -73,8 +74,8 @@
                 position:fixed;
                 @include inline-block();
                 width:100%;
-                height:34px;
-                padding:17px 0 15px;
+                height:41px;
+                padding:10px 0 15px;
                 margin:0;
                 @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
                 @include box-shadow(rgba(0,0,0,0.015) 0 3px 1px 0);
@@ -95,17 +96,18 @@
 
               label {
                 display:block;
-                padding:0 10px;
+                padding:0 5px;
 
                 a {
-                  display:block;
+                  margin:6px 0 5px 5px;
+                  @include inline-block();
                   color:#7C7C7C;
 
                   &:after {
-                    position:absolute;
-                    content:' ';
-                    right:12px;
-                    margin:8px 0 0 5px;
+                    position:relative;
+                    content:'';
+                    @include inline-block();
+                    left:2px;
                     border-left:3px solid transparent;
                     border-right:3px solid transparent;
                     border-top:3px solid #7C7C7C;
@@ -118,7 +120,7 @@
                   }
 
                   span.geo {
-                    margin:0 0 0 5px;
+                    margin:0 0 0 3px;
                     padding:1px 2px;
                     text-decoration:uppercase;
                     border:1px solid #C17400;
@@ -126,6 +128,19 @@
                     background:orange;
                     color:white;
                   }
+                }
+
+                // Default and then replace it
+                @include default-input();
+                input {
+                  min-width:160px;
+                  margin:0;
+                  padding:3px 4px;
+                  @include border-radius(3px);
+                  font:bold 13px $text-fonts;
+                  color:#333333;
+                  border:1px solid #CCCCCC;
+                  background:white;
                 }
               }
 

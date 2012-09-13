@@ -357,4 +357,26 @@ cdb.geo.MapView = cdb.core.View.extend({
   }
 
 
-});
+}, {
+
+  _getClass: function(provider) {
+    var mapViewClass = cdb.geo.LeafletMapView;
+    if(provider === 'googlemaps') {
+        if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
+          mapViewClass = cdb.geo.GoogleMapsMapView;
+        } else {
+          cdb.log.error("you must include google maps library _before_ include cdb");
+        }
+    }
+    return mapViewClass;
+  },
+
+  create: function(el, mapModel) {
+    var _mapViewClass = cdb.geo.MapView._getClass(mapModel.get('provider'));
+    return new _mapViewClass({
+      el: el,
+      map: mapModel
+    });
+  }
+}
+);

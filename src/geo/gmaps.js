@@ -330,6 +330,15 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
       [sw.lat(), sw.lng()],
       [ne.lat(), ne.lng()]
     ];
+  },
+
+  showBounds: function(bounds) {
+    var sw = bounds[0];
+    var ne = bounds[1];
+    var southWest = new google.maps.LatLng(sw[0], sw[1]);
+    var northEast = new google.maps.LatLng(ne[0], ne[1]);
+    this.map_googlemaps.fitBounds(new google.maps.LatLngBounds(southWest, northEast));
+
   }
 
 });

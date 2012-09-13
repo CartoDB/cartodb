@@ -225,7 +225,7 @@ describe("geo.map", function() {
     });
 
     it("should not all a layer when it can't be creadted", function() {
-      var layer    = new cdb.geo.GMapsBaseLayer();
+      var layer    = new cdb.geo.TileLayer({type: 'rambo'});
       map.addLayer(layer);
       expect(_.size(mapView.layers)).toEqual(0);
     });

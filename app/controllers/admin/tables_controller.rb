@@ -57,10 +57,13 @@ class Admin::TablesController < ApplicationController
   def embed_map
     @subdomain  = request.subdomain
     @table      = Table.find_by_subdomain(@subdomain, params[:id])
-    @tilejson_base = @table.map.layers.first.to_tilejson
+    base_layer = @table.map.layers.first
+    @tilejson_base = base_layer.options.to_json
+
     data_layer = @table.map.layers.last.public_values
     @layer_data = data_layer['options'].to_json
     @layer_data_infowindow = data_layer['infowindow'].to_json
+    @map_provider = @table.map.provider
     
     if @table.blank? || @table.private?
       head :forbidden

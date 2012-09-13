@@ -392,6 +392,11 @@
         }
       }
     }
+
+    // Opacity type
+    &.opacity {
+      @include background(sprite($icons-sprites, alpha_bkg) repeat);
+    }
   }
 
 

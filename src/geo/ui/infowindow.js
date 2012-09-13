@@ -72,6 +72,14 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
     return this;
   },
 
+  getFieldPos: function(fieldName) {
+    var p = this.getFieldProperty(fieldName, 'position');
+    if(p == undefined) {
+      return Number.MAX_VALUE;
+    }
+    return p;
+  },
+
   containsField: function(fieldName) {
     var fields = this.get('fields') || [];
     return _.contains(_(fields).pluck('name'), fieldName);

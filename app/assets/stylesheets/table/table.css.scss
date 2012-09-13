@@ -311,7 +311,7 @@
   div.order_selector {
     position:absolute;
     right:0;
-    top:0;
+    top:-3px;
     a.asc {
       margin-right: 1px;
       @include border-left-radius(2px);

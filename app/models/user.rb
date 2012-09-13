@@ -6,7 +6,7 @@ class User < Sequel::Model
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
-  many_to_many :layers, :order => :id
+  many_to_many :layers, :order => :order
   plugin :association_dependencies, :maps => :destroy, :layers => :nullify
 
   # Sequel setup & plugins
@@ -469,7 +469,8 @@ class User < Sequel::Model
       :remaining_table_quota => self.remaining_table_quota,
       :remaining_byte_quota => self.remaining_quota.to_f,
       :api_calls => (1..30).map{|i|i},
-      :api_key => self.get_map_key
+      :api_key => self.get_map_key,
+      :layers => self.layers.map(&:public_values)
     }
   end
 

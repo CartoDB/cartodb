@@ -27,7 +27,9 @@ describe("geo.map", function() {
       layers.add(layer);
       var copy = layers.clone();
       expect(copy.size()).toEqual(layers.size());
-      expect(copy.models[0].attributes).toEqual(layers.models[0].attributes);
+      var a = _.clone(layers.models[0].attributes);
+      a.id = null;
+      expect(copy.models[0].attributes).toEqual(a);
       expect(copy.get('id')).toEqual(undefined);
     });
 

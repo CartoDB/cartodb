@@ -7,8 +7,11 @@
   @import "compass";
   @import "../common/vars";
   @import "../common/sprites";
+  @import "../common/forms";
 
   .basemap_chooser {
+
+    @include default-form-info();
 
     div.input {
       position:relative;
@@ -65,30 +68,6 @@
         }
 
         &:focus {outline:none;}
-      }
-    }
-
-
-    div.info {
-      display:block;
-      @include opacity(0);
-      margin:-50px 0 0 0;
-      padding:20px 13px 13px;
-      border:1px solid #CCCCCC;
-      @include border-radius(4px);
-      z-index:-1;
-      background:#FFF7EA;
-      @include transform-style("linear");
-      @include transition-property("all");
-      @include transition-duration(500ms);
-
-      p {font-style:italic; font-size:13px;}
-
-      &.error {background:#FEEAEB}
-      &.active {
-        display:block;
-        margin-top:-8px;
-        @include opacity(1);
       }
     }
   }

@@ -15,30 +15,33 @@ feature "API 1.0 map layers management" do
   end
 
   scenario "Create a new layer associated to a map" do
-    opts = { 'opt1' => 'wadus', 'opt2' => '1' }
+    opts = { "type" => "GMapsBase", "base_type" => "roadmap", "style" => "null", "order" => "0" }
     infowindow = ['column1', 'column2', 'column3']
 
     post_json v1_map_layers_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :map_id => @map.id), { 
-      :kind => 'carto', 
+      :kind => 'gmapsbase', 
       :infowindow => infowindow,
+      :order => 0,
       :options => opts } do |response|
       response.status.should be_success
       @map.layers.size.should == 1
       response.body[:id].should == @map.layers.first.id
       response.body[:options].should == opts
       response.body[:infowindow].should == infowindow
-      response.body[:kind].should == 'carto'
+      response.body[:order].should == 0
+      response.body[:kind].should == 'gmapsbase'
     end
   end
 
   scenario "Get layer information" do
-    layer = Layer.create :kind => 'carto'
+    layer = Layer.create :kind => 'carto', :order => 1
     @map.add_layer layer
 
     get_json v1_map_layer_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :id => layer.id, :map_id => @map.id) do |response|
       response.status.should be_success
       response.body[:id].should == layer.id
       response.body[:kind].should == 'carto'
+      response.body[:order].should == 1
     end
   end
 
@@ -61,18 +64,20 @@ feature "API 1.0 map layers management" do
   end
 
   scenario "Update a layer" do
-    layer = Layer.create :kind => 'carto'
+    layer = Layer.create :kind => 'carto', :order => 0
     @map.add_layer layer
 
     put_json v1_map_layer_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :id => layer.id, :map_id => @map.id), {
       :options => { :opt1 => 'value' },
       :infowindow => ['column1', 'column2'], 
+      :order => 3,
       :kind => 'carto' } do |response|
       response.status.should be_success
       response.body[:id].should == layer.id
       response.body[:options].should == { 'opt1' => 'value' }
       response.body[:infowindow].should == ['column1', 'column2']
       response.body[:kind].should == 'carto'      
+      response.body[:order].should == 3
     end
   end
 

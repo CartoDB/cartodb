@@ -320,6 +320,16 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     p.y += pc.y;
     var ll = this.projector.pixelToLatLng(p);
     this.map.setCenter([ll.lat(), ll.lng()]);
+  },
+
+  getBounds: function() {
+    var b = this.map_googlemaps.getBounds();
+    var sw = b.getSouthWest();
+    var ne = b.getNorthEast();
+    return [
+      [sw.lat(), sw.lng()],
+      [ne.lat(), ne.lng()]
+    ];
   }
 
 });

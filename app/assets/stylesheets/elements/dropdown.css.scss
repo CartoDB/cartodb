@@ -4,6 +4,7 @@
    */
 
   @import "compass";
+  @import "../common/vars";
 
   div.dropdown {
     position:absolute;
@@ -97,6 +98,11 @@
         &:hover {
           background:#F7F7F7;
           a {color:#333333; text-decoration:none}
+        }
+
+        &.disabled {
+          background:white;
+          a {opacity:0.4; color:$link-color; text-decoration:none}
         }
       }
 

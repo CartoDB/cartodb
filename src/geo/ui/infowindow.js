@@ -211,7 +211,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _adjustPan: function () {
-	return;
 
     var offset = this.model.get("offset");
 

@@ -26,7 +26,7 @@ describe "Imports API" do
 
     last_import = DataImport.order(:updated_at.desc).first
     last_import.queue_id.should be == response_json['item_queue_id']
-    last_import.state.should_not be == 'failure'
+    last_import.state.should be == 'complete'
   end
 
   it 'allows users to perform asynchronous url imports' do
@@ -46,7 +46,7 @@ describe "Imports API" do
 
     last_import = DataImport.order(:updated_at.desc).first
     last_import.queue_id.should be == response_json['item_queue_id']
-    last_import.state.should_not be == 'failure'
+    last_import.state.should be == 'complete'
   end
 
   it 'allows users to perform synchronous imports'
@@ -88,12 +88,28 @@ describe "Imports API" do
   end
 
   it 'allows users to import files with weird filenames' do
-    post v1_imports_url(:host => 'test.localhost.lan'), :file_uri       => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'text/plain'),
+    post v1_imports_url(:host => 'test.localhost.lan'), :filename       => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'text/plain'),
                                                         :table_name     => '_penguins_below_80\ \(2\).tgz',
                                                         :api_key        => @user.get_map_key
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
+    get v1_import_url(:host => 'test.localhost.lan', :id => item_queue_id), :api_key => @user.get_map_key
+
+    response.code.should be == '200'
+
+    import = JSON.parse(response.body)
+    import['state'].should be == 'complete'
+  end
+
+  it 'allows users to import csv files with invalid encodings' do
+    f = upload_file('spec/support/data/invalid_byte_seq.csv', 'text/csv')
+    post v1_imports_url(:host => 'test.localhost.lan', 
+                        :filename => 'invalid_byte_seq.csv',
+                        :table_name     => 'invalid_byte_seq',
+                        :api_key        => @user.get_map_key), f.read.force_encoding('UTF-8')
+
+    item_queue_id = JSON.parse(response.body)['item_queue_id']
     get v1_import_url(:host => 'test.localhost.lan', :id => item_queue_id), :api_key => @user.get_map_key
 
     response.code.should be == '200'

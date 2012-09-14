@@ -121,10 +121,12 @@
       vis_data.overlays.splice(0, 0, { type: 'header' });
     }
 
-    vis_data.bounds = [
-      [opt.sw_lat, opt.sw_lon],
-      [opt.ne_lat, opt.ne_lon],
-    ];
+    if(opt.sw_lat !== undefined) {
+        vis_data.bounds = [
+          [opt.sw_lat, opt.sw_lon],
+          [opt.ne_lat, opt.ne_lon],
+        ];
+    }
 
     if(opt.sql) {
       data_layer_tilejson.query = opt.sql;

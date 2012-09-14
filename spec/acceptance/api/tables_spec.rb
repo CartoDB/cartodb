@@ -34,6 +34,7 @@ feature "API 1.0 tables management" do
       response.body[:tables][1]['tags'].split(',').should include('tag 3')
       response.body[:tables][1]['tags'].split(',').should include('tag 2')
       response.body[:tables][1]['tags'].split(',').should include('tag 1')
+      response.body[:tables][1]['geometry_types'].should == []
       (response.body[:tables][1]['schema'] - default_schema).should be_empty
       response.body[:tables].map{ |t| t['name'] }.should_not include("another_table_3")
     end
@@ -58,7 +59,7 @@ feature "API 1.0 tables management" do
     end
   end
 
-  scenario "Get ghost table" do
+  pending "Get ghost table" do
     @user.in_database.run('CREATE TABLE my_new_ghost_table (id integer)')
 
     get_json api_tables_url do |response|
@@ -320,6 +321,28 @@ feature "API 1.0 tables management" do
     table1.insert_row!({:name => "El Estocolmo"})
     visit "#{api_table_url(table1.name, :format => 'csv')}"
     current_path.should be == '/api/v1/tables/my_table_1.csv'
+  end
+
+  scenario "Download table metadata" do
+    data_import = DataImport.create( :user_id       => @user.id,
+      :table_name    => 'elecciones2008',
+      :data_source   => '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip')
+
+    table1 = Table[data_import.table_id]
+    get_json "#{api_table_url(table1.name)}" do |response|
+      response.status.should be_success      
+      response.body.except(:updated_at, :id).should == {
+        :name => "elecciones2008", 
+        :privacy => "PRIVATE", 
+        :tags => "", 
+        :schema =>[["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"], ["created_at", "date"], ["updated_at", "date"]], 
+        :rows_counted => 246, 
+        :table_size => 356352, 
+        :map_id => table1.map.id, 
+        :description => nil, 
+        :geometry_types => ["ST_MultiPolygon"]
+      }
+    end
   end
 
   scenario "save a infowindow for a table" do

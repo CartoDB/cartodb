@@ -70,7 +70,7 @@ module CartoDB
 
       def fix_encoding
         begin
-          
+          encoding_to_try = "UTF-8"
           is_utf = `file -bi #{@path}`
           unless is_utf.include? 'utf-8'
             # sample first 500 lines from source
@@ -105,13 +105,18 @@ module CartoDB
                 `iconv -f #{cd.encoding} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
                 `mv -f #{tf.path} #{@path}`                
                 tf.close!
+              else
+                # Try with LATIN1
+                encoding_to_try = "LATIN1"
               end  
             end
           end
+          return encoding_to_try
         rescue => e
           #raise e
           #silently fail here and try importing anyway
           log "ICONV failed for CSV #{@path}: #{e.message} #{e.backtrace}"
+          return encoding_to_try
         end
       end  
       

@@ -5,7 +5,7 @@ class Map < Sequel::Model
   plugin :association_dependencies, :layers => :nullify
   self.raise_on_save_failure = false
 
-  PUBLIC_ATTRIBUTES = %W{ id user_id provider bounding_box_sw bounding_box_ne center zoom }
+  PUBLIC_ATTRIBUTES = %W{ id user_id provider bounding_box_sw bounding_box_ne center zoom view_bounds_sw view_bounds_ne }
 
   DEFAULT_OPTIONS = {
     zoom:            3,

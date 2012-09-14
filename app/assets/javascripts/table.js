@@ -5,7 +5,6 @@
 //= require jquery.faviconNotify
 //= require rgbcolor
 //= require jquery-ui.core.min
-//= require jquery-ui.slider
 //= require ZeroClipboard
 //= require tag-it
 //= require spin.min

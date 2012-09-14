@@ -76,7 +76,8 @@
             // Event callbacks.
             onTagAdded  : null,
             onTagRemoved: null,
-            onTagClicked: null
+            onTagClicked: null,
+            onSubmitTags: null
         },
 
 
@@ -175,6 +176,8 @@
                         }
                     } else if (that.options.removeConfirmation) {
                         that._lastTag().removeClass('remove ui-state-highlight');
+                    } else if (event.which == $.ui.keyCode.ENTER && that._tagInput.val() == "") {
+                        that._trigger('onSubmitTags', null, that.tagList);
                     }
 
                     // Comma/Space/Enter are all valid delimiters for new tags,
@@ -207,6 +210,7 @@
                         // So let's ensure that it closes.
                         that._tagInput.autocomplete('close');
                     }
+
                 }).blur(function(e){
                     // Create a tag when the element loses focus (unless it's empty).
                     that.createTag(that._cleanedInput());

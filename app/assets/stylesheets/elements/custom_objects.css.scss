@@ -25,33 +25,8 @@
     height:81px;
 
     &.vertical_top {
-      &:before {
-        content:' ';
-        position:absolute;
-        display:block!important;
-        bottom:-6px;
-        right:5px;
-        width:0;
-        height:0;
-        border-top:6px solid white;
-        border-left:6px solid transparent;
-        border-right:6px solid transparent;
-        z-index:2;
-      }
-
-      &:after {
-        content:' ';
-        position:absolute;
-        display:block!important;
-        bottom:-7px;
-        right:7px;
-        width:0;
-        height:0;
-        border-top:6px solid #999;
-        border-left:6px solid transparent;
-        border-right:6px solid transparent;
-        z-index:1;
-      }
+      &:before {left:7px;}
+      &:after {left:7px;}
     }
 
     .ui-slider-vertical {
@@ -160,38 +135,6 @@
   div.dropdown.color_picker {
     border:1px solid #999999;
     padding:6px;
-
-    &.vertical_top {
-      &:after {
-        content:' ';
-        position:absolute;
-        display:block!important;
-        bottom:-7px;
-        right:12px;
-        width:0;
-        height:0;
-        border-top:6px solid #999;
-        border-left:6px solid transparent;
-        border-right:6px solid transparent;
-        z-index:2;
-      }
-    }
-
-    &.vertical_bottom {
-      &:after {
-        content:' ';
-        position:absolute;
-        display:block!important;
-        top:-6px;
-        left:12px;
-        width:0;
-        height:0;
-        border-bottom:6px solid #888;
-        border-left:6px solid transparent;
-        border-right:6px solid transparent;
-        z-index:2;
-      }
-    }
 
     div.colors {
       position:relative;

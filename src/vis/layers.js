@@ -11,6 +11,10 @@ Layers.register('gmapsbase', function(vis, data) {
   return new cdb.geo.GMapsBaseLayer(data);
 });
 
+Layers.register('plain', function(vis, data) {
+  return new cdb.geo.PlainLayer(data);
+});
+
 Layers.register('cartodb', function(vis, data) {
 
   if(data.infowindow && data.infowindow.fields) {

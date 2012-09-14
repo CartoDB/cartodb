@@ -17,7 +17,32 @@ feature "API 1.0 maps management" do
     post_json v1_maps_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key), { :table_id => table.id } do |response|
       response.status.should be_success
       table.refresh
-      table.map_id.should == response.body[:id]
+      table.map.should == Map[response.body[:id]]
+    end
+  end
+
+  scenario "Create a new google map" do
+    table = create_table(:user_id => @user.id)
+    data = { table_id: table.id, center: "[41.68932225997044,-13.4912109375]", zoom: 5, minZoom: 0, maxZoom: 20, provider: "googlemaps", id: 24, user_id: 2,bounding_box_sw: "[0,0]", bounding_box_ne: "[0,0]" }
+
+    post_json v1_maps_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key), data do |response|
+      response.status.should be_success
+      table.refresh
+      table.map.should == Map[response.body[:id]]
+      response.body[:center].should == "[41.68932225997044,-13.4912109375]"
+      response.body[:zoom].should == 5
+      response.body[:bounding_box_sw].should == "[0,0]"
+      response.body[:bounding_box_ne].should == "[0,0]"
+    end
+  end
+
+  scenario "Can't create a map associated to another user's table" do
+    another_user  = create_user({:username => 'waldo'})
+    table = create_table(:user_id => another_user.id)
+    data = { table_id: table.id }
+
+    post_json v1_maps_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key), data do |response|
+      response.status.should_not be_success
     end
   end
 

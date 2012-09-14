@@ -128,7 +128,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
   rowView: cdb.ui.common.RowView,
 
   events: {
-      'click td': '_cellClick'
+      'click td': '_cellClick',
+      'dblclick td': '_cellDblClick'
   },
 
   default_options: {
@@ -268,12 +269,17 @@ cdb.ui.common.Table = cdb.core.View.extend({
     return this.rowViews[y].getCell(x);
   },
 
-  _cellClick: function(e) {
+  _cellClick: function(e, evtName) {
+    evtName = evtName || 'cellClick';
     e.preventDefault();
     var cell = $(e.currentTarget || e.target);
     var x = parseInt(cell.attr('data-x'), 10);
     var y = parseInt(cell.parent().attr('data-y'), 10);
-    this.trigger('cellClick', e, cell, x, y);
+    this.trigger(evtName, e, cell, x, y);
+  },
+
+  _cellDblClick: function(e) {
+    this._cellClick(e, 'cellDblClick');
   }
 
 

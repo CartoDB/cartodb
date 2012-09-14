@@ -4,10 +4,11 @@
 
   <%= content_for(:js) do %>
     <%= headjs_include_tag "plugins/jquery.min", "admin/show/helpers", "plugins/file_uploader", "admin/index/dashboard", "plugins/jquery.color", "plugins/jquery.cookie", "admin/index/import"  %>
+    
     <% 
       # Get the user space to set the uploader max file size
       if @quota && @database_size
-        @userSpaceLimit = (@quota - @database_size.to_i) * 1024 * 1024
+        @userSpaceLimit = ((@quota - @database_size.to_i) * 1024 * 1024 ) * (current_user.try(:account_type).upcase != "FREE" ? 3 : 1)
       else
         @userSpaceLimit = 0
       end

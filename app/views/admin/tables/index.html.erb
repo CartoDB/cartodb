@@ -23,20 +23,7 @@
   <section id="content">
     <div id="hugeUploader"></div>
     <div class="inner_content">
-
-      <% if false %>
-        <div class="requests_info section white_content padding">
-        <a class="close" href="#close_stats">close</a>
-          <div class="left">
-            <h2>Payment received. Welcome to your Macallan server!</h2>
-            <p>Your payment has been received correctly. Your next payment will be on May 1st ($29)</p>
-            <p class="margin">Since now, you will be able to view your payment data in your <%= link_to 'settings panel', account_url, :class=>"settings" %></p>
-          </div>
-          <img src="/images/admin/dashboard/success_payment.png" class="star_table" alt="Hoooray" title=""/>
-        </div>
-      <% end %>
-
-      <% if @tables_count == 0 %>
+      <% if @tables_count == 0 && params["q"].blank? %>
         <div class="requests_info section white_content padding">
           <a class="close" href="#close_stats">close</a>
           <h2>Welcome to CartoDB <%= current_user.username %>!</h2>
@@ -101,11 +88,14 @@
                 <%= (@table_quota.present? && @tables_count.to_f/@table_quota > 0.90) ? 'boom' : '' %>">
                   <% if @table_quota.blank? %>
                     <p class="big"><%= @tables_count %>/&infin;</p>
-                    <label>Tables<br/>created</label>
                   <% else %>
                     <p class="big"><%= @tables_count %>/<%= @table_quota %></p>
-                    <label>Tables<br/>created</label>                      
-                  <% end %>    
+                  <% end %>
+                  <% if !params["q"].blank? %>
+                    <label>Tables<br/>found</label>
+                  <% else %>
+                    <label>Tables<br/>created</label>
+                  <% end %>
                 </td>
               </tr>
             </tbody>

@@ -1138,8 +1138,8 @@
 		  
 			function changeEmbedCode() {
 				var sql = (($('body').hasClass('query')) ? '?sql=' + encodeURIComponent(editor.getOption('query')) : '');
-				$('div.embed_window span.copy_code input').val('<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map'+ sql +'\'></iframe>');
-				$('div.embed_window div.tiles_code input').val(TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map'+ sql);
+				$('div.embed_window span.copy_code p').text('<iframe src=\''+ TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map'+ sql +'\'></iframe>');
+				$('div.embed_window div.tiles_code p').text(TILEHTTP +'://'+ user_name + '.' + TILESERVER +'/tables/'+table_name+'/embed_map'+ sql);
 			}
 		
 		  return {}

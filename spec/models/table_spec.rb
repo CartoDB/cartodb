@@ -873,6 +873,15 @@ describe Table do
       cartodb_id_schema[:allow_null].should == false
     end
 
+    it "should return geometry types" do
+      data_import = DataImport.create( :user_id       => @user.id,
+                                       :data_source   => '/../db/fake_data/gadm4_export.csv' )
+
+      table = Table[data_import.table_id]
+
+      table.geometry_types.should == ['ST_Point']
+    end
+
     # FIXME: Don't know if we still support this behaviour, or if it's something from the past
     pending "should copy cartodb_id values to a new cartodb_id serial column when importing a file which already has a cartodb_id column" do
       data_import = DataImport.create( :user_id       => @user.id,

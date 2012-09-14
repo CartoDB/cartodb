@@ -18,8 +18,8 @@ class Api::Json::TablesController < Api::ApplicationController
                           and user_tables.id = tags.table_id
                           and tags.name = ? order by user_tables.id desc", current_user.id, tag_name)
     else
-      current_user.tables.select("*, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names".lit)
-        .order(:id.desc)
+      Table.select("*, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names".lit)
+        .where(:user_id => current_user.id).order(:id.desc)
     end
 
     @tables = @tables.search(params[:q]) unless params[:q].blank?

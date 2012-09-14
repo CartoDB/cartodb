@@ -11,12 +11,17 @@ class Table < Sequel::Model(:user_tables)
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = { :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
                         :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
-                        :table_size => :table_size, :map_id => :map_id, :description => :description }
+                        :table_size => :table_size, :map_id => :map_id, :description => :description, 
+                        :geometry_types => :geometry_types }
 
   many_to_one :map
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |k, v| [k, (self.send(v) rescue self[v].to_s)] }]
+  end
+
+  def geometry_types
+    owner.in_database.fetch("SELECT distinct(ST_GeometryType(the_geom)) from #{self.name}").all.map {|r| r[:st_geometrytype] }
   end
 
   def_dataset_method(:search) do |query|
@@ -1556,5 +1561,6 @@ SQL
     CartodbStats.update_tables_counter_per_host(-1)
     CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
   end
+
 
 end

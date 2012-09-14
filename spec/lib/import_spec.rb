@@ -108,6 +108,16 @@ describe CartoDB::Importer do
         results[0].import_type.should   == '.csv'
       end
 
+      it "should import a CSV file with invalid byte sequences" do
+        importer = create_importer 'invalid_byte_seq.csv', 'invalid_byte_seq'
+        results,errors = importer.import!
+
+        errors.should be_empty
+        results[0].name.should          == 'invalid_byte_seq'
+        results[0].rows_imported.should == 98
+        results[0].import_type.should   == '.csv'
+      end
+
       it "should import estaciones2.csv" do
         importer = create_importer 'estaciones2.csv'
         results,errors = importer.import!
@@ -394,6 +404,13 @@ describe CartoDB::Importer do
 
   after(:all) do
     CartoDB::ImportDatabaseConnection.drop
+  end
+
+  before(:each) do
+    # Clean existing databases to avoid naming errors on the tests
+    CartoDB::ImportDatabaseConnection.connection["select tablename from pg_tables where schemaname = 'public' and tablename != 'spatial_ref_sys'"].all.each do |table|
+      CartoDB::ImportDatabaseConnection.connection.run("drop table if exists #{table[:tablename]} cascade")
+    end
   end
 
   def file file

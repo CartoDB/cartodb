@@ -131,6 +131,11 @@
 
         // Bind events
         Core._bind($el);
+
+        // Check if input has value (TIMEOUT due to if browser saves values)
+        setTimeout(function(){
+          Core._check($el);
+        },300);
       });
     },
 

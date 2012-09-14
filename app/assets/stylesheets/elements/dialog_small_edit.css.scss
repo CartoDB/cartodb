@@ -59,7 +59,7 @@
     position:absolute;
     top:5px;
     left:5px;
-    right:64px;
+    right:65px;
     bottom:5px;
     font-size: 15px;
     color: #333333;
@@ -77,12 +77,66 @@
     @include inline-block();
     float: left;
   }
-  a {
+  a.ok {
     padding: 1px + (36px - 15px)/2 !important;
     border: 1px solid #000 !important;
     font-size: 15px !important;
     font-weight: bold !important;
+    letter-spacing:0;
     @include border-radius(4px);
   }
 
+  &.tags-dialog {
+    ul {
+      min-height:38px;
+      min-width:215px;
+      max-width:400px;
+      margin:0 3px 0 0;
+      background:white;
+      border: 1px solid #000;
+      @include border-radius(4px);
+
+      li.tagit-choice {
+        margin:0 5px 0 0;
+        padding:0;
+        background:#4086C3;
+        border:1px solid #2B5B85;
+        @include border-radius(3px);
+        font:normal 11px "Arial";
+        color:#FFFFFF;
+
+        span.tagit-label {
+          @include inline-block();
+          padding:3px;
+          border-right:1px solid #2B5B85;
+        }
+
+        a.tagit-close {
+          position:relative;
+          @include inline-block();
+          width:auto;
+          height:auto;
+
+          span.text-icon {
+            display:block;
+            margin:0;
+            padding:0 4px;
+          }
+        }
+      }
+    }
+
+    a.ok {
+      padding: 7px 15px !important;
+      border: 1px solid #000 !important;
+      font-size: 15px !important;
+      font-weight: bold !important;
+      letter-spacing:0;
+      @include border-radius(4px);
+    }
+
+    input {
+      position:relative;
+    }
+  }
 }

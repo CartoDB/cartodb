@@ -123,6 +123,9 @@ _.extend(GMapsTiledLayerView.prototype, GMapsLayerView.prototype, {
         if (x < 0 || x >= tileRange) {
           x = (x % tileRange + tileRange) % tileRange;
         }
+        if(layerModel.get('tms')) {
+          y = tileRange - y - 1;
+        }
         var urlPattern = layerModel.get('urlTemplate');
         return urlPattern
                     .replace("{x}",x)

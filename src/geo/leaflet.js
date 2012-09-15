@@ -2,6 +2,7 @@
 * leaflet implementation of a map
 */
 (function() {
+if(typeof(L) != "undefined") {
 
   var PlainLayer = L.TileLayer.extend({
 
@@ -72,7 +73,9 @@
   // -- tiled layer view
 
   var LeafLetTiledLayerView = function(layerModel, leafletMap) {
-    var leafletLayer = new L.TileLayer(layerModel.get('urlTemplate'));
+    var leafletLayer = new L.TileLayer(layerModel.get('urlTemplate'), {
+      tms: layerModel.get('tms')
+    });
     LeafLetLayerView.call(this, layerModel, leafletLayer, leafletMap);
   };
 
@@ -297,4 +300,5 @@
 
   });
 
+} // defined leaflet
 })();

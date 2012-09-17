@@ -186,6 +186,12 @@ if(typeof(L) != "undefined") {
 
       this.map_leaflet = new L.Map(this.el, mapConfig);
 
+      // looks like leaflet dont like to change the bounds just after the inicialization
+      var bounds = this.map.getViewBounds();
+      if(bounds) {
+        this.showBounds(bounds);
+      }
+
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
       this.map.layers.bind('remove', this._removeLayer, this);
@@ -226,6 +232,9 @@ if(typeof(L) != "undefined") {
         });
         self.trigger('drag');
       }, this);
+
+
+      this.trigger('ready');
 
     },
 
@@ -296,6 +305,18 @@ if(typeof(L) != "undefined") {
 
     panBy: function(p) {
       this.map_leaflet.panBy(new L.Point(p.x, p.y));
+    },
+
+    setAutoSaveBounds: function() {
+      var self = this;
+      // save on change
+      this.map.bind('change:center change:zoom', _.debounce(function() {
+        var b = self.getBounds();
+        self.map.save({
+          view_bounds_sw: b[0],
+          view_bounds_ne: b[1]
+        }, { silent: true });
+      }, 1000), this);
     }
 
   });

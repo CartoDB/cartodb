@@ -217,11 +217,19 @@ describe("geo.map", function() {
     });
 
     it("shoule remove all layers when map view is cleaned", function() {
-      var layer    = new cdb.geo.CartoDBLayer({});
-      map.addLayer(layer);
-      expect(_.size(mapView.layers)).toEqual(1);
+
+      var id1= map.addLayer(new cdb.geo.CartoDBLayer({});
+      var id2 map.addLayer(new cdb.geo.CartoDBLayer({}));
+
+      expect(_.size(mapView.layers)).toEqual(2);
+      var layer = mapView.getLayerByCid(id1);
+      var layer2 = mapView.getLayerByCid(id2);
+      spyOn(layer, 'remove');
+      spyOn(layer2, 'remove');
       mapView.clean();
       expect(_.size(mapView.layers)).toEqual(0);
+      expect(layer.remove).toHaveBeenCalled();
+      expect(layer2.remove).toHaveBeenCalled();
     });
 
     it("should not all a layer when it can't be creadted", function() {
@@ -229,6 +237,7 @@ describe("geo.map", function() {
       map.addLayer(layer);
       expect(_.size(mapView.layers)).toEqual(0);
     });
+
 
 
 

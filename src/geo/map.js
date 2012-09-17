@@ -188,6 +188,19 @@ cdb.geo.Map = Backbone.Model.extend({
 
   },
 
+  /**
+   * return getViewbounds if it is set 
+   */
+  getViewBounds: function() {
+    if(this.has('view_bounds_sw') && this.has('view_bounds_ne')) {
+      return [
+        this.get('view_bounds_sw'),
+        this.get('view_bounds_ne')
+      ];
+    }
+    return null;
+  },
+
   getLayerAt: function(i) {
     return this.layers.at(i);
   },

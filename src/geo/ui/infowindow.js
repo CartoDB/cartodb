@@ -188,8 +188,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _update: function () {
-    this._adjustPan();
-    this._updatePosition();
+    if(!this.isHidden()) {
+      this._adjustPan();
+      this._updatePosition();
+    }
   },
 
   /**

@@ -223,19 +223,22 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   },
 
   initialize: function() {
+    _.bindAll(this, '_ready');
+    this._isReady = false;
     var self = this;
 
     cdb.geo.MapView.prototype.initialize.call(this);
     var center = this.map.get('center');
     this.map_googlemaps = new google.maps.Map(this.el, {
       center: new google.maps.LatLng(center[0], center[1]),
-      zoom: 2,
+      zoom: this.map.get('zoom'),
       minZoom: this.map.get('minZoom'),
       maxZoom: this.map.get('maxZoom'),
       disableDefaultUI: true,
       mapTypeControl:false,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     });
+
 
     this._bindModel();
     this._addLayers();
@@ -256,7 +259,19 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.map.layers.bind('reset', this._addLayers, this);
 
     this.projector = new cdb.geo.CartoDBLayerGMaps.Projector(this.map_googlemaps);
+    
+    this.projector.draw = this._ready;
 
+  },
+
+  _ready: function() {
+    this.projector.draw = function() {};
+    this.trigger('ready');
+    this._isReady = true;
+    var bounds = this.map.getViewBounds();
+    if(bounds) {
+      this.showBounds(bounds);
+    }
   },
 
   _setZoom: function(model, z) {
@@ -341,7 +356,20 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     var southWest = new google.maps.LatLng(sw[0], sw[1]);
     var northEast = new google.maps.LatLng(ne[0], ne[1]);
     this.map_googlemaps.fitBounds(new google.maps.LatLngBounds(southWest, northEast));
+  },
 
+  setAutoSaveBounds: function() {
+    var self = this;
+    // save on change
+    this.map.bind('change:center change:zoom', _.debounce(function() {
+      if(self._isReady) {
+        var b = self.getBounds();
+        self.map.save({
+          view_bounds_sw: b[0],
+          view_bounds_ne: b[1]
+        }, { silent: true });
+      }
+    }, 1000), this);
   }
 
 });

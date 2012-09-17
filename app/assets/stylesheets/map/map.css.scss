@@ -104,6 +104,7 @@
             }
 
             span.remove_layer {
+              display: none;
               position:absolute;
               bottom:1px;
               right:1px;
@@ -128,6 +129,7 @@
               }
             }
 
+
             &:before {
               content:' ';
               position:absolute;
@@ -145,6 +147,9 @@
               cursor:pointer;
               &:before {
                 border:1px solid rgba(#999999,1);
+              }
+              span.remove_layer {
+                display: block;
               }
             }
 

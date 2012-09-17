@@ -126,8 +126,19 @@
         var params = {};
         params['cartodb_georef_status'] = false;
 
-        if (event.data.query.results.ResultSet.Found != "0") {
-          params['the_geom'] = {"type":"Point","coordinates":[event.data.query.results.ResultSet.Results.longitude,event.data.query.results.ResultSet.Results.latitude]};
+        if (event.data.query.results && event.data.query.results.ResultSet && event.data.query.results.ResultSet.Found != "0") {
+
+          // Could be an array or an object |arg!
+          var coordinates = {};
+          if (_.isArray(event.data.query.results.ResultSet.Results)) {
+            coordinates.lat = event.data.query.results.ResultSet.Results[0].latitude;
+            coordinates.lon = event.data.query.results.ResultSet.Results[0].longitude;
+          } else {
+            coordinates.lat = event.data.query.results.ResultSet.Results.latitude;
+            coordinates.lon = event.data.query.results.ResultSet.Results.longitude;
+          }
+
+          params['the_geom'] = {"type":"Point","coordinates":[coordinates.lon,coordinates.lat]};
           params['cartodb_georef_status'] = true;
         }
 				

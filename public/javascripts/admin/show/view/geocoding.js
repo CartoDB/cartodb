@@ -126,7 +126,7 @@
         var params = {};
         params['cartodb_georef_status'] = false;
 
-        if (event.data.query.results && event.data.query.results.ResultSet && event.data.query.results.ResultSet.Found != "0") {
+        if (event.data && event.data.query && event.data.query.results && event.data.query.results.ResultSet && event.data.query.results.ResultSet.Found != "0") {
 
           // Could be an array or an object |arg!
           var coordinates = {};

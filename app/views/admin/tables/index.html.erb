@@ -21,7 +21,7 @@
         <div class="content">
           <div class="left">
             <h2>Welcome <%= current_user.username %>!</h2>
-            <p class="margin20">Start dropping here your data or just creating a table from scratch. Once you have your data imported you will be able to create your first map!</p>
+            <p class="margin20">Start by dragging and dropping your data onto the browser to create your first table, or start from scratch. </br></br>  Once your data is imported you will be able to see your first map.</p>
             <p class="margin40"><a href="#create_a_table" class="green button create_new">Create your first table</a></p>
           </div>
           <div class="right">
@@ -30,7 +30,7 @@
         </div>
         <div class="foot">
           <ul>
-            <li><h3>Do you need some example data?</h3></li>
+            <li><h3>Need sample data?</h3></li>
             <li><a class="population import_example" href="http://cartodb.s3.amazonaws.com/static/TM_WORLD_BORDERS_SIMPL-0.3.zip">Import country borders<br/>with population numbers</a></li>
             <li><a class="twitter import_example" href="http://cartodb.s3.amazonaws.com/static/stop_frisk_bedford.zip">Import NYPD’s<br/>stop-and-frisk 2011 data</a></li>
           </ul>
@@ -60,7 +60,7 @@
         </div>
         <div class="content">
           <ul></ul>
-          <ul><li><%= link_to "Sample data tables", "#some_samples", :class => "popular" %></li></ul>
+          <ul><li><%= link_to "Sample data", "#some_samples", :class => "popular" %></li></ul>
         </div>
       </aside>
       <div class="paginator"></div>
@@ -70,8 +70,8 @@
   <article class="support">
     <div class="inner">   
       <section class="left">
-        <h3>Since you are a paid user you have access to dedicated support.</h3>
-        <p>We also encourage you to participate in our <a href="https://groups.google.com/d/forum/cartodb" target="_blank">Google Group</a> and share your knowledge.</p>
+        <h3>As a paying customer you have access to our dedicated support.</h3>
+        <p>We also encourage our users to participate on our <a href="https://groups.google.com/d/forum/cartodb" target="_blank">community forums</a> and share their knowledge.</p>
       </section>
       <aside class="right">
         <a href="mailto:support@cartodb.com" class="button grey">Contact us</a>
@@ -81,6 +81,6 @@
 
   <div class="drag_mamufas">
     <span class="file"></span>
-    <p class="bigger strong">Drop here your file to create a new table with it</p>
+    <p class="bigger strong">Drop your file onto the browser window to create a new table</p>
     <div class="mask"></div>
   </div>

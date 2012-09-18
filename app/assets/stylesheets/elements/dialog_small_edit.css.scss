@@ -46,6 +46,25 @@
     }
   }
 
+
+  // Edit date dialog
+  &.date_dialog {
+    .select2-container {width:100px!important;}
+    div.field {
+      @include inline-block();
+      label {display:block; margin:0 0 5px; font:bold 10px $text-fonts; color:#999999;}
+    }
+    
+    input.time {
+      width:50px;
+      padding:0 5px;
+      height:19px;
+      font-size:13px;
+      line-height:19px;
+      &.error {border-color:rgba(red,0.5);}
+    }
+  }
+
 }
 
 .floating.edit_name_dialog {
@@ -169,3 +188,5 @@
     }
   }
 }
+
+

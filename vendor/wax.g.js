@@ -3364,7 +3364,7 @@ wax.g.connector = function(options) {
         blankImage: options.blankImage || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
     };
 
-    this.opacity = options.opacity || 0;
+    this.opacity = options.opacity || 0;
     this.minZoom = options.minzoom || 0;
     this.maxZoom = options.maxzoom || 22;
 

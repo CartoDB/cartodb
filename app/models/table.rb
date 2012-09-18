@@ -174,6 +174,7 @@ class Table < Sequel::Model(:user_tables)
       @data_import.reload
       @data_import.migrated
       @data_import.save
+      set_trigger_the_geom_webmercator
       return importer.name
     end
   end

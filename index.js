@@ -8,7 +8,7 @@
 //= require cdb/vendor/leaflet
 //= require cdb/vendor/cartodb-leaflet
 //= require cdb/vendor/wax.leaf
-//= require cdb/vendor/wax.g.min
+//= require cdb/vendor/wax.g
 //= require cdb/src/cartodb
 //= require cdb/src/core/decorator
 //= require cdb/src/core/config

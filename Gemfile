@@ -13,7 +13,7 @@ gem "sequel_pg",               "1.2.0", :require => "sequel"
 # gem "sequel-rails-cartodb", "~> 0.1.7", :require => "sequel-rails"
 # gem "text-hyphen", "1.2.0"
 
-gem "vizzuality-sequel-rails", "0.3.4"
+gem "vizzuality-sequel-rails", "0.3.5"
 
 gem "rails_warden",            "0.5.2" # Auth via the Warden Rack framework
 gem "oauth",                   "0.4.5"

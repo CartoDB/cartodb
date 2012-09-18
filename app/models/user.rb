@@ -411,7 +411,7 @@ class User < Sequel::Model
 
   # Cartodb functions
   def load_cartodb_functions
-    #puts "Loading functions in db '#{database_name}' (#{username})"
+    puts "Loading functions in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         glob = Rails.root.join('lib/sql/*.sql')

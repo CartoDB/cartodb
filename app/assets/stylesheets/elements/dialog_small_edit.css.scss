@@ -61,7 +61,24 @@
       height:19px;
       font-size:13px;
       line-height:19px;
+      border-color:#9E9E9E;
       &.error {border-color:rgba(red,0.5);}
+    }
+  }
+
+  // Edit boolean dialog
+  &.boolean_dialog {
+    nav {
+      display:block;
+      border:1px solid #CCCCCC;
+      @include border-radius(4px);
+      background:white;
+      padding:12px 5px 12px 20px;
+      a {
+        @include inline-block(); width:65px; font-weight:normal; font-size:13px;
+        span.radio {margin-top:0!important;}
+        &:hover {text-decoration:none;}
+      }
     }
   }
 

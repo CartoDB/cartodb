@@ -8,6 +8,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     # BEWARE. don't get clever. This is all explicit because of mass assignment limitations
     @user = User.new
 
+    User.db.run('SET statement_timeout TO 600000')    
     if attributes = params[:user]
       @user.username                = attributes[:username]
       @user.email                   = attributes[:email]   
@@ -30,6 +31,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     end
     
     @user.save
+    User.db.run('SET statement_timeout TO DEFAULT')
+    
     respond_with(:superadmin, @user)
   end
 

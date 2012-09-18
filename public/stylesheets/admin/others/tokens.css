@@ -1,5 +1,5 @@
 section#content div.inner_content {padding:40px 0 50px 0;}
-
+section#content div.tables_list {letter-spacing: -4px}
 section#content div.inner_content div.notification div.top_white {width:906px; height:7px; padding:0; background:url('/images/admin/backgrounds/top_white_long.png') no-repeat 0 0;}
 section#content div.inner_content div.notification div.middle_white {position:relative; width:846px; padding:12px 30px 12px; background:url('/images/admin/backgrounds/middle_white_long.png') repeat-y 0 0;}
 section#content div.inner_content div.notification div.middle_white h2 {width:100%; font:bold 21px Arial; color:#333333;}
@@ -8,7 +8,7 @@ section#content div.inner_content div.notification div.middle_white a.close {pos
 section#content div.inner_content div.notification div.middle_white a.close:hover {background-position:0 -17px;}
 section#content div.inner_content div.notification div.bottom_white {width:906px; height:8px; padding:0; margin: 0 0 30px 0; background:url('/images/admin/backgrounds/bottom_white_long.png') no-repeat 0 bottom;}
 
-section#content div.left {display:inline-block; width:626px; vertical-align:top;}
+section#content div.left {display:inline-block; width:626px; vertical-align:top; letter-spacing: 0}
 section#content div.left div.top_blue_medium {float:left; width:626px; height:61px; background:url('/images/admin/backgrounds/top_blue_medium.png') no-repeat 0 0;}
 section#content div.left div.top_blue_medium h3 {float:left; margin:18px 0 0 25px; font:normal 23px "Aller",Arial; color:white; text-shadow:0 1px #718C92;}
 section#content div.left div.top_blue_medium p {float:right; width:auto; margin:16px 25px 0 0;}
@@ -133,7 +133,7 @@ section#content div.left div.middle_white_medium div.end_oauth span.end_key p a 
 section#content div.left div.middle_white_medium div.end_oauth span.end_key p a:hover {color:#FF6600;}
 
 section#content div.left div.bottom_white_medium {float:left; width:626px; height:10px; padding:0; background:url('/images/admin/backgrounds/bottom_white_medium.png') no-repeat 0 top;}
-section#content div.right {display:inline-block; vertical-align:top; width:260px; margin:0 0 0 16px;}
+section#content div.right {display:inline-block; vertical-align:top; width:260px; margin:0 0 0 19px; letter-spacing:0;}
 section#content div.right div.banner {width:100%;}
 section#content div.right div.banner div.top_white_short {width:100%; height:10px; background:url('/images/admin/backgrounds/top_white_short.png') no-repeat 0 0;}
 section#content div.right div.banner div.middle_white_short {width:204px; height:auto; padding:18px 28px 21px; background:url('/images/admin/backgrounds/middle_white_short.png') repeat-y 0 0;}

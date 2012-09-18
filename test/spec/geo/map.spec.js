@@ -218,8 +218,8 @@ describe("geo.map", function() {
 
     it("shoule remove all layers when map view is cleaned", function() {
 
-      var id1= map.addLayer(new cdb.geo.CartoDBLayer({});
-      var id2 map.addLayer(new cdb.geo.CartoDBLayer({}));
+      var id1 = map.addLayer(new cdb.geo.CartoDBLayer({}));
+      var id2 = map.addLayer(new cdb.geo.CartoDBLayer({}));
 
       expect(_.size(mapView.layers)).toEqual(2);
       var layer = mapView.getLayerByCid(id1);

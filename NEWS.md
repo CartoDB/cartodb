@@ -1,3 +1,11 @@
+0.9.14 (18/09/12)
+------
+* Fixed text in tables number when there is a search filter
+* Increased allowed upload size in javascript 
+* Increased timeout in user creation tasks
+* Fixed georeference when there are several results
+* Small visual fixes
+
 0.9.13 (12/09/12)
 ------
 * Fixed statement timeout when creating user database

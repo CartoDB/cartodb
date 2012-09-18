@@ -162,7 +162,9 @@ cdb.geo.Map = Backbone.Model.extend({
     m.set({
       center: _.clone(this.attributes.center),
       bounding_box_sw: _.clone(this.attributes.bounding_box_sw),
-      bounding_box_ne: _.clone(this.attributes.bounding_box_ne)
+      bounding_box_ne: _.clone(this.attributes.bounding_box_ne),
+      view_bounds_sw: _.clone(this.attributes.view_bounds_sw),
+      view_bounds_ne: _.clone(this.attributes.view_bounds_ne)
     });
     // layers
     m.layers = this.layers.clone();

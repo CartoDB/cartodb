@@ -21,13 +21,13 @@ class Layer < Sequel::Model
   def after_save
     super
 
-    $layers_metadata.hset key, "style", (options[:style] rescue '')
+    #$layers_metadata.hset key, "style", (options[:style] rescue '')
   end
 
   def after_destroy
     super
 
-    $layers_metadata.del key
+    #$layers_metadata.del key
   end
 
   def key

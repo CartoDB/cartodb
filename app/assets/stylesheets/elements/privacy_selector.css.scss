@@ -14,6 +14,19 @@
     background:white;
     z-index:10;
 
+    div.nonPayer {
+      padding:14px;
+      color: #999;
+
+      div {
+        margin: 0;
+        padding: 0
+      }
+      div:first-child {
+        margin-bottom: 5px;
+      }
+    }
+
     ul {
       display:block;
       width:100%;

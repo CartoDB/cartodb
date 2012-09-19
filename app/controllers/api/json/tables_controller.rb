@@ -5,7 +5,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
   before_filter :load_table, :except => [:index, :create]
   before_filter :set_start_time
-  #before_filter :link_ghost_tables
+  before_filter :link_ghost_tables
   after_filter  :record_query_threshold
 
   def index
@@ -23,7 +23,7 @@ class Api::Json::TablesController < Api::ApplicationController
     end
 
     @tables = @tables.search(params[:q]) unless params[:q].blank?
-    
+
     page     = params[:page].to_i > 0 ? params[:page].to_i : 1
     per_page = params[:per_page].to_i > 0 ? params[:per_page].to_i : 1000
     render_jsonp({ :tables => @tables.paginate(page, per_page).all.map(&:public_values),
@@ -83,7 +83,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
     # Perform name validations
     # TODO move this to the model!
-    unless params[:name].nil? 
+    unless params[:name].nil?
       if params[:name].downcase != @table.name
         owner = User.select(:id,:database_name,:crypted_password,:quota_in_bytes,:username, :private_tables_enabled, :table_quota).filter(:id => current_user.id).first
         if params[:name] =~ /^[0-9_]/

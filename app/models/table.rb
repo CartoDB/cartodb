@@ -11,7 +11,7 @@ class Table < Sequel::Model(:user_tables)
   RESERVED_COLUMN_NAMES = %W{ oid tableoid xmin cmin xmax cmax ctid ogc_fid }
   PUBLIC_ATTRIBUTES = { :id => :id, :name => :name, :privacy => :privacy_text, :tags => :tags_names,
                         :schema => :schema, :updated_at => :updated_at, :rows_counted => :rows_estimated,
-                        :table_size => :table_size, :map_id => :map_id, :description => :description, 
+                        :table_size => :table_size, :map_id => :map_id, :description => :description,
                         :geometry_types => :geometry_types }
 
   many_to_one :map
@@ -276,6 +276,7 @@ class Table < Sequel::Model(:user_tables)
       @data_import.save
     else
       create_table_in_database!
+      set_table_id
       if !self.temporal_the_geom_type.blank?
         self.the_geom_type = self.temporal_the_geom_type
         self.temporal_the_geom_type = nil
@@ -1032,6 +1033,12 @@ class Table < Sequel::Model(:user_tables)
     end
   end
 
+  # if the table is already renamed, we just need to update the name attribute
+  def synchronize_name(name)
+    self[:name] = name
+    save
+  end
+
   def to_kml
     owner.in_database do |user_database|
       export_schema = self.schema.map{|c| c.first}
@@ -1167,6 +1174,8 @@ class Table < Sequel::Model(:user_tables)
                 RETURN NEW;
           END;
         $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
+
+        #{create_the_geom_if_not_exists(self.name)}
 
         CREATE TRIGGER update_the_geom_webmercator_trigger
         BEFORE INSERT OR UPDATE OF the_geom ON #{self.name}
@@ -1437,12 +1446,20 @@ TRIGGER
                                unshift("updated_at timestamp")
         user_database.run(<<-SQL
 CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')});
-alter table #{self.name} alter column created_at SET DEFAULT now();
-alter table #{self.name} alter column updated_at SET DEFAULT now();
+ALTER TABLE #{self.name} ALTER COLUMN created_at SET DEFAULT now();
+ALTER TABLE #{self.name} ALTER COLUMN updated_at SET DEFAULT now();
 SQL
         )
       end
     end
+  end
+
+  def set_table_id
+    self.table_id = owner.in_database.select(:pg_class__oid)
+                                     .from(:pg_class)
+                                     .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+                                     .where(:relkind => 'r', :nspname => 'public', :relname => name)
+                                     .first[:oid]
   end
 
   def update_the_geom!(attributes, primary_key)
@@ -1563,5 +1580,28 @@ SQL
     CartodbStats.update_tables_counter_per_plan(-1, self.owner.account_type)
   end
 
+  def create_the_geom_if_not_exists(table_name)
+    <<-SQL
+      CREATE OR REPLACE FUNCTION check_the_geom_exists(tablename text)
+      RETURNS VOID AS $BODY$
+      DECLARE the_geom_exists integer := 0;
+      BEGIN
+          SELECT count(attname) INTO the_geom_exists
+          FROM pg_attribute
+          INNER JOIN pg_class ON pg_class.oid = pg_attribute.attrelid
+          WHERE pg_attribute.attname = 'the_geom' AND pg_class.relname = tablename;
+
+          IF the_geom_exists = 0 THEN
+            PERFORM AddGeometryColumn(tablename,'#{THE_GEOM}',#{CartoDB::GOOGLE_SRID},'GEOMETRY',3);
+          END IF;
+
+          RETURN;
+      END;
+      $BODY$
+      LANGUAGE plpgsql VOLATILE;
+
+      SELECT check_the_geom_exists('#{table_name}');
+    SQL
+  end
 
 end

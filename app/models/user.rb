@@ -311,22 +311,43 @@ class User < Sequel::Model
   # required records to link them
   def link_ghost_tables
     real_tables = self.in_database(:as => :superuser)
-                      .select(:tablename).from(:pg_tables)
-                      .where(:tableowner => self.database_username)
-                      .all.map {|t| t[:tableownername]} - SYSTEM_TABLE_NAMES
+                      .select(:pg_class__oid, :pg_class__relname)
+                      .from(:pg_class)
+                      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+                      .where(:relkind => 'r', :nspname => 'public')
+                      .exclude(:relname => SYSTEM_TABLE_NAMES)
+                      .all
 
-    ghost_tables = (real_tables - self.tables.select(:name).map(&:name)).compact
+    current_tables_ids   = self.tables.select(:table_id).map(&:table_id)
+    current_tables_names = self.tables.select(:name).map(&:name)
 
-    ghost_tables.each do |t| 
+    created_tables = real_tables.reject{|t| current_tables_ids.include?(t[:oid])}
+    renamed_tables = real_tables.reject{|t| current_tables_ids.include?(t[:oid]) && current_tables_names.include?(t[:relname])}
+    dropped_tables = current_tables_ids - real_tables.map{|t| t[:oid]}
+
+    created_tables.each do |t|
       table = Table.new
-      table.user_id = self.id
-      table.migrate_existing_table = t
+      table.user_id  = self.id
+      table.name     = t[:relname]
+      table.table_id = t[:oid]
+      table.migrate_existing_table = t[:relname]
       begin
         table.save
       rescue Sequel::DatabaseError => e
         raise unless e.message =~ /must be owner of relation/
       end
     end
+
+    renamed_tables.each do |t|
+      table = Table.find(:table_id => t[:oid])
+      begin
+        table.synchronize_name(t[:relname])
+      rescue Sequel::DatabaseError => e
+        raise unless e.message =~ /must be owner of relation/
+      end
+    end
+
+    Table.filter(:table_id => dropped_tables).destroy if dropped_tables.present?
   end
 
   def exceeded_quota?

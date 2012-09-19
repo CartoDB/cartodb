@@ -9,10 +9,14 @@ Please, configure Redis in your config/app_config.yml file as this:
 MESSAGE
 end
 
-$tables_metadata = Redis.new(:host => Cartodb.config[:redis]['host'], :port => Cartodb.config[:redis]['port'], :db => 0)
-$threshold = Redis.new(:host => Cartodb.config[:redis]['host'], :port => Cartodb.config[:redis]['port'],       :db => 2)
-$api_credentials = Redis.new(:host => Cartodb.config[:redis]['host'], :port => Cartodb.config[:redis]['port'], :db => 3)
-$users_metadata = Redis.new(:host => Cartodb.config[:redis]['host'], :port => Cartodb.config[:redis]['port'], :db => 5)
 
+# Redis interfaces definition:
+redis_conf = Cartodb.config[:redis].select { |k, v| [:host, :port].include?(k) }
+
+$tables_metadata = Redis.new(redis_conf.merge(:db => 0))
 # TO ACTIVATE when decided how to do it more efficiently without filling the Redis
-# $queries_log = Redis.new(:host => Cartodb.config[:redis]['host'], :port => Cartodb.config[:redis]['port'],     :db => 1)
+#$queries_log    = Redis.new(Cartodb.config[:redis].merge(:db => 1))
+$threshold       = Redis.new(redis_conf.merge(:db => 2))
+$api_credentials = Redis.new(redis_conf.merge(:db => 3))
+$users_metadata  = Redis.new(redis_conf.merge(:db => 5))
+$layers_metadata = Redis.new(redis_conf.merge(:db => 7))

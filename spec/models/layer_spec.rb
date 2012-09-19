@@ -53,4 +53,24 @@ describe Layer do
 
   end
 
+  context "redis syncs" do
+    it "should have a unique key to be identified in Redis" do
+      layer = Layer.create(:kind => 'carto', :options => { :style => 'wadus' })
+      layer.key.should == "rails:layer_styles:#{layer.id}"
+    end
+
+    it "should store styles in Redis" do
+      layer = Layer.create(:kind => 'carto', :options => { :style => 'wadus' })
+
+      $layers_metadata.hget(layer.key,"style").should == "wadus"
+    end
+
+    it "should remove the metadata from Redis when removing the layer" do
+      layer = Layer.create(:kind => 'carto', :options => { :style => 'wadus' })
+      $layers_metadata.exists(layer.key).should be_true
+      layer.destroy
+      $layers_metadata.exists(layer.key).should be_false
+    end
+  end
+
 end

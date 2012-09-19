@@ -18,6 +18,23 @@ class Layer < Sequel::Model
     errors.add(:kind, "not accepted") unless ALLOWED_KINDS.include?(kind)
   end
 
+  def after_save
+    super
+
+    $layers_metadata.hset key, "style", (options[:style] rescue '')
+  end
+
+  def after_destroy
+    super
+
+    $layers_metadata.del key
+  end
+
+  def key
+    "rails:layer_styles:#{self.id}"
+  end
+
+
   def to_tilejson
     o = JSON.parse(self.values[:options])
     if self.kind == 'carto'

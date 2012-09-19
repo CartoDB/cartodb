@@ -1,0 +1,68 @@
+
+/**
+ *  CartoDB2.0 Infowindow (DEFAULT)
+ */
+
+div.infowindow {
+  position: absolute;
+}
+
+div.cartodb-popup {
+  position:relative;
+  width:226px;
+  height:auto;
+  padding:7px 0 0 0;
+  margin:0;
+  background:url('../img/light.png') no-repeat -226px 0;
+}
+
+div.cartodb-popup-content-wrapper {
+  width:197px;
+  padding:12px 12px 12px 19px;
+  background:url('../img/light.png') repeat-y -452px 0;
+}
+
+div.cartodb-popup div.cartodb-popup-content {
+  display:block;
+  width:100%;
+  min-height:5px;
+  height:auto;
+  max-height:175px;
+  margin: 0;
+  padding:0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+div.cartodb-popup-tip-container {
+  width:226px;
+  height:20px;
+  background:url('../img/light.png') no-repeat 0 0;
+}
+
+div.cartodb-popup a.cartodb-popup-close-button {
+  position:absolute;
+  top:-9px;
+  right:-9px;
+  width:26px; 
+  height:26px;
+  padding:0;
+  background:url('../img/light.png') no-repeat 0 -23px;
+  text-indent:-9999px;
+  font-size:0;
+  line-height:0;
+  text-transform:uppercase;
+  z-index:3;
+}
+
+div.cartodb-popup h4 {
+  font:bold 11px "Helvetica Neue","Helvetica",Arial;
+  color:#CCCCCC;
+  text-transform:uppercase;
+}
+
+div.cartodb-popup p {
+  font:normal 13px "Helvetica",Arial;
+  color:#333333;
+  padding:0 0 7px;
+}

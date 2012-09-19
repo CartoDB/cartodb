@@ -1,0 +1,29 @@
+
+/**
+ *  CartoDB2.0 Infowindow dark
+ */
+
+
+div.cartodb-popup.dark {
+  background:url('../img/dark.png') no-repeat -226px 0;
+}
+
+div.cartodb-popup.dark div.cartodb-popup-content-wrapper {
+  background:url('../img/dark.png') repeat-y -452px 0;
+}
+
+div.cartodb-popup.dark div.cartodb-popup-tip-container {
+  background:url('../img/dark.png') no-repeat 0 0;
+}
+
+div.cartodb-popup.dark a.cartodb-popup-close-button {
+  background:url('../img/dark.png') no-repeat 0 -23px;
+}
+
+div.cartodb-popup.dark h4 {
+  color:#666666;
+}
+
+div.cartodb-popup.dark p {
+  color:#FFFFFF;
+}

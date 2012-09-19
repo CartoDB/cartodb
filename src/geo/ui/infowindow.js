@@ -23,7 +23,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   defaults: {
     template_name: 'geo/infowindow',
     latlng: [0, 0],
-    offset: [0, 0], // offset of the tip calculated from the bottom left corner
+    offset: [28, 0], // offset of the tip calculated from the bottom left corner
     autoPan: true,
     content: "",
     visibility: false,
@@ -104,6 +104,11 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
 cdb.geo.ui.Infowindow = cdb.core.View.extend({
   className: "infowindow",
 
+  events: {
+    //"click .close": "hide",
+    "click": "_stopPropagation"
+  },
+
   initialize: function(){
     var self = this;
 
@@ -152,6 +157,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   toggle: function() {
     this.model.get("visibility") ? this.show() : this.hide();
+  },
+
+  _stopPropagation: function(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
   },
 
   /**
@@ -221,13 +231,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if (!this.model.get("autoPan")) { return; }
 
     var
-    x               = this.$el.position().left,
-    y               = this.$el.position().top,
-    containerHeight = this.$el.outerHeight(true),
-    containerWidth  = this.$el.width(),
-    pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
-    adjustOffset    = {x: 0, y: 0};
-    size            = this.mapView.getSize();
+      x               = this.$el.position().left,
+      y               = this.$el.position().top,
+      containerHeight = this.$el.outerHeight(true),
+      containerWidth  = this.$el.width(),
+      pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
+      adjustOffset    = {x: 0, y: 0};
+      size            = this.mapView.getSize();
 
     if (pos.x - offset[0] < 0) {
       adjustOffset.x = pos.x - offset[0] - 10;

@@ -1,0 +1,51 @@
+
+/**
+ *  CartoDB2.0 Infowindow with header (DEFAULT)
+ */
+
+div.cartodb-popup.header {
+  padding:0;
+  background:none;
+}
+
+div.cartodb-popup.header div.cartodb-popup-header {
+  position:relative;
+  width:188px;
+  height:auto;
+  max-height:62px;
+  overflow:hidden;
+  padding:17px 19px 17px 19px;
+  background:url('../img/headers.png') no-repeat 0 0;
+}
+
+div.cartodb-popup.header div.cartodb-popup-header h4 {
+  color:#1F4C7F;
+}
+
+div.cartodb-popup.header div.cartodb-popup-header h1 {
+  margin:0;
+  font:bold 21px "Helvetica Neue", "Helvetica", Arial;
+  color:#FFFFFF;
+  line-height:normal;
+}
+
+div.cartodb-popup.header div.cartodb-popup-header span.separator {
+  position:absolute;
+  bottom:0;
+  left:4px;
+  right:4px;
+  height:1px;
+  background:#225386;
+}
+
+div.cartodb-popup.header div.cartodb-popup-content {
+  max-height:150px;
+}
+
+div.cartodb-popup.header a.cartodb-popup-close-button {
+  background:url('../img/headers.png') no-repeat -226px 0;
+}
+
+div.cartodb-popup.header a.cartodb-popup-close-button:hover {
+  background-position:-226px -26px;
+}

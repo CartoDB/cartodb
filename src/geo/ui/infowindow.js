@@ -105,12 +105,17 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   className: "infowindow",
 
   events: {
-    //"click .close": "hide",
-    "click": "_stopPropagation"
+    "click .close":   "_closeInfowindow",
+
+    "mousedown":      "_stopPropagation",
+    "mouseup":        "_stopPropagation",
+    "mousewheel":     "_stopPropagation",
+    "DOMMouseScroll": "_stopPropagation",
+    "dbclick":        "_stopPropagation",
+    "click":          "_stopPropagation"
   },
 
   initialize: function(){
-    var self = this;
 
     _.bindAll(this, "render", "setLatLng", "changeTemplate", "_updatePosition", "_update", "toggle", "show", "hide");
 
@@ -130,10 +135,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.mapView.bind('drag', this._updatePosition, this);
     this.mapView.bind('zoomstart', this.hide, this);
     this.mapView.bind('zoomend', this.show, this);
-
-    this.mapView.bind('click', function() {
-      self.model.set("visibility", false);
-    });
 
     this.render();
     this.$el.hide();
@@ -160,8 +161,14 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _stopPropagation: function(ev) {
-    ev.preventDefault();
     ev.stopPropagation();
+  },
+
+  _closeInfowindow: function(ev) {
+    if (ev)
+      ev.preventDefault()
+
+    this.model.set("visibility",false);
   },
 
   /**

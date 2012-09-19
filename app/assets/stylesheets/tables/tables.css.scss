@@ -61,8 +61,8 @@
         overflow:hidden;
         div.left {
           width:280px;
-          padding:43px 0 0 0;
-          h2 {font-size:27px;}
+          padding:23px 0 0 0;
+          h2 {font-size:27px;line-height: 27px}
         }
         div.right {
           img {position:relative; display:block; margin:0; padding:0;}
@@ -75,7 +75,7 @@
             @include inline-block();
             width:285px;
             margin:0 27px 0 0;
-
+            vertical-align: top;
             a {
               height:46px;
               display:block;
@@ -505,7 +505,7 @@
       }
 
       h3,p {letter-spacing:0;}
-      h3 {letter-spacing:-1px; font-size:21px;}
+      h3 {letter-spacing:-1px; font-size:21px; margin:3px 0 2px 0;}
       a.button {float:left; margin-top:5px; padding-right:15px; padding-left:15px;}
     }
   }

@@ -390,8 +390,9 @@ class User < Sequel::Model
         conn = Rails::Sequel.connection
         begin
           conn.run("CREATE USER #{database_username} PASSWORD '#{database_password}'")
-        rescue
-          puts "USER #{database_username} already exists: #{$!}"
+        rescue => e
+          puts "#{Time.now} USER SETUP ERROR (#{database_username}): #{$!}"
+          raise e
         end
         begin
           conn.run("CREATE DATABASE #{self.database_name}
@@ -399,8 +400,9 @@ class User < Sequel::Model
           OWNER = #{::Rails::Sequel.configuration.environment_for(Rails.env)['username']}
           ENCODING = 'UTF8'
           CONNECTION LIMIT=-1")
-        rescue
-          puts "DATABASE #{self.database_name} already exists: #{$!}"
+        rescue => e
+          puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{self.database_name}: #{$!}"
+          raise e
         end
       end.join
 
@@ -411,7 +413,7 @@ class User < Sequel::Model
 
   # Cartodb functions
   def load_cartodb_functions
-    #puts "Loading functions in db '#{database_name}' (#{username})"
+    puts "Loading functions in db '#{database_name}' (#{username})"
     in_database(:as => :superuser) do |user_database|
       user_database.transaction do
         glob = Rails.root.join('lib/sql/*.sql')

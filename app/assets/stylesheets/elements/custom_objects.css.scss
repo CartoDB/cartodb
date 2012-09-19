@@ -163,11 +163,18 @@
           &:last-child {
             a {@include border-bottom-right-radius(2px)}
           }
-          &:nth-child(16) {
+          &:nth-child(18) {
            a {@include border-bottom-left-radius(2px)} 
           }
-          &:nth-child(15) {
-           a {@include border-top-right-radius(2px)} 
+          &:nth-child(17) {
+            a {
+              @include border-top-right-radius(2px);
+              &:hover:before {
+                @include border-top-right-radius(2px);
+                border-color:#999999!important;
+              }
+            }
+
           }
 
           a {

@@ -106,7 +106,6 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   events: {
     "click .close":   "_closeInfowindow",
-
     "mousedown":      "_stopPropagation",
     "mouseup":        "_stopPropagation",
     "mousewheel":     "_stopPropagation",

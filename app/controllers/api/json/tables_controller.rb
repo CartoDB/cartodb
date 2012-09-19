@@ -5,7 +5,6 @@ class Api::Json::TablesController < Api::ApplicationController
 
   before_filter :load_table, :except => [:index, :create]
   before_filter :set_start_time
-  before_filter :link_ghost_tables
   after_filter  :record_query_threshold
 
   def index
@@ -157,8 +156,4 @@ class Api::Json::TablesController < Api::ApplicationController
     end
   end
 
-  def link_ghost_tables
-    return true unless current_user.present?
-    current_user.link_ghost_tables
-  end
 end

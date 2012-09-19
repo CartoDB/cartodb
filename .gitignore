@@ -22,3 +22,4 @@ env
 coverage
 .spin.rb
 .sass-cache
+public/js/lib/cdb.js

@@ -46,6 +46,87 @@
     }
   }
 
+
+  // Edit date dialog
+  &.date_dialog {
+    .select2-container {width:100px!important;}
+    div.field {
+      @include inline-block();
+      label {display:block; margin:0 0 5px; font:bold 10px $text-fonts; color:#999999;}
+    }
+    
+    input.time {
+      width:50px;
+      padding:0 5px;
+      height:19px;
+      font-size:13px;
+      line-height:19px;
+      border-color:#9E9E9E;
+      &.error {border-color:rgba(red,0.5);}
+    }
+  }
+
+  // Edit boolean dialog
+  &.boolean_dialog {
+    nav {
+      display:block;
+      border:1px solid #CCCCCC;
+      @include border-radius(4px);
+      background:white;
+      padding:12px 5px 12px 20px;
+      a {
+        @include inline-block(); width:65px; font-weight:normal; font-size:13px;
+        span.radio {margin-top:0!important;}
+        &:hover {text-decoration:none;}
+      }
+    }
+  }
+
+
+  // Edit number dialog
+  &.number_dialog {
+    textarea.error {border-color:rgba(red,0.5);}
+  }
+
+  // Edit geometry dialog
+  &.geometry_dialog {
+    textarea.error, input.error {border-color:rgba(red,0.5);}
+
+    div.loader {
+      display:block;
+      width:100%;
+      height:50px;
+      background: url('/assets/layout/loader.gif') no-repeat center center transparent;
+    }
+    div.rest {display:none;}
+    div.point {
+      display:none;
+      width:100%;
+      height:30px;
+      input {
+        position:absolute;
+        top:10px;
+        width:31%;
+        padding:5px 5px 5px 36px;
+        height:19px;
+        font-size:15px;
+        line-height:19px;
+        border-color:#9E9E9E;
+        text-align:right;
+        &.latitude {right:10px;}
+        &.longitude {left:10px;}
+        &.error {border-color:rgba(red,0.5);}
+      }
+      
+      p {position:absolute; top:15px; left:50%; margin-left:-3px; font-size:20px;}
+
+      label {
+        position:absolute; top:20px; font-style:italic; color:#AAAAAA; z-index:10; font-size:13px;
+        &.latitude {left:55%;}
+        &.longitude {left:18px;}
+      }
+    }
+  }
 }
 
 .floating.edit_name_dialog {
@@ -169,3 +250,5 @@
     }
   }
 }
+
+

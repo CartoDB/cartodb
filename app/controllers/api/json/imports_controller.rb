@@ -16,7 +16,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def create
-    file_uri = params[:url].present? ? params[:url] : upload_file
+    file_uri = params[:url].present? ? params[:url] : _upload_file
 
     if synchronous_import?
       #@data_import = Resque::ImporterJobs.process(current_user[:id], params[:table_name], file_uri)
@@ -35,13 +35,13 @@ class Api::Json::ImportsController < Api::ApplicationController
     params[:synchronous].present?
   end
 
-  def upload_file
+  def _upload_file
     temp_file = filename = filedata = nil
 
     case
     when params[:filename].present? && request.body.present?
       filename = params[:filename].original_filename rescue params[:filename].to_s
-      filedata = request.body.read.force_encoding('utf-8')
+      filedata = params[:filename].read.force_encoding('utf-8') rescue request.body.read.force_encoding('utf-8')
     when params[:file].present?
       filename = params[:file].original_filename rescue params[:file].to_s
       filedata = params[:file].read.force_encoding('utf-8')

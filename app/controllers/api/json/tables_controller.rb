@@ -49,7 +49,7 @@ class Api::Json::TablesController < Api::ApplicationController
     @data_import = DataImport.new(:user_id => current_user.id)
     @data_import.updated_at = Time.now
     @data_import.save
-    current_user.in_database.run('SET statement_timeout TO 600000')    
+    current_user.in_database.run('SET statement_timeout TO 3600000')
     #get info about any import data coming
     multifiles = ['.bz2','.osm']
     if params[:url] || params[:file]

@@ -227,6 +227,11 @@
               }
             }
 
+            // Different column types
+            &.number {
+              div.cell {color:#4DC964;}
+            }
+
             &:first-child {
               position:relative;
 

@@ -1245,7 +1245,7 @@ describe Table do
       File.open(file,'w+') { |f| f.write(zip) }
 
       Zip::ZipFile.foreach(file) do |entry|
-        entry.name.should == "twitters_export.csv"
+        entry.name.should == "twitters.csv"
         csv_content = entry.get_input_stream.read
       end
       file.close

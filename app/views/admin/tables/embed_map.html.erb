@@ -45,17 +45,7 @@
     <%= stylesheet_link_tag :cdb, :media => 'all' %>
 
     <script id="infowindow_template" type="text/tmpl">
-      <div class="cartodb-popup">
-        <div class="cartodb-popup-content-wrapper">
-          <div class="cartodb-popup-content">
-            {{#content.fields}}
-            {{#title}}<h4>{{title}}</h4>{{/title}}
-            <p>{{value}}</p> {{/content.fields}}
-          </div>
-        </div>
-        <div class="cartodb-popup-tip-container">
-        </div>
-      </div>
+      <%= render :file => File.join(Rails.root,"lib/assets/javascripts/cartodb/table/views/infowindow_light.jst.mustache") %>
     </script>
 
     <%= render 'shared/analytics' %>

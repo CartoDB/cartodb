@@ -3,43 +3,11 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <title>CartoDB - <%= @table.name %> </title>
+    <link rel="shortcut icon" href="/favicons/favicon.ico" />
+    <title><%= @table.name %> | CartoDB</title>
 
     <style type="text/css">
-      html, body, #map {
-        height: 100%;
-        padding: 0;
-        margin: 0;
-      }
-
-      @media print {html, body {height: auto;} #map {height: 650px;}}
-      div#outer_map_cartodb_container {position:relative; width:100%; height:100%; background:white; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;}
-      div#map_cartodb_container {position:absolute; top:0; left:0; right:0; bottom:0; z-index:0;}
-      span.cartodb_map_controls {position:absolute; top:100px; left:10px; width:26px; height:100px; z-index:10;}
-      span.cartodb_map_controls a.cartodb_map_embed_zoom_in {display:block; width:30px; height:32px; text-indent:-9999px; line-height:0; font-size:0; background:url('https://cartodb.s3.amazonaws.com/embed/sprite.png') no-repeat -289px -142px;}
-      span.cartodb_map_controls a.cartodb_map_embed_zoom_in:hover {background-position:-320px -142px; cursor:pointer;}
-      span.cartodb_map_controls a.cartodb_map_embed_zoom_out {display:block; width:30px; height:32px; text-indent:-9999px; line-height:0; font-size:0; background:url('https://cartodb.s3.amazonaws.com/embed/sprite.png') no-repeat -289px -174px;}
-      span.cartodb_map_controls a.cartodb_map_embed_zoom_out:hover {background-position:-320px -174px; cursor:pointer;}
-      div.cartodb_infowindow {position:absolute; display:block; width:214px; padding:0; visibility:hidden;}
-      div.cartodb_infowindow a.close {position:absolute; right:3px; top:3px; width:22px; height:15px; padding:4px 0 3px 0; text-align:center; font:bold 15px "Helvetica",Arial; color:#666666; text-decoration:none; line-height:15px}
-      div.cartodb_infowindow a.close:hover {color:#333333}
-      div.cartodb_infowindow div.outer_top {width:186px; padding:25px 18px 5px 10px; background:url('https://cartodb.s3.amazonaws.com/embed/sprite.png') 0 top;}
-      div.cartodb_infowindow div.top {width:186px; max-height:200px; overflow-y:auto; overflow-x:hidden}
-      div.cartodb_infowindow div.top label {display:block; width:auto; padding:0 0 0 5px; font:normal 11px Arial; color:#B3B3B3; text-shadow:0 1px white}
-      div.cartodb_infowindow div.top p {display:block; width:170px; padding:2px 4px; margin:2px 0 7px; font:bold 11px 'Helvetica',Arial; color:#666666; border:none; background:none; text-shadow:0 1px white;
-        text-overflow:ellipsis; overflow:hidden; white-space:nowrap;}
-      div.cartodb_infowindow div.top p.empty {font-weight:normal; font-style:italic; color:#b7b7b7;}
-      div.cartodb_infowindow div.bottom {width:180px; height:36px; padding:11px 16px 10px 10px; background:url('https://cartodb.s3.amazonaws.com/embed/sprite.png') no-repeat right top;}
-      div.cartodb_infowindow div.bottom label {float:left; margin:5px 0 0 3px; font:normal 11px Arial; color:#B3B3B3; text-shadow:0 1px white}
-      div.cartodb_infowindow div.bottom label strong {font:bold 11px 'Helvetica',Arial; color:#666666; text-shadow:0 1px white;}
-      div.cartodb_infowindow div.bottom a {float:right; height:12px; margin:0 5px 0 0; padding:4px 7px; border:1px solid #999; font:bold 11px "Helvetica",Arial; color:#333333; text-align:center;
-        text-decoration:none; -webkit-border-radius:3px; -moz-border-radius:3px; border-radius:3px; text-shadow:0 1px white; background:linear-gradient(-90deg, #FFFFFF, #CACBCE); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#FFFFFF), to(#CACBCE));
-        background:-moz-linear-gradient(-90deg, #FFFFFF, #CACBCE); background: -o-linear-gradient(#FFFFFF,#CACBCE); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#FFFFFF', endColorstr='#CACBCE');}
-      div.cartodb_infowindow div.bottom a:hover {background:linear-gradient(-90deg, #CACBCE, #FFFFFF); background:-webkit-gradient(linear, 50% 0%, 50% 100%, from(#CACBCE), to(#FFFFFF));
-        background:-moz-linear-gradient(-90deg, #CACBCE, #FFFFFF); background: -o-linear-gradient(#CACBCE,#FFFFFF); filter:  progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#CACBCE', endColorstr='#FFFFFF'); cursor:pointer;}
-      a.cartodb_logo {position:absolute; bottom:7px; left:75px; display:block; width:71px; height:29px; background:url('https://cartodb.s3.amazonaws.com/embed/new_logo.png') no-repeat 0 0;
-              text-indent:-9999px; line-height:0; font-size:0; text-transform:capitalize;}
+      html, body, #map {height: 100%; padding: 0; margin: 0;}
     </style>
 
     <%= stylesheet_link_tag :cdb, :media => 'all' %>
@@ -50,7 +18,7 @@
           <div class="cartodb-popup-content">
             {{#content.fields}}
             {{#title}}<h4>{{title}}</h4>{{/title}}
-            <p>{{value}}</p> {{/content.fields}}
+            <p>{{value}}</p>{{/content.fields}}
           </div>
         </div>
         <div class="cartodb-popup-tip-container">
@@ -67,9 +35,7 @@
   </body>
 
   <% if @map_provider == 'googlemaps' %>
-      <script type="text/javascript"
-        src="https://maps.google.com/maps/api/js?sensor=false">
-      </script>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
   <% end %>
   <%= javascript_include_tag :jquery, :cdb %>
 
@@ -79,6 +45,7 @@
     data_layer_tilejson.infowindow = <%=raw @layer_data_infowindow %>;
     // those two parameters should be in tilejson
     var table_name = '<%= @table.name %>';
+    var table_url = '<%= table_url @table %>';
     var table_description = '<%= @table.description %>';
     var map_provider = '<%= @map_provider %>';
 
@@ -98,19 +65,32 @@
       return params;
     }
 
-    var opt = get_url_params();
+    var opt = get_url_params()
+      , overlays = [];
+
+    // Add shareable?
+    if (opt.shareable) {
+      overlays.push({ type: 'shareable' })
+    }
+
+    // Add search?
+    if (opt.search) {
+      overlays.push({ type: 'search' })
+    }
+
+    // Add zoom
+    overlays.push({
+      type: 'zoom',
+      template: '<a class="zoom_in">+</a> <a class="zoom_out">-</a>'
+    });
+
+
 
     var vis_data = {
-       title: opt.title === 'true' ? table_name:null,
-       description: opt.description === 'true' ? table_description: null,
-       provider: map_provider,
-       overlays: [
-        {
-          type: 'zoom',
-          template: '<a class="zoom_in">+</a> <a class="zoom_out">-</a>'
-        }
-      ],
-
+      title: opt.title === 'true' ? table_name:null,
+      description: opt.description === 'true' ? table_description: null,
+      provider: map_provider,
+      overlays: overlays,
       layers: [
         base_layer_tilejson,
         data_layer_tilejson
@@ -134,7 +114,5 @@
 
     var vis = new cdb.vis.Vis({el: $('#map')});
     vis.load(vis_data);
-
-
   </script>
 </html>

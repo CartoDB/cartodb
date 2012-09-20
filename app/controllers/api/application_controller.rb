@@ -3,7 +3,8 @@
 class Api::ApplicationController < ApplicationController
   skip_before_filter :browser_is_html5_compliant?, :verify_authenticity_token
   before_filter :api_authorization_required
-  
+  before_filter :link_ghost_tables
+
   # TO ACTIVATE when decided how to do it more efficiently without filling the Redis
   # after_filter :log_request
 
@@ -19,7 +20,12 @@ class Api::ApplicationController < ApplicationController
 
   # dry up the jsonp output
   def render_jsonp obj, status = 200, options = {}
-    options.reverse_merge! :json => obj, :status => status, :callback => params[:callback]    
+    options.reverse_merge! :json => obj, :status => status, :callback => params[:callback]
     render options
-  end  
+  end
+
+  def link_ghost_tables
+    return true unless current_user.present?
+    current_user.link_ghost_tables
+  end
 end

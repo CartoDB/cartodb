@@ -59,16 +59,62 @@ feature "API 1.0 tables management" do
     end
   end
 
-  pending "Get ghost table" do
-    @user.in_database.run('CREATE TABLE my_new_ghost_table (id integer)')
+  it "Should update metadata of orphans tables created via SQL API" do
+    @user.in_database.run(
+      <<-SQL
+        CREATE TABLE my_new_ghost_table (id integer);
+      SQL
+    )
 
     get_json api_tables_url do |response|
       response.status.should be_success
       response.body[:tables].size.should == 1
       response.body[:tables][0]['name'].should == "my_new_ghost_table"
-    end    
+    end
   end
 
+  it "Should remove metadata of tables destroyed via SQL API" do
+    table = FactoryGirl.create(:table, :user_id => @user.id)
+
+    get_json api_tables_url do |response|
+      response.status.should be_success
+      response.body[:tables].size.should == 1
+      response.body[:tables][0]['name'].should == "untitled_table"
+    end
+
+    @user.in_database.run(
+      <<-SQL
+        DROP TABLE #{table.name};
+      SQL
+    )
+
+    get_json api_tables_url do |response|
+      response.status.should be_success
+      response.body[:tables].size.should == 0
+    end
+  end
+
+  it "Should update metadata of tables renamed via SQL API" do
+    table = FactoryGirl.create(:table, :user_id => @user.id)
+
+    get_json api_tables_url do |response|
+      response.status.should be_success
+      response.body[:tables].size.should == 1
+      response.body[:tables][0]['name'].should == "untitled_table"
+    end
+
+    @user.in_database.run(
+      <<-SQL
+        ALTER TABLE #{table.name} RENAME TO ghost_table;
+      SQL
+    )
+
+    get_json api_tables_url do |response|
+      response.status.should be_success
+      response.body[:tables].size.should == 1
+      response.body[:tables][0]['name'].should == "ghost_table"
+    end
+  end
   scenario "Get tables from a tag" do
     another_user = create_user
 
@@ -183,7 +229,7 @@ feature "API 1.0 tables management" do
     post_json api_tables_url, {:name => "My new imported table", :schema => "bla bla blat"} do |response|
       response.status.should == 400
     end
-  end  
+  end
 
   scenario "Get a table metadata information" do
     table1 = create_table :user_id => @user.id, :name => 'My table #1', :tags => "tag 1, tag 2,tag 3, tag 3", :description => "Testing is awesome"
@@ -210,7 +256,7 @@ feature "API 1.0 tables management" do
       response.body[:id].should == table1.id
       response.body[:name].should == "my_table_2"
       response.body[:privacy] == "PRIVATE"
-      response.body[:description].should == "Testing is awesome"      
+      response.body[:description].should == "Testing is awesome"
       response.body[:tags].split(',').should include("disco")
       response.body[:tags].split(',').should include("bars")
       (response.body[:schema] - default_schema).should be_empty
@@ -330,16 +376,16 @@ feature "API 1.0 tables management" do
 
     table1 = Table[data_import.table_id]
     get_json "#{api_table_url(table1.name)}" do |response|
-      response.status.should be_success      
+      response.status.should be_success
       response.body.except(:updated_at, :id).should == {
-        :name => "elecciones2008", 
-        :privacy => "PRIVATE", 
-        :tags => "", 
-        :schema =>[["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"], ["created_at", "date"], ["updated_at", "date"]], 
-        :rows_counted => 246, 
-        :table_size => 356352, 
-        :map_id => table1.map.id, 
-        :description => nil, 
+        :name => "elecciones2008",
+        :privacy => "PRIVATE",
+        :tags => "",
+        :schema =>[["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"], ["created_at", "date"], ["updated_at", "date"]],
+        :rows_counted => 246,
+        :table_size => 356352,
+        :map_id => table1.map.id,
+        :description => nil,
         :geometry_types => ["ST_MultiPolygon"]
       }
     end

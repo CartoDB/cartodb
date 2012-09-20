@@ -3,7 +3,6 @@
 class Api::ApplicationController < ApplicationController
   skip_before_filter :browser_is_html5_compliant?, :verify_authenticity_token
   before_filter :api_authorization_required
-  # before_filter :link_ghost_tables
 
   # TO ACTIVATE when decided how to do it more efficiently without filling the Redis
   # after_filter :log_request

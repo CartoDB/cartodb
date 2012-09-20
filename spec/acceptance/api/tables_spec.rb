@@ -115,6 +115,23 @@ feature "API 1.0 tables management" do
       response.body[:tables][0]['name'].should == "ghost_table"
     end
   end
+
+  it "Should update metadata of outdated tables" do
+    Table.destroy
+    3.times { FactoryGirl.create(:table, :user_id => @user.id) }
+
+    Table.all.each do |table|
+      table.update(:table_id => nil)
+    end
+
+    get_json api_tables_url do |response|
+      response.status.should be_success
+      response.body[:tables].size.should == 3
+    end
+
+    Table.exclude(:table_id => nil).count.should be == 3
+  end
+
   scenario "Get tables from a tag" do
     another_user = create_user
 
@@ -383,7 +400,7 @@ feature "API 1.0 tables management" do
         :tags => "",
         :schema =>[["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"], ["created_at", "date"], ["updated_at", "date"]],
         :rows_counted => 246,
-        :table_size => 356352,
+        :table_size => 352256,
         :map_id => table1.map.id,
         :description => nil,
         :geometry_types => ["ST_MultiPolygon"]

@@ -306,25 +306,47 @@ class User < Sequel::Model
     size / 2
   end
 
+  def real_tables
+    @real_tables ||= begin
+      self.in_database(:as => :superuser)
+      .select(:pg_class__oid, :pg_class__relname)
+      .from(:pg_class)
+      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+      .where(:relkind => 'r', :nspname => 'public')
+      .exclude(:relname => SYSTEM_TABLE_NAMES)
+      .all
+   end
+  end
+
   # Looks for tables created on the user database
-  # but not linked to the Rails app database. Creates
-  # required records to link them
+  # but not linked to the Rails app database. Creates/Updates/Deletes
+  # required records to sync them
   def link_ghost_tables
-    real_tables = self.in_database(:as => :superuser)
-                      .select(:pg_class__oid, :pg_class__relname)
-                      .from(:pg_class)
-                      .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-                      .where(:relkind => 'r', :nspname => 'public')
-                      .exclude(:relname => SYSTEM_TABLE_NAMES)
-                      .all
+    link_outdated_tables
 
-    current_tables_ids   = self.tables.select(:table_id).map(&:table_id)
-    current_tables_names = self.tables.select(:name).map(&:name)
+    metadata_tables_ids = self.tables.select(:table_id).map(&:table_id)
 
-    created_tables = real_tables.reject{|t| current_tables_ids.include?(t[:oid])}
-    renamed_tables = real_tables.reject{|t| current_tables_ids.include?(t[:oid]) && current_tables_names.include?(t[:relname])}
-    dropped_tables = current_tables_ids - real_tables.map{|t| t[:oid]}
+    link_created_tables(metadata_tables_ids)
+    link_renamed_tables(metadata_tables_ids)
+    link_deleted_tables(metadata_tables_ids)
+  end
 
+  def link_outdated_tables
+    metadata_tables_without_id = self.tables.filter(:table_id => nil).map(&:name)
+    outdated_tables = real_tables.select{|t| metadata_tables_without_id.include?(t[:relname])}
+    outdated_tables.each do |t|
+      table = Table.find(:name => t[:relname])
+      table.table_id = t[:oid]
+      begin
+        table.save
+      rescue Sequel::DatabaseError => e
+        raise unless e.message =~ /must be owner of relation/
+      end
+    end
+  end
+
+  def link_created_tables(metadata_tables_ids)
+    created_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid])}
     created_tables.each do |t|
       table = Table.new
       table.user_id  = self.id
@@ -337,7 +359,11 @@ class User < Sequel::Model
         raise unless e.message =~ /must be owner of relation/
       end
     end
+  end
 
+  def link_renamed_tables(metadata_tables_ids)
+    metadata_tables_names      = self.tables.select(:name).map(&:name)
+    renamed_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid]) && metadata_tables_names.include?(t[:relname])}
     renamed_tables.each do |t|
       table = Table.find(:table_id => t[:oid])
       begin
@@ -346,7 +372,10 @@ class User < Sequel::Model
         raise unless e.message =~ /must be owner of relation/
       end
     end
+  end
 
+  def link_deleted_tables(metadata_tables_ids)
+    dropped_tables = metadata_tables_ids - real_tables.map{|t| t[:oid]}
     Table.filter(:table_id => dropped_tables).destroy if dropped_tables.present?
   end
 

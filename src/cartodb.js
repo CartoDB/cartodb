@@ -33,6 +33,7 @@
         'core/view.js',
 
         'geo/geocoder.js',
+        'geo/geometries.js',
         'geo/map.js',
         'geo/ui/zoom.js',
         'geo/ui/legend.js',

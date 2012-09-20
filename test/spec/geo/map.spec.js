@@ -282,6 +282,23 @@ describe("geo.map", function() {
       expect(_.size(mapView.layers)).toEqual(0);
     });
 
+    var geojsonFeature = {
+      "type": "Feature",
+      "properties": { "name": "Coors Field", },
+      "geometry": {
+          "type": "Point",
+          "coordinates": [-104.99404, 39.75621]
+      }
+    };
+
+    it("should add a geometry", function() {
+      var geo = new cdb.geo.Geometry({
+        geojson: geojsonFeature
+      });
+      map.addGeometry(geo);
+      expect(_.size(mapView.geometries)).toEqual(1);
+    });
+
 
   });
 

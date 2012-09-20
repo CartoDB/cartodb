@@ -269,7 +269,7 @@
 
   /*
     <div class="form_spinner">
-      <span class="value">0.6</span>
+      <input class="value" type="text" value="0.6" />
       <a href="#plus" class="plus"></a>
       <a href="#minus" class="minus"></a>
     </div>
@@ -291,16 +291,20 @@
       cursor:pointer;
     }
 
-    span.value {
+    input.value {
       float:none;
       margin:0;
       padding:0;
+      width:25px;
       text-align:left;
       line-height:15px;
       font-size:13px;
+      font-family: $text-fonts;
       color:#666666;
-      &:hover {
-        cursor:pointer;
+      border:none;
+      &:focus {
+        outline:none;
+        color:#333333;
       }
     }
 

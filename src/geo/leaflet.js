@@ -197,6 +197,8 @@ if(typeof(L) != "undefined") {
       this.map.layers.bind('remove', this._removeLayer, this);
       this.map.layers.bind('reset', this._addLayers, this);
 
+      //this.map.geometries.bind('add', this._addGeometry
+
       this._bindModel();
 
       this._addLayers();

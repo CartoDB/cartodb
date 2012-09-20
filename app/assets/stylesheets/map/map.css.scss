@@ -240,47 +240,4 @@
 
   }
 
-  div#zoom {
-    position:absolute;
-    top:85px;
-    left:20px;
-    width:29px;
-    @include box-shadow(rgba(black,0.2) 0 0 4px 2px);
-    z-index:5;
-    background:white;
-    @include border-radius(4px);
-    border:1px solid #999999;
-
-    a {
-      display:block;
-      width:29px;
-      padding:4px 0;
-      font:bold 20px "Arial";
-      color:#999999;
-      text-align:center;
-      line-height:normal;
-      text-decoration:none;
-
-      &.zoom_in {
-        border-bottom:1px solid rgba(#999999,0.25);
-      }
-
-      &.zoom_out {
-        padding:0 0 18px;
-        line-height:13px;
-      }
-
-      &:hover {
-        cursor:pointer;
-        color:#666666;
-      }
-
-      &.disabled {
-        @include opacity(0.2);
-        &:hover {
-          cursor:default;
-          color:#999999;
-        }
-      }
-    }
-  }
+  div#zoom {top:65px;}

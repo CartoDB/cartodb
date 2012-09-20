@@ -6,6 +6,7 @@ class Api::Json::TablesController < Api::ApplicationController
   before_filter :load_table, :except => [:index, :create]
   before_filter :set_start_time
   after_filter  :record_query_threshold
+  # before_filter :link_ghost_tables
 
   def index
     @tables = unless params[:tag_name].blank?
@@ -146,7 +147,7 @@ class Api::Json::TablesController < Api::ApplicationController
   end
 
   def record_query_threshold
-    if response.ok?
+    if [200, 204].include?(response.status)
       case action_name
         when "create"
           CartoDB::QueriesThreshold.incr(current_user.id, "other", Time.now - @time_start)

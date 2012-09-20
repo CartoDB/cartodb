@@ -5,6 +5,16 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="shortcut icon" href="/favicons/favicon.ico" />
     <title><%= @table.name %> | CartoDB</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="CartoDB">
+    <meta name="DC.title" content="<%= @table.name %> | CartoDB">
+    
+    <meta property="og:title" content="<%= @table.name %> | CartoDB"/>
+    <meta property="og:description" content=""/>
+    <meta property="og:type" content="Visualization"/>
+    <meta property="og:url" content="<%= request.fullpath %>" />
+    <meta property="og:image" content="/assets/cartofante_blue.png"/>
 
     <style type="text/css">
       html, body, #map {height: 100%; padding: 0; margin: 0;}
@@ -13,17 +23,7 @@
     <%= stylesheet_link_tag :cdb, :media => 'all' %>
 
     <script id="infowindow_template" type="text/tmpl">
-      <div class="cartodb-popup">
-        <div class="cartodb-popup-content-wrapper">
-          <div class="cartodb-popup-content">
-            {{#content.fields}}
-            {{#title}}<h4>{{title}}</h4>{{/title}}
-            <p>{{value}}</p>{{/content.fields}}
-          </div>
-        </div>
-        <div class="cartodb-popup-tip-container">
-        </div>
-      </div>
+      <%= render :file => File.join(Rails.root,"lib/assets/javascripts/cartodb/table/views/infowindow_light.jst.mustache") %>
     </script>
 
     <%= render 'shared/analytics' %>
@@ -49,6 +49,7 @@
     var table_description = '<%= @table.description %>';
     var map_provider = '<%= @map_provider %>';
 
+
     if(data_layer_tilejson.infowindow) {
       data_layer_tilejson.infowindow.template = $('#infowindow_template').html()
     }
@@ -68,11 +69,6 @@
     var opt = get_url_params()
       , overlays = [];
 
-    // Add shareable?
-    if (opt.shareable) {
-      overlays.push({ type: 'shareable' })
-    }
-
     // Add search?
     if (opt.search) {
       overlays.push({ type: 'search' })
@@ -81,9 +77,8 @@
     // Add zoom
     overlays.push({
       type: 'zoom',
-      template: '<a class="zoom_in">+</a> <a class="zoom_out">-</a>'
+      template: '<a class="zoom_in">+</a><a class="zoom_out">-</a>'
     });
-
 
 
     var vis_data = {
@@ -97,8 +92,8 @@
       ]
     };
 
-    if(opt.title === 'true' || opt.description === 'true') {
-      vis_data.overlays.splice(0, 0, { type: 'header' });
+    if(opt.title === 'true' || opt.description === 'true' || opt.shareable === 'true') {
+      vis_data.overlays.splice(0, 0, { type: 'header', shareable: opt.shareable, url: table_url });
     }
 
     if(opt.sw_lat !== undefined) {

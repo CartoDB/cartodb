@@ -39,55 +39,13 @@
       overflow:hidden;
     }
 
-    .map_header {
-      position: relative;
-      display:block;
-      width: 100%;
-      min-height:6px;
-      background: #FFF;
-      border:none;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-      margin:0;
-      padding: 20px 0 20px 0;
-      @include border-top-radius(1px);
-      @include box-shadow(rgba(0,0,0,0.10) 0 0 4px 4px);
-      @include translateZ(10px);
-
-      h1 {
-        font:normal 17px $text-fonts;
-        color: #397DBA;
-        font-weight: bold;
-        margin-bottom: 5px;
-        margin-left: 20px;
-      }
-      p {
-        font:normal 13px $text-fonts;
-        color: #999999;
-        margin-left: 20px;
-      }
-
-      div.header_shareable {
-        position:absolute;
-        top:10px;
-        right:10px;
-        display:none;
-
-        a {
-          @include inline-block();
-          width:26px;
-          height:26px;
-          @include text-indent();
-          &.twitter {@include icons-sprite(twitter)} 
-          &.facebook {@include icons-sprite(facebook)} 
-        }
-      }
+    div.header {
+      div.social {display:none;}
     }
 
-    #zoom {
-      position:relative;
-      top:0;
-      margin:20px 0 0 0;
-    }
+    div.search_box {display:none;}
+
+    div#zoom {top:0;}
   }
 
   ul.switches {

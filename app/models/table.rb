@@ -174,7 +174,6 @@ class Table < Sequel::Model(:user_tables)
       @data_import.reload
       @data_import.migrated
       @data_import.save
-      set_trigger_the_geom_webmercator
       return importer.name
     end
   end
@@ -1170,7 +1169,6 @@ class Table < Sequel::Model(:user_tables)
         CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
           BEGIN
                 NEW.#{THE_GEOM_WEBMERCATOR} := CDB_TransformToWebmercator(NEW.the_geom);
-                --NEW.#{THE_GEOM_WEBMERCATOR} := ST_Transform(NEW.the_geom,#{CartoDB::GOOGLE_SRID});
                 RETURN NEW;
           END;
         $update_the_geom_webmercator_trigger$ LANGUAGE plpgsql VOLATILE COST 100;
@@ -1593,6 +1591,15 @@ SQL
 
           IF the_geom_exists = 0 THEN
             PERFORM AddGeometryColumn(tablename,'#{THE_GEOM}',#{CartoDB::GOOGLE_SRID},'GEOMETRY',3);
+          END IF;
+
+          SELECT count(attname) INTO the_geom_exists
+          FROM pg_attribute
+          INNER JOIN pg_class ON pg_class.oid = pg_attribute.attrelid
+          WHERE pg_attribute.attname = 'the_geom_webmercator' AND pg_class.relname = tablename;
+
+          IF the_geom_exists = 0 THEN
+            PERFORM AddGeometryColumn(tablename,'#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'GEOMETRY',3);
           END IF;
 
           RETURN;

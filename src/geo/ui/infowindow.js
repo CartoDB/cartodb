@@ -164,9 +164,11 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _closeInfowindow: function(ev) {
-    if (ev)
+    if (ev) {
       ev.preventDefault()
-
+      ev.stopPropagation();
+    }
+      
     this.model.set("visibility",false);
   },
 

@@ -1,8 +1,9 @@
 
 /**
- *  CartoDB2.0 Infowindow dark
+ *  CartoDB2.0 theme dark
  */
 
+/* INFOWINDOW */
 
 div.cartodb-popup.dark {
   background:url('../img/dark.png') no-repeat -226px 0;
@@ -26,4 +27,54 @@ div.cartodb-popup.dark h4 {
 
 div.cartodb-popup.dark p {
   color:#FFFFFF;
+}
+
+
+/* EMBED MAP */
+div.header.dark {
+  background:#333333;
+}
+
+div.header.dark h1 {
+  color: #F7F7F7;
+}
+
+div.header.dark h1 a {
+  color: #F7F7F7;
+}
+
+div.header.dark h1 a:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+div.header.dark p {
+  margin-top:5px;
+  font-weight: normal;
+  font-size: 13px;
+  color: #ABABAB;
+}
+
+div.dark#zoom {
+  background:#333333;
+}
+
+div.dark#zoom a {
+  color: #ABABAB;
+}
+div.dark#zoom a.zoom_in {
+  border-bottom: 1px solid #BCBCBC;
+}
+div.dark#zoom a:hover {
+  cursor: pointer;
+  color: #F1F1F1;
+}
+div#zoom a.disabled {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);
+  opacity: 0.2;
+}
+
+div#zoom a.disabled:hover {
+  cursor: default;
+  color: #999999;
 }

@@ -264,7 +264,7 @@
         }
         .fields {
           li {
-            padding: (46px - 15px)/2 0;
+            padding: 15px 0;            
             font-size: 15px;
             color: #CCCCCC;
             border-bottom:1px solid rgba(#999999,0.25);
@@ -295,14 +295,21 @@
               margin-right: 20px;
             }
 
+            &.drag_field {
+              padding: 15px 0 15px 10px;
+              @include icons-sprite(drag_points, $offset-y:23px);
+            }
+
             &.ui-sortable-helper {
-              padding:15px;
+              padding:15px 15px 15px 20px;
               margin-left:-15px!important;
               @include box-shadow(rgba(0,0,0,0.1) 0 0 5px 2px);
-              border-top:1px solid rgba(#999999,0.25);
-              background:white;
+              border:1px solid #999999;
+              @include icons-sprite(drag_points, $offset-y:23px, $offset-x:10px);
+              background-color:white;
               @include border-radius(3px);
               cursor:all-scroll;
+              & > span {color:#999999;}
             }
           
             &.enabled {

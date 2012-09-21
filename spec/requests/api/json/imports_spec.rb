@@ -88,9 +88,9 @@ describe "Imports API" do
   end
 
   it 'allows users to import files with weird filenames' do
-    post v1_imports_url(:host => 'test.localhost.lan'), :filename       => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'text/plain'),
-                                                        :table_name     => '_penguins_below_80\ \(2\).tgz',
-                                                        :api_key        => @user.get_map_key
+    post v1_imports_url(:host => 'test.localhost.lan'), 
+      :filename       => upload_file('spec/support/data/_penguins_below_80 (2).tgz', 'application/octet-stream'),
+      :api_key        => @user.get_map_key
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 

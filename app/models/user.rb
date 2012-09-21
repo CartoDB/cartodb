@@ -362,8 +362,8 @@ class User < Sequel::Model
   end
 
   def link_renamed_tables(metadata_tables_ids)
-    metadata_tables_names      = self.tables.select(:name).map(&:name)
-    renamed_tables = real_tables.reject{|t| metadata_tables_ids.include?(t[:oid]) && metadata_tables_names.include?(t[:relname])}
+    metadata_table_names = self.tables.select(:name).map(&:name)
+    renamed_tables       = real_tables.reject{|t| metadata_table_names.include?(t[:relname])}.select{|t| metadata_tables_ids.include?(t[:oid])}
     renamed_tables.each do |t|
       table = Table.find(:table_id => t[:oid])
       begin

@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev4 - v6.0.4-62-ga2b3f2b */
+/* wax - 7.0.0dev10 - v6.0.4-107-g522d2c8 */
 
 
 !function (name, context, definition) {
@@ -2030,8 +2030,10 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 // Attribution
 // -----------
 wax.attribution = function() {
-    var container,
-        a = {};
+    var a = {};
+
+    var container = document.createElement('div');
+    container.className = 'map-attribution';
 
     a.content = function(x) {
         if (typeof x === 'undefined') return container.innerHTML;
@@ -2044,12 +2046,10 @@ wax.attribution = function() {
     };
 
     a.init = function() {
-        container = document.createElement('div');
-        container.className = 'map-attribution';
         return this;
     };
 
-    return a.init();
+    return a;
 };
 wax = wax || {};
 
@@ -2324,6 +2324,10 @@ wax = wax || {};
 wax.hash = function(options) {
     options = options || {};
 
+    var s0, // old hash
+        hash = {},
+        lat = 90 - 1e-8;  // allowable latitude range
+
     function getState() {
         return location.hash.substring(1);
     }
@@ -2332,10 +2336,6 @@ wax.hash = function(options) {
         var l = window.location;
         l.replace(l.toString().replace((l.hash || /$/), '#' + state));
     }
-
-    var s0, // old hash
-        hash = {},
-        lat = 90 - 1e-8;  // allowable latitude range
 
     function parseHash(s) {
         var args = s.split('/');
@@ -2374,15 +2374,15 @@ wax.hash = function(options) {
     hash.add = function() {
         stateChange(getState());
         options.bindChange(_move);
-        return this;
+        return hash;
     };
 
     hash.remove = function() {
         options.unbindChange(_move);
-        return this;
+        return hash;
     };
 
-    return hash.add();
+    return hash;
 };
 wax = wax || {};
 
@@ -2390,7 +2390,7 @@ wax.interaction = function() {
     var gm = wax.gm(),
         interaction = {},
         _downLock = false,
-        _clickTimeout = false,
+        _clickTimeout = null,
         // Active feature
         // Down event
         _d,
@@ -2420,10 +2420,11 @@ wax.interaction = function() {
     function getTile(e) {
         var g = grid();
         for (var i = 0; i < g.length; i++) {
-            if ((g[i][0] < e.y) &&
-               ((g[i][0] + 256) > e.y) &&
-                (g[i][1] < e.x) &&
-               ((g[i][1] + 256) > e.x)) return g[i][2];
+            if (e)
+                if ((g[i][0] < e.y) &&
+                   ((g[i][0] + 256) > e.y) &&
+                    (g[i][1] < e.x) &&
+                   ((g[i][1] + 256) > e.x)) return g[i][2];
         }
         return false;
     }
@@ -2463,9 +2464,6 @@ wax.interaction = function() {
 
     // A handler for 'down' events - which means `mousedown` and `touchstart`
     function onDown(e) {
-        // Ignore double-clicks by ignoring clicks within 300ms of
-        // each other.
-        if (killTimeout()) { return; }
 
         // Prevent interaction offset calculations happening while
         // the user is dragging the map.
@@ -2476,7 +2474,8 @@ wax.interaction = function() {
         _d = wax.u.eventoffset(e);
         if (e.type === 'mousedown') {
             bean.add(document.body, 'click', onUp);
-            bean.add(document.body, 'mouseup', onUp);
+            // track mouse up to remove lockDown when the drags end
+            bean.add(document.body, 'mouseup', dragEnd);
 
         // Only track single-touches. Double-touches will not affect this
         // control
@@ -2486,6 +2485,10 @@ wax.interaction = function() {
             // Touch moves invalidate touches
             bean.add(parent(), touchEnds);
         }
+    }
+
+    function dragEnd() {
+        _downLock = false;
     }
 
     function touchCancel() {
@@ -2514,11 +2517,16 @@ wax.interaction = function() {
         } else if (Math.round(pos.y / tol) === Math.round(_d.y / tol) &&
             Math.round(pos.x / tol) === Math.round(_d.x / tol)) {
             // Contain the event data in a closure.
-            _clickTimeout = window.setTimeout(
-                function() {
-                    _clickTimeout = null;
-                    interaction.click(evt, pos);
-                }, 300);
+            // Ignore double-clicks by ignoring clicks within 300ms of
+            // each other.
+            if(!_clickTimeout) {
+              _clickTimeout = window.setTimeout(function() {
+                  _clickTimeout = null;
+                  interaction.click(evt, pos);
+              }, 300);
+            } else {
+              killTimeout();
+            }
         }
         return onUp;
     }
@@ -2654,10 +2662,10 @@ wax.legend = function() {
 
     legend.add = function() {
         container = document.createElement('div');
-        container.className = 'map-legends';
+        container.className = 'map-legends wax-legends';
 
         element = container.appendChild(document.createElement('div'));
-        element.className = 'map-legend';
+        element.className = 'map-legend wax-legend';
         element.style.display = 'none';
         return legend;
     };
@@ -2671,7 +2679,6 @@ wax.location = function() {
     var t = {};
 
     function on(o) {
-        console.log(o);
         if ((o.e.type === 'mousemove' || !o.e.type)) {
             return;
         } else {
@@ -2906,7 +2913,7 @@ wax.tooltip = function() {
     // Hide any tooltips on layers underneath this one.
     function getTooltip(feature) {
         var tooltip = document.createElement('div');
-        tooltip.className = 'map-tooltip map-tooltip-0';
+        tooltip.className = 'map-tooltip map-tooltip-0 wax-tooltip';
         tooltip.innerHTML = feature;
         return tooltip;
     }
@@ -2954,7 +2961,7 @@ wax.tooltip = function() {
             hide();
             parent.style.cursor = 'pointer';
             var tt = parent.appendChild(getTooltip(content));
-            tt.className += ' map-popup';
+            tt.className += ' map-popup wax-popup';
 
             var close = tt.appendChild(document.createElement('a'));
             close.href = '#close';
@@ -3019,8 +3026,6 @@ wax.u = {
             doc_body = document.body,
             top = 0,
             left = 0;
-
-        var real_top = $(el).offset();
 
         var calculateOffset = function(el) {
             if (el === doc_body || el === document.documentElement) return;
@@ -3091,16 +3096,6 @@ wax.u = {
         return (typeof x === 'string') ?
             document.getElementById(x) :
             x;
-    },
-
-    // IE doesn't have indexOf
-    indexOf: function(array, item) {
-        var nativeIndexOf = Array.prototype.indexOf;
-        if (array === null) return -1;
-        var i, l;
-        if (nativeIndexOf && array.indexOf === nativeIndexOf) return array.indexOf(item);
-        for (i = 0, l = array.length; i < l; i++) if (array[i] === item) return i;
-        return -1;
     },
 
     // From quirksmode: normalize the offset of an event from the top-left
@@ -3226,6 +3221,7 @@ wax.leaf.interaction = function() {
                     if (layers[layerId]._tiles) {
                         for (var tile in layers[layerId]._tiles) {
                             var _tile = layers[layerId]._tiles[tile];
+                            // avoid adding tiles without src, grid url can't be found for them
                             if(_tile.src) {
                               var offset = wax.u.offset(_tile);
                               o.push([offset.top, offset.left, _tile]);

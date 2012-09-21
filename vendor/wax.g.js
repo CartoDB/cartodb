@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-104-g7d45887 */
+/* wax - 7.0.0dev10 - v6.0.4-107-g522d2c8 */
 
 
 !function (name, context, definition) {
@@ -2390,7 +2390,7 @@ wax.interaction = function() {
     var gm = wax.gm(),
         interaction = {},
         _downLock = false,
-        _clickTimeout = false,
+        _clickTimeout = null,
         // Active feature
         // Down event
         _d,
@@ -2464,9 +2464,6 @@ wax.interaction = function() {
 
     // A handler for 'down' events - which means `mousedown` and `touchstart`
     function onDown(e) {
-        // Ignore double-clicks by ignoring clicks within 300ms of
-        // each other.
-        if (killTimeout()) { return; }
 
         // Prevent interaction offset calculations happening while
         // the user is dragging the map.
@@ -2477,7 +2474,8 @@ wax.interaction = function() {
         _d = wax.u.eventoffset(e);
         if (e.type === 'mousedown') {
             bean.add(document.body, 'click', onUp);
-            bean.add(document.body, 'mouseup', onUp);
+            // track mouse up to remove lockDown when the drags end
+            bean.add(document.body, 'mouseup', dragEnd);
 
         // Only track single-touches. Double-touches will not affect this
         // control
@@ -2487,6 +2485,10 @@ wax.interaction = function() {
             // Touch moves invalidate touches
             bean.add(parent(), touchEnds);
         }
+    }
+
+    function dragEnd() {
+        _downLock = false;
     }
 
     function touchCancel() {
@@ -2515,11 +2517,16 @@ wax.interaction = function() {
         } else if (Math.round(pos.y / tol) === Math.round(_d.y / tol) &&
             Math.round(pos.x / tol) === Math.round(_d.x / tol)) {
             // Contain the event data in a closure.
-            _clickTimeout = window.setTimeout(
-                function() {
-                    _clickTimeout = null;
-                    interaction.click(evt, pos);
-                }, 300);
+            // Ignore double-clicks by ignoring clicks within 300ms of
+            // each other.
+            if(!_clickTimeout) {
+              _clickTimeout = window.setTimeout(function() {
+                  _clickTimeout = null;
+                  interaction.click(evt, pos);
+              }, 300);
+            } else {
+              killTimeout();
+            }
         }
         return onUp;
     }

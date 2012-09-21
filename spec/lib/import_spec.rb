@@ -7,8 +7,8 @@ describe CartoDB::Importer do
   context "basic functionality" do
     it "should raise an error if :import_from_file option is blank" do
       lambda {
-        CartoDB::Importer.new
-      }.should raise_error("import_from_file value can't be nil")
+        CartoDB::Importer.new(:data_import_id => get_data_import_id)
+      }.should raise_error("import_from_file value can't be blank")
     end
     it "should get the table name from the options" do
       importer = create_importer 'clubbing.csv', 'prefered_name'
@@ -96,6 +96,30 @@ describe CartoDB::Importer do
         results[0].import_type.should   == '.csv'
       end
     end
+
+    describe "#TAR" do
+      it "should import CSV even from a tgz" do
+        importer = create_importer 'pino.tgz'
+        results,errors   = importer.import!
+
+        # Assertions
+        errors.should be_empty
+        results[0].name.should          == 'data'
+        results[0].rows_imported.should == 4
+        results[0].import_type.should   == '.csv'
+      end
+      it "should import CSV even from a tarball" do
+        importer = create_importer 'pino.tar'
+        results, errors   = importer.import!
+
+        # Assertions
+        errors.should be_empty
+        results[0].rows_imported.should == 4
+        results[0].import_type.should   == '.csv'
+      end
+    end
+
+
 
     describe "#CSV" do
       it "should import a CSV file in the given database in a table named like the file" do

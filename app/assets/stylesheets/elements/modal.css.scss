@@ -83,5 +83,15 @@
           a.cancel {display:none}
         }
       }
+
+      // Notification (upgrade account)
+      &.notification {
+        border:4px solid rgba(#FFCC33,0.3);
+        div.foot {
+          padding-top:0;
+          border:none;
+          a.cancel {display:none}
+        }
+      }      
     }
   }

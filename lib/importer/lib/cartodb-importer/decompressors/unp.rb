@@ -25,7 +25,11 @@ module CartoDB
         tarcmd = "unp #{@path}"
         begin
           utr = `#{tarcmd}`
-          raise "unp: Can't find #{@path}" unless utr =~ /.*inflating: .*/
+
+          # Try to detect unp failures
+          if utr =~ /.*Cannot read.*/ || $?.exitstatus != 0
+            raise "unp: Can't find #{@path}"
+          end
         rescue => e
           @data_import.log_update("unp: Can't find #{@path}")
           raise e

@@ -52,7 +52,9 @@ module CartoDB
             raise e
           end
         end
-        raise "import_from_file value can't be nil" unless @import_from_file
+
+        raise "data_import_id can't be blank" if @data_import.blank?
+        raise "import_from_file value can't be blank" if @import_from_file.blank?
 
         # Setup suggested name
         if options[:suggested_name]
@@ -62,50 +64,55 @@ module CartoDB
           @force_name = false
         end
 
-        # TODO: Explain THIS!
         if @import_from_file.is_a?(String)
+
+          @import_from_file.strip!
           @filesrc = nil
           @fromuri = false
-          if @import_from_file =~ /^http/ # Tells us it is a URL
+          
+          # URL cleaning stuff
+          if @import_from_file =~ /^http/ 
+            @import_from_file = parse_url(URI.escape(@import_from_file.strip))
+
             # KML from FusionTables urls were not coming with extensions
             if @import_from_file =~ /fusiontables/
               @filesrc = "fusiontables"
             end
+
             @fromuri = true
-            #@import_from_file = URI.escape(@import_from_file) # Ensures open-uri will work
           end
-            begin
-              @import_from_file = parse_url(URI.escape(@import_from_file.strip))
-              open(@import_from_file) do |res| # opens file normally, or open-uri to download/open
-                @data_import.file_ready
-                file_name = File.basename(@import_from_file)
-                @ext = File.extname(file_name).downcase
+          
+          begin
+            # Try to open file normally, or open-uri to download/open
+            open(@import_from_file) do |res|
+              @data_import.file_ready
+              file_name = File.basename(@import_from_file)
+              @ext = File.extname(file_name).downcase
 
-
-                # Fix for extensionless fusiontables files
-                if @filesrc == "fusiontables"
-                  @ext = ".kml"
-                elsif @import_from_file =~ /openstreetmap.org/
-                  @ext = ".osm"
-                elsif @ext==".gz" and @import_from_file.include?(".tar.gz")
-                  @ext=".tgz"
-                end
-
-                @iconv ||= Iconv.new('UTF-8//IGNORE', 'UTF-8')
-                @original_name ||= get_valid_name(File.basename(@iconv.iconv(@import_from_file), @ext).downcase.sanitize)
-
-                @import_from_file = Tempfile.new([@original_name, @ext])
-                @import_from_file.write res.read.force_encoding("UTF-8")
-                @import_from_file.close
+              # Fix for extensionless fusiontables files
+              if @filesrc == "fusiontables"
+                @ext = ".kml"
+              elsif @import_from_file =~ /openstreetmap.org/
+                @ext = ".osm"
+              elsif @ext==".gz" and @import_from_file.include?(".tar.gz")
+                @ext=".tgz"
               end
-            rescue e
-              if @import_from_file =~ /^http/
-                uri = $!.uri
-                retry
-              else
-                @data_import.log_error(e)
-              end
+
+              @iconv ||= Iconv.new('UTF-8//IGNORE', 'UTF-8')
+              @original_name ||= get_valid_name(File.basename(@iconv.iconv(@import_from_file), @ext).downcase.sanitize)
+
+              @import_from_file = Tempfile.new([@original_name, @ext])
+              @import_from_file.write res.read.force_encoding("UTF-8")
+              @import_from_file.close
             end
+          rescue e
+            if @import_from_file =~ /^http/
+              uri = $!.uri
+              retry
+            else
+              @data_import.log_error(e)
+            end
+          end
 
         else
           original_filename = if @import_from_file.respond_to?(:original_filename)
@@ -129,8 +136,7 @@ module CartoDB
         end
         @data_import.file_ready
       rescue => e
-        p e
-        #@data_import.log_error(e)
+        @data_import.log_error(e)
         log e.inspect
         raise e
       end

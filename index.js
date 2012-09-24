@@ -25,6 +25,7 @@
 //= require cdb/src/geo/ui/switcher
 //= require cdb/src/geo/ui/infowindow
 //= require cdb/src/geo/ui/header
+//= require cdb/src/geo/ui/search
 //= require cdb/src/ui/common/tabpane
 //= require cdb/src/ui/common/dialog
 //= require cdb/src/ui/common/notification

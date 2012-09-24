@@ -129,7 +129,14 @@ if(typeof(L) != "undefined") {
   _.extend(LeafLetLayerCartoDBView.prototype, LeafLetLayerView.prototype, {
 
     _update: function() {
-      this.leafletLayer.setOptions(_.clone(this.model.attributes));
+      var attrs = _.clone(this.model.attributes);
+      // if we want to use the style stored in the server
+      // but we want to store it in the layer model
+      // we should remove it from layer options
+      if(this.model.get('use_server_style')) {
+        attrs.tile_style = null;
+      }
+      this.leafletLayer.setOptions(attrs);
     },
 
     featureOver: function(e, latlon, pixelPos, data) {

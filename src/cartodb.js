@@ -38,6 +38,7 @@
         //'geo/ui/selector.js',
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
+        'geo/ui/search.js',
         'geo/leaflet.js',
         'geo/gmaps_cartodb_layer.js',
         'geo/gmaps.js',

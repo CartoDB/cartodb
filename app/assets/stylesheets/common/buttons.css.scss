@@ -43,6 +43,30 @@
       text-align:center;
     }
 
+    // Small
+    &.small {
+      padding:9px 10px;
+      font-size:15px;
+      letter-spacing:0;
+    }
+
+    // With radiobutton
+    &.radiobutton {
+      padding:10px 10px 12px 25px;
+
+      span.radio {
+        top:1px;
+        border-color:#4C6720;
+        &:before {
+          background-color:#66892B;
+        }
+      }
+
+      &.selected {
+        cursor:default;
+      }
+    }
+
     // Hover
     &:hover {
       background:#749C33; // IE
@@ -134,6 +158,64 @@
         background:#F9F9F9; // IE
         color:#333333;
         @include background(linear-gradient(#F9F9F9,#EBEBEB));
+        cursor:default;
+      }
+    }
+  }
+
+
+
+    /*
+   *  Blue button
+   *  {@hover}
+   *  {@active}
+   *  {@focus}
+   *  {@disabled}
+   */
+  a.button.blue,
+  button.blue,
+  input[type="submit"].blue {
+    padding:12px 13px;
+    font:bold 19px $text-fonts2;
+    line-height:normal;
+    color:white;
+    text-shadow:0 1px 0 #2E577B;
+    background:#53A0DA; // IE
+    @include background(linear-gradient(#53A0DA,#3B7EBC));
+    @include border-radius(3px);
+    border:1px solid #29557B;
+    letter-spacing:-1px;
+    word-spacing:1px;
+    @include transform-style("linear");
+    @include transition-property("box-shadow,border");
+    @include transition-duration(250ms);
+
+    // Hover
+    &:hover {
+      background:#3B7EBC; // IE
+      @include background(linear-gradient(#53A0DA,#3470A9)); 
+      text-decoration:none;
+      cursor:pointer;
+    }
+    // Active
+    &:active {
+      background:#3470A9; // IE
+      @include background(linear-gradient(#53A0DA,#3470A9));
+      @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(0,0,0,0.35) 0 1px 4px 0 inset,#fff 0 1px 0 0);
+    }
+    // Focus = hover
+    &:focus {
+      outline:none;
+      background:#3470A9; // IE
+      @include background(linear-gradient(#53A0DA,#3470A9));
+    }
+    // Disabled
+    &.disabled {
+      @include opacity(0.5);
+      &:hover, &:active, &:focus {
+        background:#53A0DA; // IE
+        color:white;
+        @include background(linear-gradient(#53A0DA,#3B7EBC));
         cursor:default;
       }
     }

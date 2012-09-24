@@ -125,7 +125,7 @@ describe('Interaction funcionality', function() {
       });
     });
 
-    waits(500);
+    waits(1000);
 
     runs(function () {
       expect(cdb_layer._manageOnEvents).toHaveBeenCalled();

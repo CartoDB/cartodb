@@ -53,7 +53,7 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
 
 
 // search content
-cdb.vis.Overlay.register('search', function(data) {
+cdb.vis.Overlay.register('search', function(data, vis) {
 
   var template = cdb.core.Template.compile(
     data.template || '\
@@ -66,7 +66,8 @@ cdb.vis.Overlay.register('search', function(data) {
   );
 
   var search = new cdb.geo.ui.Search({
-    template: template
+    template: template,
+    model: vis.map
   });
 
   return search.render();

@@ -2,6 +2,7 @@
 * leaflet implementation of a map
 */
 (function() {
+if(typeof(L) != "undefined") {
 
   var PlainLayer = L.TileLayer.extend({
 
@@ -72,7 +73,9 @@
   // -- tiled layer view
 
   var LeafLetTiledLayerView = function(layerModel, leafletMap) {
-    var leafletLayer = new L.TileLayer(layerModel.get('urlTemplate'));
+    var leafletLayer = new L.TileLayer(layerModel.get('urlTemplate'), {
+      tms: layerModel.get('tms')
+    });
     LeafLetLayerView.call(this, layerModel, leafletLayer, leafletMap);
   };
 
@@ -126,7 +129,14 @@
   _.extend(LeafLetLayerCartoDBView.prototype, LeafLetLayerView.prototype, {
 
     _update: function() {
-      this.leafletLayer.setOptions(_.clone(this.model.attributes));
+      var attrs = _.clone(this.model.attributes);
+      // if we want to use the style stored in the server
+      // but we want to store it in the layer model
+      // we should remove it from layer options
+      if(this.model.get('use_server_style')) {
+        attrs.tile_style = null;
+      }
+      this.leafletLayer.setOptions(attrs);
     },
 
     featureOver: function(e, latlon, pixelPos, data) {
@@ -155,7 +165,9 @@
     layerTypeMap: {
       "tiled": cdb.geo.LeafLetTiledLayerView,
       "cartodb": cdb.geo.LeafLetLayerCartoDBView,
-      "plain": cdb.geo.LeafLetPlainLayerView
+      "plain": cdb.geo.LeafLetPlainLayerView,
+      // for google maps create a plain layer
+      "gmapsbase": cdb.geo.LeafLetPlainLayerView
     },
 
     initialize: function() {
@@ -176,10 +188,16 @@
         maxZoom: this.map.get('maxZoom')
       };
       if (this.map.get('bounding_box_ne')) {
-        mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
+        //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
       }
 
       this.map_leaflet = new L.Map(this.el, mapConfig);
+
+      // looks like leaflet dont like to change the bounds just after the inicialization
+      var bounds = this.map.getViewBounds();
+      if(bounds) {
+        this.showBounds(bounds);
+      }
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
@@ -222,6 +240,9 @@
         self.trigger('drag');
       }, this);
 
+
+      this.trigger('ready');
+
     },
 
 
@@ -232,19 +253,6 @@
 
     _setCenter: function(model, center) {
       this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
-    },
-
-    /**
-    * Adds interactivity to a layer
-    *
-    * @params {String} tileJSON
-    * @params {String} featureOver
-    * @return {String} featureOut
-    */
-    addInteraction: function(tileJSON, featureOver, featureOut) {
-
-      return wax.leaf.interaction().map(this.map_leaflet).tilejson(tileJSON).on('on', featureOver).on('off', featureOut);
-
     },
 
     _setView: function() {
@@ -260,6 +268,7 @@
         layer_view = new layerClass(layer, this.map_leaflet);
       } else {
         cdb.log.error("MAP: " + layer.get('type') + " can't be created");
+        return;
       }
 
       this.layers[layer.cid] = layer_view;
@@ -303,8 +312,21 @@
 
     panBy: function(p) {
       this.map_leaflet.panBy(new L.Point(p.x, p.y));
+    },
+
+    setAutoSaveBounds: function() {
+      var self = this;
+      // save on change
+      this.map.bind('change:center change:zoom', _.debounce(function() {
+        var b = self.getBounds();
+        self.map.save({
+          view_bounds_sw: b[0],
+          view_bounds_ne: b[1]
+        }, { silent: true });
+      }, 1000), this);
     }
 
   });
 
+} // defined leaflet
 })();

@@ -81,16 +81,34 @@ cdb.geo.Layers = Backbone.Collection.extend({
 
   model: cdb.geo.MapLayer,
 
+  initialize: function() {
+    this.bind('add remove', this._asignIndexes, this);
+  },
+
   clone: function() {
     var layers = new cdb.geo.Layers();
     this.each(function(layer) {
       if(layer.clone) {
-        layers.add(layer.clone());
+        var lyr = layer.clone();
+        lyr.set('id', null);
+        layers.add(lyr);
       } else {
-        layers.add(_.clone(layer.attributes));
+        var attrs = _.clone(layer.attributes);
+        delete attrs.id;
+        layers.add(attrs);
       }
     });
     return layers;
+  },
+
+  /**
+   * each time a layer is added or removed
+   * the index should be recalculated
+   */
+  _asignIndexes: function() {
+    for(var i = 0; i < this.size(); ++i) {
+      this.models[i].set({ order: i }, { silent: true });
+    }
   }
 });
 
@@ -109,6 +127,7 @@ cdb.geo.Map = Backbone.Model.extend({
 
   initialize: function() {
     this.layers = new cdb.geo.Layers();
+
   },
 
   setView: function(latlng, zoom) {
@@ -143,7 +162,9 @@ cdb.geo.Map = Backbone.Model.extend({
     m.set({
       center: _.clone(this.attributes.center),
       bounding_box_sw: _.clone(this.attributes.bounding_box_sw),
-      bounding_box_ne: _.clone(this.attributes.bounding_box_ne)
+      bounding_box_ne: _.clone(this.attributes.bounding_box_ne),
+      view_bounds_sw: _.clone(this.attributes.view_bounds_sw),
+      view_bounds_ne: _.clone(this.attributes.view_bounds_ne)
     });
     // layers
     m.layers = this.layers.clone();
@@ -167,6 +188,19 @@ cdb.geo.Map = Backbone.Model.extend({
     // Set options
     _.defauls(this.options, options);
 
+  },
+
+  /**
+   * return getViewbounds if it is set 
+   */
+  getViewBounds: function() {
+    if(this.has('view_bounds_sw') && this.has('view_bounds_ne')) {
+      return [
+        this.get('view_bounds_sw'),
+        this.get('view_bounds_ne')
+      ];
+    }
+    return null;
   },
 
   getLayerAt: function(i) {
@@ -212,14 +246,13 @@ cdb.geo.Map = Backbone.Model.extend({
   },
 
   // remove current base layer and set the specified
-  // the base layer is not deleted, it is only removed
-  // from the layer list
-  // return the old one
+  // current base layer is removed
   setBaseLayer: function(layer) {
     var old = this.layers.at(0);
-    this.layers.remove(old);
+    old.destroy();
+    //this.layers.remove(old);
     this.layers.add(layer, { at: 0 });
-    return old;
+    return layer;
   }
 });
 
@@ -237,9 +270,12 @@ cdb.geo.MapView = cdb.core.View.extend({
 
     this.map = this.options.map;
     this.add_related_model(this.map);
+    this.add_related_model(this.map.layers);
 
     // this var stores views information for each model
     this.layers = {};
+
+    this.bind('clean', this._removeLayers, this);
   },
 
   render: function() {
@@ -272,6 +308,13 @@ cdb.geo.MapView = cdb.core.View.extend({
     throw "to be implemented";
   },
 
+  _removeLayers: function() {
+    for(var layer in this.layers) {
+      this.layers[layer].remove();
+    }
+    this.layers = {}
+  },
+
   /**
   * set model property but unbind changes first in order to not create an infinite loop
   */
@@ -301,8 +344,11 @@ cdb.geo.MapView = cdb.core.View.extend({
   },
 
   _removeLayer: function(layer) {
-    this.layers[layer.cid].remove();
-    delete this.layers[layer.cid];
+    var layer_view = this.layers[layer.cid];
+    if(layer_view) {
+      layer_view.remove();
+      delete this.layers[layer.cid];
+    }
   },
 
   getLayerByCid: function(cid) {
@@ -326,4 +372,26 @@ cdb.geo.MapView = cdb.core.View.extend({
   }
 
 
-});
+}, {
+
+  _getClass: function(provider) {
+    var mapViewClass = cdb.geo.LeafletMapView;
+    if(provider === 'googlemaps') {
+        if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
+          mapViewClass = cdb.geo.GoogleMapsMapView;
+        } else {
+          cdb.log.error("you must include google maps library _before_ include cdb");
+        }
+    }
+    return mapViewClass;
+  },
+
+  create: function(el, mapModel) {
+    var _mapViewClass = cdb.geo.MapView._getClass(mapModel.get('provider'));
+    return new _mapViewClass({
+      el: el,
+      map: mapModel
+    });
+  }
+}
+);

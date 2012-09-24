@@ -64,7 +64,8 @@ var Vis = cdb.core.View.extend({
       title: data.title,
       description: data.description,
       maxZoom: data.maxZoom,
-      minZoom: data.minZoom
+      minZoom: data.minZoom,
+      provider: data.provider
     };
 
     // if the boundaries are defined, we add them to the map
@@ -80,10 +81,7 @@ var Vis = cdb.core.View.extend({
       height: '100%'
     });
     this.$el.append(div);
-    var mapView = new cdb.geo.LeafletMapView({
-      el: div,
-      map: map
-    });
+    var mapView = new cdb.geo.MapView.create(div, map);
     this.map = map;
     this.mapView = mapView;
 

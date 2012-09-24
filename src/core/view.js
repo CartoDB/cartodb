@@ -48,6 +48,7 @@
       // remove from parent
       if(this._parent) {
         this._parent.removeView(this);
+        this._parent = null;
       }
       this.remove();
       this.unbind();

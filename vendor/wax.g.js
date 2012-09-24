@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev4 - v6.0.4-62-ga2b3f2b */
+/* wax - 7.0.0dev10 - v6.0.4-104-g7d45887 */
 
 
 !function (name, context, definition) {
@@ -2030,8 +2030,10 @@ var Mustache = (typeof module !== "undefined" && module.exports) || {};
 // Attribution
 // -----------
 wax.attribution = function() {
-    var container,
-        a = {};
+    var a = {};
+
+    var container = document.createElement('div');
+    container.className = 'map-attribution';
 
     a.content = function(x) {
         if (typeof x === 'undefined') return container.innerHTML;
@@ -2044,12 +2046,10 @@ wax.attribution = function() {
     };
 
     a.init = function() {
-        container = document.createElement('div');
-        container.className = 'map-attribution';
         return this;
     };
 
-    return a.init();
+    return a;
 };
 wax = wax || {};
 
@@ -2324,6 +2324,10 @@ wax = wax || {};
 wax.hash = function(options) {
     options = options || {};
 
+    var s0, // old hash
+        hash = {},
+        lat = 90 - 1e-8;  // allowable latitude range
+
     function getState() {
         return location.hash.substring(1);
     }
@@ -2332,10 +2336,6 @@ wax.hash = function(options) {
         var l = window.location;
         l.replace(l.toString().replace((l.hash || /$/), '#' + state));
     }
-
-    var s0, // old hash
-        hash = {},
-        lat = 90 - 1e-8;  // allowable latitude range
 
     function parseHash(s) {
         var args = s.split('/');
@@ -2374,15 +2374,15 @@ wax.hash = function(options) {
     hash.add = function() {
         stateChange(getState());
         options.bindChange(_move);
-        return this;
+        return hash;
     };
 
     hash.remove = function() {
         options.unbindChange(_move);
-        return this;
+        return hash;
     };
 
-    return hash.add();
+    return hash;
 };
 wax = wax || {};
 
@@ -2420,10 +2420,11 @@ wax.interaction = function() {
     function getTile(e) {
         var g = grid();
         for (var i = 0; i < g.length; i++) {
-            if ((g[i][0] < e.y) &&
-               ((g[i][0] + 256) > e.y) &&
-                (g[i][1] < e.x) &&
-               ((g[i][1] + 256) > e.x)) return g[i][2];
+            if (e)
+                if ((g[i][0] < e.y) &&
+                   ((g[i][0] + 256) > e.y) &&
+                    (g[i][1] < e.x) &&
+                   ((g[i][1] + 256) > e.x)) return g[i][2];
         }
         return false;
     }
@@ -2654,10 +2655,10 @@ wax.legend = function() {
 
     legend.add = function() {
         container = document.createElement('div');
-        container.className = 'map-legends';
+        container.className = 'map-legends wax-legends';
 
         element = container.appendChild(document.createElement('div'));
-        element.className = 'map-legend';
+        element.className = 'map-legend wax-legend';
         element.style.display = 'none';
         return legend;
     };
@@ -2671,7 +2672,6 @@ wax.location = function() {
     var t = {};
 
     function on(o) {
-        console.log(o);
         if ((o.e.type === 'mousemove' || !o.e.type)) {
             return;
         } else {
@@ -2906,7 +2906,7 @@ wax.tooltip = function() {
     // Hide any tooltips on layers underneath this one.
     function getTooltip(feature) {
         var tooltip = document.createElement('div');
-        tooltip.className = 'map-tooltip map-tooltip-0';
+        tooltip.className = 'map-tooltip map-tooltip-0 wax-tooltip';
         tooltip.innerHTML = feature;
         return tooltip;
     }
@@ -2954,7 +2954,7 @@ wax.tooltip = function() {
             hide();
             parent.style.cursor = 'pointer';
             var tt = parent.appendChild(getTooltip(content));
-            tt.className += ' map-popup';
+            tt.className += ' map-popup wax-popup';
 
             var close = tt.appendChild(document.createElement('a'));
             close.href = '#close';
@@ -3019,8 +3019,6 @@ wax.u = {
             doc_body = document.body,
             top = 0,
             left = 0;
-
-        var real_top = $(el).offset();
 
         var calculateOffset = function(el) {
             if (el === doc_body || el === document.documentElement) return;
@@ -3093,16 +3091,6 @@ wax.u = {
             x;
     },
 
-    // IE doesn't have indexOf
-    indexOf: function(array, item) {
-        var nativeIndexOf = Array.prototype.indexOf;
-        if (array === null) return -1;
-        var i, l;
-        if (nativeIndexOf && array.indexOf === nativeIndexOf) return array.indexOf(item);
-        for (i = 0, l = array.length; i < l; i++) if (array[i] === item) return i;
-        return -1;
-    },
-
     // From quirksmode: normalize the offset of an event from the top-left
     // of the page.
     eventoffset: function(e) {
@@ -3171,107 +3159,164 @@ wax.u = {
     }
 };
 wax = wax || {};
-wax.leaf = wax.leaf || {};
+wax.g = wax.g || {};
 
-wax.leaf.hash = function(map) {
+// Attribution
+// -----------
+// Attribution wrapper for Google Maps.
+wax.g.attribution = function(map, tilejson) {
+    tilejson = tilejson || {};
+    var a, // internal attribution control
+        attribution = {};
+
+    attribution.element = function() {
+        return a.element();
+    };
+
+    attribution.appendTo = function(elem) {
+        wax.u.$(elem).appendChild(a.element());
+        return this;
+    };
+
+    attribution.init = function() {
+        a = wax.attribution();
+        a.content(tilejson.attribution);
+        a.element().className = 'map-attribution map-g';
+        return this;
+    };
+
+    return attribution.init();
+};
+wax = wax || {};
+wax.g = wax.g || {};
+
+// Bandwidth Detection
+// ------------------
+wax.g.bwdetect = function(map, options) {
+    options = options || {};
+    var lowpng = options.png || '.png128',
+        lowjpg = options.jpg || '.jpg70';
+
+    // Create a low-bandwidth map type.
+    if (!map.mapTypes['mb-low']) {
+        var mb = map.mapTypes.mb;
+        var tilejson = {
+            tiles: [],
+            scheme: mb.options.scheme,
+            blankImage: mb.options.blankImage,
+            minzoom: mb.minZoom,
+            maxzoom: mb.maxZoom,
+            name: mb.name,
+            description: mb.description
+        };
+        for (var i = 0; i < mb.options.tiles.length; i++) {
+            tilejson.tiles.push(mb.options.tiles[i]
+                .replace('.png', lowpng)
+                .replace('.jpg', lowjpg));
+        }
+        m.mapTypes.set('mb-low', new wax.g.connector(tilejson));
+    }
+
+    return wax.bwdetect(options, function(bw) {
+      map.setMapTypeId(bw ? 'mb' : 'mb-low');
+    });
+};
+wax = wax || {};
+wax.g = wax.g || {};
+
+wax.g.hash = function(map) {
     return wax.hash({
-        getCenterZoom: function () {
+        getCenterZoom: function() {
             var center = map.getCenter(),
                 zoom = map.getZoom(),
                 precision = Math.max(
                     0,
                     Math.ceil(Math.log(zoom) / Math.LN2));
-
-            return [
-                zoom,
-                center.lat.toFixed(precision),
-                center.lng.toFixed(precision)
+            return [zoom.toFixed(2),
+                center.lat().toFixed(precision),
+                center.lng().toFixed(precision)
             ].join('/');
         },
-
-        setCenterZoom: function (args) {
-            map.setView(new L.LatLng(args[1], args[2]), args[0]);
+        setCenterZoom: function setCenterZoom(args) {
+            map.setCenter(new google.maps.LatLng(args[1], args[2]));
+            map.setZoom(args[0]);
         },
-
-        bindChange: function (fn) {
-            map.on('moveend', fn);
+        bindChange: function(fn) {
+            google.maps.event.addListener(map, 'idle', fn);
         },
-
-        unbindChange: function (fn) {
-            map.off('moveend', fn);
+        unbindChange: function(fn) {
+            google.maps.event.removeListener(map, 'idle', fn);
         }
     });
 };
 wax = wax || {};
-wax.leaf = wax.leaf || {};
+wax.g = wax.g || {};
 
-wax.leaf.interaction = function() {
+wax.g.interaction = function() {
     var dirty = false, _grid, map;
 
     function setdirty() { dirty = true; }
 
     function grid() {
-        // TODO: don't build for tiles outside of viewport
-        // Touch interaction leads to intermediate
-        //var zoomLayer = map.createOrGetLayer(Math.round(map.getZoom())); //?what is this doing?
-        // Calculate a tile grid and cache it, by using the `.tiles`
-        // element on this map.
+
         if (!dirty && _grid) {
             return _grid;
         } else {
-            return (_grid = (function(layers) {
-                var o = [];
-                for (var layerId in layers) {
-                    // This only supports tiled layers
-                    if (layers[layerId]._tiles) {
-                        for (var tile in layers[layerId]._tiles) {
-                            var _tile = layers[layerId]._tiles[tile];
-                            if(_tile.src) {
-                              var offset = wax.u.offset(_tile);
-                              o.push([offset.top, offset.left, _tile]);
-                            }
-                        }
-                    }
+            _grid = [];
+            var zoom = map.getZoom();
+            var mapOffset = wax.u.offset(map.getDiv());
+            var get = function(mapType) {
+                if (!mapType.interactive) return;
+                for (var key in mapType.cache) {
+                    if (key.split('/')[0] != zoom) continue;
+                    var tileOffset = wax.u.offset(mapType.cache[key]);
+                    _grid.push([
+                        tileOffset.top,
+                        tileOffset.left,
+                        mapType.cache[key]
+                    ]);
                 }
-                return o;
-            })(map._layers));
+            };
+            // Iterate over base mapTypes and overlayMapTypes.
+            for (var i in map.mapTypes) get(map.mapTypes[i]);
+            map.overlayMapTypes.forEach(get);
         }
+        return _grid;
     }
 
     function attach(x) {
         if (!arguments.length) return map;
         map = x;
-        var l = ['moveend'];
-        for (var i = 0; i < l.length; i++) {
-            map.on(l[i], setdirty);
-        }
+        google.maps.event.addListener(map, 'tileloaded',
+            setdirty);
+        google.maps.event.addListener(map, 'idle',
+            setdirty);
     }
 
     function detach(x) {
-        if (!arguments.length) return map;
-        map = x;
-        var l = ['moveend'];
-        for (var i = 0; i < l.length; i++) {
-            map.off(l[i], setdirty);
-        }
+        google.maps.event.removeListener(map, 'tileloaded',
+            setdirty);
+        google.maps.event.removeListener(map, 'idle',
+            setdirty);
     }
+
+
 
     return wax.interaction()
         .attach(attach)
         .detach(detach)
         .parent(function() {
-          return map._container;
+          return map.getDiv();
         })
         .grid(grid);
 };
 wax = wax || {};
-wax.leaf = wax.leaf || {};
+wax.g = wax.g || {};
 
 // Legend Control
 // --------------
-// The Leaflet version of this control is a very, very
-// light wrapper around the `/lib` code for legends.
-wax.leaf.legend = function(map, tilejson) {
+// Adds legends to a google Map object.
+wax.g.legend = function(map, tilejson) {
     tilejson = tilejson || {};
     var l, // parent legend
         legend = {};
@@ -3279,11 +3324,7 @@ wax.leaf.legend = function(map, tilejson) {
     legend.add = function() {
         l = wax.legend()
             .content(tilejson.legend || '');
-        return this;
-    };
-
-    legend.content = function(x) {
-        if (x) l.content(x.legend || '');
+        return legend;
     };
 
     legend.element = function() {
@@ -3292,19 +3333,91 @@ wax.leaf.legend = function(map, tilejson) {
 
     legend.appendTo = function(elem) {
         wax.u.$(elem).appendChild(l.element());
-        return this;
+        return legend;
     };
 
     return legend.add();
 };
-wax = wax || {};
-wax.leaf = wax.leaf || {};
+// Wax for Google Maps API v3
+// --------------------------
 
-wax.leaf.connector = L.TileLayer.extend({
-    initialize: function(options) {
-        options = options || {};
-        options.minZoom = options.minzoom || 0;
-        options.maxZoom = options.maxzoom || 22;
-        L.TileLayer.prototype.initialize.call(this, options.tiles[0], options);
+// Wax header
+var wax = wax || {};
+wax.g = wax.g || {};
+
+// Wax Google Maps MapType: takes an object of options in the form
+//
+//     {
+//       name: '',
+//       filetype: '.png',
+//       layerName: 'world-light',
+//       alt: '',
+//       zoomRange: [0, 18],
+//       baseUrl: 'a url',
+//     }
+wax.g.connector = function(options) {
+    options = options || {};
+
+    this.options = {
+        tiles: options.tiles,
+        scheme: options.scheme || 'xyz',
+        blankImage: options.blankImage || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
+    };
+
+    this.opacity = options.opacity || 0;
+    this.minZoom = options.minzoom || 0;
+    this.maxZoom = options.maxzoom || 22;
+
+    this.name = options.name || '';
+    this.description = options.description || '';
+
+    // non-configurable options
+    this.interactive = true;
+    this.tileSize = new google.maps.Size(256, 256);
+
+    // DOM element cache
+    this.cache = {};
+};
+
+// Get a tile element from a coordinate, zoom level, and an ownerDocument.
+wax.g.connector.prototype.getTile = function(coord, zoom, ownerDocument) {
+    var key = zoom + '/' + coord.x + '/' + coord.y;
+    if (!this.cache[key]) {
+        var img = this.cache[key] = new Image(256, 256);
+        this.cache[key].src = this.getTileUrl(coord, zoom);
+        this.cache[key].setAttribute('gTileKey', key);
+        this.cache[key].setAttribute("style","opacity: "+this.opacity+"; filter: alpha(opacity="+(this.opacity*100)+");");
+        this.cache[key].onerror = function() { img.style.display = 'none'; };
     }
-});
+    return this.cache[key];
+};
+
+// Remove a tile that has fallen out of the map's viewport.
+//
+// TODO: expire cache data in the gridmanager.
+wax.g.connector.prototype.releaseTile = function(tile) {
+    var key = tile.getAttribute('gTileKey');
+    if (this.cache[key]) delete this.cache[key];
+    if (tile.parentNode) tile.parentNode.removeChild(tile);
+};
+
+// Get a tile url, based on x, y coordinates and a z value.
+wax.g.connector.prototype.getTileUrl = function(coord, z) {
+    // Y coordinate is flipped in Mapbox, compared to Google
+    var mod = Math.pow(2, z),
+        y = (this.options.scheme === 'tms') ?
+            (mod - 1) - coord.y :
+            coord.y,
+        x = (coord.x % mod);
+
+    x = (x < 0) ? (coord.x % mod) + mod : x;
+
+    if (y < 0) return this.options.blankImage;
+
+    return this.options.tiles
+        [parseInt(x + y, 10) %
+            this.options.tiles.length]
+                .replace(/\{z\}/g, z)
+                .replace(/\{x\}/g, x)
+                .replace(/\{y\}/g, y);
+};

@@ -183,18 +183,27 @@ describe("common.ui.Table", function() {
       expect(cell.html()).toEqual('4');
     });
 
-    it("should trigger cell clicked on click", function() {
+    it("should trigger cell clicked on click and dblclick", function() {
       var cell = table.render().getCell(0, 1);
       spy = {
-        click: function() {}
+        click: function() {},
+        dblClick: function() {}
       };
       spyOn(spy, 'click');
+      spyOn(spy, 'dblClick');
       table.bind('cellClick', spy.click, spy);
       cell.trigger('click');
       expect(spy.click).toHaveBeenCalled();
       expect(spy.click.mostRecentCall.args[1][0]).toEqual(cell[0]);
       expect(spy.click.mostRecentCall.args[2]).toEqual(0);
       expect(spy.click.mostRecentCall.args[3]).toEqual(1);
+
+      table.bind('cellDblClick', spy.dblClick, spy);
+      cell.trigger('dblclick');
+      expect(spy.dblClick).toHaveBeenCalled();
+      expect(spy.dblClick.mostRecentCall.args[1][0]).toEqual(cell[0]);
+      expect(spy.dblClick.mostRecentCall.args[2]).toEqual(0);
+      expect(spy.dblClick.mostRecentCall.args[3]).toEqual(1);
 
     });
 

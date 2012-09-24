@@ -27,7 +27,25 @@ describe("geo.map", function() {
       layers.add(layer);
       var copy = layers.clone();
       expect(copy.size()).toEqual(layers.size());
-      expect(copy.models[0].attributes).toEqual(layers.models[0].attributes);
+      var a = _.clone(layers.models[0].attributes);
+      a.id = null;
+      expect(copy.models[0].attributes).toEqual(a);
+      expect(copy.get('id')).toEqual(undefined);
+    });
+
+    it("should assign order each time is added", function() {
+      var layer = new cdb.geo.CartoDBLayer();
+      layers.add(layer);
+      expect(layer.get('order')).toEqual(0);
+      var layer2 = new cdb.geo.CartoDBLayer();
+      layers.add(layer2);
+      expect(layer2.get('order')).toEqual(1);
+      layer.destroy();
+      expect(layer2.get('order')).toEqual(0);
+      layers.add(new cdb.geo.CartoDBLayer(),{at: 0});
+      expect(layer2.get('order')).toEqual(1);
+
+
     });
 
   });
@@ -54,7 +72,7 @@ describe("geo.map", function() {
       map.addLayer(layer);
       var base = new cdb.geo.CartoDBLayer({});
       var r = map.setBaseLayer(base);
-      expect(r).toEqual(old);
+      expect(r).toEqual(base);
       expect(map.layers.at(0)).toEqual(base);
     });
 
@@ -198,27 +216,52 @@ describe("geo.map", function() {
       //expect(mapView.map_leaflet.addLayer).toHaveBeenCalledWith(mapView.layers[layer.cid].leafletLayer, true);
     });
 
-    it("should not insert map boundaries when not defined by the user", function() {
-      expect(mapView.map_leaflet.options.maxBounds).toBeFalsy();
+    // DEPRECATED (by now)
+    // it("should not insert map boundaries when not defined by the user", function() {
+    //   expect(mapView.map_leaflet.options.maxBounds).toBeFalsy();
+    // });
+
+    // it("should insert the boundaries when provided", function() {
+    //   var container = $('<div>').css('height', '200px');
+    //   var map = new cdb.geo.Map({bounding_box_sw: [1,2], bounding_box_ne: [3,5]});
+
+    //   var mapView = new cdb.geo.LeafletMapView({
+    //     el: this.container,
+    //     map: map
+    //   });
+    //   expect(map.get('bounding_box_sw')).toEqual([1,2]);
+    //   expect(map.get('bounding_box_ne')).toEqual([3,5]);
+    //   expect(mapView.map_leaflet.options.maxBounds).toBeTruthy();
+    //   expect(mapView.map_leaflet.options.maxBounds.getNorthEast().lat).toEqual(3);
+    //   expect(mapView.map_leaflet.options.maxBounds.getNorthEast().lng).toEqual(5);
+    //   expect(mapView.map_leaflet.options.maxBounds.getSouthWest().lat).toEqual(1);
+    //   expect(mapView.map_leaflet.options.maxBounds.getSouthWest().lng).toEqual(2);
+
+    // })
+
+
+    it("shoule remove all layers when map view is cleaned", function() {
+
+      var id1 = map.addLayer(new cdb.geo.CartoDBLayer({}));
+      var id2 = map.addLayer(new cdb.geo.CartoDBLayer({}));
+
+      expect(_.size(mapView.layers)).toEqual(2);
+      var layer = mapView.getLayerByCid(id1);
+      var layer2 = mapView.getLayerByCid(id2);
+      spyOn(layer, 'remove');
+      spyOn(layer2, 'remove');
+      mapView.clean();
+      expect(_.size(mapView.layers)).toEqual(0);
+      expect(layer.remove).toHaveBeenCalled();
+      expect(layer2.remove).toHaveBeenCalled();
     });
 
-    it("should insert the boundaries when provided", function() {
-      var container = $('<div>').css('height', '200px');
-      var map = new cdb.geo.Map({bounding_box_sw: [1,2], bounding_box_ne: [3,5]});
+    it("should not all a layer when it can't be creadted", function() {
+      var layer    = new cdb.geo.TileLayer({type: 'rambo'});
+      map.addLayer(layer);
+      expect(_.size(mapView.layers)).toEqual(0);
+    });
 
-      var mapView = new cdb.geo.LeafletMapView({
-        el: this.container,
-        map: map
-      });
-      expect(map.get('bounding_box_sw')).toEqual([1,2]);
-      expect(map.get('bounding_box_ne')).toEqual([3,5]);
-      expect(mapView.map_leaflet.options.maxBounds).toBeTruthy();
-      expect(mapView.map_leaflet.options.maxBounds.getNorthEast().lat).toEqual(3);
-      expect(mapView.map_leaflet.options.maxBounds.getNorthEast().lng).toEqual(5);
-      expect(mapView.map_leaflet.options.maxBounds.getSouthWest().lat).toEqual(1);
-      expect(mapView.map_leaflet.options.maxBounds.getSouthWest().lng).toEqual(2);
-
-    })
 
   });
 

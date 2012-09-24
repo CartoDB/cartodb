@@ -5,6 +5,7 @@
     window.cdb.core = {};
     window.cdb.geo = {};
     window.cdb.geo.ui = {};
+    window.cdb.geo.geocoder = {};
     window.cdb.ui = {};
     window.cdb.ui.common = {};
     window.cdb.vis = {};
@@ -31,6 +32,7 @@
         'core/template.js',
         'core/view.js',
 
+        'geo/geocoder.js',
         'geo/map.js',
         'geo/ui/zoom.js',
         'geo/ui/legend.js',

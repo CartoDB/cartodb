@@ -236,9 +236,17 @@ cdb.ui.common.Table = cdb.core.View.extend({
   _renderRows: function() {
     var self = this;
     this.clear_rows();
-    this.dataModel.each(function(row) {
-      self.addRow(row);
-    });
+    if(this.dataModel.length > 0) {
+      this.dataModel.each(function(row) {
+        self.addRow(row);
+      });
+    } else {
+      this.addEmptyTableInfo();
+    }
+  },
+
+  addEmptyTableInfo: function() {
+    // #to be overwrite by descendant classes
   },
 
   /**

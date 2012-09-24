@@ -21,7 +21,7 @@
 
         "../vendor/leaflet.js",
         "../vendor/wax.leaf.js",
-        "../vendor/wax.g.min.js",
+        "../vendor/wax.g.js",
         "../vendor/cartodb-leaflet.js",
 
         'core/decorator.js',

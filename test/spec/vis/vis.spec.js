@@ -50,7 +50,7 @@ describe("Vis", function() {
   })
 
 
-  it("should insert the max boundaries when provided", function() {
+  xit("should insert the max boundaries when provided", function() {
     this.container = $('<div>').css('height', '200px');
     this.mapConfig.bounding_box_sw = [1,2];
     this.mapConfig.bounding_box_ne = [3,5];

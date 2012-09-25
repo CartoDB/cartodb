@@ -390,6 +390,17 @@ describe CartoDB::Importer do
         results[0].import_type.should   == '.shp'
       end
     end
+
+    it "should import dbf with wrong encoding" do
+      importer = create_importer "Municipios.zip"
+      results, errors = importer.import!
+
+      @db.tables.should include(:cb_municipios_5000_e)
+      results[0].name.should          == 'cb_municipios_5000_e'
+      results[0].rows_imported.should == 258
+      results[0].import_type.should   == '.shp'
+      @db.select(:comarca).from(:cb_municipios_5000_e).all.first[:comarca].should be == 'MONTAÑA ALAVESA'
+    end
   end
 
   context "expected error results" do

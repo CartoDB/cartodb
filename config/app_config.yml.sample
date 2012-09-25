@@ -22,7 +22,7 @@ defaults: &defaults
     username: "superadmin"
     password: "monkey"
   layer_opts:
-    data: 
+    data:
       kind: "carto"
       options:
         type:               "CartoDB"
@@ -57,6 +57,7 @@ defaults: &defaults
       options:
         base_type: "roadmap"
         style: ""
+  custom_install: true
 
 development:
   <<: *defaults

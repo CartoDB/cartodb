@@ -1,3 +1,7 @@
+0.9.15 (24/09/12)
+------
+* Increased statement_timeout for create table 
+
 0.9.14 (18/09/12)
 ------
 * Fixed text in tables number when there is a search filter

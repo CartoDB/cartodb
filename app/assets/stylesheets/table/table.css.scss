@@ -15,6 +15,39 @@
     left:0;
     right:0;
     bottom:0;
+    .emptyTableContainer {
+      width:100%;
+      position:relative;
+      display: inline-block;
+      text-align: center;
+
+      .emptyTableInfo {
+        width: 600px;
+        height: 375px;
+        display: inline-block;
+        position: relative;
+        top: 5em;
+        background: image-url('layout/empty_table.png') no-repeat 0 0 #FFF;
+
+        h4 {
+          margin-top: 8em;
+          color: #333;
+          font-size: 17px;
+          font-family: helvetica;
+          font-weight: normal;
+        }
+
+        p {
+          margin: 1em auto;
+          width: 325px;
+          color: #999;
+          font-size: 15px;
+        }
+
+
+      }
+
+    }
   }
 
   div.table {
@@ -186,6 +219,52 @@
         border:none;
         background:white;
 
+        tr.empty_table {
+        }
+
+        tr.placeholder, tr.placeholder td {
+          height: 40px;
+          cursor:pointer;
+
+          .addNewRow {
+            color: #e5e5e5;
+            vertical-align: center;
+            text-align: center;
+            font-size:22px;
+            font-weight:bolder;
+          }
+
+        }
+
+        tr.placeholder.decoration {
+          height: 15px;
+          border-bottom:0px;
+
+          &:hover {
+            background:inherit;
+            border-color:#ECECEC;
+
+            & + tr {
+              border-top-color:#ECECEC;
+            }
+          }
+        }
+
+        tr.placeholder.decoration td{
+          height: 15px;
+          border-bottom:0px;
+          border-top:0px;
+
+          &:hover {
+            background:inherit;
+            border-color:'#ECECEC';
+            border-top: 0px;
+            border-top-color:'#ECECEC';
+
+          }
+        }
+
+
         tr {
           width:100%;
           border-top:1px solid #ECECEC;
@@ -245,7 +324,7 @@
                 @include border-radius(3px);
                 background:#FAFAFA;
                 @include background(linear-gradient(#FAFAFA,#E8E8E8));
-                
+
                 &:before {
                   position:absolute;
                   @include opacity(1);
@@ -311,7 +390,7 @@
         h5 {display:block; font-size:15px; color:#7B7B7B; line-height:normal;}
         p {display:block; font-size:13px;}
       }
-      
+
       &.up {
         div.float_info {
           top:265px;

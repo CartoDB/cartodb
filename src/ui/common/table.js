@@ -184,6 +184,9 @@ cdb.ui.common.Table = cdb.core.View.extend({
    * remove all rows
    */
   clear_rows: function() {
+    this.$('tfoot').remove();
+    this.$('tr.noRows').remove();
+
     while(this.rowViews.length) {
       // each element removes itself from rowViews
       this.rowViews[0].clean();
@@ -231,14 +234,38 @@ cdb.ui.common.Table = cdb.core.View.extend({
   },
 
   /**
+  * Checks if the table is empty
+  * @method isEmptyTable
+  * @returns boolean
+  */
+  isEmptyTable: function() {
+    return (this.dataModel.length === 0)
+  },
+
+  /**
    * render only data rows
    */
   _renderRows: function() {
-    var self = this;
-    this.clear_rows();
-    this.dataModel.each(function(row) {
-      self.addRow(row);
-    });
+    if(! this.isEmptyTable()) {
+      var self = this;
+      this.clear_rows();
+
+      this.dataModel.each(function(row) {
+        self.addRow(row);
+      });
+    } else {
+      this.addEmptyTableInfo();
+    }
+
+  },
+
+  /**
+  * Method for the children to redefine with the table behaviour when it has no rows.
+  * @method addEmptyTableInfo
+  * @abstract
+  */
+  addEmptyTableInfo: function() {
+    // #to be overwrite by descendant classes
   },
 
   /**

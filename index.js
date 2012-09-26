@@ -16,6 +16,7 @@
 //= require cdb/src/core/profiler
 //= require cdb/src/core/template
 //= require cdb/src/core/view
+//= require cdb/src/geo/geocoder
 //= require cdb/src/geo/map
 //= require cdb/src/geo/leaflet
 //= require cdb/src/geo/gmaps_cartodb_layer

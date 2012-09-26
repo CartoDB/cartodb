@@ -21,7 +21,7 @@
     border:1px solid #999999;
     @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
     @include border-top-left-radius(4px);
-    
+
     .sidebar {
       position:absolute;
       top:0;
@@ -101,7 +101,7 @@
               border-top:7px solid transparent;
               border-bottom:7px solid transparent;
               border-right:7px solid #E5E5E5;
-              z-index:1; 
+              z-index:1;
             }
           }
         }
@@ -137,13 +137,13 @@
         bottom:0;
         padding:0 30px;
         overflow:auto;
-        
+
         &.nano {
           left:0;
           right:0; // Hack for nano scroller
           overflow-x: hidden!important;
         }
-        
+
         div.content {left:30px; right:30px!important; overflow-x:visible;}
       }
 
@@ -264,7 +264,7 @@
         }
         .fields {
           li {
-            padding: 15px 0;            
+            padding: 15px 0;
             font-size: 15px;
             color: #CCCCCC;
             border-bottom:1px solid rgba(#999999,0.25);
@@ -311,7 +311,7 @@
               cursor:all-scroll;
               & > span {color:#999999;}
             }
-          
+
             &.enabled {
               .switch {
                 color: #000000;
@@ -382,7 +382,7 @@
             display:table;
             width:100%;
             letter-spacing:-4px;
-            
+
             li {
               display:table-cell;
               padding:0 1px 0 0;
@@ -502,3 +502,4 @@
       }
     }
   }
+

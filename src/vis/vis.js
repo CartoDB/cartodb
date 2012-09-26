@@ -121,7 +121,8 @@ var Vis = cdb.core.View.extend({
                 var f = fields[j];
                 render_fields.push({
                   title: f.title ? f.name: null,
-                  value: interact_data[f.name]
+                  value: interact_data[f.name],
+                  index: j?j:null
                 });
               }
               infowindow.model.set({ content:  { fields: render_fields } });

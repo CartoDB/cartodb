@@ -129,6 +129,13 @@ var Vis = cdb.core.View.extend({
               infowindow.setLatLng(latlng).showInfowindow();
             }
           });
+          dataLayer.bind('featureOver', function(e, latlon, pxPos, data) {
+            $(document.body).css('cursor', 'pointer');
+          });
+          dataLayer.bind('featureOut', function() {
+            $(document.body).css('cursor', 'auto');
+          });
+
       }
     }
 

@@ -136,7 +136,7 @@
             @include transform-style("linear");
             @include transition-property("background,color");
             @include transition-duration(500ms);
-            
+
             &::-webkit-input-placeholder {
               color:#9AB2CB;
             }
@@ -206,11 +206,18 @@
           background:rgba(0,0,0,0.35);
           font:normal 13px $text-fonts;
           color:white;
+
+          &.error {
+            color: #EB2466;
+            background-color: #FFEBF1;
+          }
+
         }
+
       }
 
       .inner {width:auto;}
-      
+
       div.left {
         position:relative;
         width:65%;
@@ -247,7 +254,7 @@
               padding:0;
               white-space:nowrap;
             }
-            
+
             &:before {
               position:absolute;
               content:'|';
@@ -354,7 +361,7 @@
               border:1px solid #1C3D56;
               border-bottom:none;
               background:white;
-              
+
               &:hover {text-decoration:none; cursor:default;}
               &:focus {}
               &:active {}

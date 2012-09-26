@@ -216,8 +216,12 @@ if(typeof(L) != "undefined") {
         self.trigger('zoomstart');
       });
 
-      this.map_leaflet.on('click', function() {
-        self.trigger('click');
+      this.map_leaflet.on('click', function(e) {
+        self.trigger('click', e.originalEvent);
+      });
+
+      this.map_leaflet.on('dblclick', function(e) {
+        self.trigger('dblclick', e.originalEvent);
       });
 
       this.map_leaflet.on('zoomend', function() {

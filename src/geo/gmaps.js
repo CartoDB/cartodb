@@ -254,6 +254,14 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
       });
     });
 
+    google.maps.event.addListener(this.map_googlemaps, 'click', function(e) {
+        self.trigger('click', e);
+    });
+
+    google.maps.event.addListener(this.map_googlemaps, 'dblclick', function(e) {
+        self.trigger('dblclick', e);
+    });
+
     this.map.layers.bind('add', this._addLayer, this);
     this.map.layers.bind('remove', this._removeLayer, this);
     this.map.layers.bind('reset', this._addLayers, this);

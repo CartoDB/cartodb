@@ -102,11 +102,12 @@ module ApplicationHelper
 
   def frontend_config
     {
-      tiler_port: Cartodb.config[:tile_port],
-      tiler_domain: Cartodb.config[:tile_host],
-      sql_api_domain: Cartodb.config[:sql_api_domain],
-      sql_api_endpoint: Cartodb.config[:sql_api_endpoint],
-      sql_api_port: Cartodb.config[:sql_api_port]
+      tiler_port:        Cartodb.config[:tile_port],
+      tiler_domain:      Cartodb.config[:tile_host],
+      sql_api_domain:    Cartodb.config[:sql_api_domain],
+      sql_api_endpoint:  Cartodb.config[:sql_api_endpoint],
+      sql_api_port:      Cartodb.config[:sql_api_port],
+      installation_type: Cartodb.config[:installation_type]
     }.to_json
   end
 

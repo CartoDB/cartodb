@@ -244,6 +244,14 @@ if(typeof(L) != "undefined") {
         self.trigger('drag');
       }, this);
 
+      this.map.bind('change:maxZoom', function() {
+        L.Util.setOptions(self.map_leaflet, { maxZoom: self.map.get('maxZoom') });
+      });
+
+      this.map.bind('change:minZoom', function() {
+        L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
+      });
+
 
       this.trigger('ready');
 

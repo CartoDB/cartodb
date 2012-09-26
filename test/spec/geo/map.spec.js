@@ -76,6 +76,26 @@ describe("geo.map", function() {
       expect(map.layers.at(0)).toEqual(base);
     });
 
+    it("should change bounds according to base layer", function() {
+      var layer = new cdb.geo.CartoDBLayer({
+        maxZoom: 8,
+        minZoom: 7
+      });
+      map.addLayer(layer);
+      expect(map.get('maxZoom')).toEqual(8);
+      expect(map.get('minZoom')).toEqual(7);
+      var layerbase = new cdb.geo.CartoDBLayer({
+        maxZoom: 10,
+        minZoom: 9
+      });
+      map.setBaseLayer(layerbase);
+      expect(map.get('maxZoom')).toEqual(10);
+      expect(map.get('minZoom')).toEqual(9);
+
+
+
+    });
+
   });
 
   describe('MapView', function() {

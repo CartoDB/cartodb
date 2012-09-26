@@ -127,6 +127,11 @@ cdb.geo.Map = Backbone.Model.extend({
 
   initialize: function() {
     this.layers = new cdb.geo.Layers();
+    this.layers.bind('reset', function() {
+      if(this.layers.size() >= 1) {
+        this._adjustZoomtoLayer(this.layers.models[0]);
+      }
+    }, this);
 
   },
 
@@ -211,7 +216,22 @@ cdb.geo.Map = Backbone.Model.extend({
     return this.layers.getByCid(cid);
   },
 
+  _adjustZoomtoLayer: function(layer) {
+    //set zoom
+    var z = layer.get('maxZoom');
+    if(_.isNumber(z)) {
+      this.set({ maxZoom: z });
+    }
+    z = layer.get('minZoom');
+    if(_.isNumber(z)) {
+      this.set({ minZoom: z });
+    }
+  },
+
   addLayer: function(layer, opts) {
+    if(this.layers.size() == 0) {
+      this._adjustZoomtoLayer(layer);
+    }
     this.layers.add(layer, opts);
     return layer.cid;
   },
@@ -252,6 +272,7 @@ cdb.geo.Map = Backbone.Model.extend({
     old.destroy();
     //this.layers.remove(old);
     this.layers.add(layer, { at: 0 });
+    this._adjustZoomtoLayer(layer);
     return layer;
   }
 });

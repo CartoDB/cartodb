@@ -27,13 +27,16 @@ cdb.ui.common.Notification = cdb.core.View.extend({
 
   default_options: {
       timeout: 0,
-      msg: ''
+      msg: '',
+      hideMethod: '',
+      duration: 'normal'
   },
 
   initialize: function() {
     this.closeTimeout = -1;
     _.defaults(this.options, this.default_options);
     this.template = this.options.template ? _.template(this.options.template) : cdb.templates.getTemplate('common/notification');
+
     this.$el.hide();
   },
 
@@ -47,12 +50,21 @@ cdb.ui.common.Notification = cdb.core.View.extend({
   },
 
   hide: function(ev) {
+    var self = this;
     if (ev)
       ev.preventDefault();
-
     clearTimeout(this.closeTimeout);
-    this.$el.hide();
-    this.remove();
+    if(this.options.hideMethod != '' && this.$el.is(":visible") ) {
+      this.$el[this.options.hideMethod](this.options.duration, 'swing', function() {
+        self.$el.html('');
+        self.remove();
+      });
+    } else {
+      this.$el.hide();
+      self.$el.html('');
+      self.remove();
+    }
+
   },
 
   open: function() {

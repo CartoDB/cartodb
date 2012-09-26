@@ -3,11 +3,11 @@
 */
 
 /**
-* Adds .super method to call for the same method of the parent class
+* Adds .elder method to call for the same method of the parent class
 * usage:
-*   insanceOfClass.super('name_of_the_method');
+*   insanceOfClass.elder('name_of_the_method');
 */
-cdb.decorators.super = (function() {
+cdb.decorators.elder = (function() {
   // we need to backup one of the backbone extend models
   // (it doesn't matter which, they are all the same method)
   var backboneExtend = Backbone.Router.extend;
@@ -16,15 +16,15 @@ cdb.decorators.super = (function() {
       if (this.parent != null) {
           var currentParent = this.parent;
           // we need to change the parent of "this", because
-          // since we are going to call the super method
+          // since we are going to call the elder (super) method
           // in the context of "this", if the super method has
-          // another call to super, we need to provide a way of
+          // another call to elder (super), we need to provide a way of
           // redirecting to the grandparent
           this.parent = this.parent.parent;
           if (currentParent.hasOwnProperty(method)) {
               result = currentParent[method].call(this, options);
           } else {
-              result = currentParent.super.call(this, method, options);
+              result = currentParent.elder.call(this, method, options);
           }
           this.parent = currentParent;
       }
@@ -34,7 +34,7 @@ cdb.decorators.super = (function() {
       var child = backboneExtend.call(this, protoProps, classProps);
 
       child.prototype.parent = this.prototype;
-      child.prototype.super = function(method, options) {
+      child.prototype.elder = function(method, options) {
           if (method) {
               return superMethod.call(this, method, options);
           } else {
@@ -45,12 +45,12 @@ cdb.decorators.super = (function() {
   };
   var decorate = function(objectToDecorate) {
     objectToDecorate.extend = extend;
-    objectToDecorate.prototype.super = function() {};
+    objectToDecorate.prototype.elder = function() {};
     objectToDecorate.prototype.parent = null;
   }
   return decorate;
 })()
 
-cdb.decorators.super(Backbone.Model);
-cdb.decorators.super(Backbone.View);
-cdb.decorators.super(Backbone.Collection);
+cdb.decorators.elder(Backbone.Model);
+cdb.decorators.elder(Backbone.View);
+cdb.decorators.elder(Backbone.Collection);

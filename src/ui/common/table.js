@@ -60,11 +60,31 @@ cdb.ui.common.RowView = cdb.core.View.extend({
   tagName: 'tr',
 
   initialize: function() {
+    _.bindAll(this, "triggerChange", "triggerSync", "triggerError");
+
     this.model.bind('change', this.render, this);
     this.model.bind('destroy', this.clean, this);
     this.model.bind('remove', this.clean, this);
+    this.model.bind('change', this.triggerChange);
+    this.model.bind('sync', this.triggerSync);
+    this.model.bind('error', this.triggerError);
+
+
+
     this.add_related_model(this.model);
     this.order = this.options.order;
+  },
+
+  triggerChange: function() {
+    this.trigger('changeRow');
+  },
+
+  triggerSync: function() {
+    this.trigger('syncRow');
+  },
+
+  triggerError: function() {
+    this.trigger('errorRow')
   },
 
   valueView: function(colName, value) {
@@ -214,6 +234,9 @@ cdb.ui.common.Table = cdb.core.View.extend({
         self.rowViews[i].$el.attr('data-y', i);
       }
     });
+    tr.bind('changeRow', this.rowChanged);
+    tr.bind('syncRow', this.rowSynched);
+    tr.bind('errorRow', this.rowFailed);
 
     tr.render();
     if(options && options.index !== undefined && options.index != self.rowViews.length) {
@@ -232,6 +255,28 @@ cdb.ui.common.Table = cdb.core.View.extend({
       self.rowViews.push(tr);
     }
   },
+
+  /**
+  * Callback executed when a row change
+  * @method rowChanged
+  * @abstract
+  */
+  rowChanged: function() {},
+
+  /**
+  * Callback executed when a row is sync
+  * @method rowSynched
+  * @abstract
+  */
+  rowSynched: function() {},
+
+  /**
+  * Callback executed when a row fails to reach the server
+  * @method rowFailed
+  * @abstract
+  */
+  rowFailed: function() {},
+
 
   /**
   * Checks if the table is empty

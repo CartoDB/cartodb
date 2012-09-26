@@ -73,7 +73,7 @@ group :development, :test do
   gem "mocha",                 "0.10.5"
 
   # TODO fix debugger readline conflicts with resque
-  #gem "debugger", "1.2.0"
+  gem "debugger", "1.2.0"
 
   gem "steak",                 "2.0.0"
   gem "rspec-rails",           "2.10.1"
@@ -84,4 +84,5 @@ group :development, :test do
   gem "rack-reverse-proxy",    "0.4.4", :require => 'rack/reverse_proxy'
   gem "foreman",               "0.46.0"
   gem "aws-sdk",               "1.5.2"
+  gem "factory_girl_rails",    "~> 4.0.0"
 end

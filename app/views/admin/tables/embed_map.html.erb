@@ -8,10 +8,10 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <meta name="author" content="CartoDB">
-    <meta name="DC.title" content="<%= @table.name %> | CartoDB">
+    <meta name="DC.title" content="<%= @table.description %> | CartoDB">
     
-    <meta property="og:title" content="<%= @table.name %> | CartoDB"/>
-    <meta property="og:description" content=""/>
+    <meta property="og:title" content="<%= @table.description %> | CartoDB"/>
+    <meta property="og:description" content="<%= @table.description %>"/> 
     <meta property="og:type" content="Visualization"/>
     <meta property="og:url" content="<%= request.fullpath %>" />
     <meta property="og:image" content="/assets/cartofante_blue.png"/>
@@ -70,7 +70,7 @@
       , overlays = [];
 
     // Add search?
-    if (opt.search) {
+    if (opt.search === 'true') {
       overlays.push({ type: 'search' })
     }
 

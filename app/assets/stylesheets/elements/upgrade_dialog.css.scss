@@ -1,0 +1,68 @@
+
+
+  /**
+   *  Upgrade dialog
+   */
+
+  @import "compass";
+  @import "../common/vars";
+
+
+  .upgrade_account {
+
+    ul.instances {
+      width:100%;
+      display:block;
+      border:1px solid #CCCCCC;
+      @include border-radius(4px);
+      letter-spacing:-4px;
+      word-wrap:-4px;
+
+      & > li {
+        @include inline-block();
+        letter-spacing:0;
+        word-wrap:0;
+        padding:32px 37px 37px;
+        width:138px;
+        margin:0;
+        background:#F2F2F2;
+        border-bottom:0!important;
+        border-right:1px solid #E5E5E5;
+
+        &:first-child {@include border-left-radius(4px);}
+        &:last-child {width:138.6px; /*lol*/ border:none; @include border-right-radius(4px);}
+
+        h4 {
+          font:bold 29px $title-fonts;
+          color:#333333;
+          letter-spacing:-2px;
+          small {
+            font-size:21px;
+            letter-spacing:-1px;
+          }
+        }
+        p.sub {
+          margin:0;
+          font:normal 17px $title-fonts;
+          color:#333333;
+          line-height:20px;
+        }
+
+        ul {
+          padding:6px 0;
+          li {
+            padding:12px 0;
+            p {font:normal 15px $text-fonts; color:#666666;}
+          } 
+        }
+
+        a {display:block;}
+
+        &.selected {
+          background:rgba(white,0.5);
+          h4, p.sub {color:000000;}
+          ul li p {color:#333333;}
+        }
+      }
+    }
+  }

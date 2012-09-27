@@ -57,7 +57,7 @@ defaults: &defaults
       options:
         base_type: "roadmap"
         style: ""
-  custom_install: true
+  installation_type: 'custom'
 
 development:
   <<: *defaults

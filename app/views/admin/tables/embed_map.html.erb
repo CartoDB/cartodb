@@ -23,7 +23,7 @@
     <%= stylesheet_link_tag :cdb, :media => 'all' %>
 
     <script id="infowindow_template" type="text/tmpl">
-      <%= render :file => File.join(Rails.root,"lib/assets/javascripts/cartodb/table/views/infowindow_light.jst.mustache") %>
+      <%= render :file => File.join(Rails.root,"lib/assets/javascripts/cartodb/" + @infowindow_template_path + ".jst.mustache") %>
     </script>
 
     <%= render 'shared/analytics' %>
@@ -53,6 +53,7 @@
     if(data_layer_tilejson.infowindow) {
       data_layer_tilejson.infowindow.template = $('#infowindow_template').html()
     }
+    data_layer_tilejson.tile_style = null;
 
     //base_layer_tilejson.type = 'tilejson';
 

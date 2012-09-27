@@ -1,4 +1,4 @@
-   
+
   /*
    * Custom objects
    * - Custom radiobutton
@@ -60,7 +60,7 @@
     .ui-slider-vertical .ui-slider-handle {  }
     .ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
     .ui-slider-vertical .ui-slider-range-min { bottom: 0; }
-    .ui-slider-vertical .ui-slider-range-max { top: 0; }    
+    .ui-slider-vertical .ui-slider-range-max { top: 0; }
   }
 
 
@@ -81,7 +81,7 @@
     @include border-radius(3px);
     width:43px;
     height:21px;
-    
+
     span.color {
       @include inline-block();
       @include border-left-radius(3px);
@@ -164,7 +164,7 @@
             a {@include border-bottom-right-radius(2px)}
           }
           &:nth-child(18) {
-           a {@include border-bottom-left-radius(2px)} 
+           a {@include border-bottom-left-radius(2px)}
           }
           &:nth-child(17) {
             a {
@@ -217,7 +217,7 @@
 
   .form_input_color {
     letter-spacing:-4px;
-    
+
     span.color {
       position:relative;
       @include inline-block();
@@ -261,7 +261,7 @@
     }
   }
 
-  
+
 
 
 
@@ -301,6 +301,7 @@
       font-size:13px;
       font-family: $text-fonts;
       color:#666666;
+      background-color: transparent;
       border:none;
       &:focus {
         outline:none;
@@ -343,7 +344,7 @@
         &.minus {
           bottom:0;
           &:before {border-top:3px solid #000;}
-        }
+        }auto
       }
     }
 
@@ -364,7 +365,7 @@
     </a>
   */
 
-  .radiobutton { 
+  .radiobutton {
     @include inline-block();
     vertical-align:middle;
     font-weight:bold;
@@ -429,7 +430,7 @@
           display:none;
         }
       }
-      &:hover { 
+      &:hover {
         cursor:default;
       }
     }
@@ -438,7 +439,7 @@
 
 
   // CHECKBOX
-  
+
   /*
     <a href="#title?" class="checkbox {enabled}">
       <span class="check"></span>
@@ -498,7 +499,7 @@
 
 
   // SWITCH (ON/OFF)
-  
+
   /*
     <a href="#switch" class="switch {enabled}">
       <span class="handle"></span>

@@ -48,6 +48,7 @@ cdb.geo.ui.InfowindowModel = Backbone.Model.extend({
   addField: function(fieldName, at) {
     if(!this.containsField(fieldName)) {
       var fields = this._cloneFields() || [];
+      at = at === undefined ? fields.length: at;
       fields.push({name: fieldName, title: true, position: at});
       //sort fields
       this._setFields(fields);

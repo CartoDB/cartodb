@@ -166,13 +166,34 @@ if(typeof(L) != "undefined") {
    * @param geometryModel geojson based geometry model, see cdb.geo.Geometry
    */
   function GeometryView(geometryModel) {
+    var self = this;
+    this.model = geometryModel;
+    this.points = [];
     this.geom = L.geoJson(geometryModel.get('geojson'), {
+      pointToLayer: function(geojson, latLng) {
+        var p = new L.CircleMarker(latLng, {
+          color: '#000'
+        });
+        //p.dragging = new L.Handler.MarkerDrag(p);
+        self.points.push(p);
+        return p;
+      },
       style: function (feature) {
           //return {color: feature.properties.color};
       },
       onEachFeature: function (feature, layer) {
       }
     });
+  }
+
+  GeometryView.prototype.edit = function() {
+    /*
+    if(this.model.isPoint()) {
+      this.points[0].dragging.enable();
+    } else {
+      this.geom.editing.enable();
+    }
+    */
   }
 
   /**

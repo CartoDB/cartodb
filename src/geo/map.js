@@ -134,6 +134,7 @@ cdb.geo.Map = Backbone.Model.extend({
       }
     }, this);
 
+    this.geometries = new cdb.geo.Geometries();
   },
 
   setView: function(latlng, zoom) {

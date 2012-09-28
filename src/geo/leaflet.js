@@ -89,8 +89,8 @@ if(typeof(L) != "undefined") {
   cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
 
   /**
-  * leatlet cartodb layer
-  */
+   * leatlet cartodb layer
+   */
 
   var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
     var self = this;
@@ -158,8 +158,26 @@ if(typeof(L) != "undefined") {
   cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
   /**
-  * leatlef impl
-  */
+   * leaflet geometry view 
+   */
+
+  /**
+   * create a geometry 
+   * @param geometryModel geojson based geometry model, see cdb.geo.Geometry
+   */
+  function GeometryView(geometryModel) {
+    this.geom = L.geoJson(geometryModel.get('geojson'), {
+      style: function (feature) {
+          //return {color: feature.properties.color};
+      },
+      onEachFeature: function (feature, layer) {
+      }
+    });
+  }
+
+  /**
+   * leatlef impl
+   */
   cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
     layerTypeMap: {
@@ -204,7 +222,7 @@ if(typeof(L) != "undefined") {
       this.map.layers.bind('remove', this._removeLayer, this);
       this.map.layers.bind('reset', this._addLayers, this);
 
-      //this.map.geometries.bind('add', this._addGeometry
+      this.map.geometries.bind('add', this._addGeometry, this);
 
       this._bindModel();
 
@@ -271,6 +289,12 @@ if(typeof(L) != "undefined") {
 
     _setView: function() {
       this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
+    },
+
+    _addGeometry: function(geom) {
+      var geo = new GeometryView(geom);
+      geo.geom.addTo(this.map_leaflet);
+      this.geometries[geom.cid] = geo;
     },
 
     _addLayer: function(layer, layers, opts) {

@@ -127,7 +127,6 @@ cdb.geo.Map = Backbone.Model.extend({
 
   initialize: function() {
     this.layers = new cdb.geo.Layers();
-<<<<<<< HEAD
 
     this.layers.bind('reset', function() {
       if(this.layers.size() >= 1) {

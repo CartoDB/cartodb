@@ -298,7 +298,6 @@ describe("geo.map", function() {
       expect(_.size(mapView.geometries)).toEqual(1);
     });
 
-
   });
 
 });

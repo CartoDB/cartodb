@@ -6,6 +6,7 @@ class User < Sequel::Model
   one_to_one :client_application
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
+  one_to_many :assets
   many_to_many :layers, :order => :order
   plugin :association_dependencies, :maps => :destroy, :layers => :nullify
 

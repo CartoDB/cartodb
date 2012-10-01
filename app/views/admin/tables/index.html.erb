@@ -6,7 +6,8 @@
     <%= javascript_include_tag :application, :cdb, :dashboard %>
     <script type="text/javascript">
       var username = "<%= current_user.username %>"
-        , user_data = JSON.parse('<%=raw current_user.data.to_json %>');
+        , user_data = JSON.parse('<%=raw current_user.data.to_json %>')
+        , config = JSON.parse('<%=raw frontend_config %>');
     </script>
   <% end %>
   <%= content_for(:css) do %>

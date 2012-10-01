@@ -384,6 +384,11 @@ cdb.geo.MapView = cdb.core.View.extend({
     }
   },
 
+  _removeGeometry: function(geo) {
+    var geo_view = this.geometries[geo.cid];
+    delete this.layers[layer.cid];
+  },
+
   getLayerByCid: function(cid) {
     var l = this.layers[cid];
     if(!l) {

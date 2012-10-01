@@ -158,45 +158,6 @@ if(typeof(L) != "undefined") {
   cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
   /**
-   * leaflet geometry view 
-   */
-
-  /**
-   * create a geometry 
-   * @param geometryModel geojson based geometry model, see cdb.geo.Geometry
-   */
-  function GeometryView(geometryModel) {
-    var self = this;
-    this.model = geometryModel;
-    this.points = [];
-    this.geom = L.geoJson(geometryModel.get('geojson'), {
-      pointToLayer: function(geojson, latLng) {
-        var p = new L.CircleMarker(latLng, {
-          color: '#000'
-        });
-        //p.dragging = new L.Handler.MarkerDrag(p);
-        self.points.push(p);
-        return p;
-      },
-      style: function (feature) {
-          //return {color: feature.properties.color};
-      },
-      onEachFeature: function (feature, layer) {
-      }
-    });
-  }
-
-  GeometryView.prototype.edit = function() {
-    /*
-    if(this.model.isPoint()) {
-      this.points[0].dragging.enable();
-    } else {
-      this.geom.editing.enable();
-    }
-    */
-  }
-
-  /**
    * leatlef impl
    */
   cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
@@ -244,6 +205,7 @@ if(typeof(L) != "undefined") {
       this.map.layers.bind('reset', this._addLayers, this);
 
       this.map.geometries.bind('add', this._addGeometry, this);
+      this.map.geometries.bind('remove', this._removeGeometry, this);
 
       this._bindModel();
 
@@ -298,8 +260,6 @@ if(typeof(L) != "undefined") {
 
     },
 
-
-
     _setZoom: function(model, z) {
       this.map_leaflet.setZoom(z);
     },
@@ -313,9 +273,15 @@ if(typeof(L) != "undefined") {
     },
 
     _addGeometry: function(geom) {
-      var geo = new GeometryView(geom);
+      var geo = GeometryView.create(geom);
       geo.geom.addTo(this.map_leaflet);
       this.geometries[geom.cid] = geo;
+    },
+
+    _removeGeometry: function(geo) {
+      var geo_view = this.geometries[geo.cid];
+      this.map_leaflet.removeLayer(geo_view.geom);
+      delete this.geometries[geo.cid];
     },
 
     _addLayer: function(layer, layers, opts) {

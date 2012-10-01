@@ -68,7 +68,7 @@ div.table_position table tbody.end {padding-bottom:150px!important;}
 div.table_position table tbody tr {position:relative; float:left; height:38px; padding:0 0 0 41px;}
 div.table_position.public table tr {padding:0;}
 div.table_position table tbody tr td {height:37px!important; padding:0; margin:0; background:url('/images/admin/table/item_bkg.jpg') repeat-x 0 -1px; border:1px solid #E4E5E9; font:normal 13px "Helvetica"; line-height:13px; color:#666666; overflow-y:hidden;
-text-shadow:0 1px white;}
+text-shadow:0 1px white; overflow:hidden;}
 div.table_position table tbody tr td:hover {cursor:pointer;}
 div.table_position table tbody tr:hover td {background-position:0 -40px;}
 div.table_position table tbody tr td.error {color:#FF9900; text-decoration:underline;}

@@ -126,16 +126,16 @@
         var params = {};
         params['cartodb_georef_status'] = false;
 
-        if (event.data && event.data.query && event.data.query.results && event.data.query.results.ResultSet && event.data.query.results.ResultSet.Found != "0") {
+        if (event.data && event.data.query && event.data.query.results && event.data.query.results.json && event.data.query.results.json.ResultSet && event.data.query.results.json.ResultSet.Found != "0") {
 
           // Could be an array or an object |arg!
           var coordinates = {};
-          if (_.isArray(event.data.query.results.ResultSet.Results)) {
-            coordinates.lat = event.data.query.results.ResultSet.Results[0].latitude;
-            coordinates.lon = event.data.query.results.ResultSet.Results[0].longitude;
+          if (_.isArray(event.data.query.results.json.ResultSet.Result)) {
+            coordinates.lat = event.data.query.results.json.ResultSet.Result[0].latitude;
+            coordinates.lon = event.data.query.results.json.ResultSet.Result[0].longitude;
           } else {
-            coordinates.lat = event.data.query.results.ResultSet.Results.latitude;
-            coordinates.lon = event.data.query.results.ResultSet.Results.longitude;
+            coordinates.lat = event.data.query.results.json.ResultSet.Result.latitude;
+            coordinates.lon = event.data.query.results.json.ResultSet.Result.longitude;
           }
 
           params['the_geom'] = {"type":"Point","coordinates":[coordinates.lon,coordinates.lat]};

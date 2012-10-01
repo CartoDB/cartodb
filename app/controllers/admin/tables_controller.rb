@@ -56,7 +56,7 @@ class Admin::TablesController < ApplicationController
   
   def embed_map
     # /!\
-    # code done by a pythonista, needs a total refacto
+    # code done by a pythonista and coffee boy, needs a total refacto
     # /!\
     @subdomain  = request.subdomain
     @table      = Table.find_by_subdomain(@subdomain, params[:id])
@@ -66,7 +66,7 @@ class Admin::TablesController < ApplicationController
     data_layer = @table.map.layers.last.public_values
     @layer_data = data_layer['options'].to_json
     @layer_data_infowindow = data_layer['infowindow'].to_json
-    @infowindow_template_path = data_layer['infowindow']['template_name']
+    @infowindow_template_path = data_layer['infowindow']['template_name'] rescue 'table/views/infowindow_light'
     @map_provider = @table.map.provider
     
     if @table.blank? || @table.private?

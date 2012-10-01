@@ -56,7 +56,10 @@
           } 
         }
 
-        a {display:block;}
+        a {
+          display:block;
+          line-height:20px;
+        }
 
         &.selected {
           background:rgba(white,0.5);

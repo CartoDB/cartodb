@@ -7,7 +7,7 @@ feature "API 1.0 assets management" do
   before(:all) do
     Capybara.current_driver = :rack_test
     @user  = create_user({:username => 'test'})
-    AWS.stub!
+    AWS.stub! # Live S3 requests tested on the model spec
   end
 
   before(:each) do

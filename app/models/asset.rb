@@ -3,7 +3,7 @@ class Asset < Sequel::Model
   many_to_one :user
   PUBLIC_ATTRIBUTES = %W{ id public_url user_id }
 
-  attr_accessor :asset_file
+  attr_accessor :asset_file, :file
 
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
@@ -13,8 +13,18 @@ class Asset < Sequel::Model
     super
 
     errors.add(:user_id, "can't be blank") if user_id.blank?
-    errors.add(:asset_file, "must be a string or an uploaded file") unless asset_file.blank? || [String, ActionDispatch::Http::UploadedFile].include?(asset_file.class)
-    errors.add(:asset_file, "is invalid") unless asset_file.blank? || (asset_file.is_a?(String) && File.readable?(asset_file)) || (asset_file.is_a?(ActionDispatch::Http::UploadedFile) && File.readable?(asset_file.path))
+
+    begin
+      file = (asset_file.is_a?(String) ? File.open(asset_file) : File.open(asset_file.path))
+    rescue Errno::ENOENT
+      errors.add(:asset_file, "is invalid")
+    end
+
+    if file.is_a?(File)
+      errors.add(:asset_file, "is invalid") unless File.readable?(file)
+      errors.add(:asset_file, "is too big, 10Mb max") unless file.size <= Cartodb::config[:assets]["max_file_size"]
+      file.close
+    end
   end
 
   def after_save

@@ -1,0 +1,42 @@
+  
+  /*
+   * Lovely help functions
+   */
+
+  @import "compass";
+
+  @mixin text-indent() {
+    text-indent:-9999px;
+    line-height:0px;
+    font-size:0px;
+    text-transform:uppercase;
+  }
+
+  @mixin user-select($val) {
+   	-webkit-touch-callout: $val;
+   	-webkit-user-select: $val;
+   	-khtml-user-select: $val;
+   	-moz-user-select: $val;
+   	-ms-user-select: $val;
+   	user-select: $val;
+  }
+
+  @mixin progress-background($rgba) {
+    background-image: -webkit-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+    background-image: -moz-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+    background-image: -ms-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+    background-image: linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+  }
+
+  @mixin size($width, $height:$width) {
+    @if $width  != false { width:  $width; }
+    @if $height != false { height: $height; }
+  }
+
+  @mixin position($top, $right, $bottom, $left) {
+    position: absolute;
+    @if $top    != false { top:    $top; }
+    @if $right  != false { right:  $right; }
+    @if $bottom != false { bottom: $bottom; }
+    @if $left   != false { left:   $left; }
+  }

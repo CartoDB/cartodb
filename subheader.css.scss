@@ -1,0 +1,161 @@
+
+  /*
+   * Subheader for the CartoDB dashboard
+   */
+
+  @import "compass";
+  @import "../common/sprites";
+  @import "../common/mixins";
+
+  div.subheader {
+    position:relative;
+    @include inline-block();
+    width:100%;
+    margin-top:-180px;
+    padding:0;
+    @include transform-style("linear");
+    @include transition-property("all");
+    @include transition-duration(500ms);
+    z-index:1;
+
+    // If there is NO tables, this section is active
+    &.active {
+      margin-top:0;
+    }
+
+    section.stats {
+      position:relative;
+      @include inline-block();
+      width:100%;
+      height:145px;
+      margin:0;
+      background:white;
+      border-bottom:1px solid #CDCDCD;
+      @include single-box-shadow(rgba(0,0,0,0.07), 0, 4px, 3px, 0, false);
+      z-index:2;
+
+      ul {
+        letter-spacing:-4px;
+        li {
+          @include inline-block();
+          width:239px;
+          padding:40px;
+          border-right: 1px solid #E5E5E5;
+          letter-spacing:0;
+
+          &:first-child {width:279px; padding-left:0}
+          &:last-child {width:279px; padding-right:0; border:none;}
+
+          div.progress {
+            display:block;
+            height:36px;
+            background:#E7E7E7; //IE
+            @include background(linear-gradient(#E5E5E5,#E9E9E9));
+            @include border-radius(3px);
+            span {
+              position:relative;
+              @include inline-block();
+              width:0;
+              min-width:5px;
+              height:36px;
+              @include border-radius(3px);
+              background:#85ACDC;
+              @include background(linear-gradient(#85ACDC,#5990CE));
+              @include transform-style("linear");
+              @include transition-property("width");
+              @include transition-duration(500ms);
+
+              &.green {
+                background:rgba(green,0.55);
+                @include transform-style("linear");
+                @include transition-property("background");
+                @include transition-duration(500ms);
+              }
+
+              &.boom {
+                background:#FF5255;
+                @include background(linear-gradient(#FF5255,#CB2828));
+                @include transform-style("linear");
+                @include transition-property("background");
+                @include transition-duration(500ms);
+              }
+
+              &.danger {
+                background:#F8B85C;
+                @include background(linear-gradient(#F8B85C,#F49000));
+                @include transform-style("linear");
+                @include transition-property("background");
+                @include transition-duration(500ms);
+              }
+
+              &:after {
+                position:absolute;
+                content:' ';
+                width:100%;
+                height:100%;
+                top:0;
+                left:0;
+                @include border-radius(3px);
+                background:rgba(255,255,255,0.05);
+                @include background(linear-gradient(left,rgba(255,255,255,0.35), rgba(255,255,255,0)));
+              }
+            }
+
+            &.unlimited span {
+              &.green {
+                background: -moz-linear-gradient(#94BE42, #7FA938) repeat scroll 0 0 transparent;
+              }
+            }
+          }
+
+          div.stats {
+            display:block;
+            height:36px;
+          }
+
+          p {
+            margin:10px 0 0 0;
+            font-size:15px;
+            color:#666666;
+            @include transform-style("linear");
+            @include transition-property("all");
+            @include transition-duration(500ms);
+
+            strong {font-weight:bold}
+          }
+        }
+      }
+    }
+
+    section.warning {
+      position:relative;
+      margin:-70px 0 0 0;
+      padding:25px 0;
+      background:#FFF7EA;
+      border-bottom:1px solid rgba(#CCCCCC,0.5);
+      z-index:-1;
+      @include transform-style("linear");
+      @include transition-property("all");
+      @include transition-duration(500ms);
+
+      a.close {
+        position:absolute;
+        right:0;
+        top:3px;
+        width:13px;
+        height:13px;
+        @include icons-sprite(close_flash);
+        @include text-indent();
+
+        &:hover {@include icons-sprite(close_flash, $offset-y: -13px);}
+        &:active {@include icons-sprite(close_flash, $offset-y: -26px);}
+      }
+
+      &.visible {
+        margin:0;
+        z-index:0;
+      }
+    }
+  }
+
+

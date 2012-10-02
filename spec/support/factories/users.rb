@@ -63,6 +63,7 @@ module CartoDB
       user.tables.destroy
       user.maps_dataset.destroy
       user.layers_dataset.destroy
+      user.assets_dataset.destroy
     end
   end
 end

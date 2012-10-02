@@ -896,7 +896,7 @@ class Table < Sequel::Model(:user_tables)
 
     owner.in_database do |user_database|
       columns_sql_builder = <<-SQL
-      SELECT array_to_string(ARRAY(SELECT '#{name}' || '.' || c.column_name
+      SELECT array_to_string(ARRAY(SELECT '#{name}' || '.' || quote_ident(c.column_name)
         FROM information_schema.columns As c
         WHERE table_name = '#{name}'
         AND c.column_name <> 'the_geom_webmercator'

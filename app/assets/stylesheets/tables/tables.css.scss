@@ -50,11 +50,14 @@
 
       .removeTags {
         width: 215px;
-        border:1px dashed #F90;
+        height:0px;
+        opacity: 0px;
+        border:0px dashed #F90;
         font-size: 15px;
         color: #ccc;
         background-color: #FFF;
-        padding: 10px;
+        padding: 0px;
+        overflow: hidden;
         text-align: center;
         margin-bottom: 1em;
         @include transform-style("linear");

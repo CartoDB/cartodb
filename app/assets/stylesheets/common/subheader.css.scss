@@ -79,7 +79,7 @@
                 @include transition-property("background");
                 @include transition-duration(500ms);
               }
-              
+
               &.danger {
                 background:#F8B85C;
                 @include background(linear-gradient(#F8B85C,#F49000));
@@ -100,13 +100,19 @@
                 @include background(linear-gradient(left,rgba(255,255,255,0.35), rgba(255,255,255,0)));
               }
             }
+
+            &.unlimited span {
+              &.green {
+                background: -moz-linear-gradient(#94BE42, #7FA938) repeat scroll 0 0 transparent;
+              }
+            }
           }
 
           div.stats {
             display:block;
             height:36px;
           }
-          
+
           p {
             margin:10px 0 0 0;
             font-size:15px;
@@ -140,7 +146,7 @@
         height:13px;
         @include icons-sprite(close_flash);
         @include text-indent();
-        
+
         &:hover {@include icons-sprite(close_flash, $offset-y: -13px);}
         &:active {@include icons-sprite(close_flash, $offset-y: -26px);}
       }
@@ -152,4 +158,4 @@
     }
   }
 
-  
+

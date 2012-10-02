@@ -57,7 +57,7 @@ defaults: &defaults
       options:
         base_type: "roadmap"
         style: ""
-  installation_type: 'custom'
+  cartodb_com_hosted: true
 
 development:
   <<: *defaults

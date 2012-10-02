@@ -17,8 +17,8 @@ describe Asset do
   it 'should upload the asset_file to s3 passing an uploaded file' do
     asset = Asset.create user_id: @user.id, asset_file: Rack::Test::UploadedFile.new(Rails.root.join('db/fake_data/column_number_to_boolean.csv'), 'text/csv')
     
-    asset.public_url.should == "https://s3.amazonaws.com/tile_assets_devel/user/#{@user.id}/assets/simple.json"
-    path = "#{asset.asset_path}simple.json"
+    asset.public_url.should == "https://s3.amazonaws.com/tile_assets_devel/user/#{@user.id}/assets/column_number_to_boolean.csv"
+    path = "#{asset.asset_path}column_number_to_boolean.csv"
     bucket = asset.s3_bucket
     bucket.objects[path].exists?.should == true
   end
@@ -44,5 +44,12 @@ describe Asset do
     asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'db/fake_data/simple.json').to_s
 
     asset.public_values.should == { "public_url" => nil, "user_id" => @user.id, "id" => nil }
+  end
+
+  it 'should not allow a user to upload files bigger than 10Mb' do
+    asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/GLOBAL_ELEVATION_SIMPLE.zip').to_s
+
+    expect { asset.save }.to raise_error(Sequel::ValidationFailed)
+    asset.errors.full_messages.should == ["asset_file is too big, 10Mb max"]
   end
 end

@@ -184,7 +184,7 @@ namespace :cartodb do
       User.all.each do |user|
         tables = Table.filter(:user_id => user.id).all
         next if tables.empty?
-        puts "Updating tables from #{user.username}"
+        puts "Updating tables in db '#{user.database_name}' (#{user.username})"
         tables.each do |table|
           has_the_geom = false
           user.in_database do |user_database|

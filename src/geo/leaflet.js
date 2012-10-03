@@ -239,7 +239,7 @@ if(typeof(L) != "undefined") {
       });
 
       this.map_leaflet.on('click', function(e) {
-        self.trigger('click', e.originalEvent);
+        self.trigger('click', e.originalEvent, [e.latlng.lat, e.latlng.lng]);
       });
 
       this.map_leaflet.on('dblclick', function(e) {

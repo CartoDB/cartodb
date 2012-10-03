@@ -29,7 +29,7 @@
         border-bottom:0!important;
         border-right:1px solid #E5E5E5;
 
-        &:first-child {@include border-left-radius(4px);}
+        &:nth-child(2) {@include border-left-radius(4px);}
         &:last-child {width:138.6px; /*lol*/ border:none; @include border-right-radius(4px);}
 
         h4 {

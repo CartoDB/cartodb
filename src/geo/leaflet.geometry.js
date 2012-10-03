@@ -1,12 +1,86 @@
 /**
- * implement all the features related to overlay geometries
+ * this module implements all the features related to overlay geometries
  * in leaflet: markers, polygons, lines and so on
  */
 
-/* =====================
- * leaflet geometry view 
- * =====================
- */
+// layer to geojson from https://raw.github.com/ebrehault/Leaflet/681d26aa0d301cb2ab5f0963eb1ea8fff14aa02c/src/layer/GeoJSON.js
+// wait until leaflet includes it in the core
+// see https://github.com/CloudMade/Leaflet/issues/712
+L.Util.extend(L.GeoJSON, {
+  toGeoJSON: function(target) {
+    if (target instanceof L.Marker) {
+        //Point
+        return {
+            coordinates: this.latLngToCoords(target.getLatLng()),
+            type: 'Point'
+        }
+    } else if (target instanceof L.MultiPolygon || target instanceof L.MultiPolyline) {
+        //MultiPolygon and MultiLineString
+        var multi = [];
+        var layers = target._layers;
+        for (var stamp in layers) {
+            multi.push(this.toGeoJSON(layers[stamp]).coordinates);
+        }
+        return {
+            coordinates: multi,
+            type: (target instanceof L.MultiPolygon) ? 'MultiPolygon': 'MultiLineString'
+        };
+    } else if (target instanceof L.Polygon) {
+        //Polygon
+        var coords = this.latLngsToCoords(target.getLatLngs());
+        return {
+            coordinates: [coords],
+            type: 'Polygon'
+        };
+    } else if (target instanceof L.Polyline) {
+        //Linestring
+        var coords = this.latLngsToCoords(target.getLatLngs());
+        return {
+            coordinates: coords,
+            type: 'LineString'
+        };
+    } else if (target instanceof L.FeatureGroup) {
+        //Multi point and GeometryCollection
+        var multi = [];
+        var layers = target._layers;
+        var points = true;
+        for (var stamp in layers) {
+            var json = this.toGeoJSON(layers[stamp]);
+            multi.push(json);
+            if (json.type !== 'Point') {
+                points = false;
+            }
+        }
+        if (points) {
+            var coords = multi.map(function(geo){
+                return geo.coordinates;
+            });
+            return {
+                coordinates: coords,
+                type: 'MultiPoint'
+            };
+        } else {
+            return {
+                geometries: multi,
+                type: 'GeometryCollection'
+            };
+        }
+    }
+  },
+
+  latLngToCoords: function(latlng) {
+      return [latlng.lng, latlng.lat];
+  },
+
+  latLngsToCoords: function(arrLatlng) {
+      var coords = [];
+      arrLatlng.forEach(function(latlng) {
+          coords.push(this.latLngToCoords(latlng));
+      },
+      this);
+      return coords;
+  }
+});
 
 /**
  * create a geometry
@@ -25,7 +99,6 @@ GeometryView.create = function(geometryModel) {
   }
   return new PathView(geometryModel);
 };
-
 
 
 
@@ -50,7 +123,6 @@ function PointView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-  
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'), function(geojson, latLng) {
       //TODO: create marker depending on the visualizacion options
       var p = L.marker(latLng,{
@@ -60,7 +132,8 @@ function PointView(geometryModel) {
         })
       });
 
-      for(var i = 0; i < events.length; ++i) {
+      var i;
+      for(i = 0; i < events.length; ++i) {
         var e = events[i];
         p.on(e, self._eventHandler(e));
       }
@@ -75,7 +148,6 @@ function PointView(geometryModel) {
         coordinates: [pos[1], pos[0]]
       }
     });
-
   });
 }
 
@@ -121,11 +193,11 @@ function PathView(geometryModel) {
   this.points = [];
 
   
-  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'))
+  this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
   _.each(this.geom._layers, function(g) {
     g.on('edit', function() {
-      console.log('edit');
-    });
+      geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
+    }, self);
   });
   /*for(var i = 0; i < events.length; ++i) {
     var e = events[i];
@@ -140,6 +212,7 @@ PathView.prototype.edit = function(enable) {
   var fn = enable ? 'enable': 'disable';
   _.each(this.geom._layers, function(g) {
     g.editing[fn]();
+    g.off('edit', null, self);
   });
 };
 

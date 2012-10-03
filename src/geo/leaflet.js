@@ -55,6 +55,21 @@ if(typeof(L) != "undefined") {
       this.leafletMap.removeLayer(this.leafletLayer);
       this.model.unbind(null, null, this);
       this.unbind();
+    },
+
+    show: function() {
+      this.leafletLayer.setOpacity(1.0);
+    },
+
+    hide: function() {
+      this.leafletLayer.setOpacity(0.0);
+    },
+
+    /**
+     * reload the tiles
+     */
+    reload: function() {
+      this.leafletLayer.redraw();
     }
 
   });
@@ -151,6 +166,10 @@ if(typeof(L) != "undefined") {
     featureClick: function(e, latlon, pixelPos, data) {
       // dont pass leaflet lat/lon
       this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data);
+    },
+
+    reload: function() {
+      this.leafletLayer.layer.redraw();
     }
 
   });

@@ -66,7 +66,7 @@ class Admin::TablesController < ApplicationController
     data_layer = @table.map.layers.last.public_values
     @layer_data = data_layer['options'].to_json
     @layer_data_infowindow = data_layer['infowindow'].to_json
-    @infowindow_template_path = data_layer['infowindow']['template_name'] rescue 'table/views/infowindow_light'
+    @infowindow_template_path = data_layer['infowindow']['template_name']
     @map_provider = @table.map.provider
     
     if @table.blank? || @table.private?

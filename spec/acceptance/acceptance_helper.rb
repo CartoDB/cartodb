@@ -22,7 +22,11 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Rails.cache.clear
-    Capybara.reset_sessions! 
+    begin
+      Capybara.reset_sessions! 
+    rescue Errno::ECONNREFUSED
+      # Browser must have already gone
+    end
   end
 
   config.after(:each) do

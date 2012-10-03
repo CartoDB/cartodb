@@ -215,7 +215,7 @@ namespace :cartodb do
             
             user.in_database do |user_database|
               user_database.run("ALTER TABLE #{table.name} DROP CONSTRAINT IF EXISTS enforce_srid_the_geom")
-              user_database.run("update #{table.name} set the_geom_webmercator = CDB_TransformToWebmercator(the_geom)")
+              user_database.run("update #{table.name} set \"#{Table::THE_GEOM_WEBMERCATOR}\" = CDB_TransformToWebmercator(the_geom)")
               user_database.run("ALTER TABLE #{table.name} ADD CONSTRAINT enforce_srid_the_geom CHECK (st_srid(the_geom) = #{CartoDB::SRID})")
             end
           end

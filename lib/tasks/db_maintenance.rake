@@ -184,14 +184,20 @@ namespace :cartodb do
       User.all.each do |user|
         tables = Table.filter(:user_id => user.id).all
         next if tables.empty?
-        puts "Updating tables from #{user.username}"
+        user.load_cartodb_functions 
+        puts "Updating tables in db '#{user.database_name}' (#{user.username})"
         tables.each do |table|
           has_the_geom = false
           user.in_database do |user_database|
-            flatten_schema = user_database.schema(table.name.to_sym).flatten
+            begin
+              flatten_schema = user_database.schema(table.name.to_sym).flatten
+            rescue => e
+              puts " Skipping table #{table.name}: #{e}"
+              next
+            end
             has_the_geom = true if flatten_schema.include?(:the_geom)
             if flatten_schema.include?(:the_geom) && !flatten_schema.include?(Table::THE_GEOM_WEBMERCATOR.to_sym)
-              puts "Updating table #{table.name}"
+              puts " Updating table #{table.name}"
               geometry_type = if col = user_database["select GeometryType(the_geom) FROM #{table.name} limit 1"].first
                 col[:geometrytype]
               end
@@ -200,6 +206,8 @@ namespace :cartodb do
               user_database.run("CREATE INDEX #{table.name}_#{Table::THE_GEOM_WEBMERCATOR}_idx ON #{table.name} USING GIST(#{Table::THE_GEOM_WEBMERCATOR})")                      
               user_database.run("ANALYZE #{table.name}")
               table.save_changes
+            else
+              puts " Skipping table #{table.name}: does not have 'the_geom' or has '#{Table::THE_GEOM_WEBMERCATOR}' already"
             end
           end
           if has_the_geom
@@ -222,14 +230,22 @@ namespace :cartodb do
         
         tables = Table.filter(:user_id => user.id).all
         next if tables.empty?
+        puts "Updating tables in db '#{user.database_name}' (#{user.username})"
         tables.each do |table|
           has_the_geom = false
           user.in_database do |user_database|
-            has_the_geom = true if user_database.schema(table.name.to_sym).flatten.include?(:the_geom)
+            begin
+              has_the_geom = true if user_database.schema(table.name.to_sym).flatten.include?(:the_geom)
+            rescue => e
+              puts " Skipping table #{table.name}: #{e}"
+              next
+            end
           end
           if has_the_geom
-            puts "Updating the_geom_webmercator triggers for #{user.username}:#{table.name}"
+            puts " Updating the_geom_webmercator triggers for table #{table.name}"
             table.set_trigger_the_geom_webmercator
+          else
+            puts " Skipping table #{table.name}: no 'the_geom' column"
           end
         end
       end

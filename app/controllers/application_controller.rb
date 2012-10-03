@@ -141,57 +141,16 @@ class ApplicationController < ActionController::Base
 
   def browser_is_html5_compliant?
     user_agent = request.user_agent.try(:downcase)
-    return true if Rails.env.test? || api_request? || user_agent.nil?
 
-    #IE 6
-    # mozilla/4.0 (compatible; msie 8.0; windows nt 6.1; wow64; trident/4.0; slcc2; .net clr 2.0.50727; .net clr 3.5.30729; .net clr 3.0.30729; media center pc 6.0)
-    if user_agent.match(/msie [0-6]/)
+    return true if user_agent.nil?
+
+    banned_regex = [
+      /msie [0-8]\./, /safari\/[0-4][0-2][0-2]/, /opera\/[0-8].[0-7]/, /firefox\/[0-2].[0-5]/
+    ]
+
+    if banned_regex.map { |re| user_agent.match(re) }.compact.first
       raise NoHTML5Compliant
     end
-
-    # login or developer ie ready
-    if controller_name == "home" || controller_name == "invitations" || controller_name == "sessions" && !user_agent.match(/msie [0-6]/)
-      return true
-    end
-
-    #IE
-    # mozilla/4.0 (compatible; msie 8.0; windows nt 6.1; wow64; trident/4.0; slcc2; .net clr 2.0.50727; .net clr 3.5.30729; .net clr 3.0.30729; media center pc 6.0)
-    if user_agent.match(/msie [0-8]/)
-      raise NoHTML5Compliant
-    end
-
-    # CHROME
-    # mozilla/5.0 (macintosh; intel mac os x 10_6_7) applewebkit/534.30 (khtml, like gecko) chrome/12.0.742.91 safari/534.30
-    # This was to flag up chrome 0-12. Currently chrome is on 18
-    # if user_agent.match(/chrome\/\d[0-1]/)
-    #   raise NoHTML5Compliant
-    # end
-
-    #SAFARI
-    # mozilla/5.0 (macintosh; u; intel mac os x 10_6_7; en-us) applewebkit/533.21.1 (khtml, like gecko) version/5.0.5 safari/533.21.1
-    if user_agent.match(/safari\/[0-4][0-2][0-2]/) && !user_agent.match(/iphone/i) && !user_agent.match(/ipad/i) && !user_agent.match(/ipod/i) && !user_agent.match(/android/i)
-      raise NoHTML5Compliant
-    end
-
-    #OPERA
-    # opera/9.80 (macintosh; intel mac os x 10.6.7; u; mac app store edition; en) presto/2.8.131 version/11.11
-    if user_agent.match(/opera\/[0-8].[0-7]/)
-      raise NoHTML5Compliant
-    end
-
-    #MOZILLA
-    # mozilla/5.0 (macintosh; intel mac os x 10.6; rv:2.0.1) gecko/20100101 firefox/4.0.1
-    if user_agent.match(/firefox\/[0-2].[0-5]/)
-      raise NoHTML5Compliant
-    end
-
-    #IPHONE IPAD IPOD
-    # Mozilla/5.0 (iPhone; U; XXXXX like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/241 Safari/419.3
-    # Checked in safari
-
-    #ANDROID
-    # Mozilla/5.0 (Linux; U; Android 0.5; en-us) AppleWebKit/522+ (KHTML, like Gecko) Safari/419.3
-    # Checked in safari
   end
 
   def current_user

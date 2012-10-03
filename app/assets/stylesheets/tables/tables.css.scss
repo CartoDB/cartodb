@@ -296,6 +296,16 @@
                   border:1px solid #C7D1D9;
                   &:hover {color:#333333;}
                 }
+
+                a.exists {
+                  -webkit-animation: pulsate 0.5s linear;
+                  -webkit-animation-iteration-count: 1;
+                  -webkit-animation-delay: 0.5s;
+                  -moz-animation: pulsate 0.5s linear;
+                  -moz-animation-iteration-count: 1;
+                  -moz-animation-delay: 0.5s;
+
+                }
               }
 
               .status {
@@ -336,6 +346,8 @@
               &:before {content:' '; position:absolute; left:0; top:0px; width:100%; height:1px; background:#E8E8E8}
             }
 
+
+
             &.empty {
               padding-top:150px;
               padding-bottom:200px;
@@ -347,7 +359,7 @@
               }
             }
 
-            &.drop {
+            &.drop:not(.alreadyContainsTag) {
               background:#F7F7F7;
               & + li div.table_info {border-color:white}
               &:after {content:' '; position:absolute; left:0; bottom:0px; width:100%; height:1px; background:#E8E8E8;}
@@ -371,6 +383,14 @@
                   @include border-radius(2px);
                 }
               }
+            }
+
+            &.drop.alreadyContainsTag {
+              background-color: #FFE7E7;
+              @include transform-style("linear");
+              @include transition-property("background-color");
+              @include transition-duration(500ms);
+
             }
 
             &:last-child {
@@ -545,3 +565,21 @@
     position: absolute;
 
   }
+
+@-webkit-keyframes pulsate {
+    0% {background-color: #C7D1D9; color: #666}
+    50% {background-color: #2483B4; color: #FFF}
+    100% {background-color: #C7D1D9; color: #666}
+}
+
+@-moz-keyframes pulsate {
+    0% {background-color: #C7D1D9; color: #666}
+    50% {background-color: #2483B4; color: #FFF}
+    100% {background-color: #C7D1D9; color: #666}
+}
+
+keyframes pulsate {
+    0% {background-color: #C7D1D9; color: #666}
+    50% {background-color: #2483B4; color: #FFF}
+    100% {background-color: #C7D1D9; color: #666}
+}

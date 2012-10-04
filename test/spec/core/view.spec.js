@@ -107,4 +107,17 @@ describe("core.view", function() {
       expect(v1.el.style.display).toEqual('none');
   });
 
+  it("should retrigger an event when launched on a descendant object", function() {
+    var launched = false;
+    view.child = new TestView({});
+    view.retrigger('cachopo', view.child);
+    view.bind('cachopo', function() {
+      launched = true;
+    }),
+    view.child.trigger('cachopo');
+    waits(25);
+
+    expect(launched).toBeTruthy();
+  })
+
 });

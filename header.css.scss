@@ -4,10 +4,9 @@
    */
 
   @import "compass";
-  @import "compass/css3";
-  @import "../common/mixins";
-  @import "../common/sprites";
-  @import "../common/vars";
+  @import "common/mixins";
+  @import "common/sprites";
+  @import "common/vars";
 
   header {
     position:relative;

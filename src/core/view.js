@@ -1,6 +1,6 @@
 (function() {
 
-  /** 
+  /**
    * Base View for all CartoDB views.
    * DO NOT USE Backbone.View directly
    */
@@ -38,7 +38,7 @@
 
     /**
      * this methid clean removes the view
-     * and clean and events associated. call it when 
+     * and clean and events associated. call it when
      * the view is not going to be used anymore
      */
     clean: function() {
@@ -78,7 +78,22 @@
 
     hide: function() {
         this.$el.hide();
-    }
+    },
+
+    /**
+    * Listen for an event on a children object and triggers on itself
+    * @method retrigger
+    * @param ev {String}
+    * @param obj {Object}
+    */
+    retrigger: function(ev, obj) {
+      var self = this;
+      obj.bind && obj.bind(ev, function() {
+        self.trigger(ev);
+      })
+    },
+
+
 
   }, {
     viewCount: 0,
@@ -105,8 +120,8 @@
     runChecker: function() {
       _.each(cdb.core.View.views, function(view) {
         _.each(view, function(prop, k) {
-          if( k !== '_parent' && 
-              view.hasOwnProperty(k) && 
+          if( k !== '_parent' &&
+              view.hasOwnProperty(k) &&
               prop instanceof cdb.core.View &&
               view._subviews[prop.cid] === undefined) {
             console.log("=========");

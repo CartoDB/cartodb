@@ -1,7 +1,6 @@
 
 describe("geo.map", function() {
 
-
   describe('TileLayer', function() {
     it("should be type tiled", function() {
       var layer = new cdb.geo.TileLayer();
@@ -280,6 +279,35 @@ describe("geo.map", function() {
       var layer    = new cdb.geo.TileLayer({type: 'rambo'});
       map.addLayer(layer);
       expect(_.size(mapView.layers)).toEqual(0);
+    });
+
+    var geojsonFeature = {
+        "type": "Point",
+        "coordinates": [-104.99404, 39.75621]
+    };
+
+    it("should add and remove a geometry", function() {
+      var geo = new cdb.geo.Geometry({
+        geojson: geojsonFeature
+      });
+      map.addGeometry(geo);
+      expect(_.size(mapView.geometries)).toEqual(1);
+      geo.destroy();
+      expect(_.size(mapView.geometries)).toEqual(0);
+    });
+
+    it("should edit a geometry", function() {
+      var geo = new cdb.geo.Geometry({
+        geojson: geojsonFeature
+      });
+      map.addGeometry(geo);
+      var v = mapView.geometries[geo.cid];
+      v.trigger('dragend', null, [10, 20]);
+      expect(geo.get('geojson')).toEqual({
+        "type": "Point",
+        "coordinates": [20, 10]
+      })
+
     });
 
 

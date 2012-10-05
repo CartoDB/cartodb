@@ -238,6 +238,15 @@
       z-index:1;
     }
 
-  }
+    // [done | discard] dialog shown when a geometry is being edited or created
+    div.editing {
+      @include inline-block;
+      position: relative;
+      top: 20px;
+      left: 50%;
+      background: #FFF;
+    }
+
+  } // div.map
 
   div#zoom {top:65px;}

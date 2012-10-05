@@ -212,6 +212,9 @@ if(typeof(L) != "undefined") {
 
       this.map_leaflet = new L.Map(this.el, mapConfig);
 
+      // remove the "powered by leaflet" 
+      this.map_leaflet.attributionControl.setPrefix('');
+
       // looks like leaflet dont like to change the bounds just after the inicialization
       var bounds = this.map.getViewBounds();
       if(bounds) {

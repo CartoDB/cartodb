@@ -55,6 +55,21 @@ if(typeof(L) != "undefined") {
       this.leafletMap.removeLayer(this.leafletLayer);
       this.model.unbind(null, null, this);
       this.unbind();
+    },
+
+    show: function() {
+      this.leafletLayer.setOpacity(1.0);
+    },
+
+    hide: function() {
+      this.leafletLayer.setOpacity(0.0);
+    },
+
+    /**
+     * reload the tiles
+     */
+    reload: function() {
+      this.leafletLayer.redraw();
     }
 
   });
@@ -89,8 +104,8 @@ if(typeof(L) != "undefined") {
   cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
 
   /**
-  * leatlet cartodb layer
-  */
+   * leatlet cartodb layer
+   */
 
   var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
     var self = this;
@@ -151,6 +166,10 @@ if(typeof(L) != "undefined") {
     featureClick: function(e, latlon, pixelPos, data) {
       // dont pass leaflet lat/lon
       this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data);
+    },
+
+    reload: function() {
+      this.leafletLayer.layer.redraw();
     }
 
   });
@@ -158,8 +177,8 @@ if(typeof(L) != "undefined") {
   cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
   /**
-  * leatlef impl
-  */
+   * leatlef impl
+   */
   cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
     layerTypeMap: {
@@ -204,6 +223,9 @@ if(typeof(L) != "undefined") {
       this.map.layers.bind('remove', this._removeLayer, this);
       this.map.layers.bind('reset', this._addLayers, this);
 
+      this.map.geometries.bind('add', this._addGeometry, this);
+      this.map.geometries.bind('remove', this._removeGeometry, this);
+
       this._bindModel();
 
       this._addLayers();
@@ -217,7 +239,7 @@ if(typeof(L) != "undefined") {
       });
 
       this.map_leaflet.on('click', function(e) {
-        self.trigger('click', e.originalEvent);
+        self.trigger('click', e.originalEvent, [e.latlng.lat, e.latlng.lng]);
       });
 
       this.map_leaflet.on('dblclick', function(e) {
@@ -257,8 +279,6 @@ if(typeof(L) != "undefined") {
 
     },
 
-
-
     _setZoom: function(model, z) {
       this.map_leaflet.setZoom(z);
     },
@@ -269,6 +289,18 @@ if(typeof(L) != "undefined") {
 
     _setView: function() {
       this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
+    },
+
+    _addGeometry: function(geom) {
+      var geo = GeometryView.create(geom);
+      geo.geom.addTo(this.map_leaflet);
+      this.geometries[geom.cid] = geo;
+    },
+
+    _removeGeometry: function(geo) {
+      var geo_view = this.geometries[geo.cid];
+      this.map_leaflet.removeLayer(geo_view.geom);
+      delete this.geometries[geo.cid];
     },
 
     _addLayer: function(layer, layers, opts) {

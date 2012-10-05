@@ -18,13 +18,14 @@ cdb.geo.geocoder.YAHOO = {
       .replace(/ú/g,'u')
       .replace(/ /g,'+');
 
-      $.getJSON('http://query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--&flags=J"') + '&format=json&callback=?', function(data) {
+      $.getJSON('http://query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--&flags=JX"') + '&format=json&callback=?', function(data) {
 
          var coordinates = [];
          if (data && data.query && data.query.results && data.query.results.ResultSet && data.query.results.ResultSet.Found != "0") {
 
           // Could be an array or an object |arg!
           var res;
+
           if (_.isArray(data.query.results.ResultSet.Results)) {
             res = data.query.results.ResultSet.Results;
           } else {
@@ -32,14 +33,23 @@ cdb.geo.geocoder.YAHOO = {
           }
 
           for(var i in res) {
-            var r = res[i];
-            coordinates.push({
+            var r = res[i]
+              , position;
+
+            position = {
               lat: r.latitude,
               lon: r.longitude
-            });
-          }
+            };
 
+            if (r.boundingbox) {
+              position.boundingbox = r.boundingbox;
+            }
+
+            coordinates.push(position);
+          }
         }
+
+
         callback(coordinates);
       });
   }

@@ -33,6 +33,7 @@
         'core/view.js',
 
         'geo/geocoder.js',
+        'geo/geometries.js',
         'geo/map.js',
         'geo/ui/zoom.js',
         'geo/ui/legend.js',
@@ -41,6 +42,7 @@
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/ui/search.js',
+        'geo/leaflet.geometry.js',
         'geo/leaflet.js',
         'geo/gmaps_cartodb_layer.js',
         'geo/gmaps.js',

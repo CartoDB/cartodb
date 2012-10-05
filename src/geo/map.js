@@ -127,12 +127,14 @@ cdb.geo.Map = Backbone.Model.extend({
 
   initialize: function() {
     this.layers = new cdb.geo.Layers();
+
     this.layers.bind('reset', function() {
       if(this.layers.size() >= 1) {
         this._adjustZoomtoLayer(this.layers.models[0]);
       }
     }, this);
 
+    this.geometries = new cdb.geo.Geometries();
   },
 
   setView: function(latlng, zoom) {
@@ -274,7 +276,16 @@ cdb.geo.Map = Backbone.Model.extend({
     this.layers.add(layer, { at: 0 });
     this._adjustZoomtoLayer(layer);
     return layer;
+  },
+
+  addGeometry: function(geom) {
+    this.geometries.add(geom);
+  },
+
+  removeGeometry: function(geom) {
+    this.geometries.remove(geom);
   }
+
 });
 
 
@@ -295,6 +306,7 @@ cdb.geo.MapView = cdb.core.View.extend({
 
     // this var stores views information for each model
     this.layers = {};
+    this.geometries = {};
 
     this.bind('clean', this._removeLayers, this);
   },
@@ -372,12 +384,21 @@ cdb.geo.MapView = cdb.core.View.extend({
     }
   },
 
+  _removeGeometry: function(geo) {
+    var geo_view = this.geometries[geo.cid];
+    delete this.layers[layer.cid];
+  },
+
   getLayerByCid: function(cid) {
     var l = this.layers[cid];
     if(!l) {
       cdb.log.error("layer with cid " + cid + " can't be get");
     }
     return l;
+  },
+
+  addGeometry: function(geom) {
+    throw "to be implemented";
   },
 
   _setZoom: function(model, z) {

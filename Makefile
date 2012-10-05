@@ -1,6 +1,8 @@
 
 UGLIFYJS = ./node_modules/.bin/uglifyjs
 
+CSS_FILES = $(wildcard themes/css/*.css)
+
 dist:  dist/cartodb.js dist/cartodb.full.js themes
 
 dist/cartodb.full.uncompressed.js:
@@ -20,8 +22,10 @@ dist/cartodb.js: dist/cartodb.uncompressed.js
 clean: 
 	rm -rf dist/*
 
+css:
+	cat $(CSS_FILES) > themes/css/all.css
 
-release: dist
+release: dist css
 	node scripts/release.js
 
 

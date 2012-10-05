@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-107-g522d2c8 */
+/* wax - 7.0.0dev10 - v6.0.4-112-g94e91cb */
 
 
 !function (name, context, definition) {
@@ -3057,12 +3057,26 @@ wax.u = {
             }
         };
 
-        calculateOffset(el);
+        // from jquery, offset.js
+        if ( typeof el.getBoundingClientRect !== "undefined" ) {
+          var body = document.body;
+          var doc = el.ownerDocument.documentElement;
+          var clientTop  = document.clientTop  || body.clientTop  || 0;
+          var clientLeft = document.clientLeft || body.clientLeft || 0;
+          var scrollTop  = window.pageYOffset || doc.scrollTop;
+          var scrollLeft = window.pageXOffset || doc.scrollLeft;
 
-        try {
-            while (el = el.offsetParent) { calculateOffset(el); }
-        } catch(e) {
-            // Hello, internet explorer.
+          var box = el.getBoundingClientRect();
+          top = box.top + scrollTop  - clientTop;
+          left = box.left + scrollLeft - clientLeft;
+
+        } else {
+          calculateOffset(el);
+          try {
+              while (el = el.offsetParent) { calculateOffset(el); }
+          } catch(e) {
+              // Hello, internet explorer.
+          }
         }
 
         // Offsets from the body

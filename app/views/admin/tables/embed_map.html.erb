@@ -41,22 +41,17 @@
   <%= javascript_include_tag :jquery, :cdb %>
 
   <script>
-    var base_layer_tilejson = <%=raw @tilejson_base %>;
-    var data_layer_tilejson = <%=raw @layer_data %>;
-    data_layer_tilejson.infowindow = <%=raw @layer_data_infowindow %>;
+    var wadus = <%=raw map_vizzjson(@table.map) %>
+
     // those two parameters should be in tilejson
     var table_name = '<%= @table.name %>';
     var table_url = '<%= table_url @table %>';
     var table_description = '<%= @table.description %>';
-    var map_provider = '<%= @map_provider %>';
-
 
     if(data_layer_tilejson.infowindow) {
       data_layer_tilejson.infowindow.template = $('#infowindow_template').html()
     }
     data_layer_tilejson.tile_style = null;
-
-    //base_layer_tilejson.type = 'tilejson';
 
     function get_url_params() {
       var tokens = location.search.slice(1).split('&');

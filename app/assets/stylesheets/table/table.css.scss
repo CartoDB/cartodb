@@ -12,29 +12,29 @@
   div.panes {
     position:absolute;
     top:150px;
-    left:0;
     right:0;
     bottom:0;
+    left:0;
     .emptyTableContainer {
-      width:100%;
       position:relative;
       display: inline-block;
+      width:100%;
       text-align: center;
 
       .emptyTableInfo {
-        width: 600px;
-        height: 375px;
-        display: inline-block;
         position: relative;
         top: 5em;
+        display: inline-block;
+        width: 600px;
+        height: 375px;
         background: image-url('layout/empty_table.png') no-repeat 0 0 #FFF;
 
         h4 {
           margin-top: 8em;
           color: #333;
+          font-weight: normal;
           font-size: 17px;
           font-family: helvetica;
-          font-weight: normal;
         }
 
         p {
@@ -53,9 +53,9 @@
   div.table {
     table {
       position:relative;
+      z-index:1;
       width:100%;
       background:white;
-      z-index:1;
 
       // Table head
       thead {
@@ -64,26 +64,26 @@
 
         div.sqlview {
           position: absolute;
-          display: block;
+          top: 55px;
           right: 0;
           left: 0;
-          top: 55px;
+          display: block;
           width: 100%;
           height: 37px;
           p {
             position: fixed;
-            background-color: #E5FAEA;
-            display: inline;
             left: 50%;
-            width: 100%;
+            display: inline;
             margin: 12px 0 0 -50%;
-            color: #333;
-            text-align: center;
-            color: #666666;
-            font-family: $text-fonts;
-            font-size: 13px;
             padding: 12px 0;
+            width: 100%;
             border-bottom: 1px solid #ECECEC;
+            background-color: #E5FAEA;
+            color: #333;
+            color: #666666;
+            text-align: center;
+            font-size: 13px;
+            font-family: $text-fonts;
           }
         }
 
@@ -99,32 +99,32 @@
             & > div {
               position:relative;
               display:block;
+              overflow-x: hidden;
               width:100%;
               height:66px;
-              overflow-x: hidden;
 
               & > div {
-                position:fixed;
                 @include inline-block();
+                @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
+                position:fixed;
+                z-index:1;
+                margin:0;
+                padding:10px 0 15px;
                 width:100%;
                 height:41px;
-                padding:10px 0 15px;
-                margin:0;
-                @include background(linear-gradient(top,#FDFDFD,#F2F2F2));
-                @include box-shadow(rgba(0,0,0,0.015) 0 3px 1px 0);
                 border-bottom:1px solid #CCCCCC;
-                z-index:1;
 
                 &:after {
-                  content:' ';
                   position:absolute;
-                  left:0px;
                   top:13px;
-                  background:rgba(#D9D9D9,0.5);
-                  height:42px;
-                  width:1px;
+                  left:0px;
                   z-index:0;
+                  width:1px;
+                  height:42px;
+                  background:rgba(#D9D9D9,0.5);
+                  content:' ';
                 }
+                @include box-shadow(rgba(0,0,0,0.015) 0 3px 1px 0);
               }
 
               label {
@@ -132,18 +132,18 @@
                 padding:0 5px;
 
                 a {
-                  margin:6px 0 5px 5px;
                   @include inline-block();
+                  margin:6px 0 5px 5px;
                   color:#7C7C7C;
 
                   &:after {
-                    position:relative;
-                    content:'';
                     @include inline-block();
+                    position:relative;
                     left:2px;
-                    border-left:3px solid transparent;
-                    border-right:3px solid transparent;
                     border-top:3px solid #7C7C7C;
+                    border-right:3px solid transparent;
+                    border-left:3px solid transparent;
+                    content:'';
                   }
 
                   &:hover {
@@ -153,50 +153,50 @@
                   }
 
                   span.geo {
+                    @include border-radius(2px);
                     margin:0 0 0 3px;
                     padding:1px 2px;
-                    text-decoration:uppercase;
                     border:1px solid #C17400;
-                    @include border-radius(2px);
                     background:orange;
                     color:white;
+                    text-decoration:uppercase;
                   }
+                }
+                input {
+                  @include border-radius(3px);
+                  margin:0;
+                  padding:3px 4px;
+                  min-width:160px;
+                  border:1px solid #CCCCCC;
+                  background:white;
+                  color:#333333;
+                  font:bold 13px $text-fonts;
                 }
 
                 // Default and then replace it
                 @include default-input();
-                input {
-                  min-width:160px;
-                  margin:0;
-                  padding:3px 4px;
-                  @include border-radius(3px);
-                  font:bold 13px $text-fonts;
-                  color:#333333;
-                  border:1px solid #CCCCCC;
-                  background:white;
-                }
               }
 
               p {
                 padding:0 10px;
                 a {
-                  color:#999999;
                   padding:0 10px 0 0;
+                  color:#999999;
 
                   &:hover {
                     position:relative;
-                    color:#666666;
                     padding:0 10px 0 0;
+                    color:#666666;
                     text-decoration:none;
 
                     &:after {
                       position:absolute;
-                      content:' ';
                       right:0;
                       margin:8px 0 0 5px;
-                      border-left:3px solid transparent;
-                      border-right:3px solid transparent;
                       border-top:3px solid #7C7C7C;
+                      border-right:3px solid transparent;
+                      border-left:3px solid transparent;
+                      content:' ';
                     }
                   }
                 }
@@ -204,8 +204,8 @@
             }
 
             &:first-child {
-              width:35px;
               min-width:35px;
+              width:35px;
             }
           }
         }
@@ -230,8 +230,8 @@
             color: #e5e5e5;
             vertical-align: center;
             text-align: center;
-            font-size:22px;
             font-weight:bolder;
+            font-size:22px;
           }
 
         }
@@ -241,8 +241,8 @@
           border-bottom:0px;
 
           &:hover {
-            background:inherit;
             border-color:#ECECEC;
+            background:inherit;
 
             & + tr {
               border-top-color:#ECECEC;
@@ -252,14 +252,14 @@
 
         tr.placeholder.decoration td{
           height: 15px;
-          border-bottom:0px;
           border-top:0px;
+          border-bottom:0px;
 
           &:hover {
-            background:inherit;
             border-color:'#ECECEC';
             border-top: 0px;
             border-top-color:'#ECECEC';
+            background:inherit;
 
           }
         }
@@ -277,8 +277,8 @@
           }
 
           &:hover {
-            background:#E8F9EC;
             border-color:#CCCCCC;
+            background:#E8F9EC;
 
             & + tr {
               border-top-color:#CCCCCC;
@@ -288,19 +288,19 @@
           }
 
           td {
-            border-left:1px solid #ECECEC;
             border-right:1px solid #ECECEC;
+            border-left:1px solid #ECECEC;
 
             div.cell {
               @include inline-block();
-              padding:15px 10px;
-              max-height:26px;
-              max-width:300px;
-              font-size:13px;
-              color:#666666;
               overflow: hidden;
+              padding:15px 10px;
+              max-width:300px;
+              max-height:26px;
+              color:#666666;
               text-overflow: ellipsis;
               white-space: nowrap;
+              font-size:13px;
               &.disabled {
                 color: #AAA;
               }
@@ -315,47 +315,47 @@
               position:relative;
 
               & > div {
+                @include border-radius(3px);
+                @include background(linear-gradient(#FAFAFA,#E8E8E8));
                 display:none;
-                width:12px;
-                height:12px;
                 margin:10px;
                 padding:0;
+                width:12px;
+                height:12px;
                 border:1px solid #999999;
-                @include border-radius(3px);
                 background:#FAFAFA;
-                @include background(linear-gradient(#FAFAFA,#E8E8E8));
 
                 &:before {
-                  position:absolute;
                   @include opacity(1);
-                  content:' ';
+                  position:absolute;
                   top:20px;
                   left:15px;
                   width:0;
                   height:0;
-                  border-left:2px solid transparent;
-                  border-right:2px solid transparent;
                   border-top:3px solid #666666;
+                  border-right:2px solid transparent;
+                  border-left:2px solid transparent;
+                  content:' ';
                 }
 
                 &:hover {
-                  background:#E8E8E8;
                   @include background(linear-gradient(#FAFAFA,#E3D3E3));
+                  background:#E8E8E8;
                   cursor:pointer;
                 }
 
                 &:active {
-                  background:#E3D3E3;
                   @include background(linear-gradient(#E3D3E3,#FAFAFA));
+                  background:#E3D3E3;
                 }
               }
             }
 
             &:last-child {
+              border-right:none;
               div {
                 padding-right:76px;
               }
-              border-right:none;
             }
           }
         }
@@ -364,30 +364,30 @@
 
     .page_loader {
       position:relative;
-      padding:100px 0;
-      background:white;
       z-index:1;
+      padding:100px 0;
       border:1px solid #ECECEC;
-      border-left:0;
       border-right:0;
+      border-left:0;
+      background:white;
 
       th {
         padding:70px 0;
       }
 
       div.float_info {
-        position:fixed;
         @include inline-block();
-        vertical-align:top;
+        @include icons-sprite(loading_page);
+        position:fixed;
         left:50%;
+        z-index:-1;
+        margin:0 0 0 -120px;
+        padding:0 0 0 45px;
         width:195px;
         height:34px;
-        padding:0 0 0 45px;
-        margin:0 0 0 -120px;
-        @include icons-sprite(loading_page);
-        z-index:-1;
+        vertical-align:top;
 
-        h5 {display:block; font-size:15px; color:#7B7B7B; line-height:normal;}
+        h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
         p {display:block; font-size:13px;}
       }
 
@@ -409,43 +409,43 @@
 
   div.order_selector {
     position:absolute;
-    right:0;
     top:-3px;
+    right:0;
     a.asc {
-      margin-right: 1px;
       @include border-left-radius(2px);
+      margin-right: 1px;
     }
     a.desc {
-      margin-right: 10px;
       @include border-right-radius(2px);
+      margin-right: 10px;
     }
     a.asc, a.desc {
-      text-transform: uppercase;
-      position:relative;
       @include inline-block();
+      position:relative;
+      margin-top: 13px;
       padding:0;
+      padding: (21px - 9px)/2 8px;
       background-color: $button-bkg-color;
       color: #397DB9;
-      margin-top: 13px;
-      padding: (21px - 9px)/2 8px;
-      font-size: 9px;
+      text-transform: uppercase;
       font-weight: bold;
+      font-size: 9px;
       &:hover {
         background-color: #397DB9;
         color: $button-bkg-color;
       }
       &.selected {
-        cursor: default;
         background-color: #397DB9;
         color: $button-bkg-color;
+        cursor: default;
       }
     }
   }
 
 .iconClock {
+  display: inline-block;
+  margin-right: 8px;
   width: 15px;
   height: 15px;
   background: image-url('layout/clock.png') no-repeat 0 0 transparent;
-  display: inline-block;
-  margin-right: 8px;
 }

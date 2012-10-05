@@ -5,7 +5,7 @@
    * DO NOT USE Backbone.View directly
    */
   var View = cdb.core.View = Backbone.View.extend({
-    className: 'cdb.core.View',
+    classLabel: 'cdb.core.View',
     constructor: function(options) {
       this._models = [];
       this._subviews = {};
@@ -81,7 +81,7 @@
     },
 
     /**
-    * Listen for an event on a children object and triggers on itself
+    * Listen for an event on another object and triggers on itself
     * @method retrigger
     * @param ev {String}
     * @param obj {Object}

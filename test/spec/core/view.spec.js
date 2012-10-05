@@ -118,6 +118,25 @@ describe("core.view", function() {
     waits(25);
 
     expect(launched).toBeTruthy();
+  });
+
+  it("should kill an event", function() {
+    var ev = {
+      stopPropagation:function(){},
+      preventDefault: function(){}
+    };
+    var ev2 = "thisisnotanevent";
+
+    spyOn(ev, "stopPropagation");
+    spyOn(ev, "preventDefault");
+
+    view.killEvent(ev);
+    view.killEvent(ev2);
+    view.killEvent();
+
+    expect(ev.stopPropagation).toHaveBeenCalled()
+    expect(ev.preventDefault).toHaveBeenCalled()
   })
+
 
 });

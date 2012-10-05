@@ -5,7 +5,7 @@
    * DO NOT USE Backbone.View directly
    */
   var View = cdb.core.View = Backbone.View.extend({
-
+    className: 'cdb.core.View',
     constructor: function(options) {
       this._models = [];
       this._subviews = {};
@@ -92,6 +92,19 @@
         self.trigger(ev);
       })
     },
+    /**
+    * Captures an event and prevents the default behaviour and stops it from bubbling
+    * @method killEvent
+    * @param event {Event}
+    */
+    killEvent: function(ev) {
+      if(ev && ev.preventDefault) {
+        ev.preventDefault();
+      };
+      if(ev && ev.stopPropagation) {
+        ev.stopPropagation();
+      };
+    }
 
 
 

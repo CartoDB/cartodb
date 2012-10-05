@@ -1,17 +1,29 @@
 
 UGLIFYJS = ./node_modules/.bin/uglifyjs
 
-dist: dist/cartodb.js dist/cartodb.min.js
+dist:  dist/cartodb.js dist/cartodb.full.js themes
 
-dist/cartodb.js:
+dist/cartodb.full.uncompressed.js:
+	node scripts/compress.js include_deps
+	mv dist/_cartodb.js dist/cartodb.full.uncompressed.js
+
+dist/cartodb.uncompressed.js:
 	node scripts/compress.js
+	mv dist/_cartodb.js dist/cartodb.uncompressed.js
 
-dist/cartodb.min.js:
-	$(UGLIFYJS) dist/cartodb.js > dist/cartodb.min.js
+dist/cartodb.full.js: dist/cartodb.full.uncompressed.js 
+	$(UGLIFYJS) dist/cartodb.full.uncompressed.js > dist/cartodb.full.js
+
+dist/cartodb.js: dist/cartodb.uncompressed.js
+	$(UGLIFYJS) dist/cartodb.uncompressed.js > dist/cartodb.js
 
 clean: 
-	rm -rf dist/cartodb.js
+	rm -rf dist/*
 
 
-PHONY: clean 
+release: dist
+	node scripts/release.js
+
+
+PHONY: clean themes
 

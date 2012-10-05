@@ -156,6 +156,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
   },
 
   initialize: function() {
+    var self = this;
     _.defaults(this.options, this.default_options);
     this.dataModel = this.options.dataModel;
     this.rowViews = [];
@@ -171,6 +172,14 @@ cdb.ui.common.Table = cdb.core.View.extend({
     // prepare for cleaning
     this.add_related_model(this.dataModel);
     this.add_related_model(this.model);
+
+    this.dataModel.bind('remove', function() {
+      self.rowDestroyed();
+      if(self.dataModel.length == 0) {
+        self.emptyTable();
+      }
+    })
+
   },
 
   headerView: function(column) {
@@ -224,6 +233,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
       order: this.model.columnNames(),
       row_header: this.options.row_header
     });
+    self.retrigger('destroyRow', tr);
     tr.tableView = this;
 
     tr.bind('clean', function() {
@@ -237,6 +247,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
     tr.bind('changeRow', this.rowChanged);
     tr.bind('syncRow', this.rowSynched);
     tr.bind('errorRow', this.rowFailed);
+    // tr.bind('destroyRow', this.rowDestroyed);
+    // tr.model.bind('destroy', this.rowDestroyed);
 
     tr.render();
     if(options && options.index !== undefined && options.index != self.rowViews.length) {
@@ -254,6 +266,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
       self.$el.append(tr.el);
       self.rowViews.push(tr);
     }
+
+    this.trigger('createRow');
   },
 
   /**
@@ -277,6 +291,19 @@ cdb.ui.common.Table = cdb.core.View.extend({
   */
   rowFailed: function() {},
 
+  /**
+  * Callback executed when a row gets destroyed
+  * @method rowDestroyed
+  * @abstract
+  */
+  rowDestroyed: function() {},
+
+  /**
+  * Callback executed when a row gets destroyed and the table data is empty
+  * @method emptyTable
+  * @abstract
+  */
+  emptyTable: function() {},
 
   /**
   * Checks if the table is empty

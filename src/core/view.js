@@ -1,11 +1,11 @@
 (function() {
 
-  /** 
+  /**
    * Base View for all CartoDB views.
    * DO NOT USE Backbone.View directly
    */
   var View = cdb.core.View = Backbone.View.extend({
-
+    className: 'cdb.core.View',
     constructor: function(options) {
       this._models = [];
       this._subviews = {};
@@ -38,7 +38,7 @@
 
     /**
      * this methid clean removes the view
-     * and clean and events associated. call it when 
+     * and clean and events associated. call it when
      * the view is not going to be used anymore
      */
     clean: function() {
@@ -78,7 +78,35 @@
 
     hide: function() {
         this.$el.hide();
+    },
+
+    /**
+    * Listen for an event on a children object and triggers on itself
+    * @method retrigger
+    * @param ev {String}
+    * @param obj {Object}
+    */
+    retrigger: function(ev, obj) {
+      var self = this;
+      obj.bind && obj.bind(ev, function() {
+        self.trigger(ev);
+      })
+    },
+    /**
+    * Captures an event and prevents the default behaviour and stops it from bubbling
+    * @method killEvent
+    * @param event {Event}
+    */
+    killEvent: function(ev) {
+      if(ev && ev.preventDefault) {
+        ev.preventDefault();
+      };
+      if(ev && ev.stopPropagation) {
+        ev.stopPropagation();
+      };
     }
+
+
 
   }, {
     viewCount: 0,
@@ -105,8 +133,8 @@
     runChecker: function() {
       _.each(cdb.core.View.views, function(view) {
         _.each(view, function(prop, k) {
-          if( k !== '_parent' && 
-              view.hasOwnProperty(k) && 
+          if( k !== '_parent' &&
+              view.hasOwnProperty(k) &&
               prop instanceof cdb.core.View &&
               view._subviews[prop.cid] === undefined) {
             console.log("=========");

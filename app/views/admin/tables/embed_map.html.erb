@@ -20,7 +20,8 @@
       html, body, #map {height: 100%; padding: 0; margin: 0;}
     </style>
 
-    <%= stylesheet_link_tag :cdb, :media => 'all' %>
+    <%= stylesheet_link_tag :leaflet %>
+    <%= stylesheet_link_tag 'cdb/themes/css/all.css' %>
 
     <script id="infowindow_template" type="text/tmpl">
       <%= render :file => File.join(Rails.root,"lib/assets/javascripts/cartodb/" + @infowindow_template_path + ".jst.mustache") %>

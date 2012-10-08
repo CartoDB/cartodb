@@ -1,12 +1,10 @@
 class Map < Sequel::Model
   many_to_many :layers, :order => :order
 
-  #one_to_one :base_layer
-
   many_to_many :data_layers, :clone => :layers, :right_key => :layer_id, :conditions => { :kind => "carto" }
   many_to_many :base_layers, :clone => :layers, :right_key => :layer_id, :conditions => { :kind => "tiled" }
 
-  one_to_many :table
+  one_to_many :tables
 
   plugin :association_dependencies, :layers => :nullify
   self.raise_on_save_failure = false

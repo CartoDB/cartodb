@@ -15,6 +15,7 @@
 //= require cdb/src/core/log
 //= require cdb/src/core/profiler
 //= require cdb/src/core/template
+//= require cdb/src/core/model
 //= require cdb/src/core/view
 //= require cdb/src/geo/geocoder
 //= require cdb/src/geo/geometry

@@ -43,13 +43,11 @@ describe('Interaction funcionality', function() {
 
     // Fake a click
     $(div).trigger('click');
-    expect(cdb_layer._manageOffEvents).toThrow();   
+    expect(cdb_layer._manageOffEvents).toThrow();
   });
 
 
   it('If there is interaction defined, click should work', function() {
-
-    waits(500);
 
     runs(function () {
       cdb_layer.setOptions({
@@ -61,7 +59,7 @@ describe('Interaction funcionality', function() {
       map.overlayMapTypes.setAt(0, cdb_layer);
     });
 
-    waits(2000);
+    waits(3000);
 
     runs(function () {
       spyOn(cdb_layer, '_manageOnEvents');
@@ -76,7 +74,7 @@ describe('Interaction funcionality', function() {
       cdb_layer._interaction.click(e,{x:100,y:100});
     });
 
-    waits(1500);
+    waits(3000);
 
     runs(function () {
       expect(cdb_layer._manageOnEvents).toHaveBeenCalled();
@@ -206,7 +204,7 @@ describe('Interaction funcionality', function() {
 
     waits(500);
 
-    runs(function () {   
+    runs(function () {
       var e = new jQuery.Event("click");
       e.pageX = 10;
       e.pageY = 10;

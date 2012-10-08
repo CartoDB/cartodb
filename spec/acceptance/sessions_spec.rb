@@ -81,7 +81,7 @@ feature "Sessions" do
     end
   end
 
-  scenario "shouldn't show error page when trying to connect with allowed browser" do
+  scenario "shouldn't show error page when trying to connect with supported browser" do
     @allowed_user_agents.each do |user_agent|
       options = page.driver.instance_variable_get("@options")
       options[:headers] = {"HTTP_USER_AGENT" => user_agent}

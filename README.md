@@ -1,4 +1,4 @@
-CBD.js
+cartodb.js
 =====
 
 This is the base library for cartodb projects

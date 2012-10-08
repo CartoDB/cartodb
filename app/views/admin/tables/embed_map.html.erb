@@ -24,7 +24,7 @@
     <%= stylesheet_link_tag 'cdb/themes/css/all.css' %>
 
     <script id="infowindow_template" type="text/tmpl">
-      <%= render :file => File.join(Rails.root,"lib/assets/javascripts/cartodb/" + @infowindow_template_path + ".jst.mustache") %>
+      <%# render :file => File.join(Rails.root,"lib/assets/javascripts/cartodb/" + @infowindow_template_path + ".jst.mustache") %>
     </script>
 
     <%= render 'shared/analytics' %>
@@ -35,13 +35,13 @@
     <% end %>
   </body>
 
-  <% if @map_provider == 'googlemaps' %>
+  <% if @table.map.provider == 'googlemaps' %>
     <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
   <% end %>
   <%= javascript_include_tag :jquery, :cdb %>
 
   <script>
-    var wadus = <%=raw map_vizzjson(@table.map) %>
+    var wadus = <%=raw map_vizzjson(@table.map, :full => false).to_json %>
 
     // those two parameters should be in tilejson
     var table_name = '<%= @table.name %>';

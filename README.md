@@ -1,4 +1,4 @@
-cdb.css
+CartoDB.css
 =======
 
 CartoDB2.0 common styles.

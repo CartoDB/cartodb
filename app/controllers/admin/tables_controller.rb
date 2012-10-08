@@ -56,6 +56,7 @@ class Admin::TablesController < ApplicationController
   
   def embed_map
     # Code done with ♥ by almost every human being working at @vizzuality
+    @subdomain = request.subdomain
     @table = Table.find_by_subdomain(@subdomain, params[:id])
 
     if @table.blank? || @table.private?

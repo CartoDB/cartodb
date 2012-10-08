@@ -41,17 +41,8 @@
   <%= javascript_include_tag :jquery, :cdb %>
 
   <script>
-    var wadus = <%=raw map_vizzjson(@table.map, :full => false).to_json %>
+    var vizjson= <%=raw map_vizzjson(@table.map, :full => false).to_json %>
 
-    // those two parameters should be in tilejson
-    var table_name = '<%= @table.name %>';
-    var table_url = '<%= table_url @table %>';
-    var table_description = '<%= @table.description %>';
-
-    if(data_layer_tilejson.infowindow) {
-      data_layer_tilejson.infowindow.template = $('#infowindow_template').html()
-    }
-    data_layer_tilejson.tile_style = null;
 
     function get_url_params() {
       var tokens = location.search.slice(1).split('&');
@@ -63,48 +54,62 @@
       return params;
     }
 
-    var opt = get_url_params()
-      , overlays = [];
-
-    // Add search?
-    if (opt.search === 'true') {
-      overlays.push({ type: 'search' })
+    function search_overlay(name) {
+      for(var i = 0; i < vizjson.overlays.length; ++i) {
+        if(vizjson.overlays[i].type === name) {
+          return vizjson.overlays[i];
+        }
+      }
     }
 
-    // Add zoom
-    overlays.push({
-      type: 'zoom',
-      template: '<a class="zoom_in">+</a><a class="zoom_out">-</a>'
-    });
+    function remove_overlay(name) {
+      for(var i = 0; i < vizjson.overlays.length; ++i) {
+        if(vizjson.overlays[i].type === name) {
+          vizjson.overlays.splice(i, 1);
+          return;
+        }
+      }
+    }
+
+    var opt = get_url_params()
+
+    // remove search if the vizualization does not contain it
+    if (opt.search !== 'true') {
+      remove_overlay('search');
+    }
 
 
-    var vis_data = {
-      title: opt.title === 'true' ? table_name:null,
-      description: opt.description === 'true' ? table_description: null,
-      provider: map_provider,
-      overlays: overlays,
-      layers: [
-        base_layer_tilejson,
-        data_layer_tilejson
-      ]
-    };
+    if(opt.title !== 'true' && opt.description !== 'true' && opt.shareable !== 'true') {
+      remove_overlay('header');
+    }
 
-    if(opt.title === 'true' || opt.description === 'true' || opt.shareable === 'true') {
-      vis_data.overlays.splice(0, 0, { type: 'header', shareable: opt.shareable, url: table_url });
+    if(opt.title !== 'true') {
+      vizjson.title = null;
+    }
+
+    if(opt.description !== 'true') {
+      vizjson.description = null;
+    }
+
+    if(opt.shareable !== 'true') {
+      var s = search_overlay('header');
+      if(s) {
+        s.shareable = false;
+      }
     }
 
     if(opt.sw_lat !== undefined) {
-      vis_data.bounds = [
+      vizjson.bounds = [
         [opt.sw_lat, opt.sw_lon],
         [opt.ne_lat, opt.ne_lon],
       ];
     }
 
     if(opt.sql) {
-      data_layer_tilejson.query = opt.sql;
+      vizjson.layers[1].options.query = opt.sql;
     }
 
     var vis = new cdb.vis.Vis({el: $('#map')});
-    vis.load(vis_data);
+    vis.load(vizjson);
   </script>
 </html>

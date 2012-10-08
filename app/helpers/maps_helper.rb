@@ -1,11 +1,14 @@
 module MapsHelper
-  def map_vizzjson(map)
+  def map_vizzjson(map, options = {})
+    options.reverse_merge! full: true
+
+    CartoDB::Logger.info(map.inspect)
     {
       version: "0.1.0",
 
       layers: [
-        layer_vizzjson(map.base_layers.first),
-        layer_vizzjson(map.data_layers.first)
+        layer_vizzjson(map.base_layers.first, options),
+        layer_vizzjson(map.data_layers.first, options)
       ],
 
       overlays: [
@@ -16,12 +19,12 @@ module MapsHelper
         {
           type: "header",
           shareable: true,
-          url: table_url(map.table)
+          url: table_url(map.tables.first)
         }
       ],
 
-      description: map.table.description,
-      title: map.table.name,
+      description: map.tables.first.description,
+      title: map.tables.first.name,
 
       map_provider: map.provider,
 

@@ -14,6 +14,7 @@
      * global variables
      */
     window.JST = window.JST || {};
+    window.cartodb = cdb;
 
     cdb.files = [
         "../vendor/jquery.min.js",

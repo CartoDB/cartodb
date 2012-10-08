@@ -14,6 +14,20 @@ var _exec = require('child_process').exec;
 var package_ = require('../package')
 
 var version = 'v' + package_.version.split('.')[0]
-_exec('mkdir ' + version );
-_exec('cp dist/* ' + version);
-_exec('cp -r themes ' + version);
+
+cmds = [
+  'git checkout gh-pages',
+  'mkdir ' + version,
+  'cp dist/* ' + version,
+  'cp -r themes ' + version
+];
+
+function batch() {
+  var cmd = cmds.shift();
+  if(cmd !== undefined) {
+    console.log("***", cmd);
+    _exec(cmd, batch);
+  }
+}
+
+batch();

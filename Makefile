@@ -29,5 +29,5 @@ release: dist css
 	node scripts/release.js
 
 
-PHONY: clean themes
+PHONY: clean themes dist
 

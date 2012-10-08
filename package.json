@@ -21,6 +21,6 @@
       "type": "BSD"
     }],
     "devDependencies": {
-      "uglify-js": "1.0.x"
+      "uglify-js": "1.3.3"
     }
 }

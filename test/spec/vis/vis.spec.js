@@ -29,7 +29,7 @@ describe("Vis", function() {
       zoom: 4
     };
 
-    this.vis = new Vis({el: this.container});
+    this.vis = new cdb.vis.Vis({el: this.container});
     this.vis.load(this.mapConfig);
 
   })

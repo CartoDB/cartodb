@@ -1,3 +1,5 @@
+(function() {
+
 /**
  * defines the container for an overlay.
  * It places the overlay
@@ -159,3 +161,5 @@ var Vis = cdb.core.View.extend({
 });
 
 cdb.vis.Vis = Vis;
+
+})();

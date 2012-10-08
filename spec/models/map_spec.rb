@@ -19,7 +19,7 @@ describe Map do
       table.reload
 
       table.map.should == map
-      map.table.should include(table)
+      map.tables.should include(table)
     end
 
   end

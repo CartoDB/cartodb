@@ -34,6 +34,13 @@ class Layer < Sequel::Model
     "rails:layer_styles:#{self.id}"
   end
 
+  def template_path
+    if self.infowindow.present? && self.infowindow['template_name'].present?
+      Rails.root.join("lib/assets/javascripts/cartodb/#{self.infowindow['template_name']}.jst.mustache")
+    else
+      nil
+    end
+  end
 
   def to_tilejson
     o = JSON.parse(self.values[:options])

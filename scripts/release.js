@@ -16,7 +16,6 @@ var package_ = require('../package')
 var version = 'v' + package_.version.split('.')[0]
 
 cmds = [
-  'git checkout gh-pages',
   'mkdir ' + version,
   'cp dist/* ' + version,
   'cp -r themes ' + version

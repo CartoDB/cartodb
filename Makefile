@@ -22,7 +22,7 @@ dist/cartodb.js: dist/cartodb.uncompressed.js
 clean: 
 	rm -rf dist/*
 
-css:
+css: $(CSS_FILES) 
 	cat $(CSS_FILES) > themes/css/all.css
 
 release: dist css

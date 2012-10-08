@@ -16,7 +16,7 @@ var files = window.cdb.files;
 var c = 0;
 cmds = [
   'rm -rf  dist/_cartodb.js',
-  "echo // cartodb.js v" + package_.version + " >> dist/cartodb.uncompressed.js",
+  "echo // cartodb.js v" + package_.version + " >> dist/_cartodb.js",
   "echo // uncompressed version: cartodb.uncompressed.js >> dist/_cartodb.js",
 
 ];

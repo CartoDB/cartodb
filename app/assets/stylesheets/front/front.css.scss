@@ -126,11 +126,12 @@
 
       label {
         position:absolute;
-        top:13px;
+        top:0;
         left:16px;
         font:normal 15px "Helvetica Neue","Helvetica",Arial;
         color:#CCCCCC;
         z-index:0;
+        font-style:italic;
         @include user-select(none);
         &:hover {cursor:text}
       }
@@ -153,6 +154,7 @@
         &:focus {
           outline:none;
           border-color:#999999;
+          @include box-shadow(rgba(0,0,0,0.1) 0 0 2px 2px);
         }
 
         &.error {

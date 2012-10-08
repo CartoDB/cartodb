@@ -1,8 +1,8 @@
- 
+
 	/*
    * Image sprites for using in CartoDB
    */
-	
+
   $icons-file_type-spacing: 10px;
   $icons-question-spacing: 10px;
   $icons-unredo-spacing: 15px;
@@ -11,4 +11,4 @@
   $icons-drag_points-spacing: 40px;
 	@import "icons/*.png";
   @include all-icons-sprites;
-  
+

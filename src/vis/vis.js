@@ -40,7 +40,10 @@ var Layers = {
       return null;
     }
     var t = this._types[type.toLowerCase()];
-    return new t(vis, data);
+
+    var c = {};
+    _.extend(c, data, data.options);
+    return new t(vis, c);
   }
 
 };
@@ -98,10 +101,11 @@ var Vis = cdb.core.View.extend({
     // layers
     for(var i in data.layers) {
       var layerData = data.layers[i];
-      var layer_cid = map.addLayer(Layers.create(layerData.type, this, layerData));
+      layerData.type = layerData.kind;
+      var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData));
 
       // add the associated overlays
-      if(layerData.type.toLowerCase() == 'cartodb' && layerData.infowindow) {
+      if(layerData.infowindow) {
           var infowindow = Overlay.create('infowindow', this, layerData.infowindow, true);
           mapView.addInfowindow(infowindow);
           var dataLayer = mapView.getLayerByCid(layer_cid);
@@ -142,7 +146,12 @@ var Vis = cdb.core.View.extend({
     if(data.bounds) {
       mapView.showBounds(data.bounds);
     } else {
-      map.setCenter(data.center || [0, 0]);
+      var center = data.center;
+      if (typeof(center) === "string") {
+        center = JSON.parse(center);
+      }
+
+      map.setCenter(center || [0, 0]);
       map.setZoom(data.zoom || 4);
     }
   },

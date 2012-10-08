@@ -15,7 +15,7 @@ Layers.register('plain', function(vis, data) {
   return new cdb.geo.PlainLayer(data);
 });
 
-Layers.register('cartodb', function(vis, data) {
+var cartoLayer = function(vis, data) {
 
   if(data.infowindow && data.infowindow.fields) {
     var names = [];
@@ -29,4 +29,7 @@ Layers.register('cartodb', function(vis, data) {
   }
 
   return new cdb.geo.CartoDBLayer(data);
-});
+};
+
+Layers.register('cartodb', cartoLayer);
+Layers.register('carto', cartoLayer);

@@ -13,13 +13,16 @@ module MapsHelper
 
       overlays: [
         {
-          type: "zoom",
-          template: "mustache template"
-        },
-        {
           type: "header",
           shareable: true,
           url: table_url(map.tables.first)
+        },
+        {
+          type: "zoom",
+          template: '<a class="zoom_in">+</a><a class="zoom_out">-</a>'
+        },
+        {
+          type: "search",
         }
       ],
 

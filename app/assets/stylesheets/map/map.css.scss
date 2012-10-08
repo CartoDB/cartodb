@@ -6,6 +6,7 @@
   @import "compass";
   @import "../common/vars";
   @import "../common/mixins";
+  @import "../common/sprites";
 
   div.map {
     position:absolute;
@@ -59,8 +60,8 @@
             @include inline-block();
             width:100%;
             height:100%;
-            background-size:98px 98px!important;
-            background-position:-22px -22px!important;
+            background-size:98px 98px;//!important;
+            background-position:-22px -22px;//!important;
             @include border-radius(4px);
             @include text-indent();
 
@@ -151,6 +152,14 @@
               span.remove_layer {
                 display: block;
               }
+            }
+
+            &.gmaps_roadmap {
+              @include icons-sprite(gmaps_roadmap);
+            }
+
+            &.gmaps_satellite {
+              @include icons-sprite(gmaps_satellite);
             }
 
             // Add new base map

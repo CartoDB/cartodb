@@ -18,7 +18,7 @@
 /**
  * represents a table row
  */
-cdb.ui.common.Row = Backbone.Model.extend({
+cdb.ui.common.Row = cdb.core.Model.extend({
 });
 
 cdb.ui.common.TableData = Backbone.Collection.extend({
@@ -40,7 +40,7 @@ cdb.ui.common.TableData = Backbone.Collection.extend({
 /**
  * contains information about the table, mainly the schema
  */
-cdb.ui.common.TableProperties = Backbone.Model.extend({
+cdb.ui.common.TableProperties = cdb.core.Model.extend({
 
   columnNames: function() {
     return _.map(this.get('schema'), function(c) {

@@ -1,5 +1,5 @@
 /**
- * global configuration 
+ * global configuration
  */
 
 (function() {

@@ -31,6 +31,7 @@
         'core/log.js',
         'core/profiler.js',
         'core/template.js',
+        'core/model.js',
         'core/view.js',
 
         'geo/geocoder.js',

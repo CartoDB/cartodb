@@ -5,7 +5,7 @@
 /**
 * Map layer, could be tiled or whatever
 */
-cdb.geo.MapLayer = Backbone.Model.extend({
+cdb.geo.MapLayer = cdb.core.Model.extend({
 
   defaults: {
     visible: true,
@@ -115,7 +115,7 @@ cdb.geo.Layers = Backbone.Collection.extend({
 /**
 * map model itself
 */
-cdb.geo.Map = Backbone.Model.extend({
+cdb.geo.Map = cdb.core.Model.extend({
 
   defaults: {
     center: [0, 0],
@@ -198,7 +198,7 @@ cdb.geo.Map = Backbone.Model.extend({
   },
 
   /**
-   * return getViewbounds if it is set 
+   * return getViewbounds if it is set
    */
   getViewBounds: function() {
     if(this.has('view_bounds_sw') && this.has('view_bounds_ne')) {

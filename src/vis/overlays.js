@@ -1,4 +1,6 @@
 
+(function() {
+
 // map zoom control
 cdb.vis.Overlay.register('zoom', function(data) {
 
@@ -72,3 +74,5 @@ cdb.vis.Overlay.register('search', function(data, vis) {
 
   return search.render();
 });
+
+})();

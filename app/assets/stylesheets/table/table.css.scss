@@ -21,13 +21,19 @@
       width:100%;
       text-align: center;
 
-      .emptyTableInfo {
+      .emptynessInfo {
         position: relative;
         top: 5em;
         display: inline-block;
         width: 600px;
         height: 375px;
-        background: image-url('layout/empty_table.png') no-repeat 0 0 #FFF;
+
+        &.emptyTableInfo {
+          background: image-url('layout/empty_table.png') no-repeat 0 0 #FFF;
+        }
+        &.emptySQLInfo {
+          background: image-url('layout/empty_sql.png') no-repeat 40px 0 #FFF;
+        }
 
         h4 {
           margin-top: 8em;

@@ -24,7 +24,6 @@
         "../vendor/leaflet.js",
         "../vendor/wax.leaf.js",
         "../vendor/wax.g.js",
-        "../vendor/cartodb-leaflet.js",
 
         'core/decorator.js',
         'core/config.js',
@@ -44,6 +43,7 @@
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/ui/search.js',
+        "geo/cartodb-leaflet.js",
         'geo/leaflet.geometry.js',
         'geo/leaflet.js',
         'geo/gmaps_cartodb_layer.js',

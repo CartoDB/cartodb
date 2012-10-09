@@ -1,8 +1,10 @@
 class Map < Sequel::Model
-  many_to_many :layers, :order => :order
+  many_to_many :layers, :order => :order, :after_add => proc { |map, layer| 
+    layer.set_default_order(map)
+  }
 
   many_to_many :data_layers, :clone => :layers, :right_key => :layer_id, :conditions => { :kind => "carto" }
-  many_to_many :base_layers, :clone => :layers, :right_key => :layer_id, :conditions => { :kind => "tiled" }
+  many_to_many :base_layers, :clone => :layers, :right_key => :layer_id
 
   one_to_many :tables
 

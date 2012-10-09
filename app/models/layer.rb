@@ -4,8 +4,18 @@ class Layer < Sequel::Model
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase }
   PUBLIC_ATTRIBUTES = %W{ options kind infowindow id order }
 
-  many_to_many :maps
-  many_to_many :users
+  ##
+  # Sets default order to the maximum order of the sibling layers + 1  
+  #
+  def set_default_order(parent)
+    max_order = parent.layers_dataset.select(:order).map(&:order).compact.max
+    order = (max_order == nil ? 0 : max_order + 1)
+    self.update(:order => order) if self.order.blank?
+  end
+
+  many_to_many :maps,  :after_add => proc { |layer, parent| layer.set_default_order(parent) }
+  many_to_many :users, :after_add => proc { |layer, parent| layer.set_default_order(parent) }
+  
   plugin :association_dependencies, :maps => :nullify, :users => :nullify
 
   def public_values
@@ -16,18 +26,6 @@ class Layer < Sequel::Model
     super
 
     errors.add(:kind, "not accepted") unless ALLOWED_KINDS.include?(kind)
-  end
-
-  def after_save
-    super
-
-    #$layers_metadata.hset key, "style", (options[:style] rescue '')
-  end
-
-  def after_destroy
-    super
-
-    #$layers_metadata.del key
   end
 
   def key

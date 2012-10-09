@@ -272,19 +272,19 @@
         }
         .foot {
           border-top: 0;
+          padding-top: 0px;
 
           .cancel {
-            margin-top: 20px;
+            margin-top: 15px;
 
             a {
               text-decoration: underline;
             }
           }
-
         }
+
         .enabled {
           display: block;
         }
-
       }
     }

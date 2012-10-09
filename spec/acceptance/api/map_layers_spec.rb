@@ -21,7 +21,6 @@ feature "API 1.0 map layers management" do
     post_json v1_map_layers_url(:host => CartoDB.hostname.sub('http://', ''), :api_key => api_key, :map_id => @map.id), { 
       :kind => 'gmapsbase', 
       :infowindow => infowindow,
-      :order => 0,
       :options => opts } do |response|
       response.status.should be_success
       @map.layers.size.should == 1

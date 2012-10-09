@@ -22,5 +22,22 @@ describe Map do
       map.tables.should include(table)
     end
 
+    it "should correctly identify the base layer" do
+      map = Map.create(:user_id => @user.id)
+      base_layer = Layer.create(:kind => 'carto')
+      map.add_layer(base_layer)
+      5.times { map.add_layer(Layer.create(:kind => 'carto')) }
+      map.reload.base_layers.first.should == base_layer
+    end
+
+    it "should correctly identify the data layers" do
+      map = Map.create(:user_id => @user.id)
+      5.times { map.add_layer(Layer.create(:kind => 'tiled')) }
+      data_layer = Layer.create(:kind => 'carto')
+      map.add_layer(data_layer)
+
+      map.reload.data_layers.first.should == data_layer
+    end
+
   end
 end

@@ -30,6 +30,7 @@ class Api::Json::LayersController < Api::ApplicationController
 
     if @layer.save
       @parent.add_layer(@layer.id)
+      @layer.reload
       render_jsonp(@layer.public_values)
     else
       CartoDB::Logger.info "Error on layers#create", @layer.errors.full_messages

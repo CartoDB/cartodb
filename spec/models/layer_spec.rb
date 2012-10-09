@@ -8,6 +8,10 @@ describe Layer do
     @user     = create_user(:quota_in_bytes => @quota_in_bytes, :table_quota => @table_quota)
   end
 
+  before(:each) do
+    delete_user_data @user
+  end
+
   context "setups" do
 
     it "should be preloaded with the correct default values" do
@@ -51,6 +55,23 @@ describe Layer do
       layer.users.should include(@user)
     end
 
+    it "should set default order when adding layers to a map" do
+      map   = Map.create(:user_id => @user.id)
+      5.times do |i|
+        layer = Layer.create(:kind => 'carto')
+        map.add_layer(layer)
+        layer.reload.order.should == i
+      end
+    end
+
+    it "should set default order when adding layers to a user" do
+      puts "user layers #{@user.layers.inspect}"
+      5.times do |i|
+        layer = Layer.create(:kind => 'carto')
+        @user.add_layer(layer)
+        layer.reload.order.should == i
+      end
+    end
   end
 
   context "redis syncs" do

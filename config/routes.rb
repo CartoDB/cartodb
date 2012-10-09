@@ -83,6 +83,8 @@ CartoDB::Application.routes.draw do
         resources :layers, :only                                => [:show, :index, :create, :update, :destroy]
       end
 
+      get "/vizzs/:id/vizzjson"                                 => 'tables#vizzjson'
+
       # Tags
       resources :tags, :only                                    => [:index]
     end

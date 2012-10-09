@@ -2,11 +2,12 @@
 
 class Api::Json::TablesController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy, :set_infowindow, :duplicate, :set_map_metadata, :get_map_metadata
+  skip_before_filter :api_authorization_required, :only => [ :vizzjson ]  
 
-  before_filter :load_table, :except => [:index, :create]
+  before_filter :load_table, :except => [:index, :create, :vizzjson]
   before_filter :set_start_time
   after_filter  :record_query_threshold
-   before_filter :link_ghost_tables
+  before_filter :link_ghost_tables
 
   def index
     @tables = unless params[:tag_name].blank?
@@ -138,6 +139,11 @@ class Api::Json::TablesController < Api::ApplicationController
   #todo: replace with windshaft
   def get_map_metadata
     render_jsonp({:map_metadata => @table.map_metadata})
+  end
+
+  def vizzjson
+    @table = Table.find_by_subdomain(request.subdomain, params[:id])
+    render_jsonp(view_context.map_vizzjson(@table.map))
   end
 
   protected

@@ -58,7 +58,7 @@ class Api::Json::RecordsController < Api::ApplicationController
           end
         end
       end
-      head :ok
+      head :no_content
     else
       render_jsonp({ :errors => ["row identified with #{params[:id]} not found"] }, 404) and return
     end

@@ -7,7 +7,11 @@ class User < Sequel::Model
   one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
   one_to_many :assets
-  many_to_many :layers, :order => :order
+
+  many_to_many :layers, :order => :order, :after_add => proc { |user, layer|
+    layer.set_default_order(user)
+  }
+
   plugin :association_dependencies, :maps => :destroy, :layers => :nullify
 
   # Sequel setup & plugins

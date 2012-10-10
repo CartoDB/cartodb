@@ -181,13 +181,6 @@ if(typeof(L) != "undefined") {
    */
   cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
-    layerTypeMap: {
-      "tiled": cdb.geo.LeafLetTiledLayerView,
-      "cartodb": cdb.geo.LeafLetLayerCartoDBView,
-      "plain": cdb.geo.LeafLetPlainLayerView,
-      // for google maps create a plain layer
-      "gmapsbase": cdb.geo.LeafLetPlainLayerView
-    },
 
     initialize: function() {
 
@@ -210,10 +203,15 @@ if(typeof(L) != "undefined") {
         //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
       }
 
-      this.map_leaflet = new L.Map(this.el, mapConfig);
+      if(!this.options.map_object) {
+        this.map_leaflet = new L.Map(this.el, mapConfig);
 
-      // remove the "powered by leaflet" 
-      this.map_leaflet.attributionControl.setPrefix('');
+        // remove the "powered by leaflet" 
+        this.map_leaflet.attributionControl.setPrefix('');
+      } else {
+        this.map_leaflet = this.options.map_object;
+        this.setElement(this.map_leaflet.getContainer());
+      }
 
       // looks like leaflet dont like to change the bounds just after the inicialization
       var bounds = this.map.getViewBounds();
@@ -313,15 +311,12 @@ if(typeof(L) != "undefined") {
       delete this.geometries[geo.cid];
     },
 
+
     _addLayer: function(layer, layers, opts) {
       var lyr, layer_view;
 
-      var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
-
-      if (layerClass) {
-        layer_view = new layerClass(layer, this.map_leaflet);
-      } else {
-        cdb.log.error("MAP: " + layer.get('type') + " can't be created");
+      layer_view = cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
+      if(!layer_view) {
         return;
       }
 
@@ -329,7 +324,7 @@ if(typeof(L) != "undefined") {
 
       if (layer_view) {
         var isBaseLayer = this.layers.length === 1 || (opts && opts.index === 0);
-        this.map_leaflet.addLayer(layer_view.leafletLayer, isBaseLayer);
+        cdb.geo.LeafletMapView.addLayerToMap(layer_view, isBaseLayer, this.map_leaflet);
         this.trigger('newLayerView', layer_view, this);
       } else {
         cdb.log.error("layer type not supported");
@@ -380,6 +375,31 @@ if(typeof(L) != "undefined") {
       }, 1000), this);
     }
 
+  }, {
+
+    layerTypeMap: {
+      "tiled": cdb.geo.LeafLetTiledLayerView,
+      "cartodb": cdb.geo.LeafLetLayerCartoDBView,
+      "plain": cdb.geo.LeafLetPlainLayerView,
+      // for google maps create a plain layer
+      "gmapsbase": cdb.geo.LeafLetPlainLayerView
+    },
+
+    createLayer: function(layer, map) {
+      var layer_view = null;
+      var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
+
+      if (layerClass) {
+        layer_view = new layerClass(layer, map);
+      } else {
+        cdb.log.error("MAP: " + layer.get('type') + " can't be created");
+      }
+      return layer_view;
+    },
+
+    addLayerToMap: function(layer_view, isBaseLayer, map) {
+      map.addLayer(layer_view.leafletLayer, isBaseLayer);
+    }
   });
 
 } // defined leaflet

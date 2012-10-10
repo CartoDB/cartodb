@@ -34,7 +34,7 @@
         'core/view.js',
 
         'geo/geocoder.js',
-        'geo/geometries.js',
+        'geo/geometry.js',
         'geo/map.js',
         'geo/ui/zoom.js',
         'geo/ui/legend.js',
@@ -55,7 +55,10 @@
 
         'vis/vis.js',
         'vis/overlays.js',
-        'vis/layers.js'
+        'vis/layers.js',
+
+        // PUBLIC API
+        'api/layers.js'
     ];
 
     cdb.init = function(ready) {

@@ -135,15 +135,24 @@
         left:0;
         right:0; // Hack for nano scroller
         bottom:0;
-        padding:0 30px;
-        overflow:auto;
+        overflow:hidden;
 
-        &.nano {
+        span.scroll {
+          position:absolute;
           left:0;
-          right:0; // Hack for nano scroller
-          overflow-x: hidden!important;
+          right:5px;
+          width:100%;
+          height:10px;
+          background:transparent;
+          padding:0;
+          margin:0;
+          @include border-radius(0);
+
+          &.top {top:-10px; @include box-shadow(rgba(0,0,0,0.1) 0 5px 20px 0);}
+          &.bottom {@include box-shadow(rgba(0,0,0,0.12) 0 -5px 20px 0); bottom:-10px;}
         }
 
+        div.wrapper {position:absolute; top:0; left:0; bottom:0; right:0; padding:0 30px; overflow:auto;}
         div.content {left:30px; right:30px!important; overflow-x:visible;}
       }
 
@@ -264,7 +273,7 @@
         }
         .fields {
           li {
-            padding: 15px 0;
+            padding:13px 0;
             font-size: 15px;
             color: #CCCCCC;
             border-bottom:1px solid rgba(#999999,0.25);
@@ -273,6 +282,7 @@
             & > span {
               @include inline-block();
               vertical-align:middle;
+              max-width:50%;
               &:hover {cursor:all-scroll;}
             }
 

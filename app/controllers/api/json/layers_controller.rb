@@ -2,6 +2,7 @@
 
 class Api::Json::LayersController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
+  skip_before_filter :api_authorization_required, :only => [ :show ]  
 
   before_filter :load_parent
 
@@ -20,7 +21,7 @@ class Api::Json::LayersController < Api::ApplicationController
        render :text => "#{params[:callback]}( #{@layer.to_tilejson} )"
       end
       format.json do 
-        render_jsonp(@layer.public_values)
+        render_jsonp(view_context.layer_vizzjson(@layer, full: false))
       end
     end
   end

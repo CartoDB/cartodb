@@ -12,7 +12,10 @@ defaults: &defaults
   developers_host:    'http://developers.localhost.lan:3000'
   varnish_management:
     host: '127.0.0.1'
-    post: 6082
+    port: 6082
+    purge_command: 'url.purge'
+    retries: 5
+    timeout: 5
   redis:
     host: '127.0.0.1'
     port: 6379
@@ -20,6 +23,11 @@ defaults: &defaults
     username: "superadmin"
     password: "monkey"
   layer_opts:
+    public_opts: ["type", "active", "query", "opacity", "auto_bound", 
+                  "interactivity", "debug", "visible", "tiler_domain", 
+                  "tiler_port", "tiler_protocol", "sql_domain", "sql_port", 
+                  "sql_protocol", "extra_params", "cdn_url", "table_name", 
+                  "user_name"]
     data:
       kind: "carto"
       options:

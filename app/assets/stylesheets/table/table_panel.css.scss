@@ -375,62 +375,73 @@
 
         /* wizard */
         div.wizard {
-          padding:30px;
+          display:block;
+          overflow:hidden;
 
           ul.vis_options {
-
-            display:table;
-            width:100%;
+            display:block;
+            padding:0 30px;
             letter-spacing:-4px;
+            border-bottom:1px solid #E5E5E5;
+            @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
 
             li {
-              display:table-cell;
+              position:relative;
+              @include inline-block();
               padding:0 1px 0 0;
-
+              margin:0 4px 0 0;
+              word-space: 0;
               letter-spacing:0;
-
-              &:first-child {
-                a {@include border-left-radius(3px)}
-              }
-              &:last-child {
-                margin:0;
-                a {@include border-right-radius(3px)}
-              }
-
 
               a {
                 display:block;
-                width:100%;
-                padding:15px 0;
-                font-size:13px;
-                color:#397DBA;
-                background:#F2F2F2;
-                text-align:center;
-                text-transform:capitalize;
+                width:92px;
+                height:82px;
+                margin:30px 0;
+                padding:3px;
+                border:1px solid #CCCCCC;
+                @include border-radius(5px);
+                @include text-indent();
+
+                &.simple {background: image-url('layout/wizard-simple.png') no-repeat 3px 3px;}
+                &.choropleth {background: image-url('layout/wizard-choropleth.png') no-repeat 3px 3px;}
+                &.bubble {background: image-url('layout/wizard-bubble.png') no-repeat 3px 3px;}
+                &.density {background: image-url('layout/wizard-density.png') no-repeat 3px 3px;}
 
                 &:hover {
-                  color:white;
-                  background:#397DBA;
-                  text-decoration:none;
+                  border-color:#666666;
                 }
 
                 &.selected {
-                  color:white;
-                  background:#397DBA;
+                  border-color:#666666;
 
-                  &:hover {
-                    text-decoration:none;
-                    cursor:default;
-                    color:white;
-                    background:#397DBA;
+                  &:before, &:after {
+                    content: '';
+                    position:absolute;
+                    left:50%;
+                    margin-left:-13px;
+                    width:0;
+                    height:0;
+                    border-left:10px solid transparent;
+                    border-right:10px solid transparent;
+                    z-index:5;
+                  }
+
+                  &:before {
+                    bottom:-1px;
+                    border-bottom:10px solid white;
+                    z-index:10;
+                  }
+                  &:after {
+                    bottom:0;
+                    border-bottom:10px solid #CCCCCC;
                   }
                 }
 
                 &.disabled {
                   @include opacity(0.3);
                   &:hover {
-                    color:#397DBA;
-                    background:#F2F2F2;
+                    border:1px solid #CCCCCC;
                   }
                 }
               }
@@ -471,7 +482,7 @@
             }
 
             &.panel_content {
-              top:155px;
+              top:210px;
             }
           }
         }

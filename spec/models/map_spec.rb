@@ -39,5 +39,12 @@ describe Map do
       map.reload.data_layers.first.should == data_layer
     end
 
+    it "should invalidate its vizzjson from varnish after being modified" do
+      map = Map.create(:user_id => @user.id)
+      CartoDB::Varnish.any_instance.expects(:purge).returns(true)
+      map.center = "test"
+      map.save
+    end
+
   end
 end

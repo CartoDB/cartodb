@@ -143,7 +143,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def vizzjson
     @table = Table.find_by_subdomain(request.subdomain, params[:id])
-    render_jsonp(view_context.map_vizzjson(@table.map))
+    render_jsonp(view_context.map_vizzjson(@table.map, full: false))
   end
 
   protected

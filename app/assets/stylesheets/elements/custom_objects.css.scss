@@ -57,10 +57,10 @@
       }
     }
 
-    .ui-slider-vertical .ui-slider-handle {  }
-    .ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
-    .ui-slider-vertical .ui-slider-range-min { bottom: 0; }
-    .ui-slider-vertical .ui-slider-range-max { top: 0; }
+    .ui-slider-vertical .ui-slider-handle {}
+    .ui-slider-vertical .ui-slider-range {left: 0; width: 100%;}
+    .ui-slider-vertical .ui-slider-range-min {bottom: 0;}
+    .ui-slider-vertical .ui-slider-range-max {top: 0;}
   }
 
 
@@ -302,7 +302,7 @@
       font-size:13px;
       font-family: $text-fonts;
       color:#666666;
-      background-color: transparent;
+      background: none;
       border:none;
       &:focus {
         outline:none;
@@ -316,6 +316,7 @@
       width:14px;
       height:9px;
       border-left:1px solid #A8A8A8;
+      background:white;
       @include text-indent();
 
       &:before {
@@ -331,10 +332,12 @@
       &.plus {
         top:0;
         border-bottom:1px solid #A8A8A8;
+        @include border-top-right-radius(3px);
         &:before {top:3px; border-bottom:3px solid #666666;}
       }
       &.minus {
         bottom:0;
+        @include border-bottom-right-radius(3px);
         &:before {bottom:3px; border-top:3px solid #666666;}
       }
 
@@ -351,7 +354,7 @@
 
     // Opacity type
     &.opacity {
-      @include background(sprite($icons-sprites, alpha_bkg) repeat);
+      @include background(image-url("layout/alpha_bkg.png") repeat 0 0);
     }
   }
 

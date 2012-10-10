@@ -1,7 +1,6 @@
 //= require codemirror
 //= require simple-hint
 //= require select2.min
-//= require jquery.nanoscroller
 //= require jquery.faviconNotify
 //= require rgbcolor
 //= require jquery-ui.core.min
@@ -9,6 +8,8 @@
 //= require tag-it
 //= require spin.min
 //= require jquery.tipsy
+//= require jquery.mCustomScrollbar
+//= require jquery.mousewheel.min
 //= require ../../../lib/assets/javascripts/utils/postgres.codemirror
 //= require ../../../lib/assets/javascripts/utils/carto.codemirror
 //= require_tree ../../../lib/assets/javascripts/cartodb/models

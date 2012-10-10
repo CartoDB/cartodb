@@ -17,7 +17,7 @@ class Admin::ClientApplicationsController < ApplicationController
 
   def regenerate_api_key
     begin
-      CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{current_user.database_name}.*")
+      current_user.invalidate_varnish_cache
       current_user.set_map_key
       flash_message = "Your API key has been regenerated successfully"
     rescue Errno::ECONNREFUSED => e

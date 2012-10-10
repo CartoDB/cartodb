@@ -146,6 +146,11 @@ class Api::Json::TablesController < Api::ApplicationController
     render_jsonp(view_context.map_vizzjson(@table.map, full: false))
   end
 
+  def datalayerjson
+    @table = Table.find_by_subdomain(request.subdomain, params[:id])
+    render_jsonp(view_context.layer_vizzjson(@table.map.data_layers.first, full: false))
+  end
+
   protected
 
   def load_table

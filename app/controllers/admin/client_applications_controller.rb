@@ -16,7 +16,21 @@ class Admin::ClientApplicationsController < ApplicationController
   end
 
   def regenerate_api_key
-    current_user.set_map_key
+    begin
+      CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{current_user.database_name}.*")
+      current_user.set_map_key
+      flash_message = "Your API key has been regenerated successfully"
+    rescue Errno::ECONNREFUSED => e
+      CartoDB::Logger.info "Could not clear varnish cache", "#{e.inspect}"
+      if Rails.env.development?
+        current_user.set_map_key
+        flash_message = "Your API key has been regenerated succesfully but the varnish cache has not been invalidated."
+      else
+        raise e
+      end
+    rescue => e
+      raise e
+    end 
     redirect_to api_key_credentials_path, :flash => {:success => "Your API key has been regenerated successfully"}
   end
 

@@ -2,6 +2,7 @@
 
 class Api::Json::LayersController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
+  skip_before_filter :api_authorization_required, :only => [ :show ]  
 
   before_filter :load_parent
 

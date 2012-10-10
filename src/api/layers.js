@@ -4,6 +4,9 @@
 
 (function() {
 
+  function _Promise() {}
+  _.extend(_Promise.prototype,  Backbone.Events);
+
   /**
    * compose cartodb url
    */
@@ -20,19 +23,19 @@
     var url = null;
     if(layer.kind !== undefined && layer.options !== undefined) {
       // layer object contains the layer data
-      callback(layer);
+      _.defer(function() { callback(layer); });
       return;
     } else if(layer.table !== undefined && layer.user !== undefined) {
       // layer object points to cartodbjson
       url = cartodbUrl(layer);
-    } else if(layer.indexOf('http') === 0) {
+    } else if(layer.indexOf && layer.indexOf('http') === 0) {
       // fetch from url
       url = layer;
     }
     if(url) {
       $.getJSON(url + "?callback=?", callback);
     } else {
-      callback(null);
+      _.defer(function() { callback(null); });
     }
   }
 
@@ -47,13 +50,25 @@
 
   cartodb.loadLayer = function(map, layer, options, callback) {
 
+    var promise = new _Promise();
     var layerView, MapType;
+    if(map === undefined) {
+      throw new TypeError("map should be provided");
+    }
+    if(layer === undefined) {
+      throw new TypeError("layer should be provided");
+    }
     var args = arguments,
     fn = args[args.length -1];
     if(_.isFunction(fn)) {
       callback = fn;
     }
+    
     _getLayerJson(layer, function(layerData) {
+      if(!layerData) {
+        promise.trigger('error');
+        return;
+      }
 
       // check map type
       if(typeof(map) === "google.maps.Map") {
@@ -81,7 +96,10 @@
 
       layerView = viz.loadLayer(layerData);
       callback && callback(layerView);
+      promise.trigger('done', layerView);
     });
+
+    return promise;
 
   };
 

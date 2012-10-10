@@ -31,19 +31,41 @@ describe('api.layers', function() {
     });
 
     it("should create a layer in the map", function() {
-      cartodb.loadLayer(map, { kind: 'plain', options: {} });
-      expect(map.viz.mapView.map.layers.size()).toEqual(1);
+      runs(function() {
+        cartodb.loadLayer(map, { kind: 'plain', options: {} });
+      });
+      waits(10);
+      runs(function() {
+        expect(map.viz.mapView.map.layers.size()).toEqual(1);
+      });
+    });
+
+    it("should manage errors", function() {
+      var s = sinon.spy();
+      runs(function() {
+        cartodb.loadLayer(map, { options: {} }).on('error', s);
+      });
+      waits(10);
+      runs(function() {
+        expect(s.called).toEqual(true);
+      });
     });
 
     it("should call callback if the last argument is a function", function() {
       var layer;
       var s = sinon.spy();
-      cartodb.loadLayer(map, { kind: 'plain', options: {} }, s);
-      expect(s.called).toEqual(true);
       var s2 = sinon.spy();
-      cartodb.loadLayer(map, layer={ kind: 'plain', options: {} }, { rambo: 'thebest'} ,s2);
-      expect(layer.rambo).toEqual('thebest');
-      expect(s2.called).toEqual(true);
+      runs(function() {
+        cartodb.loadLayer(map, { kind: 'plain', options: {} }, s);
+        cartodb.loadLayer(map, layer={ kind: 'plain', options: {} }, { rambo: 'thebest'} ,s2);
+      });
+      waits(10);
+      runs(function() {
+        expect(s.called).toEqual(true);
+        expect(layer.rambo).toEqual('thebest');
+        expect(s2.called).toEqual(true);
+      });
+
     });
 
   });

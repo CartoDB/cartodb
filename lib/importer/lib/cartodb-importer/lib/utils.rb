@@ -78,22 +78,19 @@ module CartoDB
                 charset = nil
               end
             end
-            unless ['unknown-8bit','',nil,'binary'].include? charset  
-              tf = Tempfile.new(@path)                  
-              `iconv -f #{charset} -t UTF-8//IGNORE #{@path} > #{tf.path}`
-              `mv -f #{tf.path} #{@path}`                
-              tf.close!
-            else
-              lines = []
-              File.open(@path) do |f|             
-                1000.times do
-                  line = f.gets || break
-                  lines << line
-                end            
-              end
-              # detect encoding for sample
-              cd = CharDet.detect(lines.join)
-              # Only do non-UTF8 if we're quite sure. (May fail)        
+
+            lines = []
+            File.open(@path) do |f|             
+              1000.times do
+                line = f.gets || break
+                lines << line
+              end            
+            end
+            # detect encoding for sample
+            cd = CharDet.detect(lines.join)
+            #puts "Chardet detected #{cd.encoding} with #{cd.confidence} confidence"
+            # Only do non-UTF8 if we're quite sure. (May fail)        
+            unless cd.encoding.include? 'utf-8' or cd.encoding.include? 'ascii'
               if (cd.confidence > 0.6)             
                 tf = Tempfile.new(@path)                  
                 `iconv -f #{cd.encoding} -t UTF-8//IGNORE #{@path} > #{tf.path}`

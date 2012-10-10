@@ -562,6 +562,10 @@ class Table < Sequel::Model(:user_tables)
     @table_size ||= owner.in_database["SELECT pg_relation_size('#{self.name}') as size"].first[:size] / 2
   end
 
+  def varnish_key
+    "#{self.owner.database_name}:#{self.name}"
+  end
+
   # TODO: make predictable. Alphabetical would be better
   def schema(options = {})
     first_columns     = []

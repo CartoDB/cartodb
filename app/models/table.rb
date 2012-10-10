@@ -350,6 +350,7 @@ class Table < Sequel::Model(:user_tables)
     manage_tags
     update_name_changes
     manage_privacy
+    map.invalidate_varnish_cache
   end
 
   def after_create
@@ -415,9 +416,17 @@ class Table < Sequel::Model(:user_tables)
       user_database.run("DROP TABLE IF EXISTS #{self.name}")
     end
     remove_table_from_stats
+    invalidate_varnish_cache
   end
   ## End of Callbacks
 
+  def invalidate_varnish_cache
+    CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{varnish_key}.*")
+  end
+
+  def varnish_key
+    "#{self.owner.database_name}:#{self.name}"
+  end
 
   # adds the column if not exists or cast it to timestamp field
   def normalize_timestamp_field!(field, user_database)
@@ -560,10 +569,6 @@ class Table < Sequel::Model(:user_tables)
   # returns table size in bytes
   def table_size
     @table_size ||= owner.in_database["SELECT pg_relation_size('#{self.name}') as size"].first[:size] / 2
-  end
-
-  def varnish_key
-    "#{self.owner.database_name}:#{self.name}"
   end
 
   # TODO: make predictable. Alphabetical would be better

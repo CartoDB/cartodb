@@ -77,6 +77,15 @@ describe Layer do
         layer.reload.order.should == i
       end
     end
+
+    it "should invalidate its maps varnish cache when updating the layer" do
+      map = Map.create(:user_id => @user.id, :table_id => @table.id)
+      layer = Layer.create(:kind => 'carto')
+      map.add_layer(layer)
+
+      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{map.tables.first.varnish_key}:vizjson").returns(true)
+      layer.save      
+    end
   end
 
   context "redis syncs" do

@@ -19,6 +19,15 @@ cmds = [
   "echo // cartodb.js v" + package_.version + " >> dist/_cartodb.js",
   "echo // uncompressed version: cartodb.uncompressed.js >> dist/_cartodb.js",
 
+  // loader
+  //"echo // cartodb.js loader v" + package_.version + " > dist/loader.js",
+  "cat vendor/head.load.min.js >> dist/loader.js",
+  "cat src/loader.js >> dist/loader.js",
+
+  // copy vendor
+  "cp vendor/* dist/"
+
+
 ];
 
 for(var i = 0; i < files.length; ++i) {

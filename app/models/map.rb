@@ -29,6 +29,8 @@ class Map < Sequel::Model
   def after_save
     Table.filter(user_id: self.user_id, id: self.table_id).
       update(map_id: self.id)
+
+    self.invalidate_varnish_cache
   end
   
   def public_values
@@ -41,5 +43,9 @@ class Map < Sequel::Model
     errors.add(:user_id, "can't be blank") if user_id.blank?
     #errors.add(:user_id, "does not exist") if user_id.present? && User[user_id].nil?
     #errors.add(:table_id, "table #{table_id} doesn't belong to user #{user_id}") if user_id.present? && !User[user_id].tables.select(:id).map(&:id).include?(table_id)
+  end
+
+  def invalidate_varnish_cache
+    CartoDB::Varnish.new.purge("wadus")
   end
 end

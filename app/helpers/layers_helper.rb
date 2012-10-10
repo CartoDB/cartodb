@@ -7,7 +7,7 @@ module LayersHelper
   def layer_carto_vizzjson(layer, options)
     Hash[Layer::PUBLIC_ATTRIBUTES.map{ |key| 
       if key == "options" && !options[:full]
-        [:options, layer.options.select { |k,v| ![''].include?(k) }]
+        [:options, layer.options.select { |k,v| Cartodb.config[:layer_opts]["public_opts"].include?(k.to_s) }]
       elsif key == "infowindow"
         [:infowindow, (layer.infowindow.merge(:template => render(:file => layer.template_path)) rescue nil) ]
       else

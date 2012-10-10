@@ -21,7 +21,7 @@ class Api::Json::LayersController < Api::ApplicationController
        render :text => "#{params[:callback]}( #{@layer.to_tilejson} )"
       end
       format.json do 
-        render_jsonp(@layer.public_values)
+        render_jsonp(view_context.layer_vizzjson(@layer, full: false))
       end
     end
   end

@@ -4,7 +4,7 @@
    * - Green, grey and disabled
    */
 
-  @import "compass"; 
+  @import "compass";
   @import "common/vars";
   @import "common/sprites";
 
@@ -27,7 +27,7 @@
     @include background(linear-gradient(#94BE42,#7FA938));
     @include border-radius(3px);
     border:1px solid #6A8C2D;
-    letter-spacing:-1px;
+    letter-spacing:0;
     word-spacing:1px;
     @include transform-style("linear");
     @include transition-property("box-shadow,border");
@@ -69,7 +69,7 @@
     // Hover
     &:hover {
       background:#749C33; // IE
-      @include background(linear-gradient(#94BE42,#799E33)); 
+      @include background(linear-gradient(#94BE42,#799E33));
       text-decoration:none;
       cursor:pointer;
     }
@@ -131,7 +131,7 @@
     // Hover
     &:hover {
       background:#DEDEDE; // IE
-      @include background(linear-gradient(#F9F9F9,#E1E1E1)); 
+      @include background(linear-gradient(#F9F9F9,#E1E1E1));
       text-decoration:none;
       cursor:pointer;
     }
@@ -192,7 +192,7 @@
     // Hover
     &:hover {
       background:#3B7EBC; // IE
-      @include background(linear-gradient(#53A0DA,#3470A9)); 
+      @include background(linear-gradient(#53A0DA,#3470A9));
       text-decoration:none;
       cursor:pointer;
     }

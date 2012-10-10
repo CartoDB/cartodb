@@ -2,8 +2,17 @@ require "net/telnet"
 
 module CartoDB
   class Varnish
-    def purge(path)
-      ActiveSupport::Notifications.instrument('purge.varnish', path: path) do |payload|
+    def purge(what)
+      ActiveSupport::Notifications.instrument('purge.varnish', what: what) do |payload|
+        send_command("purge #{what}") do |result|
+          payload[:result] = result
+          result =~ /200/
+        end
+      end
+    end
+
+    def purge_url(path)
+      ActiveSupport::Notifications.instrument('purge_url.varnish', path: path) do |payload|
         send_command(Cartodb::config[:varnish_management]["purge_command"] + " " + path.gsub('\\', '\\\\\\')) do |result|
           payload[:result] = result
           result =~ /200/

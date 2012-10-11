@@ -336,6 +336,11 @@ div.header.yellow h1 a:hover {
     padding:0 0 7px;
   }
 
+  div.cartodb-popup p.empty, div.cartodb-popup h1.empty  {
+    font-style:italic!important;
+    color:#999999;
+  }
+
 
   /* EMBED CONTENT */
   div.header {

@@ -38,7 +38,7 @@ describe("core.sql", function() {
     expect(hasCrashed).toBeTruthy();
   });
 
-  it("should de able to send the info to server and fetch", function() {
+  xit("should de able to send the info to server and fetch", function() {
     this.sqlApi.fetch();
     this.server.respond();
     expect(this.server.request).toEqual(1);

@@ -10,6 +10,9 @@ describe Layer do
 
   before(:each) do
     delete_user_data @user
+    @table = Table.new
+    @table.user_id = @user.id
+    @table.save
   end
 
   context "setups" do
@@ -35,9 +38,12 @@ describe Layer do
     end
 
     it "should allow to be linked to many maps" do
+      table2 = Table.new
+      table2.user_id = @user.id
+      table2.save
       layer = Layer.create(:kind => 'carto')
-      map   = Map.create(:user_id => @user.id)
-      map2  = Map.create(:user_id => @user.id)
+      map   = Map.create(:user_id => @user.id, :table_id => @table.id)
+      map2  = Map.create(:user_id => @user.id, :table_id => table2.id)
 
       map.add_layer(layer)
       map2.add_layer(layer)
@@ -56,7 +62,7 @@ describe Layer do
     end
 
     it "should set default order when adding layers to a map" do
-      map   = Map.create(:user_id => @user.id)
+      map = Map.create(:user_id => @user.id, :table_id => @table.id)
       5.times do |i|
         layer = Layer.create(:kind => 'carto')
         map.add_layer(layer)
@@ -65,12 +71,20 @@ describe Layer do
     end
 
     it "should set default order when adding layers to a user" do
-      puts "user layers #{@user.layers.inspect}"
       5.times do |i|
         layer = Layer.create(:kind => 'carto')
         @user.add_layer(layer)
         layer.reload.order.should == i
       end
+    end
+
+    it "should invalidate its maps varnish cache when updating the layer" do
+      map = Map.create(:user_id => @user.id, :table_id => @table.id)
+      layer = Layer.create(:kind => 'carto')
+      map.add_layer(layer)
+
+      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{map.tables.first.varnish_key}:vizjson").returns(true)
+      layer.save      
     end
   end
 

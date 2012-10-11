@@ -11,6 +11,7 @@ defaults: &defaults
   sql_api_port:       8080
   developers_host:    'http://developers.localhost.lan:3000'
   varnish_management:
+    critical: true
     host: '127.0.0.1'
     port: 6082
     purge_command: 'url.purge'
@@ -64,9 +65,23 @@ defaults: &defaults
         base_type: "roadmap"
         style: ""
   cartodb_com_hosted: true
+  aws:
+    s3:
+      access_key_id: "test"
+      secret_access_key: "test"
+  assets:
+    s3_bucket_name: "tests"
+    max_file_size: 10485760 # 10.megabytes
 
 development:
   <<: *defaults
+  varnish_management:
+    critical: false
+    host: '127.0.0.1'
+    port: 6082
+    purge_command: 'url.purge'
+    retries: 5
+    timeout: 5
 
 test:
   <<: *defaults

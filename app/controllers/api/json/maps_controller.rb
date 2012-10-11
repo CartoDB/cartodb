@@ -35,7 +35,7 @@ class Api::Json::MapsController < Api::ApplicationController
 
   def destroy
     @map.destroy
-    head :ok
+    head :no_content
   end
 
   protected

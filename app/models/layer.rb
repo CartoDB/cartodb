@@ -28,6 +28,12 @@ class Layer < Sequel::Model
     errors.add(:kind, "not accepted") unless ALLOWED_KINDS.include?(kind)
   end
 
+  def after_save
+    super
+
+    maps.each { |map| map.invalidate_varnish_cache }
+  end
+
   def key
     "rails:layer_styles:#{self.id}"
   end

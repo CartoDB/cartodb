@@ -6,7 +6,6 @@
 **/
 
 //= require cdb/vendor/leaflet
-//= require cdb/vendor/cartodb-leaflet
 //= require cdb/vendor/wax.leaf
 //= require cdb/vendor/wax.g
 //= require cdb/src/cartodb
@@ -21,6 +20,7 @@
 //= require cdb/src/geo/geocoder
 //= require cdb/src/geo/geometry
 //= require cdb/src/geo/map
+//= require cdb/src/geo/cartodb-leaflet
 //= require cdb/src/geo/leaflet.geometry
 //= require cdb/src/geo/leaflet
 //= require cdb/src/geo/gmaps_cartodb_layer

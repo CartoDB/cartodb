@@ -270,6 +270,7 @@ cdb.geo.Map = cdb.core.Model.extend({
   // remove current base layer and set the specified
   // current base layer is removed
   setBaseLayer: function(layer, opts) {
+    opts = opts || {};
     var self = this;
     var old = this.layers.at(0);
     old.destroy({

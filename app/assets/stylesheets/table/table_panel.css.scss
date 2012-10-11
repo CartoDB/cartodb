@@ -61,9 +61,9 @@
           z-index:0;
           @include opacity(0.75);
 
-          &.sql_mod {@include icons-sprite(table_icons, $offset-x:25px, $offset-y:-0px);}
-          &.carto_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-372px);}
-          &.infowindow_mod {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-431px);}
+          &.sql_mod        { @include icons-sprite(table_icons, $offset-x:22px, $offset-y:0);}
+          &.carto_mod      { @include icons-sprite(table_icons, $offset-x:22px, $offset-y:-372px);}
+          &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:22px, $offset-y:-431px);}
 
           // tool buttons
           &.add_row {@include icons-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}

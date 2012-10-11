@@ -269,12 +269,18 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   // remove current base layer and set the specified
   // current base layer is removed
-  setBaseLayer: function(layer) {
+  setBaseLayer: function(layer, opts) {
+    opts = opts || {};
+    var self = this;
     var old = this.layers.at(0);
-    old.destroy();
-    //this.layers.remove(old);
-    this.layers.add(layer, { at: 0 });
-    this._adjustZoomtoLayer(layer);
+    old.destroy({
+      success: function() {
+        self.layers.add(layer, { at: 0 });
+        self._adjustZoomtoLayer(layer);
+        opts.success && opts.success();
+      },
+      error: opts.error
+    });
     return layer;
   },
 

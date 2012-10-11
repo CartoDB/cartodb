@@ -283,6 +283,7 @@
               @include inline-block();
               vertical-align:middle;
               max-width:50%;
+              line-height:16px;
               &:hover {cursor:all-scroll;}
             }
 

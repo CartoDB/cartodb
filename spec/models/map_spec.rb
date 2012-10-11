@@ -43,11 +43,32 @@ describe Map do
       map.reload.data_layers.first.should == data_layer
     end
 
-    it "should invalidate its vizzjson from varnish after being modified" do
+    it "should remove its vizzjson from varnish after being modified" do
       map = Map.create(:user_id => @user.id, :table_id => @table.id)
-      CartoDB::Varnish.any_instance.expects(:purge).returns(true)
-      map.center = "test"
+      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}:vizjson").returns(true)
       map.save
+    end
+
+    context "when more than one table is involved" do
+      before do
+        @map = Map.create(:user_id => @user.id, :table_id => @table.id)
+        @table2 = Table.new
+        @table2.user_id = @user.id
+        @table2.save
+
+        @layer = Layer.create(:kind => 'carto', :options => { "query" => "select cartodb_id from #{@table.name} where cartodb_id in (select cartodb_id from #{@table2.name})" })
+        @layer.add_map(@map)
+      end
+
+      it "should correctly identify affected tables" do
+        @map.affected_tables.map(&:name).should == [@table.name, @table2.name]
+      end
+
+      it "should remove all the affected tables from varnish after being modified" do
+        # Three purge calls: one for vizzjson and two for the affected tables
+        CartoDB::Varnish.any_instance.expects(:purge).times(3).returns(true)
+        @map.save
+      end
     end
 
   end

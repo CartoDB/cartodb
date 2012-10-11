@@ -52,4 +52,5 @@ cdb.geo.ui.Zoom = cdb.core.View.extend({
     ev.preventDefault();
     ev.stopPropagation();
   }
+
 });

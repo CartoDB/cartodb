@@ -4,7 +4,12 @@
     {{^index}}
       <div class="cartodb-popup-header">
         {{#title}}<h4>{{title}}</h4>{{/title}}
-        <h1>{{value}}</h1>
+        {{#value}}
+          <h1>{{ value }}</h1>
+        {{/value}}
+        {{^value}}
+          <h1 class="empty">null</h1>
+        {{/value}}
         <span class="separator"></span>
       </div>
     {{/index}}
@@ -14,7 +19,12 @@
       {{#content.fields}}
         {{#index}}
           {{#title}}<h4>{{title}}</h4>{{/title}}
-          <p>{{value}}</p>
+          {{#value}}
+            <p>{{ value }}</p>
+          {{/value}}
+          {{^value}}
+            <p class="empty">null</p>
+          {{/value}}
         {{/index}}
       {{/content.fields}}
     </div>

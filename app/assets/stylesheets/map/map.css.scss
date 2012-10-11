@@ -55,6 +55,8 @@
           letter-spacing:0;
           overflow:hidden;
 
+
+
           a {
             position:relative;
             @include inline-block();
@@ -129,6 +131,8 @@
                 border-top:3px solid white;
               }
             }
+
+
 
 
             &:before {
@@ -231,6 +235,12 @@
                 }
               }
             } // a.add
+          } // a
+
+          &.selected a{
+            border: 5px solid rgba(#666,0.5);
+            width: 34px;
+            height: 34px;
           }
         }
       }
@@ -269,6 +279,7 @@
 
         .content {
           color: #666;
+          line-height:120%;
         }
         .foot {
           border-top: 0;

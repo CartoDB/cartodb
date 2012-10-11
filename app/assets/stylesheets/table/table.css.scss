@@ -168,6 +168,10 @@
                     text-decoration:uppercase;
                   }
                 }
+                
+                // Default and then replace it
+                @include default-input();
+
                 input {
                   @include border-radius(3px);
                   margin:0;
@@ -178,9 +182,7 @@
                   color:#333333;
                   font:bold 13px $text-fonts;
                 }
-
-                // Default and then replace it
-                @include default-input();
+                
               }
 
               p {

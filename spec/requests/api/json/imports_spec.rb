@@ -142,6 +142,36 @@ describe "Imports API" do
     @table.reload.rows_counted.should be == 4
   end
 
+  it 'allows users to create a table from an sql query' do
+    f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
+    post v1_imports_url(:host       => 'test.localhost.lan',
+                        :filename   => 'column_number_to_boolean.csv',
+                        :api_key    => @user.get_map_key,
+                        :table_name => "wadus"), f.read.force_encoding('UTF-8')
+
+
+    @table_from_import = Table.all.last
+
+    post v1_imports_url(:host       => 'test.localhost.lan',
+                        :api_key    => @user.get_map_key,
+                        :table_name => 'wadus',
+                        :sql        => "SELECT * FROM #{@table_from_import.name}")
+
+
+    response.code.should be == '200'
+
+    response_json = JSON.parse(response.body)
+    response_json.should_not be_nil
+    response_json['item_queue_id'].should_not be_empty
+
+    last_import = DataImport.order(:updated_at.desc).first
+    last_import.queue_id.should be == response_json['item_queue_id']
+    last_import.state.should be == 'complete'
+
+    @table_from_sql = Table.all.last
+    @table_from_sql.rows_counted.should be == @table_from_import.rows_counted
+  end
+
   it 'allows users to get a list of pending imports'
   it 'allows users to get a list of failed imports'
   it 'allows users to get a list of succeeded imports'

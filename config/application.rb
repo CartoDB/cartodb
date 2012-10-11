@@ -49,7 +49,7 @@ module CartoDB
     config.assets.enabled = true
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
-    config.assets.precompile = %w( *.js *.css *.jpg *.ico *.gif *.png *.eot *.otf *.svg *.woff *.ttf )
+    config.assets.precompile = %w( *.js *.css *.jpg *.ico *.gif *.png *.eot *.otf *.svg *.woff *.ttf *.swf)
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'

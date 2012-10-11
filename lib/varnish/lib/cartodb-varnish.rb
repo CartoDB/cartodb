@@ -37,7 +37,9 @@ module CartoDB
         if retries < conf["retries"]
           retry
         else
-          raise "Varnish error while trying to connect to #{conf[:host]}:#{conf[:port]} #{e}"
+          if Cartodb::config[:varnish_management]["critical"] == true
+            raise "Varnish error while trying to connect to #{conf[:host]}:#{conf[:port]} #{e}"
+          end
         end
       end
       response

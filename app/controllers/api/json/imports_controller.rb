@@ -20,12 +20,13 @@ class Api::Json::ImportsController < Api::ApplicationController
     table_name = params[:table_name].presence
     table_id   = params[:table_id].presence
     append     = params[:append].presence == 'true'
+    from_query = params[:sql].presence
 
     if synchronous_import?
       #@data_import = Resque::ImporterJobs.process(current_user[:id], params[:table_name], file_uri)
       #render :json => {:item_queue_id => job_meta.meta_id, :success => true}
     else
-      job = Resque::ImporterJobs.enqueue(current_user[:id], table_name, file_uri, table_id, append)
+      job = Resque::ImporterJobs.enqueue(current_user[:id], table_name, file_uri, table_id, append, nil, nil, from_query)
       render_jsonp({:item_queue_id => job.meta_id, :success => true})
     end
   #rescue => e
@@ -48,6 +49,8 @@ class Api::Json::ImportsController < Api::ApplicationController
     when params[:file].present?
       filename = params[:file].original_filename rescue params[:file].to_s
       filedata = params[:file].read.force_encoding('utf-8')
+    else
+      return
     end
 
     random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)

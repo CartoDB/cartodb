@@ -7,6 +7,7 @@ class Map < Sequel::Model
   many_to_many :base_layers, :clone => :layers, :right_key => :layer_id
 
   one_to_many :tables
+  many_to_one :user
 
   plugin :association_dependencies, :layers => :nullify
   self.raise_on_save_failure = false
@@ -31,8 +32,9 @@ class Map < Sequel::Model
       update(map_id: self.id) unless self.table_id.blank?
 
     self.invalidate_varnish_cache
+    self.affected_tables.map &:invalidate_varnish_cache
   end
-  
+
   def public_values
     Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
   end
@@ -49,5 +51,19 @@ class Map < Sequel::Model
   def invalidate_varnish_cache
     t = self.tables_dataset.select(:id, :user_id, :name).first
     CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{t.varnish_key}:vizjson")
+  end
+
+  ##
+  # Returns an array of tables used on the map
+  #
+  def affected_tables
+    queries = layers.map { |l| l.options['query'].blank? ? nil : l.options['query'] }.compact
+    queries.map { |q|
+      begin
+        xml = user.in_database.fetch("EXPLAIN (FORMAT XML) #{q}").first[:"QUERY PLAN"]
+        Nokogiri::XML(xml).search("Relation-Name").map(&:text).map { |table_name| Table.find_by_identifier(user.id, table_name) }
+      rescue Sequel::DatabaseError
+      end
+    }.flatten.compact.uniq
   end
 end

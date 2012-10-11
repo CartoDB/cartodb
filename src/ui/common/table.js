@@ -325,8 +325,6 @@ cdb.ui.common.Table = cdb.core.View.extend({
       this.dataModel.each(function(row) {
         self.addRow(row);
       });
-    } else {
-      this.addEmptyTableInfo();
     }
 
   },

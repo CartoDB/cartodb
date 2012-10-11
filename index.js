@@ -16,6 +16,7 @@
 //= require cdb/src/core/template
 //= require cdb/src/core/model
 //= require cdb/src/core/view
+//= require cdb/src/core/sql
 //= require cdb/src/geo/geocoder
 //= require cdb/src/geo/geometry
 //= require cdb/src/geo/map

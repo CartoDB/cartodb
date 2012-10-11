@@ -81,15 +81,19 @@
     },
 
     /**
-    * Listen for an event on another object and triggers on itself
+    * Listen for an event on another object and triggers on itself, with the same name or a new one
     * @method retrigger
-    * @param ev {String}
-    * @param obj {Object}
+    * @param ev {String} event who triggers the action
+    * @param obj {Object} object where the event happens
+    * @param obj {Object} [optional] name of the retriggered event;
     */
-    retrigger: function(ev, obj) {
+    retrigger: function(ev, obj, retrigEvent) {
+      if(!retrigEvent) {
+        retrigEvent = ev;
+      }
       var self = this;
       obj.bind && obj.bind(ev, function() {
-        self.trigger(ev);
+        self.trigger(retrigEvent);
       })
     },
     /**

@@ -32,6 +32,7 @@
         'core/template.js',
         'core/model.js',
         'core/view.js',
+        'core/sql.js',
 
         'geo/geocoder.js',
         'geo/geometry.js',

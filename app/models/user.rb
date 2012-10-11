@@ -72,7 +72,12 @@ class User < Sequel::Model
         conn.run("DROP USER #{database_username}")
     end.join
 
-    # Invalidate cache from Varnish
+    # Invalidate user cache
+    self.invalidate_varnish_cache
+  end
+
+  def invalidate_varnish_cache
+    CartoDB::Varnish.new.purge("obj.http.X-Cache-Channel ~ #{database_name}.*")
   end
 
   ## Authentication

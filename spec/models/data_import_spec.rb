@@ -35,12 +35,13 @@ describe DataImport do
       :data_source   => '/../db/fake_data/clubbing.csv',
       :updated_at    => Time.now )
 
-
     data_import = DataImport.create(
       :user_id       => @user.id,
       :table_name    => 'from_query',
       :updated_at    => Time.now,
       :from_query    => "SELECT * FROM #{data_import.table_name} LIMIT 5" )
+    data_import.state.should be == 'complete'
+
     duplicated_table = Table[data_import.table_id]
     duplicated_table.should_not be_nil
     duplicated_table.name.should be == 'from_query'

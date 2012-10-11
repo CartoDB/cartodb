@@ -55,7 +55,7 @@ class Api::Json::LayersController < Api::ApplicationController
 
   def destroy
     Layer[params[:id]].destroy
-    head :ok
+    head :no_content
   end
 
 

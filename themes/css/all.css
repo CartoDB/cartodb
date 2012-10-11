@@ -542,3 +542,33 @@ div.header.yellow h1 a:hover {
     cursor:pointer;
   }
 
+
+  /* FOOTER EDIT BUTTONS */
+
+  div.cartodb-edit-buttons {
+    border-top:1px solid rgba(204,204,204,0.5);
+    display:block;
+    width:188px;
+    padding:11px 0 6px;
+    margin-top:10px;
+  }
+
+  div.cartodb-edit-buttons a.button.grey.small {
+    margin-left: 5px;
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+
+  div.cartodb-edit-buttons .button:first-child {
+    margin-left:0;
+  }
+
+  div.cartodb-edit-buttons .cartodb_id {
+    display:inline-block;
+    *display:inline;
+    vertical-align:top;
+    zoom:1;
+    color: #999;
+    font-size: 13px;
+    margin-top:8px;
+  }

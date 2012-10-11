@@ -268,29 +268,3 @@
   div.search_box input.submit:hover {
     cursor:pointer;
   }
-
-  .infoWindowButtoner {
-    text-align: right;
-    display: inline-block;
-    width: 95%;
-    margin: 15px 5% 0 0;
-  }
-
-
-  .infoWindowButtoner a.button.grey.small {
-    margin-left: 5px;
-    font-size: 13px;
-    padding: 6px 8px;
-  }
-
-  .infoWindowButtoner .button:first-child {
-    margin-left:0;
-  }
-
-
-  .infoWindowButtoner  .cartodb_id {
-    float:left;
-    color: #999;
-    font-size: 13px;
-    padding: 10px 0;
-  }

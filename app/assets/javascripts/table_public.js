@@ -1,7 +1,6 @@
 //= require codemirror
 //= require simple-hint
 //= require select2.min
-//= require jquery.nanoscroller
 //= require rgbcolor
 //= require jquery-ui.slider
 //= require ZeroClipboard

@@ -229,15 +229,20 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
 
     cdb.geo.MapView.prototype.initialize.call(this);
     var center = this.map.get('center');
-    this.map_googlemaps = new google.maps.Map(this.el, {
-      center: new google.maps.LatLng(center[0], center[1]),
-      zoom: this.map.get('zoom'),
-      minZoom: this.map.get('minZoom'),
-      maxZoom: this.map.get('maxZoom'),
-      disableDefaultUI: true,
-      mapTypeControl:false,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
+    if(!this.options.map_object) {
+      this.map_googlemaps = new google.maps.Map(this.el, {
+        center: new google.maps.LatLng(center[0], center[1]),
+        zoom: this.map.get('zoom'),
+        minZoom: this.map.get('minZoom'),
+        maxZoom: this.map.get('maxZoom'),
+        disableDefaultUI: true,
+        mapTypeControl:false,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      });
+    } else {
+      this.map_googlemaps = this.options.map_object;
+      this.setElement(this.map_googlemaps.getDiv());
+    }
 
 
     this._bindModel();
@@ -292,6 +297,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   },
 
   _addLayer: function(layer, layers, opts) {
+    opts = opts || {};
     var self = this;
     var lyr, layer_view;
 
@@ -309,7 +315,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
       var idx = _.keys(this.layers).length  - 1;
       var isBaseLayer = idx === 0 || (opts && opts.index === 0);
       // set base layer
-      if(isBaseLayer) {
+      if(isBaseLayer && !opts.no_base_layer) {
         var m = layer_view.model;
         if(m.get('type') == 'GMapsBase') {
           layer_view._update();
@@ -319,6 +325,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         }
       } else {
         idx -= 1;
+        idx = Math.max(0, idx); // avoid -1
         self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
       }
       layer_view.index = idx;

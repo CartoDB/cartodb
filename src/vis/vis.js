@@ -123,11 +123,11 @@ var Vis = cdb.core.View.extend({
     }
   },
 
-  loadLayer: function(layerData) {
+  loadLayer: function(layerData, opts) {
     var map = this.map;
     var mapView = this.mapView;
     layerData.type = layerData.kind;
-    var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData));
+    var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
     // add the associated overlays
     if(layerData.infowindow) {
@@ -144,7 +144,7 @@ var Vis = cdb.core.View.extend({
           var layer = map.layers.getByCid(this.cid);
           // infoWindow only shows if the layer is active
           if(layer.get('active')) {
-            var render_fields= [];
+            var render_fields = [];
             var fields = layer.get('infowindow').fields;
             for(var j = 0; j < fields.length; ++j) {
               var f = fields[j];

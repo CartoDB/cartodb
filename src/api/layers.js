@@ -15,7 +15,7 @@
     var protocol = opts.protocol || 'https';
     return protocol + '://' + opts.user + '.' + host + '/api/v1/viz/' + opts.table + '/layer.json';
   }
-  
+
   /**
    * given layer params fetchs the layer json
    */
@@ -71,7 +71,9 @@
       }
 
       // check map type
-      if(typeof(map) === "google.maps.Map") {
+      // TODO: improve checking
+      if(typeof(map.overlayMapTypes) !== "undefined") {
+        MapType = cdb.geo.GoogleMapsMapView;
       } else if(map._mapPane.className === "leaflet-map-pane") {
         MapType = cdb.geo.LeafletMapView;
       }
@@ -94,7 +96,7 @@
         });
       }
 
-      layerView = viz.loadLayer(layerData);
+      layerView = viz.loadLayer(layerData, { no_base_layer: true });
       callback && callback(layerView);
       promise.trigger('done', layerView);
     });

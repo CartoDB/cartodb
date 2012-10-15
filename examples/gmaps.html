@@ -29,8 +29,6 @@
         cartodb.loadLayer(map, {
           user: 'development',
           table: 'clubbing',
-          host: 'localhost.lan:3000',
-          protocol: 'http'
         }).on('done', function(layer) {
           layer.on('featureOver', function(e, pos, latlng, data) {
             console.log(e, pos, latlng, data);

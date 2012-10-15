@@ -70,7 +70,7 @@
       a.form_switch {
         float: right;
       }
-    } 
+    }
   } // ul.switches
 
   ul.format_selector {
@@ -80,4 +80,10 @@
     }
   } // ul.format_selector
 
+  .description {
+    margin: 0 0 40px;
+    color: #666;
+    font-size:15px;
+    line-height: 1.2em;
+  }
 }

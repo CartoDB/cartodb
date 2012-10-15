@@ -37,7 +37,7 @@
       @include background(linear-gradient(rgba(#F2F2F2,0.01), rgba(#F2F2F2,0.2) 15%));
       z-index:50;
 
-      a {float:left;}
+      a {float:left; @include box-shadow(rgba(255, 255, 255, 0.6) -10px 0 10px 5px) ;}
     }
 
     div.base_maps {

@@ -167,7 +167,7 @@
 
         &.disabled {
           background:white;
-          a {opacity:0.4; color:$link-color; text-decoration:none}
+          a {@include opacity(0.4); color:$link-color; text-decoration:none}
         }
       }
 

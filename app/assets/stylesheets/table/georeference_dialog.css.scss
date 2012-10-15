@@ -1,4 +1,8 @@
 
+  /**
+   * Georeference dialog
+   */
+
 @import "compass";
 @import "../common/vars";
 @import "../common/forms";
@@ -37,16 +41,26 @@
   }
 
   .column_selector {
-    display: inline-block;
-    background-color: rgb(242, 242, 242);
-    margin-top: 20px;
-    width: 223px;
+    @include inline-block();
+    background: #F2F2F2;
+    margin:20px 10px 0 0;
+    width: 207px;
     padding: 11px;
     @include border-radius(3px);
-    span {
+
+    &:last-child {margin-right:0;}
+    
+    & > span {
+      @include inline-block();
+      vertical-align: middle;
       font: 15px;
       color: #CCCCCC;
-      margin-right: 20px;
+      margin-right: 15px;
+    }
+
+    div.form_combo {
+      @include inline-block();
+      vertical-align: middle;
     }
   }
 

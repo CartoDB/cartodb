@@ -128,7 +128,6 @@ GEM
     multi_xml (0.5.1)
     multipart-post (1.1.5)
     mustache (0.99.4)
-    newrelic_rpm (3.4.1)
     nokogiri (1.5.3)
     oauth (0.4.5)
     oauth-plugin (0.4.0.pre4)
@@ -302,7 +301,6 @@ DEPENDENCIES
   minitest (= 2.0.2)
   mocha (= 0.10.5)
   mustache-trimmer!
-  newrelic_rpm (~> 3.4.1)
   nokogiri (= 1.5.3)
   oauth (= 0.4.5)
   oauth-plugin (= 0.4.0.pre4)

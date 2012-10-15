@@ -15,6 +15,8 @@ class DataImport < Sequel::Model
     #after_transition  :uploading => :preparing, :preparing => :importing, :importing => :cleaning do
     #end
     after_transition any => :complete do
+      table = Table[table_id]
+      table.map.recalculate_bounds!
       self.success = true
       self.logger << "SUCCESS!\n"
       self.save

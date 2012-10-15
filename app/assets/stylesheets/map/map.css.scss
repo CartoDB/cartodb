@@ -158,6 +158,10 @@
               }
             }
 
+            &.gmaps_gray_roadmap {
+              @include icons-sprite(gmaps_gray_roadmap);
+            }
+
             &.gmaps_roadmap {
               @include icons-sprite(gmaps_roadmap);
             }

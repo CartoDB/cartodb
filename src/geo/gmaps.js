@@ -3,6 +3,7 @@
 if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
 var DEFAULT_MAP_STYLE = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
+
 /**
 * base layer for all leaflet layers
 */
@@ -43,23 +44,24 @@ _.extend(GMapsLayerView.prototype, {
 
 
 // gmaps base view, dummy
-var GMapsBaseLayerView = function(layerModel, gmapsMap) { 
+var GMapsBaseLayerView = function(layerModel, gmapsMap) {
   GMapsLayerView.call(this, layerModel, null, gmapsMap);
 };
 _.extend(GMapsBaseLayerView.prototype, GMapsLayerView.prototype, {
   _update: function() {
     var m = this.model;
     var types = {
-      "roadmap": google.maps.MapTypeId.ROADMAP,
-      "satellite": google.maps.MapTypeId.SATELLITE,
-      "terrain": google.maps.MapTypeId.TERRAIN
+      "roadmap":      google.maps.MapTypeId.ROADMAP,
+      "gray_roadmap": google.maps.MapTypeId.ROADMAP,
+      "satellite":    google.maps.MapTypeId.SATELLITE,
+      "terrain":      google.maps.MapTypeId.TERRAIN
     };
 
     this.gmapsMap.setOptions({
       mapTypeId: types[m.get('base_type')]
     });
 
-    this.gmapsMap.setOptions({ 
+    this.gmapsMap.setOptions({
       styles: m.get('style') || DEFAULT_MAP_STYLE
     });
   },
@@ -272,7 +274,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.map.layers.bind('reset', this._addLayers, this);
 
     this.projector = new cdb.geo.CartoDBLayerGMaps.Projector(this.map_googlemaps);
-    
+
     this.projector.draw = this._ready;
 
   },

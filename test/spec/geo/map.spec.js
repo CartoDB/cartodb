@@ -1,7 +1,6 @@
 
 describe("geo.map", function() {
 
-
   describe('TileLayer', function() {
     it("should be type tiled", function() {
       var layer = new cdb.geo.TileLayer();
@@ -27,7 +26,25 @@ describe("geo.map", function() {
       layers.add(layer);
       var copy = layers.clone();
       expect(copy.size()).toEqual(layers.size());
-      expect(copy.models[0].attributes).toEqual(layers.models[0].attributes);
+      var a = _.clone(layers.models[0].attributes);
+      a.id = null;
+      expect(copy.models[0].attributes).toEqual(a);
+      expect(copy.get('id')).toEqual(undefined);
+    });
+
+    it("should assign order each time is added", function() {
+      var layer = new cdb.geo.CartoDBLayer();
+      layers.add(layer);
+      expect(layer.get('order')).toEqual(0);
+      var layer2 = new cdb.geo.CartoDBLayer();
+      layers.add(layer2);
+      expect(layer2.get('order')).toEqual(1);
+      layer.destroy();
+      expect(layer2.get('order')).toEqual(0);
+      layers.add(new cdb.geo.CartoDBLayer(),{at: 0});
+      expect(layer2.get('order')).toEqual(1);
+
+
     });
 
   });
@@ -53,13 +70,68 @@ describe("geo.map", function() {
       var layer    = new cdb.geo.CartoDBLayer({});
       map.addLayer(layer);
       var base = new cdb.geo.CartoDBLayer({});
+
+      sinon.stub(old, "destroy").yieldsTo("success");
       var r = map.setBaseLayer(base);
-      expect(r).toEqual(old);
+      expect(r).toEqual(base);
       expect(map.layers.at(0)).toEqual(base);
+    });
+
+    it("should change bounds according to base layer", function() {
+      var layer = new cdb.geo.CartoDBLayer({
+        maxZoom: 8,
+        minZoom: 7
+      });
+      map.addLayer(layer);
+      sinon.stub(layer, "destroy").yieldsTo("success");
+      expect(map.get('maxZoom')).toEqual(8);
+      expect(map.get('minZoom')).toEqual(7);
+      var layerbase = new cdb.geo.CartoDBLayer({
+        maxZoom: 10,
+        minZoom: 9
+      });
+      map.setBaseLayer(layerbase);
+      expect(map.get('maxZoom')).toEqual(10);
+      expect(map.get('minZoom')).toEqual(9);
+
+
+
     });
 
   });
 
+  describe('MapView', function() {
+    beforeEach(function() {
+      this.container = $('<div>').css('height', '200px');
+
+      this.map = new cdb.geo.Map();
+      this.mapView = new cdb.geo.MapView({
+        el: this.container,
+        map: this.map
+      });
+    });
+
+    it('should be able to add a infowindow', function() {
+      var infow = new cdb.geo.ui.Infowindow({mapView: this.mapView, model: new Backbone.Model()});
+      this.mapView.addInfowindow(infow);
+
+      expect(this.mapView._subviews[infow.cid]).toBeTruthy()
+      expect(this.mapView._subviews[infow.cid] instanceof cdb.geo.ui.Infowindow).toBeTruthy()
+
+    });
+
+    it('should be able to retrieve the infowindows', function() {
+      var infow = new cdb.geo.ui.Infowindow({mapView: this.mapView, model: new Backbone.Model()});
+      this.mapView._subviews['irrelevant'] = new Backbone.View();
+      this.mapView.addInfowindow(infow);
+
+      var infowindows = this.mapView.getInfoWindows()
+
+
+      expect(infowindows.length).toEqual(1);
+      expect(infowindows[0]).toEqual(infow);
+    });
+  });
 
   describe('LeafletMapView', function() {
     var mapView;
@@ -154,7 +226,7 @@ describe("geo.map", function() {
       expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetPlainLayerView);
     });
 
-    it("should inser layer in specified order", function() {
+    it("should insert layers in specified order", function() {
       var layer    = new cdb.geo.CartoDBLayer({});
       map.addLayer(layer);
 
@@ -164,7 +236,80 @@ describe("geo.map", function() {
 
       expect(mapView.map_leaflet.addLayer.mostRecentCall.args[1]).toEqual(true);
       //expect(mapView.map_leaflet.addLayer).toHaveBeenCalledWith(mapView.layers[layer.cid].leafletLayer, true);
+    });
 
+    // DEPRECATED (by now)
+    // it("should not insert map boundaries when not defined by the user", function() {
+    //   expect(mapView.map_leaflet.options.maxBounds).toBeFalsy();
+    // });
+
+    // it("should insert the boundaries when provided", function() {
+    //   var container = $('<div>').css('height', '200px');
+    //   var map = new cdb.geo.Map({bounding_box_sw: [1,2], bounding_box_ne: [3,5]});
+
+    //   var mapView = new cdb.geo.LeafletMapView({
+    //     el: this.container,
+    //     map: map
+    //   });
+    //   expect(map.get('bounding_box_sw')).toEqual([1,2]);
+    //   expect(map.get('bounding_box_ne')).toEqual([3,5]);
+    //   expect(mapView.map_leaflet.options.maxBounds).toBeTruthy();
+    //   expect(mapView.map_leaflet.options.maxBounds.getNorthEast().lat).toEqual(3);
+    //   expect(mapView.map_leaflet.options.maxBounds.getNorthEast().lng).toEqual(5);
+    //   expect(mapView.map_leaflet.options.maxBounds.getSouthWest().lat).toEqual(1);
+    //   expect(mapView.map_leaflet.options.maxBounds.getSouthWest().lng).toEqual(2);
+
+    // })
+
+
+    it("shoule remove all layers when map view is cleaned", function() {
+
+      var id1 = map.addLayer(new cdb.geo.CartoDBLayer({}));
+      var id2 = map.addLayer(new cdb.geo.CartoDBLayer({}));
+
+      expect(_.size(mapView.layers)).toEqual(2);
+      var layer = mapView.getLayerByCid(id1);
+      var layer2 = mapView.getLayerByCid(id2);
+      spyOn(layer, 'remove');
+      spyOn(layer2, 'remove');
+      mapView.clean();
+      expect(_.size(mapView.layers)).toEqual(0);
+      expect(layer.remove).toHaveBeenCalled();
+      expect(layer2.remove).toHaveBeenCalled();
+    });
+
+    it("should not all a layer when it can't be creadted", function() {
+      var layer    = new cdb.geo.TileLayer({type: 'rambo'});
+      map.addLayer(layer);
+      expect(_.size(mapView.layers)).toEqual(0);
+    });
+
+    var geojsonFeature = {
+        "type": "Point",
+        "coordinates": [-104.99404, 39.75621]
+    };
+
+    it("should add and remove a geometry", function() {
+      var geo = new cdb.geo.Geometry({
+        geojson: geojsonFeature
+      });
+      map.addGeometry(geo);
+      expect(_.size(mapView.geometries)).toEqual(1);
+      geo.destroy();
+      expect(_.size(mapView.geometries)).toEqual(0);
+    });
+
+    it("should edit a geometry", function() {
+      var geo = new cdb.geo.Geometry({
+        geojson: geojsonFeature
+      });
+      map.addGeometry(geo);
+      var v = mapView.geometries[geo.cid];
+      v.trigger('dragend', null, [10, 20]);
+      expect(geo.get('geojson')).toEqual({
+        "type": "Point",
+        "coordinates": [20, 10]
+      })
 
     });
 

@@ -2,6 +2,7 @@
 * leaflet implementation of a map
 */
 (function() {
+if(typeof(L) != "undefined") {
 
   var PlainLayer = L.TileLayer.extend({
 
@@ -54,6 +55,21 @@
       this.leafletMap.removeLayer(this.leafletLayer);
       this.model.unbind(null, null, this);
       this.unbind();
+    },
+
+    show: function() {
+      this.leafletLayer.setOpacity(1.0);
+    },
+
+    hide: function() {
+      this.leafletLayer.setOpacity(0.0);
+    },
+
+    /**
+     * reload the tiles
+     */
+    reload: function() {
+      this.leafletLayer.redraw();
     }
 
   });
@@ -72,7 +88,9 @@
   // -- tiled layer view
 
   var LeafLetTiledLayerView = function(layerModel, leafletMap) {
-    var leafletLayer = new L.TileLayer(layerModel.get('urlTemplate'));
+    var leafletLayer = new L.TileLayer(layerModel.get('urlTemplate'), {
+      tms: layerModel.get('tms')
+    });
     LeafLetLayerView.call(this, layerModel, leafletLayer, leafletMap);
   };
 
@@ -86,8 +104,8 @@
   cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
 
   /**
-  * leatlet cartodb layer
-  */
+   * leatlet cartodb layer
+   */
 
   var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
     var self = this;
@@ -126,7 +144,14 @@
   _.extend(LeafLetLayerCartoDBView.prototype, LeafLetLayerView.prototype, {
 
     _update: function() {
-      this.leafletLayer.setOptions(_.clone(this.model.attributes));
+      var attrs = _.clone(this.model.attributes);
+      // if we want to use the style stored in the server
+      // but we want to store it in the layer model
+      // we should remove it from layer options
+      if(this.model.get('use_server_style')) {
+        attrs.tile_style = null;
+      }
+      this.leafletLayer.setOptions(attrs);
     },
 
     featureOver: function(e, latlon, pixelPos, data) {
@@ -141,6 +166,10 @@
     featureClick: function(e, latlon, pixelPos, data) {
       // dont pass leaflet lat/lon
       this.trigger('featureClick', e, [latlon.lat, latlon.lng], pixelPos, data);
+    },
+
+    reload: function() {
+      this.leafletLayer.layer.redraw();
     }
 
   });
@@ -148,9 +177,10 @@
   cdb.geo.LeafLetLayerCartoDBView = LeafLetLayerCartoDBView;
 
   /**
-  * leatlef impl
-  */
+   * leatlef impl
+   */
   cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
+
 
     initialize: function() {
 
@@ -162,27 +192,40 @@
 
       var center = this.map.get('center');
 
-      this.map_leaflet = new L.Map(this.el, {
+      var mapConfig = {
         zoomControl: false,
         center: new L.LatLng(center[0], center[1]),
         zoom: this.map.get('zoom'),
         minZoom: this.map.get('minZoom'),
-        maxZoom: this.map.get('maxZoom'),
-        maxBounds: [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')]
-      });
-      this.layerTypeMap = {
-        "tiled": cdb.geo.LeafLetTiledLayerView,
-        "cartodb": cdb.geo.LeafLetLayerCartoDBView,
-        "plain": cdb.geo.LeafLetPlainLayerView
+        maxZoom: this.map.get('maxZoom')
       };
+      if (this.map.get('bounding_box_ne')) {
+        //mapConfig.maxBounds = [this.map.get('bounding_box_ne'), this.map.get('bounding_box_sw')];
+      }
 
-      // this var stores views information for each model
-      this.layers = {};
+      if(!this.options.map_object) {
+        this.map_leaflet = new L.Map(this.el, mapConfig);
+
+        // remove the "powered by leaflet" 
+        this.map_leaflet.attributionControl.setPrefix('');
+      } else {
+        this.map_leaflet = this.options.map_object;
+        this.setElement(this.map_leaflet.getContainer());
+      }
+
+      // looks like leaflet dont like to change the bounds just after the inicialization
+      var bounds = this.map.getViewBounds();
+      if(bounds) {
+        this.showBounds(bounds);
+      }
 
       this.map.bind('set_view', this._setView, this);
       this.map.layers.bind('add', this._addLayer, this);
       this.map.layers.bind('remove', this._removeLayer, this);
       this.map.layers.bind('reset', this._addLayers, this);
+
+      this.map.geometries.bind('add', this._addGeometry, this);
+      this.map.geometries.bind('remove', this._removeGeometry, this);
 
       this._bindModel();
 
@@ -192,10 +235,23 @@
         this.trigger('layeradd', lyr, self);
       }, this);
 
+      this.map_leaflet.on('zoomstart', function() {
+        self.trigger('zoomstart');
+      });
+
+      this.map_leaflet.on('click', function(e) {
+        self.trigger('click', e.originalEvent, [e.latlng.lat, e.latlng.lng]);
+      });
+
+      this.map_leaflet.on('dblclick', function(e) {
+        self.trigger('dblclick', e.originalEvent);
+      });
+
       this.map_leaflet.on('zoomend', function() {
         self._setModelProperty({
           zoom: self.map_leaflet.getZoom()
         });
+        self.trigger('zoomend');
       }, this);
 
       this.map_leaflet.on('move', function() {
@@ -208,29 +264,27 @@
         self._setModelProperty({
           center: [c.lat, c.lng]
         });
+        self.trigger('drag');
       }, this);
 
-    },
+      this.map.bind('change:maxZoom', function() {
+        L.Util.setOptions(self.map_leaflet, { maxZoom: self.map.get('maxZoom') });
+      });
 
-    /** bind model properties */
-    _bindModel: function() {
-      this.map.bind('change:zoom',   this._setZoom, this);
-      this.map.bind('change:center', this._setCenter, this);
-    },
+      this.map.bind('change:minZoom', function() {
+        L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
+      });
 
-    /** unbind model properties */
-    _unbindModel: function() {
-      this.map.unbind('change:zoom',   this._setZoom, this);
-      this.map.unbind('change:center', this._setCenter, this);
-    },
+      /*this.map.bind('change:view_bounds_sw change:view_bounds_ne', function() {
+        var bounds = this.map.getViewBounds();
+        if(bounds) {
+          this.showBounds(bounds);
+        }
+      }, this);
+      */
 
-    /**
-    * set model property but unbind changes first in order to not create an infinite loop
-    */
-    _setModelProperty: function(prop) {
-      this._unbindModel();
-      this.map.set(prop);
-      this._bindModel();
+      this.trigger('ready');
+
     },
 
     _setZoom: function(model, z) {
@@ -241,61 +295,36 @@
       this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
     },
 
-    /**
-    * Adds interactivity to a layer
-    *
-    * @params {String} tileJSON
-    * @params {String} featureOver
-    * @return {String} featureOut
-    */
-    addInteraction: function(tileJSON, featureOver, featureOut) {
-
-      return wax.leaf.interaction().map(this.map_leaflet).tilejson(tileJSON).on('on', featureOver).on('off', featureOut);
-
-    },
-
-    getLayerByCid: function(cid) {
-      var l = this.layers[cid];
-      if(!l) {
-        cdb.log.error("layer with cid " + cid + " can't be get");
-      }
-      return l;
-    },
-
-    _removeLayer: function(layer) {
-      //this.map_leaflet.removeLayer(layer.lyr);
-      this.layers[layer.cid].remove();
-      delete this.layers[layer.cid];
-    },
-
     _setView: function() {
       this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
     },
 
-
-    _addLayers: function() {
-      var self = this;
-      this.map.layers.each(function(lyr) {
-        self._addLayer(lyr);
-      });
+    _addGeometry: function(geom) {
+      var geo = GeometryView.create(geom);
+      geo.geom.addTo(this.map_leaflet);
+      this.geometries[geom.cid] = geo;
     },
+
+    _removeGeometry: function(geo) {
+      var geo_view = this.geometries[geo.cid];
+      this.map_leaflet.removeLayer(geo_view.geom);
+      delete this.geometries[geo.cid];
+    },
+
 
     _addLayer: function(layer, layers, opts) {
       var lyr, layer_view;
 
-      var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
-
-      if (layerClass) {
-        layer_view = new layerClass(layer, this.map_leaflet);
-      } else {
-        cdb.log.error("MAP: " + layer.get('type') + " can't be created");
+      layer_view = cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
+      if(!layer_view) {
+        return;
       }
 
       this.layers[layer.cid] = layer_view;
 
       if (layer_view) {
         var isBaseLayer = this.layers.length === 1 || (opts && opts.index === 0);
-        this.map_leaflet.addLayer(layer_view.leafletLayer, isBaseLayer);
+        cdb.geo.LeafletMapView.addLayerToMap(layer_view, isBaseLayer, this.map_leaflet);
         this.trigger('newLayerView', layer_view, this);
       } else {
         cdb.log.error("layer type not supported");
@@ -324,8 +353,54 @@
       var southWest = new L.LatLng(sw[0], sw[1]);
       var northEast = new L.LatLng(ne[0], ne[1]);
       this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
+    },
+
+    getSize: function() {
+      return this.map_leaflet.getSize();
+    },
+
+    panBy: function(p) {
+      this.map_leaflet.panBy(new L.Point(p.x, p.y));
+    },
+
+    setAutoSaveBounds: function() {
+      var self = this;
+      // save on change
+      this.map.bind('change:center change:zoom', _.debounce(function() {
+        var b = self.getBounds();
+        self.map.save({
+          view_bounds_sw: b[0],
+          view_bounds_ne: b[1]
+        }, { silent: true });
+      }, 1000), this);
     }
 
+  }, {
+
+    layerTypeMap: {
+      "tiled": cdb.geo.LeafLetTiledLayerView,
+      "cartodb": cdb.geo.LeafLetLayerCartoDBView,
+      "plain": cdb.geo.LeafLetPlainLayerView,
+      // for google maps create a plain layer
+      "gmapsbase": cdb.geo.LeafLetPlainLayerView
+    },
+
+    createLayer: function(layer, map) {
+      var layer_view = null;
+      var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
+
+      if (layerClass) {
+        layer_view = new layerClass(layer, map);
+      } else {
+        cdb.log.error("MAP: " + layer.get('type') + " can't be created");
+      }
+      return layer_view;
+    },
+
+    addLayerToMap: function(layer_view, isBaseLayer, map) {
+      map.addLayer(layer_view.leafletLayer, isBaseLayer);
+    }
   });
 
+} // defined leaflet
 })();

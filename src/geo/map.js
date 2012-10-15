@@ -5,7 +5,7 @@
 /**
 * Map layer, could be tiled or whatever
 */
-cdb.geo.MapLayer = Backbone.Model.extend({
+cdb.geo.MapLayer = cdb.core.Model.extend({
 
   defaults: {
     visible: true,
@@ -17,6 +17,15 @@ cdb.geo.MapLayer = Backbone.Model.extend({
 // Good old fashioned tile layer
 cdb.geo.TileLayer = cdb.geo.MapLayer.extend({
   getTileLayer: function() {
+  }
+});
+
+cdb.geo.GMapsBaseLayer = cdb.geo.MapLayer.extend({
+  OPTIONS: ['roadmap', 'satellite', 'terrain', 'custom'],
+  defaults: {
+    type: 'GMapsBase',
+    base_type: 'roadmap',
+    style: null
   }
 });
 
@@ -72,36 +81,60 @@ cdb.geo.Layers = Backbone.Collection.extend({
 
   model: cdb.geo.MapLayer,
 
+  initialize: function() {
+    this.bind('add remove', this._asignIndexes, this);
+  },
+
   clone: function() {
     var layers = new cdb.geo.Layers();
     this.each(function(layer) {
       if(layer.clone) {
-        layers.add(layer.clone());
+        var lyr = layer.clone();
+        lyr.set('id', null);
+        layers.add(lyr);
       } else {
-        layers.add(_.clone(layer.attributes));
+        var attrs = _.clone(layer.attributes);
+        delete attrs.id;
+        layers.add(attrs);
       }
     });
     return layers;
+  },
+
+  /**
+   * each time a layer is added or removed
+   * the index should be recalculated
+   */
+  _asignIndexes: function() {
+    for(var i = 0; i < this.size(); ++i) {
+      this.models[i].set({ order: i }, { silent: true });
+    }
   }
 });
 
 /**
 * map model itself
 */
-cdb.geo.Map = Backbone.Model.extend({
+cdb.geo.Map = cdb.core.Model.extend({
 
   defaults: {
     center: [0, 0],
     zoom: 3,
     minZoom: 0,
     maxZoom: 20,
-    bounding_box_sw: [0, 0],
-    bounding_box_ne: [0, 0],
     provider: 'leaflet'
   },
 
   initialize: function() {
     this.layers = new cdb.geo.Layers();
+
+    this.layers.bind('reset', function() {
+      if(this.layers.size() >= 1) {
+        this._adjustZoomtoLayer(this.layers.models[0]);
+      }
+    }, this);
+
+    this.geometries = new cdb.geo.Geometries();
   },
 
   setView: function(latlng, zoom) {
@@ -136,7 +169,9 @@ cdb.geo.Map = Backbone.Model.extend({
     m.set({
       center: _.clone(this.attributes.center),
       bounding_box_sw: _.clone(this.attributes.bounding_box_sw),
-      bounding_box_ne: _.clone(this.attributes.bounding_box_ne)
+      bounding_box_ne: _.clone(this.attributes.bounding_box_ne),
+      view_bounds_sw: _.clone(this.attributes.view_bounds_sw),
+      view_bounds_ne: _.clone(this.attributes.view_bounds_ne)
     });
     // layers
     m.layers = this.layers.clone();
@@ -158,8 +193,21 @@ cdb.geo.Map = Backbone.Model.extend({
     }
 
     // Set options
-    L.Util.setOptions(this, options);
+    _.defauls(this.options, options);
 
+  },
+
+  /**
+   * return getViewbounds if it is set
+   */
+  getViewBounds: function() {
+    if(this.has('view_bounds_sw') && this.has('view_bounds_ne')) {
+      return [
+        this.get('view_bounds_sw'),
+        this.get('view_bounds_ne')
+      ];
+    }
+    return null;
   },
 
   getLayerAt: function(i) {
@@ -170,7 +218,22 @@ cdb.geo.Map = Backbone.Model.extend({
     return this.layers.getByCid(cid);
   },
 
+  _adjustZoomtoLayer: function(layer) {
+    //set zoom
+    var z = layer.get('maxZoom');
+    if(_.isNumber(z)) {
+      this.set({ maxZoom: z });
+    }
+    z = layer.get('minZoom');
+    if(_.isNumber(z)) {
+      this.set({ minZoom: z });
+    }
+  },
+
   addLayer: function(layer, opts) {
+    if(this.layers.size() == 0) {
+      this._adjustZoomtoLayer(layer);
+    }
     this.layers.add(layer, opts);
     return layer.cid;
   },
@@ -205,15 +268,30 @@ cdb.geo.Map = Backbone.Model.extend({
   },
 
   // remove current base layer and set the specified
-  // the base layer is not deleted, it is only removed
-  // from the layer list
-  // return the old one
-  setBaseLayer: function(layer) {
+  // current base layer is removed
+  setBaseLayer: function(layer, opts) {
+    opts = opts || {};
+    var self = this;
     var old = this.layers.at(0);
-    this.layers.remove(old);
-    this.layers.add(layer, { at: 0 });
-    return old;
+    old.destroy({
+      success: function() {
+        self.layers.add(layer, { at: 0 });
+        self._adjustZoomtoLayer(layer);
+        opts.success && opts.success();
+      },
+      error: opts.error
+    });
+    return layer;
+  },
+
+  addGeometry: function(geom) {
+    this.geometries.add(geom);
+  },
+
+  removeGeometry: function(geom) {
+    this.geometries.remove(geom);
   }
+
 });
 
 
@@ -230,6 +308,13 @@ cdb.geo.MapView = cdb.core.View.extend({
 
     this.map = this.options.map;
     this.add_related_model(this.map);
+    this.add_related_model(this.map.layers);
+
+    // this var stores views information for each model
+    this.layers = {};
+    this.geometries = {};
+
+    this.bind('clean', this._removeLayers, this);
   },
 
   render: function() {
@@ -240,13 +325,121 @@ cdb.geo.MapView = cdb.core.View.extend({
    * add a infowindow to the map
    */
   addInfowindow: function(infoWindowView) {
+
     this.$el.append(infoWindowView.render().el);
     this.addView(infoWindowView);
   },
 
+  /**
+  * search in the subviews and return the infowindows
+  */
+  getInfoWindows: function() {
+    var result = [];
+    for (var s in this._subviews) {
+      if(this._subviews[s] instanceof cdb.geo.ui.Infowindow) {
+        result.push(this._subviews[s]);
+      }
+    }
+    return result;
+  },
+
   showBounds: function(bounds) {
+    throw "to be implemented";
+  },
+
+  _removeLayers: function() {
+    for(var layer in this.layers) {
+      this.layers[layer].remove();
+    }
+    this.layers = {}
+  },
+
+  /**
+  * set model property but unbind changes first in order to not create an infinite loop
+  */
+  _setModelProperty: function(prop) {
+    this._unbindModel();
+    this.map.set(prop);
+    this._bindModel();
+  },
+
+  /** bind model properties */
+  _bindModel: function() {
+    this.map.bind('change:zoom',   this._setZoom, this);
+    this.map.bind('change:center', this._setCenter, this);
+  },
+
+  /** unbind model properties */
+  _unbindModel: function() {
+    this.map.unbind('change:zoom',   this._setZoom, this);
+    this.map.unbind('change:center', this._setCenter, this);
+  },
+
+  _addLayers: function() {
+    var self = this;
+    this.map.layers.each(function(lyr) {
+      self._addLayer(lyr);
+    });
+  },
+
+  _removeLayer: function(layer) {
+    var layer_view = this.layers[layer.cid];
+    if(layer_view) {
+      layer_view.remove();
+      delete this.layers[layer.cid];
+    }
+  },
+
+  _removeGeometry: function(geo) {
+    var geo_view = this.geometries[geo.cid];
+    delete this.layers[layer.cid];
+  },
+
+  getLayerByCid: function(cid) {
+    var l = this.layers[cid];
+    if(!l) {
+      cdb.log.error("layer with cid " + cid + " can't be get");
+    }
+    return l;
+  },
+
+  addGeometry: function(geom) {
+    throw "to be implemented";
+  },
+
+  _setZoom: function(model, z) {
+    throw "to be implemented";
+  },
+
+  _setCenter: function(model, center) {
+    throw "to be implemented";
+  },
+
+  _addLayer: function(layer, layers, opts) {
     throw "to be implemented";
   }
 
 
-});
+}, {
+
+  _getClass: function(provider) {
+    var mapViewClass = cdb.geo.LeafletMapView;
+    if(provider === 'googlemaps') {
+        if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
+          mapViewClass = cdb.geo.GoogleMapsMapView;
+        } else {
+          cdb.log.error("you must include google maps library _before_ include cdb");
+        }
+    }
+    return mapViewClass;
+  },
+
+  create: function(el, mapModel) {
+    var _mapViewClass = cdb.geo.MapView._getClass(mapModel.get('provider'));
+    return new _mapViewClass({
+      el: el,
+      map: mapModel
+    });
+  }
+}
+);

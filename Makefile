@@ -1,17 +1,34 @@
 
 UGLIFYJS = ./node_modules/.bin/uglifyjs
 
-dist: dist/cartodb.js dist/cartodb.min.js
+CSS_FILES = $(wildcard themes/css/*.css)
 
-dist/cartodb.js:
+#dist:  dist/cartodb.js dist/cartodb.full.js themes
+dist:  dist/cartodb.js themes
+
+dist/cartodb.full.uncompressed.js:
+	node scripts/compress.js include_deps
+	mv dist/_cartodb.js dist/cartodb.full.uncompressed.js
+
+dist/cartodb.uncompressed.js:
 	node scripts/compress.js
+	mv dist/_cartodb.js dist/cartodb.uncompressed.js
 
-dist/cartodb.min.js:
-	$(UGLIFYJS) dist/cartodb.js > dist/cartodb.min.js
+dist/cartodb.full.js: dist/cartodb.full.uncompressed.js 
+	$(UGLIFYJS) dist/cartodb.full.uncompressed.js > dist/cartodb.full.js
+
+dist/cartodb.js: dist/cartodb.uncompressed.js
+	$(UGLIFYJS) dist/cartodb.uncompressed.js > dist/cartodb.js
 
 clean: 
-	rm -rf dist/cartodb.js
+	rm -rf dist/*
+
+css: $(CSS_FILES) 
+	cat $(CSS_FILES) > themes/css/all.css
+
+release: dist css
+	node scripts/release.js
 
 
-PHONY: clean 
+PHONY: clean themes dist
 

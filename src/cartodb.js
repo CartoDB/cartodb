@@ -5,6 +5,7 @@
     window.cdb.core = {};
     window.cdb.geo = {};
     window.cdb.geo.ui = {};
+    window.cdb.geo.geocoder = {};
     window.cdb.ui = {};
     window.cdb.ui.common = {};
     window.cdb.vis = {};
@@ -13,6 +14,7 @@
      * global variables
      */
     window.JST = window.JST || {};
+    window.cartodb = cdb;
 
     cdb.files = [
         "../vendor/jquery.min.js",
@@ -21,15 +23,19 @@
 
         "../vendor/leaflet.js",
         "../vendor/wax.leaf.js",
-        "../vendor/cartodb-leaflet.js",
+        "../vendor/wax.g.js",
 
         'core/decorator.js',
         'core/config.js',
         'core/log.js',
         'core/profiler.js',
         'core/template.js',
+        'core/model.js',
         'core/view.js',
+        'core/sql.js',
 
+        'geo/geocoder.js',
+        'geo/geometry.js',
         'geo/map.js',
         'geo/ui/zoom.js',
         'geo/ui/legend.js',
@@ -37,7 +43,12 @@
         //'geo/ui/selector.js',
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
+        'geo/ui/search.js',
+        "geo/cartodb-leaflet.js",
+        'geo/leaflet.geometry.js',
         'geo/leaflet.js',
+        'geo/gmaps_cartodb_layer.js',
+        'geo/gmaps.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',
@@ -45,7 +56,10 @@
 
         'vis/vis.js',
         'vis/overlays.js',
-        'vis/layers.js'
+        'vis/layers.js',
+
+        // PUBLIC API
+        'api/layers.js'
     ];
 
     cdb.init = function(ready) {

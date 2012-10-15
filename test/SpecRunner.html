@@ -1,24 +1,28 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html lang="en">
 <head>
   <title>CartoDB Spec Runner</title>
-
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.2.0/jasmine_favicon.png">
   <link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
 
+  <script type="text/javascript"
+      src="https://maps.google.com/maps/api/js?sensor=false">
+  </script>
 
   <script type="text/javascript" src="../vendor/jquery.min.js"></script>
   <script type="text/javascript" src="../vendor/underscore-min.js"></script>
   <script type="text/javascript" src="../vendor/backbone.js"></script>
   <script type="text/javascript" src="../vendor/leaflet.js"></script>
-  <script type="text/javascript" src="../vendor/cartodb-leaflet.js"></script>
+  <script type="text/javascript" src="../vendor/wax.g.js"></script>
+  <script type="text/javascript" src="../vendor/wax.leaf.js"></script>
+  <!--<script type="text/javascript" src="../vendor/cartodb-gmapsv3.js"></script>-->
   <script type="text/javascript" src="../vendor/mustache.js"></script>
 
   <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine.js"></script>
   <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine-html.js"></script>
   <script type="text/javascript" src="lib/sinon-1.3.4.js"></script>
-
 
 
   <!-- SOURCE -->
@@ -30,13 +34,21 @@
   <script type="text/javascript" src="../src/core/log.js"></script>
   <script type="text/javascript" src="../src/core/profiler.js"></script>
   <script type="text/javascript" src="../src/core/template.js"></script>
+  <script type="text/javascript" src="../src/core/model.js"></script>
   <script type="text/javascript" src="../src/core/view.js"></script>
+  <script type="text/javascript" src="../src/core/sql.js"></script>
 
   <!-- Geo source -->
+  <script type="text/javascript" src="../src/geo/geometry.js"></script>
   <script type="text/javascript" src="../src/geo/map.js"></script>
   <script type="text/javascript" src="../src/geo/ui/legend.js"></script>
   <script type="text/javascript" src="../src/geo/ui/infowindow.js"></script>
+  <script type="text/javascript" src="../src/geo/cartodb-leaflet.js"></script>
+  <script type="text/javascript" src="../src/geo/leaflet.geometry.js"></script>
   <script type="text/javascript" src="../src/geo/leaflet.js"></script>
+  <script type="text/javascript" src="../src/geo/gmaps_cartodb_layer.js"></script>
+  <script type="text/javascript" src="../src/geo/gmaps.js"></script>
+  <script type="text/javascript" src="../src/geo/geocoder.js"></script>
 
   <!-- Common source -->
   <script type="text/javascript" src="../src/ui/common/dialog.js"></script>
@@ -46,6 +58,11 @@
 
   <!-- vis -->
   <script type="text/javascript" src="../src/vis/vis.js"></script>
+  <script type="text/javascript" src="../src/vis/layers.js"></script>
+  <script type="text/javascript" src="../src/vis/overlays.js"></script>
+
+  <!-- api -->
+  <script type="text/javascript" src="../src/api/layers.js"></script>
 
   <!-- SPECS -->
   <!-- Core specs -->
@@ -53,6 +70,7 @@
   <script type="text/javascript" src="spec/core/log.spec.js"></script>
   <script type="text/javascript" src="spec/core/view.spec.js"></script>
   <script type="text/javascript" src="spec/core/template.spec.js"></script>
+  <script type="text/javascript" src="spec/core/sql.spec.js"></script>
 
   <!-- Common specs -->
   <script type="text/javascript" src="spec/ui/common/dialog.spec.js"></script>
@@ -62,11 +80,22 @@
 
   <!-- Geo specs -->
   <script type="text/javascript" src="spec/geo/map.spec.js"></script>
+  <script type="text/javascript" src="spec/geo/geometry.spec.js"></script>
   <script type="text/javascript" src="spec/geo/legend.spec.js"></script>
   <script type="text/javascript" src="spec/geo/infowindow.spec.js"></script>
+  <script type="text/javascript" src="spec/geo/gmaps.spec.js"></script>
+  <script type="text/javascript" src="spec/geo/geocoder.spec.js"></script>
+
+  <script type="text/javascript" src="spec/geo/gmaps_cartodb_layer/hide.js"></script>
+  <script type="text/javascript" src="spec/geo/gmaps_cartodb_layer/interaction.js"></script>
+  <script type="text/javascript" src="spec/geo/gmaps_cartodb_layer/opacity.js"></script>
+  <script type="text/javascript" src="spec/geo/gmaps_cartodb_layer/show.js"></script>
 
   <!-- vis -->
   <script type="text/javascript" src="spec/vis/vis.spec.js"></script>
+
+  <!-- api -->
+  <script type="text/javascript" src="spec/api/layers.spec.js"></script>
 
 
   <script type="text/javascript">

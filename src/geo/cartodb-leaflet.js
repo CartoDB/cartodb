@@ -693,7 +693,7 @@ if (typeof(L.CartoDBLayer) === "undefined") {
       }
 
       // STYLE?
-      if (this.options.tile_style) {
+      if (!this.options.use_server_style && this.options.tile_style) {
         var style = 'style=' + encodeURIComponent(this.options.tile_style.replace(/\{\{table_name\}\}/g,this.options.table_name));
         tile_url = this._addUrlData(tile_url, style);
         grid_url = this._addUrlData(grid_url, style);

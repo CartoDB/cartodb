@@ -1,9 +1,25 @@
 
+(function() {
+
+var Layers = cdb.vis.Layers;
+
 Layers.register('tilejson', function(vis, data) {
   return new cdb.geo.TileLayer({urlTemplate: data.tiles[0]});
 });
 
-Layers.register('cartodb', function(vis, data) {
+Layers.register('tiled', function(vis, data) {
+  return new cdb.geo.TileLayer(data);
+});
+
+Layers.register('gmapsbase', function(vis, data) {
+  return new cdb.geo.GMapsBaseLayer(data);
+});
+
+Layers.register('plain', function(vis, data) {
+  return new cdb.geo.PlainLayer(data);
+});
+
+var cartoLayer = function(vis, data) {
 
   if(data.infowindow && data.infowindow.fields) {
     var names = [];
@@ -17,4 +33,9 @@ Layers.register('cartodb', function(vis, data) {
   }
 
   return new cdb.geo.CartoDBLayer(data);
-});
+};
+
+Layers.register('cartodb', cartoLayer);
+Layers.register('carto', cartoLayer);
+
+})();

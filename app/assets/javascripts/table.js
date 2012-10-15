@@ -4,6 +4,8 @@
 //= require jquery.faviconNotify
 //= require rgbcolor
 //= require jquery-ui.core.min
+//= require jquery-ui.autocomplete
+//= require jquery.caret
 //= require ZeroClipboard
 //= require tag-it
 //= require spin.min

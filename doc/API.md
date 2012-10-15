@@ -36,4 +36,33 @@ load the specified layer in the spcified map. The layer is appended to the exist
 
 *returns*: promise object.
 
+*example*:
+
+```javascript
+
+    var map;
+    var mapOptions = {
+      zoom: 5,
+      center: new google.maps.LatLng(43, 0),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    map = new google.maps.Map(document.getElementById('map'),  mapOptions);
+
+    cartodb.loadLayer(map, {
+      user: 'development',
+      table: 'clubbing',
+      host: 'localhost.lan:3000',
+      protocol: 'http'
+    }).on('done', function(layer) {
+      layer.on('featureOver', function(e, pos, latlng, data) {
+        console.log(e, pos, latlng, data);
+      })
+    }).on('error', function() {
+      console.log("some error occurred");
+    });
+
+```
+
+
+
 

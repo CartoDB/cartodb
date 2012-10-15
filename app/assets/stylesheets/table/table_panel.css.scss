@@ -62,7 +62,7 @@
           @include opacity(0.75);
 
           &.sql_mod        { @include icons-sprite(table_icons, $offset-x:22px, $offset-y:0);}
-          &.carto_mod      { @include icons-sprite(table_icons, $offset-x:22px, $offset-y:-372px);}
+          &.carto_mod      { @include icons-sprite(table_icons, $offset-x:22px, $offset-y:-370px);}
           &.infowindow_mod { @include icons-sprite(table_icons, $offset-x:22px, $offset-y:-431px);}
 
           // tool buttons

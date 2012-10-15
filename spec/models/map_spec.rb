@@ -1,3 +1,4 @@
+# coding: UTF-8
 require 'spec_helper'
 
 describe Map do
@@ -47,6 +48,24 @@ describe Map do
       map = Map.create(:user_id => @user.id, :table_id => @table.id)
       CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}:vizjson").returns(true)
       map.save
+    end
+
+    it "should correctly recalculate bounds" do
+      table = Table.new :privacy => Table::PRIVATE, :name => 'Madrid Bars',
+                        :tags => 'movies, personal'
+      table.user_id = @user.id
+      table.force_schema = "name text, address text, latitude float, longitude float"
+      table.save
+      table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
+      table.insert_row!({:name => "El Estocolmo", :address => "Calle de la Palma 72, Madrid, Spain", :latitude => 40.426949, :longitude => -3.708969})
+      table.insert_row!({:name => "El Rey del Tallarín", :address => "Plaza Conde de Toreno 2, Madrid, Spain", :latitude => 40.424654, :longitude => -3.709570})
+      table.insert_row!({:name => "El Lacón", :address => "Manuel Fernández y González 8, Madrid, Spain", :latitude => 40.415113, :longitude => -3.699871})
+      table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
+      table.reload
+      table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+      table.map.recalculate_bounds!
+      table.map.view_bounds_ne.should == "[40.428198, -3.699732]"
+      table.map.view_bounds_sw.should == "[40.415113, -3.70957]"
     end
 
     context "when more than one table is involved" do

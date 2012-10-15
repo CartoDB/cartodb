@@ -74,7 +74,23 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     } else {
       this.activate();
     }
+  },
+
+  /***
+  * Compare the layer with the received one
+  * @method isEqual
+  * @param layer {Layer}
+  */
+  isEqual: function(layer) {
+    if(this.get('options') && layer.get('options')) {
+      if(this.get('options').urlTemplate === layer.get('options').urlTemplate) {
+        return true;
+      }
+    }
+    return false;
   }
+
+
 });
 
 cdb.geo.Layers = Backbone.Collection.extend({
@@ -266,6 +282,18 @@ cdb.geo.Map = cdb.core.Model.extend({
   getBaseLayer: function() {
     return this.layers.at(0);
   },
+
+  /**
+  * gets the url of the template of the tile layer
+  * @method getLayerTemplate
+  */
+  getLayerTemplate: function() {
+    var baseLayer = this.getBaseLayer();
+    if(baseLayer && baseLayer.get('options'))  {
+      return baseLayer.get('options').urlTemplate;
+    }
+  },
+
 
   // remove current base layer and set the specified
   // current base layer is removed

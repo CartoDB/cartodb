@@ -20,6 +20,8 @@ load the specified layer in the spcified map. The layer is appended to the exist
        cartodb.loadLayer(map, { user: 'rambo', table: 'charlies'})
     ```
 
+    ``host``, ``port`` and ``protocol`` can be passed as options if you are not using your own CartoDB
+
     - passing the url where the layer data is located
 
     ```javascript

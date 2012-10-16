@@ -273,6 +273,10 @@ class User < Sequel::Model
     $users_metadata.HMGET(key, 'map_key').first
   end
 
+  def set_last_active_time
+    $users_metadata.HMSET key, 'last_active_time',  Time.now
+  end
+
   def reset_client_application!
     if client_application
       client_application.destroy

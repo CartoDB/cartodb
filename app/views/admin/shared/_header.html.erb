@@ -14,7 +14,7 @@
         <li><%= link_to 'sheriff', superadmin_users_path %></li>
       <% end %>
       <li>
-        <a class="account" href="<%= account_url %>"><%= current_user.username %></a>
+        <a class="dropdown account separator" href="<%= account_url %>"><%= current_user.username %><span>|</span></a>
       </li>
     </ul>
   </div>

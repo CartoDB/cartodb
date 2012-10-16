@@ -19,7 +19,7 @@ class Admin::ClientApplicationsController < ApplicationController
     begin
       current_user.invalidate_varnish_cache
       current_user.set_map_key
-      flash_message = "Your API key has been regenerated successfully"
+      flash_message = "Your API key has been successfully generated"
     rescue Errno::ECONNREFUSED => e
       CartoDB::Logger.info "Could not clear varnish cache", "#{e.inspect}"
       if Rails.env.development?

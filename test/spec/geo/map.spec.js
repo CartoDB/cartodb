@@ -43,9 +43,15 @@ describe("geo.map", function() {
       expect(layer2.get('order')).toEqual(0);
       layers.add(new cdb.geo.CartoDBLayer(),{at: 0});
       expect(layer2.get('order')).toEqual(1);
-
-
     });
+
+    it("should compare equal layers correctly", function() {
+      var layer = new cdb.geo.CartoDBLayer({options: {urlTemplate: 'irrelevant'}});
+      layers.add(layer);
+      var copy = layer.clone();
+      expect(layer.isEqual(copy)).toBeTruthy();
+
+    })
 
   });
   describe("Map", function() {

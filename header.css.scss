@@ -77,7 +77,7 @@
             &:before {
               position:absolute;
               content:' ';
-              top:0;
+              top:-1px;
               right:0px;
               margin:8px 0 0 5px;
               border-left:3px solid transparent;
@@ -89,7 +89,7 @@
             &:after {
               position:absolute;
               content:' ';
-              top:0;
+              top:-1px;
               right:0px;
               margin:9px 0 0 5px;
               border-left:3px solid transparent;

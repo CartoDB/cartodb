@@ -38,7 +38,17 @@ _.extend(GMapsLayerView.prototype, {
     } else {
       this.gmapsMap.overlayMapTypes.setAt(this.index, this.gmapsLayer);
     }
-  }
+  },
+
+  show: function() {
+    this.gmapsLayer.show();
+  },
+
+  hide: function() {
+    this.gmapsLayer.hide();
+  },
+
+  reload: function() { this.refreshView() ; }
 
 });
 

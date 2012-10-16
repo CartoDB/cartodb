@@ -1,7 +1,16 @@
 
-# cartodb.js
+# cartodb.js - API reference
 
 This library allows you to use the visualizations created using [CartoDB](http://cartodb.com/ "cartodb") in your website or introduce them in your current map. Here are described all the methods available, check examples page to see the API in action
+
+
+
+
+### **cartodb.VERSION**
+
+Contains the library version, should be something like ``'2.0.1'``
+
+
 
 
 ### **cartodb.loadLayer**(map, layerSource [, options])

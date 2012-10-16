@@ -261,6 +261,9 @@ GEM
     treetop (1.4.10)
       polyglot
       polyglot (>= 0.3.1)
+    turbo-sprockets-rails3 (0.1.16)
+      railties (>= 3.1.0)
+      sprockets (>= 2.0.0)
     tzinfo (0.3.33)
     uglifier (1.0.4)
       execjs (>= 0.3.0)
@@ -333,6 +336,7 @@ DEPENDENCIES
   steak (= 2.0.0)
   therubyracer (~> 0.9.10)
   timecop (= 0.3.5)
+  turbo-sprockets-rails3 (= 0.1.16)
   uglifier (~> 1.0.3)
   vizzuality-sequel-rails (= 0.3.5)
   yajl-ruby (= 1.1.0)

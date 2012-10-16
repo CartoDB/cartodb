@@ -67,34 +67,7 @@
         a {
           font-size:15px;
           color:white;
-
-          &.account {
-            position:relative;
-            padding:0 20px 0 0;
-
-            &:after {
-              position:absolute;
-              content:'|';
-              top:1px;
-              right:11px;
-              margin:0 0 0 5px;
-              color:rgba(white,0.5);
-            }
-
-            &:before {
-              position:absolute;
-              content:' ';
-              right:0px;
-              margin:8px 0 0 5px;
-              border-left:3px solid transparent;
-              border-right:3px solid transparent;
-              border-top:3px solid white;
-            }
-
-            &:hover {
-              cursor:pointer;
-            }
-          }
+          text-shadow:0 1px rgba(#2A4C72,0.7);
 
           &.dropdown {
             position:relative;
@@ -104,11 +77,41 @@
             &:before {
               position:absolute;
               content:' ';
+              top:0;
               right:0px;
               margin:8px 0 0 5px;
               border-left:3px solid transparent;
               border-right:3px solid transparent;
               border-top:3px solid white;
+              z-index:1;
+            }
+
+            &:after {
+              position:absolute;
+              content:' ';
+              top:0;
+              right:0px;
+              margin:9px 0 0 5px;
+              border-left:3px solid transparent;
+              border-right:3px solid transparent;
+              border-top:3px solid rgba(#2A4C72,0.7);
+              z-index:0;
+            }
+          }
+
+          &.account {
+            &.separator {
+              padding:0 20px 0 0;
+            }
+
+            span {
+              position:absolute;
+              top:0;
+              right:11px;
+            }
+
+            &:hover {
+              cursor:pointer;
             }
           }
 
@@ -248,10 +251,12 @@
               margin:0;
               font-size:21px;
               line-height:23px;
+              font-family: $title-fonts;
               color:white;
               text-overflow:ellipsis;
               padding:0;
               white-space:nowrap;
+              text-shadow:0 1px rgba(#2A4C72,0.7);
             }
 
             &:before {
@@ -396,7 +401,6 @@
           &:last-child {
             padding-right:0;
             &:after {display:none}
-            a.account:after {display:none}
           }
         }
       }

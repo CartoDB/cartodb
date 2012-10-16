@@ -46,8 +46,6 @@ group :assets do
   gem 'mustache-trimmer',      :git => 'https://github.com/josh/mustache-trimmer.git'
 end
 
-gem "newrelic_rpm",            "~> 3.4.1"
-
 # Importer
 gem "ruby-ole",                "1.2.11.3"
 gem "rchardet19",              "1.3.5"

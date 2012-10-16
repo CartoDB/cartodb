@@ -144,6 +144,7 @@ class Api::Json::TablesController < Api::ApplicationController
   def vizzjson
     @table = Table.find_by_subdomain(request.subdomain, params[:id])
     response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
+    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
     render_jsonp(view_context.map_vizzjson(@table.map, full: false))
   end
 

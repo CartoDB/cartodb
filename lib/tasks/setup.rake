@@ -25,7 +25,7 @@ DESC
         puts e.inspect
       end
     end
-    
+
     desc "make public and tile users"
     task :create_publicuser => :environment do
       begin
@@ -35,7 +35,7 @@ DESC
       begin
         ::Rails::Sequel.connection.run("CREATE USER #{CartoDB::TILE_DB_USER}")
       rescue
-      end  
+      end
     end
 
     # TODO: remove text bit and just use env
@@ -60,13 +60,13 @@ DESC
         puts e.inspect
       end
     end
-    
+
     # TODO: remove text bit and just use env
     desc "Create an admin account with a password from ENV['ADMIN_PASSWORD'] environment variable"
     task :create_admin => :environment do
       raise "Set ADMIN_PASSWORD environment variable" if ENV['ADMIN_PASSWORD'].blank?
       password = ENV['ADMIN_PASSWORD']
-      
+
       u = User.new
       u.email = "admin@cartodb.com"
       u.password = password
@@ -79,12 +79,12 @@ DESC
         raise u.errors.inspect
       end
     end
-    
+
     desc "Sets the password of the admin user to the value of a ADMIN_PASSWORD environment variable"
     task :change_admin_password => :environment do
       raise "Set ADMIN_PASSWORD environment variable" if ENV['ADMIN_PASSWORD'].blank?
       password = ENV['ADMIN_PASSWORD']
-      
+
       u = User.filter(:username => "admin").first
       u.password = ENV['ADMIN_PASSWORD']
       u.password_confirmation = ENV['ADMIN_PASSWORD']

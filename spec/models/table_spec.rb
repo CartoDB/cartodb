@@ -330,9 +330,10 @@ describe Table do
       table.destroy
     end
 
-    it "should remove its map varnish cache when updating the table" do
+    it "should remove varnish cache when updating the table" do
       table = create_table(:user_id => @user.id)      
-      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}:vizjson").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}:vizjson").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}.*").returns(true)
       table.save
     end
   end

@@ -351,6 +351,7 @@ class Table < Sequel::Model(:user_tables)
     update_name_changes
     manage_privacy
     map.invalidate_varnish_cache
+    self.invalidate_varnish_cache
   end
 
   def after_create

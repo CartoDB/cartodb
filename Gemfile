@@ -35,6 +35,7 @@ gem "statsd-client",           "0.0.7", :require => "statsd"
 gem "addressable",             "2.2.8", :require => "addressable/uri"
 
 gem "ejs",                     "~> 1.1.1"
+gem "turbo-sprockets-rails3",  "0.1.16"
 group :assets do
   gem 'sass-rails',            "~> 3.2.3"
   gem 'uglifier',              "~> 1.0.3"

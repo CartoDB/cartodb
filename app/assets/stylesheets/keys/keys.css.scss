@@ -28,6 +28,10 @@
 				&.flash {
 					padding:22px 40px;
 				}
+
+				&.success {
+					background: rgba(green,0.1);
+				}
 			}
 		}
 

@@ -249,9 +249,9 @@ div.map {
         } // a
 
         &.selected a{
-          border: 5px solid rgba(#666,0.5);
-          width: 34px;
-          height: 34px;
+          border: 1px solid rgba(0,0,0, 0.5);
+          width: 42px;
+          height: 42px;
         }
       }
     }

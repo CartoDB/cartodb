@@ -229,7 +229,7 @@
 
         hgroup {
           @include inline-block();
-          margin:10px 0 0 0;
+          margin:4px 0 0 0;
           width:100%;
 
           h1,h2,a.button_header {
@@ -240,10 +240,14 @@
             width:auto;
           }
 
+          h1 {
+            line-height:23px;
+          }
+
           h2 {
             position:relative;
             padding:0 0 1px 18px;
-            line-height:23px;
+            line-height:30px;
 
             a {
               overflow:hidden;
@@ -251,7 +255,6 @@
               max-width:440px;
               margin:0;
               font-size:21px;
-              line-height:23px;
               font-family: $title-fonts;
               color:white;
               text-overflow:ellipsis;
@@ -264,7 +267,7 @@
               position:absolute;
               content:'|';
               font-weight:normal;
-              top:0px;
+              top:1px;
               left:0;
               margin:0 0 0 5px;
               font-size: 17px;
@@ -273,7 +276,7 @@
           }
 
           a.button_header {
-            margin-left:10px;
+            margin:6px 0 0 10px;
             padding:2px 6px;
             background:white;
             @include border-radius(25px);

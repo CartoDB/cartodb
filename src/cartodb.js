@@ -53,8 +53,11 @@
         "geo/cartodb-leaflet.js",
         'geo/leaflet.geometry.js',
         'geo/leaflet.js',
-        'geo/gmaps_cartodb_layer.js',
-        'geo/gmaps.js',
+        'geo/gmaps/gmaps_base.js',
+        'geo/gmaps/gmaps_baselayer.js',
+        'geo/gmaps/gmaps_plainlayer.js',
+        'geo/gmaps/gmaps_cartodb_layer.js',
+        'geo/gmaps/gmaps.js',
 
         'ui/common/dialog.js',
         'ui/common/notification.js',

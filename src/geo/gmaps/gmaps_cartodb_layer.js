@@ -86,11 +86,23 @@ CartoDBLayer.prototype.remove = function () {
   }
 };
 
+CartoDBLayer.prototype._refresh = function() {
+  var self = this;
+  this.options.map.overlayMapTypes.forEach(
+    function(layer, i) {
+      if (layer == self) {
+        self.map.overlayMapTypes.setAt(i, self);
+        return;
+      }
+    }
+  );
+};
+
 CartoDBLayer.prototype.update = function () {
-    var tilejson = this._tileJSON();
-    this.options.tiles = tilejson.tiles;
-    this.cache = {};
-    this._interaction.tilejson(tilejson);
+  var tilejson = this._tileJSON();
+  this.options.tiles = tilejson.tiles;
+  this.cache = {};
+  this._interaction.tilejson(tilejson);
 };
 /**
  * Hide the CartoDB layer
@@ -266,5 +278,77 @@ CartoDBLayer.prototype._tilesUrl = function(ext) {
 } //end defined google
 
 cdb.geo.CartoDBLayerGMaps = CartoDBLayer;
+
+/**
+* gmaps cartodb layer
+*/
+
+var GMapsCartoDBLayerView = function(layerModel, gmapsMap) {
+  var self = this;
+
+  _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
+
+  var opts = _.clone(layerModel.attributes);
+
+  opts.map =  gmapsMap;
+
+  var // preserve the user's callbacks
+  _featureOver  = opts.featureOver,
+  _featureOut   = opts.featureOut,
+  _featureClick = opts.featureClick;
+
+  opts.featureOver  = function() {
+    _featureOver  && _featureOver.apply(this, arguments);
+    self.featureOver  && self.featureOver.apply(this, arguments);
+  };
+
+  opts.featureOut  = function() {
+    _featureOut  && _featureOut.apply(this, arguments);
+    self.featureOut  && self.featureOut.apply(this, arguments);
+  };
+
+  opts.featureClick  = function() {
+    _featureClick  && _featureClick.apply(this, arguments);
+    self.featureClick  && self.featureClick.apply(opts, arguments);
+  };
+
+  cdb.geo.CartoDBLayerGMaps.call(this, opts);
+  cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
+};
+
+cdb.geo.GMapsCartoDBLayerView = GMapsCartoDBLayerView;
+
+_.extend(
+  GMapsCartoDBLayerView.prototype, 
+  cdb.geo.GMapsLayerView.prototype, 
+  cdb.geo.CartoDBLayerGMaps.prototype,
+  {
+
+  _update: function() {
+    _.extend(this.gmapsLayer.opts, this.model.attributes);
+    this.gmapsLayer.update();
+    this.refreshView();
+  },
+
+  remove: function() {
+    GMapsLayerView.prototype.remove.call(this);
+    this.gmapsLayer.remove();
+  },
+
+  featureOver: function(e, latlon, pixelPos, data) {
+    // dont pass gmaps LatLng
+    this.trigger('featureOver', e, [latlon.lat(), latlon.lng()], pixelPos, data);
+  },
+
+  featureOut: function(e) {
+    this.trigger('featureOut', e);
+  },
+
+  featureClick: function(e, latlon, pixelPos, data) {
+    // dont pass leaflet lat/lon
+    this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data);
+  }
+
+});
 
 })();

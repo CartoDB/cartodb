@@ -7,11 +7,10 @@ if(process.argv.length >= 3) {
   INCLUDE_DEPS = process.argv[2] === 'include_deps'
 }
 
-window = {};
 require('../src/cartodb');
 
-window.cdb.files.splice(0, 0, 'cartodb.js');
-var files = window.cdb.files;
+cdb.files.splice(0, 0, 'cartodb.js');
+var files = cdb.files;
 
 var c = 0;
 cmds = [

@@ -23,8 +23,11 @@
 //= require cdb/src/geo/cartodb-leaflet
 //= require cdb/src/geo/leaflet.geometry
 //= require cdb/src/geo/leaflet
-//= require cdb/src/geo/gmaps_cartodb_layer
-//= require cdb/src/geo/gmaps
+//= require cdb/src/geo/gmaps/gmaps_base
+//= require cdb/src/geo/gmaps/gmaps_baselayer
+//= require cdb/src/geo/gmaps/gmaps_plainlayer
+//= require cdb/src/geo/gmaps/gmaps_cartodb_layer
+//= require cdb/src/geo/gmaps/gmaps
 //= require cdb/src/geo/ui/zoom
 //= require cdb/src/geo/ui/legend
 //= require cdb/src/geo/ui/switcher

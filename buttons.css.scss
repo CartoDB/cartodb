@@ -128,6 +128,12 @@
       letter-spacing:0;
     }
 
+    &.smaller {
+      padding:6px 7px;
+      font-size:13px;
+      letter-spacing:0;
+    }
+
     // Hover
     &:hover {
       background:#DEDEDE; // IE

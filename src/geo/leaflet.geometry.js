@@ -194,7 +194,9 @@ function PathView(geometryModel) {
 
   
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
+
   _.each(this.geom._layers, function(g) {
+    g.setStyle(geometryModel.get('style'));
     g.on('edit', function() {
       geometryModel.set('geojson', L.GeoJSON.toGeoJSON(self.geom));
     }, self);

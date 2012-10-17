@@ -108,7 +108,16 @@
       if(ev && ev.stopPropagation) {
         ev.stopPropagation();
       };
+    },
+
+    /**
+    * Remove all the tipsy tooltips from the document
+    * @method cleanTooltips
+    */
+    cleanTooltips: function() {
+      $('.tipsy').remove();
     }
+
 
 
 

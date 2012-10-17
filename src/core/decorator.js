@@ -22,7 +22,7 @@ cdb.decorators.elder = (function() {
           // redirecting to the grandparent
           this.parent = this.parent.parent;
           if (currentParent.hasOwnProperty(method)) {
-              result = currentParent[method].call(this, options);
+              result = currentParent[method].apply(this, options);
           } else {
               result = currentParent.elder.call(this, method, options);
           }
@@ -34,7 +34,8 @@ cdb.decorators.elder = (function() {
       var child = backboneExtend.call(this, protoProps, classProps);
 
       child.prototype.parent = this.prototype;
-      child.prototype.elder = function(method, options) {
+      child.prototype.elder = function(method) {
+          var options = Array.prototype.slice.call(arguments, 1);
           if (method) {
               return superMethod.call(this, method, options);
           } else {

@@ -273,14 +273,23 @@ cdb.geo.Map = cdb.core.Model.extend({
     opts = opts || {};
     var self = this;
     var old = this.layers.at(0);
-    old.destroy({
-      success: function() {
-        self.layers.add(layer, { at: 0 });
-        self._adjustZoomtoLayer(layer);
-        opts.success && opts.success();
-      },
-      error: opts.error
-    });
+
+    if (old) {
+      old.destroy({
+        success: function() {
+          self.layers.add(layer, { at: 0 });
+          self._adjustZoomtoLayer(layer);
+          opts.success && opts.success();
+        },
+        error: opts.error
+      });
+    } else {
+
+      self.layers.add(layer, { at: 0 });
+      self._adjustZoomtoLayer(layer);
+      opts.success && opts.success();
+    }
+
     return layer;
   },
 

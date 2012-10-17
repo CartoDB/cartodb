@@ -3,6 +3,7 @@
 if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
 
 var DEFAULT_MAP_STYLE = [ { stylers: [ { saturation: -65 }, { gamma: 1.52 } ] },{ featureType: "administrative", stylers: [ { saturation: -95 }, { gamma: 2.26 } ] },{ featureType: "water", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "administrative.locality", stylers: [ { visibility: "off" } ] },{ featureType: "road", stylers: [ { visibility: "simplified" }, { saturation: -99 }, { gamma: 2.22 } ] },{ featureType: "poi", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "road.arterial", stylers: [ { visibility: "off" } ] },{ featureType: "road.local", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "transit", stylers: [ { visibility: "off" } ] },{ featureType: "road", elementType: "labels", stylers: [ { visibility: "off" } ] },{ featureType: "poi", stylers: [ { saturation: -55 } ] } ];
+
 /**
 * base layer for all leaflet layers
 */
@@ -37,29 +38,40 @@ _.extend(GMapsLayerView.prototype, {
     } else {
       this.gmapsMap.overlayMapTypes.setAt(this.index, this.gmapsLayer);
     }
-  }
+  },
+
+  show: function() {
+    this.gmapsLayer.show();
+  },
+
+  hide: function() {
+    this.gmapsLayer.hide();
+  },
+
+  reload: function() { this.refreshView() ; }
 
 });
 
 
 // gmaps base view, dummy
-var GMapsBaseLayerView = function(layerModel, gmapsMap) { 
+var GMapsBaseLayerView = function(layerModel, gmapsMap) {
   GMapsLayerView.call(this, layerModel, null, gmapsMap);
 };
 _.extend(GMapsBaseLayerView.prototype, GMapsLayerView.prototype, {
   _update: function() {
     var m = this.model;
     var types = {
-      "roadmap": google.maps.MapTypeId.ROADMAP,
-      "satellite": google.maps.MapTypeId.SATELLITE,
-      "terrain": google.maps.MapTypeId.TERRAIN
+      "roadmap":      google.maps.MapTypeId.ROADMAP,
+      "gray_roadmap": google.maps.MapTypeId.ROADMAP,
+      "satellite":    google.maps.MapTypeId.SATELLITE,
+      "terrain":      google.maps.MapTypeId.TERRAIN
     };
 
     this.gmapsMap.setOptions({
       mapTypeId: types[m.get('base_type')]
     });
 
-    this.gmapsMap.setOptions({ 
+    this.gmapsMap.setOptions({
       styles: m.get('style') || DEFAULT_MAP_STYLE
     });
   },
@@ -229,15 +241,20 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
 
     cdb.geo.MapView.prototype.initialize.call(this);
     var center = this.map.get('center');
-    this.map_googlemaps = new google.maps.Map(this.el, {
-      center: new google.maps.LatLng(center[0], center[1]),
-      zoom: this.map.get('zoom'),
-      minZoom: this.map.get('minZoom'),
-      maxZoom: this.map.get('maxZoom'),
-      disableDefaultUI: true,
-      mapTypeControl:false,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
+    if(!this.options.map_object) {
+      this.map_googlemaps = new google.maps.Map(this.el, {
+        center: new google.maps.LatLng(center[0], center[1]),
+        zoom: this.map.get('zoom'),
+        minZoom: this.map.get('minZoom'),
+        maxZoom: this.map.get('maxZoom'),
+        disableDefaultUI: true,
+        mapTypeControl:false,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      });
+    } else {
+      this.map_googlemaps = this.options.map_object;
+      this.setElement(this.map_googlemaps.getDiv());
+    }
 
 
     this._bindModel();
@@ -267,7 +284,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.map.layers.bind('reset', this._addLayers, this);
 
     this.projector = new cdb.geo.CartoDBLayerGMaps.Projector(this.map_googlemaps);
-    
+
     this.projector.draw = this._ready;
 
   },
@@ -292,6 +309,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   },
 
   _addLayer: function(layer, layers, opts) {
+    opts = opts || {};
     var self = this;
     var lyr, layer_view;
 
@@ -309,7 +327,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
       var idx = _.keys(this.layers).length  - 1;
       var isBaseLayer = idx === 0 || (opts && opts.index === 0);
       // set base layer
-      if(isBaseLayer) {
+      if(isBaseLayer && !opts.no_base_layer) {
         var m = layer_view.model;
         if(m.get('type') == 'GMapsBase') {
           layer_view._update();
@@ -319,6 +337,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         }
       } else {
         idx -= 1;
+        idx = Math.max(0, idx); // avoid -1
         self.map_googlemaps.overlayMapTypes.setAt(idx, layer_view.gmapsLayer);
       }
       layer_view.index = idx;

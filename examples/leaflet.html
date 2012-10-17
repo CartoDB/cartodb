@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../v2/themes/css/all.css" />
+  <!--<script src="../dist/loader.js"></script>-->
+  <script src="../src/cartodb.js"></script>
+  </head>
+    
+  <body>
+    <div id="map" style="height: 800px"></div>
+  </body>
+
+  <!--<script src="../v2/cartodb.full.js"></script>-->
+
+
+  <script>
+
+    function main() {
+
+      var map = L.map('map').setView([0, 0], 3);
+
+      L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
+        attribution: 'stamen'
+      }).addTo(map);
+
+      cartodb.loadLayer(map, {
+        user: 'development',
+        table: 'clubbing',
+        host: 'localhost.lan:3000',
+        protocol: 'http'
+      }).on('done', function(layer) {
+        layer.on('featureOver', function(e, pos, latlng, data) {
+          console.log(e, pos, latlng, data);
+        })
+        //layer.on('featureClick', fn);
+        //layer.on('featureOut', fn);*/
+      }).on('error', function() {
+        console.log("some error occurred");
+      });
+
+
+        /*.on('featureOver', fn)
+        .on('featureClick', fn);
+        .on('featureOut', fn);*/
+
+    }
+
+
+    document.body.onload = function() {
+      cartodb.load('../src/', main);
+    }
+
+
+    /*layer.show();
+    layer.hide();
+    layer.setSQL();
+    layer.setStyle();
+    */
+
+  </script>
+  <script>
+    layer_data  = '{"options":{"type":"CartoDB","active":true,"query":"select * from untitled_table_2","opacity":0.99,"auto_bound":false,"interactivity":"cartodb_id","debug":false,"visible":true,"tiler_domain":"localhost.lan","tiler_port":"8181","tiler_protocol":"http","sql_domain":"cartodb.com","sql_port":"80","sql_protocol":"http","extra_params":{"cache_buster":1349856624615},"cdn_url":"","table_name":"untitled_table_2","user_name":"development","tile_style_history":["/** bubble visualization */#untitled_table_2{  marker-fill: #FF5C00;  marker-line-color: #FFF;  marker-line-width: 2;  marker-line-opacity: 1;  marker-opacity: 0.8;  marker-placement: point;  marker-type: ellipse;  marker-allow-overlap: true;}#untitled_table_2 [ cartodb_id <= 1] {   marker-width: 3.0;}","/** polygon visualization */#untitled_table_2{  marker-fill: #6B0FB2;  marker-opacity: 0.8;  marker-allow-overlap: true;  marker-placement: point;  marker-type: ellipse;  marker-width: 7;  marker-line-width: 2;  marker-line-color: #FFF;  marker-line-opacity: 1;}"],"id":469,"use_server_style":true,"query_history":[],"sql_api_domain":"development.localhost.lan","sql_api_endpoint":"/api/v1/sql","sql_api_port":8080,"tile_style":"/** polygon visualization */#untitled_table_2{  marker-fill: #6B0FB2;  marker-opacity: 0.8;  marker-allow-overlap: true;  marker-placement: point;  marker-type: ellipse;  marker-width: 7;  marker-line-width: 2;  marker-line-color: #FFF;  marker-line-opacity: 1;}","wizard_properties":{"type":"polygon","properties":{"marker-fill":"#6B0FB2","marker-opacity":0.8,"marker-allow-overlap":true,"marker-placement":"point","marker-type":"ellipse","marker-width":7,"marker-line-width":2,"marker-line-color":"#FFF","marker-line-opacity":1},"table":{"id":152,"name":"untitled_table_2","privacy":"PRIVATE","tags":"","schema":[["cartodb_id","number"],["the_geom","geometry","geometry","point"],["description","string"],["name","string"],["created_at","date"],["updated_at","date"]],"updated_at":"2012-10-05T17:48:13+02:00","rows_counted":0,"table_size":4096,"map_id":106,"description":null,"geometry_types":["ST_Point"]},"sql":null,"style":"/** polygon visualization */#untitled_table_2{  marker-fill: #6B0FB2;  marker-opacity: 0.8;  marker-allow-overlap: true;  marker-placement: point;  marker-type: ellipse;  marker-width: 7;  marker-line-width: 2;  marker-line-color: #FFF;  marker-line-opacity: 1;}"}},"kind":"carto","infowindow":{"fields":[{"name":"name","title":true,"position":3},{"name":"updated_at","title":true,"position":5}],"template_name":"table/views/infowindow_dark","template":"<div class=\\"cartodb-popup dark\\">  <a href=\\"#close\\" class=\\"cartodb-popup-close-button close\\">x</a>  <div class=\\"cartodb-popup-content-wrapper\\">    <div class=\\"cartodb-popup-content\\">      {{#content.fields}}        {{#title}}<h4>{{title}}</h4>{{/title}}        <p>{{value}}</p>      {{/content.fields}}    </div>  </div>  <div class=\\"cartodb-popup-tip-container\\"></div></div>"},"id":469, "order":"","type":"carto"}';
+  </script>
+
+
+</html>

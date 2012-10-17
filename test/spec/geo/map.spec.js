@@ -43,9 +43,15 @@ describe("geo.map", function() {
       expect(layer2.get('order')).toEqual(0);
       layers.add(new cdb.geo.CartoDBLayer(),{at: 0});
       expect(layer2.get('order')).toEqual(1);
-
-
     });
+
+    it("should compare equal layers correctly", function() {
+      var layer = new cdb.geo.CartoDBLayer({options: {urlTemplate: 'irrelevant'}});
+      layers.add(layer);
+      var copy = layer.clone();
+      expect(layer.isEqual(copy)).toBeTruthy();
+
+    })
 
   });
   describe("Map", function() {
@@ -70,6 +76,8 @@ describe("geo.map", function() {
       var layer    = new cdb.geo.CartoDBLayer({});
       map.addLayer(layer);
       var base = new cdb.geo.CartoDBLayer({});
+
+      sinon.stub(old, "destroy").yieldsTo("success");
       var r = map.setBaseLayer(base);
       expect(r).toEqual(base);
       expect(map.layers.at(0)).toEqual(base);
@@ -81,6 +89,7 @@ describe("geo.map", function() {
         minZoom: 7
       });
       map.addLayer(layer);
+      sinon.stub(layer, "destroy").yieldsTo("success");
       expect(map.get('maxZoom')).toEqual(8);
       expect(map.get('minZoom')).toEqual(7);
       var layerbase = new cdb.geo.CartoDBLayer({

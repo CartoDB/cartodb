@@ -1,5 +1,4 @@
 cartodb.js
-==========
 
 To use this library in production link to:
 http://libs.cartodb.com/cartodb.js/v2/cartodb.js

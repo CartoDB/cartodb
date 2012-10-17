@@ -336,6 +336,11 @@ div.header.yellow h1 a:hover {
     padding:0 0 7px;
   }
 
+  div.cartodb-popup p.empty, div.cartodb-popup h1.empty  {
+    font-style:italic!important;
+    color:#999999;
+  }
+
 
   /* EMBED CONTENT */
   div.header {
@@ -537,28 +542,33 @@ div.header.yellow h1 a:hover {
     cursor:pointer;
   }
 
-  .infoWindowButtoner {
-    text-align: right;
-    display: inline-block;
-    width: 95%;
-    margin: 15px 5% 0 0;
+
+  /* FOOTER EDIT BUTTONS */
+
+  div.cartodb-edit-buttons {
+    border-top:1px solid rgba(204,204,204,0.5);
+    display:block;
+    width:188px;
+    padding:11px 0 6px;
+    margin-top:10px;
   }
 
-
-  .infoWindowButtoner a.button.grey.small {
+  div.cartodb-edit-buttons a.button.grey.small {
     margin-left: 5px;
     font-size: 13px;
     padding: 6px 8px;
   }
 
-  .infoWindowButtoner .button:first-child {
+  div.cartodb-edit-buttons .button:first-child {
     margin-left:0;
   }
 
-
-  .infoWindowButtoner  .cartodb_id {
-    float:left;
+  div.cartodb-edit-buttons .cartodb_id {
+    display:inline-block;
+    *display:inline;
+    vertical-align:top;
+    zoom:1;
     color: #999;
     font-size: 13px;
-    padding: 10px 0;
+    margin-top:8px;
   }

@@ -45,7 +45,7 @@
     position:absolute;
     top:-9px;
     right:-9px;
-    width:26px; 
+    width:26px;
     height:26px;
     padding:0;
     background:url('../img/light.png') no-repeat 0 -23px;
@@ -100,7 +100,7 @@
     -webkit-margin-before:0em;
     -webkit-margin-after:0em;
   }
-  
+
   div.header h1 {
     padding:0;
     margin:0;
@@ -127,7 +127,7 @@
     font-size: 13px;
     color: #999999;
   }
-  
+
   div.no_description span.cartodb_map_controls {top: 10px; }
 
 
@@ -268,4 +268,3 @@
   div.search_box input.submit:hover {
     cursor:pointer;
   }
-

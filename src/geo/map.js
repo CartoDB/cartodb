@@ -10,7 +10,44 @@ cdb.geo.MapLayer = cdb.core.Model.extend({
   defaults: {
     visible: true,
     type: 'Tiled'
+  },
+  /***
+  * Compare the layer with the received one
+  * @method isEqual
+  * @param layer {Layer}
+  */
+  isEqual: function(layer) {
+    var me = this.toJSON();
+    var other = layer.toJSON();
+    var myType = me.type? me.type : me.options.type;
+    var itsType = other.type? other.type : other.options.type;
+    var myTemplate = me.urlTemplate? me.urlTemplate : me.options.urlTemplate;
+    var itsTemplate = other.urlTemplate? other.urlTemplate : other.options.urlTemplate;
+    if(myType && (myType === itsType)) {
+      if(myType === 'Tiled') {
+        if(myTemplate === itsTemplate) {
+          return true; // tiled and same template
+        } else {
+          return false; // tiled and differente template
+        }
+      } else { // same type but not tiled
+        var myBaseType = me.base_type? me.base_type : me.options.base_type;
+        var itsBaseType = other.base_type? other.base_type : other.options.base_type;
+        if(myBaseType) {
+          if(myBaseType === itsBaseType) {
+            return true;
+          } else {
+            return false;
+          }
+        } else { // not gmail
+          return true;
+        }
+
+      }
+    }
+    return false; // different type
   }
+
 
 });
 
@@ -74,7 +111,10 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     } else {
       this.activate();
     }
-  }
+  },
+
+
+
 });
 
 cdb.geo.Layers = Backbone.Collection.extend({
@@ -127,7 +167,6 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   initialize: function() {
     this.layers = new cdb.geo.Layers();
-
     this.layers.bind('reset', function() {
       if(this.layers.size() >= 1) {
         this._adjustZoomtoLayer(this.layers.models[0]);
@@ -235,6 +274,10 @@ cdb.geo.Map = cdb.core.Model.extend({
       this._adjustZoomtoLayer(layer);
     }
     this.layers.add(layer, opts);
+    this.trigger('layerAdded');
+    if(this.layers.length === 1) {
+      this.trigger('firstLayerAdded');
+    }
     return layer.cid;
   },
 
@@ -267,14 +310,40 @@ cdb.geo.Map = cdb.core.Model.extend({
     return this.layers.at(0);
   },
 
+  /**
+  * gets the url of the template of the tile layer
+  * @method getLayerTemplate
+  */
+  getLayerTemplate: function() {
+    var baseLayer = this.getBaseLayer();
+    if(baseLayer && baseLayer.get('options'))  {
+      return baseLayer.get('options').urlTemplate;
+    }
+  },
+
+
   // remove current base layer and set the specified
   // current base layer is removed
-  setBaseLayer: function(layer) {
+  setBaseLayer: function(layer, opts) {
+    opts = opts || {};
+    var self = this;
     var old = this.layers.at(0);
-    old.destroy();
-    //this.layers.remove(old);
-    this.layers.add(layer, { at: 0 });
-    this._adjustZoomtoLayer(layer);
+    if(old) { // defensive programming FTW!!
+      old.destroy({
+        success: function() {
+          self.layers.add(layer, { at: 0 });
+          self.trigger('baseLayerAdded');
+          self._adjustZoomtoLayer(layer);
+          opts.success && opts.success();
+        },
+        error: opts.error
+      })
+    } else {
+      self.layers.add(layer, { at: 0 });
+      self.trigger('baseLayerAdded');
+      self._adjustZoomtoLayer(layer);
+      opts.success && opts.success();
+    };
     return layer;
   },
 

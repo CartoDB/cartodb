@@ -3,7 +3,11 @@
 <% end %>
 <%= content_for(:js) do %>
   <%= javascript_include_tag :application, :cdb, :keys %>
-  <script type="text/javascript">var username = "<%= current_user.username %>", type = "oauth";</script>
+  <script type="text/javascript">
+    var username = "<%= current_user.username %>"
+      , type = "oauth"
+      , config = JSON.parse('<%=raw frontend_config %>');
+  </script>
 <% end %>
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag :common, :keys, :media => 'all' %>

@@ -1,20 +1,26 @@
 // entry point
 (function() {
-    var cdb = window.cdb = {};
-    window.cdb.config = {};
-    window.cdb.core = {};
-    window.cdb.geo = {};
-    window.cdb.geo.ui = {};
-    window.cdb.geo.geocoder = {};
-    window.cdb.ui = {};
-    window.cdb.ui.common = {};
-    window.cdb.vis = {};
-    window.cdb.decorators = {};
+
+    var root = this;
+
+    var cdb = root.cdb = {};
+
+    cdb.VERSION = '2.0.0';
+
+    root.cdb.config = {};
+    root.cdb.core = {};
+    root.cdb.geo = {};
+    root.cdb.geo.ui = {};
+    root.cdb.geo.geocoder = {};
+    root.cdb.ui = {};
+    root.cdb.ui.common = {};
+    root.cdb.vis = {};
+    root.cdb.decorators = {};
     /**
      * global variables
      */
-    window.JST = window.JST || {};
-    window.cartodb = cdb;
+    root.JST = root.JST || {};
+    root.cartodb = cdb;
 
     cdb.files = [
         "../vendor/jquery.min.js",
@@ -64,7 +70,7 @@
       _.extend(Class.prototype, Backbone.Events);
 
       cdb._loadJST();
-      window.cdb.god = new Backbone.Model();
+      root.cdb.god = new Backbone.Model();
 
       ready && ready();
     };

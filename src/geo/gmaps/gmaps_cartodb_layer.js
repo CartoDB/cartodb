@@ -83,14 +83,14 @@ CartoDBLayer.prototype.addInteraction = function () {
 };
 
 CartoDBLayer.prototype.clear = function () {
-  if (self._interaction) {
+  if (this._interaction) {
     this._interaction.remove();
   }
 };
 
 CartoDBLayer.prototype.update = function () {
   var tilejson = this._tileJSON();
-  this.options.tiles = tilejson.tiles;
+  this.opts.tiles = tilejson.tiles;
   this.cache = {};
   this._interaction.tilejson(tilejson);
 };
@@ -159,9 +159,18 @@ CartoDBLayer.prototype.setInteraction = function(enable) {
 
 CartoDBLayer.prototype.setOptions = function (opts) {
   _.extend(this.opts, opts);
+  if(this.opts.interactivity) {
+    var i = this.opts.interactivity
+    this.opts.interactivity = i.join ? i.join(','): i;
+  }
   this.update();
 }
 
+CartoDBLayer.prototype._checkLayer = function() {
+  if (!this.opts.added) {
+    throw new Exception('the layer is not still added to the map');
+  }
+}
 /**
  * Change query of the tiles
  * @params {str} New sql for the tiles
@@ -169,16 +178,10 @@ CartoDBLayer.prototype.setOptions = function (opts) {
 */
 CartoDBLayer.prototype.setQuery = function(sql) {
 
-  if (!this.options.added) {
-    if (this.options.debug) {
-      throw('the layer is not still added to the map');
-    } else { return }
-  }
+  this._checkLayer();
 
-  if (!isNaN(sql)) {
-    if (this.options.debug) {
-     throw(sql + ' is not a valid query');
-    } else { return }
+  if (!sql) {
+    throw new Exception('sql is not a valid query');
   }
 
   /*if (fitToBounds)
@@ -186,30 +189,24 @@ CartoDBLayer.prototype.setQuery = function(sql) {
     */
 
   // Set the new value to the layer options
-  this.options.query = sql;
+  this.opts.query = sql;
   this._update();
 }
 
 CartoDBLayer.prototype.isVisible = function() {
-  return this.options.visible;
+  return this.opts.visible;
 }
 
 CartoDBLayer.prototype.setCartoCSS = function(style, version) {
 
-  if (!this.options.added) {
-    if (this.options.debug) {
-      throw('the layer is not still added to the map');
-    } else { return }
-  }
+  this._checkLayer();
 
-  if (!isNaN(style)) {
-    if (this.options.debug) {
-      throw(style + ' is not a valid style');
-    } else { return }
+  if (!style) {
+    throw new Exception('should specify a valid style');
   }
 
   // Set the new value to the layer options
-  this.options.tile_style = style;
+  this.opts.tile_style = style;
   this._update();
 }
 
@@ -220,20 +217,14 @@ CartoDBLayer.prototype.setCartoCSS = function(style, version) {
  */
 CartoDBLayer.prototype.setInteractivity = function(fieldsArray) {
 
-  if (!this.options.added) {
-    if (this.options.debug) {
-      throw('the layer is not still added to the map');
-    } else { return }
-  }
+  this._checkLayer();
 
-  if (!isNaN(value)) {
-    if (this.options.debug) {
-      throw(value + ' is not a valid setInteractivity value');
-    } else { return }
+  if (!fieldsArray) {
+    throw new Exception('should specify fieldsArray');
   }
 
   // Set the new value to the layer options
-  this.options.interactivity = fieldsArray.join(',');
+  this.opts.interactivity = fieldsArray.join ? fieldsArray.join(','): fieldsArray;
   // Update tiles
   this._update();
 }

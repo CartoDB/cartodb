@@ -1200,6 +1200,7 @@ class Table < Sequel::Model(:user_tables)
   end
   
   def set_trigger_the_geom_webmercator
+    return true unless self.schema(:reload => true).flatten.include?(THE_GEOM)
     owner.in_database(:as => :superuser) do |user_database|      
       user_database.run(<<-TRIGGER
         DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};

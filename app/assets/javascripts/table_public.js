@@ -17,11 +17,9 @@
 //= require_tree ../../../lib/assets/javascripts/cartodb/common
 //= require ../../../lib/assets/javascripts/cartodb/table/infowindow
 //= require ../../../lib/assets/javascripts/cartodb/table/row_view
-//= require ../../../lib/assets/javascripts/cartodb/table/public_row_view
 //= require ../../../lib/assets/javascripts/cartodb/table/header_view
-//= require ../../../lib/assets/javascripts/cartodb/table/public_header_view
 //= require ../../../lib/assets/javascripts/cartodb/table/tableview
-//= require ../../../lib/assets/javascripts/cartodb/table/public_tableview
+//= require ../../../lib/assets/javascripts/cartodb/table/mapview
 //= require_tree ../../../lib/assets/javascripts/cartodb/table/views
 //= require_tree ../../../lib/assets/javascripts/cartodb/table_public
 //= require ../../../lib/assets/javascripts/cartodb/table_public/table_public

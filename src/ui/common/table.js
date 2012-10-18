@@ -100,7 +100,7 @@ cdb.ui.common.RowView = cdb.core.View.extend({
 
     var tdIndex = 0;
     if(this.options.row_header) {
-        var td = $('<td>');
+        var td = $('<td class="rowHeader">');
         td.append(self.valueView('', ''));
         td.attr('data-x', tdIndex);
         tdIndex++;

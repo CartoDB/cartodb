@@ -237,10 +237,10 @@ describe("geo.map", function() {
       map.addLayer(layer);
 
       spyOn(mapView.map_leaflet,'addLayer');
-      layer    = new cdb.geo.PlainLayer({});
-      map.addLayer(layer, {at: 0});
+      var b = new cdb.geo.PlainLayer({});
+      map.addLayer(b, {at: 0});
 
-      expect(mapView.map_leaflet.addLayer.mostRecentCall.args[1]).toEqual(true);
+      expect(mapView.map_leaflet.addLayer.mostRecentCall.args[0].model).toEqual(layer);
       //expect(mapView.map_leaflet.addLayer).toHaveBeenCalledWith(mapView.layers[layer.cid].leafletLayer, true);
     });
 

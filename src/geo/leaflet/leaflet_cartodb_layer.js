@@ -101,6 +101,7 @@ L.CartoDBLayer = L.TileLayer.extend({
    */
   onRemove: function(map) {
     this.options.added = false;
+    L.TileLayer.prototype.onRemove.call(this, map);
   },
 
   /**

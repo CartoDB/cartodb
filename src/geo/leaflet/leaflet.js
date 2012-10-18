@@ -146,6 +146,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   },
 
   _addLayer: function(layer, layers, opts) {
+    var self = this;
     var lyr, layer_view;
 
     layer_view = cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
@@ -153,15 +154,37 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       return;
     }
 
+    var appending = !opts || opts.index === undefined;
+    // since leaflet does not support layer ordering 
+    // add the layers should be removed and added again
+    // if the layer is being appended do not clear
+    if(!appending) {
+      for(var i in this.layers) {
+        this.map_leaflet.removeLayer(this.layers[i]);
+      }
+    }
+
     this.layers[layer.cid] = layer_view;
 
-    if (layer_view) {
-      var isBaseLayer = this.layers.length === 1 || (opts && opts.index === 0);
-      cdb.geo.LeafletMapView.addLayerToMap(layer_view, isBaseLayer, this.map_leaflet);
-      this.trigger('newLayerView', layer_view, this);
+    // add them again, in correct order
+    if(appending) {
+      cdb.geo.LeafletMapView.addLayerToMap(layer_view, self.map_leaflet);
     } else {
-      cdb.log.error("layer type not supported");
+      this.map.layers.each(function(layerModel) {
+        var v = self.layers[layerModel.cid];
+        if(v) {
+          cdb.geo.LeafletMapView.addLayerToMap(v, self.map_leaflet);
+        }
+      });
     }
+
+    // update all
+    for(var i in this.layers) {
+      this.layers[i].reload();
+    }
+
+
+    this.trigger('newLayerView', layer_view, this);
   },
 
   latLonToPixel: function(latlon) {
@@ -230,8 +253,8 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     return layer_view;
   },
 
-  addLayerToMap: function(layer_view, isBaseLayer, map) {
-    map.addLayer(layer_view.leafletLayer, isBaseLayer);
+  addLayerToMap: function(layer_view, map) {
+    map.addLayer(layer_view.leafletLayer);
   }
 });
 

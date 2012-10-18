@@ -82,7 +82,7 @@ CartoDBLayer.prototype.addInteraction = function () {
   this.setInteraction(true);
 };
 
-CartoDBLayer.prototype.remove = function () {
+CartoDBLayer.prototype.clear = function () {
   if (self._interaction) {
     this._interaction.remove();
   }
@@ -321,8 +321,8 @@ _.extend(
   },
 
   remove: function() {
-    GMapsLayerView.prototype.remove.call(this);
-    this.gmapsLayer.remove();
+    cdb.geo.GMapsLayerView.prototype.remove.call(this);
+    this.clear();
   },
 
   featureOver: function(e, latlon, pixelPos, data) {

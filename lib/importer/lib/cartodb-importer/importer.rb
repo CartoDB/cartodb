@@ -209,9 +209,9 @@ module CartoDB
                 @data_import.log_update('file preprocessed')
               rescue
                 @data_import.reload
-                errors << OpenStruct.new({ :description => @data_import.get_error_text,
-                                             :stack =>  @data_import.log_json,
-                                             :code=>@data_import.error_code })
+                errors << OpenStruct.new({ :description => @data_import.get_error_text[:title],
+                                           :stack       => @data_import.get_error_text[:what_about],
+                                           :code        => @data_import.error_code })
               end
             else
               processed_imports << data
@@ -239,7 +239,7 @@ module CartoDB
                 @data_import.log_update("#{data[:ext]} successfully loaded")
               rescue => e
                 @data_import.reload
-                errors << OpenStruct.new({ :description => @data_import.get_error_text,
+                errors << OpenStruct.new({ :description => @data_import.get_error_text[:title],
                                            :stack       => @data_import.log_json,
                                            :code        => @data_import.error_code })
               end

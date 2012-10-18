@@ -9,12 +9,13 @@
   <script>
     var table_name = '<%= @table.name %>'
       , table_id = '<%= @table.id %>'
-      , user_data = <%=raw @table.owner.to_json %>
+      , user_name = '<%=raw @table.owner.username %>'
       , map = <%=raw @table.map.to_json %>
       , layers = [
        <%=raw @table.map.layers.map { |layer| layer.values.to_json }.join(',') %>
        ]
       , config = JSON.parse('<%=raw frontend_config %>')
+      , vizjson = <%=raw map_vizzjson(@table.map, :full => false).to_json %>
 
 
   </script>

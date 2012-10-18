@@ -488,11 +488,11 @@
                 &.simple {
                   background: image-url('layout/wizard-simple.png') no-repeat 3px 3px;
                   &.polygon {background: image-url('layout/wizard-simple-polygon.png') no-repeat 3px 3px;}
-                  &.polyline {background: image-url('layout/wizard-simple-polyline.png') no-repeat 3px 3px;}
+                  &.line {background: image-url('layout/wizard-simple-polyline.png') no-repeat 3px 3px;}
                 }
                 &.choropleth {
                   background: image-url('layout/wizard-choropleth.png') no-repeat 3px 3px;
-                  &.polyline {background: image-url('layout/wizard-choropleth-polyline.png') no-repeat 3px 3px;}
+                  &.line {background: image-url('layout/wizard-choropleth-polyline.png') no-repeat 3px 3px;}
                 }
                 &.bubble {background: image-url('layout/wizard-bubble.png') no-repeat 3px 3px;}
                 &.density {background: image-url('layout/wizard-density-hex.png') no-repeat 3px 3px;}

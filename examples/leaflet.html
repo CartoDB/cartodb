@@ -19,22 +19,9 @@
 
       var map = L.map('map').setView([0, 0], 3);
 
-      /*L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
+      L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', {
         attribution: 'stamen'
       }).addTo(map);
-      */
-
-      cartodb.createLayer(map, {
-        kind: 'plain',
-        options: 
-        {
-          color: '#F00'
-        }
-      }).on('done', function(layer) {
-        map.addLayer(layer);
-      }).on('error', function() {
-        console.log("some error occurred");
-      });
 
       cartodb.createLayer(map, {
         user: 'development',

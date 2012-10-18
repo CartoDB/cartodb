@@ -162,6 +162,83 @@ CartoDBLayer.prototype.setOptions = function (opts) {
   this.update();
 }
 
+/**
+ * Change query of the tiles
+ * @params {str} New sql for the tiles
+ * @params {Boolean}  Choose if the map fits to the sql results bounds (thanks to @fgblanch)
+*/
+CartoDBLayer.prototype.setQuery = function(sql) {
+
+  if (!this.options.added) {
+    if (this.options.debug) {
+      throw('the layer is not still added to the map');
+    } else { return }
+  }
+
+  if (!isNaN(sql)) {
+    if (this.options.debug) {
+     throw(sql + ' is not a valid query');
+    } else { return }
+  }
+
+  /*if (fitToBounds)
+    this.setBounds(sql)
+    */
+
+  // Set the new value to the layer options
+  this.options.query = sql;
+  this._update();
+}
+
+CartoDBLayer.prototype.isVisible = function() {
+  return this.options.visible;
+}
+
+CartoDBLayer.prototype.setCartoCSS = function(style, version) {
+
+  if (!this.options.added) {
+    if (this.options.debug) {
+      throw('the layer is not still added to the map');
+    } else { return }
+  }
+
+  if (!isNaN(style)) {
+    if (this.options.debug) {
+      throw(style + ' is not a valid style');
+    } else { return }
+  }
+
+  // Set the new value to the layer options
+  this.options.tile_style = style;
+  this._update();
+}
+
+
+/**
+ * Change the query when clicks in a feature
+ * @params { Boolean || String } New sql for the request
+ */
+CartoDBLayer.prototype.setInteractivity = function(fieldsArray) {
+
+  if (!this.options.added) {
+    if (this.options.debug) {
+      throw('the layer is not still added to the map');
+    } else { return }
+  }
+
+  if (!isNaN(value)) {
+    if (this.options.debug) {
+      throw(value + ' is not a valid setInteractivity value');
+    } else { return }
+  }
+
+  // Set the new value to the layer options
+  this.options.interactivity = fieldsArray.join(',');
+  // Update tiles
+  this._update();
+}
+
+
 CartoDBLayer.prototype._tileJSON = function () {
     return {
         tilejson: '2.0.0',

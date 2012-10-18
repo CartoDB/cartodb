@@ -31,10 +31,10 @@ _.extend(
       if (x < 0 || x >= tileRange) {
         x = (x % tileRange + tileRange) % tileRange;
       }
-      if(this.layerModel.get('tms')) {
+      if(this.model.get('tms')) {
         y = tileRange - y - 1;
       }
-      var urlPattern = this.layerModel.get('urlTemplate');
+      var urlPattern = this.model.get('urlTemplate');
       return urlPattern
                   .replace("{x}",x)
                   .replace("{y}",y)

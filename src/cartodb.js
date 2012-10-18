@@ -50,12 +50,19 @@
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/ui/search.js',
-        "geo/cartodb-leaflet.js",
-        'geo/leaflet.geometry.js',
-        'geo/leaflet.js',
+
+        'geo/leaflet/leaflet.geometry.js',
+        'geo/leaflet/leaflet_base.js',
+        'geo/leaflet/leaflet_plainlayer.js',
+        'geo/leaflet/leaflet_tiledlayer.js',
+        'geo/leaflet/leaflet_cartodb_layer.js',
+        'geo/leaflet/leaflet.js',
+
+
         'geo/gmaps/gmaps_base.js',
         'geo/gmaps/gmaps_baselayer.js',
         'geo/gmaps/gmaps_plainlayer.js',
+        'geo/gmaps/gmaps_tiledlayer.js',
         'geo/gmaps/gmaps_cartodb_layer.js',
         'geo/gmaps/gmaps.js',
 

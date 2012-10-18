@@ -387,11 +387,82 @@
         /* wizard */
         div.wizard {
           display:block;
+          width:100%;
           overflow:hidden;
 
+          div.wizard_wrap {
+            position:absolute;
+            overflow:hidden;
+            top:60px;
+            left:0;
+            right:0;
+            height:151px;
+            
+            &:after {
+              content:'';
+              position:absolute;
+              top:5px;
+              bottom:5px;
+              right:0px;
+              width:30px;
+              @include background(linear-gradient(left, rgba(white,0), rgba(white,1)));
+              z-index:1;
+            }
+            &:before {
+              content:'';
+              position:absolute;
+              top:5px;
+              bottom:5px;
+              left:0px;
+              width:30px;
+              @include background(linear-gradient(left, rgba(white,1), rgba(white,0)));
+              z-index:1;
+            }
+          }
+
+          div.wizard_arrows {
+            a {
+              position:absolute;
+              top:55px;
+              width:43px;
+              height:43px;
+              z-index:10;
+              @include icons-sprite(wizard-arrows);
+
+              &.left {
+                left:8px;
+                &:hover {
+                  @include icons-sprite(wizard-arrows, $offset-y:-43px);
+                }
+              }
+
+              &.right {
+                @include icons-sprite(wizard-arrows, $offset-x:-43px);
+                right:8px;
+                &:hover {
+                  @include icons-sprite(wizard-arrows, $offset-x:-43px, $offset-y:-43px);
+                }
+              }
+
+              &.disabled {
+                @include opacity(0.3);
+                &.left:hover {
+                  @include icons-sprite(wizard-arrows);
+                }
+
+                &.right:hover {
+                  @include icons-sprite(wizard-arrows, $offset-x:-43px);
+                }
+              }
+            }
+          }
+
           ul.vis_options {
+            position:absolute;
+            top:0; left:0; bottom:0;
             display:block;
             padding:0 30px;
+            width:1000px;
             letter-spacing:-4px;
             border-bottom:1px solid #E5E5E5;
             @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
@@ -414,10 +485,17 @@
                 @include border-radius(5px);
                 @include text-indent();
 
-                &.simple {background: image-url('layout/wizard-simple.png') no-repeat 3px 3px;}
-                &.choropleth {background: image-url('layout/wizard-choropleth.png') no-repeat 3px 3px;}
+                &.simple {
+                  background: image-url('layout/wizard-simple.png') no-repeat 3px 3px;
+                  &.polygon {background: image-url('layout/wizard-simple-polygon.png') no-repeat 3px 3px;}
+                  &.polyline {background: image-url('layout/wizard-simple-polyline.png') no-repeat 3px 3px;}
+                }
+                &.choropleth {
+                  background: image-url('layout/wizard-choropleth.png') no-repeat 3px 3px;
+                  &.polyline {background: image-url('layout/wizard-choropleth-polyline.png') no-repeat 3px 3px;}
+                }
                 &.bubble {background: image-url('layout/wizard-bubble.png') no-repeat 3px 3px;}
-                &.density {background: image-url('layout/wizard-density.png') no-repeat 3px 3px;}
+                &.density {background: image-url('layout/wizard-density-hex.png') no-repeat 3px 3px;}
 
                 &:hover {
                   border-color:#666666;

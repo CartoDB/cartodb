@@ -141,38 +141,51 @@
                 display:block;
                 padding:0 5px;
 
-                a {
-                  @include inline-block();
-                  margin:6px 0 5px 5px;
-                  color:#7C7C7C;
+                &.nonInteractuable {
+                  padding: 10px 5px;
 
-                  &:after {
+                  span {
                     @include inline-block();
-                    position:relative;
-                    left:2px;
-                    border-top:3px solid #7C7C7C;
-                    border-right:3px solid transparent;
-                    border-left:3px solid transparent;
-                    content:'';
-                  }
+                    margin:6px 0 5px 5px;
+                    color:#7C7C7C;
 
-                  &:hover {
-                    color:#565656;
-                    text-decoration:none;
-                    &:after {border-top-color:#565656;}
-                  }
-
-                  span.geo {
-                    @include border-radius(2px);
-                    margin:0 0 0 3px;
-                    padding:1px 2px;
-                    border:1px solid #C17400;
-                    background:orange;
-                    color:white;
-                    text-decoration:uppercase;
                   }
                 }
 
+                &.interactuable {
+                  a {
+                    @include inline-block();
+                    margin:6px 0 5px 5px;
+                    color:#7C7C7C;
+
+
+                    &:after {
+                      @include inline-block();
+                      position:relative;
+                      left:2px;
+                      border-top:3px solid #7C7C7C;
+                      border-right:3px solid transparent;
+                      border-left:3px solid transparent;
+                      content:'';
+                    }
+
+                    &:hover {
+                      color:#565656;
+                      text-decoration:none;
+                      &:after {border-top-color:#565656;}
+                    }
+
+                    span.geo {
+                      @include border-radius(2px);
+                      margin:0 0 0 3px;
+                      padding:1px 2px;
+                      border:1px solid #C17400;
+                      background:orange;
+                      color:white;
+                      text-decoration:uppercase;
+                    }
+                  }
+                }
                 // Default and then replace it
                 @include default-input();
 
@@ -326,7 +339,7 @@
             &:first-child {
               position:relative;
 
-              & > div {
+              & > div.row_header {
                 @include border-radius(3px);
                 @include background(linear-gradient(#FAFAFA,#E8E8E8));
                 display:none;

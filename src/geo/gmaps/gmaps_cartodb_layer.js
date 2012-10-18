@@ -1,7 +1,8 @@
 
 (function() {
 // if google maps is not defined do not load the class
-if(typeof(google) != "undefined" && typeof(google.maps) != "undefined") {
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
+  return;
 
 // helper to get pixel position from latlon
 var Projector = function(map) { this.setMap(map); };
@@ -42,6 +43,7 @@ var CartoDBLayer = function(opts) {
         sql_port:       "80",
         sql_protocol:   "http"
   };
+
   this.opts = _.defaults(opts, default_options);
   opts.tiles = [
     this._tilesUrl()
@@ -86,24 +88,13 @@ CartoDBLayer.prototype.remove = function () {
   }
 };
 
-CartoDBLayer.prototype._refresh = function() {
-  var self = this;
-  this.options.map.overlayMapTypes.forEach(
-    function(layer, i) {
-      if (layer == self) {
-        self.map.overlayMapTypes.setAt(i, self);
-        return;
-      }
-    }
-  );
-};
-
 CartoDBLayer.prototype.update = function () {
   var tilejson = this._tileJSON();
   this.options.tiles = tilejson.tiles;
   this.cache = {};
   this._interaction.tilejson(tilejson);
 };
+
 /**
  * Hide the CartoDB layer
  */
@@ -275,7 +266,6 @@ CartoDBLayer.prototype._tilesUrl = function(ext) {
       return cartodb_url;
 }
 
-} //end defined google
 
 cdb.geo.CartoDBLayerGMaps = CartoDBLayer;
 

@@ -123,93 +123,63 @@ var Vis = cdb.core.View.extend({
     }
   },
 
+  createLayer: function(layerData, opts) {
+    var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
+    return this.mapView.createLayer(layerModel);
+  },
+
+  addInfowindow: function(layerView) {
+    var model = layerView.model;
+    var eventType = layerView.model.get('eventType') || 'featureClick';
+    var infowindow = Overlay.create('infowindow', this, model.get('infowindow'), true);
+    this.mapView.addInfowindow(infowindow);
+
+    var infowindowFields = layerView.model.get('infowindow');
+
+    // if the layer has no infowindow just pass the interaction
+    // data to the infowindow
+    layerView.bind(eventType, function(e, latlng, pos, interact_data) {
+        var content = interact_data;
+        if(infowindowFields) {
+          var render_fields = [];
+          var fields = infowindowFields.fields;
+          for(var j = 0; j < fields.length; ++j) {
+            var f = fields[j];
+            render_fields.push({
+              title: f.title ? f.name: null,
+              value: interact_data[f.name],
+              index: j ? j:null // mustache does not recognize 0 as false :( 
+            });
+          }
+          content = render_fields;
+        }
+        infowindow.model.set({ content:  { fields: content} });
+        infowindow.setLatLng(latlng).showInfowindow();
+    });
+  },
+
   loadLayer: function(layerData, opts) {
     var map = this.map;
     var mapView = this.mapView;
     layerData.type = layerData.kind;
     var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
+    var layerView = mapView.getLayerByCid(layer_cid);
     // add the associated overlays
     if(layerData.infowindow) {
-        var infowindow = Overlay.create('infowindow', this, layerData.infowindow, true);
-        mapView.addInfowindow(infowindow);
-        var dataLayer = mapView.getLayerByCid(layer_cid);
-        dataLayer.cid = layer_cid;
-        var eventType = '';
-        layerData.infowindow.eventType?
-          eventType = layerData.infowindow.eventType:
-          eventType = 'featureClick';
-        dataLayer.bind(eventType, function(e, latlng, pos, interact_data) {
-          // prepare data
-          var layer = map.layers.getByCid(this.cid);
-          // infoWindow only shows if the layer is active
-          if(layer.get('active')) {
-            var render_fields = [];
-            var fields = layer.get('infowindow').fields;
-            for(var j = 0; j < fields.length; ++j) {
-              var f = fields[j];
-              render_fields.push({
-                title: f.title ? f.name: null,
-                value: interact_data[f.name],
-                index: j?j:null
-              });
-            }
-            infowindow.model.set({ content:  { fields: render_fields } });
-            infowindow.setLatLng(latlng).showInfowindow();
-          }
-        });
-        dataLayer.bind('featureOver', function(e, latlon, pxPos, data) {
-          $(document.body).css('cursor', 'pointer');
-        });
-        dataLayer.bind('featureOut', function() {
-          $(document.body).css('cursor', 'auto');
-        });
-    }
-
-    return mapView.getLayerByCid(layer_cid);
-
-  },
-
-  /**
-   * addsInfowindow to the map
-   */
-  addLayerInfowindow: function(layerView) {
-      var layerModel = layerView.model;
-
-      // create the infowindow
-      var infowindow = Overlay.create('infowindow', this, 
-        layerModel.get('infowindow'), true);
-
-      this.mapView.addInfowindow(infowindow);
-      eventType = layerModel.get('infowindow').eventType || 'featureClick';
-
-      layerView.bind(eventType, function(e, latlng, pos, interact_data) {
-        // infoWindow only shows if the layer is active
-        if(layerModel.get('active')) {
-          var render_fields = [];
-          var fields = layer.get('infowindow').fields;
-          for(var j = 0; j < fields.length; ++j) {
-            var f = fields[j];
-            render_fields.push({
-              title: f.title ? f.name: null,
-              value: interact_data[f.name],
-              index: j?j:null
-            });
-          }
-          infowindow.model.set({ content:  { fields: render_fields } });
-          infowindow.setLatLng(latlng).showInfowindow();
-        }
-      });
-
-      layerView.bind('featureOver', function(e, latlon, pxPos, data) {
+      this.addInfowindow(layerView);
+      dataLayer.bind('featureOver', function(e, latlon, pxPos, data) {
         $(document.body).css('cursor', 'pointer');
       });
-
-      layerView.bind('featureOut', function() {
+      dataLayer.bind('featureOut', function() {
         $(document.body).css('cursor', 'auto');
       });
+    }
+
+    return layerView;
 
   }
+
 });
 
 cdb.vis.Vis = Vis;

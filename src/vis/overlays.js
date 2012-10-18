@@ -42,7 +42,7 @@ cdb.vis.Overlay.register('infowindow', function(data, vis) {
     fields: data.fields
   });
 
-  var templateType = data.templateType || 'mustache'
+  var templateType = data.templateType || 'mustache';
 
   var infowindow = new cdb.geo.ui.Infowindow({
      model: infowindowModel,

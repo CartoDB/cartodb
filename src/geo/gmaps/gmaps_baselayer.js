@@ -1,13 +1,17 @@
 
 (function() {
 
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
+  return;
+
 var GMapsBaseLayerView = function(layerModel, gmapsMap) {
   cdb.geo.GMapsLayerView.call(this, layerModel, null, gmapsMap);
 };
 
 _.extend(
   GMapsBaseLayerView.prototype,
-  cdb.geo.GMapsLayerView.prototype, {
+  cdb.geo.GMapsLayerView.prototype,
+  {
   _update: function() {
     var m = this.model;
     var types = {

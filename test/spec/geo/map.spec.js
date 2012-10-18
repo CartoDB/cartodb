@@ -222,14 +222,14 @@ describe("geo.map", function() {
       layer    = new cdb.geo.CartoDBLayer({});
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetLayerCartoDBView);
+      expect(layerView.setQuery).not.toEqual(undefined);
     });
 
     it("should create a PlaiLayer when the layer is cartodb", function() {
       layer    = new cdb.geo.PlainLayer({});
       var lyr = map.addLayer(layer);
       var layerView = mapView.getLayerByCid(lyr);
-      expect(layerView.__proto__.constructor).toEqual(cdb.geo.LeafLetPlainLayerView);
+      expect(layerView.setQuery).not.toEqual(cdb.geo.LeafLetPlainLayerView);
     });
 
     it("should insert layers in specified order", function() {

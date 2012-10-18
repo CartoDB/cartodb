@@ -1,9 +1,12 @@
 
 (function() {
 
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
+  return;
+
 var GMapsPlainLayerView = function(layerModel, gmapsMap) {
   this.color = layerModel.get('color')
-  GMapsLayerView.call(this, layerModel, this, gmapsMap);
+  cdb.geo.GMapsLayerView.call(this, layerModel, this, gmapsMap);
 };
 
 _.extend(
@@ -11,7 +14,7 @@ _.extend(
   cdb.geo.GMapsLayerView.prototype, {
 
   _update: function() {
-    this.color = layerModel.get('color')
+    this.color = this.model.get('color')
     this.refreshView();
   },
 

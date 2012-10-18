@@ -89,17 +89,27 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.map_googlemaps.setCenter(c);
   },
 
-  _addLayer: function(layer, layers, opts) {
-    opts = opts || {};
-    var self = this;
-    var lyr, layer_view;
-
-    var layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
+  createLayer: function(layer) {
+    var layer_view,
+        layerClass = this.layerTypeMap[layer.get('type').toLowerCase()];
 
     if (layerClass) {
       layer_view = new layerClass(layer, this.map_googlemaps);
     } else {
       cdb.log.error("MAP: " + layer.get('type') + " can't be created");
+    }
+    return layer_view;
+  },
+
+  _addLayer: function(layer, layers, opts) {
+    opts = opts || {};
+    var self = this;
+    var lyr, layer_view;
+
+    layer_view = this.createLayer(layer);
+
+    if (!layer_view) {
+      return;
     }
 
     this.layers[layer.cid] = layer_view;

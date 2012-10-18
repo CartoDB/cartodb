@@ -42,7 +42,7 @@ if(typeof(L) != "undefined") {
     this.leafletLayer = leafletLayer;
     this.leafletMap = leafletMap;
     this.model = layerModel;
-    this.model.bind('change', this._update, this);
+    this.model.bind('change', this._modelUpdated, this);
   };
 
   _.extend(LeafLetLayerView.prototype, Backbone.Events);
@@ -79,10 +79,6 @@ if(typeof(L) != "undefined") {
     var leafletLayer = new PlainLayer(layerModel.attributes);
     LeafLetLayerView.call(this, layerModel, leafletLayer, leafletMap);
   };
-  _.extend(LeafLetPlainLayerView.prototype, LeafLetLayerView.prototype, {
-    _update: function() {
-    }
-  });
   cdb.geo.LeafLetPlainLayerView = LeafLetPlainLayerView;
 
   // -- tiled layer view
@@ -95,7 +91,7 @@ if(typeof(L) != "undefined") {
   };
 
   _.extend(LeafLetTiledLayerView.prototype, LeafLetLayerView.prototype, {
-    _update: function() {
+    _modelUpdated: function() {
       _.defaults(this.leafletLayer.options, _.clone(this.model.attributes));
       this.leafletLayer.setUrl(this.model.get('urlTemplate'));
     }
@@ -136,14 +132,18 @@ if(typeof(L) != "undefined") {
       self.featureClick  && self.featureClick.apply(opts, arguments);
     };
 
-    leafletLayer = new L.CartoDBLayer(opts);
-    LeafLetLayerView.call(this, layerModel, leafletLayer, leafletMap);
+    L.CartoDBLayer.call(this, opts);
+    LeafLetLayerView.call(this, layerModel, this, leafletMap);
   };
 
 
-  _.extend(LeafLetLayerCartoDBView.prototype, LeafLetLayerView.prototype, {
+  _.extend(
+    LeafLetLayerCartoDBView.prototype, 
+    LeafLetLayerView.prototype, 
+    L.CartoDBLayer.prototype,
+    {
 
-    _update: function() {
+    _modelUpdated: function() {
       var attrs = _.clone(this.model.attributes);
       // if we want to use the style stored in the server
       // but we want to store it in the layer model
@@ -169,7 +169,7 @@ if(typeof(L) != "undefined") {
     },
 
     reload: function() {
-      this.leafletLayer.layer.redraw();
+      this.redraw();
     }
 
   });
@@ -311,6 +311,9 @@ if(typeof(L) != "undefined") {
       delete this.geometries[geo.cid];
     },
 
+    createLayer: function(layer) {
+      return cdb.geo.LeafletMapView.createLayer(layer, this.map_leaflet);
+    },
 
     _addLayer: function(layer, layers, opts) {
       var lyr, layer_view;

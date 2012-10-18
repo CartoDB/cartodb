@@ -9,7 +9,7 @@ describe('api.layers', function() {
 
     it("should fecth layer when user and pass are specified", function() {
       spyOn($, 'getJSON');
-      cartodb.loadLayer(map, {
+      cartodb.createLayer(map, {
         user: 'development',
         table: 'clubbing',
         host: 'localhost.lan:3000',
@@ -20,30 +20,33 @@ describe('api.layers', function() {
 
     it("should fecth layer when a url is specified", function() {
       spyOn($, 'getJSON');
-      cartodb.loadLayer(map, 'http://test.com/layer.json');
+      cartodb.createLayer(map, 'http://test.com/layer.json');
       expect($.getJSON).toHaveBeenCalled();
     });
 
     it("should not fecth layer when kind and options are specified", function() {
       spyOn($, 'getJSON');
-      cartodb.loadLayer(map, { kind: 'plain', options: {} });
+      cartodb.createLayer(map, { kind: 'plain', options: {} });
       expect($.getJSON).not.toHaveBeenCalled();
     });
 
-    it("should create a layer in the map", function() {
+    it("should create a layer", function() {
+      var layer;
       runs(function() {
-        cartodb.loadLayer(map, { kind: 'plain', options: {} });
+        cartodb.createLayer(map, { kind: 'plain', options: {} }, function(l) {
+          layer = l;
+        });
       });
-      waits(10);
+      waits(100);
       runs(function() {
-        expect(map.viz.mapView.map.layers.size()).toEqual(1);
+        expect(layer).not.toEqual(undefined);
       });
     });
 
     it("should manage errors", function() {
       var s = sinon.spy();
       runs(function() {
-        cartodb.loadLayer(map, { options: {} }).on('error', s);
+        cartodb.createLayer(map, { options: {} }).on('error', s);
       });
       waits(10);
       runs(function() {
@@ -56,8 +59,8 @@ describe('api.layers', function() {
       var s = sinon.spy();
       var s2 = sinon.spy();
       runs(function() {
-        cartodb.loadLayer(map, { kind: 'plain', options: {} }, s);
-        cartodb.loadLayer(map, layer={ kind: 'plain', options: {} }, { rambo: 'thebest'} ,s2);
+        cartodb.createLayer(map, { kind: 'plain', options: {} }, s);
+        cartodb.createLayer(map, layer={ kind: 'plain', options: {} }, { rambo: 'thebest'} ,s2);
       });
       waits(10);
       runs(function() {

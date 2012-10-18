@@ -1,12 +1,16 @@
 
 (function() {
+
+if(typeof(google) == "undefined" || typeof(google.maps) == "undefined") 
+  return;
+
 /**
 * base layer for all google maps
 */
 
 var GMapsLayerView = function(layerModel, gmapsLayer, gmapsMap) {
   this.gmapsLayer = gmapsLayer;
-  this.gmapsMap = gmapsMap;
+  this.map = this.gmapsMap = gmapsMap;
   this.model = layerModel;
   this.model.bind('change', this._update, this);
 };
@@ -26,6 +30,7 @@ _.extend(GMapsLayerView.prototype, {
   },
 
   refreshView: function() {
+    var self = this;
     //reset to update
     if(this.isBase) {
       var a = '_baseLayer';
@@ -33,7 +38,14 @@ _.extend(GMapsLayerView.prototype, {
       this.gmapsMap.mapTypes.set(a, this.gmapsLayer);
       this.gmapsMap.setMapTypeId(a);
     } else {
-      this.gmapsMap.overlayMapTypes.setAt(this.index, this.gmapsLayer);
+      self.gmapsMap.overlayMapTypes.forEach(
+        function(layer, i) {
+          if (layer == self) {
+            self.gmapsMap.overlayMapTypes.setAt(i, self);
+            return;
+          }
+        }
+      );
     }
   },
 
@@ -45,7 +57,9 @@ _.extend(GMapsLayerView.prototype, {
     this.gmapsLayer.hide();
   },
 
-  reload: function() { this.refreshView() ; }
+  reload: function() { this.refreshView() ; },
+  _update: function() { this.refreshView(); }
+
 
 });
 

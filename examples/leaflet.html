@@ -23,12 +23,13 @@
         attribution: 'stamen'
       }).addTo(map);
 
-      cartodb.loadLayer(map, {
+      cartodb.createLayer(map, {
         user: 'development',
-        table: 'clubbing',
+        table: 'table_10m_us_parks_p',
         host: 'localhost.lan:3000',
         protocol: 'http'
       }).on('done', function(layer) {
+        map.addLayer(layer);
         layer.on('featureOver', function(e, pos, latlng, data) {
           console.log(e, pos, latlng, data);
         })

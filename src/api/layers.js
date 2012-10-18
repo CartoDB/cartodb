@@ -40,7 +40,7 @@
   }
 
   /**
-   * load a layer in the specified map
+   * create a layer for the specified map
    * 
    * @param map should be a L.Map or google.maps.Map object
    * @param layer should be an url or a javascript object with the data to create the layer
@@ -48,7 +48,7 @@
    *
    */
 
-  cartodb.loadLayer = function(map, layer, options, callback) {
+  cartodb.createLayer = function(map, layer, options, callback) {
 
     var promise = new _Promise();
     var layerView, MapType;
@@ -79,8 +79,12 @@
       }
 
       // update options
-      if(options) {
+      if(options && !_.isFunction(options)) {
         _.extend(layerData, options);
+      } else {
+        options = {
+          infowindow: true
+        };
       }
 
       // create a dummy viz
@@ -96,7 +100,10 @@
         });
       }
 
-      layerView = viz.loadLayer(layerData, { no_base_layer: true });
+      layerView = viz.createLayer(layerData, { no_base_layer: true });
+      if(options.infowindow && layerView.model.get('infowindow')) {
+        viz.addInfowindow(layerView);
+      }
       callback && callback(layerView);
       promise.trigger('done', layerView);
     });

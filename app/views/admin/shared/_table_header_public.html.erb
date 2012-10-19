@@ -3,7 +3,7 @@
     <div class="left">
       <hgroup>
         <h1><%= link_to "CartoDB", root_path %></h1>
-        <h2 class="special"><%= link_to "", "#change_title", :class => "change_title" %></h2>
+        <h2 class="special"><a></a></h2>
         <label class="small author">
           <a href=""></a>
         </label>
@@ -15,8 +15,12 @@
         <%= link_to "map view",     "#map",     :class => "smaller strong uppercase tab" %>
       </nav>
     </div>
-    <ul class="right options">
-    </ul>
+    <div>
+      <ul class="right options">
+        <li><a class="button_header data_download"><span class="icons-download_blue"></span>download this data</a></li>
+        <li><a href="/login">sign in</a></li>
+      </ul>
+    </div>
   </div>
 </header>
 

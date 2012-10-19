@@ -31,6 +31,10 @@
         &.emptyTableInfo {
           background: image-url('layout/empty_table.png') no-repeat 0 0 #FFF;
         }
+        &.emptyPublicTableInfo {
+          background: image-url('layout/empty_public.png') no-repeat center 70px #FFF;
+        }
+
         &.emptySQLInfo {
           background: image-url('layout/empty_sql.png') no-repeat 40px 0 #FFF;
         }
@@ -323,7 +327,7 @@
               color:#4DC964;
             }
 
-            &:first-child {
+            &.rowHeader:first-child {
               position:relative;
 
               & > div {
@@ -460,4 +464,14 @@
   width: 15px;
   height: 15px;
   background: image-url('layout/clock.png') no-repeat 0 0 transparent;
+}
+
+.data_download {
+  cursor: pointer;
+
+  span {
+    display: inline-block;
+    height: 8px;
+    width: 13px;
+  }
 }

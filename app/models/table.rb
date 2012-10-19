@@ -14,6 +14,8 @@ class Table < Sequel::Model(:user_tables)
                         :table_size => :table_size, :map_id => :map_id, :description => :description,
                         :geometry_types => :geometry_types }
 
+  DEFAULT_THE_GEOM_TYPE = "geometry"
+
   many_to_one :map
 
   def public_values
@@ -1022,11 +1024,13 @@ class Table < Sequel::Model(:user_tables)
 
 
   def the_geom_type
-    $tables_metadata.hget(key,"the_geom_type") || "point"
+    $tables_metadata.hget(key,"the_geom_type") || DEFAULT_THE_GEOM_TYPE
   end
 
   def the_geom_type=(value)
     the_geom_type_value = case value.downcase
+      when "geometry"
+        "geometry"
       when "point"
         "point"
       when "line"
@@ -1370,7 +1374,7 @@ TRIGGER
           owner.in_database.rename_column(self.name.to_sym, THE_GEOM, :the_geom_str)
         end
       else # Ensure a the_geom column, of type point by default
-        type = "point"
+        type = DEFAULT_THE_GEOM_TYPE
       end
     end
     return if type.nil?

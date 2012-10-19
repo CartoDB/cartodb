@@ -58,7 +58,7 @@ module CartoDB
     "string" => "text"
   }
   
-  VALID_GEOMETRY_TYPES = %W{ multipolygon point multilinestring}
+  VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
   
   POSTGRESQL_RESERVED_WORDS = %W{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC AUTHORIZATION BETWEEN BINARY BOTH CASE CAST 
                                   CHECK COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP 

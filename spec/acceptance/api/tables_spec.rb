@@ -173,7 +173,7 @@ feature "API 1.0 tables management" do
       response.status.should be_success
       response.body[:id].should == response.headers['Location'].match(/\/(\d+)$/)[1].to_i
       response.body[:name].should match(/^untitled/)
-      (response.body[:schema] - default_schema).should be_empty
+      response.body[:schema].should =~ default_schema
     end
   end
 
@@ -184,10 +184,10 @@ feature "API 1.0 tables management" do
       response.status.should be_success
       response.body[:name].should == "my_new_imported_table"
       response.body[:description].should == "Testing is awesome"
-      (response.body[:schema] - [
+      response.body[:schema].should =~ [
          ["cartodb_id", "number"], ["code", "string"], ["title", "string"], ["did", "number"],
          ["date_prod", "date"], ["kind", "string"], ["created_at", "date"], ["updated_at", "date"]
-       ]).should be_empty
+       ]
     end
   end
 
@@ -400,7 +400,7 @@ feature "API 1.0 tables management" do
         :tags => "",
         :schema =>[["cartodb_id", "number"], ["the_geom", "geometry", "geometry", "multipolygon"], ["area", "number"], ["fips", "string"], ["iso2", "string"], ["iso3", "string"], ["lat", "number"], ["lon", "number"], ["name", "string"], ["pop2005", "number"], ["region", "number"], ["subregion", "number"], ["un", "number"], ["created_at", "date"], ["updated_at", "date"]],
         :rows_counted => 246,
-        :table_size => 352256,
+        :table_size => 356352,
         :map_id => table1.map.id,
         :description => nil,
         :geometry_types => ["ST_MultiPolygon"]

@@ -3,12 +3,14 @@
   <% end %>
 
   <% content_for(:css) do %>
+    <%= stylesheet_link_tag 'cdb/themes/css/all.css' %>
     <%= stylesheet_link_tag :common, :table, :map, :media => 'all' %>
   <% end %>
 
   <script>
     var table_name = '<%= @table.name %>'
       , table_id = '<%= @table.id %>'
+      , schema = <%=raw @table.schema.to_json %>
       , user_name = '<%=raw @table.owner.username %>'
       , map = <%=raw @table.map.to_json %>
       , layers = [

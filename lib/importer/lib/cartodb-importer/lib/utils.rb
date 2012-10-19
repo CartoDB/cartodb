@@ -84,39 +84,34 @@ module CartoDB
                 charset = nil
               end
             end
-            unless ['unknown-8bit','',nil,'binary'].include? charset  
-              tf = Tempfile.new(@path)                  
-              `iconv -f #{charset} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
-              `mv -f #{tf.path} #{@path}`                
+
+            # Read in a 128kb chunk and try to detect encoding
+            chunk = File.open(@path).read(128000)
+            cd = CharDet.detect(chunk)
+            #puts "*** Chardet detected #{cd.encoding} with #{cd.confidence} confidence"
+
+            # Only do non-UTF8 if we're quite sure. (May fail)
+            if !['utf-8', 'ascii', ''].include?(cd.encoding.to_s.downcase) && cd.confidence > 0.6
+              tf = Tempfile.new(@path)
+
+              # Try transliteration first, then ignore
+              `iconv -f #{cd.encoding} -t UTF-8//TRANSLIT #{@path} > #{tf.path}`
+              `iconv -f #{cd.encoding} -t UTF-8//IGNORE #{@path} > #{tf.path}` if $?.exitstatus != 0
+
+              # Overwrite the file only on successful conversion
+              `mv -f #{tf.path} #{@path}` if $?.exitstatus == 0
               tf.close!
-            else
-              lines = []
-              File.open(@path) do |f|             
-                1000.times do
-                  line = f.gets || break
-                  lines << line
-                end            
-              end
-              # detect encoding for sample
-              cd = CharDet.detect(lines.join)
-              # Only do non-UTF8 if we're quite sure. (May fail)        
-              if (cd.confidence > 0.6)             
-                tf = Tempfile.new(@path)                  
-                `iconv -f #{cd.encoding} -t UTF-8//TRANSLIT//IGNORE #{@path} > #{tf.path}`
-                `mv -f #{tf.path} #{@path}`                
-                tf.close!
-              else
-                # Try with LATIN1
-                encoding_to_try = "LATIN1"
-              end  
+            elsif !['utf-8'].include?(cd.encoding.to_s.downcase)
+              # Fall back to LATIN1
+              encoding_to_try = "LATIN1"
             end
           end
+
           return encoding_to_try
+        
         rescue => e
-          #raise e
-          #silently fail here and try importing anyway
+          # Silently fail here and try importing anyway
           log "ICONV failed for CSV #{@path}: #{e.message} #{e.backtrace}"
-          return encoding_to_try
         end
       end  
       

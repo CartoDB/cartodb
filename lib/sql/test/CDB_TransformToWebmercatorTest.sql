@@ -14,3 +14,6 @@ select '6', ST_AsEWKT(ST_SnapToGrid(CDB_TransformToWebmercator(
  'SRID=4326;MULTILINESTRING((90 90, 0 90),(0 4, -4 5))'), 1));
 select '7', ST_AsEWKT(ST_SnapToGrid(CDB_TransformToWebmercator(
  'SRID=4326;POINT(5 3)'), 1));
+-- See https://github.com/Vizzuality/cartodb/issues/901
+select '8', ST_AsEWKT(ST_SnapToGrid(CDB_TransformToWebmercator(
+ 'SRID=4326;POLYGON((100 0, -100 -100, 100 -100, -100 0, 100 00))'), 1));

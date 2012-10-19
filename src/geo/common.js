@@ -91,6 +91,10 @@ CartoDBLayerCommon.prototype = {
     };
   },
 
+  error: function(e) {
+    console.log(e.error);
+  },
+
   /**
    *  Check the tiles
    */
@@ -100,43 +104,28 @@ CartoDBLayerCommon.prototype = {
       , img = new Image()
       , urls = this._tileJSON()
 
-    // Choose a x-y-z for the check tile - grid
-    urls.tile_url = urls.tile_url.replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
-    urls.grid_url = urls.grid_url.replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
+    var grid_url = urls.grids[0].replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
 
 
-    reqwest({
+    $.ajax({
       method: "get",
-      url: urls.grid_url,
-      type: 'jsonp',
-      jsonpCallback: 'callback',
-      jsonpCallbackName: 'grid',
+      url: grid_url,
+      crossDomain: true,
+      dataType: 'json',
       success: function() {
         clearTimeout(timeout)
       },
-      error: function(error,msg) {
-        if (self.interaction)
-          self.interaction.remove();
-
-        if (self.options.debug)
-          throw('There is an error in your query or your interaction parameter');
-
-        self.fire("layererror", msg);
+      error: function(xhr, msg, data) {
+        clearTimeout(timeout);
+        self.error(xhr.responseText && JSON.parse(xhr.responseText));
       }
     });
 
     // Hacky for reqwest, due to timeout doesn't work very well
     var timeout = setTimeout(function(){
       clearTimeout(timeout);
-
-      if (self.interaction)
-        self.interaction.remove();
-
-      if (self.options.debug)
-        throw('There is an error in your query or your interaction parameter');
-
-      self.fire("layererror", "There is a problem in your SQL or interaction parameter");
-    },2000);
+      self.error("tile timeout");
+    }, 2000);
 
   }
 

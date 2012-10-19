@@ -25,15 +25,20 @@
 
       cartodb.createLayer(map, {
         user: 'development',
-        table: 'table_10m_us_parks_p',
+        table: 'tm2',
         host: 'localhost.lan:3000',
         protocol: 'http'
       }).on('done', function(layer) {
         window.layer = layer;
         map.addLayer(layer);
+
         layer.on('featureOver', function(e, pos, latlng, data) {
           console.log(e, pos, latlng, data);
-        })
+        });
+
+        layer.on('error', function(err) {
+          console.log('error: ' + err);
+        });
         //layer.on('featureClick', fn);
         //layer.on('featureOut', fn);*/
       }).on('error', function() {

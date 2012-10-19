@@ -7,6 +7,13 @@
 
     cdb.VERSION = '2.0.0';
 
+    cdb.CARTOCSS_VERSIONS = {
+      '2.0.0': '',
+      '2.1.0': ''
+    };
+
+    cdb.CARTOCSS_DEFAULT_VERSION = '2.0.0';
+
     root.cdb.config = {};
     root.cdb.core = {};
     root.cdb.geo = {};

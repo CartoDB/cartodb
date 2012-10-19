@@ -28,7 +28,7 @@
 
         cartodb.createLayer(map, {
           user: 'development',
-          table: 'table_10m_us_parks_p',
+          table: 'tm2',
           protocol: 'http',
           host: 'localhost.lan:3000'
         }).on('done', function(layer) {
@@ -36,7 +36,10 @@
           map.overlayMapTypes.setAt(0, layer);
           layer.on('featureOver', function(e, pos, latlng, data) {
             console.log(e, pos, latlng, data);
-          })
+          });
+          layer.on('error', function(err) {
+            console.log('error: ' + err);
+          });
         }).on('error', function() {
           console.log("some error occurred");
         });

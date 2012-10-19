@@ -71,7 +71,10 @@ CartoDBLayer.prototype.setOpacity = function(opacity) {
   this.opacity = this.options.opacity = opacity;
   for(var key in this.cache) {
     var img = this.cache[key];
-    img.setAttribute("style","opacity: " + opacity + "; filter: alpha(opacity="+(opacity*100)+");");
+    img.style.opacity = opacity;
+    img.style.filter = "alpha(opacity=" + (opacity*100) + ");"
+
+    //img.setAttribute("style","opacity: " + opacity + "; filter: alpha(opacity="+(opacity*100)+");");
   }
 
 };
@@ -104,10 +107,19 @@ CartoDBLayer.prototype.update = function () {
   var tilejson = this._tileJSON();
   // clear wax cache
   this.cache = {};
+  // set new tiles to wax
   this.options.tiles = tilejson.tiles;
   this._interaction.tilejson(tilejson);
+
+  this._checkTiles();
+
+  // reload the tiles
+  this.refreshView();
 };
 
+
+CartoDBLayer.prototype.refreshView = function() {
+}
 
 /**
  * Active or desactive interaction
@@ -135,14 +147,26 @@ CartoDBLayer.prototype.setInteraction = function(enable) {
 
 CartoDBLayer.prototype.setOptions = function (opts) {
   _.extend(this.options, opts);
-  if(this.options.interactivity) {
-    var i = this.options.interactivity
+
+  if (typeof opts != "object" || opts.length) {
+    throw new Error(opts + ' options has to be an object');
+  }
+
+  if(opts.interactivity) {
+    var i = opts.interactivity;
     this.options.interactivity = i.join ? i.join(','): i;
   }
-  this.setOpacity(this.options.opacity);
-  this.setInteraction(this.options.interaction);
+  if(opts.opacity !== undefined) {
+    this.setOpacity(this.options.opacity);
+  }
+  if(opts.interaction !== undefined) {
+    this.setInteraction(this.options.interaction);
+  }
 
-  this.update();
+  // Update tiles
+  if(opts.query || opts.style || opts.tile_style || opts.interactivity) {
+    this.update();
+  }
 }
 
 CartoDBLayer.prototype._checkLayer = function() {
@@ -159,17 +183,13 @@ CartoDBLayer.prototype.setQuery = function(sql) {
 
   this._checkLayer();
 
-  if (!sql) {
-    throw new Error('sql is not a valid query');
-  }
-
   /*if (fitToBounds)
     this.setBounds(sql)
     */
 
   // Set the new value to the layer options
   this.options.query = sql;
-  this._update();
+  this.update();
 }
 
 CartoDBLayer.prototype.isVisible = function() {
@@ -180,13 +200,12 @@ CartoDBLayer.prototype.setCartoCSS = function(style, version) {
 
   this._checkLayer();
 
-  if (!style) {
-    throw new Error('should specify a valid style');
-  }
+  version = version || cdb.CARTOCSS_DEFAULT_VERSION;
 
-  // Set the new value to the layer options
-  this.options.tile_style = style;
-  this._update();
+  this.setOptions({
+    tile_style: style,
+    style_version: version
+  });
 }
 
 
@@ -205,7 +224,7 @@ CartoDBLayer.prototype.setInteractivity = function(fieldsArray) {
   // Set the new value to the layer options
   this.options.interactivity = fieldsArray.join ? fieldsArray.join(','): fieldsArray;
   // Update tiles
-  this._update();
+  this.update();
 }
 
 
@@ -305,14 +324,13 @@ cdb.geo.GMapsCartoDBLayerView = GMapsCartoDBLayerView;
 
 _.extend(
   GMapsCartoDBLayerView.prototype,
-  cdb.geo.GMapsLayerView.prototype,
   cdb.geo.CartoDBLayerGMaps.prototype,
+  cdb.geo.GMapsLayerView.prototype,
   {
 
   _update: function() {
     _.extend(this.options, this.model.attributes);
     this.update();
-    this.refreshView();
   },
 
   remove: function() {
@@ -332,6 +350,10 @@ _.extend(
   featureClick: function(e, latlon, pixelPos, data) {
     // dont pass leaflet lat/lon
     this.trigger('featureClick', e, [latlon.lat(), latlon.lng()], pixelPos, data);
+  },
+
+  error: function(e) {
+    this.trigger('error', e?e.error:'unknown error');
   }
 
 });

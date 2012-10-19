@@ -58,9 +58,13 @@ create the specified layer to be added map. The layer is not appended to the map
 
     cartodb.loadLayer(map, 'http://examples.cartodb.com/tables/TODO/cartodb.js')
       .on('done', function(layer) {
-        layer.on('featureOver', function(e, pos, latlng, data) {
-          console.log(e, pos, latlng, data);
-        })
+        layer
+          .on('featureOver', function(e, pos, latlng, data) {
+            console.log(e, pos, latlng, data);
+          })
+          .on('error', function(err) {
+            console.log('error: ' + err);
+          });
       }).on('error', function(err) {
         console.log("some error occurred: " + err);
       });
@@ -100,7 +104,7 @@ Here are described all the layer types you can get:
   + **enable**: true if the interaction needs to be enabled
 
 ### **setQuery(sql)** 
-  sets the sql query. The layer will show the geometry resulting of this query. When the query raises an error, ``error`` event is triggered. 
+  Sets the sql query. The layer will show the geometry resulting of this query. When the query raises an error, ``error`` event is triggered. If you set sql to null the query is reset to 'select * form {{table_name}}'
 
   The layer is refreshed just after the execute this function.
 
@@ -124,6 +128,7 @@ Here are described all the layer types you can get:
 ### setCartoCSS(cartoCSS, version='2.0.1') 
   Change the style of the layer tiles.
   'error' event is triggered on the layer if something is wrong with the style
+  set cartoCSS to null to reset to original style
 
 *arguments*:
 

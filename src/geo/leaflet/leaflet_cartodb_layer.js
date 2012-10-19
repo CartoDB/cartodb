@@ -111,7 +111,7 @@ L.CartoDBLayer = L.TileLayer.extend({
     this.tilejson = this._tileJSON();
 
     // check the tiles
-    //this._checkTiles();
+    this._checkTiles();
 
     // add the interaction?
     if (this.options.interactivity) {
@@ -163,11 +163,7 @@ L.CartoDBLayer = L.TileLayer.extend({
   setCartoCSS: function(style, version) {
     this._checkLayer();
 
-    if (!style) {
-      throw new Error('should specify a valid style');
-    }
-
-    version = version || '2.0.1';
+    version = version || cdb.CARTOCSS_DEFAULT_VERSION;
 
     this.setOptions({
       tile_style: style,
@@ -256,21 +252,29 @@ L.CartoDBLayer = L.TileLayer.extend({
    * Change multiple options at the same time
    * @params {Object} New options object
    */
-  setOptions: function(options) {
+  setOptions: function(opts) {
 
-    this._checkLayer();
-
-    if (typeof options != "object" || options.length) {
-      throw new Error(options + ' options has to be an object');
+    if (typeof opts != "object" || opts.length) {
+      throw new Error(opts + ' options has to be an object');
     }
 
-    L.Util.setOptions(this, options);
+    L.Util.setOptions(this, opts);
 
-    this.setOpacity(this.options.opacity);
-    this.setInteraction(this.options.interaction);
+    if(opts.interactivity) {
+      var i = opts.interactivity;
+      this.options.interactivity = i.join ? i.join(','): i;
+    }
+    if(opts.opacity !== undefined) {
+      this.setOpacity(this.options.opacity);
+    }
+    if(opts.interaction !== undefined) {
+      this.setInteraction(this.options.interaction);
+    }
 
     // Update tiles
-    this.__update();
+    if(opts.query || opts.style || opts.tile_style || opts.interactivity) {
+      this.__update();
+    }
   },
 
 
@@ -499,6 +503,10 @@ _.extend(
 
   reload: function() {
     this.redraw();
+  },
+
+  error: function(e) {
+    this.trigger('error', e?e.error:'unknown error');
   }
 
 });

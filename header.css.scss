@@ -223,6 +223,25 @@
 
       .inner {width:auto;}
 
+      div {
+        a.button_header {
+          margin:6px 0 0 10px;
+          padding:2px 6px;
+          background:white;
+          @include border-radius(25px);
+          font-weight:bold;
+          font-size:11px;
+          line-height:12px;
+          color:#3474AF;
+          @include box-shadow(rgba(black,0.09) 0 0 2px 2px);
+          &:hover {
+            text-decoration:none;
+            @include box-shadow(rgba(black,0.19) 0 0 2px 2px);
+          }
+          text-transform: uppercase;
+        }
+      }
+
       div.left {
         position:relative;
         width:65%;
@@ -233,6 +252,23 @@
           @include inline-block();
           margin:4px 0 0 0;
           width:100%;
+
+          .author {
+            color: #FFF;
+            font-size: 11px;
+            top: 5px;
+            position:relative;
+            margin-left: 5px;
+
+            a {
+              text-decoration: underline;
+              color: #FFF;
+            }
+
+            &:before {
+              content: "by ";
+            }
+          }
 
           h1,h2,a.button_header {
             @include inline-block();
@@ -277,22 +313,6 @@
             }
           }
 
-          a.button_header {
-            margin:6px 0 0 10px;
-            padding:2px 6px;
-            background:white;
-            @include border-radius(25px);
-            font-weight:bold;
-            font-size:11px;
-            line-height:12px;
-            color:#3474AF;
-            @include box-shadow(rgba(black,0.09) 0 0 2px 2px);
-            &:hover {
-              text-decoration:none;
-              @include box-shadow(rgba(black,0.19) 0 0 2px 2px);
-            }
-            text-transform: uppercase;
-          }
         }
 
         span.table_description {

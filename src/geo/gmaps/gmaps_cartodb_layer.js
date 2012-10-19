@@ -230,23 +230,17 @@ CartoDBLayer.prototype.setInteractivity = function(fieldsArray) {
 
 
 CartoDBLayer.prototype._findPos = function (map,o) {
-      var curleft, cartop;
-      curleft = curtop = 0;
-      var obj = map.getDiv();
-      // Modern browsers
-      if (obj.offsetParent) {
-        do {
-          curleft += obj.offsetLeft;
-          curtop += obj.offsetTop;
-        } while (obj = obj.offsetParent);
-        return new google.maps.Point(
-            (o.e.clientX || o.e.changedTouches[0].clientX) - curleft,
-            (o.e.clientY || o.e.changedTouches[0].clientY) - curtop
-        );
-      } else {
-        // IE
-        return new google.maps.Point(o.e);
-      }
+  var curleft, cartop;
+  curleft = curtop = 0;
+  var obj = map.getDiv();
+  do {
+    curleft += obj.offsetLeft;
+    curtop += obj.offsetTop;
+  } while (obj = obj.offsetParent);
+  return new google.maps.Point(
+      (o.e.clientX || o.e.changedTouches[0].clientX) - curleft,
+      (o.e.clientY || o.e.changedTouches[0].clientY) - curtop
+  );
 };
 
 CartoDBLayer.prototype._manageOffEvents = function(){
@@ -257,8 +251,10 @@ CartoDBLayer.prototype._manageOffEvents = function(){
 
 
 CartoDBLayer.prototype._manageOnEvents = function(map,o) {
-  var point  = this._findPos(map, o),
-      latlng = this.projector.pixelToLatLng(point);
+  var point  = this._findPos(map, o);
+
+  console.log(point);
+  var      latlng = this.projector.pixelToLatLng(point);
 
   switch (o.e.type) {
     case 'mousemove':

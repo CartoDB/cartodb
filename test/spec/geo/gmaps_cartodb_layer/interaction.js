@@ -26,7 +26,6 @@ describe('Interaction funcionality', function() {
       debug: true
     });
 
-    cdb_layer.rabo = new Date().getTime();
 
     map.overlayMapTypes.setAt(0, cdb_layer);
   });

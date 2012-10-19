@@ -14,6 +14,11 @@
 
     cdb.CARTOCSS_DEFAULT_VERSION = '2.0.0';
 
+    cdb.CDB_HOST = {
+      'http': 'tiles.cartocdn.com',
+      'https': 'd3pu9mtm6f0hk5.cloudfront.net'
+    };
+
     root.cdb.config = {};
     root.cdb.core = {};
     root.cdb.geo = {};

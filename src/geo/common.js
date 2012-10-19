@@ -32,12 +32,21 @@ CartoDBLayerCommon.prototype = {
   },
 
 
-  _host: function() {
+  _host: function(subhost) {
     var opts = this.options;
-    return opts.tiler_protocol +
-       "://" + ((opts.user_name) ? opts.user_name+".":"")  +
-       opts.tiler_domain +
-       ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+    if (opts.no_cdn) {
+      return opts.tiler_protocol +
+         "://" + ((opts.user_name) ? opts.user_name+".":"")  +
+         opts.tiler_domain +
+         ((opts.tiler_port != "") ? (":" + opts.tiler_port) : "");
+    } else {
+      var h = opts.tiler_protocol + "://";
+      if (subhost) {
+        h += subhost + ".";
+      }
+      h += cdb.CDB_HOST[opts.tiler_protocol] + "/" + opts.user_name;
+      return h;
+    }
   },
 
   //
@@ -64,20 +73,25 @@ CartoDBLayerCommon.prototype = {
         params.interactivity = opts.interactivity.replace(/ /g, '');
       }
     }
+
+    // extra_params?
+    for (_param in opts.extra_params) {
+       params[_param] = opts.extra_params[_param];
+    }
+
     var url_params = [];
     for(var k in params) {
+      var p = params[k];
       var q = encodeURIComponent(
-        params[k].replace(/\{\{table_name\}\}/g, opts.table_name)
+        p.replace ? 
+          p.replace(/\{\{table_name\}\}/g, opts.table_name):
+          p
       );
       q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
       url_params.push(k + "=" + q);
     }
     cartodb_url += url_params.join('&');
 
-    // extra_params?
-    for (_param in opts.extra_params) {
-       cartodb_url += "&" + _param + "=" + opts.extra_params[_param];
-    }
     return cartodb_url;
   },
 

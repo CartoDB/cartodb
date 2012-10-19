@@ -6,6 +6,8 @@ module MapsHelper
     {
       version: "0.1.0",
 
+      updated_at: Time.now,
+
       layers: [
         layer_vizzjson(map.base_layers.first, options),
         layer_vizzjson(map.data_layers.first, options)

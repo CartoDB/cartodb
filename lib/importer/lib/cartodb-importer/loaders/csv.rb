@@ -19,17 +19,13 @@ module CartoDB
 
           # Check if file has only one header, add a blank column
           # if so. See Vizzuality/CartoDB#202
-          begin
           headers = File.open("#{@path}") {|f| f.readline}
-          unless headers =~ /[\,\;]/
-            `sed -ie "1 s/$/;/" #{@path}`
-          end
-          rescue
-          end
 
           @data_import.log_update("ogr2ogr #{@working_data[:suggested_name]}")
+
           ogr2ogr_bin_path = `which ogr2ogr`.strip
           ogr2ogr_command = %Q{PGCLIENTENCODING=#{encoding_to_try} #{ogr2ogr_bin_path} -f "PostgreSQL" PG:"host=#{@db_configuration[:host]} port=#{@db_configuration[:port]} user=#{@db_configuration[:username]} dbname=#{@db_configuration[:database]}" #{@working_data[:path]} -nln #{@working_data[:suggested_name]}}
+
           stdin,  stdout, stderr = Open3.popen3(ogr2ogr_command)
 
           unless (err = stderr.read).empty?

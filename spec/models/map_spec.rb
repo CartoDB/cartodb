@@ -44,9 +44,18 @@ describe Map do
       map.reload.data_layers.first.should == data_layer
     end
 
+    it "should correctly identify affected tables" do
+      map = Map.create(:user_id => @user.id, :table_id => @table.id)
+      5.times { map.add_layer(Layer.create(:kind => 'tiled')) }
+
+      map.affected_tables.first.id.should == @table.id
+      map.affected_tables.length.should == 1
+    end
+
     it "should remove its vizzjson from varnish after being modified" do
       map = Map.create(:user_id => @user.id, :table_id => @table.id)
-      CartoDB::Varnish.any_instance.expects(:purge).with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}:vizjson").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}:vizjson").returns(true)
+      CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{@table.varnish_key}.*").returns(true)
       map.save
     end
 

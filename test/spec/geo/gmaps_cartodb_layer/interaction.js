@@ -295,7 +295,7 @@ describe('Interaction funcionality', function() {
     waits(500);
 
     runs(function () {
-      spyOn(cdb_layer.opts, 'featureOut');
+      spyOn(cdb_layer.options, 'featureOut');
 
       var e = new $.Event("mousemove");
       e.pageX = 10;
@@ -329,7 +329,7 @@ describe('Interaction funcionality', function() {
     waits(500);
 
     runs(function () {
-      expect(cdb_layer.opts.featureOut).toHaveBeenCalled();
+      expect(cdb_layer.options.featureOut).toHaveBeenCalled();
     });
   });
 

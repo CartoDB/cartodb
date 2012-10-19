@@ -79,6 +79,9 @@ Here are described all the layer types you can get:
 
 #### methods
 
+### **clear()**: 
+
+  Should be called after removing from it from the map.
 
 ### **hide()**: 
 

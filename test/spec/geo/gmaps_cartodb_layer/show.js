@@ -40,8 +40,8 @@ describe('Show funcionality', function() {
 
     runs(function () {
       expect(cdb_layer.show).toThrow();
-      var opacity = cdb_layer.opts.opacity;
-      expect(cdb_layer.opts.visible).toBeTruthy();
+      var opacity = cdb_layer.options.opacity;
+      expect(cdb_layer.options.visible).toBeTruthy();
     });
   });
 
@@ -52,7 +52,7 @@ describe('Show funcionality', function() {
     runs(function () {
       cdb_layer.hide();
       cdb_layer.show();
-      expect(cdb_layer.opts.visible).toBeTruthy();
+      expect(cdb_layer.options.visible).toBeTruthy();
     });
   });
 
@@ -63,7 +63,7 @@ describe('Show funcionality', function() {
     runs(function () {
       cdb_layer.hide();
       cdb_layer.setOpacity(0.2);
-      expect(cdb_layer.opts.visible).toBeFalsy();
+      expect(cdb_layer.options.visible).toBeFalsy();
     });
   });
 });

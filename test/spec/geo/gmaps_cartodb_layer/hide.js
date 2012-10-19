@@ -47,10 +47,10 @@ describe('Hide funcionality', function() {
 
     runs(function() {
       var $tile = $(div).find("img[gtilekey]").first()
-        , opacity = cdb_layer.opts.opacity
-        , before_opacity = cdb_layer.opts.previous_opacity;
+        , opacity = cdb_layer.options.opacity
+        , before_opacity = cdb_layer.options.previous_opacity;
 
-      expect(cdb_layer.opts.visible).toBeFalsy();
+      expect(cdb_layer.options.visible).toBeFalsy();
       expect($tile.css("opacity")).toEqual('0');
       expect(opacity).toEqual(0);
       expect(before_opacity).not.toEqual(0);
@@ -62,7 +62,7 @@ describe('Hide funcionality', function() {
 
     runs(function () {
       cdb_layer.setOpacity(0);
-      expect(cdb_layer.opts.visible).toBeTruthy();
+      expect(cdb_layer.options.visible).toBeTruthy();
     });
   });
 });

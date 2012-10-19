@@ -32,7 +32,7 @@
           protocol: 'http',
           host: 'localhost.lan:3000'
         }).on('done', function(layer) {
-
+          window.layer = layer;
           map.overlayMapTypes.setAt(0, layer);
           layer.on('featureOver', function(e, pos, latlng, data) {
             console.log(e, pos, latlng, data);

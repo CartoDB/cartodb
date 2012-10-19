@@ -51,6 +51,8 @@
         'geo/ui/header.js',
         'geo/ui/search.js',
 
+        'geo/common.js',
+
         'geo/leaflet/leaflet.geometry.js',
         'geo/leaflet/leaflet_base.js',
         'geo/leaflet/leaflet_plainlayer.js',

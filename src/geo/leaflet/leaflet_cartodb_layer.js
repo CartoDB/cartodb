@@ -11,7 +11,7 @@
 
 (function() {
 
-if(typeof(L) == "undefined") 
+if(typeof(L) == "undefined")
   return;
 
 L.CartoDBLayer = L.TileLayer.extend({
@@ -34,33 +34,6 @@ L.CartoDBLayer = L.TileLayer.extend({
     cdn_url:        null
   },
 
-  /**
-   * Initialize CartoDB Layer
-   * @params {Object}
-   *    map               -     Your Leaflet map
-   *    user_name         -     CartoDB user name
-   *    table_name        -     CartoDB table name
-   *    query             -     If you want to apply any sql sentence to the table...
-   *    opacity           -     If you want to change the opacity of the CartoDB layer
-   *    tile_style        -     If you want to add other style to the layer
-   *    interactivity     -     Get data from the feature clicked ( without any request :) )
-   *    featureOver       -     Callback when user hovers a feature (return mouse event, latlng, position (x & y) and feature data)
-   *    featureOut        -     Callback when user hovers out a feature
-   *    featureClick      -     Callback when user clicks a feature (return mouse/touch event, latlng, position (x & y) and feature data)
-   *    attribution       -     Set the attribution text
-   *    debug             -     Get error messages from the library
-   *    auto_bound        -     Let cartodb auto-bound-zoom in the map (opcional - default = false)
-   *
-   *    tiler_protocol    -     Tiler protocol (opcional - default = 'http')
-   *    tiler_domain      -     Tiler domain (opcional - default = 'cartodb.com')
-   *    tiler_port        -     Tiler port as a string (opcional - default = '80')
-   *    sql_protocol      -     SQL API protocol (opcional - default = 'http')
-   *    sql_domain        -     SQL API domain (opcional - default = 'cartodb.com')
-   *    sql_port          -     SQL API port as a string (opcional - default = '80')
-   *    extra_params      -     In case you want to pass aditional params to cartodb tiler, pass them
-   *                            as an object
-   *    cdn_url           -     If you want to use a CDN as a proxy set the URL
-   */
 
   initialize: function (options) {
     // Set options
@@ -81,6 +54,27 @@ L.CartoDBLayer = L.TileLayer.extend({
     this._addWadus();
 
     L.TileLayer.prototype.initialize.call(this);
+  },
+
+  /**
+   * Change opacity of the layer
+   * @params {Integer} New opacity
+   */
+  setOpacity: function(opacity) {
+
+    this._checkLayer();
+
+    if (isNaN(opacity) || opacity>1 || opacity<0) {
+      throw new Error(opacity + ' is not a valid value');
+    }
+
+    // Leaflet only accepts 0-0.99... Weird!
+    this.options.opacity = Math.min(opacity, 0.99);
+
+    if (this.options.visible) {
+      L.TileLayer.prototype.setOpacity.call(this,  opacity);
+      this.fire('updated');
+    }
   },
 
 
@@ -114,10 +108,10 @@ L.CartoDBLayer = L.TileLayer.extend({
     this.fire('updated');
 
     // generate the tilejson
-    this.tilejson = this._generateTileJson();
+    this.tilejson = this._tileJSON();
 
     // check the tiles
-    this._checkTiles();
+    //this._checkTiles();
 
     // add the interaction?
     if (this.options.interactivity) {
@@ -139,33 +133,12 @@ L.CartoDBLayer = L.TileLayer.extend({
     this.setUrl(this.tilejson.tiles[0]);
   },
 
-
-  /**
-   * Change opacity of the layer
-   * @params {Integer} New opacity
-   */
-  setOpacity: function(opacity) {
-
+  _checkLayer: function() {
     if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
-    }
-
-    if (isNaN(opacity) || opacity>1 || opacity<0) {
-      if (this.options.debug) {
-        throw(opacity + ' is not a valid value');
-      } else { return }
-    }
-
-    // Leaflet only accepts 0-0.99... Weird!
-    this.options.opacity = opacity;
-
-    if (this.options.visible) {
-      this.setOpacity(opacity == 1 ? 0.99 : opacity);
-      this.fire('updated');
+      throw new Error('the layer is not still added to the map');
     }
   },
+
 
 
   /**
@@ -174,21 +147,12 @@ L.CartoDBLayer = L.TileLayer.extend({
    */
   setQuery: function(sql) {
 
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
-    }
+    this._checkLayer();
 
-    if (!isNaN(sql)) {
-      if (this.options.debug) {
-       throw(sql + ' is not a valid query');
-      } else { return }
-    }
+    this.setOptions({
+      query: sql
+    });
 
-    // Set the new value to the layer options
-    this.options.query = sql;
-    this.__update();
   },
 
 
@@ -196,23 +160,20 @@ L.CartoDBLayer = L.TileLayer.extend({
    * Change style of the tiles
    * @params {style} New carto for the tiles
    */
-  setStyle: function(style) {
+  setCartoCSS: function(style, version) {
+    this._checkLayer();
 
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
+    if (!style) {
+      throw new Error('should specify a valid style');
     }
 
-    if (!isNaN(style)) {
-      if (this.options.debug) {
-        throw(style + ' is not a valid style');
-      } else { return }
-    }
+    version = version || '2.0.1';
 
-    // Set the new value to the layer options
-    this.options.tile_style = style;
-    this.__update();
+    this.setOptions({
+      tile_style: style,
+      style_version: version
+    });
+
   },
 
 
@@ -234,10 +195,10 @@ L.CartoDBLayer = L.TileLayer.extend({
       } else { return }
     }
 
-    // Set the new value to the layer options
-    this.options.interactivity = value;
-    // Update tiles
-    this.__update();
+    this.setOptions({
+      interactivity: value
+    });
+
   },
 
 
@@ -245,25 +206,19 @@ L.CartoDBLayer = L.TileLayer.extend({
    * Active or desactive interaction
    * @params {Boolean} Choose if wants interaction or not
    */
-  setInteraction: function(bool) {
+  setInteraction: function(enable) {
+    var self = this;
 
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
-    }
-
-    if (bool !== false && bool !== true) {
-      if (this.options.debug) {
-        throw(bool + ' is not a valid setInteraction value');
-      } else { return }
-    }
+    this._checkLayer();
 
     if (this.interaction) {
-      if (bool) {
-        var self = this;
-        this.interaction.on('on', function(o) {self._bindWaxOnEvents(self.options.map,o)});
-        this.interaction.on('off', function(o) {self._bindWaxOffEvents()});
+      if (enable) {
+        this.interaction.on('on', function(o) {
+          self._bindWaxOnEvents(self.options.map, o)
+        });
+        this.interaction.on('off', function(o) {
+          self._bindWaxOffEvents()
+        });
       } else {
         this.interaction.off('on');
         this.interaction.off('off');
@@ -278,26 +233,16 @@ L.CartoDBLayer = L.TileLayer.extend({
    */
   setAttribution: function(attribution) {
 
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
-    }
-
-    if (!isNaN(attribution)) {
-      if (this.options.debug) {
-        throw(attribution + ' is not a valid attribution');
-      } else { return }
-    }
+    this._checkLayer();
 
     // Remove old one
-    this.options.map.attributionControl.removeAttribution(this.options.attribution);
+    this.map.attributionControl.removeAttribution(this.options.attribution);
 
     // Set new attribution in the options
     this.options.attribution = attribution;
 
     // Change text
-    this.options.map.attributionControl.addAttribution(this.options.attribution);
+    this.map.attributionControl.addAttribution(this.options.attribution);
 
     // Change in the layer
     this.options.attribution = this.options.attribution;
@@ -313,20 +258,16 @@ L.CartoDBLayer = L.TileLayer.extend({
    */
   setOptions: function(options) {
 
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
+    this._checkLayer();
+
+    if (typeof options != "object" || options.length) {
+      throw new Error(options + ' options has to be an object');
     }
 
-    if (typeof options!= "object" || options.length) {
-      if (this.options.debug) {
-        throw(options + ' options has to be an object');
-      } else { return }
-    }
-
-    // Set options
     L.Util.setOptions(this, options);
+
+    this.setOpacity(this.options.opacity);
+    this.setInteraction(this.options.interaction);
 
     // Update tiles
     this.__update();
@@ -348,53 +289,6 @@ L.CartoDBLayer = L.TileLayer.extend({
     return this.options.added
   },
 
-
-  /**
-   * Hide the CartoDB layer
-   */
-  hide: function() {
-
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
-    }
-
-    if (!this.options.visible) {
-      if (this.options.debug) {
-        throw('the layer is already hidden');
-      } else { return }
-    }
-
-    this.setOpacity(0);
-    this.setInteraction(false);
-    this.options.visible = false;
-    this.fire('hidden');
-  },
-
-
-  /**
-   * Show the CartoDB layer
-   */
-  show: function() {
-
-    if (!this.options.added) {
-      if (this.options.debug) {
-        throw('the layer is not still added to the map');
-      } else { return }
-    }
-
-    if (this.options.visible) {
-      if (this.options.debug) {
-        throw('the layer is already shown');
-      } else { return }
-    }
-
-    this.setOpacity(this.options.opacity);
-    this.setInteraction(true);
-    this.options.visible = true;
-    this.fire('shown');
-  },
 
   /**
    * Zoom to cartodb geometries
@@ -479,25 +373,21 @@ L.CartoDBLayer = L.TileLayer.extend({
       , latlng = map.layerPointToLatLng(layer_point);
 
     switch (o.e.type) {
-      case 'mousemove': if (this.options.featureOver) {
-                          return this.options.featureOver(o.e,latlng,{x: o.e.clientX, y: o.e.clientY},o.data);
-                        } else {
-                          if (this.options.debug) throw('featureOver function not defined');
-                        }
-                        break;
-      case 'click':   if (this.options.featureClick) {
-                          this.options.featureClick(o.e,latlng,{x: o.e.clientX, y: o.e.clientY},o.data);
-                        } else {
-                          if (this.options.debug) throw('featureClick function not defined');
-                        }
-                        break;
-      case 'touchend':  if (this.options.featureClick) {
-                          this.options.featureClick(o.e,latlng,{x: o.e.clientX, y: o.e.clientY},o.data);
-                        } else {
-                          if (this.options.debug) throw('featureClick function not defined');
-                        }
-                        break;
-      default:          break;
+
+      case 'mousemove':
+        if (this.options.featureOver) {
+          return this.options.featureOver(o.e,latlng, { x: o.e.clientX, y: o.e.clientY }, o.data);
+        }
+        break;
+
+      case 'click':
+      case 'touchend':
+        if (this.options.featureClick) {
+          this.options.featureClick(o.e,latlng, { x: o.e.clientX, y: o.e.clientY }, o.data);
+        }
+        break;
+      default:
+        break;
     }
   },
 
@@ -508,159 +398,8 @@ L.CartoDBLayer = L.TileLayer.extend({
   _bindWaxOffEvents: function(){
     if (this.options.featureOut) {
       return this.options.featureOut && this.options.featureOut();
-    } else {
-      if (this.options.debug) throw('featureOut function not defined');
     }
   },
-
-
-  /**
-   * Generate tilejson for wax
-   * @return {Object} Options for L.TileLayer
-   */
-  _generateTileJson: function () {
-
-    var urls = this._generateTileUrls();
-
-    // Build up the tileJSON
-    return {
-      blankImage: '../img/blank_tile.png',
-      tilejson: '1.0.0',
-      scheme: 'xyz',
-      attribution: this.options.attribution,
-      tiles: [urls.tile_url],
-      grids: [urls.grid_url],
-      tiles_base: urls.tile_url,
-      grids_base: urls.grid_url,
-      opacity: this.options.opacity,
-      formatter: function(options, data) {
-        return data
-      }
-    };
-  },
-
-
-
-  /*
-   * HELPER FUNCTIONS
-   */
-
-
-  /**
-   * Parse URI
-   * @params {String} Tile url
-   * @return {String} URI parsed
-   */
-  _parseUri: function (str) {
-    var o = {
-      strictMode: false,
-      key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
-      q:   {
-        name:   "queryKey",
-        parser: /(?:^|&)([^&=]*)=?([^&]*)/g
-      },
-      parser: {
-        strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
-        loose:  /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
-      }
-    },
-    m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
-    uri = {},
-    i   = 14;
-
-    while (i--) uri[o.key[i]] = m[i] || "";
-
-    uri[o.q.name] = {};
-    uri[o.key[12]].replace(o.q.parser, function ($0, $1, $2) {
-      if ($1) uri[o.q.name][$1] = $2;
-    });
-    return uri;
-  },
-
-
-  /**
-   * Appends callback onto urls regardless of existing query params
-   * @params {String} Tile url
-   * @params {String} Tile data
-   * @return {String} Tile url parsed
-   */
-  _addUrlData: function (url, data) {
-    url += (this._parseUri(url).query) ? '&' : '?';
-    return url += data;
-  },
-
-
-  /**
-   * Generate the core URL for the tiler
-   * @params {String} Options including tiler_protocol, user_name, tiler_domain and tiler_port
-   */
-  _generateCoreUrl: function(type){
-    //First check if we are using a CDN which in that case we dont need to do all this.
-    if (this.options.cdn_url) {
-      return this.options.cdn_url;
-    }
-
-    if (type == "sql") {
-       return this.options.sql_protocol +
-           "://" + ((this.options.user_name)?this.options.user_name+".":"")  +
-           this.options.sql_domain +
-           ((this.options.sql_port != "") ? (":" + this.options.sql_port) : "");
-     } else {
-       return this.options.tiler_protocol +
-           "://" + ((this.options.user_name)?this.options.user_name+".":"")  +
-           this.options.tiler_domain +
-           ((this.options.tiler_port != "") ? (":" + this.options.tiler_port) : "");
-     }
-  },
-
-
-  /**
-   * Generate the final tile and grid URLs for the tiler
-   */
-  _generateTileUrls: function() {
-    var core_url = this._generateCoreUrl("tiler")
-      , base_url = core_url + '/tiles/' + this.options.table_name + '/{z}/{x}/{y}'
-      , tile_url = base_url + '.png'
-      , grid_url = base_url + '.grid.json';
-
-    // SQL?
-    if (this.options.query) {
-      var q = encodeURIComponent(this.options.query.replace(/\{\{table_name\}\}/g,this.options.table_name));
-      q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-      var query = 'sql=' +  q
-      tile_url = this._addUrlData(tile_url, query);
-      grid_url = this._addUrlData(grid_url, query);
-    }
-
-    // EXTRA PARAMS?
-    for (_param in this.options.extra_params) {
-      tile_url = this._addUrlData(tile_url, _param+"="+this.options.extra_params[_param]);
-      grid_url = this._addUrlData(grid_url, _param+"="+this.options.extra_params[_param]);
-    }
-
-    // STYLE?
-    if (!this.options.use_server_style && this.options.tile_style) {
-      var style = 'style=' + encodeURIComponent(this.options.tile_style.replace(/\{\{table_name\}\}/g,this.options.table_name));
-      tile_url = this._addUrlData(tile_url, style);
-      grid_url = this._addUrlData(grid_url, style);
-    }
-
-    // INTERACTIVITY?
-    if (this.options.interactivity) {
-      var interactivity = 'interactivity=' + encodeURIComponent(this.options.interactivity.replace(/ /g,''));
-      tile_url = this._addUrlData(tile_url, interactivity);
-      grid_url = this._addUrlData(grid_url, interactivity);
-    }
-
-    return {
-      core_url: core_url,
-      base_url: base_url,
-      tile_url: tile_url,
-      grid_url: grid_url
-    }
-  },
-
-
 
   /**
    * Get the Leaflet Point of the event
@@ -684,55 +423,6 @@ L.CartoDBLayer = L.TileLayer.extend({
       return map.mouseEventToLayerPoint(o.e)
     }
   },
-
-
-  /**
-   *  Check the tiles
-   */
-  _checkTiles: function() {
-    var xyz = {z: 4, x: 6, y: 6}
-      , self = this
-      , img = new Image()
-      , urls = this._generateTileUrls()
-
-    // Choose a x-y-z for the check tile - grid
-    urls.tile_url = urls.tile_url.replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
-    urls.grid_url = urls.grid_url.replace(/\{z\}/g,xyz.z).replace(/\{x\}/g,xyz.x).replace(/\{y\}/g,xyz.y);
-
-
-    reqwest({
-      method: "get",
-      url: urls.grid_url,
-      type: 'jsonp',
-      jsonpCallback: 'callback',
-      jsonpCallbackName: 'grid',
-      success: function() {
-        clearTimeout(timeout)
-      },
-      error: function(error,msg) {
-        if (self.interaction)
-          self.interaction.remove();
-
-        if (self.options.debug)
-          throw('There is an error in your query or your interaction parameter');
-
-        self.fire("layererror", msg);
-      }
-    });
-
-    // Hacky for reqwest, due to timeout doesn't work very well
-    var timeout = setTimeout(function(){
-      clearTimeout(timeout);
-
-      if (self.interaction)
-        self.interaction.remove();
-
-      if (self.options.debug)
-        throw('There is an error in your query or your interaction parameter');
-
-      self.fire("layererror", "There is a problem in your SQL or interaction parameter");
-    },2000);
-  }
 
 });
 
@@ -773,11 +463,13 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
   cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
 };
 
+_.extend(L.CartoDBLayer.prototype, CartoDBLayerCommon.prototype);
 
 _.extend(
-  LeafLetLayerCartoDBView.prototype,
+  LeafLetLayerCartoDBView.prototype, 
   cdb.geo.LeafLetLayerView.prototype,
   L.CartoDBLayer.prototype,
+  Backbone.Events, // be sure this is here to not use the on/off from leaflet
   {
 
   _modelUpdated: function() {

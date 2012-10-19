@@ -40,9 +40,9 @@ describe('Opacity interaction', function() {
 
     runs(function () {
       var $layer = $(div).find("img[gtilekey]").first()
-        , opacity = cdb_layer.opts.opacity;
+        , opacity = cdb_layer.options.opacity;
 
-      expect(cdb_layer.opts.visible).toBeTruthy();
+      expect(cdb_layer.options.visible).toBeTruthy();
       expect($layer.css("opacity")).toEqual('0.8');//opacity.toString());
     });
   });
@@ -63,9 +63,9 @@ describe('Opacity interaction', function() {
     runs(function () {
       var $layer = $(div).find("img[gtilekey]").first()
         , opacity = cdb_layer.options.opacity
-        , before_opacity = cdb_layer.opts.previous_opacity;
+        , before_opacity = cdb_layer.options.previous_opacity;
 
-      expect(cdb_layer.opts.visible).toBeFalsy();
+      expect(cdb_layer.options.visible).toBeFalsy();
       expect($layer.css("opacity")).toEqual('0.3');
       expect(before_opacity).toEqual(0.8);
     });

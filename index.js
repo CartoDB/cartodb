@@ -24,6 +24,8 @@
 //= require cdb/src/geo/geometry
 //= require cdb/src/geo/map
 //
+//= require cdb/src/geo/common.js
+//
 //= require cdb/src/geo/leaflet/leaflet.geometry
 //= require cdb/src/geo/leaflet/leaflet_base
 //= require cdb/src/geo/leaflet/leaflet_plainlayer

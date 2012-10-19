@@ -896,7 +896,7 @@ class Table < Sequel::Model(:user_tables)
 
     owner.in_database do |user_database|
       columns_sql_builder = <<-SQL
-      SELECT array_to_string(ARRAY(SELECT '#{name}' || '.' || c.column_name
+      SELECT array_to_string(ARRAY(SELECT '#{name}' || '.' || quote_ident(c.column_name)
         FROM information_schema.columns As c
         WHERE table_name = '#{name}'
         AND c.column_name <> 'the_geom_webmercator'
@@ -1173,6 +1173,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def set_trigger_the_geom_webmercator
+    return true unless self.schema(:reload => true).flatten.include?(THE_GEOM)
     owner.in_database(:as => :superuser) do |user_database|
       user_database.run(<<-TRIGGER
         DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
@@ -1265,8 +1266,8 @@ TRIGGER
     QUOTA_MAX = #{self.owner.quota_in_bytes}
 
     if c%m == 0:
-        s = plpy.execute("SELECT sum(pg_relation_size(table_name)) FROM information_schema.tables WHERE table_catalog = '#{self.database_name}' AND table_schema = 'public'")[0]['sum'] / 2
-        int_s = int(s)
+        s = plpy.execute("SELECT sum(pg_relation_size(quote_ident(table_name))) FROM information_schema.tables WHERE table_catalog = '#{self.database_name}' AND table_schema = 'public'")[0]['sum'] / 2
+        int_s = int(s) 
         diff = int_s - QUOTA_MAX
         SD['quota_mod'] = min(1000, max(1, diff))
         if int_s > QUOTA_MAX:

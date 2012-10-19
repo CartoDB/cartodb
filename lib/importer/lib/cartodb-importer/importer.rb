@@ -200,13 +200,21 @@ module CartoDB
             @working_data[:suggested_name] = get_valid_name(@working_data[:suggested_name])
             preproc = CartoDB::Import::Preprocessor.create(data[:ext], self.to_import_hash)
             @data_import.refresh
+
             if preproc
+
               begin
                 out = preproc.process!
-                out.each{ |d|
-                  processed_imports << d
-                }
-                @data_import.log_update('file preprocessed')
+
+                # Return raw data if preprocessor returns false
+                # For example: we don't want to run JSON preprocessor
+                # on GEOJSON files
+                if out == false
+                  processed_imports << data
+                else
+                  out.each { |d| processed_imports << d }
+                  @data_import.log_update('file preprocessed')
+                end
               rescue
                 @data_import.reload
                 errors << OpenStruct.new({ :description => @data_import.get_error_text[:title],

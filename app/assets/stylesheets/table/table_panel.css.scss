@@ -223,13 +223,14 @@
           bottom:78px;
           right:0;
           left:0;
-          width:100%;
           padding:17px 17px 17px 52px;
-          background:rgba(yellow,0.5);
+          background:rgba(yellow,0.3);
           color:#888;
           z-index:2;
           font-size:13px;
           border-top:1px solid #EBDCE0;
+
+          p {line-height:17px;}
 
           &.error {
             background:rgba(#FFD7E3,0.5);

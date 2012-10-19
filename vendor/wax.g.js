@@ -1,4 +1,4 @@
-/* wax - 7.0.0dev10 - v6.0.4-112-g94e91cb */
+/* wax - 7.0.0dev10 - v6.0.4-113-g1ace597 */
 
 
 !function (name, context, definition) {
@@ -3275,6 +3275,8 @@ wax.g = wax.g || {};
 
 wax.g.interaction = function() {
     var dirty = false, _grid, map;
+    var tileloadListener = null,
+        idleListener = null;
 
     function setdirty() { dirty = true; }
 
@@ -3308,17 +3310,17 @@ wax.g.interaction = function() {
     function attach(x) {
         if (!arguments.length) return map;
         map = x;
-        google.maps.event.addListener(map, 'tileloaded',
+        tileloadListener = google.maps.event.addListener(map, 'tileloaded',
             setdirty);
-        google.maps.event.addListener(map, 'idle',
+        idleListener = google.maps.event.addListener(map, 'idle',
             setdirty);
     }
 
     function detach(x) {
-        google.maps.event.removeListener(map, 'tileloaded',
-            setdirty);
-        google.maps.event.removeListener(map, 'idle',
-            setdirty);
+        if(tileloadListener)
+          google.maps.event.removeListener(tileloadListener);
+        if(idleListener)
+          google.maps.event.removeListener(idleListener);
     }
 
 

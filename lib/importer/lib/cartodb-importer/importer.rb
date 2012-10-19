@@ -194,7 +194,7 @@ module CartoDB
           # preprocessors are expected to return a hash datastructure
 
           processed_imports = Array.new
-          import_data.each { |data|
+          import_data.each do |data|
             @entries << data[:path]
             @working_data = data
             @working_data[:suggested_name] = get_valid_name(@working_data[:suggested_name])
@@ -216,11 +216,11 @@ module CartoDB
             else
               processed_imports << data
             end
-          }
+          end
 
           # Load data in
           payloads = Array.new
-          processed_imports.each { |data|
+          processed_imports.each do |data|
             @entries << data[:path]
             @working_data = data
             # re-check suggested_name in the case that it has been taken by another in this import
@@ -244,13 +244,13 @@ module CartoDB
                                            :code        => @data_import.error_code })
               end
             end
-          }
+          end
 
           @data_import.refresh
 
           # Flag the data import as failed
-          if errors.blank?
-            @data_import.log_update("file successfully imported")
+          if payloads.length > 0
+            @data_import.log_update("#{payloads.size} tables imported")
           else
             @data_import.failed
           end

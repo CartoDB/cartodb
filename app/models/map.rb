@@ -59,14 +59,22 @@ class Map < Sequel::Model
   # Returns an array of tables used on the map
   #
   def affected_tables
-    queries = layers.map { |l| l.options['query'].blank? ? nil : l.options['query'] }.compact
-    queries.map { |q|
+    queries = layers.map { |l| 
+      if l.options.present?
+        l.options['query'].blank? ? nil : l.options['query'] 
+      else
+        nil
+      end
+    }.compact
+    aff_tables = queries.map { |q|
       begin
         xml = user.in_database.fetch("EXPLAIN (FORMAT XML) #{q}").first[:"QUERY PLAN"]
         Nokogiri::XML(xml).search("Relation-Name").map(&:text).map { |table_name| Table.find_by_identifier(user.id, table_name) }
       rescue Sequel::DatabaseError
       end
     }.flatten.compact.uniq
+
+    aff_tables.empty? ? self.tables : aff_tables
   end
 
   def recalculate_bounds!

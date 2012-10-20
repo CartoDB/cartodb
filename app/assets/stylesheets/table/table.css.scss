@@ -42,7 +42,7 @@
         h4 {
           margin-top: 8em;
           color: #333;
-          font-weight: normal;
+          font-weight: bold;
           font-size: 17px;
           font-family: helvetica;
         }
@@ -52,11 +52,10 @@
           width: 325px;
           color: #999;
           font-size: 15px;
+
+          a {text-decoration:underline;}
         }
-
-
       }
-
     }
   }
 

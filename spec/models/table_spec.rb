@@ -309,8 +309,8 @@ describe Table do
     it "should store the_geom_type in Redis" do
       table = create_table(:user_id => @user.id)
 
-      table.the_geom_type.should == "point"
-      $tables_metadata.hget(table.key,"the_geom_type").should == "point"
+      table.the_geom_type.should == "geometry"
+      $tables_metadata.hget(table.key,"the_geom_type").should == "geometry"
 
       table.the_geom_type = "multipolygon"
       $tables_metadata.hget(table.key,"the_geom_type").should == "multipolygon"
@@ -801,7 +801,7 @@ describe Table do
       check_schema(table, [
         [:cartodb_id, "integer"], [:url, "text"], [:login, "text"],
         [:country, "text"], [:followers_count, "text"],
-        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "point"],
+        [:created_at, "timestamp without time zone"], [:updated_at, "timestamp without time zone"], [:the_geom, "geometry", "geometry", "geometry"],
         [:field_5, "text"]
       ])
 
@@ -1145,6 +1145,7 @@ describe Table do
     context "geojson tests" do
       it "should return a geojson for the_geom if it is a point" do
         table = new_table :user_id => @user.id
+        table.the_geom_type = "point"
         table.save.reload
 
         lat = -43.941

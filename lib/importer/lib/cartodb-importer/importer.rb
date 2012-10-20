@@ -194,33 +194,41 @@ module CartoDB
           # preprocessors are expected to return a hash datastructure
 
           processed_imports = Array.new
-          import_data.each { |data|
+          import_data.each do |data|
             @entries << data[:path]
             @working_data = data
             @working_data[:suggested_name] = get_valid_name(@working_data[:suggested_name])
             preproc = CartoDB::Import::Preprocessor.create(data[:ext], self.to_import_hash)
             @data_import.refresh
+
             if preproc
+
               begin
                 out = preproc.process!
-                out.each{ |d|
-                  processed_imports << d
-                }
-                @data_import.log_update('file preprocessed')
+
+                # Return raw data if preprocessor returns false
+                # For example: we don't want to run JSON preprocessor
+                # on GEOJSON files
+                if out == false
+                  processed_imports << data
+                else
+                  out.each { |d| processed_imports << d }
+                  @data_import.log_update('file preprocessed')
+                end
               rescue
                 @data_import.reload
-                errors << OpenStruct.new({ :description => @data_import.get_error_text,
-                                             :stack =>  @data_import.log_json,
-                                             :code=>@data_import.error_code })
+                errors << OpenStruct.new({ :description => @data_import.get_error_text[:title],
+                                           :stack       => @data_import.get_error_text[:what_about],
+                                           :code        => @data_import.error_code })
               end
             else
               processed_imports << data
             end
-          }
+          end
 
           # Load data in
           payloads = Array.new
-          processed_imports.each { |data|
+          processed_imports.each do |data|
             @entries << data[:path]
             @working_data = data
             # re-check suggested_name in the case that it has been taken by another in this import
@@ -239,18 +247,18 @@ module CartoDB
                 @data_import.log_update("#{data[:ext]} successfully loaded")
               rescue => e
                 @data_import.reload
-                errors << OpenStruct.new({ :description => @data_import.get_error_text,
+                errors << OpenStruct.new({ :description => @data_import.get_error_text[:title],
                                            :stack       => @data_import.log_json,
                                            :code        => @data_import.error_code })
               end
             end
-          }
+          end
 
           @data_import.refresh
 
           # Flag the data import as failed
-          if errors.blank?
-            @data_import.log_update("file successfully imported")
+          if payloads.length > 0
+            @data_import.log_update("#{payloads.size} tables imported")
           else
             @data_import.failed
           end

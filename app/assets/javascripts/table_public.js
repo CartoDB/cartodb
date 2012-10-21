@@ -15,6 +15,10 @@
 //= require_tree ../../../lib/assets/javascripts/cartodb/models
 //= require ../../../lib/assets/javascripts/cartodb/common/dropdown_menu
 //= require_tree ../../../lib/assets/javascripts/cartodb/common
+//= require ../../../lib/assets/javascripts/cartodb/table/column_type_dropdown
+//= require ../../../lib/assets/javascripts/cartodb/table/export_dialog
+//= require ../../../lib/assets/javascripts/cartodb/table/header_dropdown
+//= require ../../../lib/assets/javascripts/cartodb/table/header_view
 //= require ../../../lib/assets/javascripts/cartodb/table/infowindow
 //= require ../../../lib/assets/javascripts/cartodb/table/row_view
 //= require ../../../lib/assets/javascripts/cartodb/table/header_view
@@ -23,3 +27,6 @@
 //= require_tree ../../../lib/assets/javascripts/cartodb/table/views
 //= require_tree ../../../lib/assets/javascripts/cartodb/table_public
 //= require ../../../lib/assets/javascripts/cartodb/table_public/table_public
+//= require_tree ../../../lib/assets/javascripts/cartodb/table/views
+//= require_tree ../../../lib/assets/javascripts/cartodb/dashboard/views
+//= require_tree ../../../lib/assets/javascripts/cartodb/table_public/views

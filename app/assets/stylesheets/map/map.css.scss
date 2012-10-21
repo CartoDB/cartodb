@@ -268,6 +268,11 @@ div.map {
     z-index:1;
   }
 
+  div#map.public {
+    top: 20px;
+    box-shadow: 0 -2px 10px #CCC;
+  }
+
   // [done | discard] dialog shown when a geometry is being edited or created
   div.editing {
     position: relative;

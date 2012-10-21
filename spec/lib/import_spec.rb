@@ -296,14 +296,15 @@ describe CartoDB::Importer do
 
     describe "#GPX file" do
       it "should import GPX file" do
-        importer = create_importer 'route2.gpx'
+        importer = create_importer 'activity_234497933.gpx'
         results,errors = importer.import!
 
+        errors.length.should              == 3
         results.length.should           == 2
-        results[0].name.should          == 'route2_track_points'
-        results[0].rows_imported.should == 822
+        results[0].name.should          == 'activity_234497933_t'
+        results[0].rows_imported.should == 440
         results[0].import_type.should   == '.gpx'
-        results[1].name.should          == 'route2_tracks'
+        results[1].name.should          == 'activity_234497933_1'
         results[1].rows_imported.should == 1
         results[1].import_type.should   == '.gpx'
       end

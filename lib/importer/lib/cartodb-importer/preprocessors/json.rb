@@ -5,13 +5,25 @@ module CartoDB
       register_preprocessor :json
 
       def process!
+        @data_import = DataImport.find(:id => @data_import_id)
+        fix_encoding
 
         import_data = []
-        json_data  = ::JSON.parse(File.open(@working_data[:path]).read)
+
+        begin
+          json_data = ::JSON.parse(File.open(@working_data[:path]).read)
+        rescue ::JSON::ParserError => e
+          # Ignore file, fall back to loader
+          return false
+        end
+
+        # Skip geojson and complex json structures
+        return false if json_data.first.is_a?(Array)
+
         csv_header = json_data.first.keys.join(',')
         csv_data   = json_data.map{|row| row.values.map{|value| value.gsub(/"/, "\"")}.join(',')}.join("\n")
 
-        @working_data[:path] =
+        @working_data[:path] = @path
         import_data << {
           :ext => File.extname(@working_data[:path]),
           :import_type => '.json',

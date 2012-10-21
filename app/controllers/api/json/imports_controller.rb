@@ -9,7 +9,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
   def show
     import        = DataImport.filter(:queue_id => params[:id]).first
-    import_values = import.values rescue { :state => 'preprocessing' }
+    import_values = import.public_values rescue { :state => 'preprocessing' }
 
     success = import_values[:state].blank? || import_values[:state] != 'failure'
     render :json => import_values, :status => success ? :ok : :ok

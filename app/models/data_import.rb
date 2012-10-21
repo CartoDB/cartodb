@@ -5,6 +5,12 @@ class DataImport < Sequel::Model
 
   attr_accessor :append, :migrate_table, :table_copy, :from_query
 
+  PUBLIC_ATTRIBUTES = %W{ id user_id table_id data_type table_name state success error_code queue_id get_error_text }
+
+  def public_values
+    Hash[PUBLIC_ATTRIBUTES.map{ |a| [a, self.send(a)] }]
+  end
+
   state_machine :initial => :preprocessing do
     before_transition :updated_now
     before_transition do
@@ -169,7 +175,7 @@ class DataImport < Sequel::Model
   end
 
   def get_error_text
-    CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+    self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
   end
 
   def log_json

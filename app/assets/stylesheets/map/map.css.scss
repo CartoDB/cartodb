@@ -270,11 +270,22 @@ div.map {
 
   // [done | discard] dialog shown when a geometry is being edited or created
   div.editing {
-    @include inline-block;
     position: relative;
+    @include inline-block;
     top: 20px;
     left: 50%;
+    margin-left:-67px;
+    padding:11px;
     background: #FFF;
+    border:1px solid #999999;
+    @include box-shadow(rgba(0,0,0,0.1) 0 0 4px 3px);
+    background:white;
+    @include border-radius(3px);
+
+    a {
+      position:relative;
+      @include inline-block();
+    }
   }
 
 } // div.map

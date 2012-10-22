@@ -131,9 +131,6 @@ div.map {
             }
           }
 
-
-
-
           &:before {
             content:' ';
             position:absolute;
@@ -158,22 +155,27 @@ div.map {
           }
 
           &.mapbox_graphite {
+            background-size:auto;
             @include icons-sprite(gmaps_gray_roadmap);
           }
 
           &.mapbox_warden {
+            background-size:auto;
             @include icons-sprite(gmaps_gray_roadmap);
           }
 
           &.gmaps_gray_roadmap {
+            background-size:auto;
             @include icons-sprite(gmaps_gray_roadmap);
           }
 
           &.gmaps_roadmap {
+            background-size:auto;
             @include icons-sprite(gmaps_roadmap);
           }
 
           &.gmaps_satellite {
+            background-size:auto;
             @include icons-sprite(gmaps_satellite);
           }
 

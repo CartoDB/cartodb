@@ -1,6 +1,6 @@
 describe("common.ui.Table", function() {
 
-  var cols; 
+  var cols;
   var tableMetadata;
   describe("Row", function() {
     beforeEach(function() {
@@ -32,26 +32,26 @@ describe("common.ui.Table", function() {
     it("should render in a row", function() {
       var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
       var r = new cdb.ui.common.RowView({model: row});
-      expect(r.render().$('td').length).toEqual(2);
+      expect(r.render().$('td').length).toEqual(3); // two rows plus one blank row before them
     });
 
     it("should render in order", function() {
       var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
       var r = new cdb.ui.common.RowView({model: row, order: ['test1', 'test0']});
       r.render();
-      expect($(r.$('td')[0]).html()).toEqual('b');
-      expect($(r.$('td')[1]).html()).toEqual('a');
+      expect($(r.$('td')[1]).html()).toEqual('b');
+      expect($(r.$('td')[2]).html()).toEqual('a');
 
       r = new cdb.ui.common.RowView({model: row, order: ['test0', 'test1']});
       r.render();
-      expect($(r.$('td')[0]).html()).toEqual('a');
-      expect($(r.$('td')[1]).html()).toEqual('b');
+      expect($(r.$('td')[1]).html()).toEqual('a');
+      expect($(r.$('td')[2]).html()).toEqual('b');
     });
 
     it("should render row header", function() {
       var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
       var r = new cdb.ui.common.RowView({
-        model: row, 
+        model: row,
         row_header: true
       });
       r.render();
@@ -62,7 +62,7 @@ describe("common.ui.Table", function() {
       var row = new cdb.ui.common.Row({test0: 'a', test1: 'b'});
       var r = new cdb.ui.common.RowView({model: row});
       r.render();
-      expect(r.getCell(1).html()).toEqual('b');
+      expect(r.getCell(2).html()).toEqual('b');
     });
   });
 
@@ -76,8 +76,8 @@ describe("common.ui.Table", function() {
       tableMetadata = new cdb.ui.common.TableProperties({
         schema: [
           ['id', 'number'],
-          ['col1','number'], 
-          ['col2','number'], 
+          ['col1','number'],
+          ['col2','number'],
           ['col3','number']
         ]
       });
@@ -109,8 +109,8 @@ describe("common.ui.Table", function() {
     });
 
     it("should have 6 cells and header", function() {
-      expect(table.render().$('th').length).toEqual(4);
-      expect(table.render().$('td').length).toEqual(2*4);
+      expect(table.render().$('th').length).toEqual(5);
+      expect(table.render().$('td').length).toEqual(2*5);
     });
 
     it("each row has an id", function() {
@@ -148,10 +148,10 @@ describe("common.ui.Table", function() {
       table.render();
       cols.add({'id': 10, 'col1': 11, 'col2': 12, 'col3': 13}, {at: 1});
       expect(table.$('tr').length).toEqual(4);
-      var cell = table.getCell(0, 1);
+      var cell = table.getCell(1, 1);
       expect(cell.html()).toEqual('10');
       expect(cell.parent().attr('data-y')).toEqual('1');
-      expect(table.getCell(0, 2).parent().attr('data-y')).toEqual('2');
+      expect(table.getCell(1, 2).parent().attr('data-y')).toEqual('2');
     });
 
     it("should update cell indexes when remove a column", function() {
@@ -177,24 +177,33 @@ describe("common.ui.Table", function() {
 
     it("should return cell x,y", function() {
        //$('#foo').trigger('click');
-      var cell = table.render().getCell(0, 1);
+      var cell = table.render().getCell(1, 1);
       expect(cell.html()).toEqual('2');
-      cell = table.getCell(1, 1);
+      cell = table.getCell(2, 1);
       expect(cell.html()).toEqual('4');
     });
 
-    it("should trigger cell clicked on click", function() {
+    it("should trigger cell clicked on click and dblclick", function() {
       var cell = table.render().getCell(0, 1);
       spy = {
-        click: function() {}
+        click: function() {},
+        dblClick: function() {}
       };
       spyOn(spy, 'click');
+      spyOn(spy, 'dblClick');
       table.bind('cellClick', spy.click, spy);
       cell.trigger('click');
       expect(spy.click).toHaveBeenCalled();
       expect(spy.click.mostRecentCall.args[1][0]).toEqual(cell[0]);
       expect(spy.click.mostRecentCall.args[2]).toEqual(0);
       expect(spy.click.mostRecentCall.args[3]).toEqual(1);
+
+      table.bind('cellDblClick', spy.dblClick, spy);
+      cell.trigger('dblclick');
+      expect(spy.dblClick).toHaveBeenCalled();
+      expect(spy.dblClick.mostRecentCall.args[1][0]).toEqual(cell[0]);
+      expect(spy.dblClick.mostRecentCall.args[2]).toEqual(0);
+      expect(spy.dblClick.mostRecentCall.args[3]).toEqual(1);
 
     });
 
@@ -204,7 +213,7 @@ describe("common.ui.Table", function() {
       cols.reset([
         {'id': 100, 'col1': 1, 'col2': 2, 'col3': 3}
       ]);
-      cell = table.getCell(0, 0);
+      cell = table.getCell(1, 0);
       expect(cell.html()).toEqual('100');
     });
 

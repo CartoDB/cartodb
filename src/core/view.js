@@ -1,11 +1,11 @@
 (function() {
 
-  /** 
+  /**
    * Base View for all CartoDB views.
    * DO NOT USE Backbone.View directly
    */
   var View = cdb.core.View = Backbone.View.extend({
-
+    classLabel: 'cdb.core.View',
     constructor: function(options) {
       this._models = [];
       this._subviews = {};
@@ -38,7 +38,7 @@
 
     /**
      * this methid clean removes the view
-     * and clean and events associated. call it when 
+     * and clean and events associated. call it when
      * the view is not going to be used anymore
      */
     clean: function() {
@@ -48,6 +48,7 @@
       // remove from parent
       if(this._parent) {
         this._parent.removeView(this);
+        this._parent = null;
       }
       this.remove();
       this.unbind();
@@ -77,7 +78,48 @@
 
     hide: function() {
         this.$el.hide();
+    },
+
+    /**
+    * Listen for an event on another object and triggers on itself, with the same name or a new one
+    * @method retrigger
+    * @param ev {String} event who triggers the action
+    * @param obj {Object} object where the event happens
+    * @param obj {Object} [optional] name of the retriggered event;
+    */
+    retrigger: function(ev, obj, retrigEvent) {
+      if(!retrigEvent) {
+        retrigEvent = ev;
+      }
+      var self = this;
+      obj.bind && obj.bind(ev, function() {
+        self.trigger(retrigEvent);
+      })
+    },
+    /**
+    * Captures an event and prevents the default behaviour and stops it from bubbling
+    * @method killEvent
+    * @param event {Event}
+    */
+    killEvent: function(ev) {
+      if(ev && ev.preventDefault) {
+        ev.preventDefault();
+      };
+      if(ev && ev.stopPropagation) {
+        ev.stopPropagation();
+      };
+    },
+
+    /**
+    * Remove all the tipsy tooltips from the document
+    * @method cleanTooltips
+    */
+    cleanTooltips: function() {
+      $('.tipsy').remove();
     }
+
+
+
 
   }, {
     viewCount: 0,
@@ -104,8 +146,8 @@
     runChecker: function() {
       _.each(cdb.core.View.views, function(view) {
         _.each(view, function(prop, k) {
-          if( k !== '_parent' && 
-              view.hasOwnProperty(k) && 
+          if( k !== '_parent' &&
+              view.hasOwnProperty(k) &&
               prop instanceof cdb.core.View &&
               view._subviews[prop.cid] === undefined) {
             console.log("=========");

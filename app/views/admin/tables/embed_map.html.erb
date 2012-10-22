@@ -41,6 +41,11 @@
   <%= javascript_include_tag :jquery, :cdb %>
 
   <script>
+
+    var debug = false;
+    <% if Rails.env.development? %>
+      debug = true;
+    <% end %>
     var vizjson= <%=raw map_vizzjson(@table.map, :full => false).to_json %>
 
 
@@ -107,6 +112,7 @@
 
     if(opt.sql) {
       vizjson.layers[1].options.query = opt.sql;
+      vizjson.layers[1].options.no_cdn = debug;
     }
 
     var vis = new cdb.vis.Vis({el: $('#map')});

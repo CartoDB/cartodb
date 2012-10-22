@@ -313,6 +313,11 @@
             }
 
             td:first-child > div {display:block;}
+
+            div.row_header {
+                display: inline-block !important;
+            }
+
           }
 
           td {
@@ -377,6 +382,7 @@
                   background:#E3D3E3;
                 }
               }
+
             }
 
             &:last-child {

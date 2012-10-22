@@ -18,8 +18,6 @@
        ]
       , config = JSON.parse('<%=raw frontend_config %>')
       , vizjson = <%=raw map_vizzjson(@table.map, :full => false).to_json %>
-
-
   </script>
 
   <% content_for(:js) do %>

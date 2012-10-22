@@ -179,9 +179,9 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     }
 
     // update all
-    for(var i in this.layers) {
-      this.layers[i].reload();
-    }
+    //for(var i in this.layers) {
+      //this.layers[i].reload();
+    //}
 
 
     this.trigger('newLayerView', layer_view, this);

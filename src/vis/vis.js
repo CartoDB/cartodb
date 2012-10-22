@@ -168,10 +168,10 @@ var Vis = cdb.core.View.extend({
     // add the associated overlays
     if(layerData.infowindow) {
       this.addInfowindow(layerView);
-      dataLayer.bind('featureOver', function(e, latlon, pxPos, data) {
+      layerView.bind('featureOver', function(e, latlon, pxPos, data) {
         $(document.body).css('cursor', 'pointer');
       });
-      dataLayer.bind('featureOut', function() {
+      layerView.bind('featureOut', function() {
         $(document.body).css('cursor', 'auto');
       });
     }

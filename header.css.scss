@@ -72,8 +72,6 @@
           color:white;
           text-shadow:0 1px $text-shadow-color;
 
-          &.rounded_white {text-shadow:none;}
-
           &.dropdown {
             position:relative;
             padding:0 12px 0 0;
@@ -123,6 +121,8 @@
           &:hover {color:white}
           &.selected {color:#264565; text-shadow:0 1px $text-shadow-color; &:hover {text-decoration:none; cursor:default;} &:after {color:rgba(#264565,0.5);} &:before {border-top-color:#264565;}}
           &:focus {outline:none; text-decoration:underline;}
+
+          &.rounded_white {text-shadow:none; &:hover {color:#333333;}}
         }
 
         form {

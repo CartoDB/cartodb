@@ -328,7 +328,9 @@ cdb.geo.Map = cdb.core.Model.extend({
     opts = opts || {};
     var self = this;
     var old = this.layers.at(0);
-    if(old) { // defensive programming FTW!!
+
+    if (old) { // defensive programming FTW!!
+
       old.destroy({
         success: function() {
           self.layers.add(layer, { at: 0 });
@@ -338,12 +340,14 @@ cdb.geo.Map = cdb.core.Model.extend({
         },
         error: opts.error
       })
+
     } else {
       self.layers.add(layer, { at: 0 });
       self.trigger('baseLayerAdded');
       self._adjustZoomtoLayer(layer);
       opts.success && opts.success();
     };
+
     return layer;
   },
 

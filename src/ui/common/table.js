@@ -100,7 +100,13 @@ cdb.ui.common.RowView = cdb.core.View.extend({
 
     var tdIndex = 0;
     if(this.options.row_header) {
-        var td = $('<td>');
+        var td = $('<td class="rowHeader">');
+        td.append(self.valueView('', ''));
+        td.attr('data-x', tdIndex);
+        tdIndex++;
+        tr.append(td);
+    } else {
+        var td = $('<td class="EmptyRowHeader">');
         td.append(self.valueView('', ''));
         td.attr('data-x', tdIndex);
         tdIndex++;
@@ -200,6 +206,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
     var thead = $("<thead>");
     var tr = $("<tr>");
     if(this.options.row_header) {
+      tr.append($("<th>").append(self.headerView(['', 'header'])));
+    } else {
       tr.append($("<th>").append(self.headerView(['', 'header'])));
     }
     _(this.model.get('schema')).each(function(col) {

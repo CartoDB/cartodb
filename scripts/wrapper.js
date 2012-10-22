@@ -1,4 +1,5 @@
-
+// cartodb.js version: <%= version %>
+// uncompressed version: cartodb.uncompressed.js
 (function() {
   var root = this;
 

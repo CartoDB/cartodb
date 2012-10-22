@@ -13,7 +13,7 @@
   function cartodbUrl(opts) {
     var host = opts.host || 'cartodb.com';
     var protocol = opts.protocol || 'https';
-    return protocol + '://' + opts.user + '.' + host + '/api/v1/viz/' + opts.table + '/layer.json';
+    return protocol + '://' + opts.user + '.' + host + '/api/v1/viz/' + opts.table + '/viz.json';
   }
 
   /**
@@ -21,7 +21,7 @@
    */
   function _getLayerJson(layer, callback) {
     var url = null;
-    if(layer.kind !== undefined && layer.options !== undefined) {
+    if(layer.layers !== undefined || (layer.kind !== undefined && layer.options !== undefined)) {
       // layer object contains the layer data
       _.defer(function() { callback(layer); });
       return;
@@ -64,7 +64,27 @@
       callback = fn;
     }
     
-    _getLayerJson(layer, function(layerData) {
+    _getLayerJson(layer, function(visData) {
+
+      var layerData;
+
+      if(!visData) {
+        promise.trigger('error');
+        return;
+      }
+      // extract layer data from visualization data
+      if(visData.layers) {
+        if(visData.layers.length < 2) {
+          promise.trigger('error', "visualization file does not contain layer info");
+        }
+        layerData = visData.layers[1];
+        // add the timestamp to options
+        layerData.options.extra_data = layerData.options.extra_data || {};
+        layerData.options.extra_data.cache_buster = visData.updated_at;
+      } else {
+        layerData = visData;
+      }
+
       if(!layerData) {
         promise.trigger('error');
         return;

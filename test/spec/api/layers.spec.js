@@ -105,6 +105,24 @@ describe('api.layers', function() {
         });
 
       });
+
+      it("should load vis.json", function() {
+        var layer;
+        var s = sinon.spy();
+        runs(function() {
+          cartodb.createLayer(map, { 
+            updated_at: 'jaja',
+            layers: [
+              null,
+              {kind: 'plain', options: {} }
+            ]
+          }, s);
+        });
+        waits(10);
+        runs(function() {
+          expect(s.called).toEqual(true);
+        });
+      });
     });
 
   };

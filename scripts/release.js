@@ -15,10 +15,14 @@ var package_ = require('../package')
 
 var version = 'v' + package_.version.split('.')[0]
 
+var full_version = version + '/' + package_.version
 cmds = [
   'mkdir ' + version,
   'cp dist/* ' + version,
-  'cp -r themes ' + version
+  'cp -r themes ' + version,
+  'mkdir ' + version + '/' + package_.version,
+  'cp dist/* ' + full_version,
+  'cp -r themes ' + full_version
 ];
 
 function batch() {

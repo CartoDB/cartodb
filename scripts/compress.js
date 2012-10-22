@@ -1,6 +1,8 @@
 
+fs = require('fs')
 var _exec = require('child_process').exec;
 var package_ = require('../package')
+var _ = require('underscore');
 
 INCLUDE_DEPS = false;
 if(process.argv.length >= 3) {
@@ -16,25 +18,46 @@ var c = 0;
 cmds = [
   'rm -rf  dist/_cartodb.js',
   "echo // cartodb.js v" + package_.version + " >> dist/_cartodb.js",
-  "echo // uncompressed version: cartodb.uncompressed.js >> dist/_cartodb.js",
-
-  // loader
-  //"echo // cartodb.js loader v" + package_.version + " > dist/loader.js",
-  "cat vendor/head.load.min.js >> dist/loader.js",
-  "cat src/loader.js >> dist/loader.js",
-
-  // copy vendor
-  "cp vendor/* dist/"
-
-
+  "echo // uncompressed version: cartodb.uncompressed.js >> dist/_cartodb.js"
 ];
 
+
+function concat_files(files, callback) {
+  var all = '';
+  var _r = function(f) {
+    console.log(f);
+    fs.readFile(f, 'utf8', function (err, data) {
+      if (err) { throw new Error(err); }
+      all += data;
+      var next = files.shift();
+      if(next) _r(next);
+      else callback(all);
+    });
+  }
+  _r(files.shift());
+}
+
+var vendor_files = [];
+var cdb_files = [];
 for(var i = 0; i < files.length; ++i) {
   var f = files[i];
-  if(INCLUDE_DEPS || f.indexOf('vendor') === -1) {
-    cmds.push('cat ./src/' + f + ' >> dist/_cartodb.js');
+  if(f.indexOf('vendor') === -1) {
+    cdb_files.push('./src/' + f);
+  } else {
+    vendor_files.push('./vendor/' + f.split('/')[2]);
   }
 }
+
+concat_files(vendor_files, function(vendor_js) {
+  concat_files(cdb_files, function(cdb_js) {
+    fs.readFile('scripts/wrapper.js', 'utf8', function (err, final_js) {
+      fs.writeFile("dist/_cartodb.js", _.template(final_js)({
+        CDB_DEPS: vendor_js,
+        CDB_LIB: cdb_js
+      }));
+    });
+  });
+});
 
 
 //exec batch commands

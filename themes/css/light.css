@@ -6,6 +6,7 @@
   /* INFOWINDOW */
   div.infowindow {
     position: absolute;
+    z-index: 2;
   }
 
   div.cartodb-popup {
@@ -57,12 +58,16 @@
   }
 
   div.cartodb-popup h4 {
+    margin: 0;
+    padding: 0;
     font:bold 11px "Helvetica Neue","Helvetica",Arial;
     color:#CCCCCC;
     text-transform:uppercase;
   }
 
   div.cartodb-popup p {
+    margin: 0;
+    padding: 0;
     font:normal 13px "Helvetica",Arial;
     color:#333333;
     padding:0 0 7px;
@@ -92,11 +97,11 @@
     -ms-transform: translateZ(10px);
     -o-transform: translateZ(10px);
     transform: translateZ(10px);
-    z-index: 2;
+    z-index: 3;
     font-family: 'Helvetica Neue', Helvetica, sans-serif;
   }
 
-  div.header * {
+  div.header *, div.cartodb-popup * {
     -webkit-margin-before:0em;
     -webkit-margin-after:0em;
   }
@@ -121,8 +126,9 @@
     text-decoration: underline;
   }
 
-  div.header p {
-    margin-top:5px;
+  div.header > p {
+    margin-top:5px 0 0 0;
+    padding: 0;
     font-weight: normal;
     font-size: 13px;
     color: #999999;
@@ -148,6 +154,7 @@
     display: -moz-inline-stack;
     vertical-align: top;
     text-indent: -9999px;
+    *text-indent:0px;
     font-size: 0;
     line-height: 0;
     text-transform: uppercase;

@@ -18,10 +18,14 @@ clean:
 	rm -rf dist/*
 
 css: $(CSS_FILES) 
-	cat $(CSS_FILES) > themes/css/all.css
+	rm -rf themes/css/cartodb.css
+	cat $(CSS_FILES) > themes/css/cartodb.css
 
 release: dist css
 	node scripts/release.js
+
+publish: 
+	./scripts/publish.sh
 
 
 PHONY: clean themes dist

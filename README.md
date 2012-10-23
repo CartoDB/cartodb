@@ -50,8 +50,8 @@ quick start
 next steps
 ==========
 
-  - see our [examples](./examples)
-  - read the [API reference](./doc/api.md)
+  - see our [examples](examples)
+  - read the [API reference](doc/API.md)
   - read our mailing list
 
 

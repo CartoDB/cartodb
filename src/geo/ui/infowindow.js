@@ -142,10 +142,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   changeTemplate: function(template_name) {
-
     this.template = cdb.templates.getTemplate(this.model.get("template_name"));
     this.render();
-
   },
 
   render: function() {

@@ -115,7 +115,7 @@ var Vis = cdb.core.View.extend({
     } else {
       var center = data.center;
       if (typeof(center) === "string") {
-        center = JSON.parse(center);
+        center = $.parseJSON(center);
       }
 
       map.setCenter(center || [0, 0]);

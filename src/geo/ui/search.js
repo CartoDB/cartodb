@@ -35,6 +35,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
     var address = this.$('input.text').val();
     cdb.geo.geocoder.YAHOO.geocode(address, function(coords) {
+      console.log(self);
       if (coords.length>0) {
         if (coords[0].boundingbox) {
           self.model.set({

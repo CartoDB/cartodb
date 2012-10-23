@@ -35,6 +35,11 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     } else {
       this.map_googlemaps = this.options.map_object;
       this.setElement(this.map_googlemaps.getDiv());
+
+      // fill variables
+      var c = self.map_googlemaps.getCenter();
+      self._setModelProperty({ center: [c.lat(), c.lng()] });
+      self._setModelProperty({ zoom: self.map_googlemaps.getZoom() });
     }
 
 
@@ -182,10 +187,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.map.bind('change:center change:zoom', _.debounce(function() {
       if(self._isReady) {
         var b = self.getBounds();
-        self.map.save({
+        this._setModelProperty({
           view_bounds_sw: b[0],
           view_bounds_ne: b[1]
-        }, { silent: true });
+        });
       }
     }, 1000), this);
   }

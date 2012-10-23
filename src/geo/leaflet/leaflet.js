@@ -41,6 +41,9 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     } else {
       this.map_leaflet = this.options.map_object;
       this.setElement(this.map_leaflet.getContainer());
+      var c = self.map_leaflet.getCenter();
+      self._setModelProperty({ center: [c.lat, c.lng] });
+      self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
     }
 
     // looks like leaflet dont like to change the bounds just after the inicialization
@@ -105,13 +108,6 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
     });
 
-    /*this.map.bind('change:view_bounds_sw change:view_bounds_ne', function() {
-      var bounds = this.map.getViewBounds();
-      if(bounds) {
-        this.showBounds(bounds);
-      }
-    }, this);
-    */
 
     this.trigger('ready');
 
@@ -224,10 +220,10 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     // save on change
     this.map.bind('change:center change:zoom', _.debounce(function() {
       var b = self.getBounds();
-      self.map.save({
+      this._setModelProperty({
         view_bounds_sw: b[0],
         view_bounds_ne: b[1]
-      }, { silent: true });
+      });
     }, 1000), this);
   }
 

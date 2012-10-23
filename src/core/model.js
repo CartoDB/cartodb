@@ -48,6 +48,6 @@
       obj.bind && obj.bind(ev, function() {
         self.trigger(retrigEvent);
       })
-    },
+    }
   });
 })();

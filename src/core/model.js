@@ -48,6 +48,27 @@
       obj.bind && obj.bind(ev, function() {
         self.trigger(retrigEvent);
       })
+    },
+
+    /**
+     * We need to override backbone save method to be able to introduce new kind of triggers that
+     * for some reason are not present in the original library. Because you know, it would be nice
+     * to be able to differenciate "a model has been updated" of "a model is being saved".
+     * @param  {object} opt1
+     * @param  {object} opt2
+     * @return {$.Deferred}
+     */
+    save: function(opt1, opt2) {
+      var self = this;
+      this.trigger('saving');
+      $promise = Backbone.Model.prototype.save.call(this, opt1, opt2);
+      console.log($promise);
+      $.when($promise).done(function() {
+        self.trigger('saved');
+      }).fail(function() {
+        self.trigger('errorSaving')
+      })
+      return $promise;
     }
   });
 })();

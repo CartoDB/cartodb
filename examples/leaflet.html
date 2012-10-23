@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../v2/themes/css/all.css" />
-  <!--<script src="../dist/loader.js"></script>-->
-  <script src="../src/cartodb.js"></script>
+    <link rel="stylesheet" href="http://libs.cartodb.com/cartodb.js/v2/themes/css/all.css" />
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.uncompressed.js"></script>
   </head>
     
   <body>
@@ -23,12 +23,8 @@
         attribution: 'stamen'
       }).addTo(map);
 
-      cartodb.createLayer(map, {
-        user: 'development',
-        table: 'tm2',
-        host: 'localhost.lan:3000',
-        protocol: 'http'
-      }).on('done', function(layer) {
+      cartodb.createLayer(map, 'http://staging20.cartodb.com/api/v1/viz/nh_final/viz.json')
+       .on('done', function(layer) {
         window.layer = layer;
         map.addLayer(layer);
 

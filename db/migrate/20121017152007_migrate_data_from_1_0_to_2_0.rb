@@ -2,8 +2,7 @@ Sequel.migration do
   up do
     require Rails.root.join('lib/cartodb/migrator')
 
-    Migrator.migrate_maps
-    Migrator.migrate_layers
+    Migrator.new.migrate!
   end
 
   down do

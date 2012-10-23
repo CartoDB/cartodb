@@ -197,6 +197,17 @@
             position:relative;
             padding:0 40px;
 
+            @include opacity(1);
+            @include transform-style("linear");
+            @include transition-property("opacity");
+            @include transition-duration(1000ms);
+
+
+            &.disabled {
+              background-color: #e1e1e1;
+              opacity:0.4;
+            }
+
             div.table_info {
               padding:30px 0 40px 0;
               border-top:1px solid #EDEDED;

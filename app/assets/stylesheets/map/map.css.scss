@@ -7,6 +7,8 @@
 @import "../common/mixins";
 @import "../common/sprites";
 
+
+
 div.map {
   position:absolute;
   top:0;
@@ -259,6 +261,7 @@ div.map {
     }
   }
 
+
   div#map {
     position:absolute;
     top:64px;
@@ -270,9 +273,12 @@ div.map {
     z-index:1;
   }
 
+  div#zoom {top:65px;}
+
+
   div#map.public {
-    top: 20px;
-    box-shadow: 0 -2px 10px #CCC;
+    top: 55px;
+    border-top:1px solid rgba(black,0.2);
   }
 
   // [done | discard] dialog shown when a geometry is being edited or created
@@ -297,7 +303,6 @@ div.map {
 
 } // div.map
 
-div#zoom {top:65px;}
 
 section.block.noGeoRef {
   background-color: #FFF0C1;
@@ -327,4 +332,34 @@ section.block.noGeoRef {
       display: block;
     }
   }
+}
+
+/* FOOTER EDIT BUTTONS  for infowindow */
+
+div.cartodb-edit-buttons {
+  border-top:1px solid rgba(204,204,204,0.5);
+  display:block;
+  width:188px;
+  padding:11px 0 6px;
+  margin-top:10px;
+}
+
+div.cartodb-edit-buttons a.button.grey.small {
+  margin-left: 5px;
+  font-size: 13px;
+  padding: 6px 8px;
+}
+
+div.cartodb-edit-buttons .button:first-child {
+  margin-left:0;
+}
+
+div.cartodb-edit-buttons .cartodb_id {
+  display:inline-block;
+  *display:inline;
+  vertical-align:top;
+  zoom:1;
+  color: #999;
+  font-size: 13px;
+  margin-top:8px;
 }

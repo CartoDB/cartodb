@@ -111,10 +111,7 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     } else {
       this.activate();
     }
-  },
-
-
-
+  }
 });
 
 cdb.geo.Layers = Backbone.Collection.extend({

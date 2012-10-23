@@ -39,9 +39,7 @@ _.extend(
                   .replace("{x}",x)
                   .replace("{y}",y)
                   .replace("{z}",zoom);
-    },
-
-
+    }
 });
 
 cdb.geo.GMapsTiledLayerView = GMapsTiledLayerView;

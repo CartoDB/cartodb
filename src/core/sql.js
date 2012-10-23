@@ -72,6 +72,6 @@
     },
     setQuery: function(params) {
       this.set({query: params});
-    },
+    }
   });
 })()

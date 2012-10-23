@@ -274,6 +274,7 @@ div.header.yellow h1 a:hover {
   /* INFOWINDOW */
   div.infowindow {
     position: absolute;
+    z-index:2;
   }
 
   div.cartodb-popup {
@@ -325,12 +326,16 @@ div.header.yellow h1 a:hover {
   }
 
   div.cartodb-popup h4 {
+    margin:0;
+    padding:0;
     font:bold 11px "Helvetica Neue","Helvetica",Arial;
     color:#CCCCCC;
     text-transform:uppercase;
   }
 
   div.cartodb-popup p {
+    margin:0;
+    padding:0;
     font:normal 13px "Helvetica",Arial;
     color:#333333;
     padding:2px 0 7px;
@@ -348,6 +353,7 @@ div.header.yellow h1 a:hover {
     display: block;
     background: #FFF;
     border: none;
+    border-bottom: 1px solid #999999;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     margin:0;
     padding:20px;
@@ -365,11 +371,11 @@ div.header.yellow h1 a:hover {
     -ms-transform: translateZ(10px);
     -o-transform: translateZ(10px);
     transform: translateZ(10px);
-    z-index: 2;
+    z-index: 3;
     font-family: 'Helvetica Neue', Helvetica, sans-serif;
   }
 
-  div.header * {
+  div.header *, div.cartodb-popup * {
     -webkit-margin-before:0em;
     -webkit-margin-after:0em;
   }
@@ -394,8 +400,9 @@ div.header.yellow h1 a:hover {
     text-decoration: underline;
   }
 
-  div.header p {
-    margin-top:5px;
+  div.header > p {
+    margin:5px 0 0 0;
+    padding:0;
     font-weight: normal;
     font-size: 13px;
     color: #999999;
@@ -421,6 +428,7 @@ div.header.yellow h1 a:hover {
     display: -moz-inline-stack;
     vertical-align: top;
     text-indent: -9999px;
+    *text-indent:0px;
     font-size: 0;
     line-height: 0;
     text-transform: uppercase;

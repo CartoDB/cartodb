@@ -38,9 +38,15 @@ class Migrator
     data_layer.options['tile_style'] = JSON.parse(
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style']
+    infowindow_fields = infowindow_metadata.select { |k,v| v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) }
+    infowindow_fields = table.schema(reload: true).map { |i| i.first }.select { |k, v| 
+      !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
+    } if infowindow_fields.blank?
     data_layer.infowindow = {
-      "fields"        => infowindow_metadata.keys.each_with_index.map { |column_name, i| { name: column_name, title: true, position: i+1 } },
-      "template_name" => "table/views/infowindow_light"
+      "fields"         => infowindow_fiels
+                            .keys.each_with_index
+                            .map { |column_name, i| { name: column_name, title: true, position: i+1 } },
+      "template_name"  => "table/views/infowindow_light"
     }
 
     data_layer.save

@@ -74,7 +74,7 @@ var Vis = cdb.core.View.extend({
       description: data.description,
       maxZoom: data.maxZoom,
       minZoom: data.minZoom,
-      provider: data.provider
+      provider: data.map_provider
     };
 
     // if the boundaries are defined, we add them to the map

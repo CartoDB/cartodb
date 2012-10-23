@@ -50,7 +50,7 @@ describe("Vis", function() {
   })
 
 
-  xit("should insert the max boundaries when provided", function() {
+  it("should insert the max boundaries when provided", function() {
     this.container = $('<div>').css('height', '200px');
     this.mapConfig.bounding_box_sw = [1,2];
     this.mapConfig.bounding_box_ne = [3,5];
@@ -58,11 +58,14 @@ describe("Vis", function() {
 
     expect(this.vis.map.get('bounding_box_sw')).toEqual([1,2]);
     expect(this.vis.map.get('bounding_box_ne')).toEqual([3,5]);
-    expect(this.vis.mapView.map_leaflet.options.maxBounds).toBeTruthy();
-    expect(this.vis.mapView.map_leaflet.options.maxBounds.getNorthEast().lat).toEqual(3);
-    expect(this.vis.mapView.map_leaflet.options.maxBounds.getNorthEast().lng).toEqual(5);
-    expect(this.vis.mapView.map_leaflet.options.maxBounds.getSouthWest().lat).toEqual(1);
-    expect(this.vis.mapView.map_leaflet.options.maxBounds.getSouthWest().lng).toEqual(2);
   })
+
+
+  it("should create a google maps map when provider is google maps", function() {
+    this.container = $('<div>').css('height', '200px');
+    this.mapConfig.map_provider = "googlemaps";
+    this.vis.load(this.mapConfig);
+    expect(this.vis.mapView.map_googlemaps).not.toEqual(undefined);
+  });
 
 })

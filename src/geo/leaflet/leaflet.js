@@ -41,6 +41,9 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     } else {
       this.map_leaflet = this.options.map_object;
       this.setElement(this.map_leaflet.getContainer());
+      var c = self.map_leaflet.getCenter();
+      self._setModelProperty({ center: [c.lat, c.lng] });
+      self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
     }
 
     // looks like leaflet dont like to change the bounds just after the inicialization

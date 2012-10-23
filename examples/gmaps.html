@@ -2,17 +2,13 @@
 <html>
   <head>
     <link rel="stylesheet" href="../v2/themes/css/all.css" />
-  <!--<script src="../dist/loader.js"></script>-->
-  <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-  <script src="../src/cartodb.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="../v2/cartodb.uncompressed.js"></script>
   </head>
     
   <body>
     <div id="map" style="height: 800px"></div>
   </body>
-
-  <!--<script src="../v2/cartodb.full.js"></script>-->
-
 
   <script>
 
@@ -20,18 +16,14 @@
 
         var map;
         var mapOptions = {
-          zoom: 5,
-          center: new google.maps.LatLng(43, 0),
+          zoom: 7,
+          center: new google.maps.LatLng(43, -68),
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         map = new google.maps.Map(document.getElementById('map'),  mapOptions);
 
-        cartodb.createLayer(map, {
-          user: 'development',
-          table: 'tm2',
-          protocol: 'http',
-          host: 'localhost.lan:3000'
-        }).on('done', function(layer) {
+        cartodb.createLayer(map, 'http://staging20.cartodb.com/api/v1/viz/nh_final/viz.json')
+         .on('done', function(layer) {
           window.layer = layer;
           map.overlayMapTypes.setAt(0, layer);
           layer.on('featureOver', function(e, pos, latlng, data) {
@@ -48,15 +40,8 @@
 
 
     document.body.onload = function() {
-      cartodb.load('../src/', main);
+      main();
     }
-
-
-    /*layer.show();
-    layer.hide();
-    layer.setSQL();
-    layer.setStyle();
-    */
 
   </script>
   <script>

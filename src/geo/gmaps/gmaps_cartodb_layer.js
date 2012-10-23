@@ -252,9 +252,7 @@ CartoDBLayer.prototype._manageOffEvents = function(){
 
 CartoDBLayer.prototype._manageOnEvents = function(map,o) {
   var point  = this._findPos(map, o);
-
-  console.log(point);
-  var      latlng = this.projector.pixelToLatLng(point);
+  var latlng = this.projector.pixelToLatLng(point);
 
   switch (o.e.type) {
     case 'mousemove':

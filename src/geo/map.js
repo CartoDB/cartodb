@@ -431,12 +431,23 @@ cdb.geo.MapView = cdb.core.View.extend({
   _bindModel: function() {
     this.map.bind('change:zoom',   this._setZoom, this);
     this.map.bind('change:center', this._setCenter, this);
+    this.map.bind('change:view_bounds_sw', this._changeBounds, this);
+    this.map.bind('change:view_bounds_ne', this._changeBounds, this);
   },
 
   /** unbind model properties */
   _unbindModel: function() {
     this.map.unbind('change:zoom',   this._setZoom, this);
     this.map.unbind('change:center', this._setCenter, this);
+    this.map.unbind('change:view_bounds_sw', this._changeBounds, this);
+    this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
+  },
+
+  _changeBounds: function() {
+      var bounds = this.map.getViewBounds();
+      if(bounds) {
+        this.showBounds(bounds);
+      }
   },
 
   _addLayers: function() {

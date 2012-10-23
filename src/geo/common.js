@@ -82,13 +82,15 @@ CartoDBLayerCommon.prototype = {
     var url_params = [];
     for(var k in params) {
       var p = params[k];
-      var q = encodeURIComponent(
-        p.replace ? 
-          p.replace(/\{\{table_name\}\}/g, opts.table_name):
-          p
-      );
-      q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
-      url_params.push(k + "=" + q);
+      if(p) {
+        var q = encodeURIComponent(
+          p.replace ? 
+            p.replace(/\{\{table_name\}\}/g, opts.table_name):
+            p
+        );
+        q = q.replace(/%7Bx%7D/g,"{x}").replace(/%7By%7D/g,"{y}").replace(/%7Bz%7D/g,"{z}");
+        url_params.push(k + "=" + q);
+      }
     }
     cartodb_url += url_params.join('&');
 

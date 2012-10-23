@@ -108,13 +108,12 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
     });
 
-    /*this.map.bind('change:view_bounds_sw change:view_bounds_ne', function() {
+    this.map.bind('change:view_bounds_sw change:view_bounds_ne', function() {
       var bounds = this.map.getViewBounds();
       if(bounds) {
         this.showBounds(bounds);
       }
     }, this);
-    */
 
     this.trigger('ready');
 

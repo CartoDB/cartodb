@@ -23,6 +23,10 @@
     <%= stylesheet_link_tag :leaflet %>
     <%= stylesheet_link_tag 'cdb/themes/css/cartodb.css' %>
 
+    <!--[if lte IE 8]>
+      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
+    <![endif]-->
+
     <script id="infowindow_template" type="text/tmpl">
       <%# render :file => File.join(Rails.root,"lib/assets/javascripts/cartodb/" + @infowindow_template_path + ".jst.mustache") %>
     </script>
@@ -83,7 +87,6 @@
       remove_overlay('search');
     }
 
-
     if(opt.title !== 'true' && opt.description !== 'true' && opt.shareable !== 'true') {
       remove_overlay('header');
     }
@@ -112,8 +115,9 @@
 
     if(opt.sql) {
       vizjson.layers[1].options.query = opt.sql;
-      vizjson.layers[1].options.no_cdn = debug;
     }
+
+    vizjson.layers[1].options.no_cdn = debug;
 
     var vis = new cdb.vis.Vis({el: $('#map')});
     vis.load(vizjson);

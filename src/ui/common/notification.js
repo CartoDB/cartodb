@@ -57,22 +57,25 @@ cdb.ui.common.Notification = cdb.core.View.extend({
     if(this.options.hideMethod != '' && this.$el.is(":visible") ) {
       this.$el[this.options.hideMethod](this.options.duration, 'swing', function() {
         self.$el.html('');
+        self.trigger('notificationDeleted');
         self.remove();
       });
     } else {
       this.$el.hide();
       self.$el.html('');
+      self.trigger('notificationDeleted');
       self.remove();
     }
 
   },
 
-  open: function() {
+  open: function(method, options) {
     this.render();
-    this.$el.show();
+    this.$el.show(method, options);
     if(this.options.timeout) {
         this.closeTimeout = setTimeout(_.bind(this.hide, this), this.options.timeout);
     }
   }
 
 });
+

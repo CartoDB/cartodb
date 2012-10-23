@@ -799,7 +799,8 @@ L.DomUtil = {
         filter.Enabled = (value !== 100);
         filter.Opacity = value;
       } else {
-        el.style.filter += ' progid:' + filterName + '(opacity=' + value + ')';
+        //el.style.filter += ' progid:' + filterName + '(opacity=' + value + ')';
+        el.style.filter = 'filter:alpha(opacity=' + value + ')';
       }
     }
   },

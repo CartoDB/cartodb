@@ -19,6 +19,10 @@ Layers.register('plain', function(vis, data) {
   return new cdb.geo.PlainLayer(data);
 });
 
+Layers.register('background', function(vis, data) {
+  return new cdb.geo.PlainLayer(data);
+});
+
 var cartoLayer = function(vis, data) {
 
   if(data.infowindow && data.infowindow.fields) {

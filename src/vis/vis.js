@@ -169,10 +169,10 @@ var Vis = cdb.core.View.extend({
     if(layerData.infowindow) {
       this.addInfowindow(layerView);
       layerView.bind('featureOver', function(e, latlon, pxPos, data) {
-        $(document.body).css('cursor', 'pointer');
+        mapView.setCursor('pointer');
       });
       layerView.bind('featureOut', function() {
-        $(document.body).css('cursor', 'auto');
+        mapView.setCursor('auto');
       });
     }
 

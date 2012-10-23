@@ -225,6 +225,10 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
         view_bounds_ne: b[1]
       });
     }, 1000), this);
+  },
+
+  setCursor: function(cursor) {
+    $(this.map_leaflet.getContainer()).css('cursor', cursor);
   }
 
 }, {
@@ -252,6 +256,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   addLayerToMap: function(layer_view, map) {
     map.addLayer(layer_view.leafletLayer);
   }
+
 });
 
 })();

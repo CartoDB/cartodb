@@ -193,6 +193,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         });
       }
     }, 1000), this);
+  },
+
+  setCursor: function(cursor) {
+    this.map_googlemaps.setOptions({ draggableCursor: cursor });
   }
 
 });

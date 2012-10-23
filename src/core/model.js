@@ -6,6 +6,11 @@
    * @class cdb.core.Model
    */
   var Model = cdb.core.Model = Backbone.Model.extend({
+
+    initialize: function(options) {
+      _.bindAll(this, 'fetch',  'save', 'retrigger');
+      return Backbone.Model.prototype.initialize.call(this, options);
+    },
     /**
     * We are redefining fetch to be able to trigger an event when the ajax call ends, no matter if there's
     * a change in the data or not. Why don't backbone does this by default? ahh, my friend, who knows.
@@ -62,7 +67,6 @@
       var self = this;
       this.trigger('saving');
       $promise = Backbone.Model.prototype.save.call(this, opt1, opt2);
-      console.log($promise);
       $.when($promise).done(function() {
         self.trigger('saved');
       }).fail(function() {

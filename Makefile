@@ -18,7 +18,7 @@ clean:
 	rm -rf dist/*
 
 css: $(CSS_FILES) 
-	cat $(CSS_FILES) > themes/css/all.css
+	cat $(CSS_FILES) > themes/css/cartodb.css
 
 release: dist css
 	node scripts/release.js

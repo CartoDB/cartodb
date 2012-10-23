@@ -392,7 +392,12 @@ class Table < Sequel::Model(:user_tables)
     base_layer.options["table_name"] = self.name
     base_layer.options["user_name"] = self.owner.username
     m.add_layer(base_layer)
-    m.add_layer(Layer.create(Cartodb.config[:layer_opts]["data"]))
+    
+    data_layer = Layer.new(Cartodb.config[:layer_opts]["data"])
+    data_layer.infowindow['fields'] = self.schema(reload: true).map { |i| i.first }.select { |k, v| 
+      !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
+    }
+    m.add_layer(data_layer)
   end
 
   def after_update
@@ -482,7 +487,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def infowindow_with_new_model=(value)
-    layer = map.layers.first
+    layer = map.data_layers.first
     layer.update(:infowindow => value)
     self.infowindow_without_new_model = value
   end
@@ -493,7 +498,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def infowindow_with_new_model
-    map.layers.first.infowindow
+    map.data_layers.first.infowindow
   end
   alias_method_chain :infowindow, :new_model
 

@@ -19,6 +19,10 @@
 		@include border-top-right-radius(5px);
 		@include box-shadow(rgba(black, 0.2) 0 0 5px);
 
+		.margin {
+			margin-right:8px;
+		}
+
 		span{
 			font-size: 15px;
 			color: #333;

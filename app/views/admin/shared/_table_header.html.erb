@@ -4,14 +4,14 @@
       <hgroup>
         <h1><%= link_to "CartoDB", root_path %></h1>
         <h2 class="special"><%= link_to "", "#change_title", :class => "change_title" %></h2>
-        <a class="clearview button_header" href="#clearview">clear view</a>
-        <a href="#change_status" class="status button_header">.</a>
+        <a class="clearview button_header rounded_white" href="#clearview">clear view</a>
+        <a href="#change_status" class="status button_header rounded_white">.</a>
       </hgroup>
       <span class="table_description"><p></p></span>
       <span class="tags"></span>
       <nav>
-        <%= link_to "table",        "#table",   :class => "smaller strong uppercase tab selected" %>
-        <%= link_to "map view",     "#map",     :class => "smaller strong uppercase tab" %>
+        <%= link_to "table",        "#/table",   :class => "smaller strong uppercase tab selected" %>
+        <%= link_to "map view",     "#/map",     :class => "smaller strong uppercase tab" %>
       </nav>
     </div>
     <ul class="right options">

@@ -259,6 +259,7 @@ div.map {
     }
   }
 
+
   div#map {
     position:absolute;
     top:64px;
@@ -270,9 +271,12 @@ div.map {
     z-index:1;
   }
 
+  div#zoom {top:65px;}
+
+
   div#map.public {
-    top: 20px;
-    box-shadow: 0 -2px 10px #CCC;
+    top: 55px;
+    border-top:1px solid rgba(black,0.2);
   }
 
   // [done | discard] dialog shown when a geometry is being edited or created
@@ -297,7 +301,6 @@ div.map {
 
 } // div.map
 
-div#zoom {top:65px;}
 
 section.block.noGeoRef {
   background-color: #FFF0C1;

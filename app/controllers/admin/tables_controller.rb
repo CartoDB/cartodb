@@ -8,10 +8,6 @@ class Admin::TablesController < ApplicationController
   after_filter       :update_user_last_activity,   :only => [:index, :show]
 
   def index
-    @tags          = Tag.load_user_tags(current_user.id, :limit => 100)
-    @quota         = current_user.quota_in_bytes / 1024 / 1024
-    @database_size = current_user.db_size_in_bytes / 1024 /1024
-    @table_quota   = current_user.table_quota
     @tables_count  = current_user.tables.count
   end
 
@@ -20,7 +16,6 @@ class Admin::TablesController < ApplicationController
   # if the user is not logged in, we redirect them to the public page
   def show
     if current_user.present?
-      update_user_last_activity
       @table = Table.find_by_identifier(current_user.id, params[:id])
       begin
         respond_to do |format|

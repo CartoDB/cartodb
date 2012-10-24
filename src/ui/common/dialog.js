@@ -52,7 +52,8 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
     cancel_button_classes: '',
     modal_type: '',
     modal_class: '',
-    include_footer: true
+    include_footer: true,
+    additionalButtons: []
   },
 
   initialize: function() {
@@ -91,7 +92,7 @@ cdb.ui.common.Dialog = cdb.core.View.extend({
 
 
   _keydown: function(e) {
-    if (e.keyCode === 27) { 
+    if (e.keyCode === 27) {
       this._cancel();
     }
   },

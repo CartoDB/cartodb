@@ -123,12 +123,10 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
   _setZoom: function(model, z) {
     this._setView();
-    //this.map_leaflet.setZoom(z);
   },
 
   _setCenter: function(model, center) {
     this._setView();
-    //this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
   },
 
   _setView: function() {
@@ -214,7 +212,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     var ne = bounds[1];
     var southWest = new L.LatLng(sw[0], sw[1]);
     var northEast = new L.LatLng(ne[0], ne[1]);
-    //this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
+    this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
   },
 
   getSize: function() {

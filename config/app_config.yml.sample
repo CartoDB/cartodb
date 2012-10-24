@@ -9,6 +9,7 @@ defaults: &defaults
   sql_api_domain:     'development.localhost.lan'
   sql_api_endpoint:   '/api/v1/sql'
   sql_api_port:       8080
+  api_requests_service_url: ''
   developers_host:    'http://developers.localhost.lan:3000'
   varnish_management:
     critical: true

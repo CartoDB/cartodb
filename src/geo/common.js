@@ -65,7 +65,8 @@ CartoDBLayerCommon.prototype = {
     if(opts.tile_style) {
       params.style = opts.tile_style;
     }
-    if(opts.style_version) {
+    // style_version is only valid when tile_style is present
+    if(opts.tile_style && opts.style_version) {
       params.style_version = opts.style_version;
     }
     if(ext === 'grid.json') {

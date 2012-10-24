@@ -327,10 +327,15 @@ cdb.geo.Map = cdb.core.Model.extend({
     var old = this.layers.at(0);
 
     if (old) { // defensive programming FTW!!
-
-      old.destroy({
+      //remove layer from the view
+      //change all the attributes and save it again
+      //it will saved in the server and recreated in the client
+      self.layers.remove(old);
+      layer.set('id', old.get('id'));
+      layer.set('order', old.get('order'));
+      this.layers.add(layer, { at: 0 });
+      layer.save(null, {
         success: function() {
-          self.layers.add(layer, { at: 0 });
           self.trigger('baseLayerAdded');
           self._adjustZoomtoLayer(layer);
           opts.success && opts.success();

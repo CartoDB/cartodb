@@ -77,7 +77,7 @@ describe("geo.map", function() {
       map.addLayer(layer);
       var base = new cdb.geo.CartoDBLayer({});
 
-      sinon.stub(old, "destroy").yieldsTo("success");
+      sinon.stub(base, "save").yieldsTo("success");
       var r = map.setBaseLayer(base);
       expect(r).toEqual(base);
       expect(map.layers.at(0)).toEqual(base);
@@ -89,13 +89,13 @@ describe("geo.map", function() {
         minZoom: 7
       });
       map.addLayer(layer);
-      sinon.stub(layer, "destroy").yieldsTo("success");
       expect(map.get('maxZoom')).toEqual(8);
       expect(map.get('minZoom')).toEqual(7);
       var layerbase = new cdb.geo.CartoDBLayer({
         maxZoom: 10,
         minZoom: 9
       });
+      sinon.stub(layerbase, "save").yieldsTo("success");
       map.setBaseLayer(layerbase);
       expect(map.get('maxZoom')).toEqual(10);
       expect(map.get('minZoom')).toEqual(9);
@@ -166,10 +166,6 @@ describe("geo.map", function() {
       map.bind('change:center', spy.centerChanged);
     });
 
-    it("should change zoom", function() {
-      mapView._setZoom(10);
-      expect(spy.zoomChanged).toHaveBeenCalled();
-    });
 
     it("should allow adding a layer", function() {
       map.addLayer(layer);

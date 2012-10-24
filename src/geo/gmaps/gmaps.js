@@ -71,6 +71,16 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
 
     this.projector = new cdb.geo.CartoDBLayerGMaps.Projector(this.map_googlemaps);
 
+    this.map.bind('change:center change:zoom', function() {
+      if(self._isReady) {
+        var b = self.getBounds();
+        this._setModelProperty({
+          view_bounds_sw: b[0],
+          view_bounds_ne: b[1]
+        });
+      }
+    }, this);
+
     this.projector.draw = this._ready;
 
   },
@@ -179,20 +189,6 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     var southWest = new google.maps.LatLng(sw[0], sw[1]);
     var northEast = new google.maps.LatLng(ne[0], ne[1]);
     this.map_googlemaps.fitBounds(new google.maps.LatLngBounds(southWest, northEast));
-  },
-
-  setAutoSaveBounds: function() {
-    var self = this;
-    // save on change
-    this.map.bind('change:center change:zoom', _.debounce(function() {
-      if(self._isReady) {
-        var b = self.getBounds();
-        this._setModelProperty({
-          view_bounds_sw: b[0],
-          view_bounds_ne: b[1]
-        });
-      }
-    }, 1000), this);
   },
 
   setCursor: function(cursor) {

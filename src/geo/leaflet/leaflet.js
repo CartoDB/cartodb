@@ -108,17 +108,27 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
     });
 
+    this.map.bind('change:center change:zoom', function() {
+      var b = self.getBounds();
+      this._setModelProperty({
+        view_bounds_sw: b[0],
+        view_bounds_ne: b[1]
+      });
+    }, this);
+
 
     this.trigger('ready');
 
   },
 
   _setZoom: function(model, z) {
-    this.map_leaflet.setZoom(z);
+    this._setView();
+    //this.map_leaflet.setZoom(z);
   },
 
   _setCenter: function(model, center) {
-    this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
+    this._setView();
+    //this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
   },
 
   _setView: function() {
@@ -173,12 +183,12 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
         }
       });
     }
-
-    // update all
-    //for(var i in this.layers) {
-      //this.layers[i].reload();
-    //}
-
+    /*
+    var attr = layer.get('attribution');
+    if(attr) {
+      this.addAttribution(attr);
+    }
+    */
 
     this.trigger('newLayerView', layer_view, this);
   },
@@ -204,7 +214,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     var ne = bounds[1];
     var southWest = new L.LatLng(sw[0], sw[1]);
     var northEast = new L.LatLng(ne[0], ne[1]);
-    this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
+    //this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
   },
 
   getSize: function() {
@@ -213,18 +223,6 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
   panBy: function(p) {
     this.map_leaflet.panBy(new L.Point(p.x, p.y));
-  },
-
-  setAutoSaveBounds: function() {
-    var self = this;
-    // save on change
-    this.map.bind('change:center change:zoom', _.debounce(function() {
-      var b = self.getBounds();
-      this._setModelProperty({
-        view_bounds_sw: b[0],
-        view_bounds_ne: b[1]
-      });
-    }, 1000), this);
   },
 
   setCursor: function(cursor) {

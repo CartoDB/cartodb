@@ -429,10 +429,10 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   /** bind model properties */
   _bindModel: function() {
-    this.map.bind('change:zoom',   this._setZoom, this);
-    this.map.bind('change:center', this._setCenter, this);
     this.map.bind('change:view_bounds_sw', this._changeBounds, this);
     this.map.bind('change:view_bounds_ne', this._changeBounds, this);
+    this.map.bind('change:zoom',   this._setZoom, this);
+    this.map.bind('change:center', this._setCenter, this);
   },
 
   /** unbind model properties */
@@ -446,7 +446,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   _changeBounds: function() {
       var bounds = this.map.getViewBounds();
       if(bounds) {
-        this.showBounds(bounds);
+        //this.showBounds(bounds);
       }
   },
 
@@ -492,7 +492,15 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   _addLayer: function(layer, layers, opts) {
     throw "to be implemented";
-  }
+  },
+
+  setAutoSaveBounds: function() {
+    var self = this;
+    // save on change
+    this.map.bind('change:center change:zoom', _.debounce(function() {
+      self.map.save(null, { silent: true });
+    }, 1000), this);
+  },
 
 
 }, {

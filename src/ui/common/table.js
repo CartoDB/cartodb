@@ -255,6 +255,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
     tr.bind('changeRow', this.rowChanged);
     tr.bind('syncRow', this.rowSynched);
     tr.bind('errorRow', this.rowFailed);
+    tr.bind('saving', this.rowSaving);
+    this.retrigger('saving', tr);
     // tr.bind('destroyRow', this.rowDestroyed);
     // tr.model.bind('destroy', this.rowDestroyed);
 
@@ -298,6 +300,12 @@ cdb.ui.common.Table = cdb.core.View.extend({
   * @abstract
   */
   rowFailed: function() {},
+
+  /**
+  * Callback executed when a row send a POST to the server
+  * @abstract
+  */
+  rowSaving: function() {},
 
   /**
   * Callback executed when a row gets destroyed

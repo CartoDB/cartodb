@@ -16,7 +16,6 @@ class Admin::TablesController < ApplicationController
   # if the user is not logged in, we redirect them to the public page
   def show
     if current_user.present?
-      update_user_last_activity
       @table = Table.find_by_identifier(current_user.id, params[:id])
       begin
         respond_to do |format|

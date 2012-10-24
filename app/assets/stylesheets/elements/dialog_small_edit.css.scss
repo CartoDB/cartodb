@@ -26,6 +26,16 @@
     text-transform: lowercase;
   }
 
+  a.link {
+    margin-top: 19px;
+    font-size: 13px;
+    text-decoration: underline;
+    text-transform: lowercase;
+    margin-right: 3px;
+  }
+
+
+
   input, textarea {
     position:relative;
     display:block;
@@ -54,7 +64,7 @@
       @include inline-block();
       label {display:block; margin:0 0 5px; font:bold 10px $text-fonts; color:#999999;}
     }
-    
+
     input.time {
       width:50px;
       padding:0 5px;
@@ -117,7 +127,7 @@
         &.longitude {left:10px;}
         &.error {border-color:rgba(red,0.5);}
       }
-      
+
       p {position:absolute; top:15px; left:50%; margin-left:-3px; font-size:20px;}
 
       label {
@@ -126,6 +136,10 @@
         &.longitude {left:18px;}
       }
     }
+  }
+
+  .hidden {
+    display: none;
   }
 }
 
@@ -140,7 +154,7 @@
     float: left;
     @include inline-block();
   }
-  
+
   input {
     position:absolute;
     top:5px;
@@ -201,7 +215,7 @@
 
         a.tagit-close {
           position:relative;
-          @include inline-block();          
+          @include inline-block();
           width:auto;
           height:100%;
           margin:0;
@@ -211,7 +225,7 @@
             span.text-icon {color:white;}
             text-decoration:none;
           }
-          
+
           span.text-icon {
             display:block;
             margin:0;

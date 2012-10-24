@@ -33,7 +33,6 @@ defaults: &defaults
     data:
       kind: "carto"
       options:
-        type:               "CartoDB"
         query:              ""
         opacity:            0.99
         auto_bound:         false
@@ -52,6 +51,8 @@ defaults: &defaults
         user_name:          "development"
         tile_style_history: []
         style_version:              "2.1.0"
+      infowindow:
+        template_name:      "table/views/infowindow_light"
     background:
       kind: "background"
       options: { color: '#ffffff' }

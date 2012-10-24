@@ -81,6 +81,20 @@ describe User do
     user.valid?.should be_true
   end
 
+  it "should read api calls from external service" do
+    file = Tempfile.new 'foo'
+    wadus = {"per_day" => [1, 2, 3, 4, 5], "total" => 15 }
+    file.write(wadus.to_json)
+    file.rewind
+    @user.stubs(:open).returns(file)
+    
+    @user.set_api_calls
+    @user.get_api_calls['per_day'].should == wadus['per_day']
+    @user.get_api_calls['total'].should == wadus['total']
+    @user.get_api_calls['updated_at'].should be <= Time.now.to_i
+    file.close
+  end
+
   it "should have many tables" do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => Table::PUBLIC

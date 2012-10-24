@@ -269,6 +269,26 @@ class User < Sequel::Model
     $users_metadata.HMSET key, 'map_key',  token
   end
 
+  ##
+  # Load api calls from external service
+  #
+  def set_api_calls
+    # Ensure we update only once every 24 hours
+    if get_api_calls["updated_at"].to_i < 24.hours.ago.to_i
+      api_calls = JSON.parse(
+        open("#{Cartodb.config['api_requests_service_url']}?username=#{self.username}").read
+      ) rescue {}
+      
+      # Manually set updated_at
+      api_calls["updated_at"] = Time.now.to_i
+      $users_metadata.HMSET key, 'api_calls', api_calls.to_json
+    end
+  end
+
+  def get_api_calls
+    JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
+  end
+
   def get_map_key
     $users_metadata.HMGET(key, 'map_key').first
   end
@@ -534,7 +554,7 @@ class User < Sequel::Model
       :byte_quota => self.quota_in_bytes,
       :remaining_table_quota => self.remaining_table_quota,
       :remaining_byte_quota => self.remaining_quota.to_f,
-      :api_calls => (1..30).map{|i|i},
+      :api_calls => self.get_api_calls["per_day"],
       :api_key => self.get_map_key,
       :layers => self.layers.map(&:public_values)
     }

@@ -9,6 +9,7 @@ defaults: &defaults
   sql_api_domain:     'development.localhost.lan'
   sql_api_endpoint:   '/api/v1/sql'
   sql_api_port:       8080
+  api_requests_service_url: ''
   developers_host:    'http://developers.localhost.lan:3000'
   varnish_management:
     critical: true
@@ -32,7 +33,6 @@ defaults: &defaults
     data:
       kind: "carto"
       options:
-        type:               "CartoDB"
         query:              ""
         opacity:            0.99
         auto_bound:         false
@@ -51,6 +51,8 @@ defaults: &defaults
         user_name:          "development"
         tile_style_history: []
         style_version:              "2.1.0"
+      infowindow:
+        template_name:      "table/views/infowindow_light"
     background:
       kind: "background"
       options: { color: '#ffffff' }

@@ -457,6 +457,9 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
   var opts = _.clone(layerModel.attributes);
+  if(layerModel.get('use_server_style')) {
+    opts.tile_style = null;
+  }
 
   opts.map =  leafletMap;
 
@@ -500,7 +503,7 @@ _.extend(
     // we should remove it from layer options
     if(this.model.get('use_server_style')) {
       attrs.tile_style = null;
-    }
+    } 
     this.leafletLayer.setOptions(attrs);
   },
 

@@ -44,6 +44,7 @@ var Layers = {
     var t = this._types[type.toLowerCase()];
 
     var c = {};
+    c.type = type;
     _.extend(c, data, data.options);
     return new t(vis, c);
   }

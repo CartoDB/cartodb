@@ -5,15 +5,19 @@ class Migrator
       if already_migrated?(table)
         puts "* Skipping: #{table.name}"
       else
-        puts "* Migrating: #{table.name}"
-        puts "  - Creating default map and layers"
-        table.create_default_map_and_layers if table.respond_to?(:map) && table.map.blank?
-        table.reload
-        puts "  - Migrating map"
-        migrate_table_map(table)
-        puts "  - Migrating layers"
-        migrate_table_layers(table)
-        migrated!(table)
+        begin
+          puts "* Migrating: #{table.name}"
+          puts "  - Creating default map and layers"
+          table.create_default_map_and_layers if table.respond_to?(:map) && table.map.blank?
+          table.reload
+          puts "  - Migrating map"
+          migrate_table_map(table)
+          puts "  - Migrating layers"
+          migrate_table_layers(table)
+          migrated!(table)
+        rescue => e
+          notify_airbrake(e)
+        end      
       end
     end
   end

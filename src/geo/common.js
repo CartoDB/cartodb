@@ -52,10 +52,10 @@ CartoDBLayerCommon.prototype = {
   //
   // param ext tile extension, i.e png, json
   // 
-  _tilesUrl: function(ext) {
+  _tilesUrl: function(ext, subdomain) {
     var opts = this.options;
     ext = ext || 'png';
-    var cartodb_url = this._host() + '/tiles/' + opts.table_name + '/{z}/{x}/{y}.' + ext + '?';
+    var cartodb_url = this._host(subdomain) + '/tiles/' + opts.table_name + '/{z}/{x}/{y}.' + ext + '?';
 
     // set params
     var params = {};
@@ -97,12 +97,29 @@ CartoDBLayerCommon.prototype = {
     return cartodb_url;
   },
 
+  isHttps: function() {
+    return this.options.tiler_protocol === 'https';
+  },
+
   _tileJSON: function () {
+    var grids = [];
+    var tiles = [];
+    var subdomains = this.options.subdomains || ['0', '1', '2', '3'];
+    if(this.isHttps()) {
+      subdomains = [null]; // no subdomain
+    } 
+
+    // use subdomains
+    for(var i = 0; i < subdomains.length; ++i) {
+      var s = subdomains[i]
+      grids.push(this._tilesUrl('grid.json', s));
+      tiles.push(this._tilesUrl('png', s));
+    }
     return {
         tilejson: '2.0.0',
         scheme: 'xyz',
-        grids: [this._tilesUrl('grid.json')],
-        tiles: [this._tilesUrl()],
+        grids: grids,
+        tiles: tiles,
         formatter: function(options, data) { return data; }
     };
   },

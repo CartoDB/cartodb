@@ -56,6 +56,23 @@ L.CartoDBLayer = L.TileLayer.extend({
     L.TileLayer.prototype.initialize.call(this);
   },
 
+
+  // overwrite getTileUrl in order to
+  // support different tiles subdomains in tilejson way
+  getTileUrl: function (tilePoint) {
+    this._adjustTilePoint(tilePoint);
+
+    var tiles = this.tilejson.tiles;
+
+    var index = (tilePoint.x + tilePoint.y) % tiles.length;
+
+    return L.Util.template(tiles[index], L.Util.extend({
+      z: this._getZoomForUrl(),
+      x: tilePoint.x,
+      y: tilePoint.y
+    }, this.options));
+  },
+
   /**
    * Change opacity of the layer
    * @params {Integer} New opacity

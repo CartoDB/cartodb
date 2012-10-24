@@ -21,7 +21,7 @@ class Migrator
   def migrate_table_map(table)
     map_metadata = JSON.parse(table.map_metadata) rescue {}
     map = table.map
-    
+
     # All previous maps were based on google maps
     map.provider = "googlemaps"
     map.center = (map_metadata["latitude"].blank? ? "[0, 0]" : "[#{map_metadata["latitude"]},#{map_metadata["longitude"]}]")
@@ -37,14 +37,14 @@ class Migrator
     data_layer.options['kind'] = 'carto'
     data_layer.options['tile_style'] = JSON.parse(
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
-    )['style']
+    )['style'] rescue nil
     infowindow_fields = infowindow_metadata.select { |k,v| v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) }
-    infowindow_fields = table.schema(reload: true).map { |i| i.first }.select { |k, v| 
+    infowindow_fields = table.schema(reload: true).map { |i| i.first }.select { |k, v|
       !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
     } if infowindow_fields.blank?
     data_layer.infowindow = {
-      "fields"         => infowindow_fiels
-                            .keys.each_with_index
+      "fields"         => infowindow_fields
+                            .each_with_index
                             .map { |column_name, i| { name: column_name, title: true, position: i+1 } },
       "template_name"  => "table/views/infowindow_light"
     }

@@ -20,7 +20,7 @@ function PointView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-  var style = _.clone(geometryModel.get('style'));
+  var style = _.clone(geometryModel.get('style')) || {};
   style.path = google.maps.SymbolPath.CICLE;
   style.scale = style.weight;
 
@@ -90,7 +90,7 @@ function PathView(geometryModel) {
 
   
 
-  var style = _.clone(geometryModel.get('style'));
+  var style = _.clone(geometryModel.get('style')) || {};
   style.path = google.maps.SymbolPath.CICLE;
   style.scale = style.weight;
 

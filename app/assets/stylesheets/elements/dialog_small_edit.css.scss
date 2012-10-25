@@ -145,6 +145,7 @@
 
 .floating.edit_name_dialog {
   min-width:280px;
+  height:37px;
   padding: 5px;
   @include background(linear-gradient(rgba(black, 0.5), rgba(#212121,0.5)));
   @include border-radius(4px);
@@ -173,17 +174,25 @@
     }
   }
 
-
   a.ok {
-    padding: 1px + (36px - 15px)/2 !important;
+    padding: 9px 15px !important;
     border: 1px solid #000 !important;
     font-size: 15px !important;
     font-weight: bold !important;
     letter-spacing:0;
     @include border-radius(4px);
+
+    &:active {
+      border-color:#ACACAC;
+      background:#D3D3D3; // IE
+      @include background(linear-gradient(#F9F9F9,#E1E1E1));
+      @include box-shadow(rgba(255,255,255,0) 0 0 1px 0,rgba(130,126,111,0.6) 0 1px 3px 0 inset);
+    }
   }
 
   &.tags-dialog {
+    height:31px;
+
     ul {
       position:relative;
       @include inline-block();

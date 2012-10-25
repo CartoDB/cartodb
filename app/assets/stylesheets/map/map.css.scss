@@ -294,6 +294,7 @@ div.map {
     @include box-shadow(rgba(0,0,0,0.1) 0 0 4px 3px);
     background:white;
     @include border-radius(3px);
+    z-index: 2;
 
     a {
       position:relative;

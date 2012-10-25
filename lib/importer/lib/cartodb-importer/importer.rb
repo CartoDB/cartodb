@@ -69,9 +69,9 @@ module CartoDB
           @import_from_file.strip!
           @filesrc = nil
           @fromuri = false
-          
+
           # URL cleaning stuff
-          if @import_from_file =~ /^http/ 
+          if @import_from_file =~ /^http/
             @import_from_file = parse_url(URI.escape(@import_from_file.strip))
 
             # KML from FusionTables urls were not coming with extensions
@@ -81,7 +81,7 @@ module CartoDB
 
             @fromuri = true
           end
-          
+
           begin
             # Try to open file normally, or open-uri to download/open
             open(@import_from_file) do |res|
@@ -243,6 +243,7 @@ module CartoDB
             else
               begin
                 out = loader.process!
+
                 out.each{ |d| payloads << d }
                 @data_import.log_update("#{data[:ext]} successfully loaded")
               rescue => e

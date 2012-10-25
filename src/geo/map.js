@@ -78,6 +78,7 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
 
 // CartoDB layer
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
+
   defaults: {
     type: 'CartoDB',
     active: true,
@@ -103,6 +104,16 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
 
   deactivate: function() {
     this.set({active: false, opacity: 0, visible: false})
+  },
+
+  /**
+   * refresh the layer
+   */
+  invalidate: function() {
+    var e = this.get('extra_params') || e;
+    e.cache_buster = new Date().getTime();
+    this.set('extra_params', e);
+    this.trigger('change');
   },
 
   toggle: function() {

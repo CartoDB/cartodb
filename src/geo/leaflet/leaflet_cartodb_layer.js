@@ -522,7 +522,8 @@ _.extend(
   },
 
   reload: function() {
-    this.redraw();
+    this.model.invalidate();
+    //this.redraw();
   },
 
   error: function(e) {

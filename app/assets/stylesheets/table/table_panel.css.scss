@@ -417,7 +417,7 @@
             left:0;
             right:0;
             height:151px;
-            
+
             &:after {
               content:'';
               position:absolute;
@@ -465,7 +465,7 @@
               }
 
               &.disabled {
-                @include opacity(0.3);
+                @include opacity(0);
                 &.left:hover {
                   @include icons-sprite(wizard-arrows);
                 }
@@ -548,7 +548,7 @@
                 }
 
                 &.disabled {
-                  @include opacity(0.3);
+                  display: none;
                   &:hover {
                     border:1px solid #CCCCCC;
                   }

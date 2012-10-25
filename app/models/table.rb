@@ -396,6 +396,7 @@ class Table < Sequel::Model(:user_tables)
     m.add_layer(base_layer)
     
     data_layer = Layer.new(Cartodb.config[:layer_opts]["data"])
+    data_layer.infowindow ||= {}
     data_layer.infowindow['fields'] = self.schema(reload: true).map { |i| i.first }.select { |k, v| 
       !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
     }

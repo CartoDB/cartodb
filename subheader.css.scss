@@ -57,6 +57,7 @@
               @include inline-block();
               width:0;
               min-width:5px;
+              max-width:100%;
               height:36px;
               @include border-radius(3px);
               background:#85ACDC;

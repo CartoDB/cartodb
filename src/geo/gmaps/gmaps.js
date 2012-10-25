@@ -101,6 +101,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   },
 
   _setZoom: function(model, z) {
+    z = z || 0;
     this.map_googlemaps.setZoom(z);
   },
 
@@ -188,12 +189,18 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     ];
   },
 
+  // for some reason we have to wait a little bit in order to work
+  _showBounds: _.debounce(function(bounds) {
+      var sw = bounds[0];
+      var ne = bounds[1];
+      var southWest = new google.maps.LatLng(sw[0], sw[1]);
+      var northEast = new google.maps.LatLng(ne[0], ne[1]);
+      this.map_googlemaps.fitBounds(new google.maps.LatLngBounds(southWest, northEast));
+  }, 100),
+
   showBounds: function(bounds) {
-    var sw = bounds[0];
-    var ne = bounds[1];
-    var southWest = new google.maps.LatLng(sw[0], sw[1]);
-    var northEast = new google.maps.LatLng(ne[0], ne[1]);
-    this.map_googlemaps.fitBounds(new google.maps.LatLngBounds(southWest, northEast));
+    var self = this;
+    this._showBounds(bounds);
   },
 
   setCursor: function(cursor) {

@@ -130,7 +130,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   },
 
   _setView: function() {
-    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
+    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0 );
   },
 
   _addGeomToMap: function(geom) {

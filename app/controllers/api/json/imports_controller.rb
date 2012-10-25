@@ -21,12 +21,13 @@ class Api::Json::ImportsController < Api::ApplicationController
     table_id   = params[:table_id].presence
     append     = params[:append].presence == 'true'
     from_query = params[:sql].presence
+    table_copy = params[:table_copy].presence
 
     if synchronous_import?
       #@data_import = Resque::ImporterJobs.process(current_user[:id], params[:table_name], file_uri)
       #render :json => {:item_queue_id => job_meta.meta_id, :success => true}
     else
-      job = Resque::ImporterJobs.enqueue(current_user[:id], table_name, file_uri, table_id, append, nil, nil, from_query)
+      job = Resque::ImporterJobs.enqueue(current_user[:id], table_name, file_uri, table_id, append, nil, table_copy, from_query)
       render_jsonp({:item_queue_id => job.meta_id, :success => true})
     end
   #rescue => e

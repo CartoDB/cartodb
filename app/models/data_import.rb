@@ -233,9 +233,9 @@ class DataImport < Sequel::Model
     return uniname
   end
 
-  def migrate_existing table, name = nil
+  def migrate_existing imported_name, name = nil
 
-    new_name = name.nil? ? table : name
+    new_name = imported_name || name
 
     #the below is redudant with the method below after import.nil?, should factor
     @new_table = Table.new
@@ -244,7 +244,7 @@ class DataImport < Sequel::Model
 
     @new_table.user_id =  user_id
     @new_table.data_import_id = id
-    @new_table.migrate_existing_table = table
+    @new_table.migrate_existing_table = imported_name
 
     if @new_table.valid?
       @new_table.save

@@ -12,3 +12,4 @@ describe("Geometry", function() {
     expect(g.isPoint()).toEqual(false);
   });
 });
+

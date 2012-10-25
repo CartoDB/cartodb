@@ -87,7 +87,6 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     auto_bound: false,
     interactivity: null,
     debug: false,
-    visible: true,
     tiler_domain: "cartodb.com",
     tiler_port: "80",
     tiler_protocol: "http",
@@ -462,7 +461,7 @@ cdb.geo.MapView = cdb.core.View.extend({
   _changeBounds: function() {
       var bounds = this.map.getViewBounds();
       if(bounds) {
-        //this.showBounds(bounds);
+        this.showBounds(bounds);
       }
   },
 
@@ -494,10 +493,6 @@ cdb.geo.MapView = cdb.core.View.extend({
     return l;
   },
 
-  addGeometry: function(geom) {
-    throw "to be implemented";
-  },
-
   _setZoom: function(model, z) {
     throw "to be implemented";
   },
@@ -510,6 +505,14 @@ cdb.geo.MapView = cdb.core.View.extend({
     throw "to be implemented";
   },
 
+  _addGeomToMap: function(geom) {
+    throw "to be implemented";
+  },
+
+  _removeGeomFromMap: function(geo) {
+    throw "to be implemented";
+  },
+
   setAutoSaveBounds: function() {
     var self = this;
     // save on change
@@ -517,6 +520,18 @@ cdb.geo.MapView = cdb.core.View.extend({
       self.map.save(null, { silent: true });
     }, 1000), this);
   },
+
+  _addGeometry: function(geom) {
+    var view = this._addGeomToMap(geom);
+    this.geometries[geom.cid] = view;
+  },
+
+  _removeGeometry: function(geo) {
+    var geo_view = this.geometries[geo.cid];
+    this._removeGeomFromMap(geo_view);
+    delete this.geometries[geo.cid];
+  },
+
 
 
 }, {
@@ -540,5 +555,6 @@ cdb.geo.MapView = cdb.core.View.extend({
       map: mapModel
     });
   }
+
 }
 );

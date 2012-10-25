@@ -11,6 +11,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   layerTypeMap: {
     "tiled": cdb.geo.GMapsTiledLayerView,
     "cartodb": cdb.geo.GMapsCartoDBLayerView,
+    "carto": cdb.geo.GMapsCartoDBLayerView,
     "plain": cdb.geo.GMapsPlainLayerView,
     "gmapsbase": cdb.geo.GMapsBaseLayerView
   },
@@ -41,6 +42,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
       self._setModelProperty({ center: [c.lat(), c.lng()] });
       self._setModelProperty({ zoom: self.map_googlemaps.getZoom() });
     }
+
+
+    this.map.geometries.bind('add', this._addGeometry, this);
+    this.map.geometries.bind('remove', this._removeGeometry, this);
 
 
     this._bindModel();
@@ -193,8 +198,30 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
 
   setCursor: function(cursor) {
     this.map_googlemaps.setOptions({ draggableCursor: cursor });
-  }
+  },
 
+  _addGeomToMap: function(geom) {
+    var geo = cdb.geo.GoogleMapsMapView.createGeometry(geom);
+    geo.geom.setMap(this.map_googlemaps);
+    return geo;
+  },
+
+  _removeGeomFromMap: function(geo) {
+    geo.geom.setMap(null);
+  },
+
+
+}, {
+
+  /**
+   * create the view for the geometry model
+   */
+  createGeometry: function(geometryModel) {
+    if(geometryModel.isPoint()) {
+      return new cdb.geo.gmaps.PointView(geometryModel);
+    }
+    return new cdb.geo.gmaps.PathView(geometryModel);
+  }
 });
 
 }

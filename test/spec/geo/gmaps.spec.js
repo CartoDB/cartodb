@@ -92,6 +92,35 @@
       var layerView = mapView.getLayerByCid(lyr);
       expect(layerView.__proto__.constructor).toEqual(cdb.geo.GMapsPlainLayerView);
     });
+
+    var geojsonFeature = {
+        "type": "Point",
+        "coordinates": [-104.99404, 39.75621]
+    };
+
+    it("should add and remove a geometry", function() {
+      var geo = new cdb.geo.Geometry({
+        geojson: geojsonFeature
+      });
+      map.addGeometry(geo);
+      expect(_.size(mapView.geometries)).toEqual(1);
+      geo.destroy();
+      expect(_.size(mapView.geometries)).toEqual(0);
+    });
+
+    it("should edit a geometry", function() {
+      var geo = new cdb.geo.Geometry({
+        geojson: geojsonFeature
+      });
+      map.addGeometry(geo);
+      var v = mapView.geometries[geo.cid];
+      v.trigger('dragend', null, [10, 20]);
+      expect(geo.get('geojson')).toEqual({
+        "type": "Point",
+        "coordinates": [20, 10]
+      })
+
+    });
 /*
 
     it("should inser layer in specified order", function() {

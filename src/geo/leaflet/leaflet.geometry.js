@@ -1,3 +1,4 @@
+(function() {
 /**
  * this module implements all the features related to overlay geometries
  * in leaflet: markers, polygons, lines and so on
@@ -82,23 +83,6 @@ L.Util.extend(L.GeoJSON, {
   }
 });
 
-/**
- * create a geometry
- * @param geometryModel geojson based geometry model, see cdb.geo.Geometry
- */
-function GeometryView() { }
-
-_.extend(GeometryView.prototype, Backbone.Events);
-
-/**
- * create the view for the geometry model
- */
-GeometryView.create = function(geometryModel) {
-  if(geometryModel.isPoint()) {
-    return new PointView(geometryModel);
-  }
-  return new PathView(geometryModel);
-};
 
 
 
@@ -218,5 +202,10 @@ PathView.prototype.edit = function(enable) {
   });
 };
 
+cdb.geo.leaflet = cdb.geo.leaflet || {};
+
+cdb.geo.leaflet.PointView = PointView;
+cdb.geo.leaflet.PathView = PathView;
 
 
+})();

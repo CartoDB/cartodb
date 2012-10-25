@@ -42,6 +42,9 @@
         "../vendor/leaflet.js",
         "../vendor/wax.leaf.js",
         "../vendor/wax.g.js",
+        "../vendor/GeoJSON.js", //geojson gmaps lib
+        "../vendor/polygonEdit.js", //editing lib for gmaps
+        "../vendor/polylineEdit.js",
 
         'core/decorator.js',
         'core/config.js',

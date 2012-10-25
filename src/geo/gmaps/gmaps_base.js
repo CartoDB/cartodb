@@ -51,6 +51,8 @@ _.extend(GMapsLayerView.prototype, {
     }
   },
 
+  /*
+
   show: function() {
     this.gmapsLayer.show();
   },
@@ -58,6 +60,7 @@ _.extend(GMapsLayerView.prototype, {
   hide: function() {
     this.gmapsLayer.hide();
   },
+  */
 
   reload: function() { this.refreshView() ; },
   _update: function() { this.refreshView(); }

@@ -133,16 +133,14 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
   },
 
-  _addGeometry: function(geom) {
-    var geo = GeometryView.create(geom);
+  _addGeomToMap: function(geom) {
+    var geo = cdb.geo.LeafletMapView.createGeometry(geom);
     geo.geom.addTo(this.map_leaflet);
-    this.geometries[geom.cid] = geo;
+    return geo;
   },
 
-  _removeGeometry: function(geo) {
-    var geo_view = this.geometries[geo.cid];
-    this.map_leaflet.removeLayer(geo_view.geom);
-    delete this.geometries[geo.cid];
+  _removeGeomFromMap: function(geo) {
+    this.map_leaflet.removeLayer(geo.geom);
   },
 
   createLayer: function(layer) {
@@ -251,7 +249,18 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
   addLayerToMap: function(layer_view, map) {
     map.addLayer(layer_view.leafletLayer);
+  },
+
+  /**
+   * create the view for the geometry model
+   */
+  createGeometry: function(geometryModel) {
+    if(geometryModel.isPoint()) {
+      return new cdb.geo.leaflet.PointView(geometryModel);
+    }
+    return new cdb.geo.leaflet.PathView(geometryModel);
   }
+
 
 });
 

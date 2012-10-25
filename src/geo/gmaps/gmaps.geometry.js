@@ -21,13 +21,21 @@ function PointView(geometryModel) {
   this.points = [];
 
   var style = _.clone(geometryModel.get('style')) || {};
-  style.path = google.maps.SymbolPath.CICLE;
-  style.scale = style.weight;
+  style.path = google.maps.SymbolPath.CIRCLE;
+  //style.scale = style.weight;
+  //style.strokeColor = "ff0000";
+  //style.strokeOpacity = 1;
+  //style.strokeWeight = 1;
+  //style.fillColor = '00000';
+  //style.fillOpacity = 0.5;
 
   this.geom = new GeoJSON (
     geometryModel.get('geojson'),
     {
-      icon: style
+      icon: {
+          url: '/assets/icons/default_marker.png',
+          anchor: {x: 11, y: 11}
+      }
     }
   );
 
@@ -91,14 +99,10 @@ function PathView(geometryModel) {
   
 
   var style = _.clone(geometryModel.get('style')) || {};
-  style.path = google.maps.SymbolPath.CICLE;
-  style.scale = style.weight;
 
   this.geom = new GeoJSON (
     geometryModel.get('geojson'),
-    {
-      icon: new google.maps.Symbol(style)
-    }
+    style
   );
 
   /*_.each(this.geom._layers, function(g) {
@@ -109,10 +113,15 @@ function PathView(geometryModel) {
   });
   */
 
+  _.bindAll(this, '_updateModel');
+  var self = this;
+
   function bindPath(p) {
-    google.maps.events.addListener(p, 'insert_at', this._updateModel);
-    google.maps.events.addListener(p, 'remove_at', this._updateModel);
-    google.maps.events.addListener(p, 'set_at', this._updateModel);
+    google.maps.event.addListener(p, 'insert_at', self._updateModel);
+    /*
+    google.maps.event.addListener(p, 'remove_at', this._updateModel);
+    google.maps.event.addListener(p, 'set_at', this._updateModel);
+    */
   }
 
   if(this.geom.getPaths) {
@@ -121,7 +130,10 @@ function PathView(geometryModel) {
       bindPath(paths[i]);
     }
   } else {
-    bindPath(this.geom.getPath());
+    for(var i = 0; i < this.geom.length; ++i) {
+      bindPath(this.geom[i].getPath());
+      google.maps.event.addListener(this.geom[i], 'mouseup', this._updateModel);
+    }
   }
 
   /*for(var i = 0; i < events.length; ++i) {
@@ -133,9 +145,81 @@ function PathView(geometryModel) {
 
 PathView.prototype = new GeometryView();
 
+PathView.prototype._getGeoJSON= function(geom) {
+
+  var geomType = {
+    'google.maps.Polygon': ['Polygon', 'MultiPolygon'],
+    'google.maps.Polyline': ['LineString', 'MultiLineString'],
+    'google.maps.Marker': ['Point', 'MultiPoint']
+  };
+
+  var coordFn = {
+    'Polygon': 'getPath',
+    'MultiPolygon': 'getPath',
+    'LineString': 'getPath',
+    'MultiLineString': 'getPath',
+    'Point': 'getPosition',
+    'MultiPoint': 'getPosition'
+  };
+
+  function _coord(latlng) {
+    return [latlng.lng(), latlng.lat()];
+  }
+
+  function _coords(latlngs) {
+    var c = [];
+    for(var i = 0; i < latlngs.length; ++i) {
+      c.push(_coord(latlngs.getAt(i)));
+    }
+    return c;
+  }
+
+  var gType = this.model.get('geojson').type;
+  // single
+  if(!geom.length || geom.length == 1) {
+    var g = geom.length ? geom[0]: geom;
+    var coords;
+    if(gType == 'Point' || gType == 'MultiPoint') {
+      coords = _coord(g.getPosition());
+    } else if(gType == 'Polygon' || gType == 'MultiPolygon') {
+      coords = [[_coords(g.getPath())]];
+    } else if(gType == 'LineString' || gType == 'MultiLineString') {
+      coords = _coords(g.getPath());
+    }
+    return {
+      type: gType,
+      coordinates: coords
+    }
+  } else {
+    // poly
+    var c = [];
+    for(var i = 0; i < geom.length; ++i) {
+      c.push(this._getGeoJSON(geom[i]).coordinates);
+    }
+    return  {
+      type: gType,
+      coordinates: c
+    }
+  }
+}
+
+PathView.prototype._updateModel = function(e) {
+  var self = this;
+  setTimeout(function() {
+  self.model.set('geojson', self._getGeoJSON(self.geom));
+  }, 100)
+}
+
 PathView.prototype.edit = function(enable) {
+
   var fn = enable ? 'enable': 'disable';
-  this.geom.setEditable(enable);
+  var g = this.geom.length ? this.geom: [this.geom];
+  for(var i = 0; i < g.length; ++i) {
+    g[i].setEditable(enable);
+  }
+  if(!enable) {
+    this.model.set('geojson', this._getGeoJSON(this.geom));
+  }
 };
 
 cdb.geo.gmaps = cdb.geo.gmaps || {};

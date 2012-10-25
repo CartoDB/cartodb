@@ -209,12 +209,24 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
 
   _addGeomToMap: function(geom) {
     var geo = cdb.geo.GoogleMapsMapView.createGeometry(geom);
-    geo.geom.setMap(this.map_googlemaps);
+    if(geo.geom.length) {
+      for(var i = 0 ; i < geo.geom.length; ++i) {
+        geo.geom[i].setMap(this.map_googlemaps);
+      }
+    } else {
+        geo.geom.setMap(this.map_googlemaps);
+    }
     return geo;
   },
 
   _removeGeomFromMap: function(geo) {
-    geo.geom.setMap(null);
+    if(geo.geom.length) {
+      for(var i = 0 ; i < geo.geom.length; ++i) {
+        geo.geom[i].setMap(null);
+      }
+    } else {
+      geo.geom.setMap(null);
+    }
   },
 
 

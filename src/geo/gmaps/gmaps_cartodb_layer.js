@@ -327,6 +327,10 @@ _.extend(
     this.update();
   },
 
+  reload: function() {
+    this.model.invalidate();
+  },
+
   remove: function() {
     cdb.geo.GMapsLayerView.prototype.remove.call(this);
     this.clear();

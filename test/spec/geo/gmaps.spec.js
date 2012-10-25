@@ -97,15 +97,32 @@
         "type": "Point",
         "coordinates": [-104.99404, 39.75621]
     };
+    var multipoly = {"type":"MultiPolygon","coordinates":
+      [
+        [
+          [
+            [1.710967,42.473499],[1.533333,42.4361],[1.448333,42.450821],[1.446388,42.572208],[1.435247,42.597149],[1.541111,42.65387],[1.781667,42.581661],[1.710967,42.473499]
+          ]
+        ]
+      ]
+    };
 
-    it("should add and remove a geometry", function() {
+    function testGeom(g) {
       var geo = new cdb.geo.Geometry({
-        geojson: geojsonFeature
+        geojson: g
       });
       map.addGeometry(geo);
       expect(_.size(mapView.geometries)).toEqual(1);
       geo.destroy();
       expect(_.size(mapView.geometries)).toEqual(0);
+    }
+
+    it("should add and remove a geometry", function() {
+      testGeom(geojsonFeature);
+    });
+
+    it("should add and remove a polygon", function() {
+      testGeom(multipoly);
     });
 
     it("should edit a geometry", function() {
@@ -121,6 +138,17 @@
       })
 
     });
+
+    it("should convert to geojson", function() {
+      var geo = new cdb.geo.Geometry({
+        geojson: multipoly 
+      });
+      map.addGeometry(geo);
+      var v = mapView.geometries[geo.cid];
+      var geojson = v._getGeoJSON(v.geom);
+      expect(geojson).toEqual(multipoly);
+    });
+
 /*
 
     it("should inser layer in specified order", function() {

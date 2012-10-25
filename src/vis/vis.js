@@ -133,7 +133,8 @@ var Vis = cdb.core.View.extend({
     var model = layerView.model;
     var eventType = layerView.model.get('eventType') || 'featureClick';
     var infowindow = Overlay.create('infowindow', this, model.get('infowindow'), true);
-    this.mapView.addInfowindow(infowindow);
+    var mapView = this.mapView;
+    mapView.addInfowindow(infowindow);
 
     var infowindowFields = layerView.model.get('infowindow');
 
@@ -157,6 +158,14 @@ var Vis = cdb.core.View.extend({
         infowindow.model.set({ content:  { fields: content} });
         infowindow.setLatLng(latlng).showInfowindow();
     });
+
+    layerView.bind('featureOver', function(e, latlon, pxPos, data) {
+      mapView.setCursor('pointer');
+    });
+    layerView.bind('featureOut', function() {
+      mapView.setCursor('auto');
+    });
+
   },
 
   loadLayer: function(layerData, opts) {
@@ -169,12 +178,6 @@ var Vis = cdb.core.View.extend({
     // add the associated overlays
     if(layerData.infowindow) {
       this.addInfowindow(layerView);
-      layerView.bind('featureOver', function(e, latlon, pxPos, data) {
-        mapView.setCursor('pointer');
-      });
-      layerView.bind('featureOut', function() {
-        mapView.setCursor('auto');
-      });
     }
 
     return layerView;

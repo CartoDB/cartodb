@@ -1,4 +1,4 @@
-class Migrator
+class Migrator20
 
   def migrate!
     Table.select(:id, :database_name, :name, :user_id).all.each do |table|

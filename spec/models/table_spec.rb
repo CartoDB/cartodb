@@ -1329,6 +1329,38 @@ describe Table do
     end
   end
 
+  context "search" do
+
+    it "should find tables by description" do
+      table = Table.new
+      table.user_id = @user.id
+      table.name = "clubbing_spain_1_copy"
+      table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes. Camión"
+      table.save.reload
+
+      ['borders', 'polygons', 'spain', 'countries'].each do |query|
+        tables = Table.search(query)
+        tables.should_not be_empty
+        tables.first.id.should == table.id
+      end
+      tables = Table.search("wadus")
+      tables.should be_empty
+    end
+
+    it "should find tables by name" do
+      table = Table.new
+      table.user_id = @user.id
+      table.name = "european_countries_1"
+      table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
+      table.save.reload
+
+      tables = Table.search("eur")
+      tables.should_not be_empty
+      tables.first.id.should == table.id
+    end
+
+  end
+
   context "retrieving tables from ids" do
     it "should be able to find a table by name or by identifier" do
       table = new_table :user_id => @user.id
@@ -1395,3 +1427,4 @@ describe Table do
     end
   end
 end
+

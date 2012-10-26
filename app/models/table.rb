@@ -28,9 +28,9 @@ class Table < Sequel::Model(:user_tables)
 
   def_dataset_method(:search) do |query|
     conditions = <<-EOS
-      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?)
+      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name LIKE ?
       EOS
-    where(conditions, query)
+    where(conditions, query, "%#{query}%")
   end
 
   # Ignore mass-asigment on not allowed columns

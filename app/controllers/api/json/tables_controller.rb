@@ -1,5 +1,4 @@
 # coding: UTF-8
-
 class Api::Json::TablesController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
   skip_before_filter :api_authorization_required, :only => [ :vizzjson ]  
@@ -127,9 +126,13 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def vizzjson
     @table = Table.find_by_subdomain(request.subdomain, params[:id])
-    response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
-    response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
-    render_jsonp(view_context.map_vizzjson(@table.map, full: false))
+    if @table.present? && (@table.public? || (current_user.present? && @table.owner.id == current_user.id))
+      response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
+      response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
+      render_jsonp(view_context.map_vizzjson(@table.map, full: false))
+    else
+      head :forbidden
+    end
   end
 
   protected

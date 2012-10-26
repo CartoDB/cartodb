@@ -1,4 +1,4 @@
-class Migrator
+class Migrator20
 
   def migrate!
     Table.select(:id, :database_name, :name, :user_id).all.each do |table|
@@ -29,7 +29,7 @@ class Migrator
     # All previous maps were based on google maps
     map.provider = "googlemaps"
     map.center = (map_metadata["latitude"].blank? ? "[0, 0]" : "[#{map_metadata["latitude"]},#{map_metadata["longitude"]}]")
-    map.zoom = map_metadata["zoom"]
+    map.zoom = (map_metadata["zoom"].blank? ? 2 : map_metadata["zoom"])
     map.save
   end
 

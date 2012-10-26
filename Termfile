@@ -7,7 +7,7 @@ setup 'echo "setup"'
 tab "redis-server" do
   run "echo 'Running redis-server'"
   run "cd /tmp"
-  run "redis-server"
+  run "redis-server $CARTODB20_PATH/../redis.conf"
 end
 
 tab "cartodb app server" do
@@ -37,5 +37,7 @@ end
 
 tab "cartodb tiler" do
   run "cd $CARTODB20_PATH/../Windshaft-cartodb"
+  run ". ~/nvm/nvm.sh"
+  run "nvm use v0.8.11"
   run "node app.js development"
 end

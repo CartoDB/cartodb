@@ -1,4 +1,4 @@
-class Migrator
+class Migrator20
 
   def migrate!
     Table.select(:id, :database_name, :name, :user_id).all.each do |table|
@@ -23,19 +23,19 @@ class Migrator
   end
 
   def migrate_table_map(table)
-    map_metadata = JSON.parse(table.map_metadata) rescue {}
+    map_metadata = JSON.parse($tables_metadata.hget(table.key, 'map_metadata')) rescue {}
     map = table.map
 
     # All previous maps were based on google maps
     map.provider = "googlemaps"
     map.center = (map_metadata["latitude"].blank? ? "[0, 0]" : "[#{map_metadata["latitude"]},#{map_metadata["longitude"]}]")
-    map.zoom = map_metadata["zoom"]
+    map.zoom = (map_metadata["zoom"].blank? ? 2 : map_metadata["zoom"])
     map.save
   end
 
   def migrate_table_layers(table)
-    map_metadata = JSON.parse(table.map_metadata) rescue {}
-    infowindow_metadata = JSON.parse(table.infowindow_without_new_model) rescue {}
+    map_metadata = JSON.parse($tables_metadata.hget(table.key, 'map_metadata')) rescue {}
+    infowindow_metadata = JSON.parse($tables_metadata.hget(key, 'infowindow')) rescue {}
     data_layer = table.map.data_layers.first
 
     data_layer.options['kind'] = 'carto'

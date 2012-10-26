@@ -1,8 +1,8 @@
 Sequel.migration do
   up do
-    require Rails.root.join('lib/cartodb/migrator')
+    require Rails.root.join('lib/cartodb/migrator20')
 
-    Migrator.new.migrate!
+    Migrator20.new.migrate!
   end
 
   down do

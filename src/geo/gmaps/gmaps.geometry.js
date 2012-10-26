@@ -182,7 +182,10 @@ PathView.prototype._getGeoJSON= function(geom) {
     if(gType == 'Point' || gType == 'MultiPoint') {
       coords = _coord(g.getPosition());
     } else if(gType == 'Polygon' || gType == 'MultiPolygon') {
-      coords = [[_coords(g.getPath())]];
+      coords = [];
+      for(var p = 0; p < g.getPaths().length; ++p) {
+        coords.push(_coords(g.getPaths().getAt(p)));
+      }
     } else if(gType == 'LineString' || gType == 'MultiLineString') {
       coords = _coords(g.getPath());
     }

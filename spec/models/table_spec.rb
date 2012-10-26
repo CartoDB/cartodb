@@ -1401,30 +1401,5 @@ describe Table do
     end
   end
 
-  context "maps, styles, and infowindows" do
-    it "should let a user save an infowindow and retrieve it" do
-      delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      table = Table[data_import.table_id]
-      table.infowindow = "id, name, description"
-
-      table.infowindow.should == "id, name, description"
-      table.infowindow_without_new_model.should == "id, name, description"
-    end
-
-    it "should let a user save map_metadata and retrieve it" do
-      delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      table = Table[data_import.table_id]
-
-      table.map_metadata = "something"
-
-      table.map_metadata.should == "something"
-    end
-  end
 end
 

@@ -485,34 +485,6 @@ class Table < Sequel::Model(:user_tables)
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
   end
 
-  def infowindow=(value)
-    $tables_metadata.hset(key, 'infowindow', value)
-  end
-
-  def infowindow_with_new_model=(value)
-    layer = map.data_layers.first
-    layer.update(:infowindow => value)
-    self.infowindow_without_new_model = value
-  end
-  alias_method_chain :infowindow=, :new_model
-
-  def infowindow
-    $tables_metadata.hget(key, 'infowindow')
-  end
-
-  def infowindow_with_new_model
-    map.data_layers.first.infowindow
-  end
-  alias_method_chain :infowindow, :new_model
-
-  def map_metadata=(value)
-    $tables_metadata.hset(key, 'map_metadata', value)
-  end
-
-  def map_metadata
-    $tables_metadata.hget(key, 'map_metadata')
-  end
-
   def private?
     $tables_metadata.hget(key, "privacy").to_i == PRIVATE
   end

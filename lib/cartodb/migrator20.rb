@@ -23,7 +23,7 @@ class Migrator20
   end
 
   def migrate_table_map(table)
-    map_metadata = JSON.parse(table.map_metadata) rescue {}
+    map_metadata = JSON.parse($tables_metadata.hget(table.key, 'map_metadata')) rescue {}
     map = table.map
 
     # All previous maps were based on google maps
@@ -34,8 +34,8 @@ class Migrator20
   end
 
   def migrate_table_layers(table)
-    map_metadata = JSON.parse(table.map_metadata) rescue {}
-    infowindow_metadata = JSON.parse(table.infowindow_without_new_model) rescue {}
+    map_metadata = JSON.parse($tables_metadata.hget(table.key, 'map_metadata')) rescue {}
+    infowindow_metadata = JSON.parse($tables_metadata.hget(key, 'infowindow')) rescue {}
     data_layer = table.map.data_layers.first
 
     data_layer.options['kind'] = 'carto'

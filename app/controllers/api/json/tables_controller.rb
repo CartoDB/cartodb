@@ -1,8 +1,8 @@
 # coding: UTF-8
 
 class Api::Json::TablesController < Api::ApplicationController
-  ssl_required :index, :show, :create, :update, :destroy, :set_infowindow, :duplicate, :set_map_metadata, :get_map_metadata
-  skip_before_filter :api_authorization_required, :only => [ :vizzjson, :datalayerjson ]  
+  ssl_required :index, :show, :create, :update, :destroy
+  skip_before_filter :api_authorization_required, :only => [ :vizzjson ]  
 
   before_filter :load_table, :except => [:index, :create, :vizzjson]
   before_filter :set_start_time
@@ -125,32 +125,11 @@ class Api::Json::TablesController < Api::ApplicationController
     head :no_content
   end
 
-  # expects the infowindow data in the infowindow parameter
-  def set_infowindow
-    @table.infowindow = params[:infowindow]
-    head :ok
-  end
-
-  def set_map_metadata
-    @table.map_metadata = params[:map_metadata]
-    head :ok
-  end
-
-  #todo: replace with windshaft
-  def get_map_metadata
-    render_jsonp({:map_metadata => @table.map_metadata})
-  end
-
   def vizzjson
     @table = Table.find_by_subdomain(request.subdomain, params[:id])
     response.headers['X-Cache-Channel'] = "#{@table.varnish_key}:vizjson"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
     render_jsonp(view_context.map_vizzjson(@table.map, full: false))
-  end
-
-  def datalayerjson
-    @table = Table.find_by_subdomain(request.subdomain, params[:id])
-    render_jsonp(view_context.layer_vizzjson(@table.map.data_layers.first, full: false))
   end
 
   protected

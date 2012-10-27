@@ -28,7 +28,7 @@ module MapsHelper
         },
         {
           type: "loader",
-          template: '<div>pene</div>'
+          template: '<div class="loader"></div>'
         }
       ],
 

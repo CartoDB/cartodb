@@ -65,9 +65,9 @@ gem "simplecov",               "0.6.4", :require => false, :group => :test
 gem "spin",                    "0.5.3", :require => false, :group => :test
 
 group :development, :test do
-  gem "poltergeist",           "0.6.0"
+  gem "poltergeist",           ">= 1.0.0"
   gem "minitest",              "2.0.2", :require => 'minitest/unit'
-  gem "selenium-webdriver",    "2.5.0"
+  gem "selenium-webdriver",    ">= 2.5.0"
 
   gem "mocha",                 "0.10.5"
 

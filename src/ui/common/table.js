@@ -33,6 +33,10 @@ cdb.ui.common.TableData = Backbone.Collection.extend({
         return null;
       }
       return r.get(columnName);
+    },
+
+    isEmpty: function() {
+      return this.length === 0;
     }
 
 });

@@ -63,7 +63,7 @@ describe Table do
       table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}
       table.map.layers.count.should == 2
       table.map.layers.map(&:kind).should == ['tiled', 'carto']
-      table.map.data_layers.first.infowindow["fields"].should == ["cartodb_id", "description", "name"]
+      table.map.data_layers.first.infowindow["fields"].should == [{"name"=>"cartodb_id", "title"=>true, "position"=>1}, {"name"=>"description", "title"=>true, "position"=>2}, {"name"=>"name", "title"=>true, "position"=>3}]
     end
 
     it "should return a sequel interface" do
@@ -1329,6 +1329,38 @@ describe Table do
     end
   end
 
+  context "search" do
+
+    it "should find tables by description" do
+      table = Table.new
+      table.user_id = @user.id
+      table.name = "clubbing_spain_1_copy"
+      table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes. Camión"
+      table.save.reload
+
+      ['borders', 'polygons', 'spain', 'countries'].each do |query|
+        tables = Table.search(query)
+        tables.should_not be_empty
+        tables.first.id.should == table.id
+      end
+      tables = Table.search("wadus")
+      tables.should be_empty
+    end
+
+    it "should find tables by name" do
+      table = Table.new
+      table.user_id = @user.id
+      table.name = "european_countries_1"
+      table.description = "A world borders shapefile suitable for thematic mapping applications. Contains polygon borders in two resolutions as well as longitude/latitude values and various country codes"
+      table.save.reload
+
+      tables = Table.search("eur")
+      tables.should_not be_empty
+      tables.first.id.should == table.id
+    end
+
+  end
+
   context "retrieving tables from ids" do
     it "should be able to find a table by name or by identifier" do
       table = new_table :user_id => @user.id
@@ -1369,29 +1401,5 @@ describe Table do
     end
   end
 
-  context "maps, styles, and infowindows" do
-    it "should let a user save an infowindow and retrieve it" do
-      delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      table = Table[data_import.table_id]
-      table.infowindow = "id, name, description"
-
-      table.infowindow.should == "id, name, description"
-      table.infowindow_without_new_model.should == "id, name, description"
-    end
-
-    it "should let a user save map_metadata and retrieve it" do
-      delete_user_data @user
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :table_name    => 'esp_adm1',
-                                       :data_source   => '/../db/fake_data/SHP1.zip' )
-      table = Table[data_import.table_id]
-
-      table.map_metadata = "something"
-
-      table.map_metadata.should == "something"
-    end
-  end
 end
+

@@ -25,6 +25,10 @@ module MapsHelper
         },
         {
           type: "search",
+        },
+        {
+          type: "loader",
+          template: '<div class="loader"></div>'
         }
       ],
 

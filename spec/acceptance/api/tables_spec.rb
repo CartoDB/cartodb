@@ -408,18 +408,4 @@ feature "API 1.0 tables management" do
     end
   end
 
-  scenario "save a infowindow for a table" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
-    post_json api_tables_info_window_url(table1.id), {:infowindow => "id, desc, name"} do |response|
-      response.status.should == 200
-    end
-  end
-
-  scenario "save a map_metadata for a table" do
-    table1 = create_table :user_id => @user.id, :name => 'My table #1', :privacy => Table::PRIVATE, :tags => "tag 1, tag 2,tag 3, tag 3"
-    post_json api_tables_map_metadata_url(table1.id), {:map_metadata => "some_metadata"} do |response|
-      response.status.should == 200
-    end
-  end
-
 end

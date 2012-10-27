@@ -23,7 +23,7 @@ class Migrator20
   end
 
   def migrate_table_map(table)
-    map_metadata = JSON.parse(table.map_metadata) rescue {}
+    map_metadata = JSON.parse($tables_metadata.hget(table.key, 'map_metadata')) rescue {}
     map = table.map
 
     # All previous maps were based on google maps
@@ -34,14 +34,17 @@ class Migrator20
   end
 
   def migrate_table_layers(table)
-    map_metadata = JSON.parse(table.map_metadata) rescue {}
-    infowindow_metadata = JSON.parse(table.infowindow_without_new_model) rescue {}
+    map_metadata = JSON.parse($tables_metadata.hget(table.key, 'map_metadata')) rescue {}
+    infowindow_metadata = JSON.parse($tables_metadata.hget(key, 'infowindow')) rescue {}
     data_layer = table.map.data_layers.first
 
+    
+    data_layer.options = data_layer.options.except('style_version')
     data_layer.options['kind'] = 'carto'
     data_layer.options['tile_style'] = JSON.parse(
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil
+
     infowindow_fields = infowindow_metadata.select { |k,v| v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) }
     infowindow_fields = table.schema(reload: true).map { |i| i.first }.select { |k, v|
       !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)

@@ -38,10 +38,13 @@ class Migrator20
     infowindow_metadata = JSON.parse($tables_metadata.hget(key, 'infowindow')) rescue {}
     data_layer = table.map.data_layers.first
 
+    
+    data_layer.options = data_layer.options.except('style_version')
     data_layer.options['kind'] = 'carto'
     data_layer.options['tile_style'] = JSON.parse(
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil
+
     infowindow_fields = infowindow_metadata.select { |k,v| v.to_s == "true" && !['created_at', 'updated_at', 'the_geom'].include?(k) }
     infowindow_fields = table.schema(reload: true).map { |i| i.first }.select { |k, v|
       !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)

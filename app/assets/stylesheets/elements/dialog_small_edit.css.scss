@@ -102,6 +102,38 @@
   &.geometry_dialog {
     textarea.error, input.error {border-color:rgba(red,0.5);}
 
+
+    .selector {
+      display: none;
+      width: 100%;
+    }
+
+    div.point {
+      margin-bottom: 1em;
+      width: 100%;
+      position: relative;
+
+      span {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+
+        input {
+          float:left;
+        }
+      }
+    }
+
+    .geoJSON {
+      margin-top: 1em;
+    }
+
+    .switches label {
+      font-size: 13px;
+      color: #AAA;
+    }
+
+
     div.loader {
       display:block;
       width:100%;
@@ -123,8 +155,8 @@
         line-height:19px;
         border-color:#9E9E9E;
         text-align:right;
-        &.latitude {right:10px;}
-        &.longitude {left:10px;}
+        &.latitude {right:0px; top:-15px;}
+        &.longitude {left:0px; top:0px;}
         &.error {border-color:rgba(red,0.5);}
       }
 
@@ -132,8 +164,8 @@
 
       label {
         position:absolute; top:20px; font-style:italic; color:#AAAAAA; z-index:10; font-size:13px;
-        &.latitude {left:55%;}
-        &.longitude {left:18px;}
+        &.latitude {right: 100px; top: -5px;}
+        &.longitude {left:18px; top: 10px;}
       }
     }
   }

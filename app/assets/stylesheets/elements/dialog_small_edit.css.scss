@@ -153,10 +153,19 @@
         height:19px;
         font-size:15px;
         line-height:19px;
-        border-color:#9E9E9E;
+        border-color:#C0C1C2;
         text-align:right;
         &.latitude {right:0px; top:-15px;}
+        &.latitude:focus {
+          outline: none;
+          border-color:#999999;
+        }
         &.longitude {left:0px; top:0px;}
+        &.longitude:focus {
+          outline: none;
+          border-color:#999;
+        }
+
         &.error {border-color:rgba(red,0.5);}
       }
 
@@ -196,7 +205,7 @@
     bottom:5px;
     font-size: 15px;
     color: #333333;
-    border: 1px solid #000;
+    border: 1px solid #666;
     padding: 10px;
     line-height:normal;
     @include border-radius(4px);

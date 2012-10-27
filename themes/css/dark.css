@@ -29,6 +29,11 @@ div.cartodb-popup.dark p {
   color:#FFFFFF;
 }
 
+div.cartodb-popup.dark p.empty {
+  font-style:italic;
+  color:#AAA;
+}
+
 
 /* EMBED MAP */
 div.header.dark {

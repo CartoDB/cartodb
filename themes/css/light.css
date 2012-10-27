@@ -73,6 +73,11 @@
     padding:0 0 7px;
   }
 
+  div.cartodb-popup p.empty {
+    color:#999999;
+    font-style: italic;
+  }
+
 
   /* EMBED CONTENT */
   div.header {

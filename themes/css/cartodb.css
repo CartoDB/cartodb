@@ -29,6 +29,11 @@ div.cartodb-popup.dark p {
   color:#FFFFFF;
 }
 
+div.cartodb-popup.dark p.empty {
+  font-style:italic;
+  color:#AAA;
+}
+
 
 /* EMBED MAP */
 div.header.dark {
@@ -718,6 +723,11 @@ div.header.yellow h1 a:hover {
     font:normal 13px "Helvetica",Arial;
     color:#333333;
     padding:0 0 7px;
+  }
+
+  div.cartodb-popup p.empty {
+    color:#999999;
+    font-style: italic;
   }
 
 

@@ -25,6 +25,10 @@ module MapsHelper
         },
         {
           type: "search",
+        },
+        {
+          type: "loader",
+          template: '<div>pene</div>'
         }
       ],
 

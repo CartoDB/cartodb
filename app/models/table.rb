@@ -28,9 +28,9 @@ class Table < Sequel::Model(:user_tables)
 
   def_dataset_method(:search) do |query|
     conditions = <<-EOS
-      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?)
+      to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, '')) @@ plainto_tsquery('english', ?) OR name LIKE ?
       EOS
-    where(conditions, query)
+    where(conditions, query, "%#{query}%")
   end
 
   # Ignore mass-asigment on not allowed columns
@@ -397,9 +397,14 @@ class Table < Sequel::Model(:user_tables)
     
     data_layer = Layer.new(Cartodb.config[:layer_opts]["data"])
     data_layer.infowindow ||= {}
-    data_layer.infowindow['fields'] = self.schema(reload: true).map { |i| i.first }.select { |k, v| 
-      !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
-    }
+    data_layer.infowindow['fields'] = self.schema(reload: true)
+      .map { |i| i.first }.select { |k, v| 
+        !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
+      }
+      .each_with_index.map { |column_name, i| 
+        { name: column_name, title: true, position: i+1 } 
+      }
+
     m.add_layer(data_layer)
   end
 
@@ -483,34 +488,6 @@ class Table < Sequel::Model(:user_tables)
 
   def tags=(value)
     self[:tags] = value.split(',').map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
-  end
-
-  def infowindow=(value)
-    $tables_metadata.hset(key, 'infowindow', value)
-  end
-
-  def infowindow_with_new_model=(value)
-    layer = map.data_layers.first
-    layer.update(:infowindow => value)
-    self.infowindow_without_new_model = value
-  end
-  alias_method_chain :infowindow=, :new_model
-
-  def infowindow
-    $tables_metadata.hget(key, 'infowindow')
-  end
-
-  def infowindow_with_new_model
-    map.data_layers.first.infowindow
-  end
-  alias_method_chain :infowindow, :new_model
-
-  def map_metadata=(value)
-    $tables_metadata.hset(key, 'map_metadata', value)
-  end
-
-  def map_metadata
-    $tables_metadata.hget(key, 'map_metadata')
   end
 
   def private?

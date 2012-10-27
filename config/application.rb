@@ -49,8 +49,8 @@ module CartoDB
     config.assets.enabled = true
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
-    config.assets.precompile = %w( application.js cdb.js keys.js jquery.js dashboard.js table.js table_public.js login.js specs.js common.js )
-    config.assets.precompile += %w( common.css keys.css leaflet.css tables.css reset.css map.css table.css front.css admin/table/view.css admin/table/table.css admin/table/map.css cdb/themes/css/cartodb.css front/oauth.css specs.css )
+    config.assets.precompile = %w( application.js cdb.js keys.js jquery.js dashboard.js table.js table_public.js login.js specs.js common.js embed.js )
+    config.assets.precompile += %w( common.css keys.css leaflet.css tables.css reset.css map.css table.css front.css admin/table/view.css admin/table/table.css admin/table/map.css cdb/themes/css/cartodb.css front/oauth.css specs.css map/leaflet.ie.css )
     config.assets.precompile += %w( *.jpg *.ico *.gif *.png *.eot *.otf *.svg *.woff *.ttf *.swf )
 
     # Version of your assets, change this if you want to expire all your assets

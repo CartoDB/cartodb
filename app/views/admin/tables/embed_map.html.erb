@@ -10,7 +10,7 @@
     <meta name="author" content="CartoDB">
     <meta name="DC.title" content="<%= @table.description %> | CartoDB">
     
-    <meta property="og:title" content="<%= @table.description %> | CartoDB"/>
+    <meta property="og:title" content="<%= @table.name %> | CartoDB"/>
     <meta property="og:description" content="<%= @table.description %>"/> 
     <meta property="og:type" content="Visualization"/>
     <meta property="og:url" content="<%= request.fullpath %>" />
@@ -33,7 +33,7 @@
 
     <%= render 'shared/analytics' %>
   </head>
-  <body >
+  <body>
     <% if @table.public? %>
     <div id="map"></div>
     <% end %>
@@ -42,7 +42,7 @@
   <% if @table.map.provider == 'googlemaps' %>
     <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
   <% end %>
-  <%= javascript_include_tag :jquery, :cdb %>
+  <%= javascript_include_tag :jquery, :cdb, :embed %>
 
   <script>
 
@@ -116,6 +116,8 @@
     if(opt.sql) {
       vizjson.layers[1].options.query = opt.sql;
     }
+
+    //vizjson.overlays.push('loader');
 
     vizjson.layers[1].options.no_cdn = debug;
 

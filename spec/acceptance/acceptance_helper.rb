@@ -9,9 +9,10 @@ require "capybara/poltergeist"
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 #Capybara.default_driver    = :selenium
-Capybara.javascript_driver = :poltergeist
-Capybara.default_host      = "http://admin.localhost.lan:53716"
-Capybara.app_host          = "http://admin.localhost.lan:53716"
+#Capybara.javascript_driver = :poltergeist
+Capybara.javascript_driver = :selenium
+Capybara.default_host      = Cartodb.hostname
+Capybara.app_host          = Cartodb.hostname
 Capybara.server_port       = 53716
 
 RSpec.configure do |config|

@@ -58,6 +58,7 @@ var CartoDBLayer = function(opts) {
    _.extend(this.options, opts);
   this.projector = new Projector(opts.map);
   this._addInteraction();
+  this._checkTiles();
 };
 
 CartoDBLayer.Projector = Projector;
@@ -375,7 +376,13 @@ _.extend(
   },
 
   error: function(e) {
-    this.trigger('error', e?e.error:'unknown error');
+    //trigger the error form _checkTiles in the model
+    this.model.trigger('error', e?e.error:'unknown error');
+    this.model.trigger('tileError', e?e.error:'unknown error');
+  },
+
+  tilesOk: function(e) {
+    this.model.trigger('tileOk');
   }
 
 });

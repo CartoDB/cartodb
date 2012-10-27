@@ -129,6 +129,9 @@ CartoDBLayerCommon.prototype = {
     console.log(e.error);
   },
 
+  tilesOk: function() {
+  },
+
   /**
    *  Check the tiles
    */
@@ -147,6 +150,7 @@ CartoDBLayerCommon.prototype = {
       crossDomain: true,
       dataType: 'json',
       success: function() {
+        self.tilesOk();
         clearTimeout(timeout)
       },
       error: function(xhr, msg, data) {

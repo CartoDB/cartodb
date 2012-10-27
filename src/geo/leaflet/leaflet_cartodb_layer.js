@@ -530,6 +530,11 @@ _.extend(
 
   error: function(e) {
     this.trigger('error', e?e.error:'unknown error');
+    this.model.trigger('tileError', e?e.error:'unknown error');
+  },
+
+  tilesOk: function(e) {
+    this.model.trigger('tileOk');
   }
 
 });

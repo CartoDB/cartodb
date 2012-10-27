@@ -37,11 +37,15 @@ class Migrator20
   def migrate_table_layers(table)
     map_metadata = JSON.parse($tables_metadata.hget(table.key, 'map_metadata')) rescue {}
     infowindow_metadata = JSON.parse($tables_metadata.hget(key, 'infowindow')) rescue {}
-    data_layer = table.map.data_layers.first
 
     
-    data_layer.options = data_layer.options.except('style_version')
-    data_layer.options['kind'] = 'carto'
+    # Data layer setup
+    data_layer = table.map.data_layers.first    
+
+    data_layer.options               = data_layer.options.except('style_version')
+    data_layer.options['kind']       = 'carto'
+    data_layer.options["table_name"] = table.name
+    data_layer.options["user_name"]  = table.owner.username
     data_layer.options['tile_style'] = JSON.parse(
       $tables_metadata.get("map_style|#{table.database_name}|#{table.name}")
     )['style'] rescue nil
@@ -56,10 +60,10 @@ class Migrator20
                             .map { |column_name, i| { name: column_name, title: true, position: i+1 } },
       "template_name"  => "table/views/infowindow_light"
     }
-
     data_layer.save
 
 
+    # Base layer setup
     base_layer = table.map.base_layers.first
 
     base_layer.kind = 'gmapsbase'
@@ -67,7 +71,6 @@ class Migrator20
       'style'     => map_metadata["google_maps_customization_style"],
       'base_type' => (map_metadata["google_maps_base_type"].blank? ? 'roadmap' : map_metadata["google_maps_base_type"])
     }
-
     base_layer.save
   end
 

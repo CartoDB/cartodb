@@ -24,6 +24,7 @@
 //= require ../../../lib/assets/javascripts/cartodb/table/header_view
 //= require ../../../lib/assets/javascripts/cartodb/table/tableview
 //= require ../../../lib/assets/javascripts/cartodb/table/mapview
+//= require ../../../lib/assets/javascripts/cartodb/table/tile_loader
 //= require_tree ../../../lib/assets/javascripts/cartodb/table/views
 //= require_tree ../../../lib/assets/javascripts/cartodb/table_public
 //= require ../../../lib/assets/javascripts/cartodb/table_public/table_public

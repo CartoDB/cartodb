@@ -59,6 +59,8 @@ cdb.vis.Layers = Layers;
 var Vis = cdb.core.View.extend({
 
   initialize: function() {
+    _.bindAll(this, 'loadingTiles', 'loadTiles');
+
     if(this.options.mapView) {
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
@@ -95,12 +97,17 @@ var Vis = cdb.core.View.extend({
     this.map = map;
     this.mapView = mapView;
 
-
     // overlays
     for(var i in data.overlays) {
       var overlay = data.overlays[i];
       overlay.map = map;
       var v = Overlay.create(overlay.type, this, overlay);
+
+      // Save tiles loader view for later
+      if (overlay.type == "loader") {
+        this.loader = v;
+      }
+
       this.addView(v);
       this.mapView.$el.append(v.el);
     }
@@ -175,13 +182,27 @@ var Vis = cdb.core.View.extend({
     var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
     var layerView = mapView.getLayerByCid(layer_cid);
+    
     // add the associated overlays
     if(layerData.infowindow) {
       this.addInfowindow(layerView);
     }
 
+    if (layerView) {
+      layerView.bind('loading', this.loadingTiles);
+      layerView.bind('load',    this.loadTiles);
+    }
+
     return layerView;
 
+  },
+
+  loadingTiles: function() {
+    this.loader.show()
+  },
+
+  loadTiles: function() {
+    this.loader.hide();
   }
 
 });

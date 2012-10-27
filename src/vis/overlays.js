@@ -12,6 +12,16 @@ cdb.vis.Overlay.register('zoom', function(data) {
   return zoom.render();
 });
 
+// Tiles loader
+cdb.vis.Overlay.register('loader', function(data) {
+
+  var tilesLoader = new cdb.admin.TilesLoader({
+    template: cdb.core.Template.compile(data.template)
+  });
+
+  return tilesLoader.render();
+});
+
 // Header to show informtion (title and description)
 cdb.vis.Overlay.register('header', function(data, vis) {
 

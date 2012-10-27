@@ -53,6 +53,8 @@ L.CartoDBLayer = L.TileLayer.extend({
     // Add cartodb logo, yes sir!
     this._addWadus();
 
+    this.fire = this.trigger;
+
     L.TileLayer.prototype.initialize.call(this);
   },
 

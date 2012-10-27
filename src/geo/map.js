@@ -530,8 +530,7 @@ cdb.geo.MapView = cdb.core.View.extend({
     var geo_view = this.geometries[geo.cid];
     this._removeGeomFromMap(geo_view);
     delete this.geometries[geo.cid];
-  },
-
+  }
 
 
 }, {

@@ -47,6 +47,10 @@ var CartoDBLayer = function(opts) {
   opts.tiles = [
     this._tilesUrl()
   ];
+
+  // Set init
+  this.tiles = 0;
+
   wax.g.connector.call(this, opts);
 
   // lovely wax connector overwrites options so set them again
@@ -80,8 +84,28 @@ CartoDBLayer.prototype.setOpacity = function(opacity) {
 };
 
 CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
+
+  var self = this;
+
   this.options.added = true;
-  return wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
+
+  var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
+  
+  if (this.tiles == 0) {
+    this.trigger("loading");
+  }
+
+  this.tiles++;
+
+  im.onload = function() {
+    self.tiles--;
+    
+    if (self.tiles == 0) {
+      self.trigger("load");
+    }
+  }
+
+  return im;
 }
 
 CartoDBLayer.prototype._addInteraction = function () {

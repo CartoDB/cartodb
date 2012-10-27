@@ -227,7 +227,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     } else {
       geo.geom.setMap(null);
     }
-  },
+  }
 
 
 }, {

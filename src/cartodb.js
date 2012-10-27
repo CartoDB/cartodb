@@ -61,7 +61,6 @@
         'geo/ui/zoom.js',
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
-        //'geo/ui/selector.js',
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/ui/search.js',

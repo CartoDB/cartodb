@@ -125,16 +125,22 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     this.add_related_model(this.model);
 
-    this.model.bind('change:content', this.render, this);
+    this.model.bind('change:content',       this.render, this);
     this.model.bind('change:template_name', this.changeTemplate, this);
-    this.model.bind('change:latlng', this.render, this);
-    this.model.bind('change:visibility', this.toggle, this);
+    this.model.bind('change:latlng',        this._update, this);
+    this.model.bind('change:visibility',    this.toggle, this);
 
-    this.mapView.map.bind('change', this._updatePosition, this);
+    this.mapView.map.bind('change',         this._updatePosition, this);
     //this.map.on('viewreset', this._updatePosition, this);
-    this.mapView.bind('drag', this._updatePosition, this);
-    this.mapView.bind('zoomstart', this.hide, this);
-    this.mapView.bind('zoomend', this.show, this);
+    this.mapView.bind('drag',               this._updatePosition, this);
+
+    var that = this;
+    this.mapView.bind('zoomstart', function(){
+      that.hide(true);
+    });
+    this.mapView.bind('zoomend', function() {
+      that.show(true);
+    });
 
     this.render();
     this.$el.hide();
@@ -149,7 +155,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   render: function() {
     if(this.template) {
       this.$el.html($(this.template(_.clone(this.model.attributes))));
-      this._update();
+      //this._update();
     }
     return this;
   },
@@ -184,16 +190,13 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.set("visibility", true);
   },
 
-  show: function () {
+  show: function (no_pan) {
     var that = this;
 
     if (this.model.get("visibility")) {
       that.$el.css({ left: -5000 });
-      that.$el.fadeIn(250, function() {
-        that._update();
-      });
+      that._update(no_pan);
     }
-
   },
 
   isHidden: function () {
@@ -201,14 +204,48 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   hide: function (force) {
-    if (force || !this.model.get("visibility")) this.$el.fadeOut(250);
+    if (force || !this.model.get("visibility")) this._animateOut();
   },
 
-  _update: function () {
+  _update: function (no_pan) {
+    
     if(!this.isHidden()) {
-      this._adjustPan();
+      var delay = 0;
+      
+      if (!no_pan) {
+        var delay = this._adjustPan();
+      }
+
       this._updatePosition();
+      this._animateIn(delay);
     }
+  },
+
+  _animateIn: function(delay) {
+    this.$el.css({
+      'marginBottom':'-10px',
+      'display':'block',
+      opacity:0
+    });
+
+    this.$el
+      .delay(delay)
+      .animate({
+        opacity: 1,
+        marginBottom: 0
+      },300);
+  },
+
+  _animateOut: function() {
+    var that = this;
+
+    this.$el.animate({
+      marginBottom: "-10px",
+      opacity:      "0",
+      display:      "block"
+    }, 180, function() {
+      that.$el.css({display: "none"});
+    });
   },
 
   /**
@@ -216,9 +253,8 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   */
   _updatePosition: function () {
 
-    var offset = this.model.get("offset");
-
     var
+    offset          = this.model.get("offset")
     pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
     x               = this.$el.position().left,
     y               = this.$el.position().top,
@@ -231,7 +267,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.$el.css({ bottom: bottom, left: left });
   },
 
-  _adjustPan: function () {
+  _adjustPan: function (callback) {
 
     var offset = this.model.get("offset");
 
@@ -240,11 +276,12 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     var
       x               = this.$el.position().left,
       y               = this.$el.position().top,
-      containerHeight = this.$el.outerHeight(true),
+      containerHeight = 280, //this.$el.outerHeight(true),
       containerWidth  = this.$el.width(),
       pos             = this.mapView.latLonToPixel(this.model.get("latlng")),
       adjustOffset    = {x: 0, y: 0};
-      size            = this.mapView.getSize();
+      size            = this.mapView.getSize()
+      wait_callback   = 0;
 
     if (pos.x - offset[0] < 0) {
       adjustOffset.x = pos.x - offset[0] - 10;
@@ -264,7 +301,10 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
     if (adjustOffset.x || adjustOffset.y) {
       this.mapView.panBy(adjustOffset);
+      wait_callback = 300;
     }
+
+    return wait_callback;
   }
 
 });

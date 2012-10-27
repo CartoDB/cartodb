@@ -10,6 +10,10 @@
 //= require cdb/vendor/wax.g
 //= require cdb/vendor/GeoJSON
 //
+//= require cdb/vendor/mousewheel
+//= require cdb/vendor/mwheelIntent
+//= require cdb/vendor/jscrollpane
+//
 //= require cdb/src/cartodb
 //
 //= require cdb/src/core/decorator

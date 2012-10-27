@@ -154,8 +154,18 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
 
   render: function() {
     if(this.template) {
+
+      // If there is content, destroy the jscrollpane first, then remove the content.
+      if (this.$el.html().length > 0) {
+        this.$el.find(".cartodb-popup-content").jScrollPane() 
+        && this.$el.find(".cartodb-popup-content").jScrollPane().data().jsp.destroy();
+      }
+
       this.$el.html($(this.template(_.clone(this.model.attributes))));
-      //this._update();
+      this.$el.find(".cartodb-popup-content").jScrollPane({
+        maintainPosition:       false,
+        verticalDragMinHeight:  20
+      });
     }
     return this;
   },

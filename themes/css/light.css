@@ -19,8 +19,8 @@
   }
 
   div.cartodb-popup-content-wrapper {
-    width:197px;
-    padding:12px 12px 12px 19px;
+    width:190px;
+    padding:12px 19px 12px 19px;
     background:url('../img/light.png') repeat-y -452px 0;
   }
 
@@ -34,6 +34,7 @@
     padding:0;
     overflow-y: auto;
     overflow-x: hidden;
+    outline: none;
   }
 
   div.cartodb-popup-tip-container {

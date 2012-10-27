@@ -16,7 +16,8 @@ class Migrator20
           migrate_table_layers(table)
           migrated!(table)
         rescue => e
-          notify_airbrake(e)
+          #notify_airbrake(e)
+          puts "!! Exception on #{table.name}\n#{e.inspect}"
         end      
       end
     end

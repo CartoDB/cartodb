@@ -13,11 +13,11 @@ feature "Tables", :js => true do
 
     log_in_as @user
 
-    click_link_or_button("twitter_followers")
+    click_on "twitter_followers"
   end
 
   scenario "can access embedded map if public" do
-    click_link_or_button("PRIVATE")
+    click_on "PRIVATE"
     click_on 'Make this table public'
     visit embed_map_table_path(@table)
     page.current_path.should be == embed_map_table_path(@table)
@@ -30,22 +30,33 @@ feature "Tables", :js => true do
   # By the moment threre is no privacy in the table
   pending "Toggle the privacy of a table" do
     # Toggle to private
-    click_link_or_button("PUBLIC")
+    click_on "PUBLIC"
     page.find("span.privacy_window ul li.private a").click
     sleep 1
     page.should have_css("p.status", :text => 'private')
   end
 
-  pending "Change the name from a table" do
-    click_link_or_button("twitter_followers")
-    page.find("form#change_name input[name='title']").set("New name")
-    page.find_button('Save').click
+  scenario "Change the name from a table" do
+    click_on "twitter_followers"
+    page.find(".edit_name_dialog input").set("New name")
+    click_on 'Save'
 
-    page.find("h2").text.should == "new_name"
+    click_on 'Ok, continue'
+    page.should have_content 'new_name'
+  end
+
+  scenario "Change the name from a table with invalid chars in the new name" do
+    click_on "twitter_followers"
+    page.find(".edit_name_dialog input").set("áéasdf")
+    click_on 'Save'
+
+    click_on 'Ok, continue'
+    #require 'debugger'; debugger
+    page.should have_content 'aeasdf'
   end
 
   pending "Add and remove tags from a table" do
-    click_link_or_button("add tags")
+    click_on "add tags"
     page.find("li.tagit-new input.tagit-input").set("tag1,")
     page.find_link("Save").click
 
@@ -55,7 +66,7 @@ feature "Tables", :js => true do
     page.all("span.tags p")[0].text.should == 'twitter'
     page.all("span.tags p")[1].text.should == 'tag1'
 
-    click_link_or_button("add tags")
+    click_on "add tags"
     page.find("li.tagit-new input.tagit-input").set("tag3,")
     page.find_link("Save").click
 
@@ -64,7 +75,7 @@ feature "Tables", :js => true do
     page.all("span.tags p")[1].text.should == 'tag1'
     page.all("span.tags p")[2].text.should == 'tag3'
 
-    click_link_or_button("add tags")
+    click_on "add tags"
     page.find("li.tagit-choice", :text => "tag3").find("a.remove_tag").click
     page.find_link("Save").click
 
@@ -74,8 +85,8 @@ feature "Tables", :js => true do
   end
 
   pending "Delete a table" do
-    click_link_or_button("delete table")
-    click_link_or_button("Delete this table")
+    click_on "delete table"
+    click_on "Delete this table"
 
     page.current_path.should == dashboard_path
   end

@@ -1,7 +1,7 @@
 # coding: UTF-8
 class Api::Json::TablesController < Api::ApplicationController
   ssl_required :index, :show, :create, :update, :destroy
-  skip_before_filter :api_authorization_required, :only => [ :vizzjson ]  
+  skip_before_filter :api_authorization_required, :only => [ :vizzjson ]
 
   before_filter :load_table, :except => [:index, :create, :vizzjson]
   before_filter :set_start_time
@@ -105,7 +105,7 @@ class Api::Json::TablesController < Api::ApplicationController
       render_jsonp(@table.public_values.merge(warnings: warnings)) and return
     end
     @table.tags = params[:tags] if params[:tags]
-    if @table.update(@table.values.delete_if {|k,v| k == :tags_names})
+    if @table.update(@table.values.delete_if {|k,v| k == :tags_names}) != false
       @table = Table.fetch("select *, array_to_string(array(select tags.name from tags where tags.table_id = user_tables.id),',') as tags_names
                             from user_tables
                             where id=?",@table.id).first

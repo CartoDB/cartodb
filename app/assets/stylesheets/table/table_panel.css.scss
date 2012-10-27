@@ -59,6 +59,66 @@
         &.tools {
           top:0;
           a:first-child {@include border-top-left-radius(4px);}
+
+          .error {
+            position: absolute;
+            text-indent: 0;
+            top:0;
+            right:0;
+            width:10px;
+            height: 100%;
+            opacity: 0;
+            @include transform-style("linear");
+            @include transition-property("opacity");
+            @include transition-duration(1000ms);
+
+
+            .errorLabel {
+              background-color: #EB2466;
+              opacity: 1;
+              color: #FFF;
+              font-size: 6px;
+              line-height: 8px;
+              width: 9px;
+              height: 13px;
+              border-radius: 0 0 8px 8px;
+              position: absolute;
+              top:0;
+              right: 0px;
+              display: block;
+            }
+            .errorBar {
+              background-color: #EB2466;
+              display: block;
+              position: absolute;
+              top: 0;
+              right: 0;
+              height: 100%;
+              width: 5px;
+            }
+
+            .symbol {
+
+              width:1px;
+              height:6px;
+              display: inline-block;
+              background-color: #FFF;
+              margin: 2px 3px;
+
+              .space {
+                margin-top: 4px;
+                height: 1px;
+                background-color: #EB2466   ;
+              }
+            }
+          }
+
+          a.hasErrors {
+            .error {
+              opacity: 1;
+            }
+          }
+
         }
 
         &.edit {

@@ -63,7 +63,7 @@ describe Table do
       table.map.values.slice(:zoom, :bounding_box_sw, :bounding_box_ne, :provider).should == { zoom: 3, bounding_box_sw: "[0, 0]", bounding_box_ne: "[0, 0]", provider: 'leaflet'}
       table.map.layers.count.should == 2
       table.map.layers.map(&:kind).should == ['tiled', 'carto']
-      table.map.data_layers.first.infowindow["fields"].should == ["cartodb_id", "description", "name"]
+      table.map.data_layers.first.infowindow["fields"].should == [{"name"=>"cartodb_id", "title"=>true, "position"=>1}, {"name"=>"description", "title"=>true, "position"=>2}, {"name"=>"name", "title"=>true, "position"=>3}]
     end
 
     it "should return a sequel interface" do

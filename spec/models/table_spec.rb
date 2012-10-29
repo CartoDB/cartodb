@@ -282,7 +282,7 @@ describe Table do
       }.should_not raise_error
     end
 
-    it "can create a table called using a reserved postgresql word" do
+    it "can create a table called using a reserved postgresql word as its name" do
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
@@ -616,6 +616,15 @@ describe Table do
       table.reload
       table.schema(:cartodb_types => false).should include([:action, "double precision"])
     end
+
+    it "can have a column with a reserved psql word as its name" do
+      table = create_table(:user_id => @user.id)
+
+      resp = table.add_column!(:name => "where", :type => "number")
+      resp.should == {:name => "where", :type => "double precision", :cartodb_type => "number"}
+      table.reload
+      table.schema(:cartodb_types => false).should include([:where, "double precision"])
+    end
   end
 
   context "insert and update rows" do
@@ -757,6 +766,16 @@ describe Table do
 
       table.update_row!(pk1, :description => "Description 123")
       table.records[:rows].first[:description].should be == "Description 123"
+    end
+
+    it "can insert and update records in a table which one of its columns uses a reserved word as its name" do
+      table = create_table(:name => 'where', :user_id => @user.id)
+      table.add_column!(:name => 'where', :type => 'string')
+
+      pk1 = table.insert_row!({:where => 'random string'})
+
+      table.records[:rows].should have(1).rows
+      table.records[:rows].first[:where].should be == 'random string'
     end
   end
 

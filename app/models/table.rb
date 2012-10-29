@@ -965,9 +965,9 @@ class Table < Sequel::Model(:user_tables)
     row = nil
     owner.in_database do |user_database|
       select = if schema.flatten.include?(THE_GEOM)
-        schema.select{|c| c[0] != THE_GEOM }.map{|c| c[0] }.join(',') + ",ST_AsGeoJSON(the_geom,6) as the_geom"
+        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ",ST_AsGeoJSON(the_geom,6) as the_geom"
       else
-        schema.map{|c| c[0] }.join(',')
+        schema.map{|c| %Q{"#{c[0]}"} }.join(',')
       end
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'

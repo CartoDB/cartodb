@@ -23,7 +23,7 @@ class Table < Sequel::Model(:user_tables)
   end
 
   def geometry_types
-    owner.in_database.fetch("SELECT distinct(ST_GeometryType(the_geom)) from #{self.name}").all.map {|r| r[:st_geometrytype] }
+    owner.in_database.fetch(%Q{SELECT distinct(ST_GeometryType(the_geom)) from "#{self.name}"}).all.map {|r| r[:st_geometrytype] }
   end
 
   def_dataset_method(:search) do |query|
@@ -140,7 +140,7 @@ class Table < Sequel::Model(:user_tables)
       end
     end
     # append table 2 to table 1
-    owner.in_database.run("INSERT INTO #{append_to_table.name} (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM #{from_table.name})")
+    owner.in_database.run(%Q{INSERT INTO "#{append_to_table.name}" (#{new_schema_names.join(',')}) (SELECT #{new_schema_names.join(',')} FROM "#{from_table.name}")})
     # so that we can use the same method to allow the user to merge two tables
     # that already exist in the API
     # a future might be merge_two_tables
@@ -186,7 +186,7 @@ class Table < Sequel::Model(:user_tables)
       aux_cartodb_id_column = nil
       if schema.present? && schema.flatten.include?(:cartodb_id)
          aux_cartodb_id_column = "cartodb_id_aux_#{Time.now.to_i}"
-         user_database.run("ALTER TABLE #{self.name} RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}")
+         user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN cartodb_id TO #{aux_cartodb_id_column}})
          @data_import.log_update('renaming cartodb_id from import file')
          self.schema
       end
@@ -199,7 +199,7 @@ class Table < Sequel::Model(:user_tables)
         if aux_cartodb_id_column.nil?
           aux_cartodb_id_column = "ogc_fid"
         else
-          user_database.run("ALTER TABLE #{self.name} DROP COLUMN ogc_fid")
+          user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN ogc_fid})
           @data_import.log_update('removing ogc_fid from import file')
         end
       end
@@ -207,26 +207,26 @@ class Table < Sequel::Model(:user_tables)
         if aux_cartodb_id_column.nil?
           aux_cartodb_id_column = "gid"
         else
-          user_database.run("ALTER TABLE #{self.name} DROP COLUMN gid")
+          user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN gid})
           @data_import.log_update('removing gid from import file')
         end
       end
       self.schema(:reload => true, :cartodb_types => false).each do |column|
         if column[1] =~ /^character varying/
-          user_database.run("ALTER TABLE #{self.name} ALTER COLUMN \"#{column[0]}\" TYPE text")
+          user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN \"#{column[0]}\" TYPE text})
         end
       end
       schema = self.schema(:reload => true)
 
-      user_database.run("ALTER TABLE #{self.name} ADD COLUMN cartodb_id SERIAL")
+      user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN cartodb_id SERIAL})
 
       # If there's an auxiliary column, copy and restart the sequence to the max(cartodb_id)+1
       # Do this before adding constraints cause otherwise we can have duplicate key errors
       if aux_cartodb_id_column.present?
-        user_database.run("UPDATE #{self.name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)")
-        user_database.run("ALTER TABLE #{self.name} DROP COLUMN #{aux_cartodb_id_column}")
+        user_database.run(%Q{UPDATE "#{self.name}" SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
+        user_database.run(%Q{ALTER TABLE "#{self.name}" DROP COLUMN #{aux_cartodb_id_column}})
         cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
-        max_cartodb_id = user_database["SELECT max(cartodb_id) FROM #{self.name}"].first[:max]
+        max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM "#{self.name}"}].first[:max]
 
         # only reset the sequence on real imports.
         # skip for duplicate tables as they have totaly new names, but have aux_cartodb_id columns
@@ -235,7 +235,7 @@ class Table < Sequel::Model(:user_tables)
         end
         @data_import.log_update('cleaning supplied cartodb_id')
       end
-      user_database.run("ALTER TABLE #{self.name} ADD PRIMARY KEY (cartodb_id)")
+      user_database.run(%Q{ALTER TABLE "#{self.name}" ADD PRIMARY KEY (cartodb_id)})
 
       normalize_timestamp_field!(:created_at, user_database)
       normalize_timestamp_field!(:updated_at, user_database)
@@ -297,7 +297,7 @@ class Table < Sequel::Model(:user_tables)
     end
 
     # all looks ok, so ANALYZE for correct statistics
-    owner.in_database.run("ANALYZE \"#{self.name}\"")
+    owner.in_database.run(%Q{ANALYZE "#{self.name}"})
 
     # TODO: insert geometry checking and fixing here https://github.com/Vizzuality/cartodb/issues/511
     super
@@ -312,7 +312,7 @@ class Table < Sequel::Model(:user_tables)
     end
     unless self.name.blank?
       $tables_metadata.del key
-      owner.in_database(:as => :superuser).run("DROP TABLE IF EXISTS #{self.name}")
+      owner.in_database(:as => :superuser).run(%Q{DROP TABLE IF EXISTS "#{self.name}"})
       if @data_import
         @data_import.log_update("dropping table #{self.name}")
       end
@@ -362,7 +362,7 @@ class Table < Sequel::Model(:user_tables)
     self.create_default_map_and_layers
 
     User.filter(:id => user_id).update(:tables_count => :tables_count + 1)
-    owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::TILE_DB_USER};")
+    owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::TILE_DB_USER};})
     add_python
     delete_tile_style
     flush_cache
@@ -392,17 +392,17 @@ class Table < Sequel::Model(:user_tables)
     self.map_id = m.id
     base_layer = Layer.new(Cartodb.config[:layer_opts]["base"])
     m.add_layer(base_layer)
-    
+
     data_layer = Layer.new(Cartodb.config[:layer_opts]["data"])
     data_layer.options["table_name"] = self.name
     data_layer.options["user_name"] = self.owner.username
     data_layer.infowindow ||= {}
     data_layer.infowindow['fields'] = self.schema(reload: true)
-      .map { |i| i.first }.select { |k, v| 
+      .map { |i| i.first }.select { |k, v|
         !["the_geom", "updated_at", "created_at"].include?(k.to_s.downcase)
       }
-      .each_with_index.map { |column_name, i| 
-        { name: column_name, title: true, position: i+1 } 
+      .each_with_index.map { |column_name, i|
+        { name: column_name, title: true, position: i+1 }
       }
 
     m.add_layer(data_layer)
@@ -427,7 +427,7 @@ class Table < Sequel::Model(:user_tables)
       rescue => e
         CartoDB::Logger.info "Table#after_destroy error", "maybe table #{self.name} doesn't exist: #{e.inspect}"
       end
-      user_database.run("DROP TABLE IF EXISTS #{self.name}")
+      user_database.run(%Q{DROP TABLE IF EXISTS "#{self.name}"})
     end
     remove_table_from_stats
     invalidate_varnish_cache
@@ -446,7 +446,7 @@ class Table < Sequel::Model(:user_tables)
   def normalize_timestamp_field!(field, user_database)
     schema = self.schema(:reload => true)
     if schema.nil? || !schema.flatten.include?(field)
-        user_database.run("ALTER TABLE #{self.name} ADD COLUMN #{field.to_s} timestamp DEFAULT NOW()")
+        user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN #{field.to_s} timestamp DEFAULT NOW()})
     end
 
     if !schema.nil?
@@ -455,7 +455,7 @@ class Table < Sequel::Model(:user_tables)
       if field_type == 'string' && schema.flatten.include?(field)
           #TODO: check type
           sql = <<-ALTERCREATEDAT
-              ALTER TABLE #{self.name} ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
+              ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
               USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US'),
               ALTER COLUMN #{field.to_s} SET DEFAULT now();
           ALTERCREATEDAT
@@ -469,7 +469,7 @@ class Table < Sequel::Model(:user_tables)
     begin
       # make timeout here long, but not infinite. 10mins = 600000 ms.
       # TODO: extend .run to take a "long_running" indicator? See #730.
-      owner.in_database.run("SET statement_timeout TO 600000;UPDATE #{self.name} SET the_geom = ST_MakeValid(the_geom);SET statement_timeout TO DEFAULT")
+      owner.in_database.run(%Q{SET statement_timeout TO 600000;UPDATE "#{self.name}" SET the_geom = ST_MakeValid(the_geom);SET statement_timeout TO DEFAULT})
     rescue => e
       CartoDB::Logger.info "Table#make_geom_valid error", "table #{self.name} make valid failed: #{e.inspect}"
     end
@@ -505,11 +505,11 @@ class Table < Sequel::Model(:user_tables)
 
   def manage_privacy
     if privacy == PRIVATE
-      owner.in_database(:as => :superuser).run("REVOKE SELECT ON #{self.name} FROM #{CartoDB::PUBLIC_DB_USER};")
+      owner.in_database(:as => :superuser).run(%Q{REVOKE SELECT ON "#{self.name}" FROM #{CartoDB::PUBLIC_DB_USER};})
       $tables_metadata.hset key, "privacy", PRIVATE
     elsif privacy == PUBLIC
       $tables_metadata.hset key, "privacy", PUBLIC
-      owner.in_database(:as => :superuser).run("GRANT SELECT ON #{self.name} TO #{CartoDB::PUBLIC_DB_USER};")
+      owner.in_database(:as => :superuser).run(%Q{GRANT SELECT ON "#{self.name}" TO #{CartoDB::PUBLIC_DB_USER};})
     end
   end
 
@@ -732,7 +732,7 @@ class Table < Sequel::Model(:user_tables)
       # try straight cast
       user_database.transaction do
         user_database.run(<<-EOF
-          ALTER TABLE #{table_name}
+          ALTER TABLE "#{table_name}"
           ALTER COLUMN #{column_name}
           TYPE #{new_type}
           USING cast(#{column_name} as #{new_type})
@@ -752,7 +752,7 @@ class Table < Sequel::Model(:user_tables)
         if (old_type == 'string' && new_type == 'double precision')
           # normalise number
           user_database.run(<<-EOF
-            UPDATE #{table_name}
+            UPDATE "#{table_name}"
             SET #{column_name}=NULL
             WHERE trim(\"#{column_name}\") !~* '^([-+]?[0-9]+(\.[0-9]+)?)$'
             EOF
@@ -765,7 +765,7 @@ class Table < Sequel::Model(:user_tables)
 
           # normalise empty string to NULL
           user_database.run(<<-EOF
-            UPDATE #{table_name}
+            UPDATE "#{table_name}"
             SET #{column_name}=NULL
             WHERE trim(\"#{column_name}\") ~* '^$'
             EOF
@@ -773,7 +773,7 @@ class Table < Sequel::Model(:user_tables)
 
           # normalise truthy (anything not false and NULL is true...)
           user_database.run(<<-EOF
-            UPDATE #{table_name}
+            UPDATE "#{table_name}"
             SET #{column_name}='t'
             WHERE trim(\"#{column_name}\") !~* '^(#{falsy})$' AND #{column_name} IS NOT NULL
             EOF
@@ -781,7 +781,7 @@ class Table < Sequel::Model(:user_tables)
 
           # normalise falsy
           user_database.run(<<-EOF
-            UPDATE #{table_name}
+            UPDATE "#{table_name}"
             SET #{column_name}='f'
             WHERE trim(\"#{column_name}\") ~* '^(#{falsy})$'
             EOF
@@ -794,7 +794,7 @@ class Table < Sequel::Model(:user_tables)
 
           # first to string
           user_database.run(<<-EOF
-            ALTER TABLE #{table_name}
+            ALTER TABLE "#{table_name}"
             ALTER COLUMN #{column_name} TYPE text
             USING cast(#{column_name} as text)
             EOF
@@ -802,7 +802,7 @@ class Table < Sequel::Model(:user_tables)
 
           # normalise truthy
           user_database.run(<<-EOF
-            UPDATE #{table_name}
+            UPDATE "#{table_name}"
             SET #{column_name}='1'
             WHERE #{column_name} = 'true' AND #{column_name} IS NOT NULL
             EOF
@@ -810,7 +810,7 @@ class Table < Sequel::Model(:user_tables)
 
           # normalise falsy
           user_database.run(<<-EOF
-            UPDATE #{table_name}
+            UPDATE "#{table_name}"
             SET #{column_name}='0'
             WHERE #{column_name} = 'false' AND #{column_name} IS NOT NULL
             EOF
@@ -824,7 +824,7 @@ class Table < Sequel::Model(:user_tables)
 
           # first to string
           user_database.run(<<-EOF
-            ALTER TABLE #{table_name}
+            ALTER TABLE "#{table_name}"
             ALTER COLUMN #{column_name} TYPE text
             USING cast(#{column_name} as text)
             EOF
@@ -832,7 +832,7 @@ class Table < Sequel::Model(:user_tables)
 
           # normalise truthy
           user_database.run(<<-EOF
-            UPDATE #{table_name}
+            UPDATE "#{table_name}"
             SET #{column_name}='t'
             WHERE #{column_name} !~* '^0$' AND #{column_name} IS NOT NULL
             EOF
@@ -840,7 +840,7 @@ class Table < Sequel::Model(:user_tables)
 
           # normalise falsy
           user_database.run(<<-EOF
-            UPDATE #{table_name}
+            UPDATE "#{table_name}"
             SET #{column_name}='f'
             WHERE #{column_name} ~* '^0$'
             EOF
@@ -856,7 +856,7 @@ class Table < Sequel::Model(:user_tables)
 
         # try to update normalised column to new type (if fails here, well, we have not lost anything)
         user_database.run(<<-EOF
-          ALTER TABLE #{table_name}
+          ALTER TABLE "#{table_name}"
           ALTER COLUMN #{column_name}
           TYPE #{new_type}
           USING cast(#{column_name} as #{new_type})
@@ -881,7 +881,7 @@ class Table < Sequel::Model(:user_tables)
 
     owner.in_database do |user_database|
       columns_sql_builder = <<-SQL
-      SELECT array_to_string(ARRAY(SELECT '#{name}' || '.' || quote_ident(c.column_name)
+      SELECT array_to_string(ARRAY(SELECT '"#{name}"' || '.' || quote_ident(c.column_name)
         FROM information_schema.columns As c
         WHERE table_name = '#{name}'
         AND c.column_name <> 'the_geom_webmercator'
@@ -909,10 +909,10 @@ class Table < Sequel::Model(:user_tables)
       rows_count = 0
       rows_count_is_estimated = true
       if filters.present?
-        query = "SELECT cartodb_id as total_rows FROM #{name} #{where} "
+        query = "SELECT cartodb_id as total_rows FROM "#{name}" #{where} "
         rows_count = rows_estimated_query(query)
         if rows_count <= max_countable_rows
-          query = "SELECT COUNT(cartodb_id) as total_rows FROM #{name} #{where} "
+          query = "SELECT COUNT(cartodb_id) as total_rows FROM "#{name}" #{where} "
           rows_count = user_database[query].get(:total_rows)
           rows_count_is_estimated = false
         end
@@ -929,7 +929,7 @@ class Table < Sequel::Model(:user_tables)
       #
       # NOTE: we fetch one more row to verify estimated rowcount is not short
       #
-      rows = user_database["SELECT #{select_columns} FROM #{name} #{where} ORDER BY \"#{order_by_column}\" #{mode} LIMIT #{per_page}+1 OFFSET #{page}"].all
+      rows = user_database[%Q{SELECT #{select_columns} FROM "#{name}" #{where} ORDER BY \"#{order_by_column}\" #{mode} LIMIT #{per_page}+1 OFFSET #{page}}].all
       CartoDB::Logger.info "Query", "fetch: #{rows.length}"
 
       # Tweak estimation if needed
@@ -987,7 +987,7 @@ class Table < Sequel::Model(:user_tables)
 
       owner.in_database do |user_database|
         user_database.run(<<-GEOREF
-        UPDATE #{self.name}
+        UPDATE "#{self.name}"
         SET the_geom =
           ST_GeomFromText(
             'POINT(' || #{options[:longitude_column]} || ' ' || #{options[:latitude_column]} || ')',#{CartoDB::SRID}
@@ -1163,7 +1163,7 @@ class Table < Sequel::Model(:user_tables)
     return true unless self.schema(:reload => true).flatten.include?(THE_GEOM)
     owner.in_database(:as => :superuser) do |user_database|
       user_database.run(<<-TRIGGER
-        DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON #{self.name};
+        DROP TRIGGER IF EXISTS update_the_geom_webmercator_trigger ON "#{self.name}";
         CREATE OR REPLACE FUNCTION update_the_geom_webmercator() RETURNS trigger AS $update_the_geom_webmercator_trigger$
           BEGIN
                 NEW.#{THE_GEOM_WEBMERCATOR} := CDB_TransformToWebmercator(NEW.the_geom);
@@ -1174,7 +1174,7 @@ class Table < Sequel::Model(:user_tables)
         #{create_the_geom_if_not_exists(self.name)}
 
         CREATE TRIGGER update_the_geom_webmercator_trigger
-        BEFORE INSERT OR UPDATE OF the_geom ON #{self.name}
+        BEFORE INSERT OR UPDATE OF the_geom ON "#{self.name}"
            FOR EACH ROW EXECUTE PROCEDURE update_the_geom_webmercator();
   TRIGGER
         )
@@ -1183,7 +1183,7 @@ class Table < Sequel::Model(:user_tables)
 
   def set_trigger_update_updated_at
     owner.in_database(:as => :superuser).run(<<-TRIGGER
-      DROP TRIGGER IF EXISTS update_updated_at_trigger ON #{self.name};
+      DROP TRIGGER IF EXISTS update_updated_at_trigger ON "#{self.name}";
 
       CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at_trigger$
         BEGIN
@@ -1193,7 +1193,7 @@ class Table < Sequel::Model(:user_tables)
       $update_updated_at_trigger$ LANGUAGE plpgsql;
 
       CREATE TRIGGER update_updated_at_trigger
-      BEFORE UPDATE ON #{self.name}
+      BEFORE UPDATE ON "#{self.name}"
         FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
 TRIGGER
     )
@@ -1232,15 +1232,15 @@ TRIGGER
     $$
     LANGUAGE 'plpythonu' VOLATILE;
 
-    DROP TRIGGER IF EXISTS cache_checkpoint ON #{self.name};
-    CREATE TRIGGER cache_checkpoint BEFORE UPDATE OR INSERT OR DELETE OR TRUNCATE ON #{self.name} EXECUTE PROCEDURE update_timestamp();
+    DROP TRIGGER IF EXISTS cache_checkpoint ON "#{self.name}";
+    CREATE TRIGGER cache_checkpoint BEFORE UPDATE OR INSERT OR DELETE OR TRUNCATE ON "#{self.name}" EXECUTE PROCEDURE update_timestamp();
 TRIGGER
     )
   end
 
   # move to C
   def update_table_pg_stats
-    owner.in_database["ANALYZE #{self.name};"]
+    owner.in_database[%Q{ANALYZE "#{self.name}";}]
   end
 
   # move to C
@@ -1254,7 +1254,7 @@ TRIGGER
 
     if c%m == 0:
         s = plpy.execute("SELECT sum(pg_relation_size(quote_ident(table_name))) FROM information_schema.tables WHERE table_catalog = '#{self.database_name}' AND table_schema = 'public'")[0]['sum'] / 2
-        int_s = int(s) 
+        int_s = int(s)
         diff = int_s - QUOTA_MAX
         SD['quota_mod'] = min(1000, max(1, diff))
         if int_s > QUOTA_MAX:
@@ -1263,8 +1263,8 @@ TRIGGER
     $$
     LANGUAGE 'plpythonu' VOLATILE;
 
-    DROP TRIGGER IF EXISTS test_quota ON #{self.name};
-    CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON #{self.name} EXECUTE PROCEDURE check_quota();
+    DROP TRIGGER IF EXISTS test_quota ON "#{self.name}";
+    CREATE TRIGGER test_quota BEFORE UPDATE OR INSERT ON "#{self.name}" EXECUTE PROCEDURE check_quota();
   TRIGGER
   )
   end
@@ -1366,9 +1366,9 @@ TRIGGER
     if type.to_s.downcase == "multipoint"
       owner.in_database do |user_database|
         user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'POINT', 2);")
-        user_database.run("UPDATE #{self.name} SET the_geom_simple = ST_GeometryN(the_geom,1);")
+        user_database.run(%Q{UPDATE "#{self.name}" SET the_geom_simple = ST_GeometryN(the_geom,1);})
         user_database.run("SELECT DropGeometryColumn('#{self.name}','the_geom');");
-        user_database.run("ALTER TABLE #{self.name} RENAME COLUMN the_geom_simple TO the_geom;")
+        user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN the_geom_simple TO the_geom;})
       end
       type = "point"
     end
@@ -1381,9 +1381,9 @@ TRIGGER
         else
           user_database.run("SELECT AddGeometryColumn('#{self.name}','the_geom_simple',4326, 'MULTILINESTRING', 2);")
         end
-        user_database.run("UPDATE #{self.name} SET the_geom_simple = ST_Multi(the_geom);")
+        user_database.run(%Q{UPDATE "#{self.name}" SET the_geom_simple = ST_Multi(the_geom);})
         user_database.run("SELECT DropGeometryColumn('#{self.name}','the_geom');");
-        user_database.run("ALTER TABLE #{self.name} RENAME COLUMN the_geom_simple TO the_geom;")
+        user_database.run(%Q{ALTER TABLE "#{self.name}" RENAME COLUMN the_geom_simple TO the_geom;})
         type = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{self.name} where #{THE_GEOM} is not null limit 1"].first[:geometrytype]
       end
     end
@@ -1397,16 +1397,16 @@ TRIGGER
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM}',#{CartoDB::SRID},'#{type}',2)")
-        user_database.run("CREATE INDEX ON #{self.name} USING GIST(the_geom)")
+        user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(the_geom)})
       end
       unless user_database.schema(name.to_sym, :reload => true).flatten.include?(THE_GEOM_WEBMERCATOR)
         updates = true
         user_database.run("SELECT AddGeometryColumn ('#{self.name}','#{THE_GEOM_WEBMERCATOR}',#{CartoDB::GOOGLE_SRID},'#{type}',2)")
         # make timeout here long, but not infinite. 10mins = 600000 ms.
-        user_database.run("SET statement_timeout TO 600000;UPDATE #{self.name} SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL;SET statement_timeout TO DEFAULT")
-        user_database.run("CREATE INDEX ON #{self.name} USING GIST(#{THE_GEOM_WEBMERCATOR})")
+        user_database.run(%Q{SET statement_timeout TO 600000;UPDATE "#{self.name}" SET #{THE_GEOM_WEBMERCATOR}=CDB_TransformToWebmercator(#{THE_GEOM}) WHERE #{THE_GEOM} IS NOT NULL;SET statement_timeout TO DEFAULT})
+        user_database.run(%Q{CREATE INDEX ON "#{self.name}" USING GIST(#{THE_GEOM_WEBMERCATOR})})
 
-        # user_database.run("ALTER TABLE #{self.name} ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))")
+        # user_database.run(%Q{ALTER TABLE "#{self.name}" ADD CONSTRAINT geometry_valid_check CHECK (ST_IsValid(#{THE_GEOM}))})
       end
     end
     self.the_geom_type = type.downcase
@@ -1441,9 +1441,9 @@ TRIGGER
                                unshift("created_at timestamp").
                                unshift("updated_at timestamp")
         user_database.run(<<-SQL
-CREATE TABLE #{self.name} (#{sanitized_force_schema.join(', ')});
-ALTER TABLE #{self.name} ALTER COLUMN created_at SET DEFAULT now();
-ALTER TABLE #{self.name} ALTER COLUMN updated_at SET DEFAULT now();
+CREATE TABLE "#{self.name}" (#{sanitized_force_schema.join(', ')});
+ALTER TABLE  "#{self.name}" ALTER COLUMN created_at SET DEFAULT now();
+ALTER TABLE  "#{self.name}" ALTER COLUMN updated_at SET DEFAULT now();
 SQL
         )
       end
@@ -1469,7 +1469,7 @@ SQL
 
     geo_json = RGeo::GeoJSON.decode(attributes[THE_GEOM], :json_parser => :json).try(:as_text)
     raise CartoDB::InvalidGeoJSONFormat if geo_json.nil?
-    owner.in_database.run("UPDATE #{self.name} SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}")
+    owner.in_database.run(%Q{UPDATE "#{self.name}" SET the_geom = ST_GeomFromText('#{geo_json}',#{CartoDB::SRID}) where cartodb_id = #{primary_key}})
   end
 
   def privacy_text

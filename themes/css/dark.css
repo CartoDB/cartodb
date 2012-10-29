@@ -4,7 +4,7 @@
  */
 
 /* INFOWINDOW */
-div.cartodb-popup.dark div.cartodb-popup-content-wrapper:after {
+div.cartodb-popup.dark .jspContainer:after {
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0,0,0,0)), color-stop(100%, rgba(0,0,0,1)));
   background: -webkit-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
   background: -moz-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
@@ -12,7 +12,7 @@ div.cartodb-popup.dark div.cartodb-popup-content-wrapper:after {
   background: linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
 }
 
-div.cartodb-popup.dark div.cartodb-popup-content-wrapper:before {
+div.cartodb-popup.dark .jspContainer:before {
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0,0,0,1)), color-stop(100%, rgba(0,0,0,0)));
   background: -webkit-linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
   background: -moz-linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));

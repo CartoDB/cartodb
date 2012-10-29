@@ -12,6 +12,8 @@
   outline: none;
 }
 
+
+
 .jspContainer * {
   outline: none;
 }
@@ -19,6 +21,7 @@
 .jspPane
 {
   position: absolute;
+  z-index:1;
 }
 
 .jspVerticalBar
@@ -29,6 +32,7 @@
   width: 6px;
   height: 100%;
   background: none;
+  z-index:10;
 }
 
 .jspHorizontalBar
@@ -140,7 +144,7 @@
  */
 
 /* INFOWINDOW */
-div.cartodb-popup.dark div.cartodb-popup-content-wrapper:after {
+div.cartodb-popup.dark .jspContainer:after {
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0,0,0,0)), color-stop(100%, rgba(0,0,0,1)));
   background: -webkit-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
   background: -moz-linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
@@ -148,7 +152,7 @@ div.cartodb-popup.dark div.cartodb-popup-content-wrapper:after {
   background: linear-gradient(top, rgba(0,0,0,0), rgba(0,0,0,1));
 }
 
-div.cartodb-popup.dark div.cartodb-popup-content-wrapper:before {
+div.cartodb-popup.dark .jspContainer:before {
   background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(0,0,0,1)), color-stop(100%, rgba(0,0,0,0)));
   background: -webkit-linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
   background: -moz-linear-gradient(top, rgba(0,0,0,1), rgba(0,0,0,0));
@@ -848,7 +852,7 @@ div.header.yellow h1 a:hover {
     max-width: 190px;
     min-height:5px;
     height:auto;
-    max-height:175px;
+    max-height:185px;
     margin: 0;
     padding: 5px 0 0 0;
     overflow-y: auto;
@@ -856,20 +860,21 @@ div.header.yellow h1 a:hover {
     outline: none;
   }
 
-  div.cartodb-popup-content-wrapper:after,
-  div.cartodb-popup-content-wrapper:before {
+  /* Custom gradients for scroll content */
+  .jspContainer:after,
+  .jspContainer:before {
     content:'';
     position:absolute;
-    left:12px;
+    left:0;
     right:12px;
     display:block;
     height:10px;
     width:190px;
-    z-index: 10;
+    z-index: 5;
   }
 
-  div.cartodb-popup-content-wrapper:after {
-    bottom:12px;
+  .jspContainer:after {
+    bottom:0px;
     background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0)), color-stop(100%, rgba(255,255,255,1)));
     background: -webkit-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
     background: -moz-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
@@ -877,8 +882,8 @@ div.header.yellow h1 a:hover {
     background: linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
   }
 
-  div.cartodb-popup-content-wrapper:before {
-    top:12px;
+  .jspContainer:before {
+    top:0px;
     background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
     background: -webkit-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
     background: -moz-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));

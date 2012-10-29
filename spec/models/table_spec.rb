@@ -281,6 +281,26 @@ describe Table do
         table2.destroy
       }.should_not raise_error
     end
+
+    it "can create a table called using a reserved postgresql word" do
+      delete_user_data @user
+      @user.private_tables_enabled = false
+      @user.save
+
+      table = create_table({:name => 'as', :user_id => @user.id})
+
+      @user.in_database do |user_database|
+        user_database.table_exists?(table.name.to_sym).should be_true
+      end
+
+      table.name = 'where'
+      table.save
+      table.reload
+      @user.in_database do |user_database|
+        user_database.table_exists?('where'.to_sym).should be_true
+      end
+    end
+
   end
 
   context "redis syncs" do
@@ -331,7 +351,7 @@ describe Table do
     end
 
     it "should remove varnish cache when updating the table" do
-      table = create_table(:user_id => @user.id)      
+      table = create_table(:user_id => @user.id)
       CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}:vizjson").returns(true)
       CartoDB::Varnish.any_instance.expects(:purge).times(1).with("obj.http.X-Cache-Channel ~ #{table.varnish_key}.*").returns(true)
       table.save
@@ -587,6 +607,15 @@ describe Table do
 
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
     end
+
+    it "can add a column called 'action'" do
+      table = create_table(:user_id => @user.id)
+
+      resp = table.add_column!(:name => "action", :type => "number")
+      resp.should == {:name => "action", :type => "double precision", :cartodb_type => "number"}
+      table.reload
+      table.schema(:cartodb_types => false).should include([:action, "double precision"])
+    end
   end
 
   context "insert and update rows" do
@@ -717,6 +746,17 @@ describe Table do
 
       res = table.sequel.where(:cartodb_id => pk).first
       res[:upo___nombre_partido].should == "PSOEE"
+    end
+
+    it "can insert and update records in a table with a reserved word as its name" do
+      table = create_table(:name => 'where', :user_id => @user.id)
+      pk1 = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
+      pk2 = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
+
+      table.records[:rows].should have(2).rows
+
+      table.update_row!(pk1, :description => "Description 123")
+      table.records[:rows].first[:description].should be == "Description 123"
     end
   end
 

@@ -371,9 +371,27 @@ cdb.geo.Map = cdb.core.Model.extend({
     this.geometries.remove(geom);
   },
 
+  setBounds: function(b) {
+    this.attributes.view_bounds_sw = [
+        b[0][0],
+        b[0][1]
+    ];
+    this.attributes.view_bounds_ne = [
+        b[1][0],
+        b[1][1]
+    ];
+
+    // change both at the same time
+    this.trigger('change:view_bounds_ne', this);
+
+  },
+
   // set center and zoom according to fit bounds
   fitBounds: function(bounds, mapSize) {
     var z = this.getBoundsZoom(bounds, mapSize);
+    if(z == null) {
+      return;
+    }
     var lat = (bounds[0][0] + bounds[1][0])/2;
     var lon = (bounds[0][1] + bounds[1][1])/2;
     this.set({

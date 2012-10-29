@@ -26,7 +26,11 @@ describe("Vis", function() {
       center: [40.044, -101.95],
       bounding_box_sw: [20, -140],
       bounding_box_ne: [ 55, -50],
-      zoom: 4
+      zoom: 4,
+      bounds: [
+        [1, 2],
+        [3, 4],
+      ]
     };
 
     this.vis = new cdb.vis.Vis({el: this.container});
@@ -38,6 +42,7 @@ describe("Vis", function() {
     expect(this.vis.mapView.map_leaflet.options.maxZoom).toEqual(20);
     expect(this.vis.mapView.map_leaflet.options.minZoom).toEqual(0);
   });
+
 
   it("should insert user max and minZoom values when provided", function() {
     this.container = $('<div>').css('height', '200px');

@@ -22,6 +22,11 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     var self = this;
 
     cdb.geo.MapView.prototype.initialize.call(this);
+
+    var bounds = this.map.getViewBounds();
+    if(bounds) {
+      this.showBounds(bounds);
+    }
     var center = this.map.get('center');
     if(!this.options.map_object) {
       this.map_googlemaps = new google.maps.Map(this.el, {
@@ -85,10 +90,6 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.projector.draw = function() {};
     this.trigger('ready');
     this._isReady = true;
-    var bounds = this.map.getViewBounds();
-    if(bounds) {
-      this.showBounds(bounds);
-    }
   },
 
   _setZoom: function(model, z) {

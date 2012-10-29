@@ -99,9 +99,24 @@ describe("geo.map", function() {
       map.setBaseLayer(layerbase);
       expect(map.get('maxZoom')).toEqual(10);
       expect(map.get('minZoom')).toEqual(9);
+    });
 
+    it("should raise only one change event on setBounds", function() {
+      var c = 0;
+      map.bind('change:view_bounds_ne', function() {
+        c++;
+      });
+      map.setBounds([[1,2],[1,2]]);
+      expect(c).toEqual(1);
+    });
 
-
+    it("should not change center or zoom when the bounds are not ok", function() {
+      var c = 0;
+      map.bind('change:center', function() {
+        c++;
+      });
+      map.setBounds([[1,2],[1,2]]);
+      expect(c).toEqual(0);
     });
 
   });

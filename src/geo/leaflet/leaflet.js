@@ -46,11 +46,6 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
     }
 
-    // looks like leaflet dont like to change the bounds just after the inicialization
-    var bounds = this.map.getViewBounds();
-    if(bounds) {
-      this.showBounds(bounds);
-    }
 
     this.map.bind('set_view', this._setView, this);
     this.map.layers.bind('add', this._addLayer, this);
@@ -109,6 +104,12 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     }, this);
 
     this.trigger('ready');
+
+    // looks like leaflet dont like to change the bounds just after the inicialization
+    var bounds = this.map.getViewBounds();
+    if(bounds) {
+      this.showBounds(bounds);
+    }
 
   },
 

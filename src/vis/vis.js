@@ -85,6 +85,10 @@ var Vis = cdb.core.View.extend({
       mapConfig.bounding_box_sw = data.bounding_box_sw;
       mapConfig.bounding_box_ne = data.bounding_box_ne;
     }
+    if(data.bounds) {
+      mapConfig.view_bounds_sw = data.bounds[0];
+      mapConfig.view_bounds_ne = data.bounds[1];
+    }
 
     var map = new cdb.geo.Map(mapConfig);
 

@@ -46,6 +46,10 @@
         "../vendor/polygonEdit.js", //editing lib for gmaps
         "../vendor/polylineEdit.js",
 
+        "../vendor/jscrollpane.js",
+        "../vendor/mousewheel.js",
+        "../vendor/mwheelIntent.js",
+
         'core/decorator.js',
         'core/config.js',
         'core/log.js',

@@ -20,8 +20,7 @@
       html, body, #map {height: 100%; padding: 0; margin: 0;}
     </style>
 
-    <%= stylesheet_link_tag :leaflet %>
-    <%= stylesheet_link_tag 'cdb/themes/css/cartodb.css' %>
+    <%= stylesheet_link_tag :leaflet, 'cdb/themes/css/cartodb', 'plugins/tipsy' %>
 
     <!--[if lte IE 8]>
       <%= stylesheet_link_tag 'map/leaflet.ie.css' %>

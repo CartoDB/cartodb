@@ -6,7 +6,7 @@ class Api::Json::TablesController < Api::ApplicationController
   before_filter :load_table, :except => [:index, :create, :vizzjson]
   before_filter :set_start_time
   after_filter  :record_query_threshold
-  before_filter :link_ghost_tables
+  #before_filter :link_ghost_tables
 
   def index
     @tables = unless params[:tag_name].blank?

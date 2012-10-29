@@ -427,6 +427,90 @@ describe CartoDB::Importer do
       end
     end
   end
+
+  context "using cartodb 1.0 exported files" do
+
+    it "can import csv files" do
+
+      importer = create_importer 'cartodb_10_export_csv.zip'
+      results, errors   = importer.import!
+
+      results.length.should           == 1
+      results[0].name.should          == 'clubbing_export'
+      results[0].rows_imported.should == 1998
+      results[0].import_type.should   == '.csv'
+      errors.length.should            == 0
+
+    end
+
+    it "can import shp files" do
+
+      importer = create_importer 'cartodb_10_export_shp.zip'
+      results, errors   = importer.import!
+
+      results.length.should           == 1
+      results[0].name.should          == 'gadm1_light_export'
+      results[0].rows_imported.should == 10
+      results[0].import_type.should   == '.shp'
+      errors.length.should            == 0
+
+    end
+
+    it "can import KML files" do
+
+      importer = create_importer 'cartodb_10_export_kml.kmz'
+      results, errors   = importer.import!
+
+      results.length.should           == 1
+      results[0].name.should          == 'gadm1_light_export'
+      results[0].rows_imported.should == 10
+      results[0].import_type.should   == '.kml'
+      errors.length.should            == 0
+
+    end
+  end
+
+  context "using cartodb 2.0 exported files" do
+
+    it "can import csv files" do
+
+      importer = create_importer 'cartodb_20_export_csv.zip'
+      results, errors   = importer.import!
+
+      results.length.should           == 1
+      results[0].name.should          == 'cartodb_query'
+      results[0].rows_imported.should == 46
+      results[0].import_type.should   == '.csv'
+      errors.length.should            == 0
+
+    end
+
+    it "can import shp files" do
+
+      importer = create_importer 'cartodb_20_export_shp.zip'
+      results, errors   = importer.import!
+
+      results.length.should           == 1
+      results[0].name.should          == 'clubbing_export'
+      results[0].rows_imported.should == 1998
+      results[0].import_type.should   == '.csv'
+      errors.length.should            == 0
+
+    end
+
+    it "can import KML files" do
+
+      importer = create_importer 'cartodb_20_export_kml.kml'
+      results, errors   = importer.import!
+
+      results.length.should           == 1
+      results[0].name.should          == 'gadm1_light_export'
+      results[0].rows_imported.should == 10
+      results[0].import_type.should   == '.kml'
+      errors.length.should            == 0
+
+    end
+  end
   ##################################################
   # configuration & helpers for tests
   ##################################################

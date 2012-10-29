@@ -26,6 +26,34 @@
       map.bind('change:center', spy.centerChanged);
     });
 
+    it("should change bounds when center is set", function() {
+      var s = sinon.spy();
+      spyOn(map, 'getViewBounds');
+      map.bind('change:view_bounds_ne', s);
+      map.set('center', [10, 10]);
+      expect(s.called).toEqual(true);
+      expect(map.getViewBounds).not.toHaveBeenCalled();
+    });
+
+    it("should change center and zoom when bounds are changed", function() {
+      var s = sinon.spy();
+      mapView.getSize = function() { return {x: 200, y: 200}; }
+      map.bind('change:center', s);
+      spyOn(mapView, '_setCenter');
+      mapView._bindModel();
+      runs(function() {
+        map.set({
+          'view_bounds_ne': [1, 1],
+          'view_bounds_sw': [-0.3, -1.2]
+        })
+      });
+      waits(1000);
+      runs(function() {
+        expect(mapView._setCenter).toHaveBeenCalled();
+        //expect(s.called).toEqual(true);
+      });
+    });
+
     it("should change zoom", function() {
       mapView._setZoom(null, 10);
       expect(spy.zoomChanged).toHaveBeenCalled();

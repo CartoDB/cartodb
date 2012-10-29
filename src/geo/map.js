@@ -369,6 +369,54 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   removeGeometry: function(geom) {
     this.geometries.remove(geom);
+  },
+
+  // set center and zoom according to fit bounds
+  fitBounds: function(bounds, mapSize) {
+    var z = this.getBoundsZoom(bounds, mapSize);
+    var lat = (bounds[0][0] + bounds[1][0])/2;
+    var lon = (bounds[0][1] + bounds[1][1])/2;
+    this.set({
+      center: [lat, lon],
+      zoom: z
+    })
+  },
+
+  // adapted from leaflat src
+  getBoundsZoom: function(boundsSWNE, mapSize) {
+    var size = [mapSize.x, mapSize.y],
+        zoom = this.get('minZoom') || 0,
+        maxZoom = this.get('maxZoom') || 24,
+        ne = boundsSWNE[1],
+        sw = boundsSWNE[0],
+        boundsSize = [],
+        nePoint,
+        swPoint,
+        zoomNotFound = true;
+
+    do {
+      zoom++;
+      nePoint = cdb.geo.Map.latlngToMercator(ne, zoom);
+      swPoint = cdb.geo.Map.latlngToMercator(sw, zoom);
+      boundsSize[0] = Math.abs(nePoint[0] - swPoint[0]);
+      boundsSize[1] = Math.abs(swPoint[1] - nePoint[1]);
+      zoomNotFound = boundsSize[0] < size[0] || boundsSize[1] < size[1];
+    } while (zoomNotFound && zoom <= maxZoom);
+
+    if (zoomNotFound) {
+      return null;
+    }
+
+    return zoom - 1;
+
+  }
+
+}, {
+
+  latlngToMercator: function(latlng, zoom) {
+    var ll = new L.LatLng(latlng[0], latlng[1]);
+    var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
+    return [pp.x, pp.y];
   }
 
 });
@@ -439,11 +487,19 @@ cdb.geo.MapView = cdb.core.View.extend({
   _setModelProperty: function(prop) {
     this._unbindModel();
     this.map.set(prop);
+    if(prop.center !== undefined || prop.zoom !== undefined) {
+      var b = this.getBounds();
+      this.map.set({
+        view_bounds_sw: b[0],
+        view_bounds_ne: b[1]
+      });
+    }
     this._bindModel();
   },
 
   /** bind model properties */
   _bindModel: function() {
+    this._unbindModel();
     this.map.bind('change:view_bounds_sw', this._changeBounds, this);
     this.map.bind('change:view_bounds_ne', this._changeBounds, this);
     this.map.bind('change:zoom',   this._setZoom, this);
@@ -452,17 +508,28 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   /** unbind model properties */
   _unbindModel: function() {
+    /*
     this.map.unbind('change:zoom',   this._setZoom, this);
     this.map.unbind('change:center', this._setCenter, this);
     this.map.unbind('change:view_bounds_sw', this._changeBounds, this);
     this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
+    */
+
+    this.map.unbind('change:zoom',   null, this);
+    this.map.unbind('change:center', null, this);
+    this.map.unbind('change:view_bounds_sw', null, this);
+    this.map.unbind('change:view_bounds_ne', null, this);
   },
 
   _changeBounds: function() {
-      var bounds = this.map.getViewBounds();
-      if(bounds) {
-        this.showBounds(bounds);
-      }
+    var bounds = this.map.getViewBounds();
+    if(bounds) {
+      this.showBounds(bounds);
+    }
+  },
+
+  showBounds: function(bounds) {
+    this.map.fitBounds(bounds, this.getSize())
   },
 
   _addLayers: function() {

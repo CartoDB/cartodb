@@ -820,20 +820,23 @@ div.header.yellow h1 a:hover {
 
   div.cartodb-popup-content-wrapper {
     width:190px;
+    max-width: 190px;
     padding:12px 19px 12px 19px;
+    overflow-x: hidden;
     background:url('../img/light.png') repeat-y -452px 0;
   }
 
   div.cartodb-popup div.cartodb-popup-content {
     display:block;
-    width:100%;
+    width:190px;
+    max-width: 190px;
     min-height:5px;
     height:auto;
     max-height:175px;
     margin: 0;
     padding:0;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: hidden!important;
     outline: none;
   }
 
@@ -859,19 +862,30 @@ div.header.yellow h1 a:hover {
   }
 
   div.cartodb-popup h4 {
+    display:block;
+    width:190px;
     margin: 0;
     padding: 0;
     font:bold 11px "Helvetica Neue","Helvetica",Arial;
     color:#CCCCCC;
     text-transform:uppercase;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
   }
 
   div.cartodb-popup p {
+    display:block;
+    width:190px;
+    max-width: 190px;
     margin: 0;
     padding: 0;
     font:normal 13px "Helvetica",Arial;
     color:#333333;
     padding:0 0 7px;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    white-space:nowrap;
   }
 
   div.cartodb-popup p.empty {

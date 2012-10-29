@@ -156,7 +156,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
-      if (this.$el.html().length > 0) {
+      if (this.jscrollpane) {
         this.$el.find(".cartodb-popup-content").jScrollPane() 
         && this.$el.find(".cartodb-popup-content").jScrollPane().data().jsp.destroy();
       }
@@ -238,30 +238,40 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
   },
 
   _animateIn: function(delay) {
-    this.$el.css({
-      'marginBottom':'-10px',
-      'display':'block',
-      opacity:0
-    });
+    if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
+      this.$el.css({
+        'marginBottom':'-10px',
+        'display':'block',
+        opacity:0
+      });
 
-    this.$el
-      .delay(delay)
-      .animate({
-        opacity: 1,
-        marginBottom: 0
-      },300);
+      this.$el
+        .delay(delay)
+        .animate({
+          opacity: 1,
+          marginBottom: 0
+        },300);  
+    } else {
+      this.$el.show();
+    }
   },
 
   _animateOut: function() {
-    var that = this;
 
-    this.$el.animate({
-      marginBottom: "-10px",
-      opacity:      "0",
-      display:      "block"
-    }, 180, function() {
-      that.$el.css({display: "none"});
-    });
+    if (!$.browser.msie || ($.browser.msie && $.browser.version.search("9.") != -1)) {
+      var that = this;
+      this.$el.animate({
+        marginBottom: "-10px",
+        opacity:      "0",
+        display:      "block"
+      }, 180, function() {
+        that.$el.css({display: "none"});
+      }); 
+    } else {
+      this.$el.hide();
+    }
+
+
   },
 
   /**

@@ -73,7 +73,7 @@ class Api::Json::TablesController < Api::ApplicationController
           :disposition => "attachment; filename=#{@table.name}.kmz"
       end
       format.json do
-        render_jsonp(@table.public_values.merge(:schema => @table.schema(:reload => true)))
+        render_jsonp(@table.public_values)
       end
     end
   end

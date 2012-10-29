@@ -10,6 +10,7 @@
   <script>
     var table_name = '<%= @table.name %>'
       , table_id = '<%= @table.id %>'
+      , table_data = JSON.parse('<%=raw @table.public_values.to_json %>')
       , user_data = JSON.parse('<%=raw current_user.data.to_json %>')
       , config = JSON.parse('<%=raw frontend_config %>')
       , map_data = JSON.parse('<%=raw @table.map.public_values.to_json %>');

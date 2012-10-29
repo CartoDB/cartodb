@@ -108,8 +108,8 @@
 
     if(opt.sw_lat !== undefined) {
       vizjson.bounds = [
-        [opt.sw_lat, opt.sw_lon],
-        [opt.ne_lat, opt.ne_lon],
+        [parseFloat(opt.sw_lat), parseFloat(opt.sw_lon)],
+        [parseFloat(opt.ne_lat), parseFloat(opt.ne_lon)],
       ];
     }
 

@@ -19,6 +19,7 @@
   }
 
   div.cartodb-popup-content-wrapper {
+    position:relative;
     width:190px;
     max-width: 190px;
     padding:12px 19px 12px 19px;
@@ -34,10 +35,40 @@
     height:auto;
     max-height:175px;
     margin: 0;
-    padding:0;
+    padding: 5px 0 0 0;
     overflow-y: auto;
     overflow-x: hidden!important;
     outline: none;
+  }
+
+  div.cartodb-popup-content-wrapper:after,
+  div.cartodb-popup-content-wrapper:before {
+    content:'';
+    position:absolute;
+    left:12px;
+    right:12px;
+    display:block;
+    height:10px;
+    width:190px;
+    z-index: 10;
+  }
+
+  div.cartodb-popup-content-wrapper:after {
+    bottom:12px;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0)), color-stop(100%, rgba(255,255,255,1)));
+    background: -webkit-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+    background: -moz-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+    background: -o-linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+    background: linear-gradient(top, rgba(255,255,255,0), rgba(255,255,255,1));
+  }
+
+  div.cartodb-popup-content-wrapper:before {
+    top:12px;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,0)));
+    background: -webkit-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    background: -moz-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    background: -o-linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
+    background: linear-gradient(top, rgba(255,255,255,1), rgba(255,255,255,0));
   }
 
   div.cartodb-popup-tip-container {

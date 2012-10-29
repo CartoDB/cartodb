@@ -31,7 +31,8 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         maxZoom: this.map.get('maxZoom'),
         disableDefaultUI: true,
         mapTypeControl:false,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        backgroundColor: 'white'
       });
     } else {
       this.map_googlemaps = this.options.map_object;

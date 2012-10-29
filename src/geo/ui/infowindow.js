@@ -162,10 +162,16 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
       }
 
       this.$el.html($(this.template(_.clone(this.model.attributes))));
-      this.$el.find(".cartodb-popup-content").jScrollPane({
-        maintainPosition:       false,
-        verticalDragMinHeight:  20
-      });
+      
+      // Hello jscrollpane hacks!
+      // It needs some time to initialize, if not it doesn't render properly the fields
+      var that = this;
+      setTimeout(function() {
+        that.$el.find(".cartodb-popup-content").jScrollPane({
+          maintainPosition:       false,
+          verticalDragMinHeight:  20
+        });
+      },1)
     }
     return this;
   },

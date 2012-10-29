@@ -49,7 +49,6 @@ cdb.geo.geocoder.YAHOO = {
           }
         }
 
-
         callback(coordinates);
       });
   }

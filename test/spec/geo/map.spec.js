@@ -119,6 +119,7 @@ describe("geo.map", function() {
       expect(c).toEqual(0);
     });
 
+
   });
 
   describe('MapView', function() {
@@ -360,6 +361,19 @@ describe("geo.map", function() {
         "type": "Point",
         "coordinates": [20, 10]
       })
+
+    });
+
+    it("should save automatically when the zoom or center changes", function() {
+      spyOn(map, 'save');
+      runs(function() {
+        mapView.setAutoSaveBounds();
+        map.set('center', [1,2]);
+      });
+      waits(1500);
+      runs(function() {
+        expect(map.save).toHaveBeenCalled();
+      });
 
     });
 

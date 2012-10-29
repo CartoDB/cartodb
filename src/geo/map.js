@@ -455,6 +455,8 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.add_related_model(this.map);
     this.add_related_model(this.map.layers);
 
+    this.autoSaveBounds = false;
+
     // this var stores views information for each model
     this.layers = {};
     this.geometries = {};
@@ -511,6 +513,9 @@ cdb.geo.MapView = cdb.core.View.extend({
         view_bounds_sw: b[0],
         view_bounds_ne: b[1]
       });
+      if(this.autoSaveBounds) {
+        this._saveLocation();
+      }
     }
     this._bindModel();
   },
@@ -600,11 +605,12 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   setAutoSaveBounds: function() {
     var self = this;
-    // save on change
-    this.map.bind('change:center change:zoom', _.debounce(function() {
-      self.map.save(null, { silent: true });
-    }, 1000), this);
+    this.autoSaveBounds = true;
   },
+
+  _saveLocation: _.debounce(function() {
+      this.map.save(null, { silent: true });
+  }, 1000),
 
   _addGeometry: function(geom) {
     var view = this._addGeomToMap(geom);

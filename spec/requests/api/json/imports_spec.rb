@@ -27,6 +27,9 @@ describe "Imports API" do
     last_import = DataImport.order(:updated_at.desc).first
     last_import.queue_id.should be == response_json['item_queue_id']
     last_import.state.should be == 'complete'
+    table = Table[last_import.table_id]
+    table.name.should == "column_number_to_boo"
+    table.map.data_layers.first.options["table_name"].should == "column_number_to_boo"
   end
 
   it 'allows users to perform asynchronous url imports' do

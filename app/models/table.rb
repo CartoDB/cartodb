@@ -391,11 +391,11 @@ class Table < Sequel::Model(:user_tables)
     m = Map.create(Map::DEFAULT_OPTIONS.merge(table_id: self.id, user_id: self.user_id))
     self.map_id = m.id
     base_layer = Layer.new(Cartodb.config[:layer_opts]["base"])
-    base_layer.options["table_name"] = self.name
-    base_layer.options["user_name"] = self.owner.username
     m.add_layer(base_layer)
     
     data_layer = Layer.new(Cartodb.config[:layer_opts]["data"])
+    data_layer.options["table_name"] = self.name
+    data_layer.options["user_name"] = self.owner.username
     data_layer.infowindow ||= {}
     data_layer.infowindow['fields'] = self.schema(reload: true)
       .map { |i| i.first }.select { |k, v| 

@@ -102,23 +102,22 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
     this.map.bind('change:maxZoom', function() {
       L.Util.setOptions(self.map_leaflet, { maxZoom: self.map.get('maxZoom') });
-    });
+    }, this);
 
     this.map.bind('change:minZoom', function() {
       L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
-    });
-
-    this.map.bind('change:center change:zoom', function() {
-      var b = self.getBounds();
-      this._setModelProperty({
-        view_bounds_sw: b[0],
-        view_bounds_ne: b[1]
-      });
     }, this);
-
 
     this.trigger('ready');
 
+  },
+
+
+  clean: function() {
+    //see https://github.com/CloudMade/Leaflet/issues/1101
+    L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
+    // do not change by elder
+    cdb.core.View.prototype.clean.call(this);
   },
 
   _setZoom: function(model, z) {
@@ -203,14 +202,6 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       [sw.lat, sw.lng],
       [ne.lat, ne.lng]
     ];
-  },
-
-  showBounds: function(bounds) {
-    var sw = bounds[0];
-    var ne = bounds[1];
-    var southWest = new L.LatLng(sw[0], sw[1]);
-    var northEast = new L.LatLng(ne[0], ne[1]);
-    this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
   },
 
   getSize: function() {

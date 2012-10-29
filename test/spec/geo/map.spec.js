@@ -144,7 +144,10 @@ describe("geo.map", function() {
     var map;
     var spy;
     beforeEach(function() {
-      var container = $('<div>').css('height', '200px');
+      var container = $('<div>').css({
+          'height': '200px',
+          'width': '200px'
+      });
       //$('body').append(container);
       map = new cdb.geo.Map();
       mapView = new cdb.geo.LeafletMapView({
@@ -157,15 +160,45 @@ describe("geo.map", function() {
 
       spy = {
         zoomChanged: function(){},
-        centerChanged: function(){}
+        centerChanged: function(){},
+        changed: function() {}
       };
 
       spyOn(spy, 'zoomChanged');
       spyOn(spy, 'centerChanged');
+      spyOn(spy, 'changed');
       map.bind('change:zoom', spy.zoomChanged);
       map.bind('change:center', spy.centerChanged);
+      map.bind('change', spy.changed);
     });
 
+    it("should change bounds when center is set", function() {
+      var s = sinon.spy();
+      spyOn(map, 'getViewBounds');
+      map.bind('change:view_bounds_ne', s);
+      map.set('center', [10, 10]);
+      expect(s.called).toEqual(true);
+      expect(map.getViewBounds).not.toHaveBeenCalled();
+    });
+
+    it("should change center and zoom when bounds are changed", function() {
+      var s = sinon.spy();
+      mapView.getSize = function() { return {x: 200, y: 200}; }
+      map.bind('change:center', s);
+      spyOn(mapView, '_setCenter');
+      mapView._bindModel();
+      runs(function() {
+        map.set({
+          'view_bounds_ne': [1, 1],
+          'view_bounds_sw': [-0.3, -1.2]
+        })
+      });
+      waits(1000);
+      runs(function() {
+        expect(mapView._setCenter).toHaveBeenCalled();
+        //expect(s.called).toEqual(true);
+      });
+    });
 
     it("should allow adding a layer", function() {
       map.addLayer(layer);

@@ -77,16 +77,6 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
 
     this.projector = new cdb.geo.CartoDBLayerGMaps.Projector(this.map_googlemaps);
 
-    this.map.bind('change:center change:zoom', function() {
-      if(self._isReady) {
-        var b = self.getBounds();
-        this._setModelProperty({
-          view_bounds_sw: b[0],
-          view_bounds_ne: b[1]
-        });
-      }
-    }, this);
-
     this.projector.draw = this._ready;
 
   },
@@ -181,28 +171,18 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   },
 
   getBounds: function() {
-    var b = this.map_googlemaps.getBounds();
-    var sw = b.getSouthWest();
-    var ne = b.getNorthEast();
-    return [
-      [sw.lat(), sw.lng()],
-      [ne.lat(), ne.lng()]
-    ];
+    if(this._isReady) {
+      var b = this.map_googlemaps.getBounds();
+      var sw = b.getSouthWest();
+      var ne = b.getNorthEast();
+      return [
+        [sw.lat(), sw.lng()],
+        [ne.lat(), ne.lng()]
+      ];
+    }
+    return [ [0,0], [0,0] ];
   },
 
-  // for some reason we have to wait a little bit in order to work
-  _showBounds: _.debounce(function(bounds) {
-      var sw = bounds[0];
-      var ne = bounds[1];
-      var southWest = new google.maps.LatLng(sw[0], sw[1]);
-      var northEast = new google.maps.LatLng(ne[0], ne[1]);
-      this.map_googlemaps.fitBounds(new google.maps.LatLngBounds(southWest, northEast));
-  }, 100),
-
-  showBounds: function(bounds) {
-    var self = this;
-    this._showBounds(bounds);
-  },
 
   setCursor: function(cursor) {
     this.map_googlemaps.setOptions({ draggableCursor: cursor });
@@ -229,7 +209,6 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
       geo.geom.setMap(null);
     }
   }
-
 
 }, {
 

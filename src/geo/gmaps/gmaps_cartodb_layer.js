@@ -93,16 +93,17 @@ CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
   var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
   
   if (this.tiles == 0) {
-    this.trigger("loading");
+    this.loading && this.loading();
+    //this.trigger("loading");
   }
 
   this.tiles++;
 
-  im.onload = function() {
+  
+  im.onload = im.onerror = function() {
     self.tiles--;
-    
     if (self.tiles == 0) {
-      self.trigger("load");
+      self.finishLoading && self.finishLoading();
     }
   }
 
@@ -126,6 +127,7 @@ CartoDBLayer.prototype.clear = function () {
     this._interaction.remove();
     delete this._interaction;
   }
+  self.finishLoading && self.finishLoading();
 };
 
 CartoDBLayer.prototype.update = function () {
@@ -383,7 +385,16 @@ _.extend(
 
   tilesOk: function(e) {
     this.model.trigger('tileOk');
+  },
+
+  loading: function() {
+    this.trigger("loading");
+  },
+
+  finishLoading: function() {
+    this.trigger("load");
   }
+
 
 });
 

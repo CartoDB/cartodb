@@ -1,5 +1,17 @@
 (function() {
 
+  cdb._debugCallbacks= function(o) {
+    var callbacks = o._callbacks;
+    for(var i in callbacks) {
+      var node = callbacks[i];
+      console.log(" * ", i);
+      var end = node.tail;
+      while ((node = node.next) !== end) {
+        console.log("    - ", node.context, (node.context && node.context.el) || 'none');
+      }
+    }
+  }
+
   /**
    * Base Model for all CartoDB model.
    * DO NOT USE Backbone.Model directly

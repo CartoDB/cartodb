@@ -74,18 +74,19 @@
 
 
             .errorLabel {
-              background-color: #EB2466;
-              opacity: 1;
-              color: #FFF;
-              font-size: 6px;
-              line-height: 8px;
-              width: 9px;
-              height: 13px;
-              border-radius: 0 0 8px 8px;
               position: absolute;
               top:0;
               right: 0px;
               display: block;
+              width: 9px;
+              height: 13px;
+              text-align:center;
+              opacity: 1;
+              color: #FFF;
+              font-size: 6px;
+              line-height: 8px;
+              border-radius: 0 0 8px 8px;
+              background-color: #EB2466;
             }
             .errorBar {
               background-color: #EB2466;
@@ -94,7 +95,7 @@
               top: 0;
               right: 0;
               height: 100%;
-              width: 5px;
+              width: 3px;
             }
 
             .symbol {
@@ -113,7 +114,7 @@
             }
           }
 
-          a.hasErrors {
+          a.has_errors {
             .error {
               opacity: 1;
             }

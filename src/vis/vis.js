@@ -88,6 +88,13 @@ var Vis = cdb.core.View.extend({
     if(data.bounds) {
       mapConfig.view_bounds_sw = data.bounds[0];
       mapConfig.view_bounds_ne = data.bounds[1];
+    } else {
+      var center = data.center;
+      if (typeof(center) === "string") {
+        center = $.parseJSON(center);
+      }
+      mapConfig.center = center || [0, 0];
+      mapConfig.zoom = data.zoom || 4;
     }
 
     var map = new cdb.geo.Map(mapConfig);
@@ -122,17 +129,6 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
-    if(data.bounds) {
-      mapView.showBounds(data.bounds);
-    } else {
-      var center = data.center;
-      if (typeof(center) === "string") {
-        center = $.parseJSON(center);
-      }
-
-      map.setCenter(center || [0, 0]);
-      map.setZoom(data.zoom || 4);
-    }
   },
 
   createLayer: function(layerData, opts) {

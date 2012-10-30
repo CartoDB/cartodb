@@ -12,6 +12,8 @@
   outline: none;
 }
 
+
+
 .jspContainer * {
   outline: none;
 }
@@ -19,6 +21,7 @@
 .jspPane
 {
   position: absolute;
+  z-index:1;
 }
 
 .jspVerticalBar
@@ -29,6 +32,7 @@
   width: 6px;
   height: 100%;
   background: none;
+  z-index:10;
 }
 
 .jspHorizontalBar

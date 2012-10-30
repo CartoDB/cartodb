@@ -1,25 +1,55 @@
 class Migrator20
 
   def migrate!
+    @logger = Logger.new(STDOUT)
+    @tables_skipped     = 0
+    @tables_migrated    = 0
+    @tables_with_errors = {}
+
     Table.select(:id, :database_name, :name, :user_id).all.each do |table|
       if already_migrated?(table)
-        puts "* Skipping: #{table.name}"
+        log "* Skipping: #{table.name}"
+        @tables_skipped += 1
       else
         begin
-          puts "* Migrating: #{table.name}"
-          puts "  - Creating default map and layers"
-          table.create_default_map_and_layers if table.respond_to?(:map) && table.map.blank?
+          log "* Migrating: #{table.name}"
+
+          log "  - Adding table_id"
+          add_table_id(table)
+
+          log "  - Creating default map and layers"
+          table.create_default_map_and_layers if table.map.blank?
           table.reload
-          puts "  - Migrating map"
+
+          log "  - Migrating map"
           migrate_table_map(table)
-          puts "  - Migrating layers"
+
+          log "  - Migrating layers"
           migrate_table_layers(table)
           migrated!(table)
         rescue => e
-          #notify_airbrake(e)
-          puts "!! Exception on #{table.name}\n#{e.inspect}"
+          log "!! Exception on #{table.name}\n#{e.inspect}"
+          @tables_with_errors[table.owner.username] ||= []
+          @tables_with_errors[table.owner.username] << table.name
         end      
       end
+    end
+
+    log("\n=================================")
+    log("Done!")
+    log("- Tables migrated:       #{@tables_migrated}")
+    log("- Tables skipped:        #{@tables_skipped}")
+    log("- Tables with errors:")
+    log("#{y(@tables_with_errors)}")
+  end
+
+  def add_table_id(table)
+    if table.table_id.blank?
+      table.this.update(:table_id => table.owner.in_database.select(:pg_class__oid)
+        .from(:pg_class)
+        .join_table(:inner, :pg_namespace, :oid => :relnamespace)
+        .where(:relkind => 'r', :nspname => 'public', :relname => table.name)
+        .first[:oid])
     end
   end
 
@@ -79,7 +109,12 @@ class Migrator20
   end
 
   def migrated!(table)
+    @tables_migrated += 1
     $tables_metadata.hset(table.key, 'migrated_to_20', true)
+  end
+
+  def log msg
+    @logger.debug(msg)
   end
 
 end

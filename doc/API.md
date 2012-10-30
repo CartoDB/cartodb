@@ -3,9 +3,30 @@
 
 This library allows you to use the visualizations created using [CartoDB](http://cartodb.com/ "cartodb") in your website or introduce them in your current map. Here are described all the methods available, check examples page to see the API in action
 
+# API index
+
+## globals
+ - cartodb.VERSION
+ - cartodb.createLayer
+
+## CartoDB layer
+  - clear()
+  - hide()
+  - show()
+  - setInteraction(enable)
+  - setQuery(sql)
+  - setCartoCSS(cartoCSS, version='2.0.1')
+  - isVisible()
+  - setInteractivity(fieldsArray)
+  - setOptions(options)
+  - setOpacity(opacity)
+  - featureOver -> (event, latlng, pos, data)
+  - featureOut ->
+  - featureClick -> (event, latlng, pos, data)
 
 
-## globals 
+
+## globals
 
 ##### **cartodb.VERSION**
 
@@ -71,9 +92,9 @@ cartodb.loadLayer(map, 'http://examples.cartodb.com/tables/TODO/cartodb.js')
 ```
 
 
-## CartoDB layer 
+## CartoDB layer
 
-Each kind of layer has different API, so depending on the the layer you created in CartoDB you will be able to perform different actions. In order to know what type of layer has been created you can check ``type`` attribute. 
+Each kind of layer has different API, so depending on the the layer you created in CartoDB you will be able to perform different actions. In order to know what type of layer has been created you can check ``type`` attribute.
 
 Here are described all the layer types you can get:
 
@@ -81,7 +102,7 @@ Here are described all the layer types you can get:
 
   Should be called after removing from it from the map.
 
-##### **hide()** 
+##### **hide()**
 
   Hides the cartodb layer from the map. Disables the interaction if it was enabled.
 
@@ -89,7 +110,7 @@ Here are described all the layer types you can get:
 
   Show the cartodb layer in the map if it was previously added. Enables the interaction if it was enabled.
 
-##### **setInteraction(enable)** 
+##### **setInteraction(enable)**
 
   Set the interaction of your layer to true or false. When is disabled ``featureOver``, ``featureClick`` and ``featureOut`` are **not** triggered
 
@@ -97,7 +118,7 @@ Here are described all the layer types you can get:
 
   + **enable**: true if the interaction needs to be enabled
 
-##### **setQuery(sql)** 
+##### **setQuery(sql)**
   Sets the sql query. The layer will show the geometry resulting of this query. When the query raises an error, ``error`` event is triggered. If you set sql to null the query is reset to 'select * form {{table_name}}'
 
   The layer is refreshed just after the execute this function.
@@ -119,17 +140,17 @@ Here are described all the layer types you can get:
   });
 ```
 
-##### setCartoCSS(cartoCSS, version='2.0.1') 
+##### setCartoCSS(cartoCSS, version='2.0.1')
   Change the style of the layer tiles.
   'error' event is triggered on the layer if something is wrong with the style
   set cartoCSS to null to reset to original style
 
 *arguments*:
 
-  + **cartoCSS**: Changes the cartoCSS style applied to the tiles 
+  + **cartoCSS**: Changes the cartoCSS style applied to the tiles
   + **version**: cartoCSS version. You usually do not need to change this
-  
-  
+
+
 *example*:
 
 ```javascript
@@ -147,27 +168,28 @@ Here are described all the layer types you can get:
 
   Change the columns you want to get data
 
-##### setOptions(options) 
+##### setOptions(options)
 
-  Change any parameter at the same time refreshing the tiles once 
+  Change any parameter at the same time refreshing the tiles once
 
 *available options*
-  + query: see setQuery
-  + tile_style: see setStyle
-  + opacity: see setOpacity
-  + interactivity: see setInteractivity
-  
-*Example*: 
+
+  + *query*: see setQuery
+  + *tile_style*: see setStyle
+  + *opacity*: see setOpacity
+  + *interactivity*: see setInteractivity
+
+*Example*:
 
 ```javascript
   layer.setOptions({
-     query: "SELECT * FROM {{table_name}} WHERE cartodb_id < 100", 
+     query: "SELECT * FROM {{table_name}} WHERE cartodb_id < 100",
      interactivity: "cartodb_id,the_geom,magnitude"
   });
 ```
 
 ##### setOpacity(opacity)
-  
+
   Change the opacity of the layer
 
 *arguments*
@@ -176,10 +198,10 @@ Here are described all the layer types you can get:
 
 
 
-#### events 
+#### events
 
 ##### featureOver -> (event, latlng, pos, data)
-  
+
   A callback when hovers in a feature
 
 *callback arguments*
@@ -197,7 +219,7 @@ Here are described all the layer types you can get:
   });
 ```
 
-##### featureOut
+##### featureOut -> ()
 
   A callback when hovers out a feature
 
@@ -208,8 +230,4 @@ Here are described all the layer types you can get:
 *callback arguments*
 
   same than featureOver
-
-/*
-setBounds: Set bounds in the map using a new query or the default one Example: cartodb_gmapsv3.setBounds("SELECT * FROM {{table_name}} WHERE cartodb_id < 100");
-*/
 

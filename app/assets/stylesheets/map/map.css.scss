@@ -281,6 +281,10 @@ div.map {
   div#map.public {
     top: 55px;
     border-top:1px solid rgba(black,0.2);
+    div#zoom {top: 0px;}
+    div#tiles_loader div.loader{
+      top:135px - 65px;
+    }
   }
 
   // [done | discard] dialog shown when a geometry is being edited or created

@@ -12,6 +12,7 @@
       , table_id = '<%= @table.id %>'
       , schema = <%=raw @table.schema.to_json %>
       , user_name = '<%=raw @table.owner.username %>'
+      , map = <%=raw @table.map.to_json %>
       , config = JSON.parse('<%=raw frontend_config %>')
       , vizjson = <%=raw map_vizzjson(@table.map, :full => false).to_json %>
   </script>

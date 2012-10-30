@@ -315,3 +315,4 @@ Windshaft-cartodb tile server URLs.
   - Luis Bosque (@luisico)
   - Sandro Santilli (@strk)
   - Xabel Álvarez (@johnhackworth)
+  - David Arango (@demimismo)

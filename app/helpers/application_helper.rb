@@ -106,7 +106,7 @@ module ApplicationHelper
       tiler_port:         Cartodb.config[:tile_port],
       tiler_domain:       Cartodb.config[:tile_host],
       sql_api_protocol:   Cartodb.config[:sql_api_protocol],
-      sql_api_domain:     Cartodb.config[:sql_api_domain],
+      sql_api_domain:     "#{request.subdomain}.#{Cartodb.config[:sql_api_domain]}",
       sql_api_endpoint:   Cartodb.config[:sql_api_endpoint],
       sql_api_port:       Cartodb.config[:sql_api_port],
       cartodb_com_hosted: Cartodb.config[:cartodb_com_hosted],

@@ -17,29 +17,47 @@
     cdb.templates.namespace = 'cartodb/';
 
     (function() {
-      var jasmineEnv = jasmine.getEnv();
-      jasmineEnv.updateInterval = 1000;
+      // Let's start
+      $.faviconNotify('/favicons/cartofante_grey.png');
 
+      var jasmineEnv = jasmine.getEnv();
       var htmlReporter = new jasmine.HtmlReporter();
+      var reportRunnerResults = htmlReporter.reportRunnerResults;
+
+      htmlReporter.reportRunnerResults = function(runner) {
+        reportRunnerResults(runner);
+
+        var specs = runner.specs();
+        var specResults;
+        var assertionCount = {total: 0, passed: 0, failed: 0};
+
+        for (var i = 0; i < specs.length; ++i) {
+          if (this.specFilter(specs[i])) {
+            specResults = specs[i].results();
+            assertionCount.total += specResults.totalCount;
+            assertionCount.passed += specResults.passedCount;
+            assertionCount.failed += specResults.failedCount;
+          }
+        }
+
+        if (assertionCount.failed > 0) {
+          // Buhh!
+          $.faviconNotify('/favicons/cartofante_red.png');
+        } else {
+          // Yay!
+          $.faviconNotify('/favicons/cartofante_green.png');
+        }
+
+      };
 
       jasmineEnv.addReporter(htmlReporter);
-
       jasmineEnv.specFilter = function(spec) {
         return htmlReporter.specFilter(spec);
       };
 
-      var currentWindowOnload = window.onload;
-
       window.onload = function() {
-        if (currentWindowOnload) {
-          currentWindowOnload();
-        }
-        execJasmine();
-      };
-
-      function execJasmine() {
         jasmineEnv.execute();
-      }
+      };
 
     })();
   </script>

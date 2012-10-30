@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../v2/themes/css/all.css" />
+    <link rel="stylesheet" href="../v2/themes/css/cartodb.css" />
     <script src="../v2/cartodb.uncompressed.js"></script>
   </head>
     
@@ -22,7 +22,7 @@
         attribution: 'stamen'
       }).addTo(map);
 
-      cartodb.createLayer(map, 'http://staging20.cartodb.com/api/v1/viz/nh_final/viz.json')
+      cartodb.createLayer(map, 'http://staging20.cartodb.com/api/v1/viz/table_10m_reefs_3/viz.json')
        .on('done', function(layer) {
         window.layer = layer;
         map.addLayer(layer);

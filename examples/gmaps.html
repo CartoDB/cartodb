@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="../v2/themes/css/all.css" />
+    <link rel="stylesheet" href="../v2/themes/css/cartodb.css" />
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="../v2/cartodb.uncompressed.js"></script>
   </head>
@@ -16,13 +16,14 @@
 
         var map;
         var mapOptions = {
-          zoom: 7,
-          center: new google.maps.LatLng(43, -68),
+          zoom: 2,
+          center: new google.maps.LatLng(43, 0),
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         map = new google.maps.Map(document.getElementById('map'),  mapOptions);
 
-        cartodb.createLayer(map, 'http://staging20.cartodb.com/api/v1/viz/nh_final/viz.json')
+        cartodb.createLayer(map, 'http://staging20.cartodb.com/api/v1/viz/table_10m_reefs_3/viz.json')
+        //cartodb.createLayer(map, 'http://development.localhost.lan:3000/api/v1/viz/table_10m_reefs_3/viz.json')
          .on('done', function(layer) {
           window.layer = layer;
           map.overlayMapTypes.setAt(0, layer);

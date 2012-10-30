@@ -63,20 +63,6 @@ class Table < Sequel::Model(:user_tables)
 
     ## QUOTA CHECKS
 
-    # tables cannot be created if the owner has no more table quota
-    if self.new? && self.owner.over_table_quota?
-
-      # Add basic error to user response
-      errors.add(nil, 'over table quota, please upgrade')
-
-      # Add error to data_import object log
-      @data_import ||= DataImport.find(:id => self.data_import_id) # note memoize function
-      unless @data_import.blank?
-        @data_import.set_error_code(8002)
-        @data_import.log_error('over table quota, please upgrade')
-      end
-    end
-
     # Branch if owner dows not have private table privileges
     if !self.owner.try(:private_tables_enabled)
 

@@ -129,8 +129,6 @@ describe User do
     @user2.remaining_quota.should be > initial_quota
   end
 
-  it "should be able to create tables until his table quota"
-
   it "should has his own database, created when the account is created" do
     @user.database_name.should == "cartodb_test_user_#{@user.id}_db"
     @user.database_username.should == "test_cartodb_user_#{@user.id}"

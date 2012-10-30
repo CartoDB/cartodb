@@ -312,7 +312,7 @@ CartoDB is a large app. We reccomend you use the [spin gem](https://github.com/j
   - Sergio Alvarez Leiva (@saleiva)
   - Javier de la Torre (@jatorre)
   - Andrew W Hill (@andrewxhill)
-  - Javier Santana (@javisantana)
+  - Guyis (@javisantana)
   - Javier Arce (@javierarce)
   - Aaron Steele (@eightysteele)
   - Luis Bosque (@luisico)

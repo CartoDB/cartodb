@@ -15,6 +15,7 @@
     right:0;
     bottom:0;
     left:0;
+
     .emptyTableContainer {
       position:relative;
       display: inline-block;
@@ -60,7 +61,6 @@
   }
 
   div.table {
-    // padding-bottom:100px;
 
     table {
       position:relative;
@@ -96,9 +96,9 @@
             text-align: center;
             font-size: 13px;
             font-family: $text-fonts;
+            text-indent:0;
 
             @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
-
           }
         }
 

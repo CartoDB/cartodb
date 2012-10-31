@@ -218,6 +218,17 @@ describe CartoDB::Importer do
 
         results[0].import_type.should == '.csv'
       end
+
+      it "can import a csv which has problems with the header row" do
+        importer = create_importer 'soy-bean-cleaned-wahwah.csv'
+        results, errors = importer.import!
+
+        errors.should be_empty
+        results[0].name.should == 'soy_bean_cleaned_wah'
+        results[0].rows_imported.should == 238
+
+        results[0].import_type.should == '.csv'
+      end
     end
 
     describe "#XLSX" do

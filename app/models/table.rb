@@ -875,7 +875,7 @@ class Table < Sequel::Model(:user_tables)
       SQL
 
       column_names = user_database[columns_sql_builder].first[:column_names].split(',')
-      if the_geom_index = column_names.index("#{name}.the_geom")
+      if the_geom_index = column_names.index("\"#{name}\".the_geom")
         #if the geometry type of the table is POINT we send the data,
         #if not we will send an string and will have to be requested on demand
         if user_database["SELECT type from geometry_columns where f_table_name = '#{name}'

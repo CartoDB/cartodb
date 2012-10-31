@@ -4,8 +4,19 @@
 
 (function() {
 
-  function _Promise() {}
-  _.extend(_Promise.prototype,  Backbone.Events);
+  function _Promise() {
+
+  }
+  _.extend(_Promise.prototype,  Backbone.Events, {
+    done: function(fn) {
+      this.bind('done', fn);
+    }, 
+    error: function(fn) {
+      this.bind('error', fn);
+    }
+  });
+
+  cdb._Promise = _Promise;
 
   /**
    * compose cartodb url

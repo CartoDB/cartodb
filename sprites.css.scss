@@ -8,5 +8,7 @@
   $icons-background_loader_error-spacing: 10px;
   $icons-download_dataset-spacing: 40px;
   $icons-drag_points-spacing: 40px;
+  $icons-download_blue-spacing: 1px;
+  $icons-download_dark-spacing: 1px;
   @import "icons/*.png";
   @include all-icons-sprites;

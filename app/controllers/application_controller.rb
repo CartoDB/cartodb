@@ -13,6 +13,11 @@ class ApplicationController < ActionController::Base
 
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from RecordNotFound,   :with => :render_404
+  rescue_from AssetNotPrecompiledError, :with => :asset_not_found
+
+  def asset_not_found(ex)
+    notify_airbrake(ex)
+  end
 
   # this disables SSL requirement in non-production environments
   unless Rails.env.production? || Rails.env.staging?

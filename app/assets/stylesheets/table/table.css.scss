@@ -409,7 +409,32 @@
       }
     }
 
-    .page_loader {
+
+    /* PAGINATION ZONE - CAUTION */
+    
+    // If the user can paginate up (we are removing cells in the process)
+    // Let's add some top spacing as well to show the pagination loader ;)
+
+    // Let's add some bottom spacing to show always when it's neccessary the pagination loader
+    &.page_down {
+      padding-bottom:30px; // More space due to the thead height
+    }
+
+    &.page_up {
+      padding-bottom:0;
+      padding-top:180px; // More space due to the thead height
+      thead tr th div > div {
+        margin-top:-180px;
+      }
+      tbody tr:first-child {
+        border-top:1px solid #ECECEC;
+      }
+    }
+
+
+
+    // Loaders
+    tfoot.page_loader {
       position:relative;
       z-index:1;
       padding:100px 0;
@@ -422,7 +447,7 @@
         padding:70px 0;
       }
 
-      div.float_info {
+      div.float_info, div.float_action {
         @include inline-block();
         @include icons-sprite(loading_page);
         position:fixed;
@@ -431,23 +456,37 @@
         margin:0 0 0 -120px;
         padding:0 0 0 45px;
         width:195px;
-        height:34px;
+        height:36px;
         vertical-align:top;
 
         h5 {display:block; color:#7B7B7B; font-size:15px; line-height:normal;}
         p {display:block; font-size:13px;}
       }
 
+      div.float_action {
+        display:none;
+        background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;
+      }
+
       &.up {
-        div.float_info {
+        th {
+          padding:20px 0;
+        }
+
+        div.float_info, div.float_action {
           top:265px;
         }
       }
 
       &.down {
-        div.float_info {
+        div.float_info, div.float_action {
           bottom:50px;
         }
+      }
+
+      &.active {
+        div.float_info {display:none;}
+        div.float_action {display:block;}
       }
     }
   }
@@ -513,4 +552,24 @@
   &:hover span.icon {
     @include icons-sprite(download_dark);
   }
+}
+
+
+
+
+
+/* keyframes for animation;  simple 0 to 360 */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@-moz-keyframes spin {
+  0% { -moz-transform: rotate(0deg); }
+  100% { -moz-transform: rotate(360deg); }
+}
+
+@-ms-keyframes spin {
+  0% { -ms-transform: rotate(0deg); }
+  100% { -ms-transform: rotate(360deg); }
 }

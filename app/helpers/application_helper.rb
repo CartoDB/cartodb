@@ -137,6 +137,7 @@ module ApplicationHelper
 
   def stylesheet_link_tag *sources
     sources.each do |source|
+      next if source == {:media => "all"}
       raise "Hey, #{source} is not in the precompile list. This will fall apart in production." unless Rails.application.config.assets.precompile.any? do |matcher|
         if matcher.is_a? Proc
           matcher.call(source)

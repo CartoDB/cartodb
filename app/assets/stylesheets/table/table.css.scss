@@ -449,7 +449,7 @@
 
       div.float_info, div.float_action {
         @include inline-block();
-        @include icons-sprite(loading_page);
+        background: image-url('layout/loading_page_static.png') no-repeat 0 0;
         position:fixed;
         left:50%;
         z-index:-1;
@@ -465,7 +465,7 @@
 
       div.float_action {
         display:none;
-        background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;
+        background:white;
       }
 
       &.up {
@@ -474,19 +474,19 @@
         }
 
         div.float_info, div.float_action {
-          top:265px;
+          top:285px;
         }
       }
 
       &.down {
         div.float_info, div.float_action {
-          bottom:50px;
+          bottom:65px;
         }
       }
 
       &.active {
         div.float_info {display:none;}
-        div.float_action {display:block;}
+        div.float_action {display:block; background: image-url('layout/loading_page_animation.gif') no-repeat 0 0;}
       }
     }
   }

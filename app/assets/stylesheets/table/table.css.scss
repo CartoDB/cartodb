@@ -500,9 +500,17 @@
 .data_download {
   cursor: pointer;
 
-  span {
-    display: inline-block;
-    height: 8px;
+  span.icon {
+    @include inline-block();
+    vertical-align:middle;
+    height: 9px;
     width: 13px;
+    margin:0 0 1px;
+    padding:0;
+    @include icons-sprite(download_blue);
+  }
+
+  &:hover span.icon {
+    @include icons-sprite(download_dark);
   }
 }

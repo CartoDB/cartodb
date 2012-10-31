@@ -29,8 +29,9 @@ class Migrator20
           migrated!(table)
         rescue => e
           log "!! Exception on #{table.name}\n#{e.inspect}"
-          @tables_with_errors[table.owner.username] ||= []
-          @tables_with_errors[table.owner.username] << table.name
+          username = table.owner.username rescue ""
+          @tables_with_errors[username] ||= []
+          @tables_with_errors[username] << table.name
         end      
       end
     end

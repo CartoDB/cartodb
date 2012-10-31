@@ -117,4 +117,37 @@ module ApplicationHelper
   def stringified_member_type
     current_user.present? ? current_user.account_type.to_s.upcase : 'UNAUTHENTICATED'
   end
+
+  # Checks that the precompile list contains this file or raises an error, in dev only
+  # Note: You will need to move config.assets.precompile to application.rb from production.rb
+  def javascript_include_tag *sources
+    sources.each do |source|
+      raise "Hey, #{source} is not in the precompile list. This will fall apart in production." unless Rails.application.config.assets.precompile.any? do |matcher|
+        if matcher.is_a? Proc
+          matcher.call(source)
+        elsif matcher.is_a? Regexp
+          matcher.match(source)
+        else
+          matcher.to_s.gsub(/\.js/,'') == source.to_s.gsub(/\.js/,'')
+        end
+      end
+    end if Rails.env.development?
+    super *sources
+  end
+
+  def stylesheet_link_tag *sources
+    sources.each do |source|
+      raise "Hey, #{source} is not in the precompile list. This will fall apart in production." unless Rails.application.config.assets.precompile.any? do |matcher|
+        if matcher.is_a? Proc
+          matcher.call(source)
+        elsif matcher.is_a? Regexp
+          matcher.match(source)
+        else
+          matcher.to_s.gsub(/\.css/,'') == source.to_s.gsub(/\.css/,'')
+        end
+      end
+    end if Rails.env.development?
+    super *sources
+  end
+
 end

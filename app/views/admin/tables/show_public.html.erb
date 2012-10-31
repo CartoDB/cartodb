@@ -16,6 +16,13 @@
       , config = JSON.parse('<%=raw frontend_config %>')
       , vizjson = <%=raw map_vizzjson(@table.map, :full => false).to_json %>
   </script>
+  <script>
+    var debug = false;
+    <% if Rails.env.development? %>
+      debug = true;
+    <% end %>
+    cdb.config.set('debug', debug);
+  </script>
 
 
   <% content_for(:js) do %>

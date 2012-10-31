@@ -435,17 +435,27 @@ class Table < Sequel::Model(:user_tables)
         user_database.run(%Q{ALTER TABLE "#{self.name}" ADD COLUMN #{field.to_s} timestamp DEFAULT NOW()})
     end
 
-    if !schema.nil?
+    if schema.present?
       field_type = Hash[schema][field]
       # if column already exists, cast to timestamp value and set default
       if field_type == 'string' && schema.flatten.include?(field)
           #TODO: check type
-          sql = <<-ALTERCREATEDAT
+
+          #if date is in milliseconds
+          begin
+            user_database.run(<<-ALTERCREATEDAT)
               ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
-              USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US'),
-              ALTER COLUMN #{field.to_s} SET DEFAULT now();
-          ALTERCREATEDAT
-          user_database.run(sql)
+              USING to_timestamp(#{field.to_s}::float / 1000);
+            ALTERCREATEDAT
+          #if date is a string
+          rescue
+            user_database.run(<<-ALTERCREATEDAT)
+              ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} TYPE timestamp without time zone
+              USING to_timestamp(#{field.to_s}, 'YYYY-MM-DD HH24:MI:SS.MS.US');
+            ALTERCREATEDAT
+          end
+
+          user_database.run(%Q{ALTER TABLE "#{self.name}" ALTER COLUMN #{field.to_s} SET DEFAULT now();})
       end
     end
   end

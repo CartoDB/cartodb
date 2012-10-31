@@ -32,6 +32,7 @@ feature "API 1.0 records management" do
         should == content[0].slice(:cartodb_id, :name, :location, :description)
       response.body[:rows][1].symbolize_keys.slice(:cartodb_id, :name, :location, :description).
         should == content[1].slice(:cartodb_id, :name, :location, :description)
+      response.body[:rows][1]["the_geom"].should == "GeoJSON"
     end
 
     get_json api_table_records_url(@table.name, :rows_per_page => 2, :page => 1) do |response|
@@ -135,18 +136,18 @@ feature "API 1.0 records management" do
   end
 
   scenario "Remove a row" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "delete", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "delete", any_parameters).once
     
     pk = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
     delete_json api_table_record_url(@table.name,pk) do |response|
-      response.status.should be_success
+      response.status.should == 204
     end
     @table.rows_counted.should == 0
   end
 
   scenario "Remove multiple rows" do
-    CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "delete", any_parameters).once
+    #CartoDB::QueriesThreshold.expects(:incr).with(@user.id, "delete", any_parameters).once
     
     pk  = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
     pk2 = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
@@ -154,7 +155,7 @@ feature "API 1.0 records management" do
     pk4 = @table.insert_row!({:name => String.random(10), :description => String.random(50), :the_geom => %Q{\{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}}})
 
     delete_json api_table_record_url(@table.name,"#{pk},#{pk2},#{pk3}") do |response|
-      response.status.should be_success
+      response.status.should == 204
     end
     @table.rows_counted.should == 1
   end

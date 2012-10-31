@@ -876,14 +876,14 @@ class Table < Sequel::Model(:user_tables)
 
       column_names = user_database[columns_sql_builder].first[:column_names].split(',')
       if the_geom_index = column_names.index("\"#{name}\".the_geom")
-        #if the geometry type of the table is POINT we send the data,
-        #if not we will send an string and will have to be requested on demand
-        if user_database["SELECT type from geometry_columns where f_table_name = '#{name}'
-             and f_geometry_column = 'the_geom'"].first[:type] == "POINT"
-          column_names[the_geom_index] = "ST_AsGeoJSON(the_geom,6) as the_geom"
-        else
-          column_names[the_geom_index] = "'GeoJSON' as the_geom"
-        end
+        column_names[the_geom_index] = <<-STR
+            CASE
+            WHEN GeometryType(the_geom) = 'POINT' THEN
+              ST_AsGeoJSON(the_geom,6)
+            ELSE
+              'GeoJSON'
+            END the_geom
+        STR
       end
       select_columns = column_names.join(',')
 

@@ -21,7 +21,7 @@ function PointView(geometryModel) {
   this.points = [];
 
   var style = _.clone(geometryModel.get('style')) || {};
-  style.path = google.maps.SymbolPath.CIRCLE;
+  //style.path = google.maps.SymbolPath.CIRCLE;
   //style.scale = style.weight;
   //style.strokeColor = "ff0000";
   //style.strokeOpacity = 1;

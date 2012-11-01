@@ -90,4 +90,17 @@ describe('SQL api client', function() {
     expect(ajaxParams.url.indexOf('&format=geojson')).not.toEqual(-1);
     expect(ajaxParams.url.indexOf('&dp=2')).not.toEqual(-1);
   });
+
+  it("should use jsonp if browser does not support cors", function() {
+    $.support.cors = false;
+    s = new cartodb.SQL({ user: 'jaja' });
+    expect(s.options.jsonp).toEqual(true);
+    s.execute('select * from rambo', null, {
+      dp: 2
+    })
+    expect(ajaxParams.dataType).toEqual('jsonp');
+    expect(ajaxParams.crossDomain).toEqual(undefined);
+    expect(ajaxParams.jsonp).toEqual(undefined);
+    $.support.cors = true;
+  });
 });

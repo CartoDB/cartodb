@@ -24,6 +24,9 @@ This library allows you to use the visualizations created using [CartoDB](http:/
   - featureOut ->
   - featureClick -> (event, latlng, pos, data)
 
+## SQL
+  - execute(sql, vars, options, callback)
+
 
 
 ## globals
@@ -230,4 +233,69 @@ Here are described all the layer types you can get:
 *callback arguments*
 
   same than featureOver
+
+
+
+
+
+## SQL
+
+The SQL object allows you to fetch data from the CartoDB SQL API. A simple example usage is:
+
+```javascript
+var sql = cartodb.SQL({ user: 'cartodb_user' });
+sql.execute("select * from table where id > {{id}}", { id: 3 })
+  .done(function(data) {
+    console.log(data.rows);
+  })
+  .error(function(errors) {
+    // errors contains a list of errors
+    console.log("error:" + err);
+  })
+```
+
+it accepts the following options:
+
+  + format: could be geojson
+  + dp: float precisition
+  + jsonp: if jsonp should be used instead of CORS. This param is enabled if the browser does not support CORS
+
+these arguments will be applied for all the queries performed by this object, if you want to override them for one query see ``execute`` options
+
+##### **execute**(sql [,vars][, options][, callback])
+
+executes a sql query. 
+
+*arguments*:
+
+  + **sql**: a string with the sql query to be executed. You can specify template variables like {{variable}} which will be filled with ``vars`` object
+  + **vars**: a map with the variables to be interpolated in the sql query
+  + **options**: accepts ``format``, ``dp`` and ``jsonp``. This object also overrides the params passed to $.ajax
+
+*returns*: promise object. You can listen for the following events:
+
+  + ``done``: triggered when the data arrives
+  + ``error``: triggered when something failed
+
+  you can also use done and error methods:
+
+  ```javascript
+  sql.execute('select * from table')
+    .done(fn)
+    .error(fnError)
+  ```
+ 
+##### **getBounds**(sql [,vars][, options][, callback])
+
+return the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ]] for the geometry resulting of specified query
+
+```javascript
+sql.getBounds('select * form table').done(function(bounds) {
+    console.log(bounds);
+});
+```
+  
+*arguments*:
+
+  + **sql**: a string with the sql query from the bounds will be calculated
 

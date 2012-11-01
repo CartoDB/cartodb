@@ -9,10 +9,10 @@
   }
   _.extend(_Promise.prototype,  Backbone.Events, {
     done: function(fn) {
-      this.bind('done', fn);
+      return this.bind('done', fn);
     }, 
     error: function(fn) {
-      this.bind('error', fn);
+      return this.bind('error', fn);
     }
   });
 

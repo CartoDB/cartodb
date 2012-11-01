@@ -183,7 +183,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.add_related_model(this.dataModel);
     this.add_related_model(this.model);
 
-    this.dataModel.bind('remove', function() {
+    this.dataModel.bind('destroy', function() {
       self.rowDestroyed();
       if(self.dataModel.length == 0) {
         self.emptyTable();

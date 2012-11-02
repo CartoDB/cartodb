@@ -7,7 +7,10 @@ CSS_FILES = $(wildcard themes/css/*.css)
 dist:  dist/cartodb.js themes
 
 
-dist/cartodb.uncompressed.js:
+dist_folder:
+	mkdir dist
+
+dist/cartodb.uncompressed.js: dist_folder
 	node scripts/compress.js
 	mv dist/_cartodb.js dist/cartodb.uncompressed.js
 

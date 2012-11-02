@@ -12,7 +12,7 @@ var LeafLetPlainLayerView = L.TileLayer.extend({
   },
 
   _redrawTile: function (tile) {
-    tile.style['background-color'] = this.model.get('color');
+    tile.style.backgroundColor = this.model.get('color');
   },
 
   _createTileProto: function () {

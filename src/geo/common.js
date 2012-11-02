@@ -163,7 +163,7 @@ CartoDBLayerCommon.prototype = {
     var timeout = setTimeout(function(){
       clearTimeout(timeout);
       self.error("tile timeout");
-    }, 2000);
+    }, 8000);
 
   }
 

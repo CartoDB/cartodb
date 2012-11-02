@@ -129,6 +129,7 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.model.bind('change:template_name', this.changeTemplate, this);
     this.model.bind('change:latlng',        this._update, this);
     this.model.bind('change:visibility',    this.toggle, this);
+    this.model.bind('change:template',      this._compileTemplate, this);
 
     this.mapView.map.bind('change',         this._updatePosition, this);
     //this.map.on('viewreset', this._updatePosition, this);
@@ -152,12 +153,20 @@ cdb.geo.ui.Infowindow = cdb.core.View.extend({
     this.render();
   },
 
+  _compileTemplate: function() {
+    this.template = new cdb.core.Template({ 
+       template: this.model.get('template'),
+       type: this.model.get('template_type') || 'mustache'
+    }).asFunction()
+    this.render();
+  },
+
   render: function() {
     if(this.template) {
 
       // If there is content, destroy the jscrollpane first, then remove the content.
       if (this.$el.html().length > 0) {
-        this.$el.find(".cartodb-popup-content").jScrollPane() 
+        this.$el.find(".cartodb-popup-content").jScrollPane().length
         && this.$el.find(".cartodb-popup-content").jScrollPane().data().jsp.destroy();
       }
 

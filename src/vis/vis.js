@@ -173,6 +173,8 @@ var Vis = cdb.core.View.extend({
       mapView.setCursor('auto');
     });
 
+    layerView.infowindow = infowindow.model;
+
   },
 
   loadLayer: function(layerData, opts) {

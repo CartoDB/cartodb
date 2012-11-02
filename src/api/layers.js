@@ -77,7 +77,7 @@
     
     _getLayerJson(layer, function(visData) {
 
-      var layerData;
+      var layerData, MapType;
 
       if(!visData) {
         promise.trigger('error');

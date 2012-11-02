@@ -1,7 +1,6 @@
-
 # cartodb.js - API reference
 
-This library allows you to use the visualizations created using [CartoDB](http://cartodb.com/ "cartodb") in your website or introduce them in your current map. Here are described all the methods available, check examples page to see the API in action
+This library allows you to use visualizations created on [CartoDB](http://cartodb.com/ "cartodb") in your website and in your maps. Below are descriptions for each of the methods. Also check the examples page to see the API in action
 
 # API index
 
@@ -40,7 +39,7 @@ Contains the library version, should be something like ``'2.0.1'``
 
 ##### **cartodb.createLayer**(map, layerSource [, options] [, callback])
 
-create the specified layer to be added map. The layer is not appended to the map, you should add it using the API of the map you are using (see examples).
+create the specified layer to be added map. The layer is not automatically appended to the map, you should add it explicityly to your map object using the API (see examples).
 
 *arguments*:
 
@@ -97,13 +96,13 @@ cartodb.loadLayer(map, 'http://examples.cartodb.com/tables/TODO/cartodb.js')
 
 ## CartoDB layer
 
-Each kind of layer has different API, so depending on the the layer you created in CartoDB you will be able to perform different actions. In order to know what type of layer has been created you can check ``type`` attribute.
+Each type of layer has a different API, so you will be able to perform different opperation depending on the type of layer you created in CartoDB. In order to know what type of layer has been created you can check ``type`` attribute.
 
-Here are described all the layer types you can get:
+Here are each of the layer types you can get:
 
 ##### **clear()**
 
-  Should be called after removing from it from the map.
+  Should be called after removing the layer from the map.
 
 ##### **hide()**
 
@@ -115,16 +114,17 @@ Here are described all the layer types you can get:
 
 ##### **setInteraction(enable)**
 
-  Set the interaction of your layer to true or false. When is disabled ``featureOver``, ``featureClick`` and ``featureOut`` are **not** triggered
+  Sets the interaction of your layer to true (enabled) or false (disabled). When is disabled ``featureOver``, ``featureClick`` and ``featureOut`` are **not** triggered
 
 *arguments*:
 
   + **enable**: true if the interaction needs to be enabled
 
 ##### **setQuery(sql)**
-  Sets the sql query. The layer will show the geometry resulting of this query. When the query raises an error, ``error`` event is triggered. If you set sql to null the query is reset to 'select * form {{table_name}}'
 
-  The layer is refreshed just after the execute this function.
+  Sets the sql query. The layer will show the geometry returned by this query. When the query raises an error, ``error`` event is triggered. If you set sql to null the query is set to 'select * form {{table_name}}'
+
+  The layer is refreshed just after you execute this function.
 
 *arguments*:
 
@@ -144,9 +144,10 @@ Here are described all the layer types you can get:
 ```
 
 ##### setCartoCSS(cartoCSS, version='2.0.1')
-  Change the style of the layer tiles.
-  'error' event is triggered on the layer if something is wrong with the style
-  set cartoCSS to null to reset to original style
+
+  Changes the style of the layer.
+  An 'error' event is triggered on the layer if something is wrong with the style
+  Set cartoCSS to **null** to reset to original style
 
 *arguments*:
 
@@ -162,7 +163,7 @@ Here are described all the layer types you can get:
 
 ##### isVisible()
 
-  Get the visibility of the layer
+  Get the visibility of the layer. Returns true or false.
 
 *returns*:
   true: if layer is visible
@@ -205,7 +206,7 @@ Here are described all the layer types you can get:
 
 ##### featureOver -> (event, latlng, pos, data)
 
-  A callback when hovers in a feature
+   A callback when hovers in a feature
 
 *callback arguments*
 
@@ -232,7 +233,7 @@ Here are described all the layer types you can get:
 
 *callback arguments*
 
-  same than featureOver
+  same as featureOver
 
 
 
@@ -256,8 +257,8 @@ sql.execute("select * from table where id > {{id}}", { id: 3 })
 
 it accepts the following options:
 
-  + format: could be geojson
-  + dp: float precisition
+  + format: should be geojson
+  + dp: float precision
   + jsonp: if jsonp should be used instead of CORS. This param is enabled if the browser does not support CORS
 
 these arguments will be applied for all the queries performed by this object, if you want to override them for one query see ``execute`` options
@@ -297,5 +298,5 @@ sql.getBounds('select * form table').done(function(bounds) {
   
 *arguments*:
 
-  + **sql**: a string with the sql query from the bounds will be calculated
+  + **sql**: a string with the sql query to calculate the bounds from. 
 

@@ -53,7 +53,26 @@ L.CartoDBLayer = L.TileLayer.extend({
     // Add cartodb logo, yes sir!
     this._addWadus();
 
+    this.fire = this.trigger;
+
     L.TileLayer.prototype.initialize.call(this);
+  },
+
+
+  // overwrite getTileUrl in order to
+  // support different tiles subdomains in tilejson way
+  getTileUrl: function (tilePoint) {
+    this._adjustTilePoint(tilePoint);
+
+    var tiles = this.tilejson.tiles;
+
+    var index = (tilePoint.x + tilePoint.y) % tiles.length;
+
+    return L.Util.template(tiles[index], L.Util.extend({
+      z: this._getZoomForUrl(),
+      x: tilePoint.x,
+      y: tilePoint.y
+    }, this.options));
   },
 
   /**
@@ -358,10 +377,10 @@ L.CartoDBLayer = L.TileLayer.extend({
     if (!document.getElementById('cartodb_logo')) {
       var cartodb_link = document.createElement("a");
       cartodb_link.setAttribute('id','cartodb_logo');
-      cartodb_link.setAttribute('style',"position:absolute; bottom:8px; left:8px; display:block; z-index:10000;");
+      cartodb_link.setAttribute('style',"position:absolute; bottom:0; left:0; display:block; z-index:10000;");
       cartodb_link.setAttribute('href','http://www.cartodb.com');
       cartodb_link.setAttribute('target','_blank');
-      cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='border:none; outline:none' alt='CartoDB' title='CartoDB' />";
+      cartodb_link.innerHTML = "<img src='http://cartodb.s3.amazonaws.com/static/new_logo.png' style='position:absolute; bottom:8px; left:8px; display:block; border:none; outline:none' alt='CartoDB' title='CartoDB' />";
       this.options.map._container.appendChild(cartodb_link);
     }
   },
@@ -426,7 +445,7 @@ L.CartoDBLayer = L.TileLayer.extend({
       // IE
       return map.mouseEventToLayerPoint(o.e)
     }
-  },
+  }
 
 });
 
@@ -440,6 +459,9 @@ var LeafLetLayerCartoDBView = function(layerModel, leafletMap) {
   _.bindAll(this, 'featureOut', 'featureOver', 'featureClick');
 
   var opts = _.clone(layerModel.attributes);
+  if(layerModel.get('use_server_style')) {
+    opts.tile_style = null;
+  }
 
   opts.map =  leafletMap;
 
@@ -483,7 +505,7 @@ _.extend(
     // we should remove it from layer options
     if(this.model.get('use_server_style')) {
       attrs.tile_style = null;
-    }
+    } 
     this.leafletLayer.setOptions(attrs);
   },
 
@@ -502,11 +524,17 @@ _.extend(
   },
 
   reload: function() {
-    this.redraw();
+    this.model.invalidate();
+    //this.redraw();
   },
 
   error: function(e) {
     this.trigger('error', e?e.error:'unknown error');
+    this.model.trigger('tileError', e?e.error:'unknown error');
+  },
+
+  tilesOk: function(e) {
+    this.model.trigger('tileOk');
   }
 
 });

@@ -13,6 +13,7 @@ var GMapsLayerView = function(layerModel, gmapsLayer, gmapsMap) {
   this.map = this.gmapsMap = gmapsMap;
   this.model = layerModel;
   this.model.bind('change', this._update, this);
+
   this.type = layerModel.get('type') || layerModel.get('kind');
   this.type = this.type.toLowerCase();
 };
@@ -51,6 +52,8 @@ _.extend(GMapsLayerView.prototype, {
     }
   },
 
+  /*
+
   show: function() {
     this.gmapsLayer.show();
   },
@@ -58,6 +61,7 @@ _.extend(GMapsLayerView.prototype, {
   hide: function() {
     this.gmapsLayer.hide();
   },
+  */
 
   reload: function() { this.refreshView() ; },
   _update: function() { this.refreshView(); }

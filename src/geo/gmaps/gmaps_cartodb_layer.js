@@ -47,6 +47,10 @@ var CartoDBLayer = function(opts) {
   opts.tiles = [
     this._tilesUrl()
   ];
+
+  // Set init
+  this.tiles = 0;
+
   wax.g.connector.call(this, opts);
 
   // lovely wax connector overwrites options so set them again
@@ -54,6 +58,7 @@ var CartoDBLayer = function(opts) {
    _.extend(this.options, opts);
   this.projector = new Projector(opts.map);
   this._addInteraction();
+  this._checkTiles();
 };
 
 CartoDBLayer.Projector = Projector;
@@ -80,8 +85,29 @@ CartoDBLayer.prototype.setOpacity = function(opacity) {
 };
 
 CartoDBLayer.prototype.getTile = function(coord, zoom, ownerDocument) {
+
+  var self = this;
+
   this.options.added = true;
-  return wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
+
+  var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
+  
+  if (this.tiles == 0) {
+    this.loading && this.loading();
+    //this.trigger("loading");
+  }
+
+  this.tiles++;
+
+  
+  im.onload = im.onerror = function() {
+    self.tiles--;
+    if (self.tiles == 0) {
+      self.finishLoading && self.finishLoading();
+    }
+  }
+
+  return im;
 }
 
 CartoDBLayer.prototype._addInteraction = function () {
@@ -101,6 +127,7 @@ CartoDBLayer.prototype.clear = function () {
     this._interaction.remove();
     delete this._interaction;
   }
+  self.finishLoading && self.finishLoading();
 };
 
 CartoDBLayer.prototype.update = function () {
@@ -252,9 +279,7 @@ CartoDBLayer.prototype._manageOffEvents = function(){
 
 CartoDBLayer.prototype._manageOnEvents = function(map,o) {
   var point  = this._findPos(map, o);
-
-  console.log(point);
-  var      latlng = this.projector.pixelToLatLng(point);
+  var latlng = this.projector.pixelToLatLng(point);
 
   switch (o.e.type) {
     case 'mousemove':
@@ -329,6 +354,10 @@ _.extend(
     this.update();
   },
 
+  reload: function() {
+    this.model.invalidate();
+  },
+
   remove: function() {
     cdb.geo.GMapsLayerView.prototype.remove.call(this);
     this.clear();
@@ -349,8 +378,23 @@ _.extend(
   },
 
   error: function(e) {
-    this.trigger('error', e?e.error:'unknown error');
+    //trigger the error form _checkTiles in the model
+    this.model.trigger('error', e?e.error:'unknown error');
+    this.model.trigger('tileError', e?e.error:'unknown error');
+  },
+
+  tilesOk: function(e) {
+    this.model.trigger('tileOk');
+  },
+
+  loading: function() {
+    this.trigger("loading");
+  },
+
+  finishLoading: function() {
+    this.trigger("load");
   }
+
 
 });
 

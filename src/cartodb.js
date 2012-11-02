@@ -42,6 +42,11 @@
         "../vendor/leaflet.js",
         "../vendor/wax.leaf.js",
         "../vendor/wax.g.js",
+        "../vendor/GeoJSON.js", //geojson gmaps lib
+
+        "../vendor/jscrollpane.js",
+        "../vendor/mousewheel.js",
+        "../vendor/mwheelIntent.js",
 
         'core/decorator.js',
         'core/config.js',
@@ -58,7 +63,6 @@
         'geo/ui/zoom.js',
         'geo/ui/legend.js',
         'geo/ui/switcher.js',
-        //'geo/ui/selector.js',
         'geo/ui/infowindow.js',
         'geo/ui/header.js',
         'geo/ui/search.js',

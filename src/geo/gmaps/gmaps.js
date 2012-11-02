@@ -11,6 +11,7 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   layerTypeMap: {
     "tiled": cdb.geo.GMapsTiledLayerView,
     "cartodb": cdb.geo.GMapsCartoDBLayerView,
+    "carto": cdb.geo.GMapsCartoDBLayerView,
     "plain": cdb.geo.GMapsPlainLayerView,
     "gmapsbase": cdb.geo.GMapsBaseLayerView
   },
@@ -21,6 +22,11 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     var self = this;
 
     cdb.geo.MapView.prototype.initialize.call(this);
+
+    var bounds = this.map.getViewBounds();
+    if(bounds) {
+      this.showBounds(bounds);
+    }
     var center = this.map.get('center');
     if(!this.options.map_object) {
       this.map_googlemaps = new google.maps.Map(this.el, {
@@ -30,7 +36,8 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
         maxZoom: this.map.get('maxZoom'),
         disableDefaultUI: true,
         mapTypeControl:false,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        backgroundColor: 'white'
       });
     } else {
       this.map_googlemaps = this.options.map_object;
@@ -41,6 +48,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
       self._setModelProperty({ center: [c.lat(), c.lng()] });
       self._setModelProperty({ zoom: self.map_googlemaps.getZoom() });
     }
+
+
+    this.map.geometries.bind('add', this._addGeometry, this);
+    this.map.geometries.bind('remove', this._removeGeometry, this);
 
 
     this._bindModel();
@@ -79,13 +90,10 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
     this.projector.draw = function() {};
     this.trigger('ready');
     this._isReady = true;
-    var bounds = this.map.getViewBounds();
-    if(bounds) {
-      this.showBounds(bounds);
-    }
   },
 
   _setZoom: function(model, z) {
+    z = z || 0;
     this.map_googlemaps.setZoom(z);
   },
 
@@ -164,37 +172,56 @@ cdb.geo.GoogleMapsMapView = cdb.geo.MapView.extend({
   },
 
   getBounds: function() {
-    var b = this.map_googlemaps.getBounds();
-    var sw = b.getSouthWest();
-    var ne = b.getNorthEast();
-    return [
-      [sw.lat(), sw.lng()],
-      [ne.lat(), ne.lng()]
-    ];
+    if(this._isReady) {
+      var b = this.map_googlemaps.getBounds();
+      var sw = b.getSouthWest();
+      var ne = b.getNorthEast();
+      return [
+        [sw.lat(), sw.lng()],
+        [ne.lat(), ne.lng()]
+      ];
+    }
+    return [ [0,0], [0,0] ];
   },
 
-  showBounds: function(bounds) {
-    var sw = bounds[0];
-    var ne = bounds[1];
-    var southWest = new google.maps.LatLng(sw[0], sw[1]);
-    var northEast = new google.maps.LatLng(ne[0], ne[1]);
-    this.map_googlemaps.fitBounds(new google.maps.LatLngBounds(southWest, northEast));
+
+  setCursor: function(cursor) {
+    this.map_googlemaps.setOptions({ draggableCursor: cursor });
   },
 
-  setAutoSaveBounds: function() {
-    var self = this;
-    // save on change
-    this.map.bind('change:center change:zoom', _.debounce(function() {
-      if(self._isReady) {
-        var b = self.getBounds();
-        self.map.save({
-          view_bounds_sw: b[0],
-          view_bounds_ne: b[1]
-        }, { silent: true });
+  _addGeomToMap: function(geom) {
+    var geo = cdb.geo.GoogleMapsMapView.createGeometry(geom);
+    if(geo.geom.length) {
+      for(var i = 0 ; i < geo.geom.length; ++i) {
+        geo.geom[i].setMap(this.map_googlemaps);
       }
-    }, 1000), this);
+    } else {
+        geo.geom.setMap(this.map_googlemaps);
+    }
+    return geo;
+  },
+
+  _removeGeomFromMap: function(geo) {
+    if(geo.geom.length) {
+      for(var i = 0 ; i < geo.geom.length; ++i) {
+        geo.geom[i].setMap(null);
+      }
+    } else {
+      geo.geom.setMap(null);
+    }
   }
 
+}, {
+
+  /**
+   * create the view for the geometry model
+   */
+  createGeometry: function(geometryModel) {
+    if(geometryModel.isPoint()) {
+      return new cdb.geo.gmaps.PointView(geometryModel);
+    }
+    return new cdb.geo.gmaps.PathView(geometryModel);
+  }
 });
 
 }

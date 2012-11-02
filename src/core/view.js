@@ -59,6 +59,7 @@
       this._models = [];
       View.viewCount--;
       delete View.views[this.cid];
+      return this;
     },
 
     /**

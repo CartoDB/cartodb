@@ -8,7 +8,7 @@
   <link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
 
   <script type="text/javascript"
-      src="https://maps.google.com/maps/api/js?sensor=false">
+      src="https://maps.google.com/maps/api/js?sensor=false&v=3.7">
   </script>
 
   <script type="text/javascript" src="../vendor/jquery.min.js"></script>
@@ -19,6 +19,7 @@
   <script type="text/javascript" src="../vendor/wax.leaf.js"></script>
   <!--<script type="text/javascript" src="../vendor/cartodb-gmapsv3.js"></script>-->
   <script type="text/javascript" src="../vendor/mustache.js"></script>
+  <script type="text/javascript" src="../vendor/GeoJSON.js"></script>
 
   <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine.js"></script>
   <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine-html.js"></script>
@@ -54,6 +55,7 @@
   <script type="text/javascript" src="../src/geo/leaflet/leaflet_cartodb_layer.js"></script>
   <script type="text/javascript" src="../src/geo/leaflet/leaflet.js"></script>
 
+  <script type="text/javascript" src="../src/geo/gmaps/gmaps.geometry.js"></script>
   <script type="text/javascript" src="../src/geo/gmaps/gmaps_base.js"></script>
   <script type="text/javascript" src="../src/geo/gmaps/gmaps_baselayer.js"></script>
   <script type="text/javascript" src="../src/geo/gmaps/gmaps_plainlayer.js"></script>
@@ -75,11 +77,13 @@
 
   <!-- api -->
   <script type="text/javascript" src="../src/api/layers.js"></script>
+  <script type="text/javascript" src="../src/api/sql.js"></script>
 
   <!-- SPECS -->
   <!-- Core specs -->
   <script type="text/javascript" src="spec/core/decorators.spec.js"></script>
   <script type="text/javascript" src="spec/core/log.spec.js"></script>
+  <script type="text/javascript" src="spec/core/model.spec.js"></script>
   <script type="text/javascript" src="spec/core/view.spec.js"></script>
   <script type="text/javascript" src="spec/core/template.spec.js"></script>
   <script type="text/javascript" src="spec/core/sql.spec.js"></script>
@@ -111,6 +115,7 @@
   <!-- api -->
   <script type="text/javascript" src="spec/api/layers.spec.js"></script>
   <script type="text/javascript" src="spec/api/layers/cartodb.spec.js"></script>
+  <script type="text/javascript" src="spec/api/sql.spec.js"></script>
 
 
 

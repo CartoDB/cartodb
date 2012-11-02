@@ -46,11 +46,6 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
       self._setModelProperty({ zoom: self.map_leaflet.getZoom() });
     }
 
-    // looks like leaflet dont like to change the bounds just after the inicialization
-    var bounds = this.map.getViewBounds();
-    if(bounds) {
-      this.showBounds(bounds);
-    }
 
     this.map.bind('set_view', this._setView, this);
     this.map.layers.bind('add', this._addLayer, this);
@@ -102,46 +97,50 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
     this.map.bind('change:maxZoom', function() {
       L.Util.setOptions(self.map_leaflet, { maxZoom: self.map.get('maxZoom') });
-    });
+    }, this);
 
     this.map.bind('change:minZoom', function() {
       L.Util.setOptions(self.map_leaflet, { minZoom: self.map.get('minZoom') });
-    });
-
-    /*this.map.bind('change:view_bounds_sw change:view_bounds_ne', function() {
-      var bounds = this.map.getViewBounds();
-      if(bounds) {
-        this.showBounds(bounds);
-      }
     }, this);
-    */
 
     this.trigger('ready');
 
+    // looks like leaflet dont like to change the bounds just after the inicialization
+    var bounds = this.map.getViewBounds();
+    if(bounds) {
+      this.showBounds(bounds);
+    }
+
+  },
+
+
+  clean: function() {
+    //see https://github.com/CloudMade/Leaflet/issues/1101
+    L.DomEvent.off(window, 'resize', this.map_leaflet._onResize, this.map_leaflet);
+    // do not change by elder
+    cdb.core.View.prototype.clean.call(this);
   },
 
   _setZoom: function(model, z) {
-    this.map_leaflet.setZoom(z);
+    this._setView();
   },
 
   _setCenter: function(model, center) {
-    this.map_leaflet.panTo(new L.LatLng(center[0], center[1]));
+    this._setView();
   },
 
   _setView: function() {
-    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom"));
+    this.map_leaflet.setView(this.map.get("center"), this.map.get("zoom") || 0 );
   },
 
-  _addGeometry: function(geom) {
-    var geo = GeometryView.create(geom);
+  _addGeomToMap: function(geom) {
+    var geo = cdb.geo.LeafletMapView.createGeometry(geom);
     geo.geom.addTo(this.map_leaflet);
-    this.geometries[geom.cid] = geo;
+    return geo;
   },
 
-  _removeGeometry: function(geo) {
-    var geo_view = this.geometries[geo.cid];
-    this.map_leaflet.removeLayer(geo_view.geom);
-    delete this.geometries[geo.cid];
+  _removeGeomFromMap: function(geo) {
+    this.map_leaflet.removeLayer(geo.geom);
   },
 
   createLayer: function(layer) {
@@ -180,12 +179,12 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
         }
       });
     }
-
-    // update all
-    //for(var i in this.layers) {
-      //this.layers[i].reload();
-    //}
-
+    /*
+    var attr = layer.get('attribution');
+    if(attr) {
+      this.addAttribution(attr);
+    }
+    */
 
     this.trigger('newLayerView', layer_view, this);
   },
@@ -206,14 +205,6 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     ];
   },
 
-  showBounds: function(bounds) {
-    var sw = bounds[0];
-    var ne = bounds[1];
-    var southWest = new L.LatLng(sw[0], sw[1]);
-    var northEast = new L.LatLng(ne[0], ne[1]);
-    this.map_leaflet.fitBounds(new L.LatLngBounds(southWest, northEast));
-  },
-
   getSize: function() {
     return this.map_leaflet.getSize();
   },
@@ -222,16 +213,8 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
     this.map_leaflet.panBy(new L.Point(p.x, p.y));
   },
 
-  setAutoSaveBounds: function() {
-    var self = this;
-    // save on change
-    this.map.bind('change:center change:zoom', _.debounce(function() {
-      var b = self.getBounds();
-      self.map.save({
-        view_bounds_sw: b[0],
-        view_bounds_ne: b[1]
-      }, { silent: true });
-    }, 1000), this);
+  setCursor: function(cursor) {
+    $(this.map_leaflet.getContainer()).css('cursor', cursor);
   }
 
 }, {
@@ -239,6 +222,7 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
   layerTypeMap: {
     "tiled": cdb.geo.LeafLetTiledLayerView,
     "cartodb": cdb.geo.LeafLetLayerCartoDBView,
+    "carto": cdb.geo.LeafLetLayerCartoDBView,
     "plain": cdb.geo.LeafLetPlainLayerView,
     // for google maps create a plain layer
     "gmapsbase": cdb.geo.LeafLetPlainLayerView
@@ -258,7 +242,19 @@ cdb.geo.LeafletMapView = cdb.geo.MapView.extend({
 
   addLayerToMap: function(layer_view, map) {
     map.addLayer(layer_view.leafletLayer);
+  },
+
+  /**
+   * create the view for the geometry model
+   */
+  createGeometry: function(geometryModel) {
+    if(geometryModel.isPoint()) {
+      return new cdb.geo.leaflet.PointView(geometryModel);
+    }
+    return new cdb.geo.leaflet.PathView(geometryModel);
   }
+
+
 });
 
 })();

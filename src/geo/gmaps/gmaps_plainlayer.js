@@ -30,7 +30,7 @@ _.extend(
   maxZoom: 100,
   minZoom: 0,
   name:"plain layer",
-  alt: "plain layer",
+  alt: "plain layer"
 });
 
 cdb.geo.GMapsPlainLayerView = GMapsPlainLayerView;

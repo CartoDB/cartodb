@@ -33,6 +33,10 @@ cdb.ui.common.TableData = Backbone.Collection.extend({
         return null;
       }
       return r.get(columnName);
+    },
+
+    isEmpty: function() {
+      return this.length === 0;
     }
 
 });
@@ -179,7 +183,7 @@ cdb.ui.common.Table = cdb.core.View.extend({
     this.add_related_model(this.dataModel);
     this.add_related_model(this.model);
 
-    this.dataModel.bind('remove', function() {
+    this.dataModel.bind('destroy', function() {
       self.rowDestroyed();
       if(self.dataModel.length == 0) {
         self.emptyTable();
@@ -255,6 +259,8 @@ cdb.ui.common.Table = cdb.core.View.extend({
     tr.bind('changeRow', this.rowChanged);
     tr.bind('syncRow', this.rowSynched);
     tr.bind('errorRow', this.rowFailed);
+    tr.bind('saving', this.rowSaving);
+    this.retrigger('saving', tr);
     // tr.bind('destroyRow', this.rowDestroyed);
     // tr.model.bind('destroy', this.rowDestroyed);
 
@@ -298,6 +304,12 @@ cdb.ui.common.Table = cdb.core.View.extend({
   * @abstract
   */
   rowFailed: function() {},
+
+  /**
+  * Callback executed when a row send a POST to the server
+  * @abstract
+  */
+  rowSaving: function() {},
 
   /**
   * Callback executed when a row gets destroyed

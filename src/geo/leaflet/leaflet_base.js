@@ -7,6 +7,7 @@
     this.leafletLayer = leafletLayer;
     this.leafletMap = leafletMap;
     this.model = layerModel;
+
     this.model.bind('change', this._modelUpdated, this);
     this.type = layerModel.get('type') || layerModel.get('kind');
     this.type = this.type.toLowerCase();

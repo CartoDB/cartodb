@@ -26,6 +26,34 @@
       map.bind('change:center', spy.centerChanged);
     });
 
+    it("should change bounds when center is set", function() {
+      var s = sinon.spy();
+      spyOn(map, 'getViewBounds');
+      map.bind('change:view_bounds_ne', s);
+      map.set('center', [10, 10]);
+      expect(s.called).toEqual(true);
+      expect(map.getViewBounds).not.toHaveBeenCalled();
+    });
+
+    it("should change center and zoom when bounds are changed", function() {
+      var s = sinon.spy();
+      mapView.getSize = function() { return {x: 200, y: 200}; }
+      map.bind('change:center', s);
+      spyOn(mapView, '_setCenter');
+      mapView._bindModel();
+      runs(function() {
+        map.set({
+          'view_bounds_ne': [1, 1],
+          'view_bounds_sw': [-0.3, -1.2]
+        })
+      });
+      waits(1000);
+      runs(function() {
+        expect(mapView._setCenter).toHaveBeenCalled();
+        //expect(s.called).toEqual(true);
+      });
+    });
+
     it("should change zoom", function() {
       mapView._setZoom(null, 10);
       expect(spy.zoomChanged).toHaveBeenCalled();
@@ -92,6 +120,66 @@
       var layerView = mapView.getLayerByCid(lyr);
       expect(layerView.__proto__.constructor).toEqual(cdb.geo.GMapsPlainLayerView);
     });
+
+    var geojsonFeature = {
+        "type": "Point",
+        "coordinates": [-104.99404, 39.75621]
+    };
+
+
+    var multipoly = {"type":"MultiPolygon","coordinates": [
+      [
+        [[40, 40], [20, 45], [45, 30], [40, 40]]
+      ],
+      [
+        [[20, 35], [45, 20], [30, 5], [10, 10], [10, 30], [20, 35]],
+        [[30, 20], [20, 25], [20, 15], [30, 20]]
+      ]
+    ]
+    }
+
+    function testGeom(g) {
+      var geo = new cdb.geo.Geometry({
+        geojson: g
+      });
+      map.addGeometry(geo);
+      expect(_.size(mapView.geometries)).toEqual(1);
+      geo.destroy();
+      expect(_.size(mapView.geometries)).toEqual(0);
+    }
+
+    it("should add and remove a geometry", function() {
+      testGeom(geojsonFeature);
+    });
+
+    it("should add and remove a polygon", function() {
+      testGeom(multipoly);
+    });
+
+    it("should edit a geometry", function() {
+      var geo = new cdb.geo.Geometry({
+        geojson: geojsonFeature
+      });
+      map.addGeometry(geo);
+      var v = mapView.geometries[geo.cid];
+      v.trigger('dragend', null, [10, 20]);
+      expect(geo.get('geojson')).toEqual({
+        "type": "Point",
+        "coordinates": [20, 10]
+      })
+
+    });
+
+    it("should convert to geojson", function() {
+      var geo = new cdb.geo.Geometry({
+        geojson: multipoly 
+      });
+      map.addGeometry(geo);
+      var v = mapView.geometries[geo.cid];
+      var geojson = v._getGeoJSON(v.geom);
+      expect(geojson).toEqual(multipoly);
+    });
+
 /*
 
     it("should inser layer in specified order", function() {

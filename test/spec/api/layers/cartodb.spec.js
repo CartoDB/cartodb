@@ -92,7 +92,7 @@ describe('api.layers.cartodb', function() {
         var t = layer._tileJSON();
         opts = get_url_options(t.tiles[0]);
         expect(opts.style).toEqual(undefined);
-        expect(opts.style_version).toEqual(cdb.CARTOCSS_DEFAULT_VERSION);
+        expect(opts.style_version).toEqual(undefined);
       });
     });
 

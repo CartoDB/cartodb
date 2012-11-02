@@ -78,6 +78,7 @@ cdb.geo.PlainLayer = cdb.geo.MapLayer.extend({
 
 // CartoDB layer
 cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
+
   defaults: {
     type: 'CartoDB',
     active: true,
@@ -86,7 +87,6 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     auto_bound: false,
     interactivity: null,
     debug: false,
-    visible: true,
     tiler_domain: "cartodb.com",
     tiler_port: "80",
     tiler_protocol: "http",
@@ -105,16 +105,23 @@ cdb.geo.CartoDBLayer = cdb.geo.MapLayer.extend({
     this.set({active: false, opacity: 0, visible: false})
   },
 
+  /**
+   * refresh the layer
+   */
+  invalidate: function() {
+    var e = this.get('extra_params') || e;
+    e.cache_buster = new Date().getTime();
+    this.set('extra_params', e);
+    this.trigger('change');
+  },
+
   toggle: function() {
     if(this.get('active')) {
       this.deactivate();
     } else {
       this.activate();
     }
-  },
-
-
-
+  }
 });
 
 cdb.geo.Layers = Backbone.Collection.extend({
@@ -330,10 +337,15 @@ cdb.geo.Map = cdb.core.Model.extend({
     var old = this.layers.at(0);
 
     if (old) { // defensive programming FTW!!
-
-      old.destroy({
+      //remove layer from the view
+      //change all the attributes and save it again
+      //it will saved in the server and recreated in the client
+      self.layers.remove(old);
+      layer.set('id', old.get('id'));
+      layer.set('order', old.get('order'));
+      this.layers.add(layer, { at: 0 });
+      layer.save(null, {
         success: function() {
-          self.layers.add(layer, { at: 0 });
           self.trigger('baseLayerAdded');
           self._adjustZoomtoLayer(layer);
           opts.success && opts.success();
@@ -357,6 +369,72 @@ cdb.geo.Map = cdb.core.Model.extend({
 
   removeGeometry: function(geom) {
     this.geometries.remove(geom);
+  },
+
+  setBounds: function(b) {
+    this.attributes.view_bounds_sw = [
+        b[0][0],
+        b[0][1]
+    ];
+    this.attributes.view_bounds_ne = [
+        b[1][0],
+        b[1][1]
+    ];
+
+    // change both at the same time
+    this.trigger('change:view_bounds_ne', this);
+
+  },
+
+  // set center and zoom according to fit bounds
+  fitBounds: function(bounds, mapSize) {
+    var z = this.getBoundsZoom(bounds, mapSize);
+    if(z == null) {
+      return;
+    }
+    var lat = (bounds[0][0] + bounds[1][0])/2;
+    var lon = (bounds[0][1] + bounds[1][1])/2;
+    this.set({
+      center: [lat, lon],
+      zoom: z
+    })
+  },
+
+  // adapted from leaflat src
+  getBoundsZoom: function(boundsSWNE, mapSize) {
+    var size = [mapSize.x, mapSize.y],
+        zoom = this.get('minZoom') || 0,
+        maxZoom = this.get('maxZoom') || 24,
+        ne = boundsSWNE[1],
+        sw = boundsSWNE[0],
+        boundsSize = [],
+        nePoint,
+        swPoint,
+        zoomNotFound = true;
+
+    do {
+      zoom++;
+      nePoint = cdb.geo.Map.latlngToMercator(ne, zoom);
+      swPoint = cdb.geo.Map.latlngToMercator(sw, zoom);
+      boundsSize[0] = Math.abs(nePoint[0] - swPoint[0]);
+      boundsSize[1] = Math.abs(swPoint[1] - nePoint[1]);
+      zoomNotFound = boundsSize[0] < size[0] || boundsSize[1] < size[1];
+    } while (zoomNotFound && zoom <= maxZoom);
+
+    if (zoomNotFound) {
+      return null;
+    }
+
+    return zoom - 1;
+
+  }
+
+}, {
+
+  latlngToMercator: function(latlng, zoom) {
+    var ll = new L.LatLng(latlng[0], latlng[1]);
+    var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
+    return [pp.x, pp.y];
   }
 
 });
@@ -376,6 +454,8 @@ cdb.geo.MapView = cdb.core.View.extend({
     this.map = this.options.map;
     this.add_related_model(this.map);
     this.add_related_model(this.map.layers);
+
+    this.autoSaveBounds = false;
 
     // this var stores views information for each model
     this.layers = {};
@@ -427,19 +507,52 @@ cdb.geo.MapView = cdb.core.View.extend({
   _setModelProperty: function(prop) {
     this._unbindModel();
     this.map.set(prop);
+    if(prop.center !== undefined || prop.zoom !== undefined) {
+      var b = this.getBounds();
+      this.map.set({
+        view_bounds_sw: b[0],
+        view_bounds_ne: b[1]
+      });
+      if(this.autoSaveBounds) {
+        this._saveLocation();
+      }
+    }
     this._bindModel();
   },
 
   /** bind model properties */
   _bindModel: function() {
+    this._unbindModel();
+    this.map.bind('change:view_bounds_sw', this._changeBounds, this);
+    this.map.bind('change:view_bounds_ne', this._changeBounds, this);
     this.map.bind('change:zoom',   this._setZoom, this);
     this.map.bind('change:center', this._setCenter, this);
   },
 
   /** unbind model properties */
   _unbindModel: function() {
+    /*
     this.map.unbind('change:zoom',   this._setZoom, this);
     this.map.unbind('change:center', this._setCenter, this);
+    this.map.unbind('change:view_bounds_sw', this._changeBounds, this);
+    this.map.unbind('change:view_bounds_ne', this._changeBounds, this);
+    */
+
+    this.map.unbind('change:zoom',   null, this);
+    this.map.unbind('change:center', null, this);
+    this.map.unbind('change:view_bounds_sw', null, this);
+    this.map.unbind('change:view_bounds_ne', null, this);
+  },
+
+  _changeBounds: function() {
+    var bounds = this.map.getViewBounds();
+    if(bounds) {
+      this.showBounds(bounds);
+    }
+  },
+
+  showBounds: function(bounds) {
+    this.map.fitBounds(bounds, this.getSize())
   },
 
   _addLayers: function() {
@@ -470,10 +583,6 @@ cdb.geo.MapView = cdb.core.View.extend({
     return l;
   },
 
-  addGeometry: function(geom) {
-    throw "to be implemented";
-  },
-
   _setZoom: function(model, z) {
     throw "to be implemented";
   },
@@ -484,6 +593,34 @@ cdb.geo.MapView = cdb.core.View.extend({
 
   _addLayer: function(layer, layers, opts) {
     throw "to be implemented";
+  },
+
+  _addGeomToMap: function(geom) {
+    throw "to be implemented";
+  },
+
+  _removeGeomFromMap: function(geo) {
+    throw "to be implemented";
+  },
+
+  setAutoSaveBounds: function() {
+    var self = this;
+    this.autoSaveBounds = true;
+  },
+
+  _saveLocation: _.debounce(function() {
+      this.map.save(null, { silent: true });
+  }, 1000),
+
+  _addGeometry: function(geom) {
+    var view = this._addGeomToMap(geom);
+    this.geometries[geom.cid] = view;
+  },
+
+  _removeGeometry: function(geo) {
+    var geo_view = this.geometries[geo.cid];
+    this._removeGeomFromMap(geo_view);
+    delete this.geometries[geo.cid];
   }
 
 
@@ -508,5 +645,6 @@ cdb.geo.MapView = cdb.core.View.extend({
       map: mapModel
     });
   }
+
 }
 );

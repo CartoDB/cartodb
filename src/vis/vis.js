@@ -44,6 +44,7 @@ var Layers = {
     var t = this._types[type.toLowerCase()];
 
     var c = {};
+    c.type = type;
     _.extend(c, data, data.options);
     return new t(vis, c);
   }
@@ -58,6 +59,8 @@ cdb.vis.Layers = Layers;
 var Vis = cdb.core.View.extend({
 
   initialize: function() {
+    _.bindAll(this, 'loadingTiles', 'loadTiles');
+
     if(this.options.mapView) {
       this.mapView = this.options.mapView;
       this.map = this.mapView.map;
@@ -74,13 +77,24 @@ var Vis = cdb.core.View.extend({
       description: data.description,
       maxZoom: data.maxZoom,
       minZoom: data.minZoom,
-      provider: data.provider
+      provider: data.map_provider
     };
 
     // if the boundaries are defined, we add them to the map
     if(data.bounding_box_sw && data.bounding_box_ne) {
       mapConfig.bounding_box_sw = data.bounding_box_sw;
       mapConfig.bounding_box_ne = data.bounding_box_ne;
+    }
+    if(data.bounds) {
+      mapConfig.view_bounds_sw = data.bounds[0];
+      mapConfig.view_bounds_ne = data.bounds[1];
+    } else {
+      var center = data.center;
+      if (typeof(center) === "string") {
+        center = $.parseJSON(center);
+      }
+      mapConfig.center = center || [0, 0];
+      mapConfig.zoom = data.zoom || 4;
     }
 
     var map = new cdb.geo.Map(mapConfig);
@@ -94,12 +108,17 @@ var Vis = cdb.core.View.extend({
     this.map = map;
     this.mapView = mapView;
 
-
     // overlays
     for(var i in data.overlays) {
       var overlay = data.overlays[i];
       overlay.map = map;
       var v = Overlay.create(overlay.type, this, overlay);
+
+      // Save tiles loader view for later
+      if (overlay.type == "loader") {
+        this.loader = v;
+      }
+
       this.addView(v);
       this.mapView.$el.append(v.el);
     }
@@ -110,17 +129,6 @@ var Vis = cdb.core.View.extend({
       this.loadLayer(layerData);
     }
 
-    if(data.bounds) {
-      mapView.showBounds(data.bounds);
-    } else {
-      var center = data.center;
-      if (typeof(center) === "string") {
-        center = JSON.parse(center);
-      }
-
-      map.setCenter(center || [0, 0]);
-      map.setZoom(data.zoom || 4);
-    }
   },
 
   createLayer: function(layerData, opts) {
@@ -132,7 +140,8 @@ var Vis = cdb.core.View.extend({
     var model = layerView.model;
     var eventType = layerView.model.get('eventType') || 'featureClick';
     var infowindow = Overlay.create('infowindow', this, model.get('infowindow'), true);
-    this.mapView.addInfowindow(infowindow);
+    var mapView = this.mapView;
+    mapView.addInfowindow(infowindow);
 
     var infowindowFields = layerView.model.get('infowindow');
 
@@ -156,6 +165,14 @@ var Vis = cdb.core.View.extend({
         infowindow.model.set({ content:  { fields: content} });
         infowindow.setLatLng(latlng).showInfowindow();
     });
+
+    layerView.bind('featureOver', function(e, latlon, pxPos, data) {
+      mapView.setCursor('pointer');
+    });
+    layerView.bind('featureOut', function() {
+      mapView.setCursor('auto');
+    });
+
   },
 
   loadLayer: function(layerData, opts) {
@@ -165,19 +182,27 @@ var Vis = cdb.core.View.extend({
     var layer_cid = map.addLayer(Layers.create(layerData.type || layerData.kind, this, layerData), opts);
 
     var layerView = mapView.getLayerByCid(layer_cid);
+    
     // add the associated overlays
     if(layerData.infowindow) {
       this.addInfowindow(layerView);
-      layerView.bind('featureOver', function(e, latlon, pxPos, data) {
-        $(document.body).css('cursor', 'pointer');
-      });
-      layerView.bind('featureOut', function() {
-        $(document.body).css('cursor', 'auto');
-      });
+    }
+
+    if (layerView) {
+      layerView.bind('loading', this.loadingTiles);
+      layerView.bind('load',    this.loadTiles);
     }
 
     return layerView;
 
+  },
+
+  loadingTiles: function() {
+    this.loader.show()
+  },
+
+  loadTiles: function() {
+    this.loader.hide();
   }
 
 });

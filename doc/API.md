@@ -3,9 +3,33 @@
 
 This library allows you to use the visualizations created using [CartoDB](http://cartodb.com/ "cartodb") in your website or introduce them in your current map. Here are described all the methods available, check examples page to see the API in action
 
+# API index
+
+## globals
+ - cartodb.VERSION
+ - cartodb.createLayer
+
+## CartoDB layer
+  - clear()
+  - hide()
+  - show()
+  - setInteraction(enable)
+  - setQuery(sql)
+  - setCartoCSS(cartoCSS, version='2.0.1')
+  - isVisible()
+  - setInteractivity(fieldsArray)
+  - setOptions(options)
+  - setOpacity(opacity)
+  - featureOver -> (event, latlng, pos, data)
+  - featureOut ->
+  - featureClick -> (event, latlng, pos, data)
+
+## SQL
+  - execute(sql, vars, options, callback)
 
 
-## globals 
+
+## globals
 
 ##### **cartodb.VERSION**
 
@@ -71,9 +95,9 @@ cartodb.loadLayer(map, 'http://examples.cartodb.com/tables/TODO/cartodb.js')
 ```
 
 
-## CartoDB layer 
+## CartoDB layer
 
-Each kind of layer has different API, so depending on the the layer you created in CartoDB you will be able to perform different actions. In order to know what type of layer has been created you can check ``type`` attribute. 
+Each kind of layer has different API, so depending on the the layer you created in CartoDB you will be able to perform different actions. In order to know what type of layer has been created you can check ``type`` attribute.
 
 Here are described all the layer types you can get:
 
@@ -81,7 +105,7 @@ Here are described all the layer types you can get:
 
   Should be called after removing from it from the map.
 
-##### **hide()** 
+##### **hide()**
 
   Hides the cartodb layer from the map. Disables the interaction if it was enabled.
 
@@ -89,7 +113,7 @@ Here are described all the layer types you can get:
 
   Show the cartodb layer in the map if it was previously added. Enables the interaction if it was enabled.
 
-##### **setInteraction(enable)** 
+##### **setInteraction(enable)**
 
   Set the interaction of your layer to true or false. When is disabled ``featureOver``, ``featureClick`` and ``featureOut`` are **not** triggered
 
@@ -97,7 +121,7 @@ Here are described all the layer types you can get:
 
   + **enable**: true if the interaction needs to be enabled
 
-##### **setQuery(sql)** 
+##### **setQuery(sql)**
   Sets the sql query. The layer will show the geometry resulting of this query. When the query raises an error, ``error`` event is triggered. If you set sql to null the query is reset to 'select * form {{table_name}}'
 
   The layer is refreshed just after the execute this function.
@@ -119,17 +143,17 @@ Here are described all the layer types you can get:
   });
 ```
 
-##### setCartoCSS(cartoCSS, version='2.0.1') 
+##### setCartoCSS(cartoCSS, version='2.0.1')
   Change the style of the layer tiles.
   'error' event is triggered on the layer if something is wrong with the style
   set cartoCSS to null to reset to original style
 
 *arguments*:
 
-  + **cartoCSS**: Changes the cartoCSS style applied to the tiles 
+  + **cartoCSS**: Changes the cartoCSS style applied to the tiles
   + **version**: cartoCSS version. You usually do not need to change this
-  
-  
+
+
 *example*:
 
 ```javascript
@@ -147,27 +171,28 @@ Here are described all the layer types you can get:
 
   Change the columns you want to get data
 
-##### setOptions(options) 
+##### setOptions(options)
 
-  Change any parameter at the same time refreshing the tiles once 
+  Change any parameter at the same time refreshing the tiles once
 
 *available options*
-  + query: see setQuery
-  + tile_style: see setStyle
-  + opacity: see setOpacity
-  + interactivity: see setInteractivity
-  
-*Example*: 
+
+  + *query*: see setQuery
+  + *tile_style*: see setStyle
+  + *opacity*: see setOpacity
+  + *interactivity*: see setInteractivity
+
+*Example*:
 
 ```javascript
   layer.setOptions({
-     query: "SELECT * FROM {{table_name}} WHERE cartodb_id < 100", 
+     query: "SELECT * FROM {{table_name}} WHERE cartodb_id < 100",
      interactivity: "cartodb_id,the_geom,magnitude"
   });
 ```
 
 ##### setOpacity(opacity)
-  
+
   Change the opacity of the layer
 
 *arguments*
@@ -176,10 +201,10 @@ Here are described all the layer types you can get:
 
 
 
-#### events 
+#### events
 
 ##### featureOver -> (event, latlng, pos, data)
-  
+
   A callback when hovers in a feature
 
 *callback arguments*
@@ -197,7 +222,7 @@ Here are described all the layer types you can get:
   });
 ```
 
-##### featureOut
+##### featureOut -> ()
 
   A callback when hovers out a feature
 
@@ -209,7 +234,68 @@ Here are described all the layer types you can get:
 
   same than featureOver
 
-/*
-setBounds: Set bounds in the map using a new query or the default one Example: cartodb_gmapsv3.setBounds("SELECT * FROM {{table_name}} WHERE cartodb_id < 100");
-*/
+
+
+
+
+## SQL
+
+The SQL object allows you to fetch data from the CartoDB SQL API. A simple example usage is:
+
+```javascript
+var sql = cartodb.SQL({ user: 'cartodb_user' });
+sql.execute("select * from table where id > {{id}}", { id: 3 })
+  .done(function(data) {
+    console.log(data.rows);
+  })
+  .error(function(errors) {
+    // errors contains a list of errors
+    console.log("error:" + err);
+  })
+```
+
+it accepts the following options:
+
+  + format: could be geojson
+  + dp: float precisition
+  + jsonp: if jsonp should be used instead of CORS. This param is enabled if the browser does not support CORS
+
+these arguments will be applied for all the queries performed by this object, if you want to override them for one query see ``execute`` options
+
+##### **execute**(sql [,vars][, options][, callback])
+
+executes a sql query. 
+
+*arguments*:
+
+  + **sql**: a string with the sql query to be executed. You can specify template variables like {{variable}} which will be filled with ``vars`` object
+  + **vars**: a map with the variables to be interpolated in the sql query
+  + **options**: accepts ``format``, ``dp`` and ``jsonp``. This object also overrides the params passed to $.ajax
+
+*returns*: promise object. You can listen for the following events:
+
+  + ``done``: triggered when the data arrives
+  + ``error``: triggered when something failed
+
+  you can also use done and error methods:
+
+  ```javascript
+  sql.execute('select * from table')
+    .done(fn)
+    .error(fnError)
+  ```
+ 
+##### **getBounds**(sql [,vars][, options][, callback])
+
+return the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ] ] for the geometry resulting of specified query
+
+```javascript
+sql.getBounds('select * form table').done(function(bounds) {
+    console.log(bounds);
+});
+```
+  
+*arguments*:
+
+  + **sql**: a string with the sql query from the bounds will be calculated
 

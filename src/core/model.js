@@ -1,11 +1,28 @@
 (function() {
 
+  cdb._debugCallbacks= function(o) {
+    var callbacks = o._callbacks;
+    for(var i in callbacks) {
+      var node = callbacks[i];
+      console.log(" * ", i);
+      var end = node.tail;
+      while ((node = node.next) !== end) {
+        console.log("    - ", node.context, (node.context && node.context.el) || 'none');
+      }
+    }
+  }
+
   /**
    * Base Model for all CartoDB model.
    * DO NOT USE Backbone.Model directly
    * @class cdb.core.Model
    */
   var Model = cdb.core.Model = Backbone.Model.extend({
+
+    initialize: function(options) {
+      _.bindAll(this, 'fetch',  'save', 'retrigger');
+      return Backbone.Model.prototype.initialize.call(this, options);
+    },
     /**
     * We are redefining fetch to be able to trigger an event when the ajax call ends, no matter if there's
     * a change in the data or not. Why don't backbone does this by default? ahh, my friend, who knows.
@@ -49,5 +66,25 @@
         self.trigger(retrigEvent);
       })
     },
+
+    /**
+     * We need to override backbone save method to be able to introduce new kind of triggers that
+     * for some reason are not present in the original library. Because you know, it would be nice
+     * to be able to differenciate "a model has been updated" of "a model is being saved".
+     * @param  {object} opt1
+     * @param  {object} opt2
+     * @return {$.Deferred}
+     */
+    save: function(opt1, opt2) {
+      var self = this;
+      this.trigger('saving');
+      $promise = Backbone.Model.prototype.save.call(this, opt1, opt2);
+      $.when($promise).done(function() {
+        self.trigger('saved');
+      }).fail(function() {
+        self.trigger('errorSaving')
+      })
+      return $promise;
+    }
   });
 })();

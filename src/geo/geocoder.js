@@ -18,7 +18,7 @@ cdb.geo.geocoder.YAHOO = {
       .replace(/ú/g,'u')
       .replace(/ /g,'+');
 
-      $.getJSON('http://query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--&flags=JX"') + '&format=json&callback=?', function(data) {
+      $.getJSON('//query.yahooapis.com/v1/public/yql?q='+encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--&flags=JX"') + '&format=json&callback=?', function(data) {
 
          var coordinates = [];
          if (data && data.query && data.query.results && data.query.results.ResultSet && data.query.results.ResultSet.Found != "0") {
@@ -48,7 +48,6 @@ cdb.geo.geocoder.YAHOO = {
             coordinates.push(position);
           }
         }
-
 
         callback(coordinates);
       });

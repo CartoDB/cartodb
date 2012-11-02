@@ -113,10 +113,10 @@
               '       ST_XMax(ST_Extent(the_geom)) as maxx,' + 
               '       ST_YMax(ST_Extent(the_geom)) as maxy' +
               ' from ({{sql}}) as subq';
-      var v = _.extend({}, vars, {sql: sql});
-      this.execute(s, v, options)
+      sql = Mustache.render(sql, vars);
+      this.execute(s, { sql: sql }, options)
         .done(function(result) {
-          if (result.rows.length > 0 && result.rows[0].maxx != null) {
+          if (result.rows && result.rows.length > 0 && result.rows[0].maxx != null) {
             var c = result.rows[0];
             var minlat = -85.0511;
             var maxlat =  85.0511;

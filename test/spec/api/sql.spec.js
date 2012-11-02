@@ -19,7 +19,11 @@ describe('SQL api client', function() {
       ajaxParams = params;
       _.defer(function() {
         if(!throwError && params.success) params.success(TEST_DATA);
-        throwError && params.error && params.error();
+        throwError && params.error && params.error({
+          responseText: JSON.stringify({
+            error: ['jaja']
+          })
+        });
       });
     }
   });
@@ -69,7 +73,7 @@ describe('SQL api client', function() {
         err = true;
       });
     });
-    waits(1);
+    waits(10);
     runs(function() {
       expect(err).toEqual(true);
     });
@@ -102,5 +106,17 @@ describe('SQL api client', function() {
     expect(ajaxParams.crossDomain).toEqual(undefined);
     expect(ajaxParams.jsonp).toEqual(undefined);
     $.support.cors = true;
+  });
+
+  it("should get bounds for query", function() {
+    var sql = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' + 
+            '       ST_YMin(ST_Extent(the_geom)) as miny,'+
+            '       ST_XMax(ST_Extent(the_geom)) as maxx,' + 
+            '       ST_YMax(ST_Extent(the_geom)) as maxy' +
+            ' from (select * from rambo where id=2) as subq';
+    s = new cartodb.SQL({ user: 'jaja' });
+    s.getBounds('select * from rambo where id={{id}}', {id: 2});
+    console.log(ajaxParams.url)
+    expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
   });
 });

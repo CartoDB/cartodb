@@ -287,7 +287,7 @@ executes a sql query.
  
 ##### **getBounds**(sql [,vars][, options][, callback])
 
-return the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ]] for the geometry resulting of specified query
+return the bounds [ [sw_lat, sw_lon], [ne_lat, ne_lon ] ] for the geometry resulting of specified query
 
 ```javascript
 sql.getBounds('select * form table').done(function(bounds) {

@@ -8,7 +8,7 @@ dist:  dist/cartodb.js themes
 
 
 dist_folder:
-	mkdir dist
+	mkdir -p dist
 
 dist/cartodb.uncompressed.js: dist_folder
 	node scripts/compress.js
